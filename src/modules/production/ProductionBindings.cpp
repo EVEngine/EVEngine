@@ -34,7 +34,7 @@ struct ScriptWorkEvent {
 template <class T>
 eve::Result<T> productionBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
     return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "production.squirrel"));
+        eve::Diagnostic::error(code, message, path, {}, "production.squirrel"));
 }
 
 template <class Ref, class Proxy, class Release>

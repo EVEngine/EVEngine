@@ -13,7 +13,7 @@ namespace {
 
 template <typename T>
 Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
+    return Result<T>::failure(Diagnostic::error(code, message, path));
 }
 
 LogicalId id(std::string_view text) { return LogicalId::parse(text).value(); }

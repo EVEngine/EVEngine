@@ -88,7 +88,7 @@ PropertyReadResult MeshVfxAssetTarget::read(const SelectionSnapshot& selection, 
     return {editing::PropertyReadState::Value, canonicalJson(), {}};
 }
 
-EditorResult<DomainOperation> MeshVfxAssetTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> MeshVfxAssetTarget::makeSet(const SelectionSnapshot& selection,
                                                           const PropertyPath& path, const EditorValue& value,
                                                           PropertySetMode mode) const {
     if (!matches(selection) || path != PropertyPath("asset.json") || mode != PropertySetMode::Absolute)
@@ -121,12 +121,12 @@ EditorResult<DomainOperation> MeshVfxAssetTarget::makeSet(const SelectionSnapsho
     return editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> MeshVfxAssetTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> MeshVfxAssetTarget::makeReset(const SelectionSnapshot& selection,
                                                             const PropertyPath& path) const {
     return makeSet(selection, path, defaultAsset, PropertySetMode::Absolute);
 }
 
-EditorResult<void> MeshVfxAssetTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> MeshVfxAssetTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "stylize.mesh-vfx.replace.v1")
         return editing::failed<void>(editing::Status::Rejected, editing::RuleId("editor.stylize.mesh-vfx.operation"),
                                      "Mesh VFX operation mismatch");
@@ -149,7 +149,7 @@ std::unique_ptr<IDomainOperationTarget> MeshVfxAssetTarget::cloneDomainState() c
     return std::make_unique<MeshVfxAssetTarget>(*this);
 }
 
-EditorResult<void> MeshVfxAssetTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> MeshVfxAssetTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* target = dynamic_cast<MeshVfxAssetTarget*>(candidate.get());
     if (!target || target->id_ != id_)
         return editing::failed<void>(editing::Status::Conflict, editing::RuleId("editor.stylize.mesh-vfx.candidate"),
@@ -164,7 +164,7 @@ EditorValue MeshVfxAssetTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", std::int64_t{1}}, {"assetJson", canonicalJson()}};
 }
 
-EditorResult<void> MeshVfxAssetTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> MeshVfxAssetTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto* versionValue = field(snapshot, "schemaVersion");
     const auto* jsonValue = field(snapshot, "assetJson");
     const auto* version = versionValue ? versionValue->getIf<std::int64_t>() : nullptr;
@@ -184,7 +184,7 @@ EditorResult<void> MeshVfxAssetTarget::loadSnapshot(const EditorValue& snapshot)
 MeshVfxPreviewRuntime::MeshVfxPreviewRuntime() = default;
 MeshVfxPreviewRuntime::~MeshVfxPreviewRuntime() = default;
 
-EditorResult<void> MeshVfxPreviewRuntime::publish(const MeshVfxAssetTarget& document) {
+Result<void> MeshVfxPreviewRuntime::publish(const MeshVfxAssetTarget& document) {
     auto candidate = stylize::MeshVfxAssetInstance::create(document.asset());
     if (!candidate)
         return editing::failed<void>(editing::Status::Rejected, editing::RuleId("editor.stylize.mesh-vfx.preview"),

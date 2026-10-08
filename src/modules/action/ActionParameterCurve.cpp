@@ -16,10 +16,10 @@ Result<double> number(const Value& value, std::string path) {
         result = *decimal;
     else
         return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                         "parameter curve field must be numeric", std::move(path)));
+                                                         "parameter curve field must be numeric", path));
     if (!std::isfinite(result))
         return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                         "parameter curve field must be finite", std::move(path)));
+                                                         "parameter curve field must be finite", path));
     return Result<double>::success(result);
 }
 

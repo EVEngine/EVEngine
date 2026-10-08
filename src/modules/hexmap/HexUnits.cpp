@@ -20,12 +20,12 @@ namespace {
  * the failure arm of every `Result<T>` shape this translation unit returns.
  */
 [[nodiscard]] Diagnostic invalidArgument(std::string message) {
-    return Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap");
+    return Diagnostic::error(DiagnosticCode::InvalidArgument, message, "hexmap");
 }
 
 /** @brief Diagnostic for an unknown unit id. */
 [[nodiscard]] Diagnostic notFound(std::string message) {
-    return Diagnostic::error(DiagnosticCode::NotFound, std::move(message), "hexmap");
+    return Diagnostic::error(DiagnosticCode::NotFound, message, "hexmap");
 }
 
 /** @brief Wraps an angle in degrees into `[-180, 180)`. */

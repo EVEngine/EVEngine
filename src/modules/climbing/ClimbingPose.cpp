@@ -12,7 +12,7 @@ namespace {
 
 eve::Result<ClimbingPoseResult> poseFailure(std::string message, std::string path) {
     return eve::Result<ClimbingPoseResult>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path), {}, "climbing"));
+        eve::DiagnosticCode::InvalidArgument, message, path, {}, "climbing"));
 }
 
 bool validChain(const ClimbingLimbChain& chain, int boneCount) {

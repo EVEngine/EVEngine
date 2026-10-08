@@ -32,13 +32,13 @@ class EVENGINE_API_ORCHESTRATION EnvironmentAssetBrowser {
 public:
     explicit EnvironmentAssetBrowser(const MemoryAssetDatabase* database) : database_(database) {}
     /** @brief Query deterministic cards; stale index generations return Conflict. */
-    EditorResult<EnvironmentAssetPage> query(std::string text, std::size_t offset,
+    Result<EnvironmentAssetPage> query(std::string text, std::size_t offset,
                                              std::size_t limit,
                                              std::optional<std::uint64_t> generation = std::nullopt) const;
     /** @brief Resolve a selected environment map and reject unusable import metadata. */
-    EditorResult<EnvironmentAssetCard> select(const AssetGuid& asset) const;
+    Result<EnvironmentAssetCard> select(const AssetGuid& asset) const;
 private:
-    EditorResult<EnvironmentAssetCard> card(const AssetRecord& record) const;
+    Result<EnvironmentAssetCard> card(const AssetRecord& record) const;
     const MemoryAssetDatabase* database_ = nullptr;
 };
 

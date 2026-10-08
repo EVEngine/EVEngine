@@ -9,7 +9,7 @@ namespace {
 template <class T>
 eve::Result<T> advancedFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
     return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "production.advanced"));
+        eve::Diagnostic::error(code, message, path, {}, "production.advanced"));
 }
 
 eve::Result<std::int64_t> scaledRemaining(const ProductionTask& task) {

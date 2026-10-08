@@ -16,7 +16,7 @@ SelectionSnapshot select(const MaterialBatchTarget& target, std::initializer_lis
 
 class BatchSink final : public IMaterialBatchRuntimeSink {
 public:
-    EditorResult<void> publish(std::span<const MaterialDocumentTarget> candidates) override {
+    Result<void> publish(std::span<const MaterialDocumentTarget> candidates) override {
         ++calls;
         observed = candidates.size();
         if (reject)

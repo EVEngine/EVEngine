@@ -8,10 +8,6 @@
 namespace eve::card {
 namespace {
 
-eve::Result<void> invalid(const char* message, const char* path = "effect") {
-    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path));
-}
-
 bool hasKind(const effects::EffectInstance& effect, CardEffectKind kind) {
     const char* name = kind == CardEffectKind::Damage ? "card:damage"
                        : kind == CardEffectKind::Heal ? "card:heal"
@@ -25,10 +21,10 @@ public:
 
     eve::Result<void> validate(settlement::SettlementContext& context) override {
         if (target_.health < 0 || target_.maxHealth <= 0 || target_.health > target_.maxHealth || target_.barrier < 0)
-            return invalid("card effect target state is invalid", "target");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card effect target state is invalid", "target"));
         if (context.request().kind != "damage" && context.request().kind != "healing" &&
             context.request().kind != "shield")
-            return invalid("card settlement kind is unsupported", "kind");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card settlement kind is unsupported", "kind"));
         return eve::Result<void>::success();
     }
     eve::Result<void> sourceModifiers(settlement::SettlementContext&) override {
@@ -117,7 +113,7 @@ eve::Result<void> CardEffectExecutor::configureSettlementRules(const settlement:
 
 eve::Result<void> CardEffectAdapter::initializeTarget(CardEffectTarget target) {
     if (target.maxHealth <= 0 || target.health < 0 || target.health > target.maxHealth || target.barrier < 0)
-        return invalid("card effect target state is invalid", "target");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card effect target state is invalid", "target"));
     if (container_.effectCount() != 0)
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
@@ -130,15 +126,15 @@ eve::Result<void> CardEffectExecutor::applyImmediate(CardEffectTarget&          
                                                      const effects::EffectInstance&  effect,
                                                      const effects::EffectContainer& activeEffects) const {
     if (target.health < 0 || target.maxHealth <= 0 || target.health > target.maxHealth || target.barrier < 0)
-        return invalid("card effect target state is invalid", "target");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card effect target state is invalid", "target"));
     const bool damage = hasKind(effect, CardEffectKind::Damage);
     const bool heal   = hasKind(effect, CardEffectKind::Heal);
     const bool shield = hasKind(effect, CardEffectKind::Shield);
     if (!shield && ((!damage && !heal) || effect.period > 0.0)) return eve::Result<void>::success();
     if (effect.magnitude < 0.0 || effect.magnitude > static_cast<double>(std::numeric_limits<int>::max()))
-        return invalid("card immediate magnitude is outside the target range", "magnitude");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card immediate magnitude is outside the target range", "magnitude"));
     const auto parsedSubject = eve::PersistentId::parse(effect.subject);
-    if (!parsedSubject) return invalid("card shield subject is invalid", "subject");
+    if (!parsedSubject) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card shield subject is invalid", "subject"));
     settlement::SettlementRequest request;
     request.source = eve::SubjectRef::fromPersistentId(eve::PersistentId::fromUuid(effect.identity));
     request.target = eve::SubjectRef::fromPersistentId(*parsedSubject);
@@ -294,7 +290,7 @@ CardEffectSnapshot CardEffectAdapter::snapshot() const { return {container_.snap
 eve::Result<void> CardEffectAdapter::restore(const CardEffectSnapshot& snapshotValue) {
     if (snapshotValue.target.health < 0 || snapshotValue.target.maxHealth <= 0 ||
         snapshotValue.target.health > snapshotValue.target.maxHealth || snapshotValue.target.barrier < 0)
-        return invalid("card effect snapshot target state is invalid", "snapshot.target");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card effect snapshot target state is invalid", "snapshot.target"));
     auto restored = container_.restore(snapshotValue.effects);
     if (!restored) return restored;
     target_ = snapshotValue.target;

@@ -39,7 +39,7 @@ eve::Status insufficient(const Affordability& affordability) {
     return eve::Status::failure(
         eve::StatusCode::Rejected,
         eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                               "inventory item cost exceeds available quantity", "cost", std::move(details)));
+                               "inventory item cost exceeds available quantity", "cost", details));
 }
 
 eve::Status foreignReservation() {

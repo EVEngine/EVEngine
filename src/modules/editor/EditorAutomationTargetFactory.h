@@ -47,7 +47,7 @@ public:
      * @brief Create a domain target from an automation request.
      * @ownership Success transfers the target and any supporting lifetime to the caller.
      */
-    [[nodiscard]] virtual EditorResult<AutomationOwnedTarget> create(
+    [[nodiscard]] virtual Result<AutomationOwnedTarget> create(
         const TargetId& target, std::string_view type, const EditorValue::Object& request) = 0;
 };
 

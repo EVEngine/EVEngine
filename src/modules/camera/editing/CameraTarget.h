@@ -17,7 +17,7 @@ namespace eve::graphics { class Camera3D; }
 namespace eve::camera_editing {
 
 using CapabilityId=editing::CapabilityId;using DiagnosticSeverity=editing::DiagnosticSeverity;using DomainOperation=editing::DomainOperation;
-using EditRegion=editing::EditRegion;using EditorDiagnostic=editing::Diagnostic;template<class T>using EditorResult=editing::Result<T>;
+using EditRegion=editing::EditRegion;using EditorDiagnostic=editing::Diagnostic;using editing::Result;
 using EditorStatus=editing::Status;using EditorValue=editing::Value;using IDomainOperationTarget=editing::IDomainOperationTarget;
 using IDomainOperationTargetStaging=editing::IDomainOperationTargetStaging;using IEditableTarget=editing::IEditableTarget;
 using IPropertyProvider=editing::IPropertyProvider;using ObjectId=editing::ObjectId;using PropertyDescriptor=editing::PropertyDescriptor;
@@ -73,24 +73,24 @@ public:
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
     /** @brief Add a rig with a stable identity. */
-    EditorResult<DomainOperation> makeCreateRig(const CameraRigValue& rig) const;
+    Result<DomainOperation> makeCreateRig(const CameraRigValue& rig) const;
     /** @brief Delete a rig only when no timeline cut references it. */
-    EditorResult<DomainOperation> makeDeleteRig(const ObjectId& id) const;
+    Result<DomainOperation> makeDeleteRig(const ObjectId& id) const;
     /** @brief Add a stable timeline key. */
-    EditorResult<DomainOperation> makeCreateKey(const CameraTimelineKeyValue& key) const;
+    Result<DomainOperation> makeCreateKey(const CameraTimelineKeyValue& key) const;
     /** @brief Remove a timeline key. */
-    EditorResult<DomainOperation> makeDeleteKey(const ObjectId& id) const;
+    Result<DomainOperation> makeDeleteKey(const ObjectId& id) const;
     /** @brief Return authored rigs in stable document order. */
     const std::vector<CameraRigValue>& rigs() const { return rigs_; }
     /** @brief Return timeline keys sorted by time then stable identity. */
@@ -100,11 +100,11 @@ public:
     /** @brief Capture a versioned atomic persistence value. */
     EditorValue snapshotValue() const;
     /** @brief Atomically replace the document from a snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 private:
     bool matches(const SelectionSnapshot& selection) const;
     EditorValue contentValue() const;
-    EditorResult<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
+    Result<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
     std::string                   id_;
     std::vector<CameraRigValue> rigs_; std::vector<CameraTimelineKeyValue> keys_;
 };
@@ -116,9 +116,9 @@ struct CameraPreviewPose { glm::vec3 eye{0.f}; glm::vec3 target{0.f}; float fov 
 class EVENGINE_API_DOMAINS CameraPreview {
 public:
     /** @brief Evaluate the most recent cut and scalar keys at a bounded time. */
-    EditorResult<CameraPreviewPose> evaluate(const CameraDocumentTarget& document, float time) const;
+    Result<CameraPreviewPose> evaluate(const CameraDocumentTarget& document, float time) const;
     /** @brief Build camera position, look line, target and near-plane overlay primitives. */
-    EditorResult<EditorGizmoSnapshot> gizmo(const CameraDocumentTarget& document, float time) const;
+    Result<EditorGizmoSnapshot> gizmo(const CameraDocumentTarget& document, float time) const;
 };
 
 /** @brief Candidate-first bridge from camera assets to CameraController. */
@@ -127,7 +127,7 @@ public:
     CameraDocumentRuntime();
     ~CameraDocumentRuntime();
     /** @brief Build a complete controller before replacing the active generation. */
-    EditorResult<void> publish(const CameraDocumentTarget& document, graphics::Camera3D* camera);
+    Result<void> publish(const CameraDocumentTarget& document, graphics::Camera3D* camera);
     /** @brief Access the active controller generation. @return Borrowed pointer owned by this runtime. @lifetime Valid until the next successful publish or runtime destruction. */
     camera::CameraController* controller() const { return controller_.get(); }
     Revision revision() const { return revision_; }

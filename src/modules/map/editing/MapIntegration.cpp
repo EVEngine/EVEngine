@@ -5,7 +5,7 @@
 
 namespace eve::map_editing {
 
-EditorResult<void> MapRoadMeshPublisher::publish(const MapDocumentTarget& document, const StableId& road,
+Result<void> MapRoadMeshPublisher::publish(const MapDocumentTarget& document, const StableId& road,
                                                  Revision expectedRevision, IMapRoadMeshSink& sink,
                                                  int triangleBudget) const {
     if (expectedRevision != document.revision())

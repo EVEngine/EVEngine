@@ -206,7 +206,7 @@ EditorValue themeTokensValue(const ui::Theme& theme) {
     return EditorValue(std::move(object));
 }
 
-EditorResult<ui::Theme> parseThemeTokens(const EditorValue& value) {
+Result<ui::Theme> parseThemeTokens(const EditorValue& value) {
     if (!value.getIf<EditorValue::Object>())
         return eve::editing::failed<ui::Theme>(EditorStatus::Rejected, RuleId("editor.ui-theme.tokens"),
                                                "Theme tokens must be an object");
@@ -250,7 +250,7 @@ EditorResult<ui::Theme> parseThemeTokens(const EditorValue& value) {
     return eve::editing::applied<ui::Theme>(theme);
 }
 
-EditorResult<void> assignThemeToken(ui::Theme& theme, const PropertyPath& path, const EditorValue& value) {
+Result<void> assignThemeToken(ui::Theme& theme, const PropertyPath& path, const EditorValue& value) {
     for (const ColorTok& token : kColors) {
         if (path != PropertyPath(token.path)) continue;
         if (!readColor(value, theme.*(token.member)))
@@ -380,7 +380,7 @@ std::string presetName(UiThemeBasePreset preset) {
     return "dark";
 }
 
-EditorResult<UiThemeBasePreset> parsePreset(const std::string& name) {
+Result<UiThemeBasePreset> parsePreset(const std::string& name) {
     if (name == "dark") return eve::editing::applied<UiThemeBasePreset>(UiThemeBasePreset::Dark);
     if (name == "light") return eve::editing::applied<UiThemeBasePreset>(UiThemeBasePreset::Light);
     if (name == "custom") return eve::editing::applied<UiThemeBasePreset>(UiThemeBasePreset::Custom);

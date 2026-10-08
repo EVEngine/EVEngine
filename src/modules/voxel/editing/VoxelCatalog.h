@@ -24,8 +24,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -152,19 +151,19 @@ public:
      */
     void* queryCapability(const CapabilityId&) override;
 
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     PropertySchema                          schema(const SelectionSnapshot&) const override;
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
 
-    [[nodiscard]] EditorResult<DomainOperation> makeCreateModel(const VoxelModelValue&) const;
-    [[nodiscard]] EditorResult<DomainOperation> makeDeleteModel(const ObjectId&) const;
-    [[nodiscard]] EditorResult<DomainOperation> makeSetVoxel(const ObjectId& model, int x, int y, int z,
+    [[nodiscard]] Result<DomainOperation> makeCreateModel(const VoxelModelValue&) const;
+    [[nodiscard]] Result<DomainOperation> makeDeleteModel(const ObjectId&) const;
+    [[nodiscard]] Result<DomainOperation> makeSetVoxel(const ObjectId& model, int x, int y, int z,
                                                              bool occupied) const;
 
     const std::vector<VoxelModelValue>& models() const { return models_; }
@@ -179,14 +178,14 @@ public:
 
     std::vector<EditorDiagnostic> validate() const;
     EditorValue                   snapshotValue() const override;
-    EditorResult<void>            loadSnapshot(const EditorValue&);
+    Result<void>            loadSnapshot(const EditorValue&);
 
     [[nodiscard]] std::vector<ObjectId> hullJoinPartners(const ObjectId& model, int face) const;
 
 private:
     bool                          matches(const SelectionSnapshot&) const;
     EditorValue                   contentValue() const;
-    EditorResult<DomainOperation> replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation> replacement(EditorValue, std::string = {}) const;
     /**
      * @brief Mutable model lookup used by occupancy edits.
      * @ownership Borrowed from this target; callers must not delete it.

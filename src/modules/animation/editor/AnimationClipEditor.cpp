@@ -18,7 +18,7 @@ namespace eve::animation_editor {
 namespace {
 
 template <class T = void>
-animation_editing::EditorResult<T> editorError(animation_editing::EditorStatus status, std::string rule,
+animation_editing::Result<T> editorError(animation_editing::EditorStatus status, std::string rule,
                                                std::string message) {
     return eve::editing::failed<T>(status, animation_editing::RuleId(std::move(rule)), std::move(message));
 }
@@ -49,7 +49,7 @@ AnimationClipEditor::AnimationClipEditor(std::string targetId)
 }
 
 #if defined(EVE_ANIMATION_EDITOR_RUNTIME)
-animation_editing::EditorResult<void> AnimationClipEditor::loadRuntimeClip(const animation::AnimSkeleton& skeleton,
+animation_editing::Result<void> AnimationClipEditor::loadRuntimeClip(const animation::AnimSkeleton& skeleton,
                                                                             const animation::AnimClip& clip) {
     if (skeleton.getBoneCount() <= 0 || clip.getDuration() <= 0.0f)
         return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.runtime-source",
@@ -95,11 +95,11 @@ animation_editing::EditorResult<void> AnimationClipEditor::loadRuntimeClip(const
     return refreshPreview();
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::writeRuntimeClip(
+animation_editing::Result<void> AnimationClipEditor::writeRuntimeClip(
     animation::AnimClip& clip, const animation::AnimSkeleton& skeleton) const {
     animation_editing::AnimationClipRuntimeBuilder builder;
     auto built = builder.build(target_, &skeleton);
-    if (!built.ok()) return animation_editing::EditorResult<void>::failure(built.status());
+    if (!built.ok()) return animation_editing::Result<void>::failure(built.status());
     std::unique_ptr<animation::AnimClip> candidate(std::move(built).takeValue());
     clip.adopt(*candidate);
     return eve::editing::applied<void>();
@@ -149,7 +149,7 @@ std::string AnimationClipEditor::skeletonParent(const std::string& bone) const {
     return {};
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::configureWorkspace(
+animation_editing::Result<void> AnimationClipEditor::configureWorkspace(
     editor::EditorWorkspace& workspace) const {
     editor::EditorWorkspace candidate = workspace;
     struct Panel {
@@ -179,7 +179,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::configureWorkspace(
     return eve::editing::applied<void>();
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::setViewport(float width, float rowHeight,
+animation_editing::Result<void> AnimationClipEditor::setViewport(float width, float rowHeight,
                                                                       float labelWidth) {
     if (!std::isfinite(width) || !std::isfinite(rowHeight) || !std::isfinite(labelWidth) || width < 8.0f ||
         rowHeight < 8.0f || labelWidth < 0.0f || labelWidth >= width)
@@ -191,7 +191,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::setViewport(float wid
     return eve::editing::applied<void>();
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::seekSeconds(double seconds) {
+animation_editing::Result<void> AnimationClipEditor::seekSeconds(double seconds) {
     if (!std::isfinite(seconds))
         return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.seek",
                            "Seek time must be finite");
@@ -200,14 +200,14 @@ animation_editing::EditorResult<void> AnimationClipEditor::seekSeconds(double se
     return refreshPreview();
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::seekX(float x) {
+animation_editing::Result<void> AnimationClipEditor::seekX(float x) {
     if (!std::isfinite(x))
         return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.seek-x",
                            "Dope-sheet seek requires a finite x");
     return seekSeconds(xToTime(x));
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::pointerDown(float x, float y) {
+animation_editing::Result<void> AnimationClipEditor::pointerDown(float x, float y) {
     if (!std::isfinite(x) || !std::isfinite(y))
         return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.pointer",
                            "Pointer coordinates must be finite");
@@ -240,7 +240,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::pointerDown(float x, 
     return seekX(x);
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::selectBone(std::string bone) {
+animation_editing::Result<void> AnimationClipEditor::selectBone(std::string bone) {
     if (bone.empty())
         return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.select-bone",
                            "Bone name must not be empty");
@@ -248,23 +248,23 @@ animation_editing::EditorResult<void> AnimationClipEditor::selectBone(std::strin
     return refreshPreview();
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::setMaskWeight(double weight) {
+animation_editing::Result<void> AnimationClipEditor::setMaskWeight(double weight) {
     return commit(target_.makeSetMask({selectedBone_, weight}), "Set mask " + selectedBone_);
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::setDuration(double duration) {
+animation_editing::Result<void> AnimationClipEditor::setDuration(double duration) {
     return commit(target_.makeSetSettings(duration, target_.sampleRate(), target_.isLooping()), "Set clip duration");
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::setSampleRate(double sampleRate) {
+animation_editing::Result<void> AnimationClipEditor::setSampleRate(double sampleRate) {
     return commit(target_.makeSetSettings(target_.duration(), sampleRate, target_.isLooping()), "Set clip sample rate");
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::setLoop(bool loop) {
+animation_editing::Result<void> AnimationClipEditor::setLoop(bool loop) {
     return commit(target_.makeSetSettings(target_.duration(), target_.sampleRate(), loop), "Set clip loop");
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::moveSelectedKey(double time) {
+animation_editing::Result<void> AnimationClipEditor::moveSelectedKey(double time) {
     if (selectedKeyId_.empty())
         return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.no-selected-key",
                            "No key is selected");
@@ -297,7 +297,7 @@ animation_editing::AnimationTransformKey AnimationClipEditor::sampledSelectedTra
     return result;
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::keySelectedBone() {
+animation_editing::Result<void> AnimationClipEditor::keySelectedBone() {
     auto tracks = target_.tracks();
     for (auto& track : tracks) {
         if (track.bone != selectedBone_) continue;
@@ -319,7 +319,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::keySelectedBone() {
                        "Selected bone has no editable transform track");
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::deleteSelectedKey() {
+animation_editing::Result<void> AnimationClipEditor::deleteSelectedKey() {
     if (selectedKeyId_.empty())
         return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.no-selected-key", "No key is selected");
     auto tracks = target_.tracks();
@@ -334,7 +334,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::deleteSelectedKey() {
     return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.key-missing", "Selected key no longer exists");
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::updateSelectedTransform(
+animation_editing::Result<void> AnimationClipEditor::updateSelectedTransform(
     const animation_editing::AnimationTransformKey& value, std::string label) {
     auto tracks = target_.tracks();
     for (auto& track : tracks) {
@@ -358,14 +358,14 @@ animation_editing::EditorResult<void> AnimationClipEditor::updateSelectedTransfo
     return editorError(animation_editing::EditorStatus::NotFound, "editor.animation.track-missing", "Selected bone has no editable transform track");
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::setSelectedPosition(double x, double y, double z) {
+animation_editing::Result<void> AnimationClipEditor::setSelectedPosition(double x, double y, double z) {
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
         return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.position", "Position must be finite");
     auto value = sampledSelectedTransform(); value.positionX = x; value.positionY = y; value.positionZ = z;
     return updateSelectedTransform(value, "Set position " + selectedBone_);
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::setSelectedRotation(double xd, double yd, double zd) {
+animation_editing::Result<void> AnimationClipEditor::setSelectedRotation(double xd, double yd, double zd) {
     if (!std::isfinite(xd) || !std::isfinite(yd) || !std::isfinite(zd))
         return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.rotation", "Rotation must be finite");
     const double k = std::numbers::pi / 360.0;
@@ -376,17 +376,17 @@ animation_editing::EditorResult<void> AnimationClipEditor::setSelectedRotation(d
     return updateSelectedTransform(value, "Set rotation " + selectedBone_);
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::setSelectedScale(double x, double y, double z) {
+animation_editing::Result<void> AnimationClipEditor::setSelectedScale(double x, double y, double z) {
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || x <= 0.0 || y <= 0.0 || z <= 0.0)
         return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.scale", "Scale must be positive and finite");
     auto value = sampledSelectedTransform(); value.scaleX = x; value.scaleY = y; value.scaleZ = z;
     return updateSelectedTransform(value, "Set scale " + selectedBone_);
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::commit(
-    animation_editing::EditorResult<animation_editing::DomainOperation> operation, std::string label) {
+animation_editing::Result<void> AnimationClipEditor::commit(
+    animation_editing::Result<animation_editing::DomainOperation> operation, std::string label) {
     if (!operation.ok())
-        return animation_editing::EditorResult<void>::failure(operation.status());
+        return animation_editing::Result<void>::failure(operation.status());
     editor::TransactionSpec spec;
     spec.id           = editor::TransactionId("animation.clip.tx." + std::to_string(++txSequence_));
     spec.label        = std::move(label);
@@ -399,29 +399,29 @@ animation_editing::EditorResult<void> AnimationClipEditor::commit(
     if (!appended.ok()) {
         auto discarded = transactions_.discard();
         if (!discarded.ok()) discarded.ignore("pending animation clip transaction already inactive");
-        return animation_editing::EditorResult<void>::failure(appended.status());
+        return animation_editing::Result<void>::failure(appended.status());
     }
     auto committed = transactions_.commit();
     if (!committed.ok())
-        return animation_editing::EditorResult<void>::failure(committed.status());
+        return animation_editing::Result<void>::failure(committed.status());
     return refreshPreview();
 }
 
-animation_editing::EditorResult<editor::TransactionReceipt> AnimationClipEditor::undo() {
+animation_editing::Result<editor::TransactionReceipt> AnimationClipEditor::undo() {
     auto result = transactions_.undo();
     if (!result.ok()) return result;
     auto previewed = refreshPreview();
     if (!previewed.ok())
-        return animation_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+        return animation_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return result;
 }
 
-animation_editing::EditorResult<editor::TransactionReceipt> AnimationClipEditor::redo() {
+animation_editing::Result<editor::TransactionReceipt> AnimationClipEditor::redo() {
     auto result = transactions_.redo();
     if (!result.ok()) return result;
     auto previewed = refreshPreview();
     if (!previewed.ok())
-        return animation_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+        return animation_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return result;
 }
 
@@ -432,7 +432,7 @@ void AnimationClipEditor::stop() noexcept {
     playhead_ = 0.0;
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::update(double deltaSeconds) {
+animation_editing::Result<void> AnimationClipEditor::update(double deltaSeconds) {
     if (playing_) {
         if (!std::isfinite(deltaSeconds) || deltaSeconds < 0.0)
             return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.dt",
@@ -452,7 +452,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::update(double deltaSe
     return refreshPreview();
 }
 
-animation_editing::EditorResult<void> AnimationClipEditor::refreshPreview() {
+animation_editing::Result<void> AnimationClipEditor::refreshPreview() {
     const auto sampled = target_.preview(playhead_, skeletonBones());
     if (sampled.documentRevision != target_.revision()) {
         return editorError(animation_editing::EditorStatus::Conflict, "editor.animation.stale-preview",

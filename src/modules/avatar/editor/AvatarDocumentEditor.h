@@ -44,25 +44,25 @@ public:
      * @brief Install Layers / Preview / Inspector / Parameters / Expressions panels.
      * @note Does not retain @p workspace.
      */
-    [[nodiscard]] avatar_editing::EditorResult<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+    [[nodiscard]] avatar_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
 
-    [[nodiscard]] avatar_editing::EditorResult<void> selectLayer(std::string id);
-    [[nodiscard]] avatar_editing::EditorResult<void> selectParameter(std::string id);
-    [[nodiscard]] avatar_editing::EditorResult<void> selectExpression(std::string id);
-    [[nodiscard]] avatar_editing::EditorResult<void> pointerDown(float x, float y);
+    [[nodiscard]] avatar_editing::Result<void> selectLayer(std::string id);
+    [[nodiscard]] avatar_editing::Result<void> selectParameter(std::string id);
+    [[nodiscard]] avatar_editing::Result<void> selectExpression(std::string id);
+    [[nodiscard]] avatar_editing::Result<void> pointerDown(float x, float y);
 
-    [[nodiscard]] avatar_editing::EditorResult<void> setLayerVisible(bool visible);
-    [[nodiscard]] avatar_editing::EditorResult<void> setLayerZ(int zIndex);
-    [[nodiscard]] avatar_editing::EditorResult<void> setParameterValue(double value);
-    [[nodiscard]] avatar_editing::EditorResult<void> createLayer(std::string id, std::string name);
-    [[nodiscard]] avatar_editing::EditorResult<void> deleteSelectedLayer();
-    [[nodiscard]] avatar_editing::EditorResult<void> createParameter(std::string id, std::string name);
-    [[nodiscard]] avatar_editing::EditorResult<void> deleteSelectedParameter();
-    [[nodiscard]] avatar_editing::EditorResult<void> createExpression(std::string id, std::string name);
-    [[nodiscard]] avatar_editing::EditorResult<void> deleteSelectedExpression();
+    [[nodiscard]] avatar_editing::Result<void> setLayerVisible(bool visible);
+    [[nodiscard]] avatar_editing::Result<void> setLayerZ(int zIndex);
+    [[nodiscard]] avatar_editing::Result<void> setParameterValue(double value);
+    [[nodiscard]] avatar_editing::Result<void> createLayer(std::string id, std::string name);
+    [[nodiscard]] avatar_editing::Result<void> deleteSelectedLayer();
+    [[nodiscard]] avatar_editing::Result<void> createParameter(std::string id, std::string name);
+    [[nodiscard]] avatar_editing::Result<void> deleteSelectedParameter();
+    [[nodiscard]] avatar_editing::Result<void> createExpression(std::string id, std::string name);
+    [[nodiscard]] avatar_editing::Result<void> deleteSelectedExpression();
 
-    [[nodiscard]] avatar_editing::EditorResult<editor::TransactionReceipt> undo();
-    [[nodiscard]] avatar_editing::EditorResult<editor::TransactionReceipt> redo();
+    [[nodiscard]] avatar_editing::Result<editor::TransactionReceipt> undo();
+    [[nodiscard]] avatar_editing::Result<editor::TransactionReceipt> redo();
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
@@ -115,9 +115,9 @@ private:
         bool        selected = false;
     };
 
-    [[nodiscard]] avatar_editing::EditorResult<void> commit(
-        avatar_editing::EditorResult<avatar_editing::DomainOperation> operation, std::string label);
-    [[nodiscard]] avatar_editing::EditorResult<void> refreshPreview();
+    [[nodiscard]] avatar_editing::Result<void> commit(
+        avatar_editing::Result<avatar_editing::DomainOperation> operation, std::string label);
+    [[nodiscard]] avatar_editing::Result<void> refreshPreview();
     void                                             seedPreviewDocument();
     editor::SelectionSnapshot                        selection() const;
     /** @ownership Borrowed preview rect owned by this editor. @lifetime Valid until the next preview refresh or destruction; null when index is out of range. */

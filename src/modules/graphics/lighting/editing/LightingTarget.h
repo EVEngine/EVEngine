@@ -27,8 +27,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult             = editing::Result<T>;
+using editing::Result;
 using EditorStatus             = editing::Status;
 using EditorValue              = editing::Value;
 using IDomainOperationTarget   = editing::IDomainOperationTarget;
@@ -61,18 +60,18 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                         queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Capture deterministic values for document persistence. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a schema-version-one property snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
     /** @brief Read a typed runtime-neutral property value by path. @return Borrowed pointer into this target, or null.
      * @lifetime Valid until the target is mutated or destroyed. */
     const EditorValue* value(const std::string& path) const;
@@ -108,14 +107,14 @@ public:
 /** @brief Optional bridge applying a light document to graphics::Light3D. */
 class EVENGINE_API_ORCHESTRATION Light3DRuntimeApplier {
 public:
-    EditorResult<void> apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const;
+    Result<void> apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const;
 };
 
 /** @brief Optional bridge applying environment properties to DayNight or Weather. */
 class EVENGINE_API_ORCHESTRATION EnvironmentRuntimeApplier {
 public:
-    EditorResult<void> applyDayNight(const EnvironmentDocumentTarget& document, daynight::DayNight* environment) const;
-    EditorResult<void> applyWeather(const EnvironmentDocumentTarget& document, weather::Weather* environment) const;
+    Result<void> applyDayNight(const EnvironmentDocumentTarget& document, daynight::DayNight* environment) const;
+    Result<void> applyWeather(const EnvironmentDocumentTarget& document, weather::Weather* environment) const;
 };
 
 }  // namespace eve::lighting_editing

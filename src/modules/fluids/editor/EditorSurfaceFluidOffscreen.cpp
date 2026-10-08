@@ -2,7 +2,7 @@
 
 namespace eve::editor {
 
-EditorResult<OffscreenPreviewArtifact> SurfaceFluidOffscreenPreviewService::render(
+Result<OffscreenPreviewArtifact> SurfaceFluidOffscreenPreviewService::render(
     const SurfaceFluidTarget& target, const SurfaceFluidPreviewRequest& request) const {
     if (!previews_ || !renderer_ || request.previewId.empty())
         return eve::editing::failed<OffscreenPreviewArtifact>(
@@ -10,7 +10,7 @@ EditorResult<OffscreenPreviewArtifact> SurfaceFluidOffscreenPreviewService::rend
             "Surface fluid offscreen preview requires identity, Canvas and renderer services");
     SurfaceFluidPreviewSnapshot snapshot = SurfaceFluidPreviewService().build(target, request);
     if (snapshot.status != EditorStatus::Applied)
-        return EditorResult<OffscreenPreviewArtifact>::failure(
+        return Result<OffscreenPreviewArtifact>::failure(
             Status(snapshot.status, std::move(snapshot.diagnostics)));
     OffscreenPreviewRequest offscreen;
     offscreen.previewId      = request.previewId;

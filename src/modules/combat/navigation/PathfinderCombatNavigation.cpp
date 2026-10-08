@@ -24,7 +24,7 @@ Result<int> worldToCell(double coordinate, double origin, double cellSize, std::
     if (!std::isfinite(projected) || projected < static_cast<double>(std::numeric_limits<int>::min()) ||
         projected > static_cast<double>(std::numeric_limits<int>::max()))
         return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                      "navigation coordinate is outside grid range", std::move(path)));
+                                                      "navigation coordinate is outside grid range", path));
     return Result<int>::success(static_cast<int>(projected));
 }
 

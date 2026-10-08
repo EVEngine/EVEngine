@@ -17,7 +17,7 @@ public:
                                IUiSkinPlanRenderer* skins = nullptr)
         : previews_(previews), rectangles_(rectangles), assets_(assets), skins_(skins) {}
     /** @brief Layout and rasterize visible widget tint rectangles into a readback artifact. */
-    EditorResult<OffscreenPreviewArtifact> render(const UiDocumentTarget& document,
+    Result<OffscreenPreviewArtifact> render(const UiDocumentTarget& document,
                                                    int width, int height) const;
 private:
     GraphicsOffscreenPreviewService* previews_ = nullptr;

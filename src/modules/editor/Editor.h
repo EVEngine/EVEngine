@@ -72,7 +72,7 @@ public:
      * @return Applied unique workspace, or Rejected when id is empty.
      * @ownership Success transfers unique ownership to the caller.
      */
-    [[nodiscard]] EditorResult<std::unique_ptr<EditorWorkspace>> newWorkspace(const std::string& id,
+    [[nodiscard]] Result<std::unique_ptr<EditorWorkspace>> newWorkspace(const std::string& id,
                                                                               const std::string& title);
     /** @brief Return the UI- and script-neutral command registry owned by this editor module. */
     EditorCommandService& commandService() { return commandService_; }
@@ -88,19 +88,19 @@ public:
      * @return Applied, NoOp for the same registration, or structured diagnostics.
      * @thread Owner-thread only.
      */
-    [[nodiscard]] EditorResult<void> registerEditingTarget(IEditableTarget& target);
+    [[nodiscard]] Result<void> registerEditingTarget(IEditableTarget& target);
     /**
      * @brief Remove a borrowed editing target and its local transaction history.
      * @return Applied when removed, or NoOp when the target was not registered.
      */
-    [[nodiscard]] EditorResult<void> unregisterEditingTarget(const TargetId& target);
+    [[nodiscard]] Result<void> unregisterEditingTarget(const TargetId& target);
     /**
      * @brief Bind a registered target to a host session without exposing the coordinator.
      * @param session Session owned by the caller.
      * @param target Registered target identity.
      * @return Applied or a structured lookup failure.
      */
-    [[nodiscard]] EditorResult<void> bindEditingTarget(EditorSession& session, const TargetId& target);
+    [[nodiscard]] Result<void> bindEditingTarget(EditorSession& session, const TargetId& target);
     /**
      * @brief Create a script-backed implementation of the IEditorTool protocol.
      * @ownership Unique ownership transfers to the caller.

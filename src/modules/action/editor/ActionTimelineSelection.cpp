@@ -25,7 +25,7 @@ void sortAnimationSections(action::ActionTimeline& timeline) {
 
 }  // namespace
 
-EditorResult<TimelineSelectionRange> ActionTimelineEditor::selectionRange() const {
+Result<TimelineSelectionRange> ActionTimelineEditor::selectionRange() const {
     std::optional<TimelineSelectionRange> range;
     const auto include = [&](Duration start, Duration end) {
         if (!range) {
@@ -50,7 +50,7 @@ EditorResult<TimelineSelectionRange> ActionTimelineEditor::selectionRange() cons
     return eve::editing::applied<TimelineSelectionRange>(*range);
 }
 
-EditorResult<void> ActionTimelineEditor::moveSelection(Duration delta) {
+Result<void> ActionTimelineEditor::moveSelection(Duration delta) {
     if (selection_.empty()) return rejected("editor.action.timeline.selection-empty", "No timeline items are selected");
     action::ActionTimeline candidate = target_.timeline();
     const auto             move      = [&](Duration value) { return value.tryAdd(delta); };
@@ -91,9 +91,9 @@ EditorResult<void> ActionTimelineEditor::moveSelection(Duration delta) {
     return commit(std::move(candidate), "Move action timeline selection", "action.timeline.selection.move");
 }
 
-EditorResult<void> ActionTimelineEditor::alignSelectionStart() {
+Result<void> ActionTimelineEditor::alignSelectionStart() {
     auto range = selectionRange();
-    if (!range.ok()) return EditorResult<void>::failure(range.status());
+    if (!range.ok()) return Result<void>::failure(range.status());
     action::ActionTimeline candidate = target_.timeline();
     const Duration anchor = range.value().start;
     for (auto& section : candidate.animationSections) {
@@ -133,9 +133,9 @@ EditorResult<void> ActionTimelineEditor::alignSelectionStart() {
                   "action.timeline.selection.align-start");
 }
 
-EditorResult<void> ActionTimelineEditor::alignSelectionEnd() {
+Result<void> ActionTimelineEditor::alignSelectionEnd() {
     auto range = selectionRange();
-    if (!range.ok()) return EditorResult<void>::failure(range.status());
+    if (!range.ok()) return Result<void>::failure(range.status());
     action::ActionTimeline candidate = target_.timeline();
     const Duration anchor = range.value().end;
     for (auto& section : candidate.animationSections) {
@@ -175,9 +175,9 @@ EditorResult<void> ActionTimelineEditor::alignSelectionEnd() {
                   "action.timeline.selection.align-end");
 }
 
-EditorResult<void> ActionTimelineEditor::scaleSelection(Duration start, Duration end) {
+Result<void> ActionTimelineEditor::scaleSelection(Duration start, Duration end) {
     auto range = selectionRange();
-    if (!range.ok()) return EditorResult<void>::failure(range.status());
+    if (!range.ok()) return Result<void>::failure(range.status());
     if (start < Duration::zero() || end <= start || end > target_.timeline().duration)
         return rejected("editor.action.timeline.selection-scale-range",
                         "Scaled selection range must be ordered and inside the timeline");

@@ -66,7 +66,7 @@ TEST_CASE("editor.preview.offscreen_artifacts_are_bounded_revision_safe_and_rele
     CHECK_EQ(static_cast<int>(service.render({StableId("huge"), 1, 5000, 1},
         [](auto*, auto*) { return eve::editing::applied<void>(); }).code()), static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(static_cast<int>(service.render({StableId("throw"), 2, 32, 32},
-        [](auto*, auto*) -> EditorResult<void> { throw std::runtime_error("draw failed"); }).code()),
+        [](auto*, auto*) -> Result<void> { throw std::runtime_error("draw failed"); }).code()),
         static_cast<int>(EditorStatus::Failed));
     CHECK(targets.current == nullptr); CHECK_EQ(targets.bindings, 4);
 }

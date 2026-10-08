@@ -13,15 +13,6 @@ namespace {
 
 constexpr std::uint32_t kDefaultCapacity = 32;
 
-Result<void> fail(DiagnosticCode code, std::string_view message, std::string_view path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::string(message), std::string(path)));
-}
-
-template <class T>
-Result<T> failT(DiagnosticCode code, std::string_view message, std::string_view path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::string(message), std::string(path)));
-}
-
 IAttackVfxLayerExecutor* findExecutor(AttackVfxLayerRole role) {
     IAttackVfxLayerExecutor* found = nullptr;
     cap::forEach<IAttackVfxLayerExecutor>([&](IAttackVfxLayerExecutor* executor) {
@@ -60,11 +51,10 @@ struct AttackVfxRuntime::Impl {
 
     Result<AttackVfxInstanceState*> resolve(AttackVfxHandle handle) {
         if (handle.slot >= slots.size())
-            return failT<AttackVfxInstanceState*>(DiagnosticCode::NotFound, "attack VFX handle slot out of range",
-                                                  "handle");
+            return Result<AttackVfxInstanceState*>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::string("attack VFX handle slot out of range"), std::string("handle")));
         auto& slot = slots[handle.slot];
         if (!slot.state || slot.generation != handle.generation)
-            return failT<AttackVfxInstanceState*>(DiagnosticCode::StaleHandle, "stale attack VFX handle", "handle");
+            return Result<AttackVfxInstanceState*>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::string("stale attack VFX handle"), std::string("handle")));
         return Result<AttackVfxInstanceState*>::success(&*slot.state);
     }
 
@@ -78,12 +68,12 @@ struct AttackVfxRuntime::Impl {
     Result<LogicalId> resolveSkinId(const AttackVfxRecipe& recipe, const AttackVfxRequest& request) const {
         if (request.skinOverride) {
             if (!skins.contains(request.skinOverride->format()))
-                return failT<LogicalId>(DiagnosticCode::NotFound, "skin override is not registered", "skinOverride");
+                return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::string("skin override is not registered"), std::string("skinOverride")));
             return Result<LogicalId>::success(*request.skinOverride);
         }
         if (recipe.skinId) {
             if (!skins.contains(recipe.skinId->format()) && !recipe.skin)
-                return failT<LogicalId>(DiagnosticCode::NotFound, "recipe skinId is not registered", "skinId");
+                return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::string("recipe skinId is not registered"), std::string("skinId")));
             return Result<LogicalId>::success(*recipe.skinId);
         }
         return Result<LogicalId>::success(LogicalId{});
@@ -155,7 +145,7 @@ struct AttackVfxRuntime::Impl {
         auto& state = *slot.state;
         const auto recipeIt = recipes.find(state.recipeId.format());
         if (recipeIt == recipes.end())
-            return fail(DiagnosticCode::NotFound, "recipe missing while starting layers", "recipeId");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::string("recipe missing while starting layers"), std::string("recipeId")));
         const auto& recipe = recipeIt->second;
         const auto& authored = recipe.phases.at(phaseIndex);
         auto& livePhase = slot.phaseLayers.at(phaseIndex);
@@ -438,11 +428,10 @@ AttackVfxRuntime::~AttackVfxRuntime() {
 std::size_t AttackVfxRuntime::capacity() const noexcept { return impl_->slots.size(); }
 
 Result<void> AttackVfxRuntime::configurePool(std::uint32_t capacity) {
-    if (capacity == 0) return fail(DiagnosticCode::InvalidArgument, "pool capacity must be > 0", "capacity");
+    if (capacity == 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("pool capacity must be > 0"), std::string("capacity")));
     for (const auto& slot : impl_->slots) {
         if (slot.state)
-            return fail(DiagnosticCode::InvariantViolation, "cannot resize pool while instances are live",
-                        "capacity");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::string("cannot resize pool while instances are live"), std::string("capacity")));
     }
     AttackVfxFrame discard;
     for (std::size_t i = 0; i < impl_->slots.size(); ++i) {
@@ -469,7 +458,7 @@ Result<void> AttackVfxRuntime::registerRecipe(const AttackVfxRecipe& recipe) {
     const std::string key = recipe.id.format();
     for (const auto& slot : impl_->slots) {
         if (slot.state && slot.state->recipeId.format() == key)
-            return fail(DiagnosticCode::Conflict, "cannot replace recipe while instances are live", "recipeId");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::string("cannot replace recipe while instances are live"), std::string("recipeId")));
     }
     impl_->recipes[key] = recipe;
     if (recipe.skin) {
@@ -501,7 +490,7 @@ std::optional<AttackVfxSkin> AttackVfxRuntime::findSkin(const LogicalId& id) con
 Result<AttackVfxHandle> AttackVfxRuntime::play(const LogicalId& recipeId, const AttackVfxRequest& request) {
     const auto recipeIt = impl_->recipes.find(recipeId.format());
     if (recipeIt == impl_->recipes.end())
-        return failT<AttackVfxHandle>(DiagnosticCode::NotFound, "recipe is not registered", "recipeId");
+        return Result<AttackVfxHandle>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::string("recipe is not registered"), std::string("recipeId")));
     const auto& recipe = recipeIt->second;
 
     auto skinId = impl_->resolveSkinId(recipe, request);
@@ -521,7 +510,7 @@ Result<AttackVfxHandle> AttackVfxRuntime::play(const LogicalId& recipeId, const 
     }
     if (freeSlot == impl_->slots.size()) freeSlot = freeWithDrain;
     if (freeSlot == impl_->slots.size())
-        return failT<AttackVfxHandle>(DiagnosticCode::Failed, "attack VFX pool is full", "pool");
+        return Result<AttackVfxHandle>::failure(Diagnostic::error(DiagnosticCode::Failed, std::string("attack VFX pool is full"), std::string("pool")));
 
     AttackVfxInstanceState state;
     state.handle.slot       = static_cast<std::uint32_t>(freeSlot);
@@ -565,7 +554,7 @@ Result<AttackVfxHandle> AttackVfxRuntime::play(const LogicalId& recipeId, const 
 
 Result<AttackVfxFrame> AttackVfxRuntime::signal(AttackVfxHandle handle, std::string_view cue) {
     if (cue.empty())
-        return failT<AttackVfxFrame>(DiagnosticCode::InvalidArgument, "cue must be non-empty", "cue");
+        return Result<AttackVfxFrame>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("cue must be non-empty"), std::string("cue")));
     auto resolved = impl_->resolve(handle);
     if (!resolved) return Result<AttackVfxFrame>::failure(resolved.status());
     (void)std::move(resolved).takeValue();
@@ -583,7 +572,7 @@ Result<AttackVfxFrame> AttackVfxRuntime::signal(AttackVfxHandle handle, std::str
 
 Result<AttackVfxFrame> AttackVfxRuntime::advance(double dtSeconds) {
     if (!std::isfinite(dtSeconds) || dtSeconds < 0.0)
-        return failT<AttackVfxFrame>(DiagnosticCode::InvalidArgument, "dtSeconds must be finite and >= 0", "dt");
+        return Result<AttackVfxFrame>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("dtSeconds must be finite and >= 0"), std::string("dt")));
 
     ++impl_->tickSerial;
     AttackVfxFrame frame;

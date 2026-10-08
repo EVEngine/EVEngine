@@ -228,7 +228,7 @@ const eve::SnapshotMigrationChain& productionMigrations() {
 
 template <class T>
 eve::Result<T> snapshotFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message)));
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, message));
 }
 
 }  // namespace

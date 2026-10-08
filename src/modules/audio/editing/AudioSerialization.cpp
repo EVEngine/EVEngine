@@ -24,7 +24,7 @@ EditorValue AudioSourceTarget::snapshotValue() const {
     return EditorValue(std::move(root));
 }
 
-EditorResult<void> AudioSourceTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> AudioSourceTarget::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionValue = field(snapshot, "schemaVersion");
     const EditorValue* propertiesValue = field(snapshot, "properties");
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;

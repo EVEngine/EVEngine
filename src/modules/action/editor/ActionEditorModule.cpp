@@ -31,7 +31,7 @@ class ActionEditorModule::TargetFactory final : public editor::IEditorAutomation
 public:
     std::vector<std::string_view> types() const override { return {"action", "action-timeline"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type, const editor::EditorValue::Object& request) override {
         (void)type;
         auto document = std::make_unique<editor::ActionTimelineTarget>(target.value());
@@ -39,7 +39,7 @@ public:
         if (found != request.end()) {
             auto loaded = document->loadSnapshot(found->second);
             if (!loaded.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(loaded.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(loaded.status());
         }
         const std::string animationUri = stringField(request, "animationUri");
         if (!animationUri.empty()) {
@@ -55,10 +55,10 @@ public:
             auto operation    = document->makeSet(selection, editor::PropertyPath("timeline.animationUri"),
                                                   animationUri, editor::PropertySetMode::Absolute);
             if (!operation.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(operation.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(operation.status());
             auto applied = document->applyDomainOperation(operation.value());
             if (!applied.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(applied.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(applied.status());
         }
         editor::AutomationOwnedTarget owned;
         owned.target = std::move(document);

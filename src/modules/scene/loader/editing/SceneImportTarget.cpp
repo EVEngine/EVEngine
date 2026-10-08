@@ -83,7 +83,7 @@ PropertyReadResult SceneImportTarget::read(const SelectionSnapshot& s, const Pro
     auto*      v       = field(content, p.value().c_str());
     return v ? PropertyReadResult{PropertyReadState::Value, *v, {}} : PropertyReadResult{};
 }
-EditorResult<DomainOperation> SceneImportTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> SceneImportTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                           const EditorValue& v, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
@@ -121,7 +121,7 @@ EditorResult<DomainOperation> SceneImportTarget::makeSet(const SelectionSnapshot
     op.mergeKey = "scene-import:" + id_ + ":" + p.value();
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> SceneImportTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> SceneImportTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
         return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.scene-import.property"),
@@ -147,7 +147,7 @@ std::vector<EditorDiagnostic> SceneImportTarget::validate() const {
             "Missing source normals will remain missing"));
     return d;
 }
-EditorResult<void> SceneImportTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> SceneImportTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "scene-import.replace.v1" || !op.payload.isWithinLimits(3, 32, 4096))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.scene-import.operation"),
                                           "Scene import operation is invalid");
@@ -185,7 +185,7 @@ EditorResult<void> SceneImportTarget::applyDomainOperation(const DomainOperation
 std::unique_ptr<IDomainOperationTarget> SceneImportTarget::cloneDomainState() const {
     return std::make_unique<SceneImportTarget>(*this);
 }
-EditorResult<void> SceneImportTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
+Result<void> SceneImportTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<SceneImportTarget*>(c.get());
     if (!t || t->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.scene-import.candidate"),
@@ -196,7 +196,7 @@ EditorResult<void> SceneImportTarget::commitDomainState(std::unique_ptr<IDomainO
 EditorValue SceneImportTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> SceneImportTarget::loadSnapshot(const EditorValue& s) {
+Result<void> SceneImportTarget::loadSnapshot(const EditorValue& s) {
     auto *v = field(s, "schemaVersion"), *c = field(s, "content");
     auto* n = v ? v->getIf<int64_t>() : nullptr;
     if (!n || *n != 1 || !c)

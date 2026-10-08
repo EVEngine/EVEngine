@@ -56,39 +56,39 @@ struct PrefabDependencyReport {
 /** @brief Backend-neutral prefab capture, instantiate and override planning. */
 class EVENGINE_API_EDITORS ScenePrefabService {
 public:
-    using PrefabResolver = std::function<EditorResult<PrefabAssetSnapshot>(const AssetGuid&)>;
+    using PrefabResolver = std::function<Result<PrefabAssetSnapshot>(const AssetGuid&)>;
     /** @brief Capture one scene subtree as a deterministic prefab asset. */
-    EditorResult<PrefabAssetSnapshot> capture(const AssetGuid& asset, const SceneTargetBase& scene,
+    Result<PrefabAssetSnapshot> capture(const AssetGuid& asset, const SceneTargetBase& scene,
                                               const ObjectId& root) const;
     /** @brief Plan collision-safe creation of a prefab below one scene parent. */
-    EditorResult<PrefabInstancePlan> instantiate(const PrefabAssetSnapshot& prefab,
+    Result<PrefabInstancePlan> instantiate(const PrefabAssetSnapshot& prefab,
                                                  const std::string& instanceId,
                                                  const ObjectId& parent,
                                                  const SceneTargetBase& scene) const;
     /** @brief Plan operations reverting one instance to its source prefab revision. */
-    EditorResult<std::vector<DomainOperation>> revertOverrides(const PrefabAssetSnapshot& prefab,
+    Result<std::vector<DomainOperation>> revertOverrides(const PrefabAssetSnapshot& prefab,
                                                                const std::string& instanceId,
                                                                const ObjectId& parent,
                                                                const SceneTargetBase& scene) const;
     /** @brief Produce a new prefab revision from one structurally compatible instance. */
-    EditorResult<PrefabAssetSnapshot> applyOverrides(const PrefabAssetSnapshot& prefab,
+    Result<PrefabAssetSnapshot> applyOverrides(const PrefabAssetSnapshot& prefab,
                                                      const std::string& instanceId,
                                                      const ObjectId& parent,
                                                      const SceneTargetBase& scene) const;
     /** @brief Compare one instance with its source and return stable override badges. */
-    EditorResult<std::vector<PrefabOverrideRecord>> inspectOverrides(
+    Result<std::vector<PrefabOverrideRecord>> inspectOverrides(
         const PrefabAssetSnapshot& prefab, const std::string& instanceId,
         const ObjectId& parent, const SceneTargetBase& scene) const;
     /** @brief Resolve the complete nested dependency graph and diagnose cycles/stale pins. */
     PrefabDependencyReport inspectDependencies(const PrefabAssetSnapshot& prefab,
                                                const PrefabResolver& resolver) const;
     /** @brief Refresh direct nested revision pins and bump the parent only when they changed. */
-    EditorResult<PrefabAssetSnapshot> refreshNestedRevisions(const PrefabAssetSnapshot& prefab,
+    Result<PrefabAssetSnapshot> refreshNestedRevisions(const PrefabAssetSnapshot& prefab,
                                                              const PrefabResolver& resolver) const;
     /** @brief Convert a prefab snapshot to deterministic persisted data. */
     EditorValue snapshotValue(const PrefabAssetSnapshot& prefab) const;
     /** @brief Parse and validate a persisted prefab snapshot atomically. */
-    EditorResult<PrefabAssetSnapshot> loadSnapshot(const EditorValue& snapshot) const;
+    Result<PrefabAssetSnapshot> loadSnapshot(const EditorValue& snapshot) const;
 };
 
 }  // namespace eve::editor

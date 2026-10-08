@@ -23,7 +23,7 @@ bool isDigit(char c) { return c >= '0' && c <= '9'; }
 eve::Result<std::vector<DnutToken>> lexFailure(const std::string& path, int line, int column,
                                                std::string message) {
     return eve::Result<std::vector<DnutToken>>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message), path,
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, message, path,
                                {{"line", std::to_string(line)}, {"column", std::to_string(column)}},
                                "dnut.lexer"));
 }

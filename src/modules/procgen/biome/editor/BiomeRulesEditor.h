@@ -44,24 +44,24 @@ public:
      * @brief Install Layers / Preview / Inspector / Assets panels.
      * @note Does not retain @p workspace.
      */
-    [[nodiscard]] biome_editing::EditorResult<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+    [[nodiscard]] biome_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
 
-    [[nodiscard]] biome_editing::EditorResult<void> selectLayer(std::string id);
-    [[nodiscard]] biome_editing::EditorResult<void> selectAsset(std::string id);
-    [[nodiscard]] biome_editing::EditorResult<void> setLayerDensity(double density);
-    [[nodiscard]] biome_editing::EditorResult<void> setLayerPriority(int priority);
-    [[nodiscard]] biome_editing::EditorResult<void> setAssetWeight(double weight);
-    [[nodiscard]] biome_editing::EditorResult<void> createLayer(std::string id, std::string name);
-    [[nodiscard]] biome_editing::EditorResult<void> deleteSelectedLayer();
-    [[nodiscard]] biome_editing::EditorResult<void> createAsset(std::string id, std::string asset);
-    [[nodiscard]] biome_editing::EditorResult<void> deleteSelectedAsset();
-    [[nodiscard]] biome_editing::EditorResult<void> addExclusion(std::string spatialAsset);
-    [[nodiscard]] biome_editing::EditorResult<void> removeExclusion(std::string spatialAsset);
-    [[nodiscard]] biome_editing::EditorResult<void> setSeed(std::uint32_t seed);
-    [[nodiscard]] biome_editing::EditorResult<void> setSpacing(float spacing);
+    [[nodiscard]] biome_editing::Result<void> selectLayer(std::string id);
+    [[nodiscard]] biome_editing::Result<void> selectAsset(std::string id);
+    [[nodiscard]] biome_editing::Result<void> setLayerDensity(double density);
+    [[nodiscard]] biome_editing::Result<void> setLayerPriority(int priority);
+    [[nodiscard]] biome_editing::Result<void> setAssetWeight(double weight);
+    [[nodiscard]] biome_editing::Result<void> createLayer(std::string id, std::string name);
+    [[nodiscard]] biome_editing::Result<void> deleteSelectedLayer();
+    [[nodiscard]] biome_editing::Result<void> createAsset(std::string id, std::string asset);
+    [[nodiscard]] biome_editing::Result<void> deleteSelectedAsset();
+    [[nodiscard]] biome_editing::Result<void> addExclusion(std::string spatialAsset);
+    [[nodiscard]] biome_editing::Result<void> removeExclusion(std::string spatialAsset);
+    [[nodiscard]] biome_editing::Result<void> setSeed(std::uint32_t seed);
+    [[nodiscard]] biome_editing::Result<void> setSpacing(float spacing);
 
-    [[nodiscard]] biome_editing::EditorResult<editor::TransactionReceipt> undo();
-    [[nodiscard]] biome_editing::EditorResult<editor::TransactionReceipt> redo();
+    [[nodiscard]] biome_editing::Result<editor::TransactionReceipt> undo();
+    [[nodiscard]] biome_editing::Result<editor::TransactionReceipt> redo();
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
@@ -103,16 +103,16 @@ private:
     class SpatialResolver final : public biome_editing::IBiomeSpatialResolver {
     public:
         SpatialResolver(procgen::SpatialData* forest, procgen::SpatialData* clearing);
-        biome_editing::EditorResult<procgen::SpatialData*> resolve(const std::string& asset) const override;
+        biome_editing::Result<procgen::SpatialData*> resolve(const std::string& asset) const override;
 
     private:
         procgen::SpatialData* forest_   = nullptr;
         procgen::SpatialData* clearing_ = nullptr;
     };
 
-    [[nodiscard]] biome_editing::EditorResult<void> commit(
-        biome_editing::EditorResult<biome_editing::DomainOperation> operation, std::string label);
-    [[nodiscard]] biome_editing::EditorResult<void> refreshPreview();
+    [[nodiscard]] biome_editing::Result<void> commit(
+        biome_editing::Result<biome_editing::DomainOperation> operation, std::string label);
+    [[nodiscard]] biome_editing::Result<void> refreshPreview();
     void                                            seedPreviewDocument();
     editor::SelectionSnapshot                       selection() const;
     /** @ownership Borrowed layer owned by the document target. @lifetime Valid until the next document mutation or destruction; null when no layer is selected. */

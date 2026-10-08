@@ -14,11 +14,11 @@ const Value* required(const Value::Object& object, std::string_view key) {
 Result<AssetRef> parseAssetRef(const Value& value, std::string path) {
     if (!value.isString())
         return Result<AssetRef>::failure(Diagnostic::error(
-            DiagnosticCode::ParseError, "asset reference must be a string", std::move(path), {}, "asset.eva.manifest"));
+            DiagnosticCode::ParseError, "asset reference must be a string", path, {}, "asset.eva.manifest"));
     auto parsed = AssetRef::parse(value.asString());
     if (!parsed)
         return Result<AssetRef>::failure(Diagnostic::error(
-            DiagnosticCode::ParseError, "asset reference is not canonical", std::move(path), {}, "asset.eva.manifest"));
+            DiagnosticCode::ParseError, "asset reference is not canonical", path, {}, "asset.eva.manifest"));
     return Result<AssetRef>::success(std::move(parsed).takeValue());
 }
 
@@ -49,7 +49,7 @@ Result<SchemaVersion> parseVersion(const Value::Object& object, std::string_view
 Result<EvaDependencyKind> parseDependencyKind(const Value& value, std::string path) {
     if (!value.isString())
         return Result<EvaDependencyKind>::failure(Diagnostic::error(
-            DiagnosticCode::ParseError, "dependency kind must be a string", std::move(path), {}, "asset.eva.manifest"));
+            DiagnosticCode::ParseError, "dependency kind must be a string", path, {}, "asset.eva.manifest"));
     const std::string& text = value.asString();
     if (text == "runtime-required") return Result<EvaDependencyKind>::success(EvaDependencyKind::RuntimeRequired);
     if (text == "runtime-optional") return Result<EvaDependencyKind>::success(EvaDependencyKind::RuntimeOptional);
@@ -58,7 +58,7 @@ Result<EvaDependencyKind> parseDependencyKind(const Value& value, std::string pa
     if (text == "source") return Result<EvaDependencyKind>::success(EvaDependencyKind::Source);
     if (text == "platform") return Result<EvaDependencyKind>::success(EvaDependencyKind::Platform);
     return Result<EvaDependencyKind>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unknown dependency kind",
-                                                                std::move(path), {}, "asset.eva.manifest"));
+                                                                path, {}, "asset.eva.manifest"));
 }
 
 Value assetRefValue(const AssetRef& reference) { return Value(reference.format()); }

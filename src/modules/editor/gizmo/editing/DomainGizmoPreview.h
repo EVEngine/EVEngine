@@ -20,7 +20,7 @@ using PhysicsColliderTarget=physics_editing::PhysicsColliderTarget;
 using PhysicsJointTarget=physics_editing::PhysicsJointTarget;
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorStatus=editing::Status;
 using EditorValue=editing::Value; using Revision=editing::Revision; using RuleId=editing::RuleId;
-template<class T>using EditorResult=editing::Result<T>;
+using editing::Result;
 
 using EditorGizmoPrimitive = editing::GizmoPrimitive;
 using EditorGizmoSnapshot  = editing::GizmoSnapshot;
@@ -28,7 +28,7 @@ using EditorGizmoSnapshot  = editing::GizmoSnapshot;
 /** @brief Builds collider, attenuation and light-volume overlays from editor documents. */
 class EVENGINE_API_ORCHESTRATION EditorGizmoPreviewBuilder {
 public:
-    using ObjectPositionResolver = std::function<EditorResult<std::array<double, 3>>(const std::string&)>;
+    using ObjectPositionResolver = std::function<Result<std::array<double, 3>>(const std::string&)>;
     /** @brief Build a collider wire shape and sensor/body-state coloring. */
     EditorGizmoSnapshot collider(const PhysicsColliderTarget& target) const;
     /** @brief Build body-anchor, connecting-line, axis and limit overlays for a joint. */

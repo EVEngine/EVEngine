@@ -7,11 +7,6 @@
 namespace eve::dialogue {
 namespace {
 
-eve::Result<void> renameFailure(const std::string& message, const std::string& path) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, message, path, {}, "dialogue.rename"));
-}
-
 void rewriteNodeReference(std::string& reference, const std::string& oldId, const std::string& newId) {
     if (reference == oldId) reference = newId;
 }
@@ -81,11 +76,14 @@ eve::Result<void> lintConversationWorkspace(const std::vector<eve::dnut::Sequenc
 
 eve::Result<void> renameConversationAsset(std::vector<eve::dnut::SequenceAsset>& assets, const std::string& oldId,
                                           const std::string& newId) {
-    if (oldId.empty() || newId.empty()) return renameFailure("conversation IDs must not be empty", oldId);
+    if (oldId.empty() || newId.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "conversation IDs must not be empty", oldId, {}, "dialogue.rename"));
     auto source = std::find_if(assets.begin(), assets.end(), [&](const auto& asset) { return asset.id == oldId; });
-    if (source == assets.end()) return renameFailure("conversation not found: " + oldId, oldId);
+    if (source == assets.end()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "conversation not found: " + oldId, oldId, {}, "dialogue.rename"));
     if (std::any_of(assets.begin(), assets.end(), [&](const auto& asset) { return asset.id == newId; }))
-        return renameFailure("conversation already exists: " + newId, newId);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "conversation already exists: " + newId, newId, {}, "dialogue.rename"));
     source->id = newId;
     ++source->version;
     for (auto& asset : assets)
@@ -97,13 +95,17 @@ eve::Result<void> renameConversationAsset(std::vector<eve::dnut::SequenceAsset>&
 
 eve::Result<void> renameConversationNode(std::vector<eve::dnut::SequenceAsset>& assets, const std::string& assetId,
                                          const std::string& oldId, const std::string& newId) {
-    if (oldId.empty() || newId.empty()) return renameFailure("node IDs must not be empty", assetId);
+    if (oldId.empty() || newId.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "node IDs must not be empty", assetId, {}, "dialogue.rename"));
     auto asset = std::find_if(assets.begin(), assets.end(), [&](const auto& item) { return item.id == assetId; });
-    if (asset == assets.end()) return renameFailure("conversation not found: " + assetId, assetId);
+    if (asset == assets.end()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "conversation not found: " + assetId, assetId, {}, "dialogue.rename"));
     auto node =
         std::find_if(asset->nodes.begin(), asset->nodes.end(), [&](const auto& item) { return item.id == oldId; });
-    if (node == asset->nodes.end()) return renameFailure("node not found: " + oldId, assetId + "/" + oldId);
-    if (asset->findNode(newId)) return renameFailure("node already exists: " + newId, assetId + "/" + newId);
+    if (node == asset->nodes.end()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "node not found: " + oldId, assetId + "/" + oldId, {}, "dialogue.rename"));
+    if (asset->findNode(newId)) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "node already exists: " + newId, assetId + "/" + newId, {}, "dialogue.rename"));
     node->id = newId;
     rewriteNodeReference(asset->entry, oldId, newId);
     for (auto& item : asset->nodes) {

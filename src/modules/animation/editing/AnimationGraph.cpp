@@ -46,7 +46,7 @@ GraphConnectionDecision AnimationStateGraphDomain::canConnect(const GraphPinReco
     return decision;
 }
 
-EditorResult<GraphNodeRecord> AnimationStateGraphDomain::makeStateNode(const GraphNodeId& id,
+Result<GraphNodeRecord> AnimationStateGraphDomain::makeStateNode(const GraphNodeId& id,
                                                                        const std::string& clipAsset) const {
     if (id.empty() || clipAsset.empty())
         return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.animation.invalid-state"),
@@ -64,7 +64,7 @@ EditorResult<GraphNodeRecord> AnimationStateGraphDomain::makeStateNode(const Gra
     return eve::editing::applied<GraphNodeRecord>(std::move(node));
 }
 
-EditorResult<GraphNodeRecord> AnimationStateGraphDomain::makeTransitionNode(const GraphNodeId& id) const {
+Result<GraphNodeRecord> AnimationStateGraphDomain::makeTransitionNode(const GraphNodeId& id) const {
     if (id.empty())
         return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected,
                                                      RuleId("editor.animation.invalid-transition"),

@@ -6,10 +6,6 @@
 namespace eve::action {
 namespace {
 
-Result<void> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool terminal(ActionPhase phase) {
     return phase == ActionPhase::Completed || phase == ActionPhase::Cancelled || phase == ActionPhase::Failed;
 }
@@ -28,15 +24,14 @@ Result<Id> takeNext(Id& next, std::string_view domain) {
 }  // namespace
 
 Result<void> AbilityDefinition::validate() const {
-    if (!id.isValid()) return failure(DiagnosticCode::InvalidArgument, "Ability id is invalid", "id");
+    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability id is invalid", "id"));
     if (cooldown < Duration::zero())
-        return failure(DiagnosticCode::InvalidArgument, "Ability cooldown must be non-negative", "cooldown");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability cooldown must be non-negative", "cooldown"));
     auto actionValid = action.validate();
     if (!actionValid) return Result<void>::failure(actionValid.status());
     for (std::size_t i = 0; i < triggers.size(); ++i) {
         if (!tags::isValidGameplayTagName(triggers[i].gameplayTag))
-            return failure(DiagnosticCode::InvalidArgument, "Ability trigger tag is invalid",
-                           "triggers[" + std::to_string(i) + "].gameplayTag");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability trigger tag is invalid", "triggers[" + std::to_string(i) + "].gameplayTag"));
     }
     return Result<void>::success();
 }
@@ -46,7 +41,7 @@ Result<void> AbilityRuntime::registerDefinition(AbilityDefinition definition) {
     if (!valid) return valid;
     const std::string key = definition.id.format();
     if (definitions_.contains(key))
-        return failure(DiagnosticCode::AlreadyExists, "Ability definition is already registered", key);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::AlreadyExists, "Ability definition is already registered", key));
     definitions_.emplace(key, std::move(definition));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -57,15 +52,13 @@ Result<void> AbilityRuntime::replaceDefinition(AbilityDefinition definition) {
     const std::string key   = definition.id.format();
     const auto        found = definitions_.find(key);
     if (found == definitions_.end())
-        return failure(DiagnosticCode::NotFound, "Ability definition is not registered", key);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Ability definition is not registered", key));
     if (found->second.instancing != definition.instancing) {
         const bool hasGrant = std::any_of(grants_.begin(), grants_.end(), [&](const auto& item) {
             return item.second.state.definitionId == definition.id;
         });
         if (hasGrant)
-            return failure(DiagnosticCode::Conflict,
-                           "Granted ability cannot change its instancing policy during hot reload",
-                           "instancing");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Granted ability cannot change its instancing policy during hot reload", "instancing"));
     }
     found->second = std::move(definition);
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -94,9 +87,9 @@ Result<AbilityGrantId> AbilityRuntime::grant(std::string ownerId, const LogicalI
 
 Result<void> AbilityRuntime::revoke(AbilityGrantId grantId) {
     const auto found = grants_.find(grantId);
-    if (found == grants_.end()) return failure(DiagnosticCode::NotFound, "Ability grant was not found", "grantId");
+    if (found == grants_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Ability grant was not found", "grantId"));
     if (grantHasActiveActivation(grantId))
-        return failure(DiagnosticCode::Conflict, "Active ability grant cannot be revoked", "grantId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Active ability grant cannot be revoked", "grantId"));
     grants_.erase(found);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -202,7 +195,7 @@ std::vector<AbilityGrantId> AbilityRuntime::matchingGrants(std::string_view owne
 
 Result<void> AbilityRuntime::advanceCooldowns(Duration delta) {
     if (delta < Duration::zero())
-        return failure(DiagnosticCode::InvalidArgument, "Ability cooldown delta must be non-negative", "delta");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability cooldown delta must be non-negative", "delta"));
     for (auto& [id, grant] : grants_) {
         const auto remaining = grant.state.cooldownRemaining.nanoseconds();
         grant.state.cooldownRemaining =

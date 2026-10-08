@@ -19,7 +19,7 @@ bool contains(const std::string& value, const std::string& filter) {
 
 EditorProfilerModel::EditorProfilerModel() = default;
 
-EditorResult<void> EditorProfilerModel::configure(EditorProfilerBudgets budgets) {
+Result<void> EditorProfilerModel::configure(EditorProfilerBudgets budgets) {
     if (!finiteNonNegative(budgets.cpuFrameMs) || !finiteNonNegative(budgets.gpuFrameMs) ||
         !finiteNonNegative(budgets.zoneSelfMs) || budgets.historyFrames < 2 ||
         budgets.historyFrames > 36000) {
@@ -31,7 +31,7 @@ EditorResult<void> EditorProfilerModel::configure(EditorProfilerBudgets budgets)
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> EditorProfilerModel::ingest(EditorProfilerFrame frame) {
+Result<void> EditorProfilerModel::ingest(EditorProfilerFrame frame) {
     if (frame.sequence == 0 || !finiteNonNegative(frame.cpuFrameMs) ||
         !finiteNonNegative(frame.gpuFrameMs) || frame.zones.size() > 100000) {
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.profiler.invalid-frame"),

@@ -15,17 +15,6 @@
 namespace eve::weapon {
 namespace {
 
-Result<void> fail(DiagnosticCode code, std::string_view message, std::string_view path) {
-    return Result<void>::failure(Diagnostic::error(code, std::string(message), std::string(path), {},
-                                                   "weapon.spell.fragments"));
-}
-
-template <class T>
-Result<T> failT(DiagnosticCode code, std::string_view message, std::string_view path) {
-    return Result<T>::failure(Diagnostic::error(code, std::string(message), std::string(path), {},
-                                                "weapon.spell.fragments"));
-}
-
 const Value* field(const Value::Object& object, const char* name) {
     const auto it = object.find(name);
     return it == object.end() ? nullptr : &it->second;
@@ -44,16 +33,19 @@ Result<std::optional<double>> optionalDouble(const Value::Object& object, const 
     if (!value) return Result<std::optional<double>>::success(std::nullopt);
     if (const auto* number = value->getIf<double>()) {
         if (!std::isfinite(*number))
-            return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected finite number", path);
+            return Result<std::optional<double>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected finite number"), std::string(path), {},
+                                                "weapon.spell.fragments"));
         return Result<std::optional<double>>::success(*number);
     }
     if (const auto* integer = value->getIf<std::int64_t>()) {
         const double converted = static_cast<double>(*integer);
         if (!std::isfinite(converted))
-            return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected finite number", path);
+            return Result<std::optional<double>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected finite number"), std::string(path), {},
+                                                "weapon.spell.fragments"));
         return Result<std::optional<double>>::success(converted);
     }
-    return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected number", path);
+    return Result<std::optional<double>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected number"), std::string(path), {},
+                                                "weapon.spell.fragments"));
 }
 
 Result<std::optional<int>> optionalInt(const Value::Object& object, const char* name, std::string_view path) {
@@ -61,18 +53,22 @@ Result<std::optional<int>> optionalInt(const Value::Object& object, const char* 
     if (!value) return Result<std::optional<int>>::success(std::nullopt);
     if (const auto* integer = value->getIf<std::int64_t>()) {
         if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max())
-            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Integer out of range", path);
+            return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Integer out of range"), std::string(path), {},
+                                                "weapon.spell.fragments"));
         return Result<std::optional<int>>::success(static_cast<int>(*integer));
     }
     if (const auto* number = value->getIf<double>()) {
         if (!std::isfinite(*number) || *number != std::floor(*number))
-            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Expected integer", path);
+            return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected integer"), std::string(path), {},
+                                                "weapon.spell.fragments"));
         if (*number < static_cast<double>(std::numeric_limits<int>::min()) ||
             *number > static_cast<double>(std::numeric_limits<int>::max()))
-            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Integer out of range", path);
+            return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Integer out of range"), std::string(path), {},
+                                                "weapon.spell.fragments"));
         return Result<std::optional<int>>::success(static_cast<int>(*number));
     }
-    return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Expected integer", path);
+    return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected integer"), std::string(path), {},
+                                                "weapon.spell.fragments"));
 }
 
 enum class ArithKind : std::uint8_t { Add, Multiply };
@@ -122,7 +118,8 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         auto alt = optionalDouble(object, "maxTurnRateDegrees", path + ".maxTurnRateDegrees");
         if (!alt.ok()) return Result<void>::failure(alt.status());
         const double turn = turnRate.value().value_or(alt.value().value_or(90.0));
-        if (!(turn > 0.0)) return fail(DiagnosticCode::InvalidArgument, "homing turnRate must be positive", path);
+        if (!(turn > 0.0)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("homing turnRate must be positive"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         stack.homing = turn;
         return Result<void>::success();
     }
@@ -130,7 +127,8 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         auto gravity = optionalDouble(object, "gravity", path + ".gravity");
         if (!gravity.ok()) return Result<void>::failure(gravity.status());
         const double value = gravity.value().value_or(9.8);
-        if (value < 0.0) return fail(DiagnosticCode::InvalidArgument, "gravity must be non-negative", path);
+        if (value < 0.0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("gravity must be non-negative"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         stack.gravity = value;
         return Result<void>::success();
     }
@@ -138,7 +136,8 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         auto acceleration = optionalDouble(object, "acceleration", path + ".acceleration");
         if (!acceleration.ok()) return Result<void>::failure(acceleration.status());
         if (!acceleration.value().has_value() || *acceleration.value() < 0.0)
-            return fail(DiagnosticCode::InvalidArgument, "accelerate requires non-negative acceleration", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("accelerate requires non-negative acceleration"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         stack.accelerate = *acceleration.value();
         return Result<void>::success();
     }
@@ -149,13 +148,15 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         if (!altAmp.ok()) return Result<void>::failure(altAmp.status());
         const auto amp = amplitude.value().has_value() ? amplitude.value() : altAmp.value();
         if (!amp.has_value() || *amp < 0.0)
-            return fail(DiagnosticCode::InvalidArgument, "curve fragment requires non-negative amplitude", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("curve fragment requires non-negative amplitude"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         auto frequency = optionalDouble(object, "frequency", path + ".frequency");
         if (!frequency.ok()) return Result<void>::failure(frequency.status());
         auto altFreq = optionalDouble(object, "curveFrequencyHz", path + ".curveFrequencyHz");
         if (!altFreq.ok()) return Result<void>::failure(altFreq.status());
         const double freq = frequency.value().value_or(altFreq.value().value_or(2.0));
-        if (!(freq > 0.0)) return fail(DiagnosticCode::InvalidArgument, "curve frequency must be positive", path);
+        if (!(freq > 0.0)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("curve frequency must be positive"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         if (kind == "sway") {
             stack.swayAmplitude = *amp;
             stack.swayFrequency = freq;
@@ -169,7 +170,8 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         auto count = optionalInt(object, "count", path + ".count");
         if (!count.ok()) return Result<void>::failure(count.status());
         const int value = count.value().value_or(1);
-        if (value <= 0) return fail(DiagnosticCode::InvalidArgument, "count must be positive", path);
+        if (value <= 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("count must be positive"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         if (kind == "pierce") {
             stack.pierce = value;
         } else {
@@ -178,7 +180,8 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
             if (!restitution.ok()) return Result<void>::failure(restitution.status());
             if (restitution.value().has_value()) {
                 if (*restitution.value() < 0.0)
-                    return fail(DiagnosticCode::InvalidArgument, "restitution must be non-negative", path);
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("restitution must be non-negative"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
                 stack.restitution = *restitution.value();
             }
         }
@@ -190,7 +193,8 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         auto multiply = optionalDouble(object, "multiply", path + ".multiply");
         if (!multiply.ok()) return Result<void>::failure(multiply.status());
         if (!add.value().has_value() && !multiply.value().has_value())
-            return fail(DiagnosticCode::InvalidArgument, "modifier requires add and/or multiply", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("modifier requires add and/or multiply"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         auto& ops = (kind == "damage") ? stack.damageOps : (kind == "speed") ? stack.speedOps : stack.lifetimeOps;
         // Preserve fragment order: add keys then multiply keys as written is ambiguous in objects,
         // so apply add before multiply when both are present in one fragment; separate fragments
@@ -201,12 +205,14 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
     }
     if (kind == "element") {
         if (!readString(object, "value", stack.element) && !readString(object, "element", stack.element))
-            return fail(DiagnosticCode::InvalidArgument, "element requires value", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("element requires value"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         return Result<void>::success();
     }
     if (kind == "damageType") {
         if (!readString(object, "value", stack.damageType) && !readString(object, "damageType", stack.damageType))
-            return fail(DiagnosticCode::InvalidArgument, "damageType requires value", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("damageType requires value"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         return Result<void>::success();
     }
     if (kind == "splash") {
@@ -216,7 +222,8 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         if (!alt.ok()) return Result<void>::failure(alt.status());
         const auto value = radius.value().has_value() ? radius.value() : alt.value();
         if (!value.has_value() || !(*value > 0.0))
-            return fail(DiagnosticCode::InvalidArgument, "splash requires positive radius", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("splash requires positive radius"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         stack.splash = *value;
         return Result<void>::success();
     }
@@ -227,7 +234,8 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         if (!alt.ok()) return Result<void>::failure(alt.status());
         const auto value = seconds.value().has_value() ? seconds.value() : alt.value();
         if (!value.has_value() || !(*value > 0.0))
-            return fail(DiagnosticCode::InvalidArgument, "fuse requires positive seconds", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("fuse requires positive seconds"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         stack.fuse  = *value;
         auto splash = optionalDouble(object, "splash", path + ".splash");
         if (!splash.ok()) return Result<void>::failure(splash.status());
@@ -245,7 +253,8 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         auto count     = optionalInt(object, "count", path + ".count");
         if (!count.ok()) return Result<void>::failure(count.status());
         if (!count.value().has_value() || *count.value() < 1)
-            return fail(DiagnosticCode::InvalidArgument, "volley requires positive count", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("volley requires positive count"), std::string(path), {},
+                                                   "weapon.spell.fragments"));
         volley.count = *count.value();
         auto spread  = optionalDouble(object, "spread", path + ".spread");
         if (!spread.ok()) return Result<void>::failure(spread.status());
@@ -255,33 +264,35 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         stack.volley         = volley;
         return Result<void>::success();
     }
-    return fail(DiagnosticCode::InvalidArgument, "Unknown fragment kind", path + ".kind");
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Unknown fragment kind"), std::string(path + ".kind"), {},
+                                                   "weapon.spell.fragments"));
 }
 
 Result<CarrierRecipe> buildProjectile(const Value::Object& object, const ModifierStack& stack, std::string path) {
     if (field(object, "triggers") || field(object, "impacts") || field(object, "motionOps") ||
         (field(object, "motion") && field(object, "motion")->isArray())) {
-        return failT<CarrierRecipe>(
-            DiagnosticCode::Unsupported,
-            "Projectile fragments must use preset fields, not full-form motion/triggers/impacts", path);
+        return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::string("Projectile fragments must use preset fields, not full-form motion/triggers/impacts"), std::string(path), {},
+                                                "weapon.spell.fragments"));
     }
 
     std::string id;
     if (!readString(object, "id", id) || id.empty())
-        return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "projectile requires id", path + ".id");
+        return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("projectile requires id"), std::string(path + ".id"), {},
+                                                "weapon.spell.fragments"));
 
     auto speedField = optionalDouble(object, "speed", path + ".speed");
     if (!speedField.ok()) return Result<CarrierRecipe>::failure(speedField.status());
     double speed = applyArith(speedField.value().value_or(10.0), stack.speedOps);
     if (!(speed > 0.0) || !std::isfinite(speed))
-        return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "projectile speed must be positive", path + ".speed");
+        return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("projectile speed must be positive"), std::string(path + ".speed"), {},
+                                                "weapon.spell.fragments"));
 
     auto lifetimeField = optionalDouble(object, "lifetime", path + ".lifetime");
     if (!lifetimeField.ok()) return Result<CarrierRecipe>::failure(lifetimeField.status());
     double lifetime = applyArith(lifetimeField.value().value_or(2.0), stack.lifetimeOps);
     if (!(lifetime > 0.0) || !std::isfinite(lifetime))
-        return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "projectile lifetime must be positive",
-                                    path + ".lifetime");
+        return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("projectile lifetime must be positive"), std::string(path + ".lifetime"), {},
+                                                "weapon.spell.fragments"));
 
     auto damageField = optionalDouble(object, "damage", path + ".damage");
     if (!damageField.ok()) return Result<CarrierRecipe>::failure(damageField.status());
@@ -379,9 +390,11 @@ Result<CarrierRecipe> buildProjectile(const Value::Object& object, const Modifie
 
 Result<SpellCastPlan> compileSpellFragments(const Value& fragments) {
     if (!fragments.isArray())
-        return failT<SpellCastPlan>(DiagnosticCode::InvalidArgument, "Fragments must be an array", "");
+        return Result<SpellCastPlan>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Fragments must be an array"), std::string(""), {},
+                                                "weapon.spell.fragments"));
     if (fragments.arraySize() == 0)
-        return failT<SpellCastPlan>(DiagnosticCode::InvalidArgument, "Fragments must not be empty", "");
+        return Result<SpellCastPlan>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Fragments must not be empty"), std::string(""), {},
+                                                "weapon.spell.fragments"));
 
     ModifierStack stack;
     std::optional<CarrierRecipe> recipe;
@@ -389,15 +402,17 @@ Result<SpellCastPlan> compileSpellFragments(const Value& fragments) {
         const std::string path = "[" + std::to_string(i) + "]";
         const auto* object = fragments.at(i).getIf<Value::Object>();
         if (!object)
-            return failT<SpellCastPlan>(DiagnosticCode::InvalidArgument, "Fragment must be an object", path);
+            return Result<SpellCastPlan>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Fragment must be an object"), std::string(path), {},
+                                                "weapon.spell.fragments"));
         std::string kind;
         if (!readString(*object, "kind", kind) || kind.empty())
-            return failT<SpellCastPlan>(DiagnosticCode::InvalidArgument, "Fragment requires kind", path + ".kind");
+            return Result<SpellCastPlan>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Fragment requires kind"), std::string(path + ".kind"), {},
+                                                "weapon.spell.fragments"));
 
         if (kind == "projectile" || kind == "bolt" || kind == "grenade" || kind == "missile") {
             if (recipe.has_value())
-                return failT<SpellCastPlan>(DiagnosticCode::InvalidArgument,
-                                            "Only one projectile fragment is supported per cast", path);
+                return Result<SpellCastPlan>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Only one projectile fragment is supported per cast"), std::string(path), {},
+                                                "weapon.spell.fragments"));
             auto built = buildProjectile(*object, stack, path);
             if (!built.ok()) return Result<SpellCastPlan>::failure(built.status());
             recipe = std::move(built).takeValue();
@@ -405,16 +420,16 @@ Result<SpellCastPlan> compileSpellFragments(const Value& fragments) {
         }
 
         if (recipe.has_value())
-            return failT<SpellCastPlan>(DiagnosticCode::InvalidArgument,
-                                        "Modifiers must appear before the projectile fragment", path);
+            return Result<SpellCastPlan>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Modifiers must appear before the projectile fragment"), std::string(path), {},
+                                                "weapon.spell.fragments"));
 
         auto applied = applyModifier(stack, *object, kind, path);
         if (!applied) return Result<SpellCastPlan>::failure(applied.status());
     }
 
     if (!recipe.has_value())
-        return failT<SpellCastPlan>(DiagnosticCode::InvalidArgument,
-                                    "Fragment sequence requires one projectile fragment", "");
+        return Result<SpellCastPlan>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Fragment sequence requires one projectile fragment"), std::string(""), {},
+                                                "weapon.spell.fragments"));
 
     SpellCastPlan plan;
     plan.recipe = std::move(*recipe);
