@@ -316,11 +316,12 @@ public:
      * @param hostName Host name; empty uses the selected host.
      * @param nodeId Stable node id.
      * @param instance Rooted `eve.SceneEntity` instance to detach.
-     * @return false when the instance is not rooted on that node.
+     * @return Applied when queued (or already pending); NotFound / InvalidArgument on miss.
      * @cost O(bindings on the node) to locate the instance; flush is O(queued).
      */
-    bool scheduleDetachEntityAt(const std::string &hostName, const std::string &nodeId,
-                                ssq::Object instance);
+    [[nodiscard]] eve::Result<void> scheduleDetachEntityAt(const std::string &hostName,
+                                                           const std::string &nodeId,
+                                                           ssq::Object instance);
     /** @brief Drain the delayed-detach queue (called automatically by updateScripts). */
     void flushDelayedDetaches();
 

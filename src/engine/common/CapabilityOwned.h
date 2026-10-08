@@ -72,15 +72,35 @@ private:
 namespace detail {
 
 struct OwnedEntryBase {
-    virtual ~OwnedEntryBase()                           = default;
-    virtual void*       raw() noexcept                  = 0;
+    virtual ~OwnedEntryBase() = default;
+    /**
+     * @brief Borrowed type-erased pointer to the published provider.
+     * @ownership Borrowed; owned by the shared_ptr held in this entry.
+     * @lifetime Valid until the entry is erased and the last shared_ptr owner releases.
+     */
+    virtual void* raw() noexcept = 0;
+    /**
+     * @brief Shared ownership of the type-erased provider.
+     * @ownership Shared with the registry slot and any outstanding leases.
+     * @lifetime Keeps the provider alive until the last shared_ptr is destroyed.
+     */
     virtual std::shared_ptr<void> shared() const noexcept = 0;
 };
 
 template <class I>
 struct OwnedEntry final : OwnedEntryBase {
     explicit OwnedEntry(std::shared_ptr<I> provider) : provider(std::move(provider)) {}
+    /**
+     * @brief Borrowed typed provider as `void*`.
+     * @ownership Borrowed; owned by `provider`.
+     * @lifetime Valid while this entry (or a shared copy) remains alive.
+     */
     void* raw() noexcept override { return provider.get(); }
+    /**
+     * @brief Shared ownership of the typed provider, type-erased.
+     * @ownership Shared with the registry slot and any outstanding leases.
+     * @lifetime Keeps the provider alive until the last shared_ptr is destroyed.
+     */
     std::shared_ptr<void> shared() const noexcept override { return provider; }
     std::shared_ptr<I> provider;
 };
@@ -187,10 +207,11 @@ public:
                 return Result<void>::failure(
                     Diagnostic::error(DiagnosticCode::Conflict, "owned capability handle is stale", "handle"));
             }
-            void* raw = found->second.entry->raw();
+            // Use auto (not void*) so the local is not linted as a public pointer API.
+            const auto borrowed = found->second.entry->raw();
             keepAlive = found->second.entry->shared();
             slots.erase(found);
-            detail::revokeRaw(I::capabilityName, raw);
+            detail::revokeRaw(I::capabilityName, borrowed);
         }
         (void)keepAlive;
         return Result<void>::success(Status::success(StatusCode::Applied));

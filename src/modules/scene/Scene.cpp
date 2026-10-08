@@ -1091,17 +1091,34 @@ void Scene::updateScripts(float dt) {
     flushDelayedDetaches();
 }
 
-bool Scene::scheduleDetachEntityAt(const std::string &hostName, const std::string &nodeId,
-                                   ssq::Object instance) {
-    if (!vm_) return false;
+eve::Result<void> Scene::scheduleDetachEntityAt(const std::string &hostName,
+                                                const std::string &nodeId,
+                                                ssq::Object instance) {
+    if (!vm_) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "scene script VM is not ready", "scene"));
+    }
     HSQOBJECT raw = instance.getRaw();
-    if (raw._type != OT_INSTANCE) return false;
+    if (raw._type != OT_INSTANCE) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "scheduleDetachEntityAt expects a script instance",
+            "instance"));
+    }
     SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
+    if (!h) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "scene host was not found", "hostName"));
+    }
     SceneNode *n = borrowSceneResult(h->findById(nodeId));
-    if (!n || !n->objectId) return false;
+    if (!n || !n->objectId) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "scene node was not found", "nodeId"));
+    }
     SceneObject *obj = findSceneObjectById(n->objectId);
-    if (!obj) return false;
+    if (!obj) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "scene object was not found", "nodeId"));
+    }
     bool found = false;
     for (const auto &b : obj->scriptBindings()->instances) {
         if (sameScriptObject(b, raw)) {
@@ -1109,11 +1126,14 @@ bool Scene::scheduleDetachEntityAt(const std::string &hostName, const std::strin
             break;
         }
     }
-    if (!found) return false;
+    if (!found) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "script entity is not rooted on that node", "instance"));
+    }
     for (const auto &pending : delayedDetaches_) {
         if (pending.hostName == (hostName.empty() ? h->getName() : hostName) && pending.nodeId == nodeId &&
             sameScriptObject(pending.instance, raw))
-            return true;
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     }
     DelayedDetach item;
     item.hostName = hostName.empty() ? h->getName() : hostName;
@@ -1121,7 +1141,7 @@ bool Scene::scheduleDetachEntityAt(const std::string &hostName, const std::strin
     item.instance = raw;
     sq_addref(vm_, &item.instance);
     delayedDetaches_.push_back(item);
-    return true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void Scene::flushDelayedDetaches() {
@@ -1428,7 +1448,9 @@ void Scene::expose(ssq::Class &cls) {
     cls.addFunc("scheduleDetachEntityAt",
                 [](Scene *self, std::string hostName, std::string nodeId,
                    ssq::Object instance) {
-                    return self->scheduleDetachEntityAt(hostName, nodeId, instance);
+                    // Script surface stays bool (parity with attach/detach helpers);
+                    // native API is Result<void> for architecture api-shape.
+                    return self->scheduleDetachEntityAt(hostName, nodeId, instance).ok();
                 });
     cls.addFunc("forEachEntity",
                 [](Scene *self, std::string hostName, std::string nodeId,
