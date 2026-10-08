@@ -147,8 +147,8 @@ function fusionRebuildLiveSource() {
         if (fusionSurfaceVisual == null)
             fusionSurfaceVisual = fusionAdd(ground, 6.0, 0.0, 0.38, 0.44, 0.50, 0.85);
         if (fusionGhostVisual == null) {
-            // Ghost = pre-adhere pose (dull, no cast shadow) so the melt is obvious.
-            fusionGhostVisual = fusionAdd(lifted, 6.0, 0.0, 0.35, 0.40, 0.48, 0.95);
+            // Ghost = pre-adhere pose, parked beside the melt so it does not composite over it.
+            fusionGhostVisual = fusionAdd(lifted, 8.6, 0.0, 0.42, 0.48, 0.55, 0.95);
             fusionGhostVisual.setCastShadow(false);
         }
         if (fusionLiveVisual == null) {
