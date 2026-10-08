@@ -17,7 +17,7 @@ persist edgeRadius = 1.15
 persist materialRadius = 1.15
 persist strength = 1.0
 persist softSnap = true
-persist sourceLift = 0.28
+persist sourceLift = 0.35
 
 function fusionRequire(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
@@ -90,20 +90,19 @@ function fusionAdd(mesh, x, y, tintR, tintG, tintB, roughness) {
 
 function fusionMergePair(mode) {
     // Cubes are bottom-aligned, width 1.2 → half-extent 0.6.
-    // hard: slight overlap, blend OFF (control).
-    // fuse: small GAP + softSnap ON — facing faces pull together into a weld.
-    // Deep overlap + softSnap caves the joint; that is not the demo path.
-    local dx = 0.58;
+    // Same layout for hard vs fuse so the only difference is soft-snap welding the gap:
+    //   facing faces at ±(dx-0.6); with dx=0.82 the air gap is ≈0.44 and obvious on the left,
+    //   while the fuse path pulls those faces together across the gap.
+    local dx = 0.82;
     local enableBlend = false;
     local soft = false;
     local radius = 0.7;
     local normals = 0.0;
     if (mode == "fuse") {
-        dx = 0.70;          // gap ≈ 0.20 between facing faces
         enableBlend = true;
         soft = true;
-        radius = 0.95;
-        normals = 0.9;
+        radius = 1.15;   // must cover the gap or soft-snap is a no-op
+        normals = 1.0;
     }
 
     local left = fusionSubdivide(fusionRecipe("prototype.cube", 1.2, 1.55, 1.2, 8), 2);
@@ -137,9 +136,10 @@ function fusionUploadLive() {
 }
 
 function fusionRebuildLiveSource() {
-    // Subdivided cylinder floats above ground; soft-snap melts the contact skirt onto B.
-    local cyl = fusionSubdivide(fusionRecipe("prototype.cylinder1", 1.35, 1.7, 1.35, 28), 1);
-    local lifted = fusionTransform(cyl, 0.0, sourceLift, 0.0);
+    // Subdivided sphere floats above ground; soft-snap flattens the contact patch onto B
+    // (a flat bottom pancake is easier to read than a cylinder already having a flat end).
+    local ball = fusionSubdivide(fusionRecipe("prototype.sphere", 1.45, 1.45, 1.45, 24), 1);
+    local lifted = fusionTransform(ball, 0.0, sourceLift, 0.0);
     if (fusionLive == null || !fusionLive.isActive()) {
         local ground = fusionRecipe("prototype.ground", 4.2, 0.18, 4.2, 8);
         fusionLive = eve.MeshAdhereLive();
@@ -147,9 +147,9 @@ function fusionRebuildLiveSource() {
         if (fusionSurfaceVisual == null)
             fusionSurfaceVisual = fusionAdd(ground, 6.0, 0.0, 0.38, 0.44, 0.50, 0.85);
         if (fusionGhostVisual == null) {
-            // Ghost = pre-adhere pose so the melt is obvious.
-            fusionGhostVisual = fusionAdd(lifted, 6.0, 0.0, 0.55, 0.60, 0.70, 0.95);
-            fusionGhostVisual.setTint(0.55, 0.60, 0.70, 0.35);
+            // Ghost = pre-adhere pose (dull, no cast shadow) so the melt is obvious.
+            fusionGhostVisual = fusionAdd(lifted, 6.0, 0.0, 0.35, 0.40, 0.48, 0.95);
+            fusionGhostVisual.setCastShadow(false);
         }
         if (fusionLiveVisual == null) {
             fusionLiveVisual = eve.Renderable3D();
@@ -175,7 +175,7 @@ function fusionRebuildLiveSource() {
 
 function fusionBuildStaticShowcase() {
     local plain = fusionMergePair("hard");
-    fusionAdd(plain, -6.0, 0.0, 0.70, 0.74, 0.80);
+    fusionAdd(plain, -6.0, 0.0, 0.70, 0.74, 0.80, 0.62);
     local fused = fusionMergePair("fuse");
     // Near-white tint so painted contact RGB + welded silhouette read clearly.
     fusionAdd(fused, 0.0, 0.0, 1.0, 1.0, 1.0, 0.5);
@@ -186,9 +186,9 @@ function fusionBuildUi() {
     ui.setNavKeyboard(true);
     ui.beginBuild();
     ui.beginWindow("CONTACT FUSION", "root");
-    ui.text("LEFT  hard join  (blend OFF)", "staticOff");
-    ui.text("CENTER  gap soft-snap weld  (faces pull together)", "staticOn");
-    ui.text("RIGHT  live melt  (ghost = before, orange = after)", "liveLabel");
+    ui.text("LEFT  same gap, blend OFF  (air between cubes)", "staticOff");
+    ui.text("CENTER  same gap + soft-snap  (faces weld across)", "staticOn");
+    ui.text("RIGHT  live melt  (ghost=before, orange=flat contact)", "liveLabel");
     ui.slider("Edge radius", edgeRadius, 0.2, 2.0, "edgeRadius");
     ui.slider("Material radius", materialRadius, 0.2, 2.0, "materialRadius");
     ui.slider("Strength", strength, 0.0, 1.0, "strength");

@@ -4,9 +4,9 @@
 
 | 位置（相机朝 −Z） | API | 行为 |
 |---|---|---|
-| 左 | `mergeStaticMeshes` blend OFF | 两块立方体硬相交（对照） |
-| 中 | blend ON + **softSnap**，源之间留小间隙 | 对面顶点互相拉近，缝被焊住；接触权重烘成顶点色 |
-| 右 | `MeshAdhereLive` | 细分圆柱 soft-snap 到地面；灰色 ghost = 熔贴前，橙色 = 熔贴后 |
+| 左 | `mergeStaticMeshes` blend OFF | **同一间隙**布局，中间留空（对照：未融合） |
+| 中 | blend ON + **softSnap** | 同一间隙，对面顶点跨缝拉近焊住；接触权重烘成顶点色 |
+| 右 | `MeshAdhereLive` | 细分球体 soft-snap 到地面（底部摊平）；灰色 ghost = 熔贴前 |
 
 要点：
 
