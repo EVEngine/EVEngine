@@ -37,6 +37,8 @@ enum ContainerType
  *              A value of -1 indicates the default amount of compression.
  *              Specific formats may not use every level.
  * @return The newly compressed data.
+ * @ownership Caller owns the returned CompressedData and releases it through its documented destroy path.
+ * @lifetime The returned data is independent of rawbytes and remains valid until released.
  **/
 EVENGINE_API_FOUNDATION CompressedData *compress(std::string format, const char *rawbytes, size_t rawsize,
                                                  int level = -1);
@@ -47,6 +49,8 @@ EVENGINE_API_FOUNDATION CompressedData *compress(std::string format, const char 
  * @param[in] data The compressed data to decompress.
  * @param[out] decompressedsize The size in bytes of the decompressed data.
  * @return The newly decompressed data (allocated with new[]).
+ * @ownership Caller owns the returned buffer and releases it with delete[].
+ * @lifetime The returned buffer is independent of the compressed input and remains valid until freed.
  **/
 EVENGINE_API_FOUNDATION char *decompress(CompressedData *data, size_t &decompressedsize);
 
@@ -72,6 +76,8 @@ EVENGINE_API_FOUNDATION char *decompress(std::string format, const char *cbytes,
  * @param[out] dstlen Receives the encoded length in bytes.
  * @param linelen Line width for the encoded output (0 = single line).
  * @return The newly allocated encoded buffer (allocated with new[]; caller frees).
+ * @ownership Caller owns the returned buffer and releases it with delete[].
+ * @lifetime The returned buffer is independent of src and remains valid until freed.
  * @throws eve::Exception on an unsupported format.
  **/
 EVENGINE_API_FOUNDATION char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen,
@@ -84,6 +90,8 @@ EVENGINE_API_FOUNDATION char *encode(std::string format, const char *src, size_t
  * @param srclen Size in bytes of src.
  * @param[out] dstlen Receives the decoded length in bytes.
  * @return The newly allocated decoded buffer (allocated with new[]; caller frees).
+ * @ownership Caller owns the returned buffer and releases it with delete[].
+ * @lifetime The returned buffer is independent of src and remains valid until freed.
  * @throws eve::Exception on an unsupported format or malformed input.
  **/
 EVENGINE_API_FOUNDATION char *decode(std::string format, const char *src, size_t srclen, size_t &dstlen);

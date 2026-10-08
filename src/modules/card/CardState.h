@@ -9,10 +9,12 @@
 namespace eve::card {
 
 /**
- * @brief CardData/Hand interaction-state serialization for state hot reload.
+ * @brief Compatibility facade for CardData/Hand interaction-state serialization during state hot reload.
  *
  * Captures each card's structural phase (deck/hand/played/discarded/disabled/
- * returning). Transient hover/drag interaction is dropped on restore.
+ * returning). Transient hover/drag interaction is dropped on restore. The bool
+ * result is kept for the StateProvider compatibility surface; new state systems
+ * should expose structured Result diagnostics at their module boundary.
  */
 EVENGINE_API_WORLD bool captureCardState(StateValue& out);
 /** @brief Restore card state. */

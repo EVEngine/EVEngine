@@ -314,10 +314,16 @@ TEST_CASE("rts.ballisticProjectileUsesAbsoluteHeightsAndSnapshotsThreeDimensiona
                          })
                 .ok());
     CHECK(restored.snapshot().runtime.slots[0].state->position == inFlight.runtime.slots[0].state->position);
-    auto completed =
-        restored.step({eve::SimulationTick{2}, eve::Duration::fromSeconds(0.5).expect("ballistic impact dt")}, damage);
-    REQUIRE(completed.ok());
-    CHECK_EQ(completed.value(), std::size_t{1});
+    // The ballistic backend uses discrete integration: keep the restored
+    // flight at a simulation-sized step instead of one 500 ms approximation.
+    std::size_t impacts = 0;
+    for (std::uint64_t tick = 2; tick <= 61 && restored.activeCount() != 0; ++tick) {
+        auto completed = restored.step(
+            {eve::SimulationTick{tick}, eve::Duration::fromSeconds(0.01).expect("ballistic impact dt")}, damage);
+        REQUIRE(completed.ok());
+        impacts += completed.value();
+    }
+    CHECK_EQ(impacts, std::size_t{1});
     CHECK_EQ(restored.activeCount(), std::size_t{0});
     source->release();
     faction->release();
@@ -473,7 +479,14 @@ TEST_CASE("rts.genericReplayCoversQueuedMovementGroundFireAndControlOrdersAtExac
         auto applied = replay.apply(eve::SimulationTick{tick}, module);
         REQUIRE(applied.ok());
         CHECK_EQ(applied.value(), std::size_t{1});
-        CHECK_EQ(unit->orders()->values.orderCount(), std::size_t{1});
+        // Replaced orders remain as terminal history in the canonical queue.
+        CHECK_EQ(unit->orders()->values.orderCount(), static_cast<std::size_t>(tick));
+        eve::rts::OrderComponent copy   = unit->orders()->values;
+        auto                     active = copy.current();
+        REQUIRE(active.ok());
+        auto completed = copy.complete(active.value().id);
+        REQUIRE(completed.ok());
+        CHECK(copy.empty());
     }
     auto current = unit->orders()->values.current();
     REQUIRE(current.ok());

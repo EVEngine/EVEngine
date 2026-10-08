@@ -47,6 +47,31 @@
       "stale": "World and body generation-qualified handles are both resolved before any access or destruction."
     },
     {
+      "id": "network-udp-link-contract",
+      "rule": "link",
+      "scope": "src/modules/network/UdpLink.h",
+      "owner": "network::UdpLink",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "UDP reliability/fragmentation link owns process-local socket state and must define teardown and stale message handling.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/network/UdpLink.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/network.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "UdpLink"
+      ],
+      "create": "Opening a UdpLink binds endpoint/socket state and initializes reliability sequence windows before payload admission.",
+      "ownership": "UdpLink owns its socket queues, reliability windows and fragment reassembly buffers; callers own payload bytes handed in or out.",
+      "destroy_order": "Link destruction drops queued fragments/acks before socket release; peer-first teardown is observed as send/receive failure without dereferencing peer state.",
+      "restore": "Network links are process-local and never persisted; reconnect recreates socket state and sequence windows.",
+      "stale": "Message id, fragment count/index and reliability windows reject duplicate, expired or incomplete packets before publication."
+    },
+    {
       "id": "physics-destruction-bone-link-contract",
       "rule": "link",
       "scope": "src/modules/physics/destruction/**",
@@ -252,6 +277,34 @@
       "projections": "Links, handles, ECS views and UI/script values are invalidatable projections and cannot become a second store."
     },
     {
+      "id": "building-placement-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/building/PlacementSystem.h",
+      "owner": "building::PlacementSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Placement validation and restore are visible gameplay system surfaces and document their world/query authority.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/building/PlacementSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/building.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "PlacementSystem"
+      ],
+      "entity_scope": "PlacementWorld cells and placement queries supplied by the building module owner.",
+      "view": "Caller-provided PlacementWorld snapshot plus generation-independent placement query value.",
+      "read_set": "PlacementWorld occupancy, PlacementQuery footprint, validator callbacks and placement snapshots.",
+      "write_set": "Placement result candidates and exact restore status; authoritative world mutation remains with the building owner.",
+      "structural_changes": "No ECS structural mutation inside validation; callers apply accepted placements through their own deferred mutation path.",
+      "events": "Validation failure reason and restore status are returned synchronously; no retained event callbacks.",
+      "services": "Injected ValidateFn callbacks and caller-owned world data; callbacks are invoked synchronously and not retained.",
+      "phase": "Placement admission or restore phase before authoritative building publication."
+    },
+    {
       "id": "climbing-system-contracts",
       "rule": "ecs-system",
       "scope": "src/modules/climbing/**",
@@ -285,6 +338,62 @@
       "phase": "input buffering in Input; candidate preparation and atomic selection in PrePhysics"
     },
     {
+      "id": "economy-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/economy/EconomySystem.h",
+      "owner": "economy::EconomySystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Economy transfer hooks form a global resource mutation system and declare synchronous event ownership.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/economy/EconomySystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/economy.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "EconomySystem"
+      ],
+      "entity_scope": "Registered economy accounts and transfer hooks owned by the economy module.",
+      "view": "Process-local registry of accounts and hooks; no raw account pointers are retained by callers.",
+      "read_set": "Account balances, transfer requests and registered hook metadata.",
+      "write_set": "Account balances and emitted transfer event records after validation.",
+      "structural_changes": "No entity creation/destruction; registration replaces process-local hook tables synchronously.",
+      "events": "Transfer events are delivered after balance mutation through registered synchronous hooks.",
+      "services": "Injected hook functions and caller-supplied transfer requests; hooks are not invoked while mutating registry structure.",
+      "phase": "Economy command/settlement phase."
+    },
+    {
+      "id": "gpgpu-shader-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/gpgpu/ShaderSystem.h",
+      "owner": "gpgpu::ShaderSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Script-visible shader compute dispatch owns GPU binding admission and fallback boundaries.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/gpgpu/ShaderSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/tensor_gpu_contract.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "ShaderSystem"
+      ],
+      "entity_scope": "Compute shader and GPU buffer handles admitted by the gpgpu backend.",
+      "view": "Generation/backend-checked shader and buffer handles plus fixed binding slots.",
+      "read_set": "Shader bytecode, buffer bindings, dispatch dimensions and backend readiness.",
+      "write_set": "GPU dispatch submission state and explicit failure/fallback result to the caller.",
+      "structural_changes": "No ECS structural mutation; GPU resources are created/destroyed through backend ownership APIs.",
+      "events": "No gameplay events; dispatch completion/failure is observed through the compute API result.",
+      "services": "Borrowed Vulkan/gpgpu backend, shader registry and buffer registry; no callbacks retained.",
+      "phase": "GPGPU compute submission phase."
+    },
+    {
       "id": "graphics-fog-system-contracts",
       "rule": "ecs-system",
       "scope": "src/modules/graphics/fog/**",
@@ -312,6 +421,34 @@
       "events": "CFL reports and cache version bumps after a successful step; art stylize emits no simulation events",
       "services": "injected wall-clock dt accumulated into a fixed substep, named dust seed, and borrowed AtmosphereVolume for display mapping",
       "phase": "simulation step before rendering; froxel inject/integrate and ContinuousArt run after physics transport"
+    },
+    {
+      "id": "graphics-render-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/graphics/RenderSystem.h",
+      "owner": "graphics::RenderSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Renderable ECS traversal is the graphics presentation system and must state read-only scene authority.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/RenderSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/graphics_headless.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "RenderSystem"
+      ],
+      "entity_scope": "Current ECS Renderable2D/Renderable3D views and the Graphics backend.",
+      "view": "Generation-checked ECS renderable views collected for one render pass.",
+      "read_set": "Renderable components, transform projections, material/texture handles and graphics frame state.",
+      "write_set": "Graphics command buffers/batches only; gameplay ECS state is not mutated by render traversal.",
+      "structural_changes": "No ECS structural mutation during render traversal.",
+      "events": "Render submission and presentation side effects stay inside Graphics; no gameplay events emitted.",
+      "services": "Borrowed Graphics backend and resource factory for the duration of the call.",
+      "phase": "Render phase after simulation state is stable."
     },
     {
       "id": "inventory-system-contracts",
@@ -344,6 +481,34 @@
       "phase": "gameplay transaction commit after validation and before downstream inventory presentation polling"
     },
     {
+      "id": "map-tile-render-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/map/TileSystem.h",
+      "owner": "map::TileRenderSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Tile animation and render traversal are map-owned systems with graphics as a borrowed service.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/map/TileSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/map.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "TileRenderSystem"
+      ],
+      "entity_scope": "Visible TileLayer entities in the current ECS/map world.",
+      "view": "Generation-checked TileLayer view plus renderer-owned graphics batch context.",
+      "read_set": "Tile layer visibility, tile animation clocks, atlas metadata and map transforms.",
+      "write_set": "Tile animation time state and graphics batch submissions.",
+      "structural_changes": "No layer creation/destruction during traversal; callers own structural edits.",
+      "events": "No gameplay events; visible output is the rendered tile batch.",
+      "services": "Borrowed Graphics backend and injected dt for animation update.",
+      "phase": "Map update/render phase."
+    },
+    {
       "id": "npc-ai-ecs-system-contracts",
       "rule": "ecs-system",
       "scope": "src/modules/npc_ai/NpcAiECS.h",
@@ -373,6 +538,34 @@
       "phase": "deterministic AI simulation phase after perception ingestion and before animation/presentation consumption"
     },
     {
+      "id": "particles-sim-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/particles/ParticleSystem.h",
+      "owner": "particles::ParticleSimSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Particle simulation advances emitter components from an injected deterministic step.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/particles/ParticleSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/particles.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "ParticleSimSystem"
+      ],
+      "entity_scope": "ParticleEmitter simulation components in the current ECS world.",
+      "view": "Generation-checked emitter view for the current scheduler step.",
+      "read_set": "Emitter spawn state, particle lifetimes, simulation step and configured randomness stream.",
+      "write_set": "Emitter particle buffers and derived alive/dead counts.",
+      "structural_changes": "No ECS structural mutation while iterating emitters.",
+      "events": "Particle lifecycle remains internal to emitter buffers; external events are emitted only after mutation if configured.",
+      "services": "Injected SimulationStep and optional scheduler services; no wall-clock reads.",
+      "phase": "Particle simulation phase."
+    },
+    {
       "id": "pixelworld-thread-system-contract",
       "rule": "ecs-system",
       "scope": "src/modules/pixelworld/thread/PixelWorldThread.h",
@@ -400,6 +593,34 @@
       "events": "StepStats parallelTasks and deterministic phase counters after synchronous join",
       "services": "borrowed running thread::JobSystem through JobSystemPixelScheduler",
       "phase": "thermal candidate generation after canonical movement and before owner-thread thermal commit"
+    },
+    {
+      "id": "procgen-lsystem-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/procgen/algorithms/LSystem.h",
+      "owner": "procgen::LSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "The L-system recipe is a deterministic generation system with explicit seed/grammar inputs.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/algorithms/LSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/procgen.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "LSystem"
+      ],
+      "entity_scope": "Owning grammar/axiom state inside one LSystem instance.",
+      "view": "Local grammar expansion view; no ECS entities are traversed.",
+      "read_set": "Axiom, production rules, iteration count, seed and turtle interpretation parameters.",
+      "write_set": "Generated string/mesh candidates owned by the caller or recipe output.",
+      "structural_changes": "No ECS structural mutation; generated artifacts publish only through procgen artifact admission.",
+      "events": "No runtime events; diagnostics are returned through recipe error channels.",
+      "services": "Injected Params and recipe registry; no retained callbacks.",
+      "phase": "Procgen build phase."
     },
     {
       "id": "rpg-ecs-system-contracts",
@@ -464,11 +685,30 @@
         "src/modules/rts/RTSMatch.h",
         "src/modules/rts/RTSMatch.cpp",
         "src/modules/rts/RTSTech.h",
-        "src/modules/rts/RTSTech.cpp"
+        "src/modules/rts/RTSTech.cpp",
+        "src/modules/rts/RTSCrowdMotion.cpp",
+        "src/modules/rts/RTSMotion.cpp",
+        "src/modules/rts/RTSTraffic.cpp",
+        "src/modules/rts/RTSBuildingProduction.cpp",
+        "src/modules/rts/RTSProductionSpawn.cpp",
+        "src/modules/rts/RTSFormation.cpp",
+        "src/modules/rts/RTSFormationClearance.cpp",
+        "src/modules/rts/RTSFormationBindings.cpp",
+        "src/modules/rts/RTSScriptInternal.h",
+        "src/modules/rts/RTSSystemMovementInternal.h",
+        "src/modules/rts/RTSMovementGroups.cpp",
+        "src/modules/rts/RTSCommands.cpp",
+        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSSnapshotInternal.h"
       ],
       "tests": [
         "test/rts_composition.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/rts_crowd.cpp",
+        "test/rts_production.cpp",
+        "test/rts_crowd_production.cpp",
+        "test/rts_formation.cpp",
+        "test/rts_groups.cpp"
       ],
       "systems": [
         "CommandFanOutSystem",
@@ -477,16 +717,45 @@
         "BuildingProductionSystem",
         "EffectSystem",
         "MatchSystem",
-        "TechnologySystem"
+        "TechnologySystem",
+        "CrowdMotionSystem"
       ],
       "entity_scope": "live Unit, Building, ResourceNode, Faction and Match ECS roots in the current world",
       "view": "typed generation-checked RTS views; each view closes before deferred creation, destruction or relationship repair",
-      "read_set": "identity, faction links, motion, orders, production, effects, research definitions, match rules and economy queries as applicable",
-      "write_set": "motion, orders, lifecycle projections, production queues, faction research state, match participant/state/event components and affected surrender roots",
+      "read_set": "identity, faction links, motion, orders, production, effects, research definitions, match rules and economy queries as applicable; movement-group pacing reads Navigation trafficWaiting, Supply convoyWaiting and Morale/Tactics retreat-cover state",
+      "write_set": "motion, orders, lifecycle projections, production queues, faction research state, match participant/state/event components and affected surrender roots; RTS-owned movement-group membership and rebuilt Navigation formation speed projection",
       "structural_changes": "unit production and surrender collect stable handles during traversal, then create or destroy only after the relevant view closes",
       "events": "ordered command, production, effect, technology unlock, surrender and victory lifecycle facts are emitted after authoritative mutation",
       "services": "injected SimulationStep, definition registry, action executor, resource query and capability services; callbacks are synchronous and not retained",
       "phase": "owner-thread deterministic simulation after command ingestion and before presentation; match evaluation follows authoritative economy settlement"
+    },
+    {
+      "id": "scene-transform-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/scene/TransformSystem.h",
+      "owner": "scene::TransformSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Scene transform propagation is the authoritative derived transform update system.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/TransformSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/scene.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "TransformSystem"
+      ],
+      "entity_scope": "SceneHost trees and mounted scene nodes owned by the scene module.",
+      "view": "SceneHost-local tree traversal or all-host traversal over generation-checked nodes.",
+      "read_set": "Local transform, parent links and dirty flags.",
+      "write_set": "World transform matrices and cleared dirty propagation state.",
+      "structural_changes": "No node creation/destruction while propagating; mount/reconcile owns structural edits.",
+      "events": "No external callbacks during propagation; observers read updated transforms after the phase.",
+      "services": "Borrowed SceneHost registry and injected transform math only.",
+      "phase": "Scene post-reconcile/pre-render transform phase."
     },
     {
       "id": "tactics-ecs-system-contracts",
@@ -519,6 +788,62 @@
       "events": "battle, round, turn, action, reaction, defeat and objective transitions appended in deterministic sequence order",
       "services": "injected SimulationStep and the shared ActionRuntime effect-executor contract; no required rendering provider",
       "phase": "owner simulation thread after setup/command ingestion and before presentation"
+    },
+    {
+      "id": "ui-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/ui/UISystem.h",
+      "owner": "ui::UISystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "UI system owns input admission and backend rendering lifetime for UI components.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/ui/UISystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/ui_control_semantics.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "UISystem"
+      ],
+      "entity_scope": "UI roots/widgets and the currently borrowed UIBackend.",
+      "view": "Generation-checked UI component tree plus per-frame input state.",
+      "read_set": "Widget state, layout inputs, input events and backend availability.",
+      "write_set": "Widget interaction state, dirty flags, layout/render submissions.",
+      "structural_changes": "Widget structural edits are queued by UI owner; traversal does not mutate tree topology directly.",
+      "events": "UI input/change events are emitted after state mutation; backend callbacks are not retained.",
+      "services": "Borrowed UIBackend, injected input frame and script bindings on the owner thread.",
+      "phase": "UI input/layout/render phase."
+    },
+    {
+      "id": "weapon-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/weapon/WeaponSystem.h",
+      "owner": "weapon::WeaponSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Weapon logic registration and firing resolution are gameplay systems with explicit logic ownership.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/weapon/WeaponSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/weapon.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "WeaponSystem"
+      ],
+      "entity_scope": "Registered weapon logic implementations and weapon-bearing subjects.",
+      "view": "Process-local logic registry plus caller-supplied weapon command context.",
+      "read_set": "Weapon definitions, cooldown/ammo state, targets and registered logic callbacks.",
+      "write_set": "Weapon state transitions and emitted WeaponEvent records after validation.",
+      "structural_changes": "No ECS structural mutation in registry operations; firing side effects are returned/emitted for caller-owned application.",
+      "events": "WeaponEventSink receives post-mutation facts synchronously.",
+      "services": "Registered IWeaponLogic observers are borrowed; registration replacement is synchronous.",
+      "phase": "Combat command resolution phase."
     },
     {
       "id": "time-rng-policy",
@@ -586,6 +911,56 @@
       "migration": "known older versions migrate into a local candidate before validation and commit.",
       "unknown_fields": "unknown fields follow the schema's explicit reject, preserve or ignore policy.",
       "restore_atomicity": "parse, validate and migrate locally; publish once; failure leaves the observable owner unchanged."
+    },
+    {
+      "id": "rts-command-log-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rts/RTSReplay.*",
+      "owner": "rts::RTSCommandLog",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Formation orientation and layout are canonical replay inputs and must survive round trips.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSReplay.h",
+        "src/modules/rts/RTSReplay.cpp",
+        "src/modules/rts/RTSFormation.cpp",
+        "docs/usr/modules/crowd.md"
+      ],
+      "tests": [
+        "test/rts_formation.cpp",
+        "test/rts_restore.cpp",
+        "test/rts_groups.cpp"
+      ],
+      "schema": "EVERTS_COMMANDS positional text schema with explicit version header.",
+      "version": "Versions 1 through 5; v4 stores orientation/new layouts, v5 adds MovementGroup operation and groupLeadDistance.",
+      "migration": "Import v1-v3 with zero rotation and legacy enum bounds; v1-v4 cannot encode MovementGroup. Export legacy inputs at their original version; group commands select v5.",
+      "unknown_fields": "Reject unsupported header versions, malformed fields and unknown enums; positional trailing data must parse as a complete valid record.",
+      "restore_atomicity": "Parse records into a local candidate vector and validate through the canonical queue before replacing or appending target history."
+    },
+    {
+      "id": "rts-state-snapshot-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rts/RTSSnapshot.*",
+      "owner": "rts::RTS",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Movement-group members bind stable unit identities to exact order lifetimes and must survive restore.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSSnapshot.h",
+        "src/modules/rts/RTSSnapshot.cpp",
+        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSMovementGroups.cpp",
+        "docs/usr/modules/crowd.md"
+      ],
+      "tests": [
+        "test/rts_groups.cpp",
+        "test/rts_restore.cpp"
+      ],
+      "schema": "RTSStateSnapshot typed in-memory schema; canonicalStateJson is its synchronization projection.",
+      "version": "Version 2 adds stable movement-group membership and leadDistance.",
+      "migration": "Version 1 accepts no movement groups; both v1 and v2 rebuild generation-checked member handles. Derived pacing factors reset and rebuild on the next step.",
+      "unknown_fields": "Typed snapshots cannot represent unknown fields; unknown versions and invalid, duplicate or order-mismatched members are rejected.",
+      "restore_atomicity": "Stage member references and order validation before root mutation, then publish groups with the validated restored roots."
     },
     {
       "id": "tactics-persistence-contract",
@@ -673,6 +1048,191 @@
       ],
       "removal_condition": "remove the debt entry when the corresponding migration or documentation is complete; expiry forces review before renewal.",
       "max_net_growth": 0
+    },
+    {
+      "id": "crowd-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/crowd/Crowd*",
+      "owner": "crowd-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "CPU crowd movement has an explicit simulation and scripting boundary; authoring satellites are separate modules.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/crowd/Crowd.h",
+        "src/modules/crowd/CrowdBindings.cpp",
+        "docs/dev/2026-09-22-rts-crowd-implementation.md",
+        "cmake/profile_checks.cmake"
+      ],
+      "tests": [
+        "test/crowd.cpp",
+        "test/crowd_contacts.cpp",
+        "test/crowd_script.cpp",
+        "test/crowd_interaction.cpp",
+        "test/crowd_spawn.cpp",
+        "test/crowd_avoidance.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Crowd",
+          "methods": [
+            "getName",
+            "resizeField",
+            "setBlocked",
+            "setCellCost",
+            "getCellCost",
+            "buildFlowField",
+            "addFlowGoal",
+            "clearFlowGoals",
+            "build",
+            "isFieldBuilt",
+            "isReachable",
+            "getFieldWidth",
+            "getFieldHeight",
+            "getCellSize",
+            "getFieldOriginX",
+            "getFieldOriginY",
+            "flowAtWorld",
+            "costAtWorld",
+            "flowAtCell",
+            "addAgent",
+            "addNamedAgent",
+            "hasNamedAgent",
+            "getNamedAgentIndex",
+            "getAgentStableId",
+            "removeNamedAgent",
+            "removeAgent",
+            "clearAgents",
+            "getAgentCount",
+            "setMaxAgents",
+            "getMaxAgents",
+            "setAgentAction",
+            "getAgentAction",
+            "setAgentTarget",
+            "clearAgentTarget",
+            "setAgentSpeed",
+            "setAgentAccel",
+            "setAgentTurnRate",
+            "setAgentRadius",
+            "setAgentData",
+            "getAgentData",
+            "setAgentAvoidancePriority",
+            "getAgentAvoidancePriority",
+            "setAgentInteraction",
+            "getAgentInteraction",
+            "setAgentPosition",
+            "getAgentState",
+            "setDefaultSpeed",
+            "setDefaultRadius",
+            "setDefaultTurnRate",
+            "setArriveRadius",
+            "setSeparationRadius",
+            "setPerceptionRadius",
+            "setSeparationWeight",
+            "setAlignmentWeight",
+            "setCohesionWeight",
+            "setWanderWeight",
+            "setGoalWeight",
+            "setResolveOverlaps",
+            "setClampToField",
+            "getPositions",
+            "getHeadings",
+            "step",
+            "advance",
+            "applySpawnBatch",
+            "configureAvoidance",
+            "getAvoidanceSettings"
+          ]
+        },
+        {
+          "script_class": "eve.CrowdAgentState",
+          "methods": []
+        },
+        {
+          "script_class": "eve.CrowdFlowVec",
+          "methods": []
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Simulation thread; no concurrent access or reentrant mutation.",
+      "trim": {
+        "absent_profile": "minimal",
+        "evidence": "minimal normally excludes crowd; minimal + EVENGINE_MODULE_crowd=ON builds eve_crowd_check, linking EVCrowd/EVCommon without graphics/window/RTS. Absence startup remains unverified."
+      },
+      "cost_notes": [
+        {
+          "api": "Crowd::advance",
+          "shape": "owned-result",
+          "why": "Bounded integration and neighbor/contact iterations; report owns residual observations."
+        },
+        {
+          "api": "Crowd::applySpawnBatch",
+          "shape": "batch-builder",
+          "why": "One world snapshot per caller-built batch and explicitly bounded placement/contact work before atomic publication."
+        }
+      ],
+      "hot_path": [
+        "src/modules/crowd/CrowdSimulation.cpp",
+        "src/modules/crowd/CrowdStep.cpp",
+        "src/modules/crowd/CrowdInternal.h",
+        "src/modules/crowd/CrowdAvoidance.cpp"
+      ]
+    },
+    {
+      "id": "rts-movement-group-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/rts/RTSMovementGroups.cpp",
+      "owner": "rts-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "The movement-group boundary owns order-bound membership and publishes derived pacing and moving slots into existing motion backends. Radius-clear grid segments permit direct formation travel; constrained routes retain per-unit steering and release pacing until clearance recovers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTS.h",
+        "src/modules/rts/RTSMovementGroups.cpp",
+        "src/modules/rts/RTSFormationBindings.cpp",
+        "src/modules/rts/RTSReplay.cpp",
+        "src/modules/rts/RTSRestore.cpp",
+        "docs/dev/2026-09-22-rts-crowd-implementation.md"
+      ],
+      "tests": [
+        "test/rts_groups.cpp",
+        "test/rts_restore.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.RTS",
+          "methods": [
+            "moveGroupUnits",
+            "queueScriptGroupMove"
+          ]
+        }
+      ],
+      "protocol": [
+        "EVERTS_COMMANDS v5 MovementGroup input; RTSStateSnapshot v2 stable group membership"
+      ],
+      "thread_affinity": "RTS simulation owner thread; non-reentrant admission/restore/step, no callbacks and no retained raw pointers.",
+      "trim": {
+        "absent_profile": "minimal",
+        "evidence": "Minimal excludes RTS by default. Custom minimal+rts+crowd composition tests exercise both injected Crowd and native motion; this is runtime provider-presence evidence, not independent RTS L2 link trimming."
+      },
+      "cost_notes": [
+        {
+          "api": "RTS::submitMovementGroup",
+          "shape": "batch-builder",
+          "why": "Caller constructs one owning member batch; existing quadratic fan-out is amortized per group command."
+        }
+      ],
+      "hot_path": [
+        "src/modules/rts/RTSMovementGroups.cpp",
+        "src/modules/rts/RTSFormationClearance.cpp"
+      ]
     }
   ]
 }

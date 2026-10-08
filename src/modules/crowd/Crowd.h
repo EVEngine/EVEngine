@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace eve::crowd {
 
@@ -31,6 +32,65 @@ struct AgentState {
 struct FlowVec {
     float x = 0.f; ///< 方向 X
     float y = 0.f; ///< 方向 Y
+};
+
+/** @brief Owning observations of one completed advance; simulation-thread only. */
+struct StepReport {
+    std::int64_t avoidanceChecks      = 0;    ///< Candidate-neighbor predictions across all substeps.
+    int          avoidanceTruncations = 0;    ///< Agent/substep queries exceeding the configured neighbor limit.
+    int          substeps             = 0;    ///< Number of bounded integration intervals consumed.
+    int          unresolvedContacts   = 0;    ///< Final overlapping pairs deeper than 0.001 world units.
+    int          unresolvedWalls      = 0;    ///< Final agents violating terrain or field bounds.
+    float        maxPenetration       = 0.f;  ///< Largest remaining pair penetration in world units.
+};
+
+/** @brief Optional bounded velocity sampling for RTS local avoidance. */
+struct AvoidanceSettings {
+    bool  enabled      = false;  ///< Opt in independently of legacy Boids steering.
+    float horizon      = 2.f;    ///< Positive prediction seconds, at most ten.
+    float margin       = 0.05f;  ///< Non-negative extra pair clearance in world units.
+    int   maxNeighbors = 32;     ///< Nearest interacting neighbors considered, in [1,128].
+};
+
+/** @brief Independent local interaction policy, copied into Crowd storage. */
+struct AgentInteraction {
+    float pushability  = 1.f;         ///< Relative contact mobility in [0,1]; zero cannot be pushed by agents.
+    bool  holdPosition = false;       ///< Suppress locomotion and agent pushes; terrain constraints still apply.
+    int   layer        = 1;           ///< Non-negative membership bit mask; zero disables agent interaction.
+    int   mask         = 0x7fffffff;  ///< Both agents must accept the other's layer for interaction.
+};
+
+/** @brief Placement policy for an atomic spawn batch. */
+enum class SpawnPolicy { RejectOverlap, NearestFree, PushNeighbors };
+
+/** @brief One named agent to create; all fields are owned values. */
+struct SpawnRequest {
+    std::string      stableId;
+    float            x = 0.f, y = 0.f, heading = 0.f, radius = 1.f;
+    AgentInteraction interaction;
+};
+
+/** @brief Caller-built transaction; positive budgets bound search and relaxation. */
+struct SpawnBatch {
+    std::vector<SpawnRequest> agents;
+    SpawnPolicy               policy        = SpawnPolicy::PushNeighbors;
+    float                     maxDistance   = 64.f;  ///< Maximum relocation from each requested/original position.
+    float                     searchSpacing = 1.f;   ///< NearestFree samples concentric rings at this spacing.
+    int                       maxPasses     = 64;    ///< Contact relaxation limit, at most 256.
+    int                       maxChecks = 1000000;   ///< Combined candidate/neighbor work budget, at most ten million.
+};
+
+/** @brief Owning placement result, independent of compact slots and subsequent removal. */
+struct SpawnPlacement {
+    std::string stableId;
+    float       x = 0.f, y = 0.f;
+};
+
+/** @brief Observations from a committed spawn transaction. */
+struct SpawnReceipt {
+    std::vector<SpawnPlacement> created;
+    int                         displacedAgents = 0;
+    int                         checks          = 0;
 };
 
 /**
@@ -169,6 +229,44 @@ public:
     [[nodiscard]] Result<void> setAgentAvoidancePriority(int id, int priority);
     /** @brief Return overlap-resolution priority, or zero for an invalid id. */
     int getAgentAvoidancePriority(int id) const;
+    /** @brief Atomically replace the local interaction policy for a current compact slot.
+     * @param id Current
+     * slot; resolve stable identity again after any removal.
+     * @param policy Copied policy with finite pushability
+     * in [0,1] and non-negative masks.
+     * @return Applied, InvalidArgument or NotFound; failure leaves the policy
+     * unchanged.
+     * @ownership Crowd owns a copy. @thread Simulation thread only.
+     * @reentrancy No callbacks
+     * or reentrant mutation.
+     */
+    [[nodiscard]] Result<void> setAgentInteraction(int id, AgentInteraction policy);
+    /** @brief Read an owning policy snapshot, or NotFound for an invalid compact slot.
+     * @thread Simulation thread
+     * only. @lifetime The copy survives subsequent mutations.
+     */
+    [[nodiscard]] Result<AgentInteraction> getAgentInteraction(int id) const;
+    /** @brief Apply a caller-built spawn batch atomically, including neighbor displacement.
+     * @param batch Up to
+     * 1024 uniquely named agents and explicit placement/work budgets.
+     * @return Owning receipt, or a diagnostic
+     * without any world mutation on failure.
+     * @ownership Copies the batch; retains no caller references. Existing
+     * targets and velocities are preserved.
+     * @thread Simulation thread only. @reentrancy No callbacks or
+     * reentry.
+     * @cost Copies current simulation/field storage once per batch, then performs bounded
+     * candidate/contact work.
+     * Amortize by batching spawns; NearestFree chooses the first clear deterministic
+     * ring sample, not a continuous optimum.
+     * @details PushNeighbors anchors all new agents, respects existing
+     * hold/pushability and interaction masks,
+     * and only moves the connected contact region. No simulation time is
+     * advanced. Terrain and distance limits
+     * are enforced before commit. Budget exhaustion is a visible failure,
+     * never a partial creation.
+     */
+    [[nodiscard]] Result<SpawnReceipt> applySpawnBatch(const SpawnBatch &batch);
     /** @brief 直接放置单位。 */
     bool setAgentPosition(int id, float x, float y);
     /** @brief 读取单位状态快照（非法 id 返回 action=-1）。 */
@@ -201,8 +299,52 @@ public:
     void setResolveOverlaps(bool enable);
     /** @brief 是否把单位钳制在流场边界内（默认开）。 */
     void setClampToField(bool enable);
+    /** @brief Configure predictive velocity sampling; invalid input leaves settings unchanged.
+     * @return Applied
+     * or InvalidArgument. @ownership Copies the settings.
+     * @thread Simulation thread only. @reentrancy No
+     * callbacks or reentry.
+     * @details Sampling respects acceleration limits and prefers passing on the right.
 
-    /** @brief 推进一帧仿真。 */
+     * * It is a local heuristic, not a collision-free or deadlock-free guarantee; inspect advance reports.
+     */
+    [[nodiscard]] Result<void> configureAvoidance(AvoidanceSettings settings);
+    /** @brief Return an owning settings snapshot. @thread Simulation thread only. */
+    AvoidanceSettings getAvoidanceSettings() const;
+
+    /** @brief Advance using bounded simultaneous integration and contact projection.
+     * @param dt Finite,
+     * non-negative caller-supplied simulation seconds; zero is a no-op.
+     * @return Owning residual-contact report,
+     * or InvalidArgument/PreconditionViolation
+     * before mutation for invalid time or more than 1024 required
+     * substeps.
+     * @ownership Crowd retains agents; the report owns its observations.
+     * @lifetime Report
+     * values remain valid independently of subsequent mutations.
+     * @thread Simulation thread only; no concurrent
+     * access to this Crowd.
+     * @reentrancy No callbacks and no reentrant mutation.
+     * @cost Per tick, linear
+     * storage work plus local neighbor work per substep/contact
+     * iteration; dense clusters can be quadratic.
+     * Reuse one report per game tick.
+     * @details Substeps are at most 1/60 second and limit travel relative to
+     * positive
+     * agent radii and terrain cell size. Call with a fixed dt sequence for repeatability
+     * on one
+     * build; cross-platform bit-exact replay is not guaranteed. Residual
+     * contacts are reported rather than
+     * pretending an impossible packing was solved.
+     */
+    [[nodiscard]] Result<StepReport> advance(float dt);
+
+    /** @brief Compatibility-only stepping facade; delegates to advance and throws on
+     * rejected input. Use advance
+     * to inspect residual crowding and handle failure.
+     * @thread Simulation thread only. @reentrancy No callbacks
+     * or reentry.
+     */
     void step(float dt);
 
 private:

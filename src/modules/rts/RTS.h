@@ -189,6 +189,20 @@ public:
                                                       const CommandSpec& command,
                                                       const FormationSpec& formation = {}) const;
 
+    /**
+     * @brief Commit a caller-built immediate Move group with coordinated pacing.
+     * @param batch Owned
+     * input borrowed only for this call; requires at least two distinct live units.
+     * @return Per-unit order ids,
+     * or validation failure before command mutation.
+     * @remarks Owner-thread only, non-reentrant, no callbacks.
+     * Membership ends on replacement,
+     * completion, death or containment. Selection changes do not change the
+     * movement group.
+     * @cost Quadratic slot assignment per submitted batch; amortize once per group command.
+     */
+    [[nodiscard]] Result<FanOutReceipt> submitMovementGroup(const MovementGroupBatch& batch);
+
     /** @brief Set automatic combat stance and pursuit leash for module-owned units atomically. */
     [[nodiscard]] Result<void> setUnitStance(std::span<const SubjectRef> subjects,
                                              CombatStance stance, float leashRange) const;
@@ -497,10 +511,21 @@ public:
     [[nodiscard]] std::size_t matchCount() const noexcept;
 
 private:
+    struct MovementGroup {
+        RTSMovementGroupSnapshot       state;
+        std::vector<ecs::EntityHandle> handles;
+        std::vector<std::uint64_t>     epochs;
+    };
+    std::vector<MovementGroup>                                  movementGroups_;
+    [[nodiscard]] Result<std::size_t>                           stepMovementGroups();
+    [[nodiscard]] Result<std::vector<RTSMovementGroupSnapshot>> captureMovementGroups() const;
+    [[nodiscard]] Result<std::vector<MovementGroup>> prepareMovementGroups(const RTSStateSnapshot& snapshot) const;
     struct GameplayRuntime;
     [[nodiscard]] Player* resolvePlayer(SubjectRef subject) const noexcept;
     [[nodiscard]] Unit* resolveUnit(SubjectRef subject) const noexcept;
-    [[nodiscard]] bool ownsSubject(SubjectRef subject) const noexcept;
+    enum class SubjectClaimScope { Live, LiveOrReserved };
+    [[nodiscard]] bool         ownsSubject(SubjectRef        subject,
+                                           SubjectClaimScope scope = SubjectClaimScope::Live) const noexcept;
     void recordDamageEvent(const combat::DamageRequest& request,
                            const combat::DamageOutcome& outcome,
                            SimulationTick tick, DamageChannel channel);
@@ -510,7 +535,9 @@ private:
     [[nodiscard]] Result<void> rebindScriptRootProviders();
     [[nodiscard]] Result<void> materialize(Unit& unit);
     [[nodiscard]] Result<void> materialize(Building& building);
-    void removeUnitRoot(Unit& unit);
+    enum class UnitRemovalReason { Gameplay, SpawnRollback };
+    [[nodiscard]] Result<ProductionSpawnOutcome> placeProducedUnit(Unit& unit, WorldPosition requested);
+    void                             removeUnitRoot(Unit& unit, UnitRemovalReason reason = UnitRemovalReason::Gameplay);
     void removeBuildingRoot(Building& building, bool destroyOccupants);
     void removeResourceNodeRoot(ResourceNode& node);
     std::vector<ecs::EntityHandle> units_;

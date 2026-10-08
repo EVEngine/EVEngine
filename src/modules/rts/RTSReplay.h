@@ -32,6 +32,7 @@ enum class RTSReplayOperation : std::uint8_t {
     CancelFireSupport,
     SuppressArea,
     Escort,
+    MovementGroup,
 };
 
 /** @brief One process-independent command using stable subjects instead of ECS handles. */
@@ -50,6 +51,7 @@ struct RTSReplayCommand {
     int priority = 0;
     std::size_t limit = 0;
     WorldPosition point;
+    float                   groupLeadDistance = 2.f;
 };
 
 /**

@@ -26,6 +26,8 @@ enum class FormationKind : std::uint8_t {
     Line,
     Grid,
     Wedge,
+    Column,
+    Dispersed,
 };
 
 /** @brief Input to the pure formation planner. */
@@ -33,9 +35,18 @@ struct FormationSpec {
     FormationKind kind    = FormationKind::Line;
     float         spacing = 32.0f;
     int           columns = 0;
+    float rotationRadians = 0.f;  ///< Counterclockwise rotation around the anchor; zero preserves legacy layouts.
 
-    /** @brief Validate spacing and grid column constraints. */
+    /** @brief Validate layout kind, spacing, grid columns and finite rotation. */
     [[nodiscard]] Result<void> validate() const;
+};
+
+/** @brief Caller-built admission batch for an immediate coordinated Move command. */
+struct MovementGroupBatch {
+    std::vector<SubjectRef> units;  ///< Owned stable identities; no entity pointers are retained.
+    WorldPosition           target;
+    FormationSpec           formation;
+    float leadDistance = 2.f;  ///< Positive world-space allowance before leaders slow for lagging members.
 };
 
 /** @brief Static metadata for one ECS system's access and phase contract. */
@@ -270,14 +281,23 @@ public:
     [[nodiscard]] static Result<std::size_t> step();
 };
 
-/** @brief Arbitrates deterministic entry into narrow canonical-map cells. */
+/** @brief Arbitrates deterministic directional entry into connected narrow map corridors. */
 class EVENGINE_API_DOMAINS TrafficReservationSystem {
 public:
     /**
-     * @brief Reserve each moving unit's next narrow cell by priority and stable subject identity.
+     * @brief Reserve corridor direction, then next narrow cells, by occupancy, priority and stable identity.
+     *
      * @param pathfinder Canonical provider of cell walkability.
      * @param grid World/grid conversion shared with route planning.
-     * @return Number of moving units inspected, or a structured failure.
+     * @return Number of moving units inspected, or a structured failure (including corridors exceeding 1024 cells).
+
+     * @remarks Looks ahead at most three route waypoints. Existing corridor occupants precede external entrants.
+     *
+     Opposing occupants may receive a radius-checked evacuation target toward an exit-side bay.
+     * Ending evacuation
+     invalidates the cached route and defers motion until replanning.
+
+     * @thread Simulation owner thread only; no callbacks or retained component pointers.
      */
     [[nodiscard]] static Result<std::size_t> step(const map::Pathfinder& pathfinder,
                                                    const NavigationGrid& grid);
@@ -685,8 +705,25 @@ public:
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, IRTSActionExecutor& executor);
 };
 
-/** @brief Advances Building production queues without duplicating task state. */
-using ProductionSpawn = std::function<Result<Unit*>(Building&, const production::ProductionTask&)>;
+/** @brief Whether a completed production task published a unit or is waiting for space. */
+enum class ProductionSpawnState { Created, Blocked };
+
+/** @brief Factory outcome; blocked tasks retain their payment and reserved identity. */
+struct ProductionSpawnOutcome {
+    ProductionSpawnState state = ProductionSpawnState::Blocked;
+    /** @brief Borrowed game-owned unit; non-null only for Created, valid until ECS destruction. */
+    Unit* unit = nullptr;
+};
+
+/**
+ * @brief Game-owned factory receiving the requested production exit position.
+ * The factory owns final placement (including collision resolution); settlement
+ * preserves that position. Return Created with a borrowed game-owned unit, Blocked without publishing
+ * anything when space is unavailable, or failure for an invalid request. Called synchronously on the simulation thread;
+ * the producer must remain alive and the callback must not reenter settlement.
+ */
+using ProductionSpawn =
+    std::function<Result<ProductionSpawnOutcome>(Building&, const production::ProductionTask&, WorldPosition)>;
 /** @brief Game/map-owned deterministic exit probe; empty means every valid exit is currently occupied. */
 using ProductionSpawnPosition =
     std::function<Result<std::optional<WorldPosition>>(Building&, const production::ProductionTask&)>;
