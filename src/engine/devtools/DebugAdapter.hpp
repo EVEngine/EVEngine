@@ -35,7 +35,7 @@ namespace eve::dev {
  * next/stepIn/stepOut, pause, evaluate, disconnect, and custom `errorSlice`
  * for the last DevTool dynamic backward slice.
  */
-class EVENGINE_API DebugAdapter {
+class EVENGINE_API_FOUNDATION DebugAdapter {
 public:
     static DebugAdapter& instance();
 

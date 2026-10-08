@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/StateValue.h"
 
@@ -12,8 +14,8 @@ namespace eve::rpg {
  * Captures per-actor known-skill cooldowns and the in-flight casting state.
  * Casting targets are raw pointers and are not serialized (restored as null).
  */
-bool captureRpgState(StateValue& out);
-bool restoreRpgState(const StateValue& in, std::string* err = nullptr);
-bool resetRpgState();
+EVENGINE_API_PLATFORM bool captureRpgState(StateValue& out);
+EVENGINE_API_PLATFORM bool restoreRpgState(const StateValue& in, std::string* err = nullptr);
+EVENGINE_API_PLATFORM bool resetRpgState();
 
 }  // namespace eve::rpg

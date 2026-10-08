@@ -1,3 +1,5 @@
+
+#include "common/Export.h"
 #ifndef EVE_TENSOR_KERNELGEN_H
 #define EVE_TENSOR_KERNELGEN_H
 
@@ -48,7 +50,7 @@ struct KernelSpec {
  * Returns false when the group cannot be lowered (e.g. too many inputs for the
  * fixed 8-binding descriptor layout) — callers fall back to the CPU interpreter.
  */
-bool generateKernel(const Graph &graph, const FusedGroup &group, KernelSpec &out);
+EVENGINE_API_DOMAINS bool generateKernel(const Graph &graph, const FusedGroup &group, KernelSpec &out);
 
 /**
  * Generate a specific matmul variant for autotuning (tiled=false: thread-per-

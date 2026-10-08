@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "particles/editing/ParticlesEditingTypes.h"
 
@@ -28,13 +30,13 @@ struct ParticleGraphPreviewResult {
 };
 
 /** @brief `particles.emitter` graph domain reflecting core emitter modules. */
-class ParticleGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_ORCHESTRATION ParticleGraphDomain final : public IGraphDomainProvider {
 public:
     std::string domain() const override { return "particles.emitter"; }
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                        const GraphPinRecord& to) const override;
     /** @brief Construct a node of type emission, motion, collision, renderer, or output. */
-    EditorResult<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& type) const;
+    Result<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& type) const;
     /** @brief Compile one acyclic module chain into a runtime-neutral configuration object. */
     ParticleGraphCompileResult compile(const GraphDocumentData& graph) const;
     /** @brief Estimate a deterministic preview and enforce particle/frame budgets. */
@@ -59,7 +61,7 @@ namespace eve::particles_editing {
 class ParticleGraphRuntimeBuilder {
 public:
     using TextureResolver = std::function<graphics::Texture*(const std::string& asset)>;
-    EditorResult<void> apply(const GraphDocumentData& graph,
+    Result<void> apply(const GraphDocumentData& graph,
                              particles::ParticleEmitter* emitter,
                              const TextureResolver& textures = {}) const;
 };

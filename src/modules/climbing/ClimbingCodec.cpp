@@ -9,12 +9,6 @@
 namespace eve::climbing {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.codec"));
-}
-
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -186,19 +180,22 @@ eve::Result<const eve::Value::Object*> readRoot(const eve::Value& value, std::st
                                                 std::int64_t schemaVersion) {
     const auto* object = value.getIf<eve::Value::Object>();
     if (!object)
-        return failure<const eve::Value::Object*>(eve::DiagnosticCode::ParseError,
-                                                  "climbing definition must be an object");
+        return eve::Result<const eve::Value::Object*>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "climbing definition must be an object", {}, {}, "climbing.codec"));
     std::string  actualSchema;
     std::int64_t actualVersion = 0;
     if (!readString(*object, "schemaId", actualSchema) || actualSchema != schemaId)
-        return failure<const eve::Value::Object*>(eve::DiagnosticCode::ParseError,
-                                                  "climbing definition schemaId is missing or mismatched", "schemaId");
+        return eve::Result<const eve::Value::Object*>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "climbing definition schemaId is missing or mismatched", "schemaId", {},
+            "climbing.codec"));
     if (!readInt64(*object, "schemaVersion", actualVersion))
-        return failure<const eve::Value::Object*>(
-            eve::DiagnosticCode::ParseError, "climbing definition schemaVersion must be an integer", "schemaVersion");
+        return eve::Result<const eve::Value::Object*>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "climbing definition schemaVersion must be an integer", "schemaVersion",
+            {}, "climbing.codec"));
     if (actualVersion != schemaVersion && actualVersion != schemaVersion - 1)
-        return failure<const eve::Value::Object*>(eve::DiagnosticCode::UnknownVersion,
-                                                  "climbing definition schema version is unsupported", "schemaVersion");
+        return eve::Result<const eve::Value::Object*>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "climbing definition schema version is unsupported", "schemaVersion",
+            {}, "climbing.codec"));
     return eve::Result<const eve::Value::Object*>::success(object);
 }
 
@@ -293,23 +290,29 @@ void writeActionFields(eve::Value::Object& object, const ClimbingActionDefinitio
 
 eve::Result<void> validateClimbingActionDefinition(const ClimbingActionDefinition& action) {
     if (action.id.empty())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "action id must not be empty", "id");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "action id must not be empty", "id", {}, "climbing.codec"));
     if (!finite(action.minHeight) || !finite(action.maxHeight) || action.minHeight < 0.f ||
         action.maxHeight < action.minHeight)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "action height range must be finite, non-negative, and ordered", "height");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "action height range must be finite, non-negative, and ordered",
+            "height", {}, "climbing.codec"));
     if (!finite(action.minSpeed) || action.minSpeed < 0.f || !finite(action.landingForward) ||
         action.landingForward < 0.f || !finite(action.apexHeight) || action.apexHeight < 0.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "action speed, landing distance, and apex must be finite and non-negative");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "action speed, landing distance, and apex must be finite and non-negative", {}, {}, "climbing.codec"));
     if (action.duration.nanoseconds() <= 0)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "action duration must be positive", "durationNs");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "action duration must be positive", "durationNs", {},
+                                                                 "climbing.codec"));
     if (!finite(action.hangBodyOffset) || action.hangBodyOffset < 0.f || !finite(action.hangFeetBelowLedge) ||
         action.hangFeetBelowLedge <= 0.f || !finite(action.handSpacing) || action.handSpacing <= 0.f ||
         !finite(action.cancelWindowStart) || !finite(action.cancelWindowEnd) || action.cancelWindowStart < 0.f ||
         action.cancelWindowEnd > 1.f || action.cancelWindowEnd < action.cancelWindowStart)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "hang geometry and cancel window must be finite and ordered");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "hang geometry and cancel window must be finite and ordered", {}, {},
+            "climbing.codec"));
     if (!finite(action.rootMotionScaleMin) || !finite(action.rootMotionScaleMax) || action.rootMotionScaleMin <= 0.f ||
         action.rootMotionScaleMax < action.rootMotionScaleMin || action.rootMotionScaleMax > 4.f ||
         !finite(action.maxTranslationWarpPerTick) || action.maxTranslationWarpPerTick <= 0.f ||
@@ -317,95 +320,112 @@ eve::Result<void> validateClimbingActionDefinition(const ClimbingActionDefinitio
         !finite(action.horizontalWarpBudget) || action.horizontalWarpBudget < 0.f ||
         !finite(action.verticalWarpBudget) || action.verticalWarpBudget < 0.f ||
         !finite(action.facingWarpBudgetRadians) || action.facingWarpBudgetRadians < 0.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "root-motion scale and warp budgets must be finite, positive, and bounded", "warp");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "root-motion scale and warp budgets must be finite, positive, and bounded", "warp", {}, "climbing.codec"));
     float previousEnd = 0.f;
     for (std::size_t index = 0; index < action.warpWindows.size(); ++index) {
         const ClimbingWarpWindow& window = action.warpWindows[index];
         if (!finite(window.start) || !finite(window.end) || window.start < 0.f || window.end > 1.f ||
             window.end <= window.start || window.start < previousEnd ||
             (!window.horizontal && !window.vertical && !window.facing))
-            return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "warp windows must be ordered, non-overlapping, and enable a channel",
-                                 "warpWindows." + std::to_string(index));
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "warp windows must be ordered, non-overlapping, and enable a channel",
+                                       "warpWindows." + std::to_string(index), {}, "climbing.codec"));
         previousEnd = window.end;
     }
     std::vector<std::string> notifyNames = action.requiredNotifies;
     std::sort(notifyNames.begin(), notifyNames.end());
     if (std::any_of(notifyNames.begin(), notifyNames.end(), [](const std::string& name) { return name.empty(); }) ||
         std::adjacent_find(notifyNames.begin(), notifyNames.end()) != notifyNames.end())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "required animation notifies must be non-empty and unique", "requiredNotifies");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "required animation notifies must be non-empty and unique",
+            "requiredNotifies", {}, "climbing.codec"));
     const auto sourceBits = static_cast<std::uint8_t>(action.sourceModes);
     if (sourceBits == 0 || (sourceBits & ~static_cast<std::uint8_t>(ClimbingSourceMode::Any)) != 0)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "sourceModes must contain a known mode",
-                             "sourceModes");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "sourceModes must contain a known mode", "sourceModes",
+                                                                 {}, "climbing.codec"));
     if (!finite(action.minDepth) || !finite(action.maxDepth) || action.minDepth < 0.f ||
         action.maxDepth < action.minDepth || !finite(action.minDistance) || !finite(action.maxDistance) ||
         action.minDistance < 0.f || action.maxDistance < action.minDistance ||
         !finite(action.minSurfaceNormalY) || action.minSurfaceNormalY < -1.f || action.minSurfaceNormalY > 1.f ||
         !finite(action.maxSlopeRadians) || action.maxSlopeRadians < 0.f || action.maxSlopeRadians > 3.1415927f ||
         !finite(action.maxCurvature) || action.maxCurvature < 0.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "action geometry constraints are invalid",
-                             "geometry");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "action geometry constraints are invalid", "geometry",
+                                                                 {}, "climbing.codec"));
     if (!uniqueNonEmpty(action.tags) || !uniqueNonEmpty(action.requiredSupportTags) ||
         !uniqueNonEmpty(action.comboTags) || !uniqueNonEmpty(action.requiredConditionTags) ||
         !uniqueNonEmpty(action.eventMetadata))
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "action tags and event metadata must be unique",
-                             "metadata");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "action tags and event metadata must be unique",
+                                                                 "metadata", {}, "climbing.codec"));
     if (action.animation.rootBone.empty())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "animation rootBone must not be empty",
-                             "animation.rootBone");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "animation rootBone must not be empty",
+                                                                 "animation.rootBone", {}, "climbing.codec"));
     for (std::size_t index = 0; index < action.branchWindows.size(); ++index) {
         const auto& window = action.branchWindows[index];
         if (!finite(window.start) || !finite(window.end) || window.start < 0.f || window.end > 1.f ||
             window.end <= window.start || window.comboTag.empty())
-            return failure<void>(eve::DiagnosticCode::InvalidArgument, "branch window is invalid",
-                                 "branchWindows." + std::to_string(index));
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "branch window is invalid",
+                                       "branchWindows." + std::to_string(index), {}, "climbing.codec"));
         if (std::find(action.comboTags.begin(), action.comboTags.end(), window.comboTag) == action.comboTags.end())
-            return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "branch window comboTag must be declared by the action",
-                                 "branchWindows." + std::to_string(index) + ".comboTag");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "branch window comboTag must be declared by the action",
+                "branchWindows." + std::to_string(index) + ".comboTag", {}, "climbing.codec"));
     }
     for (std::size_t index = 0; index < action.contactConstraints.size(); ++index) {
         const auto& contact = action.contactConstraints[index];
         if (!finite(contact.start) || !finite(contact.end) || !finite(contact.maxWeight) || contact.start < 0.f ||
             contact.end > 1.f || contact.end <= contact.start || contact.maxWeight < 0.f || contact.maxWeight > 1.f)
-            return failure<void>(eve::DiagnosticCode::InvalidArgument, "contact constraint is invalid",
-                                 "contactConstraints." + std::to_string(index));
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "contact constraint is invalid",
+                                       "contactConstraints." + std::to_string(index), {}, "climbing.codec"));
     }
     if (action.repetitionPenalty < 0 || !finite(action.staminaCost) || action.staminaCost < 0.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "action cost metadata is invalid", "cost");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "action cost metadata is invalid", "cost", {}, "climbing.codec"));
     return eve::Result<void>::success();
 }
 
 eve::Result<void> validateClimbingProfileDefinition(const ClimbingProfileDefinition& profile) {
     if (!finite(profile.capsuleRadius) || !finite(profile.capsuleHeight) || profile.capsuleRadius <= 0.f ||
         profile.capsuleHeight <= profile.capsuleRadius * 2.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "capsule height must exceed twice its positive radius", "capsule");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "capsule height must exceed twice its positive radius",
+                                                                 "capsule", {}, "climbing.codec"));
     if (!finite(profile.compactCapsuleHeight) ||
         profile.compactCapsuleHeight <= profile.capsuleRadius * 2.f ||
         profile.compactCapsuleHeight > profile.capsuleHeight)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "compact capsule height must exceed the diameter and not exceed standing height",
-                             "compactCapsuleHeight");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "compact capsule height must exceed the diameter and not exceed standing height",
+                                   "compactCapsuleHeight", {}, "climbing.codec"));
     if (!finite(profile.skin) || profile.skin < 0.f || !finite(profile.maxProbeDistance) ||
         profile.maxProbeDistance <= 0.f || !finite(profile.maxObstacleHeight) || profile.maxObstacleHeight <= 0.f ||
         !finite(profile.minTopNormalY) || profile.minTopNormalY < 0.f || profile.minTopNormalY > 1.f ||
         !finite(profile.maxWarpResidual) || profile.maxWarpResidual < 0.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "profile probe, surface, skin, and warp limits are invalid");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "profile probe, surface, skin, and warp limits are invalid", {}, {},
+            "climbing.codec"));
     if (!finite(profile.maxPlatformSpeed) || profile.maxPlatformSpeed <= 0.f || !finite(profile.dropInitialSpeed) ||
         profile.dropInitialSpeed < 0.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "platform and drop speed limits must be finite");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "platform and drop speed limits must be finite", {},
+                                                                 {}, "climbing.codec"));
     if (profile.inputBufferTicks == 0 || profile.inputBufferTicks > 1000000 || profile.coyoteTicks > 1000000)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "input buffer must be non-zero and tick windows must be bounded", "inputTicks");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "input buffer must be non-zero and tick windows must be bounded",
+            "inputTicks", {}, "climbing.codec"));
     if (profile.pathValidationSegments < 2 || profile.pathValidationSegments > 64 ||
         !finite(profile.maxPelvisDeviation) || profile.maxPelvisDeviation < 0.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "path validation samples and pelvis deviation are invalid", "motionValidation");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "path validation samples and pelvis deviation are invalid",
+            "motionValidation", {}, "climbing.codec"));
     if (!finite(profile.groundAcceleration) || profile.groundAcceleration < 0.f || !finite(profile.groundBraking) ||
         profile.groundBraking < 0.f || !finite(profile.airControl) || profile.airControl < 0.f ||
         profile.airControl > 1.f || !finite(profile.gravity) || profile.gravity <= 0.f ||
@@ -413,36 +433,43 @@ eve::Result<void> validateClimbingProfileDefinition(const ClimbingProfileDefinit
         profile.probeSectors > 64 || profile.maxCandidates == 0 || profile.maxCandidates > 8 ||
         !finite(profile.autoAssistStrength) || profile.autoAssistStrength < 0.f || profile.autoAssistStrength > 1.f ||
         !finite(profile.maxTotalWarpBudget) || profile.maxTotalWarpBudget < 0.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "profile locomotion and probe policies are invalid",
-                             "policies");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "profile locomotion and probe policies are invalid",
+                                                                 "policies", {}, "climbing.codec"));
     if (!uniqueNonEmpty(profile.defaultActionIds) || !uniqueNonEmpty(profile.allowedActionTags) ||
         !uniqueNonEmpty(profile.deniedActionTags))
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "profile action ids and tags must be unique",
-                             "actionPolicy");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "profile action ids and tags must be unique",
+                                                                 "actionPolicy", {}, "climbing.codec"));
     const ClimbingScoreWeights& weights = profile.scoreWeights;
     if (weights.direction < 0 || weights.approachSpeed < 0 || weights.height < 0 || weights.distance < 0 ||
         weights.warpTranslation < 0 || weights.warpRotation < 0 || weights.intentMismatch < 0)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "score weights must be non-negative",
-                             "scoreWeights");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "score weights must be non-negative", "scoreWeights",
+                                                                 {}, "climbing.codec"));
     if (profile.staminaPolicy == ClimbingStaminaPolicy::RequireProvider && profile.staminaAdapter.empty())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "RequireProvider stamina policy needs a stable adapter id", "staminaAdapter");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "RequireProvider stamina policy needs a stable adapter id",
+            "staminaAdapter", {}, "climbing.codec"));
     std::unordered_set<std::string> ids;
     for (const ClimbingActionDefinition& action : profile.actions) {
         auto valid = validateClimbingActionDefinition(action);
         if (!valid) return eve::Result<void>::failure(valid.status());
         if (std::max(action.horizontalWarpBudget, action.verticalWarpBudget) >
             profile.maxTotalWarpBudget + 0.0001f)
-            return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "action translation warp budgets exceed profile maximum", "actions." + action.id);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "action translation warp budgets exceed profile maximum",
+                "actions." + action.id, {}, "climbing.codec"));
         if (!ids.emplace(action.id).second)
-            return failure<void>(eve::DiagnosticCode::AlreadyExists, "profile contains duplicate action id",
-                                  "actions." + action.id);
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists,
+                                                                     "profile contains duplicate action id",
+                                                                     "actions." + action.id, {}, "climbing.codec"));
     }
     for (const std::string& id : profile.defaultActionIds)
         if (!ids.contains(id))
-            return failure<void>(eve::DiagnosticCode::NotFound,
-                                 "default action id is not registered in the profile", "defaultActionIds." + id);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "default action id is not registered in the profile",
+                "defaultActionIds." + id, {}, "climbing.codec"));
     return eve::Result<void>::success();
 }
 
@@ -486,17 +513,18 @@ eve::Result<ClimbingActionDefinition> decodeClimbingActionDefinition(const eve::
         !readOptionalFloat(object, "verticalWarpBudget", candidate.verticalWarpBudget) ||
         !readOptionalFloat(object, "facingWarpBudgetRadians", candidate.facingWarpBudgetRadians) ||
         (warpWindowsValue && !warpWindows) || !notifies)
-        return failure<ClimbingActionDefinition>(eve::DiagnosticCode::ParseError,
-                                                 "climbing action has missing or invalid known fields");
+        return eve::Result<ClimbingActionDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                   "climbing action has missing or invalid known fields", {}, {}, "climbing.codec"));
     candidate.duration      = eve::Duration::fromNanoseconds(durationNs);
     candidate.selectionBias = static_cast<int>(selectionBias);
     candidate.requiredNotifies.reserve(notifies->size());
     for (std::size_t index = 0; index < notifies->size(); ++index) {
         const auto* notify = (*notifies)[index].getIf<std::string>();
         if (!notify)
-            return failure<ClimbingActionDefinition>(eve::DiagnosticCode::ParseError,
-                                                     "animation notify must be a string",
-                                                     "requiredNotifies." + std::to_string(index));
+            return eve::Result<ClimbingActionDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "animation notify must be a string",
+                                       "requiredNotifies." + std::to_string(index), {}, "climbing.codec"));
         candidate.requiredNotifies.push_back(*notify);
     }
     if (warpWindows) candidate.warpWindows.reserve(warpWindows->size());
@@ -506,9 +534,9 @@ eve::Result<ClimbingActionDefinition> decodeClimbingActionDefinition(const eve::
         if (!valueObject || !readFloat(*valueObject, "start", window.start) ||
             !readFloat(*valueObject, "end", window.end) || !readBool(*valueObject, "horizontal", window.horizontal) ||
             !readBool(*valueObject, "vertical", window.vertical) || !readBool(*valueObject, "facing", window.facing))
-            return failure<ClimbingActionDefinition>(eve::DiagnosticCode::ParseError,
-                                                     "warp window has missing or invalid fields",
-                                                     "warpWindows." + std::to_string(index));
+            return eve::Result<ClimbingActionDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "warp window has missing or invalid fields",
+                                       "warpWindows." + std::to_string(index), {}, "climbing.codec"));
         candidate.warpWindows.push_back(window);
     }
     std::int64_t repetitionPenalty = candidate.repetitionPenalty;
@@ -541,8 +569,8 @@ eve::Result<ClimbingActionDefinition> decodeClimbingActionDefinition(const eve::
         !readOptionalFloat(object, "staminaCost", candidate.staminaCost) ||
         !readOptionalString(object, "cameraCue", candidate.cameraCue) ||
         !readOptionalStringArray(object, "eventMetadata", candidate.eventMetadata))
-        return failure<ClimbingActionDefinition>(eve::DiagnosticCode::ParseError,
-                                                 "climbing action has invalid v4 metadata");
+        return eve::Result<ClimbingActionDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "climbing action has invalid v4 metadata", {}, {}, "climbing.codec"));
     candidate.repetitionPenalty = static_cast<std::int32_t>(repetitionPenalty);
     if (const eve::Value* animationValue = field(object, "animation")) {
         const auto* animation = animationValue->getIf<eve::Value::Object>();
@@ -550,14 +578,16 @@ eve::Result<ClimbingActionDefinition> decodeClimbingActionDefinition(const eve::
             !readString(*animation, "graphNodeId", candidate.animation.graphNodeId) ||
             !readString(*animation, "rootBone", candidate.animation.rootBone) ||
             !readBool(*animation, "mirrored", candidate.animation.mirrored))
-            return failure<ClimbingActionDefinition>(eve::DiagnosticCode::ParseError,
-                                                     "animation binding has missing or invalid fields", "animation");
+            return eve::Result<ClimbingActionDefinition>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "animation binding has missing or invalid fields", "animation", {},
+                "climbing.codec"));
     }
     if (const eve::Value* branchValue = field(object, "branchWindows")) {
         const auto* branches = branchValue->getIf<eve::Value::Array>();
         if (!branches)
-            return failure<ClimbingActionDefinition>(eve::DiagnosticCode::ParseError,
-                                                     "branchWindows must be an array", "branchWindows");
+            return eve::Result<ClimbingActionDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "branchWindows must be an array",
+                                       "branchWindows", {}, "climbing.codec"));
         candidate.branchWindows.reserve(branches->size());
         for (std::size_t index = 0; index < branches->size(); ++index) {
             const auto* valueObject = (*branches)[index].getIf<eve::Value::Object>();
@@ -565,17 +595,18 @@ eve::Result<ClimbingActionDefinition> decodeClimbingActionDefinition(const eve::
             if (!valueObject || !readFloat(*valueObject, "start", window.start) ||
                 !readFloat(*valueObject, "end", window.end) ||
                 !readString(*valueObject, "comboTag", window.comboTag))
-                return failure<ClimbingActionDefinition>(eve::DiagnosticCode::ParseError,
-                                                         "branch window has missing or invalid fields",
-                                                         "branchWindows." + std::to_string(index));
+                return eve::Result<ClimbingActionDefinition>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "branch window has missing or invalid fields",
+                    "branchWindows." + std::to_string(index), {}, "climbing.codec"));
             candidate.branchWindows.push_back(std::move(window));
         }
     }
     if (const eve::Value* contactsValue = field(object, "contactConstraints")) {
         const auto* contacts = contactsValue->getIf<eve::Value::Array>();
         if (!contacts)
-            return failure<ClimbingActionDefinition>(eve::DiagnosticCode::ParseError,
-                                                     "contactConstraints must be an array", "contactConstraints");
+            return eve::Result<ClimbingActionDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "contactConstraints must be an array",
+                                       "contactConstraints", {}, "climbing.codec"));
         candidate.contactConstraints.reserve(contacts->size());
         for (std::size_t index = 0; index < contacts->size(); ++index) {
             const auto* valueObject = (*contacts)[index].getIf<eve::Value::Object>();
@@ -586,9 +617,9 @@ eve::Result<ClimbingActionDefinition> decodeClimbingActionDefinition(const eve::
                 !field(*valueObject, "target") || !readFloat(*valueObject, "start", contact.start) ||
                 !readFloat(*valueObject, "end", contact.end) ||
                 !readFloat(*valueObject, "maxWeight", contact.maxWeight))
-                return failure<ClimbingActionDefinition>(eve::DiagnosticCode::ParseError,
-                                                         "contact constraint has missing or invalid fields",
-                                                         "contactConstraints." + std::to_string(index));
+                return eve::Result<ClimbingActionDefinition>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "contact constraint has missing or invalid fields",
+                    "contactConstraints." + std::to_string(index), {}, "climbing.codec"));
             candidate.contactConstraints.push_back(contact);
         }
     }
@@ -761,8 +792,9 @@ eve::Result<ClimbingProfileDefinition> decodeClimbingProfileDefinition(const eve
         ignoredBodyId < std::numeric_limits<int>::min() || ignoredBodyId > std::numeric_limits<int>::max() ||
         !readInt64(*filter, "ignoredShapeId", ignoredShapeId) || ignoredShapeId < std::numeric_limits<int>::min() ||
         ignoredShapeId > std::numeric_limits<int>::max())
-        return failure<ClimbingProfileDefinition>(eve::DiagnosticCode::ParseError,
-                                                  "climbing profile has missing or invalid known fields");
+        return eve::Result<ClimbingProfileDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                   "climbing profile has missing or invalid known fields", {}, {}, "climbing.codec"));
     candidate.queryFilter.categoryBits   = static_cast<std::uint32_t>(categoryBits);
     candidate.queryFilter.maskBits       = static_cast<std::uint32_t>(maskBits);
     candidate.queryFilter.ignoredBodyId  = static_cast<int>(ignoredBodyId);
@@ -782,16 +814,18 @@ eve::Result<ClimbingProfileDefinition> decodeClimbingProfileDefinition(const eve
             !readInt64(*weights, "warpTranslation", warpTranslation) ||
             !readInt64(*weights, "warpRotation", warpRotation) ||
             !readInt64(*weights, "intentMismatch", intentMismatch))
-            return failure<ClimbingProfileDefinition>(eve::DiagnosticCode::ParseError,
-                                                       "scoreWeights has missing or invalid fields", "scoreWeights");
+            return eve::Result<ClimbingProfileDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "scoreWeights has missing or invalid fields",
+                                       "scoreWeights", {}, "climbing.codec"));
         const auto inRange = [](std::int64_t value) {
             return value >= std::numeric_limits<std::int32_t>::min() &&
                    value <= std::numeric_limits<std::int32_t>::max();
         };
         if (!inRange(direction) || !inRange(approachSpeed) || !inRange(height) || !inRange(distance) ||
             !inRange(warpTranslation) || !inRange(warpRotation) || !inRange(intentMismatch))
-            return failure<ClimbingProfileDefinition>(eve::DiagnosticCode::ParseError,
-                                                       "scoreWeights exceeds int32 range", "scoreWeights");
+            return eve::Result<ClimbingProfileDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "scoreWeights exceeds int32 range",
+                                       "scoreWeights", {}, "climbing.codec"));
         candidate.scoreWeights = {static_cast<std::int32_t>(direction),
                                   static_cast<std::int32_t>(approachSpeed),
                                   static_cast<std::int32_t>(height),
@@ -804,9 +838,9 @@ eve::Result<ClimbingProfileDefinition> decodeClimbingProfileDefinition(const eve
     for (std::size_t index = 0; index < actions->size(); ++index) {
         auto decoded = decodeClimbingActionDefinition((*actions)[index]);
         if (!decoded)
-            return failure<ClimbingProfileDefinition>(
+            return eve::Result<ClimbingProfileDefinition>::failure(eve::Diagnostic::error(
                 decoded.error()->code(), decoded.error()->message(),
-                "actions." + std::to_string(index) + "." + decoded.error()->path());
+                "actions." + std::to_string(index) + "." + decoded.error()->path(), {}, "climbing.codec"));
         candidate.actions.push_back(std::move(decoded).takeValue());
     }
     candidate.extensionMetadata =

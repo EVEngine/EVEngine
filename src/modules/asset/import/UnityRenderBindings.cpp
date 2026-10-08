@@ -18,10 +18,12 @@ Result<double> property(const std::string& text, const std::string& name, double
     if (!value) return Result<double>::success(defaultValue);
     auto parsed = Value::fromJson(*value);
     if (!parsed || !parsed.value().isNumeric())
-        return detail::failure<double>(DiagnosticCode::ParseError, "invalid Unity material scalar", name);
+        return Result<double>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid Unity material scalar", name, {}, "asset.import"));
     const auto number = parsed.value().isInt64() ? double(parsed.value().asInt()) : parsed.value().asDouble();
     if (!std::isfinite(number))
-        return detail::failure<double>(DiagnosticCode::ParseError, "nonfinite material scalar", name);
+        return Result<double>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "nonfinite material scalar", name, {}, "asset.import"));
     return Result<double>::success(number);
 }
 std::string refKey(const std::string& guid, const std::string& id) {
@@ -58,22 +60,22 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
     if (!mode) return Result<PreparedAssetImport>::failure(mode.status());
     if ((mode.value() != 0 && mode.value() != 2 && mode.value() != 3) || metallic.value() < 0 || metallic.value() > 1 ||
         smoothness.value() < 0 || smoothness.value() > 1)
-        return detail::failure<PreparedAssetImport>(
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "Standard opaque/fade/transparent materials require normalized factors",
-            source.path);
+            source.path, {}, "asset.import"));
     Value::Array color{Value(1.0), Value(1.0), Value(1.0), Value(1.0)};
     if (auto value = match(text, R"(- _Color: *(\{[^\r\n]+\}))")) {
         auto parsed = Value::fromJson(std::regex_replace(*value, std::regex(R"(([rgba]):)"), "\"$1\":"));
         if (!parsed || !parsed.value().isObject())
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "invalid material color",
-                                                        source.path);
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "invalid material color", source.path, {}, "asset.import"));
         unsigned i = 0;
         for (const auto key : {"r", "g", "b", "a"}) {
             const auto& object = *parsed.value().getIf<Value::Object>();
             const auto  entry  = object.find(key);
             if (entry == object.end() || !entry->second.isNumeric())
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                            "invalid material color component", source.path);
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "invalid material color component", source.path, {}, "asset.import"));
             color[i++] = entry->second;
         }
     }
@@ -97,12 +99,13 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
         const auto guid = match(*main, R"(m_Texture: *\{fileID: *2800000, guid: *([0-9a-fA-F]{32}), type: *3\})");
         if (guid) {
             if (mode.value() == 3)
-                return detail::failure<PreparedAssetImport>(
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
                     DiagnosticCode::Unsupported, "premultiplied Standard texture alpha requires a shader conversion",
-                    source.path);
+                    source.path, {}, "asset.import"));
             if (!match(*main, R"(m_Scale: *\{x: *(1), y: *1\})") || !match(*main, R"(m_Offset: *\{x: *(0), y: *0\})"))
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                            "material texture transform is unsupported", source.path);
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::Unsupported, "material texture transform is unsupported",
+                                      source.path, {}, "asset.import"));
             auto image = detail::assetRef(
                 request.package.packageId.child("unity:" + unity_detail::foldAscii(*guid)).child("image:default"));
             if (!image) return Result<PreparedAssetImport>::failure(image.status());
@@ -156,7 +159,8 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
         auto entry = std::find_if(out.entries.begin(), out.entries.end(),
                                   [&](const auto& e) { return e.path == asset->definition; });
         if (entry == out.entries.end())
-            return detail::failure<void>(DiagnosticCode::NotFound, "scene definition absent", source.path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "scene definition absent",
+                                                           source.path, {}, "asset.import"));
         const auto&                     bytes = request.files.at(source.path);
         const std::string               text(bytes.begin(), bytes.end());
         auto                            docs = documents(text);
@@ -167,15 +171,20 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
             if (!game) continue;
             auto& target = doc.type == "4" ? transforms : filters;
             if (!target.emplace(*game, doc).second)
-                return detail::failure<void>(DiagnosticCode::Conflict,
-                                             "duplicate Transform or MeshFilter on GameObject", source.path);
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                               "duplicate Transform or MeshFilter on GameObject",
+                                                               source.path, {}, "asset.import"));
         }
         auto definition = Value::fromJson(std::string(entry->bytes.begin(), entry->bytes.end()));
         if (!definition) return Result<void>::failure(definition.status());
         auto* object = definition.value().getIf<Value::Object>();
-        if (!object) return detail::failure<void>(DiagnosticCode::ParseError, "invalid scene definition", source.path);
+        if (!object)
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid scene definition",
+                                                           source.path, {}, "asset.import"));
         auto* nodes = object->at("nodes").getIf<Value::Array>();
-        if (!nodes) return detail::failure<void>(DiagnosticCode::ParseError, "invalid scene nodes", source.path);
+        if (!nodes)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid scene nodes", source.path, {}, "asset.import"));
         std::int64_t nextNode = 1;
         for (const auto& node : *nodes)
             nextNode = std::max(nextNode, node.getIf<Value::Object>()->at("sourceFileId").asInt());
@@ -225,15 +234,17 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
                         return candidate.asset == materialRef && candidate.type == "eve.material";
                     });
                 if (materialAsset == out.manifest.assets.end())
-                    return detail::failure<void>(DiagnosticCode::TypeMismatch, "renderer material definition is absent",
-                                                 source.path);
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch,
+                                                                   "renderer material definition is absent",
+                                                                   source.path, {}, "asset.import"));
                 const auto materialType = "eve.material/" + std::to_string(materialAsset->schemaVersion.value());
                 auto objectId = request.package.packageId.child("unity:" + source.guid + ":" + transforms.at(*game).id);
                 if (split) {
                     if (nextNode == std::numeric_limits<std::int64_t>::max() ||
                         nodes->size() >= request.limits.maximumAssets)
-                        return detail::failure<void>(DiagnosticCode::InvalidArgument, "submesh node budget exceeded",
-                                                     source.path);
+                        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                       "submesh node budget exceeded", source.path, {},
+                                                                       "asset.import"));
                     ++nextNode;
                     objectId = objectId.child("submesh:" + std::to_string(slot));
                     nodes->emplace_back(

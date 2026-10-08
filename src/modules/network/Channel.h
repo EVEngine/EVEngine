@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -18,7 +20,7 @@ class Network;
  * sendMsg() writes one framed message; feed() consumes bytes and emits received
  * frames as "chmsg" events on the main thread via the Event module.
  */
-class Channel {
+class EVENGINE_API_PLATFORM Channel {
 public:
     /** @brief Creates a channel over an existing socket (socket must be non-null). */
     explicit Channel(TcpSocket* socket);

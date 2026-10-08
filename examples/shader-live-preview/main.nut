@@ -38,15 +38,15 @@ function buildPreviewScene() {
 }
 
 function reloadPreviewShader() {
-    // Live GLSL recompilation needs glslc on PATH; where it is unavailable
-    // (Windows, no Vulkan SDK) the committed SPIR-V keeps rendering.
+    // Live GLSL recompilation goes through the engine's own compiler; when it is
+    // missing or fails, the committed SPIR-V keeps rendering.
     local source = fs.readText("shaders/preview.frag");
     local result = gfx.replaceShaderFromGlsl(previewShader, "", source);
     if (result.ok) {
         reloadMessage = "shader reloaded";
         print("[shader-preview] reload applied\n");
     } else {
-        reloadMessage = "GLSL reload needs glslc; showing committed SPIR-V";
+        reloadMessage = "GLSL reload failed; showing committed SPIR-V";
         local detail = result.status;
         if (result.diagnostics.len() > 0) detail = result.diagnostics[0].message;
         print("[shader-preview] " + detail + "\n");

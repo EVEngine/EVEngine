@@ -9,11 +9,6 @@
 namespace eve::asset {
 namespace {
 
-template <class T>
-Result<T> migrationFailure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.migration"));
-}
-
 std::string sha256(std::span<const std::uint8_t> bytes) {
     data::HashFunction::Value digest{};
     data::HashFunction::getHashFunction("sha256")->hash("sha256", reinterpret_cast<const char*>(bytes.data()),
@@ -31,7 +26,9 @@ std::string sha256(std::span<const std::uint8_t> bytes) {
 
 Result<Value> migrateImageV2ToV3(const Value& input) {
     const auto* object = input.getIf<Value::Object>();
-    if (!object) return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.image definition must be an object");
+    if (!object)
+        return Result<Value>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "eve.image definition must be an object", {}, {}, "asset.migration"));
     const auto  schema      = object->find("schema");
     const auto  version     = object->find("schemaVersion");
     const auto  color       = object->find("color");
@@ -41,8 +38,9 @@ Result<Value> migrateImageV2ToV3(const Value& input) {
         object->contains("mipCount") || !colorObject || !colorObject->contains("transfer") ||
         !colorObject->at("transfer").isString() ||
         (colorObject->at("transfer").asString() != "srgb" && colorObject->at("transfer").asString() != "linear"))
-        return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                       "eve.image/2 definition is malformed or contains unversioned mips");
+        return Result<Value>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "eve.image/2 definition is malformed or contains unversioned mips", {}, {},
+            "asset.migration"));
     Value::Object migrated    = *object;
     migrated["schemaVersion"] = Value(std::int64_t(3));
     migrated["mipCount"]      = Value(std::int64_t(1));
@@ -53,45 +51,51 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
                                 const Value& definition) {
     if (from == current) return Result<Value>::success(definition);
     if (from.value() > current.value())
-        return migrationFailure<Value>(DiagnosticCode::UnknownVersion, "asset definition is newer than this reader",
-                                       std::string(type));
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::UnknownVersion,
+                                                        "asset definition is newer than this reader", std::string(type),
+                                                        {}, "asset.migration"));
     if (type == "eve.mesh" && current.value() == 3 && (from.value() == 1 || from.value() == 2)) {
         const auto* object = definition.getIf<Value::Object>();
         if (!object || !object->contains("schema") || !object->at("schema").isString() ||
             object->at("schema").asString() != "eve.mesh" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() ||
             object->at("schemaVersion").asInt() != static_cast<std::int64_t>(from.value()))
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.mesh definition is malformed");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.mesh definition is malformed", {}, {}, "asset.migration"));
         auto migrated = *object;
         if (from.value() == 1) {
             if (migrated.contains("texcoordSets") || migrated.contains("colors"))
-                return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.mesh/1 contains reserved metadata");
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "eve.mesh/1 contains reserved metadata", {}, {}, "asset.migration"));
             if (auto uv = migrated.find("texcoord0"); uv != migrated.end()) {
                 if (!uv->second.isBool())
-                    return migrationFailure<Value>(DiagnosticCode::ParseError, "invalid legacy UV metadata");
+                    return Result<Value>::failure(Diagnostic::error(
+                        DiagnosticCode::ParseError, "invalid legacy UV metadata", {}, {}, "asset.migration"));
                 Value::Array sets;
                 if (uv->second.asBool()) sets.emplace_back(int64_t(0));
                 migrated.erase(uv);
                 migrated["texcoordSets"] = Value(std::move(sets));
             }
         } else if (migrated.contains("colors")) {
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.mesh/2 contains reserved color metadata");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.mesh/2 contains reserved color metadata", {}, {}, "asset.migration"));
         }
         migrated["colors"]       = Value(false);
         migrated["schemaVersion"] = Value(int64_t(3));
         return Result<Value>::success(Value(std::move(migrated)));
     }
     if (from.value() + 1 != current.value() && type != "eve.instance-set")
-        return migrationFailure<Value>(DiagnosticCode::Unsupported,
-                                       "asset definition is older than the N-1 compatibility window",
-                                       std::string(type));
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                        "asset definition is older than the N-1 compatibility window",
+                                                        std::string(type), {}, "asset.migration"));
     if (type == "eve.instance-set" && from.value() == 1 && current.value() >= 2) {
         const auto* object = definition.getIf<Value::Object>();
         if (!object || !object->contains("schema") || !object->at("schema").isString() ||
             object->at("schema").asString() != "eve.instance-set" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 1 ||
             object->contains("prototypes"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.instance-set/1 is malformed");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.instance-set/1 is malformed", {}, {}, "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(int64_t(2));
         migrated["prototypes"]    = Value(Value::Array{});
@@ -105,13 +109,16 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.instance-set" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 2 ||
             !object->contains("prototypes") || !object->at("prototypes").isArray())
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.instance-set/2 is malformed");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.instance-set/2 is malformed", {}, {}, "asset.migration"));
         auto migrated = *object;
         auto prototypes = *migrated["prototypes"].getIf<Value::Array>();
         for (auto& value : prototypes) {
             auto* prototype = value.getIf<Value::Object>();
             if (!prototype || prototype->contains("resourceAsset"))
-                return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.instance-set/2 prototype is malformed");
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "eve.instance-set/2 prototype is malformed", {}, {},
+                                                                "asset.migration"));
             (*prototype)["resourceAsset"] = Value("");
         }
         migrated["prototypes"] = Value(std::move(prototypes));
@@ -126,7 +133,8 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.instance-set" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 3 ||
             !object->contains("prototypes") || !object->at("prototypes").isArray())
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.instance-set/3 is malformed");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.instance-set/3 is malformed", {}, {}, "asset.migration"));
         auto migrated = *object;
         auto prototypes = *migrated["prototypes"].getIf<Value::Array>();
         for (auto& value : prototypes) {
@@ -134,7 +142,9 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             if (!prototype || prototype->contains("healthyColor") || prototype->contains("dryColor") ||
                 prototype->contains("bendFactor") || prototype->contains("holeEdgePadding") ||
                 prototype->contains("useDensityScaling"))
-                return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.instance-set/3 prototype is malformed");
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "eve.instance-set/3 prototype is malformed", {}, {},
+                                                                "asset.migration"));
             (*prototype)["healthyColor"] = Value(Value::Array{Value(1.0), Value(1.0), Value(1.0), Value(1.0)});
             (*prototype)["dryColor"] = Value(Value::Array{Value(1.0), Value(1.0), Value(1.0), Value(1.0)});
             (*prototype)["bendFactor"] = Value(0.0);
@@ -153,7 +163,8 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.instance-set" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 4 ||
             object->contains("wavingGrass"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.instance-set/4 is malformed");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.instance-set/4 is malformed", {}, {}, "asset.migration"));
         auto migrated = *object;
         migrated["wavingGrass"] = Value(Value::Object{
             {"amount", Value(0.0)}, {"speed", Value(0.0)}, {"strength", Value(0.0)},
@@ -167,8 +178,9 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 5 ||
             object->contains("vegetationSurface"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "eve.material/5 is malformed or has unversioned vegetation surface");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.material/5 is malformed or has unversioned vegetation surface", {}, {},
+                "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(int64_t(6));
         return Result<Value>::success(Value(std::move(migrated)));
@@ -178,14 +190,16 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
         if (!object || !object->contains("schema") || !object->at("schema").isString() ||
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 6)
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.material/6 is malformed");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "eve.material/6 is malformed",
+                                                            {}, {}, "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(int64_t(7));
         if (auto surface = migrated.find("vegetationSurface"); surface != migrated.end()) {
             auto* vegetation = surface->second.getIf<Value::Object>();
             if (!vegetation || vegetation->contains("colors"))
-                return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                               "eve.material/6 has unversioned global colors");
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "eve.material/6 has unversioned global colors", {}, {},
+                                                                "asset.migration"));
             (*vegetation)["colors"]                      = Value(1.0);
             (*vegetation)["colorsIntensity"]             = Value(1.0);
             (*vegetation)["colorsMask"]                  = Value(1.0);
@@ -202,8 +216,9 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 7 ||
             object->contains("vegetationDetail"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "eve.material/7 is malformed or has unversioned vegetation detail");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.material/7 is malformed or has unversioned vegetation detail", {}, {},
+                "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(int64_t(8));
         return Result<Value>::success(Value(std::move(migrated)));
@@ -214,8 +229,9 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 8 ||
             (object->contains("vegetationAlpha") || object->contains("vegetationFields")))
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "eve.material/8 is malformed or has unversioned vegetation field data");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.material/8 is malformed or has unversioned vegetation field data", {},
+                {}, "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(int64_t(9));
         return Result<Value>::success(Value(std::move(migrated)));
@@ -225,15 +241,17 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
         if (!object || !object->contains("schema") || !object->at("schema").isString() ||
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 9)
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.material/9 is malformed");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "eve.material/9 is malformed",
+                                                            {}, {}, "asset.migration"));
         auto migrated = *object;
         if (auto at = migrated.find("vegetationFields"); at != migrated.end()) {
             auto* fields = at->second.getIf<Value::Object>();
             if (!fields || fields->size() != 4 || !fields->contains("colorsLayer") ||
                 !fields->contains("colorsUsePivotPosition") || !fields->contains("extrasLayer") ||
                 !fields->contains("extrasUsePivotPosition"))
-                return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                               "eve.material/9 has malformed or unversioned vegetation fields");
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "eve.material/9 has malformed or unversioned vegetation fields", {}, {},
+                    "asset.migration"));
             (*fields)["motionLayer"]   = Value(int64_t(0));
             (*fields)["vertexLayer"]   = Value(int64_t(0));
             (*fields)["globalSize"]    = Value(1.0);
@@ -249,8 +267,9 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 10 ||
             object->contains("vegetationMotion"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "eve.material/10 is malformed or has unversioned vegetation motion");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.material/10 is malformed or has unversioned vegetation motion", {}, {},
+                "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(int64_t(11));
         return Result<Value>::success(Value(std::move(migrated)));
@@ -260,14 +279,16 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
         if (!object || !object->contains("schema") || !object->at("schema").isString() ||
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 11)
-            return migrationFailure<Value>(DiagnosticCode::ParseError, "eve.material/11 is malformed");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "eve.material/11 is malformed",
+                                                            {}, {}, "asset.migration"));
         auto migrated = *object;
         if (auto at = migrated.find("vegetationAlpha"); at != migrated.end()) {
             auto* alpha = at->second.getIf<Value::Object>();
             if (!alpha || alpha->size() != 3 || !alpha->contains("global") || !alpha->contains("variation") ||
                 !alpha->contains("detailFade"))
-                return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                               "eve.material/11 has malformed or unversioned vegetation alpha fade");
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "eve.material/11 has malformed or unversioned vegetation alpha fade",
+                    {}, {}, "asset.migration"));
             (*alpha)["glancing"] = Value(0.0);
             (*alpha)["camera"]   = Value(1.0);
             (*alpha)["constant"] = Value(0.0);
@@ -281,8 +302,9 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 12 ||
             object->contains("vegetationEmission"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "eve.material/12 is malformed or has unversioned vegetation emission");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.material/12 is malformed or has unversioned vegetation emission", {},
+                {}, "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(int64_t(13));
         return Result<Value>::success(Value(std::move(migrated)));
@@ -298,9 +320,10 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->contains("vegetationGradient") || object->contains("cullMode") ||
             (vegetation &&
              (vegetation->contains("vertexOcclusionColor") || vegetation->contains("backfaceNormalMode"))))
-            return migrationFailure<Value>(
+            return Result<Value>::failure(Diagnostic::error(
                 DiagnosticCode::ParseError,
-                "eve.material/13 is malformed or has unversioned vegetation gradient or occlusion color");
+                "eve.material/13 is malformed or has unversioned vegetation gradient or occlusion color", {}, {},
+                "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(int64_t(14));
         return Result<Value>::success(Value(std::move(migrated)));
@@ -311,8 +334,9 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 14 ||
             object->contains("alphaToCoverage"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "eve.material/14 is malformed or has unversioned alpha-to-coverage");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.material/14 is malformed or has unversioned alpha-to-coverage", {}, {},
+                "asset.migration"));
         auto migrated               = *object;
         migrated["schemaVersion"]   = Value(int64_t(15));
         migrated["alphaToCoverage"] = Value(false);
@@ -326,15 +350,17 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.terrain-material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 2 || !layers ||
             object->contains("holesAsset") || object->contains("controlAssets"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "eve.terrain-material/2 is malformed or has unversioned AssetRefs");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.terrain-material/2 is malformed or has unversioned AssetRefs", {}, {},
+                "asset.migration"));
         auto migratedLayers = *layers;
         for (auto& encoded : migratedLayers) {
             auto* layer = encoded.getIf<Value::Object>();
             if (!layer || layer->contains("diffuseAsset") || layer->contains("normalAsset") ||
                 layer->contains("weightAsset") || layer->contains("maskAsset"))
-                return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                               "eve.terrain-material/2 layer has unversioned AssetRefs");
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "eve.terrain-material/2 layer has unversioned AssetRefs", {}, {},
+                    "asset.migration"));
             (*layer)["diffuseAsset"] = Value("");
             (*layer)["normalAsset"]  = Value("");
             (*layer)["weightAsset"]  = Value("");
@@ -356,8 +382,9 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 1 || !layers ||
             object->contains("holesSource") || object->contains("controlSources") ||
             object->contains("boundsMultiplier"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "eve.terrain-material/1 is malformed or has unversioned TVE fields");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.terrain-material/1 is malformed or has unversioned TVE fields", {}, {},
+                "asset.migration"));
         auto migratedLayers = *layers;
         for (auto& encoded : migratedLayers) {
             auto* layer = encoded.getIf<Value::Object>();
@@ -365,13 +392,15 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
                 layer->contains("tileOffsetMeters") || layer->contains("maskRemapMinimum") ||
                 layer->contains("maskRemapMaximum") || layer->contains("specular") || layer->contains("metallic") ||
                 layer->contains("normalScale") || layer->contains("smoothness"))
-                return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                               "eve.terrain-material/1 layer has unversioned TVE fields");
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "eve.terrain-material/1 layer has unversioned TVE fields", {}, {},
+                    "asset.migration"));
             double tileSize = 1;
             if (auto found = layer->find("tileSizeMeters"); found != layer->end()) {
                 if (!found->second.isNumeric())
-                    return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                                   "eve.terrain-material/1 tile size is invalid");
+                    return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                    "eve.terrain-material/1 tile size is invalid", {},
+                                                                    {}, "asset.migration"));
                 tileSize = found->second.isInt64() ? double(found->second.asInt()) : found->second.asDouble();
             }
             (*layer)["maskSource"]       = Value("");
@@ -398,8 +427,9 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             object->at("schema").asString() != "eve.material" || !object->contains("schemaVersion") ||
             !object->at("schemaVersion").isInt64() || object->at("schemaVersion").asInt() != 4 ||
             object->contains("motionHighlightColor"))
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "eve.material/4 is malformed or has unversioned motion highlight");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.material/4 is malformed or has unversioned motion highlight", {}, {},
+                "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(int64_t(5));
         return Result<Value>::success(Value(std::move(migrated)));
@@ -411,43 +441,47 @@ Result<Value> migrateDefinition(std::string_view type, SchemaVersion from, Schem
             !object->at("schema").isString() || object->at("schema").asString() != "eve.scene-template" ||
             !object->contains("schemaVersion") || !object->at("schemaVersion").isInt64() ||
             object->at("schemaVersion").asInt() != 2 || !object->at("renderers").isArray())
-            return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                           "scene-template/2 is malformed or has unversioned shadow state");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "scene-template/2 is malformed or has unversioned shadow state", {}, {},
+                "asset.migration"));
         auto migrated             = *object;
         migrated["schemaVersion"] = Value(std::int64_t(3));
         auto renderers = *migrated["renderers"].getIf<Value::Array>();
         for (auto& renderer : renderers) {
             auto* binding = renderer.getIf<Value::Object>();
             if (!binding || binding->contains("castShadows") || binding->contains("receiveShadows"))
-                return migrationFailure<Value>(DiagnosticCode::ParseError,
-                                               "scene-template/2 renderer shadow state is malformed");
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "scene-template/2 renderer shadow state is malformed",
+                                                                {}, {}, "asset.migration"));
             (*binding)["castShadows"]    = Value(true);
             (*binding)["receiveShadows"] = Value(true);
         }
         migrated["renderers"] = Value(std::move(renderers));
         return Result<Value>::success(Value(std::move(migrated)));
     }
-    return migrationFailure<Value>(DiagnosticCode::Unsupported, "asset definition has no registered migration",
-                                   std::string(type));
+    return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                    "asset definition has no registered migration", std::string(type),
+                                                    {}, "asset.migration"));
 }
 
 Result<void> refreshImportReport(EvaArchive& archive) {
     const auto path = archive.manifest.provenance.find("path");
     if (path == archive.manifest.provenance.end()) return Result<void>::success();
     if (!path->second.isString() || path->second.asString() != "reports/import.json")
-        return migrationFailure<void>(DiagnosticCode::ParseError, "migration found an invalid import report path");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "migration found an invalid import report path", {}, {}, "asset.migration"));
     const auto entry = std::lower_bound(
         archive.entries.begin(), archive.entries.end(), path->second.asString(),
         [](const EvaArchiveEntry& candidate, std::string_view value) { return candidate.path < value; });
     if (entry == archive.entries.end() || entry->path != path->second.asString())
-        return migrationFailure<void>(DiagnosticCode::NotFound, "migration import report is missing",
-                                      path->second.asString());
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "migration import report is missing",
+                                                       path->second.asString(), {}, "asset.migration"));
     auto parsed = Value::fromJson(std::string(entry->bytes.begin(), entry->bytes.end()));
     if (!parsed) return Result<void>::failure(parsed.status());
     auto* report = parsed.value().getIf<Value::Object>();
     if (!report)
-        return migrationFailure<void>(DiagnosticCode::ParseError, "migration import report root is invalid",
-                                      entry->path);
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "migration import report root is invalid", entry->path, {}, "asset.migration"));
     Value::Array assets;
     for (const auto& asset : archive.manifest.assets)
         assets.emplace_back(
@@ -495,8 +529,8 @@ Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type) {
     };
     const auto found = versions.find(type);
     if (found == versions.end())
-        return migrationFailure<SchemaVersion>(DiagnosticCode::Unsupported, "unknown canonical asset type",
-                                               std::string(type));
+        return Result<SchemaVersion>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "unknown canonical asset type", std::string(type), {}, "asset.migration"));
     return Result<SchemaVersion>::success(SchemaVersion(found->second));
 }
 
@@ -505,14 +539,15 @@ Result<EvaArchive> migrateEvaArchive(EvaArchive source, const EvaArchiveLimits& 
         auto current = currentAssetSchemaVersion(asset.type);
         if (!current) return Result<EvaArchive>::failure(current.status());
         if (asset.schemaVersion.value() > current.value().value())
-            return migrationFailure<EvaArchive>(DiagnosticCode::UnknownVersion,
-                                                "asset definition is newer than this reader", asset.type);
+            return Result<EvaArchive>::failure(Diagnostic::error(DiagnosticCode::UnknownVersion,
+                                                                 "asset definition is newer than this reader",
+                                                                 asset.type, {}, "asset.migration"));
         const auto entry = std::lower_bound(
             source.entries.begin(), source.entries.end(), asset.definition,
             [](const EvaArchiveEntry& candidate, std::string_view path) { return candidate.path < path; });
         if (entry == source.entries.end() || entry->path != asset.definition)
-            return migrationFailure<EvaArchive>(DiagnosticCode::NotFound, "asset definition is missing",
-                                                asset.definition);
+            return Result<EvaArchive>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "asset definition is missing", asset.definition, {}, "asset.migration"));
         const std::string_view text(reinterpret_cast<const char*>(entry->bytes.data()), entry->bytes.size());
         auto                   parsed = Value::fromJson(text);
         if (!parsed) return Result<EvaArchive>::failure(parsed.status());

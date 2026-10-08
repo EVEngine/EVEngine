@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Data.h"
@@ -24,7 +26,7 @@ class Source;
  * @brief OpenAL audio module: device management, master listener state, and Source factory.
  * Script: `audio <- eve.Audio();`
  */
-class Audio : public Module {
+class EVENGINE_API_BACKENDS Audio : public Module {
 public:
     Module_REG(Audio);
 

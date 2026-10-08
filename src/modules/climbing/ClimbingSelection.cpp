@@ -11,12 +11,6 @@
 namespace eve::climbing {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.selection"));
-}
-
 bool activePhase(ClimbingPhase phase) {
     return phase != ClimbingPhase::Idle && phase != ClimbingPhase::Completed && phase != ClimbingPhase::Cancelled &&
            phase != ClimbingPhase::Failed;
@@ -55,8 +49,9 @@ eve::Result<void> validateFullCapsulePath(physics::World3D& world, Vec3 start, c
     const std::uint32_t segmentCount = std::min(profile.pathValidationSegments, remainingBudget);
     if (segmentCount == 0) {
         budgetExceeded = true;
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                             "climbing.query_budget.exceeded", "candidate.path");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "climbing.query_budget.exceeded", "candidate.path", {},
+                                                                 "climbing.selection"));
     }
     if (segmentCount < profile.pathValidationSegments) budgetExceeded = true;
     for (std::uint32_t segment = 1; segment <= segmentCount; ++segment) {
@@ -75,8 +70,9 @@ eve::Result<void> validateFullCapsulePath(physics::World3D& world, Vec3 start, c
         moverIterations += static_cast<std::uint32_t>(std::max(0, moved.value().iterations));
         const Vec3 actual{moved.value().deltaX, moved.value().deltaY, moved.value().deltaZ};
         if (length(subtract(desired, actual)) > profile.skin + 0.001f)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation, "climbing.candidate.path_blocked",
-                                 "candidate.path." + std::to_string(segment));
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing.candidate.path_blocked",
+                                       "candidate.path." + std::to_string(segment), {}, "climbing.selection"));
         current = target;
     }
     return eve::Result<void>::success();
@@ -88,37 +84,44 @@ eve::Result<ClimbingRuntime::PreparedBegin> ClimbingRuntime::prepareBegin(physic
                                                                           const ClimbingPose& pose,
                                                                           eve::SimulationTick tick) {
     if (activePhase(phase_))
-        return failure<PreparedBegin>(eve::DiagnosticCode::Conflict, "a climbing execution is already active",
-                                      "runtime.phase");
+        return eve::Result<PreparedBegin>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                                                          "a climbing execution is already active",
+                                                                          "runtime.phase", {}, "climbing.selection"));
     if (nextExecutionId_ == 0 || nextExecutionId_ == std::numeric_limits<std::uint64_t>::max())
-        return failure<PreparedBegin>(eve::DiagnosticCode::PreconditionViolation,
-                                      "climbing execution id space is exhausted", "runtime.nextExecutionId");
+        return eve::Result<PreparedBegin>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "climbing execution id space is exhausted",
+            "runtime.nextExecutionId", {}, "climbing.selection"));
 
     auto candidates = probe(world, pose);
     if (!candidates) return eve::Result<PreparedBegin>::failure(candidates.status());
     ClimbingCandidateSet values = std::move(candidates).takeValue();
     if (values.empty())
-        return failure<PreparedBegin>(eve::DiagnosticCode::NotFound, "no valid climbing candidate was found",
-                                      "candidate");
+        return eve::Result<PreparedBegin>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                          "no valid climbing candidate was found",
+                                                                          "candidate", {}, "climbing.selection"));
     return prepareBeginCandidate(world, pose, tick, values.takeFront());
 }
 
 eve::Result<ClimbingRuntime::PreparedBegin> ClimbingRuntime::prepareBeginCandidate(
     physics::World3D& world, const ClimbingPose& pose, eve::SimulationTick tick, ClimbingCandidate candidate) {
     if (activePhase(phase_))
-        return failure<PreparedBegin>(eve::DiagnosticCode::Conflict, "a climbing execution is already active",
-                                      "runtime.phase");
+        return eve::Result<PreparedBegin>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                                                          "a climbing execution is already active",
+                                                                          "runtime.phase", {}, "climbing.selection"));
     if (nextExecutionId_ == 0 || nextExecutionId_ == std::numeric_limits<std::uint64_t>::max())
-        return failure<PreparedBegin>(eve::DiagnosticCode::PreconditionViolation,
-                                      "climbing execution id space is exhausted", "runtime.nextExecutionId");
+        return eve::Result<PreparedBegin>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "climbing execution id space is exhausted",
+            "runtime.nextExecutionId", {}, "climbing.selection"));
     const ClimbingActionDefinition* action    = findAction(profile_, candidate.actionId);
     if (!action)
-        return failure<PreparedBegin>(eve::DiagnosticCode::InvariantViolation, "selected action definition disappeared",
-                                      "candidate.actionId");
+        return eve::Result<PreparedBegin>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "selected action definition disappeared",
+                                   "candidate.actionId", {}, "climbing.selection"));
     if (!action->requiredNotifies.empty() && !validatedAnimationActions_.contains(action->id))
-        return failure<PreparedBegin>(eve::DiagnosticCode::PreconditionViolation,
-                                      "climbing.animation.notify_missing: action clip contract was not validated",
-                                      "candidate.actionId");
+        return eve::Result<PreparedBegin>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "climbing.animation.notify_missing: action clip contract was not validated",
+                                   "candidate.actionId", {}, "climbing.selection"));
     bool budgetExceeded = false;
     std::uint32_t moverIterations = 0;
     auto path = validateFullCapsulePath(world, pose.feet, candidate, *action, profile_, lastQueryCount_,
@@ -141,15 +144,17 @@ eve::Result<ClimbingRuntime::PreparedBegin> ClimbingRuntime::prepareBeginCandida
 
 eve::Result<ClimbingStart> ClimbingRuntime::commitBegin(PreparedBegin prepared) {
     if (activePhase(phase_) || execution_)
-        return failure<ClimbingStart>(eve::DiagnosticCode::Conflict, "climbing state changed before commit",
-                                      "runtime.phase");
+        return eve::Result<ClimbingStart>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                                                          "climbing state changed before commit",
+                                                                          "runtime.phase", {}, "climbing.selection"));
     if (prepared.executionId.isZero() || prepared.executionId.value() != nextExecutionId_)
-        return failure<ClimbingStart>(eve::DiagnosticCode::Conflict, "prepared climbing execution is stale",
-                                      "executionId");
+        return eve::Result<ClimbingStart>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                                                          "prepared climbing execution is stale",
+                                                                          "executionId", {}, "climbing.selection"));
     if (!prepared.conditionsSatisfied)
-        return failure<ClimbingStart>(eve::DiagnosticCode::Unsupported,
-                                      "required climbing conditions were not evaluated by a service authority",
-                                      "action.requiredConditionTags");
+        return eve::Result<ClimbingStart>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "required climbing conditions were not evaluated by a service authority",
+            "action.requiredConditionTags", {}, "climbing.selection"));
     auto eventCapacity = requireEventCapacity(1, prepared.tick);
     if (!eventCapacity) return eve::Result<ClimbingStart>::failure(eventCapacity.status());
 
@@ -190,7 +195,8 @@ eve::Result<ClimbingStart> ClimbingSelectionSystem::tryStart(ClimbingRuntime& ru
                                                              ClimbingCommand command, eve::SimulationTick tick,
                                                              eve::SimulationTick lastGroundedTick) {
     if (!ClimbingInputSystem::peek(intent, command, tick))
-        return failure<ClimbingStart>(eve::DiagnosticCode::NotFound, "climbing.input.no_match", "intent.commands");
+        return eve::Result<ClimbingStart>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "climbing.input.no_match", "intent.commands", {}, "climbing.selection"));
 
     ClimbingPose effectivePose = pose;
     if (!effectivePose.grounded && command != ClimbingCommand::Drop &&
@@ -201,17 +207,18 @@ eve::Result<ClimbingStart> ClimbingSelectionSystem::tryStart(ClimbingRuntime& ru
     auto prepared = runtime.prepareBegin(world, effectivePose, tick);
     if (!prepared) return eve::Result<ClimbingStart>::failure(prepared.status());
     if (!commandMatches(prepared.value().action.requiredCommand, command))
-        return failure<ClimbingStart>(eve::DiagnosticCode::NotFound,
-                                      "selected climbing action does not accept the buffered command",
-                                      "action.requiredCommand");
+        return eve::Result<ClimbingStart>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "selected climbing action does not accept the buffered command",
+            "action.requiredCommand", {}, "climbing.selection"));
 
     const ClimbingIntent originalIntent = intent;
     auto                 consumed = ClimbingInputSystem::consume(intent, command, tick, prepared.value().executionId);
     if (!consumed || !consumed.value()) {
         intent = originalIntent;
         if (!consumed) return eve::Result<ClimbingStart>::failure(consumed.status());
-        return failure<ClimbingStart>(eve::DiagnosticCode::Conflict,
-                                      "eligible climbing input changed before transaction commit", "intent.commands");
+        return eve::Result<ClimbingStart>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "eligible climbing input changed before transaction commit",
+            "intent.commands", {}, "climbing.selection"));
     }
 
     auto committed = runtime.commitBegin(std::move(prepared).takeValue());

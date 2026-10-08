@@ -391,7 +391,7 @@ particles、animation 未纳入本次写集。
 
 ### 30. RTS 作为组合 profile
 
-- [x] RTS Unit/Building 建立自己的领域短根，组合 Identity、Attributes、Tags、Effects、Orders、Sensing、Steering/Crowd、Weapon/Action、Settlement 组件或 Link。
+- [x] RTS Unit/Building 建立自己的领域短根，组合 Identity、Attributes、Tags、Effects、Orders、Sensing、math/Steering 计算、Crowd、Weapon/Action、Settlement 组件或 Link。
 - [x] RTS Building 通过组件组合 Definition、Placement、Production、Economy、Orders、Effects、Settlement，不继承这些能力类型。
 - [x] RTS Player/Faction 组合 Authority、Economy、Social/Faction、Selection、GameEvent。
 - [x] Move/Attack/Build/Gather 通过通用 Orders + Action executor 实现。

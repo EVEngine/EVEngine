@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/StateValue.h"
@@ -41,7 +43,7 @@ using VarValue  = eve::Value;
  * Dialogue scripts remain Squirrel (functions / generators). This module only
  * owns speaker lines, typewriter, choices, and avatar stage slots.
  */
-class Dialogue : public Module {
+class EVENGINE_API_ORCHESTRATION Dialogue : public Module {
 public:
     // Keep the historical nested names as zero-cost aliases for C++ callers.
     using DataValue = eve::Value;

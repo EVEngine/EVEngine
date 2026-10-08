@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingProperty.h"
@@ -14,8 +16,7 @@ namespace eve::procgen_editing {
 using EditorDiagnostic = editing::Diagnostic;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::Result;
 
 /**
  * @brief Authored identity and reflected parameter schema for one script generator.
@@ -40,10 +41,10 @@ struct ProcgenScriptModuleSpec {
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class ProcgenScriptDocumentTarget final : public virtual editing::IEditableTarget,
-                                          public editing::IDomainOperationTarget,
-                                          public editing::IDomainOperationTargetStaging,
-                                          public editing::IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION ProcgenScriptDocumentTarget final : public virtual editing::IEditableTarget,
+                                                                     public editing::IDomainOperationTarget,
+                                                                     public editing::IDomainOperationTargetStaging,
+                                                                     public editing::IPropertyProvider {
 public:
     /** @brief Construct an empty generator document. @param id Stable target identity. */
     explicit ProcgenScriptDocumentTarget(std::string id);
@@ -64,28 +65,28 @@ public:
      * @lifetime Valid until this target is destroyed or replaced by commitDomainState.
      */
     void* queryCapability(const editing::CapabilityId&) override;
-    EditorResult<void> applyDomainOperation(const editing::DomainOperation&) override;
+    Result<void> applyDomainOperation(const editing::DomainOperation&) override;
     std::unique_ptr<editing::IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<editing::IDomainOperationTarget>) override;
+    Result<void> commitDomainState(std::unique_ptr<editing::IDomainOperationTarget>) override;
     eve::Result<eve::Revision> currentRevision(const editing::SelectionSnapshot&) const override;
     editing::PropertySchema schema(const editing::SelectionSnapshot&) const override;
     editing::PropertyReadResult read(const editing::SelectionSnapshot&,
                                      const editing::PropertyPath&) const override;
-    EditorResult<editing::DomainOperation> makeSet(const editing::SelectionSnapshot&,
+    Result<editing::DomainOperation> makeSet(const editing::SelectionSnapshot&,
                                                    const editing::PropertyPath&, const EditorValue&,
                                                    editing::PropertySetMode) const override;
-    EditorResult<editing::DomainOperation> makeReset(const editing::SelectionSnapshot&,
+    Result<editing::DomainOperation> makeReset(const editing::SelectionSnapshot&,
                                                      const editing::PropertyPath&) const override;
 
     /**
      * @brief Parse a schema array into a module spec.
      * @param schema Array of parameter objects with key/kind/default metadata.
      */
-    static EditorResult<ProcgenScriptModuleSpec> parseSpec(std::string uri, std::string id, std::string displayName,
+    static Result<ProcgenScriptModuleSpec> parseSpec(std::string uri, std::string id, std::string displayName,
                                                            std::string kind, const EditorValue& schema);
 
     /** @brief Replace module identity and schema, remapping values (drop unknown, fill defaults). */
-    EditorResult<editing::DomainOperation> makeLoadModule(ProcgenScriptModuleSpec spec) const;
+    Result<editing::DomainOperation> makeLoadModule(ProcgenScriptModuleSpec spec) const;
 
     const std::string&              uri() const { return uri_; }
     const std::string&              moduleId() const { return moduleId_; }
@@ -105,7 +106,7 @@ public:
 
     std::vector<EditorDiagnostic> validate() const;
     EditorValue                   snapshotValue() const;
-    EditorResult<void>            loadSnapshot(const EditorValue&);
+    Result<void>            loadSnapshot(const EditorValue&);
 
 private:
     bool matches(const editing::SelectionSnapshot&) const;

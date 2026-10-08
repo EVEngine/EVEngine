@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -24,8 +26,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -71,16 +72,14 @@ struct AvatarExpressionValue {
 };
 
 /** @brief Revisioned image/Live2D/VRoid Avatar authoring asset. */
-class AvatarDocumentTarget final : public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging,
-                                   public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION AvatarDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                              public virtual IEditableTarget,
+                                                              public IDomainOperationTarget,
+                                                              public IDomainOperationTargetStaging,
+                                                              public IPropertyProvider {
 public:
     explicit AvatarDocumentTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }
-    std::uint64_t                           revision() const override { return revision_; }
-    EditRegion                              dirtyRegion() const override { return dirty_; }
-    void                                    clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor                        describe() const override;
     /**
      * @brief Query an optional stable editing capability.
@@ -88,23 +87,23 @@ public:
      * @lifetime Valid until this target is destroyed or the capability is explicitly invalidated.
      */
     void*                                   queryCapability(const CapabilityId&) override;
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     PropertySchema                          schema(const SelectionSnapshot&) const override;
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Change backend kind and model source. */
-    EditorResult<DomainOperation>             makeSetSource(std::string kind, std::string asset) const;
-    EditorResult<DomainOperation>             makeCreateLayer(const AvatarLayerValue&) const;
-    EditorResult<DomainOperation>             makeDeleteLayer(const ObjectId&) const;
-    EditorResult<DomainOperation>             makeCreateParameter(const AvatarParameterValue&) const;
-    EditorResult<DomainOperation>             makeDeleteParameter(const ObjectId&) const;
-    EditorResult<DomainOperation>             makeCreateExpression(const AvatarExpressionValue&) const;
-    EditorResult<DomainOperation>             makeDeleteExpression(const ObjectId&) const;
+    Result<DomainOperation>             makeSetSource(std::string kind, std::string asset) const;
+    Result<DomainOperation>             makeCreateLayer(const AvatarLayerValue&) const;
+    Result<DomainOperation>             makeDeleteLayer(const ObjectId&) const;
+    Result<DomainOperation>             makeCreateParameter(const AvatarParameterValue&) const;
+    Result<DomainOperation>             makeDeleteParameter(const ObjectId&) const;
+    Result<DomainOperation>             makeCreateExpression(const AvatarExpressionValue&) const;
+    Result<DomainOperation>             makeDeleteExpression(const ObjectId&) const;
     const std::string&                        kind() const { return kind_; }
     const std::string&                        sourceAsset() const { return sourceAsset_; }
     const std::vector<AvatarLayerValue>&      layers() const { return layers_; }
@@ -112,15 +111,13 @@ public:
     const std::vector<AvatarExpressionValue>& expressions() const { return expressions_; }
     std::vector<EditorDiagnostic>             validate() const;
     EditorValue                               snapshotValue() const;
-    EditorResult<void>                        loadSnapshot(const EditorValue&);
+    Result<void>                        loadSnapshot(const EditorValue&);
 
 private:
     bool                               matches(const SelectionSnapshot&) const;
     EditorValue                        contentValue() const;
-    EditorResult<DomainOperation>      replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation>      replacement(EditorValue, std::string = {}) const;
     std::string                        id_, kind_ = "image", sourceAsset_;
-    Revision                           revision_ = 1;
-    EditRegion                         dirty_;
     std::vector<AvatarLayerValue>      layers_;
     std::vector<AvatarParameterValue>  parameters_;
     std::vector<AvatarExpressionValue> expressions_;
@@ -130,11 +127,11 @@ private:
 class IAvatarTextureResolver {
 public:
     virtual ~IAvatarTextureResolver()                                          = default;
-    virtual EditorResult<graphics::Texture*> texture(const std::string&) const = 0;
+    virtual Result<graphics::Texture*> texture(const std::string&) const = 0;
 };
 
 /** @brief Candidate-first live AvatarInstance generation. */
-class AvatarDocumentRuntime {
+class EVENGINE_API_ORCHESTRATION AvatarDocumentRuntime {
 public:
     AvatarDocumentRuntime();
     ~AvatarDocumentRuntime();
@@ -142,7 +139,7 @@ public:
      * @param textures Optional borrowed resolver; it is used only during this call and is never retained.
      * @lifetime The caller must keep textures alive for the duration of publish.
      */
-    EditorResult<void>      publish(const AvatarDocumentTarget&, const IAvatarTextureResolver* textures = nullptr);
+    Result<void>      publish(const AvatarDocumentTarget&, const IAvatarTextureResolver* textures = nullptr);
     avatar::AvatarInstance* instance() const { return instance_.get(); }
     Revision                revision() const { return revision_; }
 

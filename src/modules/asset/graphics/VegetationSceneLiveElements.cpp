@@ -11,12 +11,6 @@
 
 namespace eve::asset_graphics {
 namespace {
-template <typename T>
-Result<T> fail(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {},
-                                                "asset.graphics.vegetation-live-elements"));
-}
-
 bool finite(float value) { return std::isfinite(value); }
 
 bool validGuid(std::string_view value, bool allowEmpty) {
@@ -77,19 +71,22 @@ bool validElement(const VegetationSceneElement& element) {
 Result<std::unique_ptr<VegetationSceneLiveElements>> VegetationSceneLiveElements::create(
     LoadedVegetationScene baseScene, std::uint64_t owner) {
     if (owner == 0 || baseScene.elements.size() > 4096)
-        return fail<std::unique_ptr<VegetationSceneLiveElements>>(
-            DiagnosticCode::InvalidArgument, "vegetation live-element registry identity or scene is invalid");
+        return Result<std::unique_ptr<VegetationSceneLiveElements>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "vegetation live-element registry identity or scene is invalid", {}, {},
+            "asset.graphics.vegetation-live-elements"));
     if (std::any_of(baseScene.elements.begin(), baseScene.elements.end(), [](const auto& element) {
             return !validElement(element);
         }))
-        return fail<std::unique_ptr<VegetationSceneLiveElements>>(
-            DiagnosticCode::InvalidArgument, "vegetation live-element base scene is invalid");
+        return Result<std::unique_ptr<VegetationSceneLiveElements>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation live-element base scene is invalid", {}, {},
+                              "asset.graphics.vegetation-live-elements"));
     try {
         return Result<std::unique_ptr<VegetationSceneLiveElements>>::success(
             std::unique_ptr<VegetationSceneLiveElements>(new VegetationSceneLiveElements(std::move(baseScene), owner)));
     } catch (const std::bad_alloc&) {
-        return fail<std::unique_ptr<VegetationSceneLiveElements>>(
-            DiagnosticCode::Failed, "vegetation live-element registry allocation failed");
+        return Result<std::unique_ptr<VegetationSceneLiveElements>>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "vegetation live-element registry allocation failed", {}, {},
+                              "asset.graphics.vegetation-live-elements"));
     }
 }
 
@@ -101,8 +98,9 @@ Result<LoadedVegetationScene> VegetationSceneLiveElements::snapshot() const {
             if (slot.element) result.elements.push_back(*slot.element);
         return Result<LoadedVegetationScene>::success(std::move(result));
     } catch (const std::bad_alloc&) {
-        return fail<LoadedVegetationScene>(DiagnosticCode::Failed,
-                                           "vegetation live-element snapshot allocation failed");
+        return Result<LoadedVegetationScene>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "vegetation live-element snapshot allocation failed", {}, {},
+                              "asset.graphics.vegetation-live-elements"));
     }
 }
 
@@ -112,27 +110,31 @@ Result<VegetationSceneElementPublication> VegetationSceneLiveElements::registerE
     const graphics::VegetationMotion& baseMotion, const std::map<std::string, graphics::VegetationMask>& masks,
     const VegetationSceneGpuBuild& build) {
     if (expectedRevision != revision_ || expectedGpuRevision != runtime.sourceRevision())
-        return fail<VegetationSceneElementPublication>(DiagnosticCode::Conflict,
-                                                       "vegetation live-element state changed before registration");
+        return Result<VegetationSceneElementPublication>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "vegetation live-element state changed before registration", {},
+                              {}, "asset.graphics.vegetation-live-elements"));
     if (revision_ == std::numeric_limits<std::uint64_t>::max() || !validElement(element))
-        return fail<VegetationSceneElementPublication>(DiagnosticCode::InvalidArgument,
-                                                       "vegetation live Element is invalid");
+        return Result<VegetationSceneElementPublication>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation live Element is invalid", {}, {},
+                              "asset.graphics.vegetation-live-elements"));
     std::size_t slotIndex = 0;
     while (slotIndex < slots_.size() && (slots_[slotIndex].element || slots_[slotIndex].retired)) ++slotIndex;
     const auto activeCount = std::count_if(slots_.begin(), slots_.end(), [](const Slot& slot) {
         return slot.element.has_value();
     });
     if (baseScene_.elements.size() + std::size_t(activeCount) + 1 > 4096)
-        return fail<VegetationSceneElementPublication>(DiagnosticCode::InvalidArgument,
-                                                       "vegetation live-element capacity exceeded");
+        return Result<VegetationSceneElementPublication>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation live-element capacity exceeded", {}, {},
+                              "asset.graphics.vegetation-live-elements"));
     auto candidate = snapshot();
     if (!candidate) return Result<VegetationSceneElementPublication>::failure(candidate.status());
     try {
         candidate.value().elements.push_back(element);
         if (slotIndex == slots_.size()) slots_.reserve(slots_.size() + 1);
     } catch (const std::bad_alloc&) {
-        return fail<VegetationSceneElementPublication>(DiagnosticCode::Failed,
-                                                       "vegetation live-element registration allocation failed");
+        return Result<VegetationSceneElementPublication>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "vegetation live-element registration allocation failed", {}, {},
+                              "asset.graphics.vegetation-live-elements"));
     }
     auto published = runtime.replace(expectedGpuRevision, baseSurface, baseMotion, candidate.value(), masks, build);
     if (!published) return Result<VegetationSceneElementPublication>::failure(published.status());
@@ -151,18 +153,22 @@ Result<VegetationSceneElementPublication> VegetationSceneLiveElements::withdrawE
     const graphics::VegetationMotion& baseMotion, const std::map<std::string, graphics::VegetationMask>& masks,
     const VegetationSceneGpuBuild& build) {
     if (expectedRevision != revision_ || expectedGpuRevision != runtime.sourceRevision())
-        return fail<VegetationSceneElementPublication>(DiagnosticCode::Conflict,
-                                                       "vegetation live-element state changed before withdrawal");
+        return Result<VegetationSceneElementPublication>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "vegetation live-element state changed before withdrawal", {},
+                              {}, "asset.graphics.vegetation-live-elements"));
     if (!handle.isValid() || handle.owner() != owner_ || handle.index() >= slots_.size())
-        return fail<VegetationSceneElementPublication>(DiagnosticCode::NotFound,
-                                                       "vegetation live Element handle is foreign or missing");
+        return Result<VegetationSceneElementPublication>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "vegetation live Element handle is foreign or missing", {}, {},
+                              "asset.graphics.vegetation-live-elements"));
     auto& slot = slots_[handle.index()];
     if (!slot.element || slot.generation != handle.generation())
-        return fail<VegetationSceneElementPublication>(DiagnosticCode::NotFound,
-                                                       "vegetation live Element handle is stale or withdrawn");
+        return Result<VegetationSceneElementPublication>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "vegetation live Element handle is stale or withdrawn", {}, {},
+                              "asset.graphics.vegetation-live-elements"));
     if (revision_ == std::numeric_limits<std::uint64_t>::max())
-        return fail<VegetationSceneElementPublication>(DiagnosticCode::InvalidArgument,
-                                                       "vegetation live-element revision is exhausted");
+        return Result<VegetationSceneElementPublication>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation live-element revision is exhausted", {}, {},
+                              "asset.graphics.vegetation-live-elements"));
     auto candidate = snapshot();
     if (!candidate) return Result<VegetationSceneElementPublication>::failure(candidate.status());
     const std::size_t dynamicOffset = baseScene_.elements.size();

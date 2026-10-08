@@ -1,0 +1,19 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6360666..a1f59af 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -24,8 +24,12 @@ message(STATUS "CMake C++ compiler: ${CMAKE_CXX_COMPILER_ID}")
+ message(STATUS "CMake system name: ${CMAKE_SYSTEM_NAME}")
+ message(STATUS "CMake host system processor: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+ 
+-# static link to make leak checking easier (_crtBreakAlloc)
+-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
++# The engine and every other third-party archive link the dynamic CRT (/MDd).
++# Upstream selects the STATIC CRT here so _crtBreakAlloc leak checking works
++# standalone, but the two CRT worlds cannot be mixed in one image: an executable
++# link only warns (LNK4098) while a shared-library link cannot resolve the CRT
++# startup shims (__acrt_initialize / __vcrt_initialize up in MSVCRTD.lib).
++set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+ 
+ if (MSVC OR APPLE OR UNIX)
+ 	option(BOX3D_SANITIZE "Enable sanitizers for some builds" OFF)

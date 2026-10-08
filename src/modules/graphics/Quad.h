@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::graphics {
 
@@ -6,7 +8,7 @@ namespace eve::graphics {
  * @brief Pixel-space sub-rectangle of a Texture (atlas cell / sprite frame).
  * UV conversion uses the texture's logical width/height.
  */
-class Quad {
+class EVENGINE_API_BACKENDS Quad {
 public:
     Quad();
     Quad(int x, int y, int w, int h);

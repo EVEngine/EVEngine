@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 #include "editing/EditingSelection.h"
@@ -96,7 +98,7 @@ private:
     std::optional<PropertyDescriptor> descriptor_;
 };
 
-struct PropertySchema {
+struct EVENGINE_API_PLATFORM PropertySchema {
     std::string                            typeId;
     std::uint32_t                          version = 1;
     std::vector<PropertyDescriptor>        properties;
@@ -134,9 +136,11 @@ public:
                                                             const PropertyPath&      path) const          = 0;
 };
 
-[[nodiscard]] Result<void> validatePropertyValue(const PropertyDescriptor& descriptor, const Value& value);
-[[nodiscard]] property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor& source);
-[[nodiscard]] eve::Value                          toPresentationValue(const Value& value);
-[[nodiscard]] Value                               toEditingValue(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<void> validatePropertyValue(const PropertyDescriptor& descriptor,
+                                                                       const Value&              value);
+[[nodiscard]] EVENGINE_API_PLATFORM property_access::PropertyDescriptor toPresentationDescriptor(
+    const PropertyDescriptor& source);
+[[nodiscard]] EVENGINE_API_PLATFORM eve::Value toPresentationValue(const Value& value);
+[[nodiscard]] EVENGINE_API_PLATFORM Value      toEditingValue(const eve::Value& value);
 
 }  // namespace eve::editing

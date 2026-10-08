@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "dialogue/ConversationCompiler.h"
 
@@ -15,7 +16,7 @@ struct ConversationLocalizationEntry {
 };
 
 /** @brief CSV-backed translation and voice recording catalog with default-locale resolution. */
-class ConversationLocalizationCatalog {
+class EVENGINE_API_ORCHESTRATION ConversationLocalizationCatalog {
 public:
     int         importCsv(const std::string& csv, const std::string& defaultLocale,
                           std::vector<ConversationDiagnostic>& diagnostics);
@@ -23,8 +24,9 @@ public:
     std::string resolveVoice(const std::string& key, const std::string& locale, const std::string& fallback) const;
     std::string resolveStatus(const std::string& key, const std::string& locale) const;
     double      resolveDuration(const std::string& key, const std::string& locale) const;
-    std::string exportMissingCsv(const std::vector<ConversationAsset>& assets, const std::string& locale) const;
-    std::string exportVoiceRecordingCsv(const std::vector<ConversationAsset>& assets, const std::string& locale) const;
+    std::string exportMissingCsv(const std::vector<eve::dnut::SequenceAsset>& assets, const std::string& locale) const;
+    std::string exportVoiceRecordingCsv(const std::vector<eve::dnut::SequenceAsset>& assets,
+                                        const std::string&                           locale) const;
     void        clear() { entries_.clear(); }
 
 private:

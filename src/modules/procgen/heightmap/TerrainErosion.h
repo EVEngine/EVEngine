@@ -37,9 +37,9 @@ struct TerrainLegacyHydraulicSettings {
  * updates water, moves newly dissolved material to every strictly lower 8-neighbor in proportion to height drop,
  * evaporates 1/rainFrequency, and clears the sediment delta. The unused source water-diff raster is omitted.
  */
-[[nodiscard]] Result<int> applyTerrainLegacyHydraulic(Heightmap& heights, Heightmap& sediment,
-                                                       const Heightmap& hardness, const Heightmap& rain,
-                                                       const TerrainLegacyHydraulicSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainLegacyHydraulic(
+    Heightmap& heights, Heightmap& sediment, const Heightmap& hardness, const Heightmap& rain,
+    const TerrainLegacyHydraulicSettings& settings);
 
 /** @brief Thresholds and iteration count for Pcg HeightMap.Erode's synchronous cardinal transport. */
 struct TerrainLegacyDistributedErosionSettings {
@@ -58,7 +58,7 @@ struct TerrainLegacyDistributedErosionSettings {
  * Border cells are sources only indirectly: every iteration scans interior cells, moves half the greatest accepted
  * drop from each source, distributes it across all lower cardinal neighbors by relative drop, then publishes the diff.
  */
-[[nodiscard]] Result<int> applyTerrainLegacyDistributedErosion(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainLegacyDistributedErosion(
     Heightmap& heights, const TerrainLegacyDistributedErosionSettings& settings);
 
 /** @brief Thresholds and iteration count for Pcg HeightMap.ErodeThermal's in-place steepest transport. */
@@ -79,7 +79,7 @@ struct TerrainLegacySteepestErosionSettings {
  * Strict-greater tie selection is bottom, left, right, top source order. Hardness uses Pcg's normalized width/depth
  * bilinear sampler; each accepted move transfers half the steepest drop times one minus hardness.
  */
-[[nodiscard]] Result<int> applyTerrainLegacySteepestErosion(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainLegacySteepestErosion(
     Heightmap& heights, const Heightmap& hardness, const TerrainLegacySteepestErosionSettings& settings);
 
 /**
@@ -98,9 +98,11 @@ struct TerrainLegacySteepestErosionSettings {
  * sediment samples are explicitly zero. No conservative transport claim or GPU bit parity.
  * At zero velocity and zero deposit rate, nonnegative sediment doubles, including when dt is zero.
  */
-[[nodiscard]] Result<int> applyTerrainSediment(Heightmap& heights, Heightmap& sediment, const Heightmap& velocityX,
-                                               const Heightmap& velocityZ, const TerrainWaterSettings& water,
-                                               const TerrainSedimentSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainSediment(Heightmap& heights, Heightmap& sediment,
+                                                                    const Heightmap&               velocityX,
+                                                                    const Heightmap&               velocityZ,
+                                                                    const TerrainWaterSettings&    water,
+                                                                    const TerrainSedimentSettings& settings);
 
 /**
  * @brief Explicit simulation controls for the Pcg eight-neighbor thermal kernel.
@@ -132,6 +134,6 @@ struct TerrainThermalSettings {
  * The signed sediment accumulation balances each cell's height change up to float rounding;
  * terrain-only mass conservation is not implied. No Unity height packing is performed.
  */
-[[nodiscard]] Result<int> applyTerrainThermal(Heightmap& heights, Heightmap& sediment,
-                                              const TerrainThermalSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainThermal(Heightmap& heights, Heightmap& sediment,
+                                                                   const TerrainThermalSettings& settings);
 }  // namespace eve::procgen

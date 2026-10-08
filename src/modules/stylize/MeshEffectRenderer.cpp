@@ -15,12 +15,6 @@
 namespace eve::stylize {
 namespace {
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), {}, {}, "stylize.mesh-effect-renderer"));
-}
-
 bool finite(glm::vec3 value) {
     return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z);
 }
@@ -68,23 +62,26 @@ eve::Result<TrailUploadData> prepareTrailUpload(const TrailMeshSnapshot& snapsho
 
     for (const TrailVertex& vertex : snapshot.vertices) {
         if (!finite(vertex.position) || !std::isfinite(vertex.uv.x) || !std::isfinite(vertex.uv.y))
-            return failure<TrailUploadData>(eve::DiagnosticCode::InvalidArgument,
-                                            "trail snapshot contains a non-finite vertex");
+            return eve::Result<TrailUploadData>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "trail snapshot contains a non-finite vertex", {}, {},
+                "stylize.mesh-effect-renderer"));
         upload.positions.insert(upload.positions.end(),
                                 {vertex.position.x, vertex.position.y, vertex.position.z});
         upload.uvs.insert(upload.uvs.end(), {vertex.uv.x, vertex.uv.y});
     }
     if (upload.indices.size() % 3u != 0u)
-        return failure<TrailUploadData>(eve::DiagnosticCode::InvalidArgument,
-                                        "trail snapshot index count is not triangular");
+        return eve::Result<TrailUploadData>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "trail snapshot index count is not triangular",
+                                   {}, {}, "stylize.mesh-effect-renderer"));
 
     for (std::size_t i = 0; i < upload.indices.size(); i += 3u) {
         const std::uint32_t ia = upload.indices[i];
         const std::uint32_t ib = upload.indices[i + 1u];
         const std::uint32_t ic = upload.indices[i + 2u];
         if (ia >= snapshot.vertices.size() || ib >= snapshot.vertices.size() || ic >= snapshot.vertices.size())
-            return failure<TrailUploadData>(eve::DiagnosticCode::InvalidArgument,
-                                            "trail snapshot contains an out-of-range index");
+            return eve::Result<TrailUploadData>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "trail snapshot contains an out-of-range index", {}, {},
+                "stylize.mesh-effect-renderer"));
         const glm::vec3 a = snapshot.vertices[ia].position;
         const glm::vec3 b = snapshot.vertices[ib].position;
         const glm::vec3 c = snapshot.vertices[ic].position;
@@ -145,14 +142,17 @@ void requestSceneColorForRefraction(graphics::Graphics& graphics, MeshEffectInst
 eve::Result<MeshEffectSubmitStatus> MeshEffectRenderer::submitOverlay(
     MeshEffectInstance& effect, const MeshEffectDrawSource& source) {
     if (!effect.isBound())
-        return failure<MeshEffectSubmitStatus>(eve::DiagnosticCode::PreconditionViolation,
-                                               "mesh effect has no bound target");
+        return eve::Result<MeshEffectSubmitStatus>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "mesh effect has no bound target", {},
+                                   {}, "stylize.mesh-effect-renderer"));
     if (source.target != effect.target())
-        return failure<MeshEffectSubmitStatus>(eve::DiagnosticCode::StaleHandle,
-                                               "resolved mesh source does not match the effect target");
+        return eve::Result<MeshEffectSubmitStatus>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "resolved mesh source does not match the effect target", {}, {},
+            "stylize.mesh-effect-renderer"));
     if (!source.mesh)
-        return failure<MeshEffectSubmitStatus>(eve::DiagnosticCode::InvalidArgument,
-                                               "resolved mesh source has no mesh");
+        return eve::Result<MeshEffectSubmitStatus>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "resolved mesh source has no mesh", {}, {},
+                                   "stylize.mesh-effect-renderer"));
     if (effect.intensity() <= 0.f)
         return eve::Result<MeshEffectSubmitStatus>::success(MeshEffectSubmitStatus::SkippedInactive);
 
@@ -165,8 +165,9 @@ eve::Result<MeshEffectSubmitStatus> MeshEffectRenderer::submitOverlay(
         requestSceneColorForRefraction(graphics_, effect);
         graphics_.drawMeshShader(source.mesh, source.model, source.albedo, tint, shaderFor(effect));
     } catch (const std::exception& error) {
-        return failure<MeshEffectSubmitStatus>(eve::DiagnosticCode::Failed,
-                                               std::string("mesh overlay submission failed: ") + error.what());
+        return eve::Result<MeshEffectSubmitStatus>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("mesh overlay submission failed: ") + error.what(), {}, {},
+            "stylize.mesh-effect-renderer"));
     }
     return eve::Result<MeshEffectSubmitStatus>::success(MeshEffectSubmitStatus::Drawn);
 }
@@ -191,14 +192,16 @@ eve::Result<MeshEffectSubmitStatus> MeshEffectRenderer::submitTrail(
                 static_cast<int>(upload.positions.size() / 3u), upload.indices.data(),
                 static_cast<int>(upload.indices.size()));
             if (!trailMesh_)
-                return failure<MeshEffectSubmitStatus>(eve::DiagnosticCode::Failed,
-                                                       "graphics failed to create the trail mesh");
+                return eve::Result<MeshEffectSubmitStatus>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Failed, "graphics failed to create the trail mesh", {},
+                                           {}, "stylize.mesh-effect-renderer"));
         } else if (!graphics_.updateMeshVertices(
                        trailMesh_, upload.positions.data(), upload.normals.data(), upload.uvs.data(),
                        static_cast<int>(upload.positions.size() / 3u), upload.indices.data(),
                        static_cast<int>(upload.indices.size()))) {
-            return failure<MeshEffectSubmitStatus>(eve::DiagnosticCode::Unsupported,
-                                                   "graphics backend rejected the dynamic trail upload");
+            return eve::Result<MeshEffectSubmitStatus>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Unsupported, "graphics backend rejected the dynamic trail upload", {}, {},
+                "stylize.mesh-effect-renderer"));
         }
         graphics::Color drawTint = tint;
         drawTint.a *= effect.intensity();
@@ -208,8 +211,9 @@ eve::Result<MeshEffectSubmitStatus> MeshEffectRenderer::submitTrail(
         requestSceneColorForRefraction(graphics_, effect);
         graphics_.drawMeshShader(trailMesh_, model, nullptr, drawTint, shaderFor(effect));
     } catch (const std::exception& error) {
-        return failure<MeshEffectSubmitStatus>(eve::DiagnosticCode::Failed,
-                                               std::string("trail submission failed: ") + error.what());
+        return eve::Result<MeshEffectSubmitStatus>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::string("trail submission failed: ") + error.what(),
+                                   {}, {}, "stylize.mesh-effect-renderer"));
     }
     return eve::Result<MeshEffectSubmitStatus>::success(MeshEffectSubmitStatus::Drawn);
 }
@@ -217,8 +221,9 @@ eve::Result<MeshEffectSubmitStatus> MeshEffectRenderer::submitTrail(
 eve::Result<MeshEffectSubmitStatus> MeshEffectRenderer::submitParticle(
     MeshEffectInstance& effect, const MeshParticleDrawSource& source) {
     if (!source.mesh)
-        return failure<MeshEffectSubmitStatus>(eve::DiagnosticCode::InvalidArgument,
-                                               "mesh particle source has no mesh");
+        return eve::Result<MeshEffectSubmitStatus>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mesh particle source has no mesh", {}, {},
+                                   "stylize.mesh-effect-renderer"));
     if (effect.intensity() <= 0.f)
         return eve::Result<MeshEffectSubmitStatus>::success(MeshEffectSubmitStatus::SkippedInactive);
     try {
@@ -231,9 +236,9 @@ eve::Result<MeshEffectSubmitStatus> MeshEffectRenderer::submitParticle(
         graphics_.drawMeshShader(source.mesh, source.instance.model, source.albedo, tint,
                                  shaderFor(effect));
     } catch (const std::exception& error) {
-        return failure<MeshEffectSubmitStatus>(
-            eve::DiagnosticCode::Failed,
-            std::string("mesh particle submission failed: ") + error.what());
+        return eve::Result<MeshEffectSubmitStatus>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("mesh particle submission failed: ") + error.what(), {}, {},
+            "stylize.mesh-effect-renderer"));
     }
     return eve::Result<MeshEffectSubmitStatus>::success(MeshEffectSubmitStatus::Drawn);
 }
@@ -241,16 +246,19 @@ eve::Result<MeshEffectSubmitStatus> MeshEffectRenderer::submitParticle(
 eve::Result<MeshVfxSubmissionReport> MeshEffectRenderer::submitQueue(
     const MeshVfxRenderQueue& queue, std::span<const MeshVfxRendererCommand> commands) {
     if (batchActive_ || !activeCommands_.empty())
-        return failure<MeshVfxSubmissionReport>(eve::DiagnosticCode::PreconditionViolation,
-                                                "mesh VFX queue submission is reentrant");
+        return eve::Result<MeshVfxSubmissionReport>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "mesh VFX queue submission is reentrant",
+                                   {}, {}, "stylize.mesh-effect-renderer"));
     for (const auto& command : commands) {
         if (!command.effect)
-            return failure<MeshVfxSubmissionReport>(eve::DiagnosticCode::InvalidArgument,
-                                                    "mesh VFX renderer command has no effect");
+            return eve::Result<MeshVfxSubmissionReport>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mesh VFX renderer command has no effect",
+                                       {}, {}, "stylize.mesh-effect-renderer"));
         if (!activeCommands_.emplace(command.stableInstanceId, &command).second) {
             activeCommands_.clear();
-            return failure<MeshVfxSubmissionReport>(eve::DiagnosticCode::InvalidArgument,
-                                                    "mesh VFX renderer commands contain a duplicate stable ID");
+            return eve::Result<MeshVfxSubmissionReport>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "mesh VFX renderer commands contain a duplicate stable ID", {},
+                {}, "stylize.mesh-effect-renderer"));
         }
     }
 

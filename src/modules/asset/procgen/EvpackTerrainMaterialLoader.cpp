@@ -9,12 +9,6 @@
 namespace eve::asset_procgen {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.procgen.terrain-material"));
-}
-
 const Value* field(const Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -25,7 +19,9 @@ Result<std::string> textField(const Value::Object& object, std::string_view name
     const Value* value = field(object, name);
     if (!value || !value->isString() || (!allowEmpty && value->asString().empty()) ||
         value->asString().size() > limits.maximumStringBytes || !isValidUtf8(value->asString(), Utf8NullPolicy::Reject))
-        return failure<std::string>(DiagnosticCode::ParseError, "terrain layer string is invalid", std::string(name));
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                              "terrain layer string is invalid", std::string(name), {},
+                                                              "asset.procgen.terrain-material"));
     return Result<std::string>::success(value->asString());
 }
 
@@ -36,8 +32,9 @@ Result<std::optional<AssetRef>> assetField(const Value::Object& object, std::str
     if (text.value().empty()) return Result<std::optional<AssetRef>>::success(std::nullopt);
     auto parsed = AssetRef::parse(text.value());
     if (!parsed)
-        return failure<std::optional<AssetRef>>(DiagnosticCode::ParseError, "terrain image AssetRef is invalid",
-                                                std::string(name));
+        return Result<std::optional<AssetRef>>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "terrain image AssetRef is invalid", std::string(name), {},
+                              "asset.procgen.terrain-material"));
     return Result<std::optional<AssetRef>>::success(std::move(parsed).takeValue());
 }
 
@@ -45,11 +42,13 @@ Result<float> numberField(const Value::Object& object, std::string_view name, fl
     const auto* value = field(object, name);
     if (!value) return Result<float>::success(fallback);
     if (!value->isNumeric())
-        return failure<float>(DiagnosticCode::ParseError, "terrain number is invalid", std::string(name));
+        return Result<float>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain number is invalid",
+                                                        std::string(name), {}, "asset.procgen.terrain-material"));
     const double number = value->isInt64() ? double(value->asInt()) : value->asDouble();
     if (!std::isfinite(number) || std::abs(number) > std::numeric_limits<float>::max())
-        return failure<float>(DiagnosticCode::InvalidArgument, "terrain number is outside float range",
-                              std::string(name));
+        return Result<float>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                        "terrain number is outside float range", std::string(name), {},
+                                                        "asset.procgen.terrain-material"));
     return Result<float>::success(float(number));
 }
 
@@ -60,8 +59,9 @@ Result<std::array<float, N>> vectorField(const Value::Object& object, std::strin
     if (!value) return Result<std::array<float, N>>::success(fallback);
     const auto* array = value->getIf<Value::Array>();
     if (!array || array->size() != N)
-        return failure<std::array<float, N>>(DiagnosticCode::ParseError, "terrain vector is invalid",
-                                             std::string(name));
+        return Result<std::array<float, N>>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                       "terrain vector is invalid", std::string(name),
+                                                                       {}, "asset.procgen.terrain-material"));
     for (std::size_t i = 0; i < N; ++i) {
         Value::Object scalar{{"value", (*array)[i]}};
         auto          parsed = numberField(scalar, "value", 0);
@@ -83,15 +83,19 @@ Result<LoadedTerrainMaterial> EvpackTerrainMaterialLoader::load(const AssetRef& 
     const asset::RuntimeAssetChunk* definition = nullptr;
     for (const auto& chunk : payload.value().chunks) {
         if (chunk.kind != asset::EvpackChunkKind::Definition)
-            return failure<LoadedTerrainMaterial>(DiagnosticCode::TypeMismatch,
-                                                  "terrain material cannot contain runtime bulk");
+            return Result<LoadedTerrainMaterial>::failure(
+                Diagnostic::error(DiagnosticCode::TypeMismatch, "terrain material cannot contain runtime bulk", {}, {},
+                                  "asset.procgen.terrain-material"));
         if (definition)
-            return failure<LoadedTerrainMaterial>(DiagnosticCode::Conflict,
-                                                  "terrain material has duplicate definitions");
+            return Result<LoadedTerrainMaterial>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "terrain material has duplicate definitions", {}, {},
+                                  "asset.procgen.terrain-material"));
         definition = &chunk;
     }
     if (!definition)
-        return failure<LoadedTerrainMaterial>(DiagnosticCode::NotFound, "terrain material definition is missing");
+        return Result<LoadedTerrainMaterial>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                                        "terrain material definition is missing", {},
+                                                                        {}, "asset.procgen.terrain-material"));
     asset::RuntimeDefinitionLimits definitionLimits;
     definitionLimits.maximumBytes       = limits.maximumDecodedBytes;
     definitionLimits.maximumStringBytes = limits.maximumStringBytes;
@@ -105,14 +109,17 @@ Result<LoadedTerrainMaterial> EvpackTerrainMaterialLoader::load(const AssetRef& 
     if (!schema || !schema->isString() || schema->asString() != "eve.terrain-material" || !version ||
         !version->isInt64() || (version->asInt() != 2 && version->asInt() != 3) || !layers || layers->empty() ||
         layers->size() > limits.maximumLayers)
-        return failure<LoadedTerrainMaterial>(DiagnosticCode::ParseError, "terrain material envelope is invalid");
+        return Result<LoadedTerrainMaterial>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                        "terrain material envelope is invalid", {}, {},
+                                                                        "asset.procgen.terrain-material"));
     std::vector<RuntimeTerrainLayer> decoded;
     decoded.reserve(layers->size());
     for (std::size_t index = 0; index < layers->size(); ++index) {
         const auto* layer = (*layers)[index].getIf<Value::Object>();
         if (!layer)
-            return failure<LoadedTerrainMaterial>(DiagnosticCode::ParseError, "terrain layer must be an object",
-                                                  std::to_string(index));
+            return Result<LoadedTerrainMaterial>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "terrain layer must be an object", std::to_string(index),
+                                  {}, "asset.procgen.terrain-material"));
         auto         name       = textField(*layer, "name", limits, false);
         auto         diffuse    = textField(*layer, "diffuseSource", limits, true);
         auto         normal     = textField(*layer, "normalSource", limits, true);
@@ -120,13 +127,15 @@ Result<LoadedTerrainMaterial> EvpackTerrainMaterialLoader::load(const AssetRef& 
         auto         convention = textField(*layer, "normalConvention", limits, false);
         const Value* tile       = field(*layer, "tileSizeMeters");
         if (!name || !diffuse || !normal || !weight || !convention || !tile || (!tile->isDouble() && !tile->isInt64()))
-            return failure<LoadedTerrainMaterial>(DiagnosticCode::ParseError, "terrain layer fields are incomplete",
-                                                  std::to_string(index));
+            return Result<LoadedTerrainMaterial>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "terrain layer fields are incomplete",
+                                  std::to_string(index), {}, "asset.procgen.terrain-material"));
         const double tileSize = tile->isDouble() ? tile->asDouble() : double(tile->asInt());
         if (!std::isfinite(tileSize) || tileSize <= 0 || tileSize > 1'000'000.0 ||
             (convention.value() != "opengl" && convention.value() != "directx"))
-            return failure<LoadedTerrainMaterial>(
-                DiagnosticCode::InvalidArgument, "terrain layer physical semantics are invalid", std::to_string(index));
+            return Result<LoadedTerrainMaterial>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain layer physical semantics are invalid",
+                                  std::to_string(index), {}, "asset.procgen.terrain-material"));
         RuntimeTerrainLayer runtime;
         runtime.name             = std::move(name).takeValue();
         runtime.diffuseSource    = std::move(diffuse).takeValue();
@@ -146,14 +155,15 @@ Result<LoadedTerrainMaterial> EvpackTerrainMaterialLoader::load(const AssetRef& 
             auto smoothness  = numberField(*layer, "smoothness", 0);
             if (!mask || !tileScale || !tileOffset || !remapMin || !remapMax || !specular || !metallic ||
                 !normalScale || !smoothness)
-                return failure<LoadedTerrainMaterial>(DiagnosticCode::ParseError,
-                                                      "terrain layer v2 fields are incomplete", std::to_string(index));
+                return Result<LoadedTerrainMaterial>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "terrain layer v2 fields are incomplete",
+                                      std::to_string(index), {}, "asset.procgen.terrain-material"));
             if (tileScale.value()[0] <= 0 || tileScale.value()[1] <= 0 || metallic.value() < 0 ||
                 metallic.value() > 1 || normalScale.value() < -8 || normalScale.value() > 8 || smoothness.value() < 0 ||
                 smoothness.value() > 1)
-                return failure<LoadedTerrainMaterial>(DiagnosticCode::InvalidArgument,
-                                                      "terrain layer v2 physical semantics are invalid",
-                                                      std::to_string(index));
+                return Result<LoadedTerrainMaterial>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "terrain layer v2 physical semantics are invalid",
+                    std::to_string(index), {}, "asset.procgen.terrain-material"));
             runtime.maskSource       = std::move(mask).takeValue();
             runtime.tileScaleMeters  = std::move(tileScale).takeValue();
             runtime.tileOffsetMeters = std::move(tileOffset).takeValue();
@@ -169,8 +179,9 @@ Result<LoadedTerrainMaterial> EvpackTerrainMaterialLoader::load(const AssetRef& 
                 auto weightAsset  = assetField(*layer, "weightAsset", limits);
                 auto maskAsset    = assetField(*layer, "maskAsset", limits);
                 if (!diffuseAsset || !normalAsset || !weightAsset || !maskAsset)
-                    return failure<LoadedTerrainMaterial>(
-                        DiagnosticCode::ParseError, "terrain layer v3 AssetRefs are invalid", std::to_string(index));
+                    return Result<LoadedTerrainMaterial>::failure(
+                        Diagnostic::error(DiagnosticCode::ParseError, "terrain layer v3 AssetRefs are invalid",
+                                          std::to_string(index), {}, "asset.procgen.terrain-material"));
                 runtime.diffuseAsset = std::move(diffuseAsset).takeValue();
                 runtime.normalAsset  = std::move(normalAsset).takeValue();
                 runtime.weightAsset  = std::move(weightAsset).takeValue();
@@ -190,18 +201,21 @@ Result<LoadedTerrainMaterial> EvpackTerrainMaterialLoader::load(const AssetRef& 
         const auto* controlArray    = encodedControls ? encodedControls->getIf<Value::Array>() : nullptr;
         auto        parsedBounds    = numberField(*root, "boundsMultiplier", 1);
         if (!parsedHoles || !controlArray || controlArray->size() != controls.size() || !parsedBounds)
-            return failure<LoadedTerrainMaterial>(DiagnosticCode::ParseError,
-                                                  "terrain material v2 fields are incomplete");
+            return Result<LoadedTerrainMaterial>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                            "terrain material v2 fields are incomplete",
+                                                                            {}, {}, "asset.procgen.terrain-material"));
         for (std::size_t i = 0; i < controls.size(); ++i) {
             if (!(*controlArray)[i].isString() || (*controlArray)[i].asString().size() > limits.maximumStringBytes ||
                 !isValidUtf8((*controlArray)[i].asString(), Utf8NullPolicy::Reject))
-                return failure<LoadedTerrainMaterial>(DiagnosticCode::ParseError, "terrain control source is invalid",
-                                                      std::to_string(i));
+                return Result<LoadedTerrainMaterial>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "terrain control source is invalid",
+                                      std::to_string(i), {}, "asset.procgen.terrain-material"));
             controls[i] = (*controlArray)[i].asString();
         }
         if (parsedBounds.value() <= 0 || parsedBounds.value() > 1'000'000)
-            return failure<LoadedTerrainMaterial>(DiagnosticCode::InvalidArgument,
-                                                  "terrain bounds multiplier is invalid");
+            return Result<LoadedTerrainMaterial>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                            "terrain bounds multiplier is invalid", {},
+                                                                            {}, "asset.procgen.terrain-material"));
         holes            = std::move(parsedHoles).takeValue();
         boundsMultiplier = parsedBounds.value();
         if (version->asInt() >= 3) {
@@ -210,15 +224,17 @@ Result<LoadedTerrainMaterial> EvpackTerrainMaterialLoader::load(const AssetRef& 
             const auto* controlAssetArray =
                 encodedControlAssets ? encodedControlAssets->getIf<Value::Array>() : nullptr;
             if (!parsedHolesAsset || !controlAssetArray || controlAssetArray->size() != controlAssets.size())
-                return failure<LoadedTerrainMaterial>(DiagnosticCode::ParseError,
-                                                      "terrain material v3 AssetRefs are incomplete");
+                return Result<LoadedTerrainMaterial>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "terrain material v3 AssetRefs are incomplete", {},
+                                      {}, "asset.procgen.terrain-material"));
             holesAsset = std::move(parsedHolesAsset).takeValue();
             for (std::size_t i = 0; i < controlAssets.size(); ++i) {
                 Value::Object encoded{{"asset", (*controlAssetArray)[i]}};
                 auto          parsed = assetField(encoded, "asset", limits);
                 if (!parsed)
-                    return failure<LoadedTerrainMaterial>(DiagnosticCode::ParseError,
-                                                          "terrain control AssetRef is invalid", std::to_string(i));
+                    return Result<LoadedTerrainMaterial>::failure(
+                        Diagnostic::error(DiagnosticCode::ParseError, "terrain control AssetRef is invalid",
+                                          std::to_string(i), {}, "asset.procgen.terrain-material"));
                 controlAssets[i] = std::move(parsed).takeValue();
             }
         }

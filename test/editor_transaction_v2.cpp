@@ -23,7 +23,7 @@ public:
     EditRegion         dirtyRegion() const override { return dirty_; }
     void               clearDirtyRegion() override { dirty_.clear(); }
 
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override {
+    Result<void> applyDomainOperation(const DomainOperation& operation) override {
         if (operation.type == "test.fail.v1")
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("test.operation.failure"),
                                              "Synthetic operation failure");
@@ -44,7 +44,7 @@ public:
         return std::make_unique<IntegerOperationTarget>(*this);
     }
 
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override {
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override {
         if (failCandidateCommit)
             return eve::editing::failed<void>(EditorStatus::Failed, RuleId("test.candidate.publish"),
                                              "Injected candidate publish failure");

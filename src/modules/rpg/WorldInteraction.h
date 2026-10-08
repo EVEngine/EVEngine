@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file WorldInteraction.h
@@ -33,7 +35,7 @@ struct WorldLootRequest {
 };
 
 /** @brief Product transaction boundary for persistent world-object rewards. */
-class WorldInteraction {
+class EVENGINE_API_PLATFORM WorldInteraction {
 public:
     /**
      * @brief Atomically grant loot, notify quest progress, and consume one world object.

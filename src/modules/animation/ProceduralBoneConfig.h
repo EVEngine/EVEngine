@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Result.h"
 #include "common/Value.h"
@@ -52,7 +53,7 @@ struct FootIKConfig {
 };
 
 /** @brief Versioned, forward-compatible dynamic-bone asset definition. */
-struct DynamicBoneConfig {
+struct EVENGINE_API_WORLD DynamicBoneConfig {
     static constexpr std::string_view SchemaId="eve.dynamic-bone";
     static constexpr std::uint32_t SchemaVersion=1;
 

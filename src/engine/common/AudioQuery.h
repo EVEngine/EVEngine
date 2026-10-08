@@ -5,7 +5,7 @@
 namespace eve {
 
 /** @brief Audio control surface (provided by the audio module). */
-class EVENGINE_API IAudioQuery {
+class EVENGINE_API_FOUNDATION_INLINE IAudioQuery {
 public:
     static constexpr const char* capabilityName = "IAudioQuery";
 

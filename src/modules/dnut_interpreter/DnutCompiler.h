@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file DnutCompiler.h @brief Registry-driven compiler for the `.dnut` story dialect. */
 
@@ -19,7 +21,7 @@ namespace eve::dnut {
  * `diagnostics` instead of stopping at the first one, so a tool or editor can
  * present the whole list. Call `hasErrors` before publishing `assets`.
  */
-struct DnutCompileOutput {
+struct EVENGINE_API_PLATFORM DnutCompileOutput {
     std::vector<SequenceAsset>  assets;
     std::vector<DnutDiagnostic> diagnostics;
 
@@ -47,7 +49,25 @@ struct DnutCompileOutput {
  * @cost Linear in the document size; allocates one token buffer and one asset
  *       per `story` block.
  */
-[[nodiscard]] DnutCompileOutput compileDnut(std::string_view source, const std::string& path,
-                                            const StepKindRegistry& registry);
+[[nodiscard]] EVENGINE_API_PLATFORM DnutCompileOutput compileDnut(std::string_view source, const std::string& path,
+                                                                  const StepKindRegistry& registry);
+
+/**
+ * @brief Compile legacy `conversation` blocks into canonical sequence assets.
+ *
+ * The accepted source shape is the existing versioned `eve.dnut` conversation
+ * dialect. Dialogue-owned values such as payment and state mutations are
+ * carried unchanged in node/route payloads and validated through `registry`;
+ * this L1 compiler never interprets those domain fields.
+ *
+ * @param source Full UTF-8 document text; it is not retained.
+ * @param path Source identity reported in every diagnostic.
+ * @param registry Vocabulary containing dialogue's `line`, `choice`, and
+ *        `command` descriptors and validators.
+ * @return Owned sequence assets and diagnostics.
+ */
+[[nodiscard]] EVENGINE_API_PLATFORM DnutCompileOutput compileDnutConversations(std::string_view        source,
+                                                                               const std::string&      path,
+                                                                               const StepKindRegistry& registry);
 
 }  // namespace eve::dnut

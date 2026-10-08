@@ -18,11 +18,6 @@
 
 namespace eve::asset_graphics {
 namespace {
-template <class T>
-Result<T> fail(std::string message) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), {}, {}, "asset.graphics.prefab"));
-}
 using MaterialData = detail::CookedMaterial;
 }  // namespace
 
@@ -86,16 +81,22 @@ Result<void> EvpackStaticPrefab::release() {
     return Result<void>::success();
 }
 Result<std::vector<StaticPrefabGpuPart>> EvpackStaticPrefab::prepareGpuDriven(graphics::Graphics& gfx) {
-    if (impl_->released) return fail<std::vector<StaticPrefabGpuPart>>("prefab resources have been released");
+    if (impl_->released)
+        return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "prefab resources have been released", {}, {}, "asset.graphics.prefab"));
     if (!impl_->gpuMaterials.empty())
-        return fail<std::vector<StaticPrefabGpuPart>>("prefab GPU-driven parts are already registered");
+        return Result<std::vector<StaticPrefabGpuPart>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "prefab GPU-driven parts are already registered", {}, {},
+                              "asset.graphics.prefab"));
     std::vector<std::unique_ptr<graphics::Material>> materials;
     std::vector<StaticPrefabGpuPart> parts;
     materials.reserve(impl_->draws.size());
     parts.reserve(impl_->draws.size());
     for (const auto& draw : impl_->draws) {
         if (draw.material.transparent)
-            return fail<std::vector<StaticPrefabGpuPart>>("transparent prefab Detail cannot use opaque GPU submission");
+            return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "transparent prefab Detail cannot use opaque GPU submission", {}, {},
+                "asset.graphics.prefab"));
         bool unsupportedImage = false;
         for (std::size_t role = 1; role < draw.material.images.size(); ++role) {
             if (role != std::size_t(graphics::PbrTextureSlot::Normal) && draw.material.images[role])
@@ -112,8 +113,9 @@ Result<std::vector<StaticPrefabGpuPart>> EvpackStaticPrefab::prepareGpuDriven(gr
             draw.material.surface.normalMode != graphics::PbrNormalMode::TangentXYZ ||
             !conventionalBinding(draw.material.surface.textures[0]) ||
             !conventionalBinding(draw.material.surface.textures[std::size_t(graphics::PbrTextureSlot::Normal)]))
-            return fail<std::vector<StaticPrefabGpuPart>>(
-                "extended prefab material requires a GPU-driven PBR surface record");
+            return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "extended prefab material requires a GPU-driven PBR surface record",
+                {}, {}, "asset.graphics.prefab"));
         auto material = std::make_unique<graphics::Material>();
         material->setTint(draw.material.color.r, draw.material.color.g, draw.material.color.b, draw.material.color.a);
         material->setMetallic(draw.material.metallic);
@@ -125,7 +127,9 @@ Result<std::vector<StaticPrefabGpuPart>> EvpackStaticPrefab::prepareGpuDriven(gr
         material->setNormalTexture(
             draw.material.surface.textures[std::size_t(graphics::PbrTextureSlot::Normal)].texture);
         if (!gfx.gpuDrivenMaterialUsable(material.get()))
-            return fail<std::vector<StaticPrefabGpuPart>>("prefab material is unavailable to GPU-driven rendering");
+            return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "prefab material is unavailable to GPU-driven rendering", {}, {},
+                "asset.graphics.prefab"));
         materials.push_back(std::move(material));
     }
     const auto releaseRegistered = [&gfx](const std::vector<std::unique_ptr<graphics::Material>>& owned,
@@ -146,11 +150,15 @@ Result<std::vector<StaticPrefabGpuPart>> EvpackStaticPrefab::prepareGpuDriven(gr
         if (part.meshId == graphics::kInvalidGpuDrivenSlot || part.materialId == graphics::kInvalidGpuDrivenSlot) {
             auto cleanup = releaseRegistered(materials, drawIndex + 1);
             if (!cleanup) return Result<std::vector<StaticPrefabGpuPart>>::failure(cleanup.status());
-            return fail<std::vector<StaticPrefabGpuPart>>("prefab GPU table registration failed");
+            return Result<std::vector<StaticPrefabGpuPart>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "prefab GPU table registration failed", {}, {},
+                                  "asset.graphics.prefab"));
         }
         parts.push_back(part);
     }
-    if (parts.empty()) return fail<std::vector<StaticPrefabGpuPart>>("prefab has no enabled renderer");
+    if (parts.empty())
+        return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "prefab has no enabled renderer", {}, {}, "asset.graphics.prefab"));
     impl_->gpuMaterials = std::move(materials);
     impl_->gpuGraphics = &gfx;
     return Result<std::vector<StaticPrefabGpuPart>>::success(std::move(parts));
@@ -196,7 +204,9 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
             const auto& sets     = out->impl_->meshUvSets.at(meshKey);
             auto        selected = parameters.value().surface.textures[role].texcoord;
             if (std::find(sets.begin(), sets.end(), selected) == sets.end())
-                return fail<std::unique_ptr<EvpackStaticPrefab>>("material references missing mesh UV channel");
+                return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "material references missing mesh UV channel",
+                                      {}, {}, "asset.graphics.prefab"));
             const auto& ref      = *parameters.value().images[role];
             const auto  imageKey = ref.format();
             if (!out->impl_->imageLeases.contains(imageKey)) {
@@ -228,11 +238,17 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
 }
 Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<float, 16>& transform,
                                       const std::array<float, 16>& cameraView) const {
-    if (impl_->released) return fail<void>("prefab resources have been released");
+    if (impl_->released)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "prefab resources have been released", {}, {}, "asset.graphics.prefab"));
     for (float value : transform)
-        if (!std::isfinite(value)) return fail<void>("nonfinite instance transform");
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "nonfinite instance transform", {}, {}, "asset.graphics.prefab"));
     for (float value : cameraView)
-        if (!std::isfinite(value)) return fail<void>("nonfinite camera view");
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "nonfinite camera view", {},
+                                                           {}, "asset.graphics.prefab"));
     const auto instance = glm::make_mat4(transform.data());
     const auto               view     = glm::make_mat4(cameraView.data());
     std::vector<std::size_t> order(impl_->draws.size());
@@ -269,11 +285,17 @@ Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<
 Result<void> EvpackStaticPrefab::drawShadow(graphics::Graphics& gfx,
                                             const std::array<float, 16>& transform,
                                             const std::array<float, 16>& lightViewProjection) const {
-    if (impl_->released) return fail<void>("prefab resources have been released");
+    if (impl_->released)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "prefab resources have been released", {}, {}, "asset.graphics.prefab"));
     for (float value : transform)
-        if (!std::isfinite(value)) return fail<void>("nonfinite instance transform");
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "nonfinite instance transform", {}, {}, "asset.graphics.prefab"));
     for (float value : lightViewProjection)
-        if (!std::isfinite(value)) return fail<void>("nonfinite shadow view projection");
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "nonfinite shadow view projection", {}, {}, "asset.graphics.prefab"));
     const glm::mat4 instance = glm::make_mat4(transform.data());
     const glm::mat4 lightVP  = glm::make_mat4(lightViewProjection.data());
     for (const auto& draw : impl_->draws) {

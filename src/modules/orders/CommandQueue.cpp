@@ -28,11 +28,6 @@ struct ScriptCommandQueue {
 };
 
 template <class T>
-eve::Result<T> orderFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "orders"));
-}
-
-template <class T>
 bool readObjectMember(const eve::Value::Object& object, std::string_view key, T& result) {
     const auto it = object.find(std::string(key));
     if (it == object.end()) return false;
@@ -94,12 +89,6 @@ bool readIndex(const eve::Value& value, size_t limit, size_t& result) {
     return true;
 }
 
-template <class T>
-eve::Result<T> snapshotFailure(std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message),
-                                                          std::move(path), {}, "orders.snapshot"));
-}
-
 bool generatedOrderId(std::string_view id, std::uint64_t& number) {
     constexpr std::string_view prefix = "order-";
     if (!id.starts_with(prefix) || id.size() == prefix.size()) return false;
@@ -137,7 +126,8 @@ eve::Result<void> OrderPayload::setJson(const std::string& key, std::string_view
 
 eve::Result<void> OrderPayload::set(const std::string& key, eve::Value value) {
     if (key.empty())
-        return orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "order payload key must not be empty", "key");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "order payload key must not be empty", "key", {}, "orders"));
     values_[key] = std::move(value);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -146,7 +136,8 @@ bool OrderPayload::has(const std::string& key) const { return values_.contains(k
 
 eve::Result<bool> OrderPayload::erase(const std::string& key) {
     if (key.empty())
-        return orderFailure<bool>(eve::DiagnosticCode::InvalidArgument, "order payload key must not be empty", "key");
+        return eve::Result<bool>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "order payload key must not be empty", "key", {}, "orders"));
     return eve::Result<bool>::success(values_.erase(key) != 0);
 }
 
@@ -279,68 +270,87 @@ void CommandQueue::updateUnchecked(double dtSeconds) {
 
 eve::Result<std::string> CommandQueue::append(const std::string& kind, int priority, double timeoutSeconds) {
     if (kind.empty())
-        return orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument, "order kind must not be empty", "kind");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "order kind must not be empty", "kind", {}, "orders"));
     if (!std::isfinite(timeoutSeconds) || timeoutSeconds < 0.0)
-        return orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                         "order timeout must be finite and non-negative", "timeoutSeconds");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "order timeout must be finite and non-negative",
+                                                                        "timeoutSeconds", {}, "orders"));
     const std::string id = appendUnchecked(kind, priority, timeoutSeconds);
     if (id.empty())
-        return orderFailure<std::string>(eve::DiagnosticCode::Failed, "order append did not produce an identity");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "order append did not produce an identity", {}, {}, "orders"));
     return eve::Result<std::string>::success(std::string(id), eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<std::string> CommandQueue::replace(const std::string& kind, int priority, double timeoutSeconds) {
     if (kind.empty())
-        return orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument, "order kind must not be empty", "kind");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "order kind must not be empty", "kind", {}, "orders"));
     if (!std::isfinite(timeoutSeconds) || timeoutSeconds < 0.0)
-        return orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                         "order timeout must be finite and non-negative", "timeoutSeconds");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "order timeout must be finite and non-negative",
+                                                                        "timeoutSeconds", {}, "orders"));
     const std::string id = replaceUnchecked(kind, priority, timeoutSeconds);
     if (id.empty())
-        return orderFailure<std::string>(eve::DiagnosticCode::Failed, "order replacement did not produce an identity");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "order replacement did not produce an identity", {}, {}, "orders"));
     return eve::Result<std::string>::success(std::string(id), eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<std::string> CommandQueue::interrupt(const std::string& kind, int priority, double timeoutSeconds) {
     if (kind.empty())
-        return orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument, "order kind must not be empty", "kind");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "order kind must not be empty", "kind", {}, "orders"));
     if (!std::isfinite(timeoutSeconds) || timeoutSeconds < 0.0)
-        return orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                         "order timeout must be finite and non-negative", "timeoutSeconds");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "order timeout must be finite and non-negative",
+                                                                        "timeoutSeconds", {}, "orders"));
     if (active_ != noIndex && priority < orders_[active_].priority)
-        return orderFailure<std::string>(eve::DiagnosticCode::Conflict,
-                                         "order priority cannot preempt the active order", "priority");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "order priority cannot preempt the active order", "priority", {}, "orders"));
     const std::string id = interruptUnchecked(kind, priority, timeoutSeconds);
     if (id.empty())
-        return orderFailure<std::string>(eve::DiagnosticCode::Failed, "order interrupt did not produce an identity");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "order interrupt did not produce an identity", {}, {}, "orders"));
     return eve::Result<std::string>::success(std::string(id), eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> CommandQueue::complete(const std::string& id) {
-    if (id.empty()) return orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "order id must not be empty", "id");
+    if (id.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "order id must not be empty", "id", {}, "orders"));
     if (!completeUnchecked(id))
-        return orderFailure<void>(eve::DiagnosticCode::Conflict, "order is not the active unfinished order", "id");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "order is not the active unfinished order", "id", {}, "orders"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> CommandQueue::fail(const std::string& id, const std::string& reason) {
-    if (id.empty()) return orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "order id must not be empty", "id");
+    if (id.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "order id must not be empty", "id", {}, "orders"));
     if (!failUnchecked(id, reason))
-        return orderFailure<void>(eve::DiagnosticCode::Conflict, "order is not the active unfinished order", "id");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "order is not the active unfinished order", "id", {}, "orders"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> CommandQueue::cancel(const std::string& id, const std::string& reason) {
-    if (id.empty()) return orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "order id must not be empty", "id");
+    if (id.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "order id must not be empty", "id", {}, "orders"));
     if (!cancelUnchecked(id, reason))
-        return orderFailure<void>(eve::DiagnosticCode::NotFound, "order id is not active or queued", "id");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "order id is not active or queued", "id", {}, "orders"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> CommandQueue::update(double dtSeconds) {
     if (!std::isfinite(dtSeconds) || dtSeconds < 0.0)
-        return orderFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                  "order update delta must be finite and non-negative", "dtSeconds");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "order update delta must be finite and non-negative",
+                                                                 "dtSeconds", {}, "orders"));
     const bool hadActiveOrder = active_ != noIndex;
     updateUnchecked(dtSeconds);
     return eve::Result<void>::success(
@@ -421,7 +431,9 @@ eve::Result<std::string> CommandQueue::snapshot() const {
     queued.reserve(queued_.size());
     for (const size_t index : queued_) {
         if (index >= orders_.size() || index > static_cast<size_t>(std::numeric_limits<std::int64_t>::max()))
-            return snapshotFailure<std::string>("queue contains an invalid queued index", "queued");
+            return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                            "queue contains an invalid queued index",
+                                                                            "queued", {}, "orders.snapshot"));
         queued.emplace_back(static_cast<std::int64_t>(index));
     }
     root.emplace("queued", eve::Value(std::move(queued)));
@@ -466,13 +478,17 @@ eve::Result<void> CommandQueue::restore(std::string_view json) {
     if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
     eve::Value  snapshotValue = std::move(parsed).takeValue();
     const auto* root          = snapshotValue.getIf<eve::Value::Object>();
-    if (!root) return snapshotFailure<void>("command queue snapshot must be an object");
+    if (!root)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "command queue snapshot must be an object", {}, {}, "orders.snapshot"));
 
     std::string  schema;
     std::int64_t version = 0;
     if (!readObjectMember(*root, "schema", schema) || schema != snapshotSchema ||
         !readObjectMember(*root, "version", version) || version != snapshotVersion)
-        return snapshotFailure<void>("unsupported command queue schema or version", "schema");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "unsupported command queue schema or version",
+                                                                 "schema", {}, "orders.snapshot"));
 
     const auto ordersIt = root->find("orders");
     const auto queuedIt = root->find("queued");
@@ -480,20 +496,26 @@ eve::Result<void> CommandQueue::restore(std::string_view json) {
     const auto eventsIt = root->find("events");
     if (ordersIt == root->end() || queuedIt == root->end() || activeIt == root->end() || eventsIt == root->end() ||
         !ordersIt->second.isArray() || !queuedIt->second.isArray() || !eventsIt->second.isArray())
-        return snapshotFailure<void>("command queue snapshot is missing required arrays");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "command queue snapshot is missing required arrays",
+                                                                 {}, {}, "orders.snapshot"));
 
     CommandQueue candidate;
     if (!readCounter(*root, "nextId", candidate.nextId_) ||
         !readCounter(*root, "nextSequence", candidate.nextSequence_) || candidate.nextId_ == 0 ||
         candidate.nextSequence_ == 0)
-        return snapshotFailure<void>("command queue snapshot has invalid counters", "counters");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "command queue snapshot has invalid counters",
+                                                                 "counters", {}, "orders.snapshot"));
 
     const auto&           encodedOrders = *ordersIt->second.getIf<eve::Value::Array>();
     std::set<std::string> ids;
     std::uint64_t         largestId = 0;
     for (const auto& encoded : encodedOrders) {
         const auto* object = encoded.getIf<eve::Value::Object>();
-        if (!object) return snapshotFailure<void>("order entry must be an object", "orders");
+        if (!object)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "order entry must be an object", "orders", {}, "orders.snapshot"));
 
         Order        order;
         std::int64_t priority = 0;
@@ -502,25 +524,33 @@ eve::Result<void> CommandQueue::restore(std::string_view json) {
             !readObjectMember(*object, "timeoutSeconds", order.timeoutSeconds) ||
             !readObjectMember(*object, "elapsedSeconds", order.elapsedSeconds) ||
             !readObjectMember(*object, "reason", order.reason))
-            return snapshotFailure<void>("order entry has an invalid field", "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "order entry has an invalid field", "orders", {}, "orders.snapshot"));
         const auto payloadIt = object->find("payload");
         if (payloadIt == object->end() || !payloadIt->second.isObject())
-            return snapshotFailure<void>("order payload must be an object", "orders.payload");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "order payload must be an object",
+                                                                     "orders.payload", {}, "orders.snapshot"));
         if (priority < std::numeric_limits<int>::min() || priority > std::numeric_limits<int>::max() ||
             order.id.empty() || order.kind.empty() || order.timeoutSeconds < 0.0 || order.elapsedSeconds < 0.0 ||
             !ids.insert(order.id).second)
-            return snapshotFailure<void>("order entry violates an invariant", "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "order entry violates an invariant", "orders", {}, "orders.snapshot"));
 
         std::uint64_t idNumber = 0;
         if (!generatedOrderId(order.id, idNumber) || idNumber >= candidate.nextId_)
-            return snapshotFailure<void>("order id does not match the queue counter", "orders.id");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "order id does not match the queue counter",
+                                                                     "orders.id", {}, "orders.snapshot"));
         largestId             = std::max(largestId, idNumber);
         order.priority        = static_cast<int>(priority);
         order.payload.values_ = *payloadIt->second.getIf<eve::Value::Object>();
         candidate.orders_.push_back(std::move(order));
     }
     if (!candidate.orders_.empty() && largestId >= candidate.nextId_)
-        return snapshotFailure<void>("nextId must follow every restored order", "nextId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "nextId must follow every restored order", "nextId",
+                                                                 {}, "orders.snapshot"));
 
     std::vector<bool> queuedMembership(candidate.orders_.size(), false);
     const auto&       encodedQueued = *queuedIt->second.getIf<eve::Value::Array>();
@@ -528,12 +558,16 @@ eve::Result<void> CommandQueue::restore(std::string_view json) {
         size_t index = 0;
         if (!readIndex(encodedIndex, candidate.orders_.size(), index) || queuedMembership[index] ||
             candidate.orders_[index].state != OrderState::Queued)
-            return snapshotFailure<void>("queued membership violates an invariant", "queued");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "queued membership violates an invariant",
+                                                                     "queued", {}, "orders.snapshot"));
         if (!candidate.queued_.empty()) {
             const size_t previous = candidate.queued_.back();
             if (candidate.orders_[previous].priority < candidate.orders_[index].priority ||
                 (candidate.orders_[previous].priority == candidate.orders_[index].priority && previous > index))
-                return snapshotFailure<void>("queued order is not deterministically sorted", "queued");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                         "queued order is not deterministically sorted",
+                                                                         "queued", {}, "orders.snapshot"));
         }
         queuedMembership[index] = true;
         candidate.queued_.push_back(index);
@@ -543,20 +577,25 @@ eve::Result<void> CommandQueue::restore(std::string_view json) {
         candidate.active_ = noIndex;
     } else if (!readIndex(activeIt->second, candidate.orders_.size(), candidate.active_) ||
                candidate.orders_[candidate.active_].state != OrderState::Active) {
-        return snapshotFailure<void>("active order violates an invariant", "active");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "active order violates an invariant", "active", {}, "orders.snapshot"));
     }
     for (size_t index = 0; index < candidate.orders_.size(); ++index) {
         const auto state = candidate.orders_[index].state;
         if ((state == OrderState::Queued) != queuedMembership[index] ||
             (state == OrderState::Active) != (candidate.active_ == index))
-            return snapshotFailure<void>("order state and queue membership disagree", "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "order state and queue membership disagree",
+                                                                     "orders", {}, "orders.snapshot"));
     }
 
     const auto&   encodedEvents    = *eventsIt->second.getIf<eve::Value::Array>();
     std::uint64_t previousSequence = 0;
     for (const auto& encoded : encodedEvents) {
         const auto* object = encoded.getIf<eve::Value::Object>();
-        if (!object) return snapshotFailure<void>("event entry must be an object", "events");
+        if (!object)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "event entry must be an object", "events", {}, "orders.snapshot"));
         OrderEvent  event;
         std::string from;
         std::string to;
@@ -566,7 +605,8 @@ eve::Result<void> CommandQueue::restore(std::string_view json) {
             !parseOrderState(from, event.from) || !parseOrderState(to, event.to) || event.sequence == 0 ||
             event.sequence <= previousSequence || event.sequence >= candidate.nextSequence_ || event.kind.empty() ||
             !ids.contains(event.orderId))
-            return snapshotFailure<void>("event entry violates an invariant", "events");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "event entry violates an invariant", "events", {}, "orders.snapshot"));
         previousSequence = event.sequence;
         candidate.events_.push_back(std::move(event));
     }
@@ -589,7 +629,8 @@ eve::script::Borrowed<CommandQueue> Orders::resolve(CommandQueueHandleRef refere
 eve::Result<void> Orders::release(CommandQueueHandleRef reference) {
     Orders* module = ModuleManager::getInstance<Orders>("Orders");
     if (!module)
-        return orderFailure<void>(eve::DiagnosticCode::StaleHandle, "Orders module is no longer loaded", "queue");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Orders module is no longer loaded", "queue", {}, "orders"));
     return module->queues_.erase(reference);
 }
 
@@ -611,8 +652,9 @@ void Orders::expose(ssq::Table& table) {
     payload.addFunc("setNull", &OrderPayload::setNull);
     payload.addFunc("setJson", [vm](OrderPayload* value, const std::string& key, const std::string& json) {
         if (!value)
-            return eve::script::projectResult(vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                                     "order payload must not be null", "payload"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "order payload must not be null", "payload", {}, "orders")));
         return eve::script::projectResult(vm, value->setJson(key, json));
     });
     payload.addFunc("has", &OrderPayload::has);
@@ -620,7 +662,8 @@ void Orders::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                orderFailure<bool>(eve::DiagnosticCode::InvalidArgument, "order payload must not be null", "payload"),
+                eve::Result<bool>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "order payload must not be null", "payload", {}, "orders")),
                 [](bool removed) { return eve::Value(removed); });
         return eve::script::projectResult(vm, value->erase(key), [](bool removed) { return eve::Value(removed); });
     });
@@ -652,53 +695,60 @@ void Orders::expose(ssq::Table& table) {
         "CommandQueue", std::function<CommandQueue*()>([]() -> CommandQueue* { return nullptr; }), false);
     queue.addFunc("append", [vm](CommandQueue* value, const std::string& kind, int priority, float timeout) {
         if (!value)
-            return eve::script::projectResult(vm,
-                                              orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                                        "order queue must not be null", "queue"),
-                                              [](std::string&& id) { return eve::Value(std::move(id)); });
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue", {}, "orders")),
+                [](std::string&& id) { return eve::Value(std::move(id)); });
         return eve::script::projectResult(vm, value->append(kind, priority, timeout),
                                           [](std::string&& id) { return eve::Value(std::move(id)); });
     });
     queue.addFunc("replace", [vm](CommandQueue* value, const std::string& kind, int priority, float timeout) {
         if (!value)
-            return eve::script::projectResult(vm,
-                                              orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                                        "order queue must not be null", "queue"),
-                                              [](std::string&& id) { return eve::Value(std::move(id)); });
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue", {}, "orders")),
+                [](std::string&& id) { return eve::Value(std::move(id)); });
         return eve::script::projectResult(vm, value->replace(kind, priority, timeout),
                                           [](std::string&& id) { return eve::Value(std::move(id)); });
     });
     queue.addFunc("interrupt", [vm](CommandQueue* value, const std::string& kind, int priority, float timeout) {
         if (!value)
-            return eve::script::projectResult(vm,
-                                              orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                                        "order queue must not be null", "queue"),
-                                              [](std::string&& id) { return eve::Value(std::move(id)); });
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue", {}, "orders")),
+                [](std::string&& id) { return eve::Value(std::move(id)); });
         return eve::script::projectResult(vm, value->interrupt(kind, priority, timeout),
                                           [](std::string&& id) { return eve::Value(std::move(id)); });
     });
     queue.addFunc("complete", [vm](CommandQueue* value, const std::string& id) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue", {}, "orders")));
         return eve::script::projectResult(vm, value->complete(id));
     });
     queue.addFunc("fail", [vm](CommandQueue* value, const std::string& id, const std::string& reason) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue", {}, "orders")));
         return eve::script::projectResult(vm, value->fail(id, reason));
     });
     queue.addFunc("cancel", [vm](CommandQueue* value, const std::string& id, const std::string& reason) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue", {}, "orders")));
         return eve::script::projectResult(vm, value->cancel(id, reason));
     });
     queue.addFunc("update", [vm](CommandQueue* value, float dt) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "order queue must not be null", "queue", {}, "orders")));
         return eve::script::projectResult(vm, value->update(dt));
     });
     queue.addFunc("clear", &CommandQueue::clear);
@@ -743,8 +793,9 @@ void Orders::expose(ssq::Table& table) {
     ownedQueue.addFunc("release", [vm](ScriptCommandQueue* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "owned order queue proxy must not be null",
-                                       "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned order queue proxy must not be null",
+                                                                      "queue", {}, "orders")));
         auto result = Orders::release(value->reference);
         // Retain the coordinates after release so the same script object can
         // report a stale handle and a second release returns StaleHandle.
@@ -752,73 +803,80 @@ void Orders::expose(ssq::Table& table) {
     });
     ownedQueue.addFunc("append", [vm](ScriptCommandQueue* value, const std::string& kind, int priority, float timeout) {
         if (!value)
-            return eve::script::projectResult(
-                vm,
-                orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                          "owned order queue proxy must not be null", "queue"),
-                [](std::string&& id) { return eve::Value(std::move(id)); });
+            return eve::script::projectResult(vm,
+                                              eve::Result<std::string>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "owned order queue proxy must not be null", "queue", {}, "orders")),
+                                              [](std::string&& id) { return eve::Value(std::move(id)); });
         auto queueView = Orders::resolve(value->reference);
         if (!queueView.isBound())
-            return eve::script::projectResult(vm,
-                                              orderFailure<std::string>(eve::DiagnosticCode::StaleHandle,
-                                                                        "owned order queue handle is stale", "queue"),
-                                              [](std::string&& id) { return eve::Value(std::move(id)); });
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue", {}, "orders")),
+                [](std::string&& id) { return eve::Value(std::move(id)); });
         return eve::script::projectResult(vm, queueView->append(kind, priority, timeout),
                                           [](std::string&& id) { return eve::Value(std::move(id)); });
     });
     ownedQueue.addFunc("replace", [vm](ScriptCommandQueue* value, const std::string& kind, int priority, float timeout) {
         if (!value)
-            return eve::script::projectResult(
-                vm,
-                orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                          "owned order queue proxy must not be null", "queue"),
-                [](std::string&& id) { return eve::Value(std::move(id)); });
+            return eve::script::projectResult(vm,
+                                              eve::Result<std::string>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "owned order queue proxy must not be null", "queue", {}, "orders")),
+                                              [](std::string&& id) { return eve::Value(std::move(id)); });
         auto queueView = Orders::resolve(value->reference);
         if (!queueView.isBound())
-            return eve::script::projectResult(vm,
-                                              orderFailure<std::string>(eve::DiagnosticCode::StaleHandle,
-                                                                        "owned order queue handle is stale", "queue"),
-                                              [](std::string&& id) { return eve::Value(std::move(id)); });
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue", {}, "orders")),
+                [](std::string&& id) { return eve::Value(std::move(id)); });
         return eve::script::projectResult(vm, queueView->replace(kind, priority, timeout),
                                           [](std::string&& id) { return eve::Value(std::move(id)); });
     });
     ownedQueue.addFunc("interrupt", [vm](ScriptCommandQueue* value, const std::string& kind, int priority,
                                          float timeout) {
         if (!value)
-            return eve::script::projectResult(
-                vm,
-                orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                          "owned order queue proxy must not be null", "queue"),
-                [](std::string&& id) { return eve::Value(std::move(id)); });
+            return eve::script::projectResult(vm,
+                                              eve::Result<std::string>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "owned order queue proxy must not be null", "queue", {}, "orders")),
+                                              [](std::string&& id) { return eve::Value(std::move(id)); });
         auto queueView = Orders::resolve(value->reference);
         if (!queueView.isBound())
-            return eve::script::projectResult(vm,
-                                              orderFailure<std::string>(eve::DiagnosticCode::StaleHandle,
-                                                                        "owned order queue handle is stale", "queue"),
-                                              [](std::string&& id) { return eve::Value(std::move(id)); });
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue", {}, "orders")),
+                [](std::string&& id) { return eve::Value(std::move(id)); });
         return eve::script::projectResult(vm, queueView->interrupt(kind, priority, timeout),
                                           [](std::string&& id) { return eve::Value(std::move(id)); });
     });
     ownedQueue.addFunc("fail", [vm](ScriptCommandQueue* value, const std::string& id, const std::string& reason) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "owned order queue proxy must not be null",
-                                       "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned order queue proxy must not be null",
+                                                                      "queue", {}, "orders")));
         auto queueView = Orders::resolve(value->reference);
         if (!queueView.isBound())
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue", {}, "orders")));
         return eve::script::projectResult(vm, queueView->fail(id, reason));
     });
     ownedQueue.addFunc("cancel", [vm](ScriptCommandQueue* value, const std::string& id, const std::string& reason) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "owned order queue proxy must not be null",
-                                       "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned order queue proxy must not be null",
+                                                                      "queue", {}, "orders")));
         auto queueView = Orders::resolve(value->reference);
         if (!queueView.isBound())
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue", {}, "orders")));
         return eve::script::projectResult(vm, queueView->cancel(id, reason));
     });
     ownedQueue.addFunc("current", [](ScriptCommandQueue* value) -> Order* {
@@ -838,50 +896,57 @@ void Orders::expose(ssq::Table& table) {
     ownedQueue.addFunc("complete", [vm](ScriptCommandQueue* value, const std::string& id) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "owned order queue proxy must not be null",
-                                       "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned order queue proxy must not be null",
+                                                                      "queue", {}, "orders")));
         auto queueView = Orders::resolve(value->reference);
         if (!queueView.isBound())
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue", {}, "orders")));
         return eve::script::projectResult(vm, queueView->complete(id));
     });
     ownedQueue.addFunc("snapshot", [vm](ScriptCommandQueue* value) {
         if (!value)
-            return eve::script::projectResult(
-                vm,
-                orderFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                          "owned order queue proxy must not be null", "queue"),
-                [](std::string&& text) { return eve::Value(std::move(text)); });
+            return eve::script::projectResult(vm,
+                                              eve::Result<std::string>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "owned order queue proxy must not be null", "queue", {}, "orders")),
+                                              [](std::string&& text) { return eve::Value(std::move(text)); });
         auto queueView = Orders::resolve(value->reference);
         if (!queueView.isBound())
-            return eve::script::projectResult(vm,
-                                              orderFailure<std::string>(eve::DiagnosticCode::StaleHandle,
-                                                                        "owned order queue handle is stale", "queue"),
-                                              [](std::string&& text) { return eve::Value(std::move(text)); });
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue", {}, "orders")),
+                [](std::string&& text) { return eve::Value(std::move(text)); });
         return eve::script::projectResult(vm, queueView->snapshot(),
                                           [](std::string&& text) { return eve::Value(std::move(text)); });
     });
     ownedQueue.addFunc("restore", [vm](ScriptCommandQueue* value, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "owned order queue proxy must not be null",
-                                       "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned order queue proxy must not be null",
+                                                                      "queue", {}, "orders")));
         auto queueView = Orders::resolve(value->reference);
         if (!queueView.isBound())
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue", {}, "orders")));
         return eve::script::projectResult(vm, queueView->restore(json));
     });
     ownedQueue.addFunc("update", [vm](ScriptCommandQueue* value, float dt) {
         if (!value)
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::InvalidArgument, "owned order queue proxy must not be null",
-                                       "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned order queue proxy must not be null",
+                                                                      "queue", {}, "orders")));
         auto queueView = Orders::resolve(value->reference);
         if (!queueView.isBound())
             return eve::script::projectResult(
-                vm, orderFailure<void>(eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "owned order queue handle is stale", "queue", {}, "orders")));
         return eve::script::projectResult(vm, queueView->update(dt));
     });
     ownedQueue.addFunc("clear", [](ScriptCommandQueue* value) {
@@ -899,7 +964,7 @@ void Orders::expose(ssq::Class& cls) {
     cls.addFunc("newQueueOwned", [vm = cls.getHandle()](Orders*) -> ssq::Table {
         auto reference = Orders::newQueueHandle();
         if (!reference) {
-            return eve::script::projectStatusResult(vm, reference.status(), false, false);
+            return eve::script::projectStatusResult(vm, reference.status());
         }
         const auto ref = std::move(reference).takeValue();
         auto       object =
@@ -907,10 +972,10 @@ void Orders::expose(ssq::Class& cls) {
         if (!object) {
             object.ignore("failed to create owned order queue proxy");
             Orders::release(ref).ignore("rollback failed owned order queue allocation");
-            return eve::script::projectStatusResult(vm, object.status(), false, false);
+            return eve::script::projectStatusResult(vm, object.status());
         }
         ssq::Object owned = std::move(object).takeValue();
-        auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+        auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
         result.set("value", owned);
         return result;
     });

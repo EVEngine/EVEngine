@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioTarget.h"
 #include "editing/EditingExtension.h"
@@ -31,7 +33,7 @@ public:
  * @return Generation-qualified provider handle or a structured registration failure.
  * @thread Main-thread registration path; acquired leases follow the descriptor affinity.
  */
-[[nodiscard]] editing::Result<editing::ProviderHandle> registerEditingProvider(
+[[nodiscard]] EVENGINE_API_BACKENDS editing::Result<editing::ProviderHandle> registerEditingProvider(
     editing::ExtensionProviderRegistry& registry);
 
 }  // namespace eve::audio_editing

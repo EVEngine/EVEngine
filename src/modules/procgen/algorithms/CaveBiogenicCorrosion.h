@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -24,6 +26,6 @@ struct CaveBiogenicCorrosionSample {
  * @param input Passage-local coordinates, wet-film exposure, intensity, and deterministic seed.
  * @return Secondary erosion and the retained fraction of older fluvial scallops.
  */
-CaveBiogenicCorrosionSample sampleCaveBiogenicCorrosion(const CaveBiogenicCorrosionInput& input);
+EVENGINE_API_DOMAINS CaveBiogenicCorrosionSample sampleCaveBiogenicCorrosion(const CaveBiogenicCorrosionInput& input);
 
 }  // namespace eve::procgen

@@ -1,6 +1,8 @@
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayControlJson.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "rts/RTS.h"
 
 #include "zeroerr/assert.h"
@@ -84,7 +86,9 @@ TEST_CASE("gameplay.control.rtsUsesSelectionAuthorityForPlayerAndAutomation") {
         playerSession, playerSubject,
         {eve::SimulationTick(1), eve::Duration::fromNanoseconds(1000000000)});
     REQUIRE(advanced.ok());
-    CHECK_EQ(std::move(advanced).takeValue().tick.value(), std::uint64_t{1});
+    // 先取出再断言：CHECK_EQ 会求值两次，`std::move(x).takeValue()` 第二次读的是已移动的 Result。
+    const auto advancedObservation = std::move(advanced).takeValue();
+    CHECK_EQ(advancedObservation.tick.value(), std::uint64_t{1});
 }
 
 TEST_CASE("gameplay.control.rtsRejectsUnselectedAndStaleCommands") {
@@ -116,4 +120,43 @@ TEST_CASE("gameplay.control.rtsRejectsUnselectedAndStaleCommands") {
     CHECK(!rejected.ok());
     CHECK_EQ(rejected.code(), eve::StatusCode::Conflict);
     CHECK(unit->orders()->values.empty());
+}
+
+TEST_CASE("gameplay.control.rtsEnumeratesItsPlayerInstances") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    eve::rts::RTS    rts;
+
+    const auto first  = subject("00000000-0000-7000-8000-0000000005a1");
+    const auto second = subject("00000000-0000-7000-8000-0000000005a2");
+    const auto one    = rts.newPlayer(first);
+    const auto two    = rts.newPlayer(second);
+    REQUIRE(one.ok());
+    REQUIRE(two.ok());
+
+    // 实例身份就是玩家的 subject：与 observe 解析用的键一致，按字典序稳定返回。
+    const auto instances = rts.gameplayInstances();
+    REQUIRE_EQ(instances.size(), std::size_t{2});
+    CHECK_EQ(instances[0].format(), first.format());
+    CHECK_EQ(instances[1].format(), second.format());
+
+    // 目录能力让 `instances` 操作能枚举该领域，而不是落进 unenumerable。
+    eve::IGameplayInstanceCatalog* catalog = nullptr;
+    eve::cap::forEach<eve::IGameplayInstanceCatalog>([&](auto* candidate) {
+        if (candidate != nullptr && candidate->gameplayDomain() == "rts") catalog = candidate;
+    });
+    REQUIRE(catalog != nullptr);
+    CHECK_EQ(catalog->gameplayInstances().size(), std::size_t{2});
+
+    auto scoped = eve::executeGameplayControlJson(
+        R"({"schemaId":"evengine.gameplay-control-request","schemaVersion":1,"op":"instances","domain":"rts"})");
+    REQUIRE(scoped.ok());
+    CHECK(scoped.value().find(first.format()) != std::string::npos);
+    CHECK(scoped.value().find(second.format()) != std::string::npos);
+
+    auto all = eve::executeGameplayControlJson(
+        R"({"schemaId":"evengine.gameplay-control-request","schemaVersion":1,"op":"instances"})");
+    REQUIRE(all.ok());
+    CHECK(all.value().find("\"domain\":\"rts\"") != std::string::npos);
+    CHECK(all.value().find("\"unenumerable\":[\"rts\"]") == std::string::npos);
 }

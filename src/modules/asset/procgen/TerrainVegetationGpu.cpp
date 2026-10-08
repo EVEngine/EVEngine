@@ -13,33 +13,30 @@
 namespace eve::asset_procgen {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.procgen.terrainVegetationGpu"));
-}
-
 }  // namespace
 
 Result<TerrainVegetationGpuPlan> buildTerrainVegetationGpuPlan(const TerrainVegetationRealization& realization,
                                                                ITerrainVegetationGpuResolver& resolver,
                                                                const TerrainVegetationGpuFrame& frame) {
     if (!std::isfinite(frame.timeSeconds) || std::abs(frame.timeSeconds) > 1.0e12)
-        return failure<TerrainVegetationGpuPlan>(DiagnosticCode::InvalidArgument,
-                                                 "terrain vegetation frame time is invalid");
+        return Result<TerrainVegetationGpuPlan>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain vegetation frame time is invalid", {}, {},
+                              "asset.procgen.terrainVegetationGpu"));
     TerrainVegetationGpuPlan result;
     result.instances.reserve(realization.instances.size());
     std::map<std::string_view, const RuntimeInstancePrototype*, std::less<>> prototypeMetadata;
     for (const auto& prototype : realization.prototypes)
         if (prototype.prototype.empty() || !prototypeMetadata.emplace(prototype.prototype, &prototype).second)
-            return failure<TerrainVegetationGpuPlan>(
-                DiagnosticCode::Conflict, "terrain vegetation prototype metadata is invalid", prototype.prototype);
+            return Result<TerrainVegetationGpuPlan>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "terrain vegetation prototype metadata is invalid",
+                                  prototype.prototype, {}, "asset.procgen.terrainVegetationGpu"));
     std::size_t expectedFirst = 0;
     for (const auto& bucket : realization.buckets) {
         if (bucket.prototype.empty() || bucket.firstInstance != expectedFirst || bucket.instanceCount == 0 ||
             std::uint64_t(bucket.firstInstance) + bucket.instanceCount > realization.instances.size())
-            return failure<TerrainVegetationGpuPlan>(DiagnosticCode::InvalidArgument,
-                                                     "terrain vegetation bucket layout is invalid", bucket.prototype);
+            return Result<TerrainVegetationGpuPlan>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain vegetation bucket layout is invalid",
+                                  bucket.prototype, {}, "asset.procgen.terrainVegetationGpu"));
         const auto metadata = prototypeMetadata.find(bucket.prototype);
         auto       prototype =
             resolver.resolve({bucket.prototype, metadata == prototypeMetadata.end() ? nullptr : metadata->second});
@@ -47,18 +44,20 @@ Result<TerrainVegetationGpuPlan> buildTerrainVegetationGpuPlan(const TerrainVege
         if (prototype.value().parts.empty() &&
             (prototype.value().meshId == graphics::kInvalidGpuDrivenSlot ||
              prototype.value().materialId == graphics::kInvalidGpuDrivenSlot))
-            return failure<TerrainVegetationGpuPlan>(
-                DiagnosticCode::NotFound, "vegetation prototype has no GPU mesh or material", bucket.prototype);
+            return Result<TerrainVegetationGpuPlan>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "vegetation prototype has no GPU mesh or material",
+                                  bucket.prototype, {}, "asset.procgen.terrainVegetationGpu"));
         for (const auto& part : prototype.value().parts)
             if (part.meshId == graphics::kInvalidGpuDrivenSlot || part.materialId == graphics::kInvalidGpuDrivenSlot)
-                return failure<TerrainVegetationGpuPlan>(DiagnosticCode::NotFound,
-                                                         "vegetation prefab part has no GPU mesh or material",
-                                                         bucket.prototype);
+                return Result<TerrainVegetationGpuPlan>::failure(
+                    Diagnostic::error(DiagnosticCode::NotFound, "vegetation prefab part has no GPU mesh or material",
+                                      bucket.prototype, {}, "asset.procgen.terrainVegetationGpu"));
         for (std::uint32_t offset = 0; offset < bucket.instanceCount; ++offset) {
             const auto& source = realization.instances[bucket.firstInstance + offset];
             if (source.prototype != bucket.prototype)
-                return failure<TerrainVegetationGpuPlan>(
-                    DiagnosticCode::Conflict, "vegetation bucket does not match instance prototype", bucket.prototype);
+                return Result<TerrainVegetationGpuPlan>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "vegetation bucket does not match instance prototype",
+                                      bucket.prototype, {}, "asset.procgen.terrainVegetationGpu"));
             const glm::quat rotation(source.rotation[3], source.rotation[0], source.rotation[1], source.rotation[2]);
             const glm::mat4 model =
                 glm::translate(glm::mat4(1.f), {source.position[0], source.position[1], source.position[2]}) *
@@ -109,8 +108,9 @@ Result<TerrainVegetationGpuPlan> buildTerrainVegetationGpuPlan(const TerrainVege
         expectedFirst += bucket.instanceCount;
     }
     if (expectedFirst != realization.instances.size())
-        return failure<TerrainVegetationGpuPlan>(DiagnosticCode::InvalidArgument,
-                                                 "terrain vegetation buckets do not cover every instance");
+        return Result<TerrainVegetationGpuPlan>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain vegetation buckets do not cover every instance",
+                              {}, {}, "asset.procgen.terrainVegetationGpu"));
     return Result<TerrainVegetationGpuPlan>::success(std::move(result));
 }
 
@@ -122,7 +122,9 @@ Result<void> submitTerrainVegetation(graphics::Graphics& graphics, const Terrain
     if (plan.value().instances.empty()) return Result<void>::success();
     if (!graphics.gpuDrivenSubmitOpaque(plan.value().instances.data(),
                                         static_cast<std::uint32_t>(plan.value().instances.size())))
-        return failure<void>(DiagnosticCode::Failed, "GPU-driven vegetation submission failed");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed,
+                                                       "GPU-driven vegetation submission failed", {}, {},
+                                                       "asset.procgen.terrainVegetationGpu"));
     return Result<void>::success();
 }
 
@@ -189,7 +191,9 @@ TerrainVegetationRenderer::~TerrainVegetationRenderer() {
 
 Result<void> TerrainVegetationRenderer::setFrame(TerrainVegetationGpuFrame frame) {
     if (!std::isfinite(frame.timeSeconds) || std::abs(frame.timeSeconds) > 1.0e12)
-        return failure<void>(DiagnosticCode::InvalidArgument, "terrain vegetation frame time is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "terrain vegetation frame time is invalid", {}, {},
+                                                       "asset.procgen.terrainVegetationGpu"));
     state_->frame = frame;
     return Result<void>::success();
 }

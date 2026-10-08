@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::animation {
 class AnimPose;
@@ -26,7 +28,7 @@ struct FootIKDebugSnapshot { FootIKDebugFoot left,right; };
  * @brief Paired-foot IK with contact smoothing and pelvis compensation.
  * @note Main-thread only. The borrowed skeleton must outlive this object.
  */
-class FootIKSolver {
+class EVENGINE_API_WORLD FootIKSolver {
 public:
     /** @brief Construct for a non-null borrowed skeleton. */
     explicit FootIKSolver(AnimSkeleton* skeleton);

@@ -68,11 +68,13 @@ Result<std::string> texturePath(const UnityProjectImportRequest& request, const 
             if (!id) return Result<std::string>::failure(id.status());
             if (unity_detail::foldAscii(id.value()) != guid) continue;
             if (!found.empty())
-                return detail::failure<std::string>(DiagnosticCode::Conflict, "duplicate texture GUID", guid);
+                return Result<std::string>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "duplicate texture GUID", guid, {}, "asset.import"));
             found = path.substr(0, path.size() - 5);
         }
     if (found.empty() || !request.files.contains(found))
-        return detail::failure<std::string>(DiagnosticCode::NotFound, "TVE texture source is absent", guid);
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "TVE texture source is absent", guid, {}, "asset.import"));
     return Result<std::string>::success(std::move(found));
 }
 Result<Value::Object> textureSampler(const UnityProjectImportRequest& request, const std::string& path) {
@@ -84,9 +86,9 @@ Result<Value::Object> textureSampler(const UnityProjectImportRequest& request, c
     for (const auto wrap : {u, v}) {
         if (wrap != -1 && wrap != 0 && wrap != 1 && wrap != 2 && wrap != 3) throw Invalid{};
         if (wrap == 3)
-            return detail::failure<Value::Object>(
+            return Result<Value::Object>::failure(Diagnostic::error(
                 DiagnosticCode::Unsupported, "texture MirrorOnce addressing is not supported by the canonical sampler",
-                path);
+                path, {}, "asset.import"));
     }
     auto convert = [](double wrap) { return wrap == 1 ? 33071 : wrap == 2 ? 33648 : 10497; };
     auto filter  = importerScalar(settings, native ? "m_FilterMode" : "filterMode", -1);
@@ -241,8 +243,8 @@ Result<PreparedAssetImport> normalImage(const UnityProjectImportRequest& request
         const auto&       metaBytes = request.files.at(path + ".meta");
         const std::string meta(metaBytes.begin(), metaBytes.end());
         if (mipmaps && importerScalar(meta, "mipMapMode", 0) != 0)
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                        "normal Kaiser mips are not implemented", path);
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "normal Kaiser mips are not implemented", path, {}, "asset.import"));
         const auto npot = importerScalar(meta, "nPOTScale", 1);
         if (npot < 0 || npot > 3 || npot != std::floor(npot)) throw Invalid{};
         const auto targetWidth = normalExtent(width, int(npot)), targetHeight = normalExtent(height, int(npot));
@@ -258,15 +260,17 @@ Result<PreparedAssetImport> normalImage(const UnityProjectImportRequest& request
                 const auto algorithm = numeric(value.value());
                 if (algorithm != 0 && algorithm != 1) throw Invalid{};
                 if (selected && *selected != int(algorithm))
-                    return detail::failure<PreparedAssetImport>(
+                    return Result<PreparedAssetImport>::failure(Diagnostic::error(
                         DiagnosticCode::Unsupported,
-                        "platform-specific normal resize algorithms require target-specific image variants", path);
+                        "platform-specific normal resize algorithms require target-specific image variants", path, {},
+                        "asset.import"));
                 selected = int(algorithm);
             }
             resizeAlgorithm = selected.value_or(0);
             if (uint64_t(targetWidth) * targetHeight > request.limits.maximumDecodedBytes / sizeof(double) / 3)
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                            "resized normal RGB staging exceeds budget", path);
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "resized normal RGB staging exceeds budget",
+                                      path, {}, "asset.import"));
             resized = normalResizeRgb(bulk, width, height, targetWidth, targetHeight, resizeAlgorithm);
             width   = targetWidth;
             height  = targetHeight;
@@ -277,8 +281,8 @@ Result<PreparedAssetImport> normalImage(const UnityProjectImportRequest& request
             const uint64_t bytes = uint64_t(w) * h * 4;
             if (request.limits.maximumDecodedBytes < 28 || total > request.limits.maximumDecodedBytes - 28 ||
                 bytes > request.limits.maximumDecodedBytes - 28 - total)
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                            "normal mip chain exceeds budget", path);
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "normal mip chain exceeds budget", path, {}, "asset.import"));
             total += bytes;
             ++levels;
             if (!mipmaps || (w == 1 && h == 1)) break;
@@ -287,8 +291,9 @@ Result<PreparedAssetImport> normalImage(const UnityProjectImportRequest& request
         } while (true);
         if (total > request.limits.maximumSourceBytes ||
             uint64_t(width) * height > request.limits.maximumDecodedBytes / sizeof(double) / channels)
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                        "normal source or channel staging exceeds budget", path);
+            return Result<PreparedAssetImport>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "normal source or channel staging exceeds budget",
+                                  path, {}, "asset.import"));
         std::vector<double> heights(size_t(width) * height * channels);
         for (size_t i = 0; i < size_t(width) * height; ++i) {
             if (!resized.empty()) {
@@ -410,7 +415,8 @@ Result<PreparedAssetImport> normalImage(const UnityProjectImportRequest& request
         if (!report) return Result<PreparedAssetImport>::failure(report.status());
         return Result<PreparedAssetImport>::success(std::move(result));
     }
-    return detail::failure<PreparedAssetImport>(DiagnosticCode::NotFound, "normal image definition absent", path);
+    return Result<PreparedAssetImport>::failure(
+        Diagnostic::error(DiagnosticCode::NotFound, "normal image definition absent", path, {}, "asset.import"));
 }
 }  // namespace
 
@@ -423,8 +429,9 @@ Result<PreparedAssetImport> prepareUnityVegetationMaterial(const UnityProjectImp
         if (!shader ||
             (*shader != "7befaa6f41d00a6478d5f4af21d66518" && *shader != "a933075b367f9b24981408633f72ff34" &&
              *shader != "6e6307b56f9201d40ad738f21cf03495" && *shader != "d9a724745053dee46bf301b216cdd348"))
-            return detail::failure<PreparedAssetImport>(
-                DiagnosticCode::Unsupported, "shader is not an admitted TVE 12.6.0 Plant/Prop material", source.path);
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "shader is not an admitted TVE 12.6.0 Plant/Prop material", source.path,
+                {}, "asset.import"));
         auto unit = [](double v) {
             if (v < 0 || v > 1) throw Invalid{};
             return v;
@@ -434,9 +441,9 @@ Result<PreparedAssetImport> prepareUnityVegetationMaterial(const UnityProjectImp
                    specular = scalar(text, "_RenderSpecular", 1);
         if ((mode != 0 && mode != 1) || cull < 0 || cull > 2 || cull != std::floor(cull) ||
             (clip != 0 && clip != 1) || (coverage != 0 && coverage != 1))
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                        "TVE render mode, alpha clipping, or cull mode is invalid",
-                                                        source.path);
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "TVE render mode, alpha clipping, or cull mode is invalid",
+                source.path, {}, "asset.import"));
         auto       color  = vector(text, "_MainColor", {1, 1, 1, 1});
         auto       second = vector(text, "_MainColorTwo", {1, 1, 1, 1});
         const auto uv     = vector(text, "_MainUVs", {1, 1, 0, 0});
@@ -805,8 +812,8 @@ Result<PreparedAssetImport> prepareUnityVegetationMaterial(const UnityProjectImp
                                 "inspected 12.6 shader calculations"});
         return Result<PreparedAssetImport>::success(std::move(out));
     } catch (const Invalid&) {
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "invalid TVE material saved properties",
-                                                    source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "invalid TVE material saved properties", source.path, {}, "asset.import"));
     }
 }
 }  // namespace eve::asset_import

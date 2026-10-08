@@ -1,15 +1,14 @@
 #pragma once
+#include "common/Export.h"
 
+
+#include "common/Json.h"
 #include "common/Result.h"
 #include "map/MapObject.h"
 #include "map/TileLayer.h"
 
 #include <string>
 #include <vector>
-
-namespace eve::data {
-class JsonDocument;
-}
 
 namespace eve::map {
 
@@ -25,11 +24,12 @@ struct RpgMakerImportReceipt {
 /**
  * @brief Apply map/layer JSON onto an existing TileLayer (Config + Tiles + Tileset + Draw).
  * Multi-layer documents only apply the first tile layer when called on one entity.
+ * @return Success, or InvalidArgument / Failed when the root is unusable or layer data fails.
  */
-bool applyConfigDocument(TileLayer *layer, data::JsonDocument *doc);
+[[nodiscard]] eve::Result<void> applyConfigDocument(TileLayer* layer, eve::json::Value root);
 
 /** @brief Parse JSON text and apply onto one layer. */
-bool applyConfigText(TileLayer *layer, const std::string &json, std::string *error = nullptr);
+EVENGINE_API_WORLD bool applyConfigText(TileLayer *layer, const std::string &json, std::string *error = nullptr);
 
 /**
  * @brief Read path via Filesystem, apply onto layer, bind Resource.path + modtime for hot reload.
@@ -52,24 +52,23 @@ bool loadTilesetManifestFile(TileLayer *layer, const std::string &path,
  * Optionally fills `objects` from objectgroup layers.
  * Returns created layers (empty on failure). All share the same Resource.path for reload.
  */
-std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error = nullptr);
-std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,
-                                     std::string *error = nullptr);
+EVENGINE_API_WORLD std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error = nullptr);
+EVENGINE_API_WORLD std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,
+                                                        std::string *error = nullptr);
 
 /** @brief Parse map JSON text (no filesystem). Same semantics as loadMapFile. */
-std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,
-                                     std::string *error = nullptr);
+EVENGINE_API_WORLD std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,
+                                                        std::string *error = nullptr);
 
 /**
  * @brief Imports RPG Maker MV/MZ MapXXX.json plus Tilesets.json without modifying the project.
  * @ownership Returned layer entities are owned by the ECS world, as with loadMapFile.
  * @thread Main-thread affine and non-reentrant.
  */
-[[nodiscard]] eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const std::string &mapPath,
-                                                                   const std::string &tilesetsPath,
-                                                                   const std::string &sourceEngine = "RPG Maker MV/MZ");
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(
+    const std::string &mapPath, const std::string &tilesetsPath, const std::string &sourceEngine = "RPG Maker MV/MZ");
 
 /** @brief Decodes one MV/MZ tile id into normal or quarter-tile atlas projections. */
-[[nodiscard]] TileLayer::Tileset::Visual decodeRpgMakerTileVisual(int tileId);
+[[nodiscard]] EVENGINE_API_WORLD TileLayer::Tileset::Visual decodeRpgMakerTileVisual(int tileId);
 
 }  // namespace eve::map

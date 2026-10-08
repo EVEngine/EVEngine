@@ -10,7 +10,7 @@ EditorValue selectionValue(const SelectionSnapshot& selection) {
     return EditorValue(std::move(items));
 }
 
-EditorResult<PropertyEditIntent> makeIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
+Result<PropertyEditIntent> makeIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
                                             const PropertyPath& path, const EditorValue& value, PropertySetMode mode,
                                             bool runtime) {
     auto descriptor = schema.find(path);
@@ -21,8 +21,8 @@ EditorResult<PropertyEditIntent> makeIntent(const PropertySchema& schema, const 
                     hasPropertyFlag(descriptor->flags, PropertyFlag::EditorOnly)))
         return eve::editing::failed<PropertyEditIntent>(EditorStatus::Rejected, RuleId("editor.property.runtime-hidden"),
                                                        "Property is unavailable in runtime editing");
-    EditorResult<void> validation = validatePropertyValue(*descriptor, value);
-    if (!validation.ok()) return EditorResult<PropertyEditIntent>::failure(validation.status());
+    Result<void> validation = validatePropertyValue(*descriptor, value);
+    if (!validation.ok()) return Result<PropertyEditIntent>::failure(validation.status());
 
     EditorValue::Object payload;
     payload["path"]      = path.value();
@@ -51,7 +51,7 @@ PropertyPresentation DeveloperPropertyPresenter::present(const PropertySchema&  
     return presentation;
 }
 
-EditorResult<PropertyEditIntent> DeveloperPropertyPresenter::editIntent(const PropertySchema&    schema,
+Result<PropertyEditIntent> DeveloperPropertyPresenter::editIntent(const PropertySchema&    schema,
                                                                         const SelectionSnapshot& selection,
                                                                         const PropertyPath&      path,
                                                                         const EditorValue&       value,
@@ -75,7 +75,7 @@ PropertyPresentation RuntimePropertyPresenter::present(const PropertySchema& sch
     return presentation;
 }
 
-EditorResult<PropertyEditIntent> RuntimePropertyPresenter::editIntent(
+Result<PropertyEditIntent> RuntimePropertyPresenter::editIntent(
     const PropertySchema& schema, const SelectionSnapshot& selection, const PropertyPath& path,
     const EditorValue& value, const HostProfile& profile, PropertySetMode mode) const {
     if (!profile.hasFeatures(HostFeature::RuntimeWorld))

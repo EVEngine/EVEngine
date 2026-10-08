@@ -1,14 +1,40 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file SequenceAsset.h @brief Domain-neutral compiled sequence graph for `.dnut` sources. */
 
 #include "common/Result.h"
 #include "common/Value.h"
 
+#include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace eve::dnut {
+
+/** @brief Declared value kind for one sequence invocation parameter. */
+enum class SequenceParameterType : std::uint8_t { Any, String, Integer, Number, Boolean };
+
+/**
+ * @brief One typed invocation parameter declared by authored content.
+ *
+ * The default is an owning canonical value. A null default means that no
+ * default was declared; required parameters therefore always have null
+ * defaults.
+ */
+struct SequenceParameter {
+    std::string           name;
+    SequenceParameterType type         = SequenceParameterType::Any;
+    bool                  required     = true;
+    eve::Value            defaultValue = {};
+    int                   sourceLine   = 0;
+    int                   sourceColumn = 0;
+
+    SequenceParameter() = default;
+    explicit SequenceParameter(std::string parameterName) : name(std::move(parameterName)) {}
+};
 
 /**
  * @brief One outgoing edge of a sequence node.
@@ -21,6 +47,9 @@ struct SequenceRoute {
     std::string label;
     eve::Value  condition;
     std::string target;
+    eve::Value  payload      = eve::Value::Object{};
+    int         sourceLine   = 0;
+    int         sourceColumn = 0;
 };
 
 /**
@@ -38,16 +67,20 @@ struct SequenceNode {
     std::string                next;
     eve::Value                 payload = eve::Value::Object{};
     std::vector<SequenceRoute> routes;
+    int                        sourceLine   = 0;
+    int                        sourceColumn = 0;
 };
 
 /** @brief Immutable, parameterized and versioned compiled sequence. */
-struct SequenceAsset {
+struct EVENGINE_API_PLATFORM SequenceAsset {
     std::string              id;
     int                      version    = 1;
     bool                     repeatable = false;
     std::string              entry;
-    std::vector<std::string> parameters;
+    std::vector<SequenceParameter> parameters;
     std::vector<SequenceNode> nodes;
+    int                            sourceLine   = 0;
+    int                            sourceColumn = 0;
 
     /**
      * @brief Find one node by its stable identifier.
@@ -72,9 +105,12 @@ struct SequenceAsset {
 /**
  * @brief Return whether `type` is a control-flow type interpreted by the runtime.
  * @param type Step type name as written in the compiled asset.
- * @return True for `branch`, `choice`, `call`, `wait` and `end`.
+ * @return True for `branch`, `choice`, `call`, `command`, `wait` and `end`.
  * @thread Reentrant and side-effect free.
  */
 [[nodiscard]] bool isCoreSequenceNodeType(const std::string& type) noexcept;
+
+/** @brief Return the stable lowercase spelling of a parameter type. */
+[[nodiscard]] const char* sequenceParameterTypeName(SequenceParameterType type) noexcept;
 
 }  // namespace eve::dnut

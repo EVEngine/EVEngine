@@ -42,7 +42,7 @@ EditorValue defaultValue(const schema::FieldDefinition& field) {
     return {};
 }
 
-EditorResult<DomainOperation> formError(EditorStatus status, const char* rule, std::string message) {
+Result<DomainOperation> formError(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<DomainOperation>(status, RuleId(rule), std::move(message));
 }
 
@@ -107,7 +107,7 @@ PropertyReadResult DefinitionSchemaFormTarget::read(const SelectionSnapshot& sel
     return {PropertyReadState::Value, found->second, {}};
 }
 
-EditorResult<DomainOperation> DefinitionSchemaFormTarget::makeSet(
+Result<DomainOperation> DefinitionSchemaFormTarget::makeSet(
     const SelectionSnapshot& selection, const PropertyPath& path, const EditorValue& value,
     PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
@@ -122,11 +122,11 @@ EditorResult<DomainOperation> DefinitionSchemaFormTarget::makeSet(
         return formError(EditorStatus::Rejected, "editor.definition.form-read-only",
                          "Definition field is not directly editable");
     auto valid = validatePropertyValue(*descriptor, value);
-    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
+    if (!valid.ok()) return Result<DomainOperation>::failure(valid.status());
     return document_->makeSetField(path.value(), value);
 }
 
-EditorResult<DomainOperation> DefinitionSchemaFormTarget::makeReset(
+Result<DomainOperation> DefinitionSchemaFormTarget::makeReset(
     const SelectionSnapshot& selection, const PropertyPath& path) const {
     auto descriptor = schema(selection).find(path);
     if (!matches(selection) || !descriptor)

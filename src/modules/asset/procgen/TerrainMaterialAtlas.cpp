@@ -9,12 +9,6 @@
 
 namespace eve::asset_procgen {
 namespace {
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.procgen.terrain-atlas"));
-}
-
 TerrainAtlasImage solid(std::array<std::uint8_t, 4> color) { return {1, 1, {color[0], color[1], color[2], color[3]}}; }
 
 std::array<std::uint8_t, 4> sample(const asset::DecodedEvpackImage& image, std::uint32_t x, std::uint32_t y,
@@ -95,8 +89,9 @@ Result<TerrainMaterialAtlases> buildTerrainMaterialAtlases(const asset::EvpackRe
                                                            const asset::EvpackCapabilities&   capabilities,
                                                            const TerrainMaterialAtlasLimits&  limits) {
     if (material.layers.empty() || material.layers.size() > limits.maximumLayers || limits.maximumLayers > 16)
-        return failure<TerrainMaterialAtlases>(DiagnosticCode::InvalidArgument,
-                                               "terrain atlas layer count is outside [1,16]");
+        return Result<TerrainMaterialAtlases>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                         "terrain atlas layer count is outside [1,16]",
+                                                                         {}, {}, "asset.procgen.terrain-atlas"));
     TerrainMaterialAtlases result;
     auto                   holes = decodeOptional(reader, material.holesAsset, capabilities, limits.image);
     if (!holes) return Result<TerrainMaterialAtlases>::failure(holes.status());
@@ -136,13 +131,14 @@ Result<TerrainMaterialAtlases> buildTerrainMaterialAtlases(const asset::EvpackRe
             }
         }
         if (tileWidth > limits.maximumTileDimension || tileHeight > limits.maximumTileDimension)
-            return failure<TerrainMaterialAtlases>(DiagnosticCode::InvalidArgument,
-                                                   "terrain atlas tile exceeds dimension budget",
-                                                   std::to_string(groupIndex));
+            return Result<TerrainMaterialAtlases>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain atlas tile exceeds dimension budget",
+                                  std::to_string(groupIndex), {}, "asset.procgen.terrain-atlas"));
         const std::uint64_t atlasBytes = std::uint64_t(tileWidth) * tileHeight * 16;
         if (atlasBytes > limits.maximumOutputBytes || outputBytes > limits.maximumOutputBytes - atlasBytes * 3)
-            return failure<TerrainMaterialAtlases>(DiagnosticCode::InvalidArgument,
-                                                   "terrain atlas output exceeds byte budget");
+            return Result<TerrainMaterialAtlases>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                             "terrain atlas output exceeds byte budget",
+                                                                             {}, {}, "asset.procgen.terrain-atlas"));
         TerrainMaterialAtlasGroup group;
         group.firstLayer = std::uint32_t(first);
         group.layerCount = std::uint32_t(count);
@@ -173,13 +169,15 @@ Result<TerrainMaterialAtlases> buildTerrainMaterialAtlases(const asset::EvpackRe
         } else if (groupIndex == 0) {
             group.control = solid({255, 0, 0, 0});
         } else {
-            return failure<TerrainMaterialAtlases>(DiagnosticCode::NotFound, "terrain layer group has no control image",
-                                                   std::to_string(groupIndex));
+            return Result<TerrainMaterialAtlases>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "terrain layer group has no control image",
+                                  std::to_string(groupIndex), {}, "asset.procgen.terrain-atlas"));
         }
         outputBytes += atlasBytes * 3 + group.control.pixels.size();
         if (outputBytes > limits.maximumOutputBytes)
-            return failure<TerrainMaterialAtlases>(DiagnosticCode::InvalidArgument,
-                                                   "terrain atlas output exceeds byte budget");
+            return Result<TerrainMaterialAtlases>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                             "terrain atlas output exceeds byte budget",
+                                                                             {}, {}, "asset.procgen.terrain-atlas"));
         result.groups.push_back(std::move(group));
     }
     return Result<TerrainMaterialAtlases>::success(std::move(result));
@@ -192,8 +190,8 @@ Result<PackedTerrainMaterialAtlases> packTerrainMaterialAtlases(const TerrainMat
         atlases.groups.size() != (material.layers.size() + 3) / 4 || atlases.holes.width == 0 ||
         atlases.holes.height == 0 ||
         atlases.holes.pixels.size() != std::size_t(atlases.holes.width) * atlases.holes.height * 4)
-        return failure<PackedTerrainMaterialAtlases>(DiagnosticCode::InvalidArgument,
-                                                     "terrain atlas set is incomplete");
+        return Result<PackedTerrainMaterialAtlases>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain atlas set is incomplete", {}, {}, "asset.procgen.terrain-atlas"));
     std::uint32_t tileWidth = 1, tileHeight = 1, controlWidth = atlases.holes.width,
                   controlHeight = atlases.holes.height;
     for (const auto& group : atlases.groups) {
@@ -202,13 +200,15 @@ Result<PackedTerrainMaterialAtlases> packTerrainMaterialAtlases(const TerrainMat
         if (group.tileWidth == 0 || group.tileHeight == 0 || group.control.width == 0 || group.control.height == 0 ||
             group.firstLayer != groupIndex * 4 || group.layerCount != expectedLayers ||
             group.control.pixels.size() != std::size_t(group.control.width) * group.control.height * 4)
-            return failure<PackedTerrainMaterialAtlases>(DiagnosticCode::InvalidArgument,
-                                                         "terrain atlas group is incomplete");
+            return Result<PackedTerrainMaterialAtlases>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain atlas group is incomplete", {}, {},
+                                  "asset.procgen.terrain-atlas"));
         for (const auto* image : {&group.albedo, &group.normal, &group.mask})
             if (image->width != group.tileWidth * 2 || image->height != group.tileHeight * 2 ||
                 image->pixels.size() != std::size_t(image->width) * image->height * 4)
-                return failure<PackedTerrainMaterialAtlases>(DiagnosticCode::InvalidArgument,
-                                                             "terrain layer atlas dimensions are invalid");
+                return Result<PackedTerrainMaterialAtlases>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain layer atlas dimensions are invalid", {},
+                                      {}, "asset.procgen.terrain-atlas"));
         tileWidth     = std::max(tileWidth, group.tileWidth);
         tileHeight    = std::max(tileHeight, group.tileHeight);
         controlWidth  = std::max(controlWidth, group.control.width);
@@ -219,8 +219,9 @@ Result<PackedTerrainMaterialAtlases> packTerrainMaterialAtlases(const TerrainMat
     if (tileWidth > limits.maximumTileDimension || tileHeight > limits.maximumTileDimension ||
         controlWidth > limits.maximumTileDimension || controlHeight > limits.maximumTileDimension ||
         outputBytes > limits.maximumOutputBytes)
-        return failure<PackedTerrainMaterialAtlases>(DiagnosticCode::InvalidArgument,
-                                                     "packed terrain atlas exceeds output limits");
+        return Result<PackedTerrainMaterialAtlases>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "packed terrain atlas exceeds output limits", {}, {},
+                              "asset.procgen.terrain-atlas"));
     PackedTerrainMaterialAtlases result;
     result.layerCount = std::uint32_t(material.layers.size());
     result.hasHoles   = material.holesAsset.has_value();
@@ -260,8 +261,9 @@ Result<PackedTerrainMaterialAtlases> packTerrainMaterialAtlases(const TerrainMat
             source.tileScaleMeters[0] == 0.f || source.tileScaleMeters[1] == 0.f ||
             !std::isfinite(source.tileOffsetMeters[0]) || !std::isfinite(source.tileOffsetMeters[1]) ||
             !std::isfinite(source.metallic) || !std::isfinite(source.normalScale) || !std::isfinite(source.smoothness))
-            return failure<PackedTerrainMaterialAtlases>(DiagnosticCode::InvalidArgument,
-                                                         "terrain layer parameters are invalid", std::to_string(layer));
+            return Result<PackedTerrainMaterialAtlases>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain layer parameters are invalid",
+                                  std::to_string(layer), {}, "asset.procgen.terrain-atlas"));
         const std::array<float, 7> values{1.f / source.tileScaleMeters[0],
                                           1.f / source.tileScaleMeters[1],
                                           source.tileOffsetMeters[0] / source.tileScaleMeters[0],
@@ -286,7 +288,9 @@ Result<void> releaseTerrainMaterialAtlases(graphics::IResourceFactory& factory, 
     if (set.holes && !factory.releaseTexture(set.holes)) released = false;
     set.holes = nullptr;
     set.groups.clear();
-    if (!released) return failure<void>(DiagnosticCode::Failed, "terrain atlas backend release failed");
+    if (!released)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "terrain atlas backend release failed",
+                                                       {}, {}, "asset.procgen.terrain-atlas"));
     return Result<void>::success();
 }
 
@@ -297,7 +301,9 @@ Result<TerrainMaterialGpuSet> uploadTerrainMaterialAtlases(graphics::IResourceFa
         return factory.newTexture(int(image.width), int(image.height), image.pixels.data(), false, false);
     };
     result.holes = upload(atlases.holes);
-    if (!result.holes) return failure<TerrainMaterialGpuSet>(DiagnosticCode::Failed, "terrain holes upload failed");
+    if (!result.holes)
+        return Result<TerrainMaterialGpuSet>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "terrain holes upload failed", {}, {}, "asset.procgen.terrain-atlas"));
     result.groups.reserve(atlases.groups.size());
     for (const auto& source : atlases.groups) {
         TerrainMaterialGpuGroup group;
@@ -309,7 +315,8 @@ Result<TerrainMaterialGpuSet> uploadTerrainMaterialAtlases(graphics::IResourceFa
         if (!group.albedo || !group.normal || !group.mask || !group.control) {
             auto cleanup = releaseTerrainMaterialAtlases(factory, result);
             if (!cleanup) return Result<TerrainMaterialGpuSet>::failure(cleanup.status());
-            return failure<TerrainMaterialGpuSet>(DiagnosticCode::Failed, "terrain atlas upload failed");
+            return Result<TerrainMaterialGpuSet>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "terrain atlas upload failed", {}, {}, "asset.procgen.terrain-atlas"));
         }
     }
     return Result<TerrainMaterialGpuSet>::success(std::move(result));
@@ -324,7 +331,9 @@ Result<void> releasePackedTerrainMaterialAtlases(graphics::IResourceFactory&  fa
     }
     set.layerCount = 0;
     set.hasHoles   = false;
-    if (!released) return failure<void>(DiagnosticCode::Failed, "packed terrain backend release failed");
+    if (!released)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "packed terrain backend release failed",
+                                                       {}, {}, "asset.procgen.terrain-atlas"));
     return Result<void>::success();
 }
 
@@ -344,7 +353,8 @@ Result<PackedTerrainMaterialGpuSet> uploadPackedTerrainMaterialAtlases(graphics:
     if (!result.albedo || !result.normal || !result.mask || !result.controls || !result.parameters) {
         auto cleanup = releasePackedTerrainMaterialAtlases(factory, result);
         if (!cleanup) return Result<PackedTerrainMaterialGpuSet>::failure(cleanup.status());
-        return failure<PackedTerrainMaterialGpuSet>(DiagnosticCode::Failed, "packed terrain atlas upload failed");
+        return Result<PackedTerrainMaterialGpuSet>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "packed terrain atlas upload failed", {}, {}, "asset.procgen.terrain-atlas"));
     }
     return Result<PackedTerrainMaterialGpuSet>::success(std::move(result));
 }
@@ -352,7 +362,9 @@ Result<PackedTerrainMaterialGpuSet> uploadPackedTerrainMaterialAtlases(graphics:
 Result<void> bindPackedTerrainMaterial(graphics::Shader& shader, const PackedTerrainMaterialGpuSet& gpu) {
     if (!gpu.albedo || !gpu.normal || !gpu.mask || !gpu.controls || !gpu.parameters || gpu.layerCount == 0 ||
         gpu.layerCount > 16)
-        return failure<void>(DiagnosticCode::InvalidArgument, "packed terrain GPU set is incomplete");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "packed terrain GPU set is incomplete", {}, {},
+                                                       "asset.procgen.terrain-atlas"));
     for (const auto& [slot, texture] : {std::pair<std::size_t, graphics::Texture*>{0, gpu.albedo},
                                        {1, gpu.normal},
                                        {2, gpu.mask},
@@ -367,7 +379,9 @@ Result<void> bindPackedTerrainMaterial(graphics::Shader& shader, const PackedTer
 Result<void> bindTerrainMaterialGroup(graphics::Shader& shader, const TerrainMaterialGpuSet& gpu,
                                       const LoadedTerrainMaterial& material, std::size_t groupIndex) {
     if (groupIndex >= gpu.groups.size() || groupIndex * 4 >= material.layers.size() || !gpu.holes)
-        return failure<void>(DiagnosticCode::InvalidArgument, "terrain atlas group index is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "terrain atlas group index is invalid", {}, {},
+                                                       "asset.procgen.terrain-atlas"));
     const auto& group = gpu.groups[groupIndex];
     for (const auto& [slot, texture] : {std::pair<std::size_t, graphics::Texture*>{0, group.albedo},
                                        {1, group.normal},

@@ -15,7 +15,7 @@ struct VegetationSceneAssociation {
 };
 
 /** @brief Resolve a Scene Template to exactly one manager asset in the same admitted EVPACK. */
-class VegetationSceneAssociationLoader {
+class EVENGINE_API_WORLD VegetationSceneAssociationLoader {
 public:
     /** @brief Bind a borrowed immutable reader which must outlive this loader. */
     explicit VegetationSceneAssociationLoader(const asset::EvpackResourceReader& reader) noexcept : reader_(reader) {}
@@ -38,7 +38,7 @@ private:
  * @brief Owning executable instance coupling one Scene Template, its manager fields and live Element registry.
  * GPU resources are graphics-thread affine. Base material texture pointers remain borrowed and must outlive this instance.
  */
-class VegetationSceneInstance final {
+class EVENGINE_API_WORLD VegetationSceneInstance final {
 public:
     /**
      * @brief Resolve and publish the manager automatically from a Scene Template asset.

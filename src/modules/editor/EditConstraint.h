@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorResult.h"
 
@@ -13,7 +15,7 @@ class IEditCommand;
 enum class ConstraintDisposition { Allow, Warning, Reject };
 
 /** @brief Result of evaluating one replaceable edit constraint. */
-struct ConstraintResult {
+struct EVENGINE_API_ORCHESTRATION ConstraintResult {
     ConstraintDisposition disposition = ConstraintDisposition::Allow;
     std::string message;
     static ConstraintResult allow() { return {}; }
@@ -33,7 +35,7 @@ public:
 };
 
 /** @brief Ordered, non-owning constraint chain with diagnostics. */
-class EditConstraintPipeline {
+class EVENGINE_API_ORCHESTRATION EditConstraintPipeline {
 public:
     bool add(IEditConstraint *constraint);
     bool remove(IEditConstraint *constraint);
@@ -41,7 +43,7 @@ public:
     /** @brief Compatibility-only boolean facade over evaluateChecked(). */
     bool evaluate(EditorContext &context, IEditCommand &command);
     /** @brief Evaluate the chain and return structured allow/warning/reject diagnostics. */
-    [[nodiscard]] EditorResult<void> evaluateChecked(EditorContext &context, IEditCommand &command);
+    [[nodiscard]] Result<void> evaluateChecked(EditorContext &context, IEditCommand &command);
     int diagnosticCount() const { return static_cast<int>(diagnostics_.size()); }
     const std::string &diagnostic(int index) const;
     bool rejected() const { return rejected_; }

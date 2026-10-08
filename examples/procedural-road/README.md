@@ -15,6 +15,10 @@
 | 9 | `tight-turn` | 短边近折返连接，可视化验证局部导航 turn ribbon |
 | R | `roundabout` | 四入口单向环岛 + 双向接入道路 |
 | 0 | `interchange` | 地面十字 + 对角高架 + 四条外围爬坡匝道 |
+| T | `tee` | 等宽 T 字路口与宽角路肩弦 |
+| Y | `y` | 120° 三臂路口 |
+| F | `fork` | 60° 锐角分叉 |
+| K | `skew` | 135° 斜角三臂 |
 
 ```sh
 make run GAME=examples/procedural-road
@@ -24,6 +28,6 @@ VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.json ALSOFT_DRIVERS=null \
   xvfb-run -a scripts/smoke_examples.sh procedural-road
 ```
 
-配方参数：`scene=straight|curve|bridge|cross|t-junction|y-junction|sloped-t|curve-uphill|tight-turn|roundabout|interchange`，另有 `mesh.roadNetwork` / `tex.roadMarkings`。
+配方参数：`scene=straight|curve|bridge|cross|tee|y|fork|skew|t-junction|y-junction|sloped-t|curve-uphill|tight-turn|roundabout|interchange`，另有 `mesh.roadNetwork` / `tex.roadMarkings`。
 沥青使用通用 `pbr.asphalt` 配方生成 albedo/normal/height，并复用 Mesh3D 的纹理去重复与轻量视差；道路拓扑与渲染材质保持解耦。
 设计说明见 `docs/dev/程序化道路系统设计.md`。

@@ -8,11 +8,6 @@
 namespace eve::decal_editing {
 namespace {
 
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 double number(const DecalDocumentTarget& document, const char* path) {
     return *document.value(path)->getIf<double>();
 }
@@ -21,32 +16,33 @@ const EditorValue::Array& array(const DecalDocumentTarget& document, const char*
     return *document.value(path)->getIf<EditorValue::Array>();
 }
 
-EditorResult<graphics::Texture*> resolve(const DecalDocumentTarget& document,
+Result<graphics::Texture*> resolve(const DecalDocumentTarget& document,
                                          const IDecalRuntimeAssetResolver* assets, const char* path) {
     const auto& name = *document.value(path)->getIf<std::string>();
     if (name.empty()) return eve::editing::applied<graphics::Texture*>(nullptr);
     if (!assets)
-        return fail<graphics::Texture*>(EditorStatus::Rejected, "editor.decal.assets",
-                                        "Decal texture resolver is required");
+        return eve::editing::failed<graphics::Texture*>(EditorStatus::Rejected, RuleId("editor.decal.assets"),
+                                                        "Decal texture resolver is required");
     return assets->texture(name);
 }
 
 }  // namespace
 
-EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& document) {
+Result<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& document) {
     if (!manager_)
-        return fail<void>(EditorStatus::Rejected, "editor.decal.manager", "Live DecalManager is required");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.decal.manager"),
+                                          "Live DecalManager is required");
     const auto diagnostics = document.validate();
     if (std::any_of(diagnostics.begin(), diagnostics.end(),
                     [](const auto& diagnostic) { return diagnostic.severity() == DiagnosticSeverity::Error; }))
-        return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+        return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
 
     auto albedo = resolve(document, assets_, "texture.albedo");
-    if (!albedo.ok()) return EditorResult<void>::failure(albedo.status());
+    if (!albedo.ok()) return Result<void>::failure(albedo.status());
     auto normal = resolve(document, assets_, "texture.normal");
-    if (!normal.ok()) return EditorResult<void>::failure(normal.status());
+    if (!normal.ok()) return Result<void>::failure(normal.status());
     auto params = resolve(document, assets_, "texture.params");
-    if (!params.ok()) return EditorResult<void>::failure(params.status());
+    if (!params.ok()) return Result<void>::failure(params.status());
 
     decal::DecalInstance candidate;
     const auto& position = array(document, "transform.position");
@@ -81,22 +77,22 @@ EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& docum
 
     const int next = manager_->replace(runtimeId_, std::move(candidate));
     if (next == 0)
-        return fail<void>(EditorStatus::Conflict, "editor.decal.replace",
-                          "Decal runtime generation is stale or invalid");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.decal.replace"),
+                                          "Decal runtime generation is stale or invalid");
     runtimeId_ = next;
     return eve::editing::applied<void>(diagnostics);
 }
 
-EditorResult<void> DecalRuntimeBinding::clear() {
+Result<void> DecalRuntimeBinding::clear() {
     if (runtimeId_ == 0) return eve::editing::noOp();
     if (!manager_ || !manager_->remove(runtimeId_))
-        return fail<void>(EditorStatus::NotFound, "editor.decal.runtime-stale",
-                          "Published decal generation no longer exists");
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.decal.runtime-stale"),
+                                          "Published decal generation no longer exists");
     runtimeId_ = 0;
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> DecalPublishingTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> DecalPublishingTarget::applyDomainOperation(const DomainOperation& operation) {
     if (staging_) return document_.applyDomainOperation(operation);
     auto candidate = cloneDomainState();
     auto applied = candidate->applyDomainOperation(operation);
@@ -110,15 +106,15 @@ std::unique_ptr<IDomainOperationTarget> DecalPublishingTarget::cloneDomainState(
     return candidate;
 }
 
-EditorResult<void> DecalPublishingTarget::commitDomainState(
+Result<void> DecalPublishingTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<DecalPublishingTarget*>(candidate.get());
     if (!typed || typed->targetId() != targetId() || typed->sink_ != sink_ || !typed->staging_)
-        return fail<void>(EditorStatus::Conflict, "editor.decal.publish-candidate",
-                          "Decal publishing candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.decal.publish-candidate"),
+                                          "Decal publishing candidate mismatch");
     if (!sink_)
-        return fail<void>(EditorStatus::Rejected, "editor.decal.publish-sink",
-                          "Decal publishing target requires a runtime sink");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.decal.publish-sink"),
+                                          "Decal publishing target requires a runtime sink");
     auto published = sink_->publish(typed->document_);
     if (!published.ok()) return published;
     document_ = typed->document_;

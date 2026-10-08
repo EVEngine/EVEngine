@@ -1,6 +1,7 @@
 #include "action/ActionNotifyRegistry.h"
 
 #include "action/ActionAudioBlock.h"
+#include "action/ActionAttackVfxBlock.h"
 #include "action/ActionCameraBlock.h"
 #include "action/ActionDamageBlock.h"
 #include "action/ActionGameplayEventBlock.h"
@@ -19,22 +20,13 @@
 namespace eve::action {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-Result<void> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool validType(std::string_view type) { return LogicalId::parse(type).has_value(); }
 
 class ActionCameraCueHandler final : public IActionNotifyHandler {
 public:
     Result<void> handle(const ActionTimelineEvent& event, const ActionNotifyContext& context) override {
         if (event.kind != ActionTimelineEventKind::Notify)
-            return failure(DiagnosticCode::InvalidArgument, "camera cue must be instantaneous", "event.kind");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "camera cue must be instantaneous", "event.kind"));
         auto binding = ActionCameraCueBinding::fromPayload(event.payload);
         if (!binding) return Result<void>::failure(binding.status());
         std::optional<Result<void>> result;
@@ -44,7 +36,7 @@ public:
             return true;
         });
         if (result) return std::move(*result);
-        return failure(DiagnosticCode::NotFound, "no camera sink accepts the action cue", binding.value().cue.format());
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "no camera sink accepts the action cue", binding.value().cue.format()));
     }
 };
 
@@ -52,11 +44,11 @@ class ActionDamageHandler final : public IActionNotifyHandler {
 public:
     Result<void> handle(const ActionTimelineEvent& event, const ActionNotifyContext& context) override {
         if (event.kind != ActionTimelineEventKind::Notify)
-            return failure(DiagnosticCode::InvalidArgument, "damage block must be instantaneous", "event.kind");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "damage block must be instantaneous", "event.kind"));
         auto binding = ActionDamageBinding::fromPayload(event.payload);
         if (!binding) return Result<void>::failure(binding.status());
         if (binding.value().targetIndex >= context.targets.size())
-            return failure(DiagnosticCode::NotFound, "damage target index is unavailable", "targetIndex");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "damage target index is unavailable", "targetIndex"));
         std::optional<Result<void>> result;
         cap::forEachUntil<IActionDamageSink>([&](IActionDamageSink* sink) {
             if (!sink->supports(context.targets[binding.value().targetIndex])) return false;
@@ -64,7 +56,7 @@ public:
             return true;
         });
         if (result) return std::move(*result);
-        return failure(DiagnosticCode::NotFound, "no damage sink accepts the action target", "target");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "no damage sink accepts the action target", "target"));
     }
 };
 
@@ -72,8 +64,7 @@ class ActionGameplayEventHandler final : public IActionNotifyHandler {
 public:
     Result<void> handle(const ActionTimelineEvent& event, const ActionNotifyContext& context) override {
         if (event.kind != ActionTimelineEventKind::Notify)
-            return failure(DiagnosticCode::InvalidArgument,
-                           "gameplay event block must be instantaneous", "event.kind");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "gameplay event block must be instantaneous", "event.kind"));
         auto binding = ActionGameplayEventBinding::fromPayload(event.payload);
         if (!binding) return Result<void>::failure(binding.status());
         std::optional<Result<void>> result;
@@ -82,7 +73,7 @@ public:
             return true;
         });
         if (result) return std::move(*result);
-        return failure(DiagnosticCode::NotFound, "no gameplay event sink is registered", binding.value().tag);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "no gameplay event sink is registered", binding.value().tag));
     }
 };
 
@@ -90,7 +81,7 @@ class ActionStateWindowHandler final : public IActionNotifyHandler {
 public:
     Result<void> handle(const ActionTimelineEvent& event, const ActionNotifyContext& context) override {
         if (event.kind != ActionTimelineEventKind::StateEnter && event.kind != ActionTimelineEventKind::StateExit)
-            return failure(DiagnosticCode::InvalidArgument, "state window requires enter or exit", "event.kind");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "state window requires enter or exit", "event.kind"));
         auto binding = ActionStateWindowBinding::fromPayload(event.type.format(), event.payload);
         if (!binding) return Result<void>::failure(binding.status());
         std::optional<Result<void>> result;
@@ -102,8 +93,7 @@ public:
             return true;
         });
         if (result) return std::move(*result);
-        return failure(DiagnosticCode::NotFound, "no state-window sink accepts the action block",
-                       event.type.format());
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "no state-window sink accepts the action block", event.type.format()));
     }
 };
 
@@ -116,7 +106,7 @@ public:
         if (event.kind == ActionTimelineEventKind::StateEnter)
             return Result<void>::success(Status::success(StatusCode::NoOp));
         if (event.kind != ActionTimelineEventKind::StateExit)
-            return failure(DiagnosticCode::InvalidArgument, "parameter curve requires state boundaries", "event.kind");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter curve requires state boundaries", "event.kind"));
         const auto found = active_.find(key);
         if (found == active_.end())
             return Result<void>::success(Status::success(StatusCode::NoOp));
@@ -133,8 +123,7 @@ public:
         auto binding = ActionParameterCurveBinding::fromPayload(block.payload);
         if (!binding) return Result<void>::failure(binding.status());
         if (block.duration <= Duration::zero())
-            return failure(DiagnosticCode::InvalidArgument, "parameter curve block duration must be positive",
-                           "duration");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter curve block duration must be positive", "duration"));
         const double progress = std::clamp(block.localTime.seconds() / block.duration.seconds(), 0.0, 1.0);
         const double value    = binding.value().sample(progress);
         const ActiveKey key{context.executionId, block.itemId.format()};
@@ -152,8 +141,7 @@ public:
         auto binding = ActionParameterCurveBinding::fromPayload(block.payload);
         if (!binding) return Result<void>::failure(binding.status());
         if (block.duration <= Duration::zero())
-            return failure(DiagnosticCode::InvalidArgument, "parameter curve block duration must be positive",
-                           "duration");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter curve block duration must be positive", "duration"));
         return Result<void>::success(Status::success(StatusCode::NoOp));
     }
 
@@ -173,8 +161,7 @@ private:
             return true;
         });
         if (result) return std::move(*result);
-        return failure(DiagnosticCode::NotFound,
-                       "no parameter sink accepts the action target", sample.target.format());
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "no parameter sink accepts the action target", sample.target.format()));
     }
 
     std::map<ActiveKey, ActiveParameter> active_;
@@ -189,16 +176,23 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         {"combat:damage", "Apply Damage", "Combat", ActionNotifyShape::Instant, {"damageType", "amount"}},
         {"presentation:vfx", "Spawn VFX", "Presentation", ActionNotifyShape::Instant, {"uri", "lifetimeSeconds"}},
         {"presentation:vfx-state", "VFX State", "Presentation", ActionNotifyShape::State, {"uri"}},
+        {"presentation:attack-vfx", "Attack VFX", "Presentation", ActionNotifyShape::Instant, {"lifetimeSeconds"}},
+        {"presentation:attack-vfx-state", "Attack VFX State", "Presentation", ActionNotifyShape::State, {}},
         {"presentation:audio", "Play Audio", "Presentation", ActionNotifyShape::Instant, {"uri"}},
         {"presentation:audio-state", "Audio State", "Presentation", ActionNotifyShape::State, {"uri"}},
         {"gameplay:prefab-spawn", "Spawn Prefab", "Gameplay", ActionNotifyShape::State, {"uri"}},
         {"presentation:camera", "Camera Cue", "Presentation", ActionNotifyShape::Instant, {"cue"}},
         {"combat:hitbox-window", "Hitbox Window", "Combat", ActionNotifyShape::State, {"hitbox"}},
         {"combat:invulnerability-window", "Invulnerability Window", "Combat", ActionNotifyShape::State, {}},
+        {"combat:guard-window", "Guard Window", "Combat", ActionNotifyShape::State, {"mode"}},
         {"input:combo-window", "Combo Window", "Input", ActionNotifyShape::State, {"input"}},
+        {"input:cancel-window", "Cancel Window", "Input", ActionNotifyShape::State, {"allows"}},
         {"collision:ignore-window", "Collision Ignore", "Collision", ActionNotifyShape::State, {"channel"}},
         {"movement:root-motion-window", "Root Motion", "Movement", ActionNotifyShape::State, {"mode"}},
-        {"presentation:parameter-curve", "Parameter Curve", "Presentation", ActionNotifyShape::State,
+        {"presentation:parameter-curve",
+         "Parameter Curve",
+         "Presentation",
+         ActionNotifyShape::State,
          {"target", "keys"}},
     };
     for (auto descriptor : builtins) {
@@ -213,8 +207,8 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         registry.registerHandler("gameplay:event", std::make_shared<ActionGameplayEventHandler>());
     if (!gameplayEventHandler) return Result<ActionNotifyRegistry>::failure(gameplayEventHandler.status());
     auto stateWindowHandler = std::make_shared<ActionStateWindowHandler>();
-    for (const char* type : {"collision:ignore-window", "combat:hitbox-window",
-                             "combat:invulnerability-window", "input:combo-window"}) {
+    for (const char* type : {"collision:ignore-window", "combat:hitbox-window", "combat:invulnerability-window",
+                             "combat:guard-window", "input:combo-window", "input:cancel-window"}) {
         auto registered = registry.registerHandler(type, stateWindowHandler);
         if (!registered) return Result<ActionNotifyRegistry>::failure(registered.status());
     }
@@ -231,17 +225,17 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
 }
 
 Result<void> ActionNotifyRegistry::registerDescriptor(ActionNotifyDescriptor descriptor) {
-    if (!validType(descriptor.type)) return failure(DiagnosticCode::InvalidArgument, "Notify type is invalid", "type");
+    if (!validType(descriptor.type)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Notify type is invalid", "type"));
     if (descriptor.displayName.empty())
-        return failure(DiagnosticCode::InvalidArgument, "Notify display name is empty", "displayName");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Notify display name is empty", "displayName"));
     if (descriptor.category.empty())
-        return failure(DiagnosticCode::InvalidArgument, "Notify category is empty", "category");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Notify category is empty", "category"));
     for (const auto& field : descriptor.requiredPayloadFields)
         if (field.empty())
-            return failure(DiagnosticCode::InvalidArgument, "Required payload field is empty", "requiredPayloadFields");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Required payload field is empty", "requiredPayloadFields"));
     const std::string key = descriptor.type;
     if (descriptors_.contains(key))
-        return failure(DiagnosticCode::AlreadyExists, "Notify descriptor is already registered", key);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::AlreadyExists, "Notify descriptor is already registered", key));
     descriptors_.emplace(key, std::move(descriptor));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -249,10 +243,10 @@ Result<void> ActionNotifyRegistry::registerDescriptor(ActionNotifyDescriptor des
 Result<void> ActionNotifyRegistry::registerHandler(std::string_view                      type,
                                                    std::shared_ptr<IActionNotifyHandler> handler) {
     if (!descriptors_.contains(type))
-        return failure(DiagnosticCode::NotFound, "Notify descriptor is not registered", std::string(type));
-    if (!handler) return failure(DiagnosticCode::InvalidArgument, "Notify handler is null", "handler");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Notify descriptor is not registered", std::string(type)));
+    if (!handler) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Notify handler is null", "handler"));
     if (handlers_.contains(type))
-        return failure(DiagnosticCode::AlreadyExists, "Notify handler is already registered", std::string(type));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::AlreadyExists, "Notify handler is already registered", std::string(type)));
     handlers_.emplace(std::string(type), std::move(handler));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -260,7 +254,7 @@ Result<void> ActionNotifyRegistry::registerHandler(std::string_view             
 Result<void> ActionNotifyRegistry::unregisterHandler(std::string_view type) {
     const auto found = handlers_.find(type);
     if (found == handlers_.end())
-        return failure(DiagnosticCode::NotFound, "Notify handler is not registered", std::string(type));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Notify handler is not registered", std::string(type)));
     handlers_.erase(found);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -268,8 +262,8 @@ Result<void> ActionNotifyRegistry::unregisterHandler(std::string_view type) {
 Result<ActionNotifyDescriptor> ActionNotifyRegistry::descriptor(std::string_view type) const {
     const auto found = descriptors_.find(type);
     if (found == descriptors_.end())
-        return failure<ActionNotifyDescriptor>(DiagnosticCode::NotFound, "Notify descriptor is not registered",
-                                               std::string(type));
+        return Result<ActionNotifyDescriptor>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Notify descriptor is not registered", std::string(type)));
     return Result<ActionNotifyDescriptor>::success(found->second);
 }
 
@@ -285,14 +279,13 @@ bool ActionNotifyRegistry::hasHandler(std::string_view type) const noexcept { re
 Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) const {
     auto found = descriptors_.find(event.type.format());
     if (found == descriptors_.end())
-        return failure(DiagnosticCode::NotFound, "Timeline event notify type is not registered", event.type.format());
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Timeline event notify type is not registered", event.type.format()));
     const bool instant = event.kind == ActionTimelineEventKind::Notify;
     if ((found->second.shape == ActionNotifyShape::Instant) != instant)
-        return failure(DiagnosticCode::InvalidArgument, "Timeline event boundary does not match notify shape",
-                       event.type.format());
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Timeline event boundary does not match notify shape", event.type.format()));
     for (const auto& field : found->second.requiredPayloadFields)
         if (!event.payload.contains(field))
-            return failure(DiagnosticCode::InvalidArgument, "Timeline event is missing required payload field", field);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Timeline event is missing required payload field", field));
     if (event.type.format() == "gameplay:prefab-spawn") {
         auto prefab = ActionPrefabSpawnBinding::fromPayload(event.payload);
         if (!prefab) return Result<void>::failure(prefab.status());
@@ -308,6 +301,13 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
                                                                         : ActionVfxShape::State;
         auto vfx = ActionVfxBinding::fromPayload(event.payload, shape);
         if (!vfx) return Result<void>::failure(vfx.status());
+    }
+    if (event.type.format() == "presentation:attack-vfx" ||
+        event.type.format() == "presentation:attack-vfx-state") {
+        const auto shape = event.kind == ActionTimelineEventKind::Notify ? ActionAttackVfxShape::Instant
+                                                                        : ActionAttackVfxShape::State;
+        auto attack = ActionAttackVfxBinding::fromPayload(event.payload, shape);
+        if (!attack) return Result<void>::failure(attack.status());
     }
     if (event.type.format() == "presentation:parameter-curve") {
         auto curve = ActionParameterCurveBinding::fromPayload(event.payload);
@@ -326,7 +326,8 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
         if (!gameplayEvent) return Result<void>::failure(gameplayEvent.status());
     }
     if (event.type.format() == "collision:ignore-window" || event.type.format() == "combat:hitbox-window" ||
-        event.type.format() == "combat:invulnerability-window" || event.type.format() == "input:combo-window") {
+        event.type.format() == "combat:invulnerability-window" || event.type.format() == "combat:guard-window" ||
+        event.type.format() == "input:combo-window" || event.type.format() == "input:cancel-window") {
         auto window = ActionStateWindowBinding::fromPayload(event.type.format(), event.payload);
         if (!window) return Result<void>::failure(window.status());
     }
@@ -338,8 +339,7 @@ Result<void> ActionNotifyRegistry::dispatch(const ActionTimelineEvent& event, co
     if (!valid) return valid;
     const auto handler = handlers_.find(event.type.format());
     if (handler == handlers_.end())
-        return failure(DiagnosticCode::NotFound, "No runtime handler is registered for notify type",
-                       event.type.format());
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "No runtime handler is registered for notify type", event.type.format()));
     return handler->second->handle(event, context);
 }
 
@@ -350,8 +350,7 @@ Result<void> ActionNotifyRegistry::dispatchUpdate(const ActionActiveBlock& block
     if (!valid) return valid;
     const auto handler = handlers_.find(block.type.format());
     if (handler == handlers_.end())
-        return failure(DiagnosticCode::NotFound, "No runtime handler is registered for notify type",
-                       block.type.format());
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "No runtime handler is registered for notify type", block.type.format()));
     return handler->second->update(block, context);
 }
 
@@ -363,8 +362,7 @@ Result<void> ActionNotifyRegistry::dispatchSample(const ActionActiveBlock& block
     if (!valid) return valid;
     const auto handler = handlers_.find(block.type.format());
     if (handler == handlers_.end())
-        return failure(DiagnosticCode::NotFound, "No preview handler is registered for notify type",
-                       block.type.format());
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "No preview handler is registered for notify type", block.type.format()));
     return handler->second->sample(block, context);
 }
 

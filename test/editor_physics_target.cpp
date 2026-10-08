@@ -35,7 +35,7 @@ SelectionSnapshot jointSelection(const PhysicsJointTarget& target) {
     return selection;
 }
 
-EditorResult<TransactionReceipt> commitCollider(PhysicsColliderTarget& target,
+Result<TransactionReceipt> commitCollider(PhysicsColliderTarget& target,
                                                 LocalTransactionBackend& transactions,
                                                 const DomainOperation& operation,
                                                 const char* id) {

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -30,7 +32,7 @@ uint32_t nextCodepointUtf8(const std::string &text, size_t &i);
  * `FontData` metrics (via FreeType) but are not drawn (no atlas entry).
  * Does not take ownership of the `FontData*` passed to the constructor.
  */
-class Font {
+class EVENGINE_API_BACKENDS Font {
 public:
     /** @brief Printable ASCII (0x20..0x7E), used when no explicit charset is given. */
     static std::string defaultCharset();

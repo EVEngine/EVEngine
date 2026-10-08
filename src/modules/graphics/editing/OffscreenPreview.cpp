@@ -42,7 +42,7 @@ GraphicsOffscreenPreviewService::GraphicsOffscreenPreviewService(graphics::Graph
 }
 GraphicsOffscreenPreviewService::~GraphicsOffscreenPreviewService() = default;
 
-EditorResult<OffscreenPreviewArtifact> GraphicsOffscreenPreviewService::render(const OffscreenPreviewRequest& request,
+Result<OffscreenPreviewArtifact> GraphicsOffscreenPreviewService::render(const OffscreenPreviewRequest& request,
                                                                                const DrawCallback&            draw,
                                                                                int           maximumDimension,
                                                                                std::uint64_t maximumPixels) {
@@ -71,7 +71,7 @@ EditorResult<OffscreenPreviewArtifact> GraphicsOffscreenPreviewService::render(c
     canvas->clear(graphics::Color(static_cast<float>(request.clearColor[0]), static_cast<float>(request.clearColor[1]),
                                   static_cast<float>(request.clearColor[2]), static_cast<float>(request.clearColor[3])),
                   0, 1.0);
-    EditorResult<void> drawn = [&]() -> EditorResult<void> {
+    Result<void> drawn = [&]() -> Result<void> {
         try {
             return draw(impl_->graphics, canvas);
         } catch (const std::exception& exception) {
@@ -83,7 +83,7 @@ EditorResult<OffscreenPreviewArtifact> GraphicsOffscreenPreviewService::render(c
         }
     }();
     if (!drawn.ok()) {
-        return EditorResult<OffscreenPreviewArtifact>::failure(drawn.status());
+        return Result<OffscreenPreviewArtifact>::failure(drawn.status());
     }
     std::unique_ptr<image::ImageData> pixels(canvas->newImageData());
     if (!pixels)
@@ -101,7 +101,7 @@ EditorResult<OffscreenPreviewArtifact> GraphicsOffscreenPreviewService::render(c
     return eve::editing::applied<OffscreenPreviewArtifact>(std::move(metadata));
 }
 
-EditorResult<const image::ImageData*> GraphicsOffscreenPreviewService::image(const std::string& handle,
+Result<const image::ImageData*> GraphicsOffscreenPreviewService::image(const std::string& handle,
                                                                              Revision           currentRevision) const {
     const auto found = impl_->artifacts.find(handle);
     if (found == impl_->artifacts.end())
@@ -115,7 +115,7 @@ EditorResult<const image::ImageData*> GraphicsOffscreenPreviewService::image(con
     return eve::editing::applied<const image::ImageData*>(found->second.pixels.get());
 }
 
-EditorResult<void> GraphicsOffscreenPreviewService::release(const std::string& handle) {
+Result<void> GraphicsOffscreenPreviewService::release(const std::string& handle) {
     if (!impl_->artifacts.erase(handle))
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.preview.artifact-not-found"),
                                           "Offscreen preview artifact was not found");

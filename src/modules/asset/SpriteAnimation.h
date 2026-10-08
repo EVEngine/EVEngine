@@ -1,6 +1,8 @@
 #pragma once
+
 #include <array>
 #include "asset/EvpackResourceReader.h"
+#include "common/Export.h"
 namespace eve {
 class Value;
 }
@@ -22,7 +24,7 @@ struct SpriteAnimationFrame {
  * @thread Const sampling is worker-safe. Callers supply finite nonnegative elapsed seconds.
  * @reentrancy No callbacks or locks. Reimport builds a new candidate without mutating existing clips.
  */
-class SpriteAnimationClip {
+class EVENGINE_API_FOUNDATION SpriteAnimationClip {
 public:
     /** @brief Decode eve.sprite-animation/1; reject unknown versions, ignore unknown fields.
      * @return Owning candidate or structured validation error. No previous schema exists to migrate.

@@ -1,3 +1,5 @@
+
+#include "common/Export.h"
 #ifndef EVE_TENSOR_GRAPH_H
 #define EVE_TENSOR_GRAPH_H
 
@@ -103,7 +105,7 @@ struct GraphNode {
     int qGroup = 0;                  // elements per scale group
 };
 
-class Graph {
+class EVENGINE_API_DOMAINS Graph {
 public:
     int  addNode(GraphNode node);
     const GraphNode &node(int id) const { return nodes_[static_cast<size_t>(id)]; }
@@ -122,7 +124,7 @@ private:
  * @brief Trace builder — TF2 `tf.function` analogue (`tf.func` in scripts).
  * While active, TF ops record into this graph.
  */
-class Func {
+class EVENGINE_API_DOMAINS Func {
 public:
     explicit Func(TF *owner);
     ~Func();
@@ -188,7 +190,7 @@ private:
 /**
  * @brief Optimized / scheduled graph ready to run with feeds.
  */
-class CompiledFunction {
+class EVENGINE_API_DOMAINS CompiledFunction {
 public:
     CompiledFunction();
     ~CompiledFunction();

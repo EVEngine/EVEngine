@@ -5,11 +5,6 @@
 
 namespace eve::graphics_editing {
 namespace {
-template <class T>
-editing::Result<T> fail(editing::Status status, const char* rule, std::string message) {
-    return editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 editing::Value vec3(glm::vec3 value) { return editing::Value::Array{value.x, value.y, value.z}; }
 
 bool readVec3(const editing::Value& value, glm::vec3& output) {
@@ -64,8 +59,9 @@ VegetationFieldTarget::VegetationFieldTarget(std::string id, graphics::Vegetatio
 editing::Result<std::unique_ptr<VegetationFieldTarget>> VegetationFieldTarget::create(
     std::string id, graphics::VegetationField& fieldValue) {
     if (id.empty())
-        return fail<std::unique_ptr<VegetationFieldTarget>>(
-            editing::Status::Rejected, "editor.vegetation-field.empty-id", "Vegetation field target ID is empty");
+        return editing::failed<std::unique_ptr<VegetationFieldTarget>>(
+            editing::Status::Rejected, editing::RuleId("editor.vegetation-field.empty-id"),
+            "Vegetation field target ID is empty");
     const auto revision = fieldValue.revision();
     auto       elements = fieldValue.snapshotElements();
     if (!elements.ok()) return editing::Result<std::unique_ptr<VegetationFieldTarget>>::failure(elements.status());
@@ -79,8 +75,9 @@ editing::Result<std::unique_ptr<VegetationFieldTarget>> VegetationFieldTarget::c
             std::unique_ptr<VegetationFieldTarget>(new VegetationFieldTarget(
                 std::move(id), &fieldValue, fieldValue.globalValues(), std::move(entries), revision)));
     } catch (const std::bad_alloc&) {
-        return fail<std::unique_ptr<VegetationFieldTarget>>(
-            editing::Status::Failed, "editor.vegetation-field.allocation", "Vegetation field target allocation failed");
+        return editing::failed<std::unique_ptr<VegetationFieldTarget>>(
+            editing::Status::Failed, editing::RuleId("editor.vegetation-field.allocation"),
+            "Vegetation field target allocation failed");
     }
 }
 
@@ -160,8 +157,9 @@ editing::Result<editing::DomainOperation> VegetationFieldTarget::makeTransform(
     const editing::SelectionSnapshot& selection, glm::vec3 center, glm::vec3 extents, float yaw) const {
     const Entry* before = selected(selection);
     if (!before || (field_ && field_->revision() != fieldRevision_))
-        return fail<editing::DomainOperation>(editing::Status::Conflict, "editor.vegetation-field.stale",
-                                              "Vegetation field transform targets stale state");
+        return editing::failed<editing::DomainOperation>(editing::Status::Conflict,
+                                                         editing::RuleId("editor.vegetation-field.stale"),
+                                                         "Vegetation field transform targets stale state");
     Entry after         = *before;
     after.value.center  = center;
     after.value.extents = extents;
@@ -183,22 +181,26 @@ editing::Result<editing::DomainOperation> VegetationFieldTarget::makeSet(const e
     const Entry* before     = selected(selection);
     const auto   descriptor = schema(selection).find(path);
     if (!before || !descriptor || mode != editing::PropertySetMode::Absolute)
-        return fail<editing::DomainOperation>(editing::Status::Rejected, "editor.vegetation-field.property",
-                                              "Vegetation field property edit is invalid");
+        return editing::failed<editing::DomainOperation>(editing::Status::Rejected,
+                                                         editing::RuleId("editor.vegetation-field.property"),
+                                                         "Vegetation field property edit is invalid");
     Entry after = *before;
     if (path == editing::PropertyPath("element.center")) {
         if (!readVec3(value, after.value.center))
-            return fail<editing::DomainOperation>(editing::Status::Rejected, "editor.vegetation-field.center",
-                                                  "Vegetation field center must be a finite vec3");
+            return editing::failed<editing::DomainOperation>(editing::Status::Rejected,
+                                                             editing::RuleId("editor.vegetation-field.center"),
+                                                             "Vegetation field center must be a finite vec3");
     } else if (path == editing::PropertyPath("element.extents")) {
         if (!readVec3(value, after.value.extents))
-            return fail<editing::DomainOperation>(editing::Status::Rejected, "editor.vegetation-field.extents",
-                                                  "Vegetation field extents must be a finite vec3");
+            return editing::failed<editing::DomainOperation>(editing::Status::Rejected,
+                                                             editing::RuleId("editor.vegetation-field.extents"),
+                                                             "Vegetation field extents must be a finite vec3");
     } else {
         const auto* number = value.getIf<double>();
         if (!number || !std::isfinite(*number))
-            return fail<editing::DomainOperation>(editing::Status::Rejected, "editor.vegetation-field.yaw",
-                                                  "Vegetation field yaw must be finite");
+            return editing::failed<editing::DomainOperation>(editing::Status::Rejected,
+                                                             editing::RuleId("editor.vegetation-field.yaw"),
+                                                             "Vegetation field yaw must be finite");
         after.value.yaw = static_cast<float>(*number);
     }
     graphics::VegetationField                validator;
@@ -214,8 +216,9 @@ editing::Result<editing::DomainOperation> VegetationFieldTarget::makeReset(const
                                                                            const editing::PropertyPath& path) const {
     const auto descriptor = schema(selection).find(path);
     if (!descriptor)
-        return fail<editing::DomainOperation>(editing::Status::Unsupported, "editor.vegetation-field.property",
-                                              "Unknown vegetation field property");
+        return editing::failed<editing::DomainOperation>(editing::Status::Unsupported,
+                                                         editing::RuleId("editor.vegetation-field.property"),
+                                                         "Unknown vegetation field property");
     return makeSet(selection, path, descriptor->defaultValue, editing::PropertySetMode::Absolute);
 }
 
@@ -225,8 +228,8 @@ editing::Result<void> VegetationFieldTarget::validateAndPublish(const std::vecto
         values.reserve(entries.size());
         for (const Entry& entry : entries) values.push_back(entry.value);
     } catch (const std::bad_alloc&) {
-        return fail<void>(editing::Status::Failed, "editor.vegetation-field.allocation",
-                          "Vegetation field publication allocation failed");
+        return editing::failed<void>(editing::Status::Failed, editing::RuleId("editor.vegetation-field.allocation"),
+                                     "Vegetation field publication allocation failed");
     }
     if (!field_) {
         graphics::VegetationField validator;
@@ -234,8 +237,9 @@ editing::Result<void> VegetationFieldTarget::validateAndPublish(const std::vecto
         return result.ok() ? editing::applied<void>() : editing::Result<void>::failure(result.status());
     }
     if (field_->revision() != fieldRevision_)
-        return fail<void>(editing::Status::Conflict, "editor.vegetation-field.runtime-stale",
-                          "Vegetation field changed outside this editor target");
+        return editing::failed<void>(editing::Status::Conflict,
+                                     editing::RuleId("editor.vegetation-field.runtime-stale"),
+                                     "Vegetation field changed outside this editor target");
     const auto result = field_->replace(globals_, values);
     if (!result.ok()) return editing::Result<void>::failure(result.status());
     fieldRevision_ = field_->revision();
@@ -244,26 +248,26 @@ editing::Result<void> VegetationFieldTarget::validateAndPublish(const std::vecto
 
 editing::Result<void> VegetationFieldTarget::applyDomainOperation(const editing::DomainOperation& operation) {
     if (operation.target != targetId() || operation.type != "vegetation-field.element.transform.v1")
-        return fail<void>(editing::Status::Rejected, "editor.vegetation-field.operation",
-                          "Vegetation field operation mismatch");
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("editor.vegetation-field.operation"),
+                                     "Vegetation field operation mismatch");
     const auto* idValue = field(operation.payload, "id");
     const auto* id      = idValue ? idValue->getIf<std::string>() : nullptr;
     Entry*      current = id ? selected(*id) : nullptr;
     if (!current)
-        return fail<void>(editing::Status::NotFound, "editor.vegetation-field.element",
-                          "Vegetation field element was not found");
+        return editing::failed<void>(editing::Status::NotFound, editing::RuleId("editor.vegetation-field.element"),
+                                     "Vegetation field element was not found");
     Entry       replacementEntry = *current;
     const auto* center           = field(operation.payload, "center");
     const auto* extents          = field(operation.payload, "extents");
     if (!center || !extents || !readVec3(*center, replacementEntry.value.center) ||
         !readVec3(*extents, replacementEntry.value.extents))
-        return fail<void>(editing::Status::Rejected, "editor.vegetation-field.transform",
-                          "Vegetation field transform payload is invalid");
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("editor.vegetation-field.transform"),
+                                     "Vegetation field transform payload is invalid");
     const auto* yawValue = field(operation.payload, "yaw");
     const auto* yaw      = yawValue ? yawValue->getIf<double>() : nullptr;
     if (!yaw || !std::isfinite(*yaw))
-        return fail<void>(editing::Status::Rejected, "editor.vegetation-field.transform",
-                          "Vegetation field transform payload is invalid");
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("editor.vegetation-field.transform"),
+                                     "Vegetation field transform payload is invalid");
     replacementEntry.value.yaw = static_cast<float>(*yaw);
     auto candidate             = entries_;
     *std::find_if(candidate.begin(), candidate.end(), [&](const Entry& entry) { return entry.id == current->id; }) =
@@ -286,8 +290,8 @@ editing::Result<void> VegetationFieldTarget::commitDomainState(
     std::unique_ptr<editing::IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<VegetationFieldTarget*>(candidate.get());
     if (!typed || typed->id_ != id_ || !field_)
-        return fail<void>(editing::Status::Conflict, "editor.vegetation-field.candidate",
-                          "Vegetation field candidate does not match this target");
+        return editing::failed<void>(editing::Status::Conflict, editing::RuleId("editor.vegetation-field.candidate"),
+                                     "Vegetation field candidate does not match this target");
     auto published = validateAndPublish(typed->entries_);
     if (!published.ok()) return published;
     globals_  = typed->globals_;

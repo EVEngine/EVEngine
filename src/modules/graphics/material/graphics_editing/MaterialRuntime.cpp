@@ -9,11 +9,6 @@
 namespace eve::material_editing {
 namespace {
 
-template <class T>
-EditorResult<T> runtimeError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue::Object* properties(const MaterialDocumentTarget& target,
                                       EditorValue& snapshot) {
     snapshot = target.snapshotValue();
@@ -30,7 +25,7 @@ const T* value(const EditorValue::Object& properties, const char* path) {
 }
 
 template <class T, class Resolver>
-EditorResult<T*> resolveAsset(const std::string& asset, Resolver&& resolver) {
+Result<T*> resolveAsset(const std::string& asset, Resolver&& resolver) {
     if (asset.empty()) return eve::editing::applied<T*>(nullptr);
     return resolver(asset);
 }
@@ -57,25 +52,25 @@ double number(const EditorValue& value) {
 
 Renderable3DMaterialRuntimeSink::~Renderable3DMaterialRuntimeSink() = default;
 
-EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
+Result<void> Renderable3DMaterialRuntimeSink::publish(
     const MaterialDocumentTarget& candidate) {
     if (!impl_->assets)
-        return runtimeError<void>(EditorStatus::Rejected, "editor.material.runtime-input",
-                                  "Material asset resolver is required");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.runtime-input"),
+                                          "Material asset resolver is required");
     auto* renderable = dynamic_cast<graphics::Renderable3D*>(ecs::try_get(impl_->handle));
     if (!renderable)
-        return runtimeError<void>(EditorStatus::Conflict, "editor.material.runtime-stale",
-                                  "Renderable3D handle is missing or stale");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material.runtime-stale"),
+                                          "Renderable3D handle is missing or stale");
     const auto diagnostics = candidate.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics) {
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     }
     EditorValue snapshot;
     const auto* values = properties(candidate, snapshot);
     if (!values)
-        return runtimeError<void>(EditorStatus::Failed, "editor.material.runtime-properties",
-                                  "Material properties are unavailable");
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.material.runtime-properties"),
+                                          "Material properties are unavailable");
     const bool vegetationAlpha = *value<bool>(*values, "vegetation.alpha.enabled");
     const bool vegetationEmission = *value<bool>(*values, "vegetation.emission.enabled");
     const bool vegetationGradient = *value<bool>(*values, "vegetation.gradient.enabled");
@@ -97,9 +92,8 @@ EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
         (surfaceMode != "opaque" && !(vegetationAlpha && surfaceMode == "masked")) ||
         *value<std::string>(*values, "surface.blend") != "alpha" ||
         *value<bool>(*values, "surface.double-sided"))
-        return runtimeError<void>(EditorStatus::Unsupported,
-                                  "editor.material.runtime-legacy-surface",
-                                  "Legacy Renderable3D supports PBR opaque single-sided materials only");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.material.runtime-legacy-surface"),
+                                          "Legacy Renderable3D supports PBR opaque single-sided materials only");
 
     std::array<graphics::Texture*, 14> textures{};
     constexpr const char* texturePaths[] = {
@@ -127,18 +121,19 @@ EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
         auto resolved = resolveAsset<graphics::Texture>(
             *value<std::string>(*values, texturePaths[i]),
             [&](const std::string& asset) { return impl_->assets->resolveTexture(asset); });
-        if (!resolved.ok()) return EditorResult<void>::failure(resolved.status());
+        if (!resolved.ok()) return Result<void>::failure(resolved.status());
         textures[i] = resolved.value();
     }
     auto shader = resolveAsset<graphics::Shader>(
         *value<std::string>(*values, "textures.shader"),
         [&](const std::string& asset) { return impl_->assets->resolveShader(asset); });
-    if (!shader.ok()) return EditorResult<void>::failure(shader.status());
+    if (!shader.ok()) return Result<void>::failure(shader.status());
 
     graphics::Material* runtimeMaterial = renderable->getMaterial();
     if (vegetationExtended && !runtimeMaterial)
-        return runtimeError<void>(EditorStatus::Unsupported, "editor.material.runtime-vegetation-material",
-                                  "Extended PBR vegetation editing requires a Material bound to Renderable3D");
+        return eve::editing::failed<void>(EditorStatus::Unsupported,
+                                          RuleId("editor.material.runtime-vegetation-material"),
+                                          "Extended PBR vegetation editing requires a Material bound to Renderable3D");
     if (runtimeMaterial && (vegetationExtended || runtimeMaterial->hasPbrSurface())) {
         graphics::PbrSurface surface             = runtimeMaterial->pbrSurface();
         surface.vegetationAlpha.enabled          = vegetationAlpha;
@@ -383,8 +378,9 @@ EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
         }
         auto published = runtimeMaterial->setPbrSurface(surface);
         if (!published)
-            return runtimeError<void>(EditorStatus::Rejected, "editor.material.runtime-vegetation-invalid",
-                                      published.error()->message());
+            return eve::editing::failed<void>(EditorStatus::Rejected,
+                                              RuleId("editor.material.runtime-vegetation-invalid"),
+                                              published.error()->message());
     }
 
     const auto& tint = *value<EditorValue::Array>(*values, "shading.tint");

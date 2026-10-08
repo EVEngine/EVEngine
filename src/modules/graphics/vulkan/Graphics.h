@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <vector>
 #include "common/Capability.h"
+#include "common/Export.h"
 #include "common/GpuTimer.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
@@ -21,6 +22,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/PbrSurface.h"
 #include "graphics/PrimitiveTypes.h"
+#include "graphics/RayTracingCaps.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
@@ -201,6 +203,18 @@ struct SkinPassUBO {
 };
 static_assert(sizeof(SkinPassUBO) == 160, "SkinPassUBO must match std140 shaders");
 
+struct DeferredLightingUBO {
+    glm::mat4 invViewProj{1.f};
+    glm::mat4 view{1.f};
+    glm::vec4 lightDir{0.4f, 1.f, 0.3f, 0.f};
+    glm::vec4 lightColor{1.f, 1.f, 1.f, 0.f};
+    glm::vec4 cameraPos{0.f, 0.f, 3.f, 0.f};
+    glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f};
+    glm::vec4 gridInfo{16.f, 9.f, 24.f, 0.f};
+    glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};
+};
+static_assert(sizeof(DeferredLightingUBO) == 224, "DeferredLightingUBO must match std140 shader");
+
 struct Mesh3DClusteredUBO {
     glm::mat4 mvp{1.f};
     glm::mat4 model{1.f};
@@ -301,7 +315,7 @@ struct GpuShader {
     Shader *owner = nullptr;
 };
 
-class Graphics final : public eve::graphics::Graphics, public eve::service::IGpuTimer {
+class EVENGINE_API_BACKENDS Graphics final : public eve::graphics::Graphics, public eve::service::IGpuTimer {
 public:
     // Keep the base draw(Drawable*, mat4) overload visible alongside the
     // canvas composite overloads below.
@@ -325,6 +339,7 @@ public:
     float gpuFrameMs() const override;
 
     std::string getBackendName() const override;
+    bool        supportsRuntimeGlslCompilation() const override;
 
     void initWithWindow(void *nativeWindow) override;
     void initHeadless(int width, int height) override;
@@ -354,6 +369,11 @@ public:
     /** @brief Capabilities probed at device creation; empty when unavailable. */
     const GpuDrivenCaps &gpuDrivenCaps() const { return gpuDrivenCaps_; }
 
+    /** @brief Hardware ray-tracing capabilities probed at device creation. */
+    const RayTracingCaps& rayTracingCapsRef() const { return rayTracingCaps_; }
+    RayTracingCaps        rayTracingCaps() const override { return rayTracingCaps_; }
+    bool                  supportsRayTracing() const override { return rayTracingCaps_.rayTracingAvailable(); }
+
     /** @brief Per-frame arena for the current swapchain frame slot. */
     FrameArena &currentFrameArena();
 
@@ -372,6 +392,8 @@ public:
     bool supportsGpuDriven3D() const override {
         return gpuDrivenCaps_.gpuDrivenAvailable();
     }
+    bool supportsDeferredLighting() const override { return true; }
+    void drawDeferredLighting() override;
     bool gpuDrivenEnabled() const override {
         return gpuDrivenEnabled_ && gpuDrivenCaps_.gpuDrivenAvailable();
     }
@@ -514,8 +536,11 @@ public:
         Texture *displacement, float cx, float cy, float w, float h, float degrees, float u0,
         float v0, float u1, float v1, float strengthPixels, float opacity,
         bool rotatedUV = false) override;
-    void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
-                               float u0, float v0, float u1, float v1, const Color &color) override;
+    void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0, float v0,
+                               float u1, float v1, const Color &color, BlendMode blend = BlendMode::Alpha) override;
+    void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w, float h,
+                                      float degrees, float u0, float v0, float u1, float v1, const Color &color,
+                                      BlendMode blend = BlendMode::Alpha) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
     Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                              const std::vector<uint32_t> &fragSpv) override;
@@ -627,6 +652,9 @@ public:
     void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) override;
     [[nodiscard]] Result<void> setSceneToneMapping(SceneToneMapping mode) override;
     SceneToneMapping           getSceneToneMapping() const override { return sceneToneMapping_; }
+    [[nodiscard]] Result<void> setDisplayOutputMode(DisplayOutputMode mode) override;
+    [[nodiscard]] Result<void> setDisplayHdrCalibration(float paperWhiteNits, float peakNits) override;
+    [[nodiscard]] Result<DisplayOutputSupport> queryDisplayOutputSupport() const override;
     void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
     float getSceneExposure() const override { return sceneExposure; }
     void setSceneColorFilter(const glm::vec3& color) override {
@@ -728,6 +756,17 @@ public:
 
     vkb::Device &getDevice() { return device; }
     vk::CommandPool getUploadPool() const { return uploadPool; }
+    /**
+     * @brief True when the present command buffer is open and the scene-color
+     * pass has ended, so post-scene GPU work (e.g. ray tracing) can record into
+     * the same frame stream.
+     */
+    bool canRecordPostSceneGpuWork() const { return bool(presentRecording) && !sceneColorPassOpen; }
+    /**
+     * @brief Borrow the open present command buffer for post-scene recording.
+     * @pre canRecordPostSceneGpuWork() is true.
+     */
+    vk::CommandBuffer&          postSceneCommandBuffer() { return currentPresentCb(); }
     vk::DescriptorSetLayout getTexSetLayout() const { return texSetLayout; }
     vk::DescriptorPool getDescriptorPool() const { return descriptorPool; }
     const vkb::BuiltRenderPass &getOffscreenRenderPass(bool hdr = false) const {
@@ -768,6 +807,7 @@ public:
     struct LitBatch {
         Texture *albedo = nullptr;
         Texture *normal = nullptr;
+        BlendMode blend  = BlendMode::Alpha;
         Batcher batch;
     };
 
@@ -784,6 +824,7 @@ private:
     struct DecalSetKeyHash;
     struct GBufferSlot;
     void createSwapchainAndPipeline();
+    void applyPreferredSwapchainFormats(vkb::SwapchainBuilder &builder);
     void createTexturedPipeline();
     void createLit2DPipeline();
     void          createGpuParticlePipelines();
@@ -798,6 +839,8 @@ private:
     void          drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
+    void                                                   createDeferredLightingPipeline();
+    void                                                   destroyDeferredLightingResources();
     void createVoxelRectPipeline();
     vk::Pipeline buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
                                         vk::SampleCountFlagBits samples);
@@ -857,6 +900,29 @@ private:
     void          ensureHdrOffscreenPipelines();
     void          ensureShaderOffscreenPipeline(Shader *shader);
     void          ensureShaderHdrOffscreenPipeline(Shader *shader);
+    /** @brief Destroy present render-pass pipelines so a new swapchain format can rebuild them. */
+    void          destroyPresentGraphicsPipelines();
+    /** @brief Rebuild particle draw pipelines against the given present/compose render pass. */
+    void          rebuildGpuParticleDrawPipelines(const vkb::BuiltRenderPass &target);
+    /** @brief Lazily build particle draw pipelines for the HDR compose render pass. */
+    void          ensureHdrGpuParticleDrawPipelines();
+    /** @brief Ensure the linear HDR compose target used before the final display encode. */
+    void          ensurePresentComposeResources(int width, int height);
+    void          destroyPresentComposeResources();
+    struct PresentComposeSlot;
+    /**
+     * @brief Active-frame HDR compose slot (color target + sample texture).
+     * @ownership Returned pointer is owned by Graphics; do not delete.
+     * @lifetime Borrowed until the next present-compose recreate, swapchain tear-down,
+     *           or Graphics shutdown. Invalid after destroyPresentComposeResources().
+     * @return Null when compose resources are not allocated.
+     */
+    PresentComposeSlot *currentPresentComposeSlot();
+    /** @brief Begin/end the HDR compose pass on the present command buffer. */
+    bool          beginPresentComposePass();
+    void          endPresentComposePass();
+    /** @brief Fullscreen encode of the compose target into the HDR swapchain. */
+    void          encodePresentComposeToSwapchain(vk::CommandBuffer cb);
     vk::Pipeline  createTexturedStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
                                               const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout,
                                               BlendMode mode = BlendMode::Alpha,
@@ -908,9 +974,9 @@ private:
     void noteTexturedOverlay(Texture *tex, uint32_t batchIndex);
     void noteLitOverlay(uint32_t batchIndex);
     void clear2DBatches();
-    void          drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
-                                 std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
-                                 size_t &texBufIndex, bool offscreen);
+    void          drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, std::vector<LitBatch> &batches,
+                                 std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex, bool offscreen,
+                                 bool hdr = false);
     vkb::BoundSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen);
     vkb::BoundSet post2SetFor(GpuTexture *color, GpuTexture *depth,
                               GpuTexture *motion = nullptr, GpuTexture *extra = nullptr,
@@ -1013,7 +1079,11 @@ private:
     vk::Pipeline opaqueTexPipeline;
     vk::Pipeline particleDistortionPipeline;
     vk::Pipeline sceneTonemapPipeline;
+    /** @brief Attachment format the present render pass / pipelines were built for. */
+    vk::Format presentAttachmentFormat_ = vk::Format::eUndefined;
     SceneToneMapping              sceneToneMapping_      = SceneToneMapping::Aces;
+    vk::SurfaceFormatKHR          selectedSurfaceFormat_{vk::Format::eB8G8R8A8Unorm,
+                                                vk::ColorSpaceKHR::eSrgbNonlinear};
     float sceneExposure = 1.f;
     glm::vec3 sceneColorFilter{1.f};
     glm::vec3 sceneLift{0.f};
@@ -1051,6 +1121,27 @@ private:
     vk::Pipeline offscreenOpaqueTexPipeline;
     vk::Pipeline hdrOffscreenTexPipeline;
     vk::Pipeline hdrOffscreenOpaqueTexPipeline;
+    vk::Pipeline hdrOffscreenAdditiveTexPipeline;
+    vk::Pipeline hdrOffscreenPremultipliedTexPipeline;
+    vk::Pipeline hdrOffscreenMultiplyTexPipeline;
+    vk::Pipeline hdrOffscreenSolidPipeline;
+    vk::Pipeline hdrOffscreenSolidAlphaPipeline;
+    vk::Pipeline hdrOffscreenAdditiveSolidPipeline;
+    vk::Pipeline hdrOffscreenPremultipliedSolidPipeline;
+    vk::Pipeline hdrOffscreenMultiplySolidPipeline;
+    vk::Pipeline hdrOffscreenLitPipeline;
+    vk::Pipeline         hdrOffscreenLitAdditivePipeline;
+    vk::Pipeline         hdrOffscreenLitPremultipliedPipeline;
+    vk::Pipeline         hdrOffscreenLitMultiplyPipeline;
+    vk::Pipeline         hdrOffscreenLitOpaquePipeline;
+    vk::Pipeline hdrOffscreenTonemapPipeline;
+    vk::Pipeline hdrOffscreenParticleDistortionPipeline;
+    vk::Pipeline hdrGpuParticleAlphaPipeline_{};
+    vk::Pipeline hdrGpuParticleAdditivePipeline_{};
+    vk::Pipeline hdrGpuParticlePremultipliedPipeline_{};
+    vk::Pipeline hdrGpuParticleMultiplyPipeline_{};
+    vk::Pipeline hdrGpuParticleOpaquePipeline_{};
+    bool presentComposeActive_ = false;
 
     vk::DescriptorSetLayout mesh3dSetLayout;
     vk::UniqueDescriptorSetLayout mesh3dSetLayoutUnique;
@@ -1200,6 +1291,7 @@ private:
 
     // ---- GPU-driven (stage 0): bindless set + per-frame arena + tables ----
     GpuDrivenCaps gpuDrivenCaps_{};
+    RayTracingCaps          rayTracingCaps_{};
     std::vector<FrameArena> frameArenas_;
 
     vk::UniqueDescriptorSetLayout bindlessSetLayoutUnique_{};
@@ -1297,6 +1389,14 @@ private:
     vk::PipelineLayout mesh3dGpuDrivenPipelineLayout = nullptr;
     vk::Pipeline mesh3dGpuDrivenPipeline = nullptr;
     vk::Pipeline resolveVisPipeline = nullptr;
+    // Phase C: Hybrid clustered deferred lighting (fullscreen into scene color).
+    vk::DescriptorSetLayout       deferredLightingSetLayout{};
+    vk::UniqueDescriptorSetLayout deferredLightingSetLayoutUnique;
+    vk::PipelineLayout            deferredLightingPipelineLayout{};
+    vk::Pipeline                  deferredLightingPipeline{};
+    vkb::GenericBuffer            deferredLightingUbo{};
+    vk::DescriptorSet             deferredLightingSet{};
+    vk::Sampler                   deferredLightingSampler{};
     void createMesh3DGpuDrivenPipeline();
     /** @brief Per-frame set0 (dynamic Frame UBO + shadow ring offsets). */
     struct GpuDrivenFrameSet0 {
@@ -1416,6 +1516,8 @@ private:
         vkb::ColorTarget normal;
         vkb::ColorTarget depthColor;
         vkb::ColorTarget albedo;
+        vkb::ColorTarget pbrParams;  // RGBA8: metallic, roughness, occlusion, specularFactor
+        vkb::ColorTarget emissive;   // RGB emissive (A unused)
         vkb::ColorTarget visID;    // R32G32UI: x = instance, y = pooled index offset
         vkb::ColorTarget visBary;  // R16G16F: barycentric (u, v)
         vkb::DepthTarget depth;
@@ -1424,12 +1526,16 @@ private:
         GpuTexture normalGpu{};
         GpuTexture depthColorGpu{};
         GpuTexture albedoGpu{};
+        GpuTexture       pbrParamsGpu{};
+        GpuTexture       emissiveGpu{};
         GpuTexture visIDGpu{};
         GpuTexture visBaryGpu{};
         GpuTexture depthGpu{};
         Texture normalTex{};
         Texture depthColorTex{};
         Texture albedoTex{};
+        Texture          pbrParamsTex{};
+        Texture          emissiveTex{};
         Texture visIDTex{};
         Texture visBaryTex{};
         Texture depthTex{};
@@ -1629,6 +1735,19 @@ private:
     vk::Pipeline uiTextureOpaquePipeline{};
     UiColorSlot *currentUiColorSlot();
 
+    // Linear HDR compose target: scene + overlays blend in paper-white-relative
+    // display-linear space, then a single fullscreen tonemap encodes to the
+    // HDR10/scRGB swapchain.
+    struct PresentComposeSlot {
+        vkb::ColorTarget color;
+        vk::Framebuffer framebuffer{};
+        GpuTexture colorGpu{};
+        Texture colorTex{};
+    };
+    int presentComposeWidth = 0;
+    int presentComposeHeight = 0;
+    std::vector<PresentComposeSlot> presentComposeSlots;
+
     vkb::Present presentModel;
     vkb::RecordingCmd presentRecording;
     vkb::InRenderPass swapchainPass;
@@ -1647,7 +1766,7 @@ private:
     };
     std::vector<SolidBatch> solidBatches;
     struct TexturedBatch {
-        enum class Effect { Default, SceneColorDistortion };
+        enum class Effect { Default, SceneColorDistortion, DisplayEncode };
         Texture *texture = nullptr;
         Texture *depth = nullptr;
         Shader *shader = nullptr;
@@ -1685,9 +1804,12 @@ private:
     GpuParticleHandle                                           nextGpuParticleHandle_ = 1;
     vk::DescriptorSetLayout                                     gpuParticleComputeSetLayout_{};
     vk::DescriptorSetLayout                                     gpuParticleDrawSetLayout_{};
+    vk::DescriptorSetLayout                                     gpuParticleSortSetLayout_{};
     vk::PipelineLayout                                          gpuParticleComputeLayout_{};
     vk::PipelineLayout                                          gpuParticleDrawLayout_{};
+    vk::PipelineLayout                                          gpuParticleSortLayout_{};
     vk::Pipeline                                                gpuParticleComputePipeline_{};
+    vk::Pipeline                                                gpuParticleSortPipeline_{};
     vk::Pipeline                                                gpuParticleAlphaPipeline_{};
     vk::Pipeline                                                gpuParticleAdditivePipeline_{};
     vk::Pipeline                                                gpuParticlePremultipliedPipeline_{};
@@ -1710,7 +1832,17 @@ private:
     vk::UniqueDescriptorSetLayout lit2dSetLayoutUnique;
     vk::PipelineLayout lit2dPipelineLayout;
     vk::Pipeline lit2dPipeline;
+    vk::Pipeline                  lit2dAdditivePipeline;
+    vk::Pipeline                  lit2dPremultipliedPipeline;
+    vk::Pipeline                  lit2dMultiplyPipeline;
+    vk::Pipeline                  lit2dOpaquePipeline;
     vk::Pipeline offscreenLitPipeline;
+    vk::Pipeline                  offscreenLitAdditivePipeline;
+    vk::Pipeline                  offscreenLitPremultipliedPipeline;
+    vk::Pipeline                  offscreenLitMultiplyPipeline;
+    vk::Pipeline                  offscreenLitOpaquePipeline;
+    /** @brief Select lit2d pipeline for swapchain / offscreen / HDR canvas / HDR compose. */
+    vk::Pipeline                    selectLit2DPipeline(BlendMode blend, bool offscreen, bool hdr = false) const;
     std::vector<vkb::GenericBuffer> lighting2dUboSlots;  // per swapchain frame slot
     vkb::GenericBuffer offscreenLighting2dUbo;           // synchronous offscreen path
     Lighting2DUBO lighting2dFrame{};

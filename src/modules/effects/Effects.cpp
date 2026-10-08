@@ -21,19 +21,13 @@ struct ScriptEffectContainer {
     EffectContainerHandleRef reference;
 };
 
-template <class T>
-eve::Result<T> effectsBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "effects.squirrel"));
-}
-
 eve::Result<EffectDefinition> effectDefinitionFromBinding(const std::string& type, int priority, float duration,
                                                           const std::string& stackKey,
                                                           const std::string& policyNameValue) {
     StackPolicy policy;
     if (!parsePolicy(policyNameValue, policy))
-        return effectsBindingFailure<EffectDefinition>(eve::DiagnosticCode::InvalidArgument,
-                                                       "unknown effect stack policy", "policy");
+        return eve::Result<EffectDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "unknown effect stack policy", "policy", {}, "effects.squirrel"));
 
     EffectDefinition definition;
     definition.id       = type;
@@ -60,17 +54,17 @@ eve::Value effectUpdateProjection(EffectUpdateSummary summary) {
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned effects proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned effects allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -94,8 +88,9 @@ eve::script::Borrowed<EffectContainer> Effects::resolve(EffectContainerHandleRef
 eve::Result<void> Effects::release(EffectContainerHandleRef reference) {
     Effects* module = ModuleManager::getInstance<Effects>("Effects");
     if (!module)
-        return effectsBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Effects module is no longer loaded",
-                                           "container");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "Effects module is no longer loaded", "container", {},
+                                                                 "effects.squirrel"));
     return module->containers_.erase(reference);
 }
 
@@ -120,16 +115,18 @@ void Effects::expose(ssq::Table& table) {
     payload.addFunc("setJson", [vm](EffectPayload* value, const std::string& key, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, effectsBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "effect payload must not be null",
-                                                "payload"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "effect payload must not be null", "payload", {},
+                                                                      "effects.squirrel")));
         return eve::script::projectResult(vm, value->setJson(key, json));
     });
     payload.addFunc("has", &EffectPayload::has);
     payload.addFunc("erase", [vm](EffectPayload* value, const std::string& key) {
         if (!value)
             return eve::script::projectResult(
-                vm, effectsBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "effect payload must not be null",
-                                                "payload"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "effect payload must not be null", "payload", {},
+                                                                      "effects.squirrel")));
         return eve::script::projectResult(vm, value->erase(key));
     });
     payload.addFunc("getJson", &EffectPayload::getJson);
@@ -151,14 +148,16 @@ void Effects::expose(ssq::Table& table) {
     effect.addFunc("getPayload", [](Effect* value) -> EffectPayload* { return value ? &value->payload : nullptr; });
     effect.addFunc("addTag", [vm](Effect* value, const std::string& tag) {
         if (!value)
-            return eve::script::projectResult(vm, effectsBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                                              "effect must not be null", "effect"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument, "effect must not be null",
+                                                      "effect", {}, "effects.squirrel")));
         return eve::script::projectResult(vm, value->addTag(tag));
     });
     effect.addFunc("removeTag", [vm](Effect* value, const std::string& tag) {
         if (!value)
-            return eve::script::projectResult(vm, effectsBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                                              "effect must not be null", "effect"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument, "effect must not be null",
+                                                      "effect", {}, "effects.squirrel")));
         return eve::script::projectResult(vm, value->removeTag(tag));
     });
     effect.addFunc("hasTag", [](Effect* value, const std::string& tag) { return value && value->hasTag(tag); });
@@ -185,17 +184,18 @@ void Effects::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                effectsBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                   "effect container must not be null", "container"),
+                eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "effect container must not be null",
+                                                                         "container", {}, "effects.squirrel")),
                 [](std::string&& id) { return eve::Value(std::move(id)); });
         auto definition = effectDefinitionFromBinding(type, priority, duration, stackKey, policyNameValue);
         if (!definition.ok())
             return eve::script::projectResult(
                 vm,
-                effectsBindingFailure<std::string>(definition.code() == eve::StatusCode::Rejected
-                                                       ? eve::DiagnosticCode::InvalidArgument
-                                                       : eve::DiagnosticCode::Failed,
-                                                   definition.status().describe(), "definition"),
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    definition.code() == eve::StatusCode::Rejected ? eve::DiagnosticCode::InvalidArgument
+                                                                   : eve::DiagnosticCode::Failed,
+                    definition.status().describe(), "definition", {}, "effects.squirrel")),
                 [](std::string&& id) { return eve::Value(std::move(id)); });
         EffectDefinition input = std::move(definition).takeValue();
         return eve::script::projectResult(vm, value->apply(input, subject, source),
@@ -208,17 +208,18 @@ void Effects::expose(ssq::Table& table) {
             if (!value)
                 return eve::script::projectResult(
                     vm,
-                    effectsBindingFailure<eve::EffectId>(eve::DiagnosticCode::InvalidArgument,
-                                                         "effect container must not be null", "container"),
+                    eve::Result<eve::EffectId>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                               "effect container must not be null",
+                                                                               "container", {}, "effects.squirrel")),
                     [](eve::EffectId id) { return eve::Value(id.isNil() ? std::string{} : id.format()); });
             auto definition = effectDefinitionFromBinding(type, priority, duration, stackKey, policyNameValue);
             if (!definition.ok())
                 return eve::script::projectResult(
                     vm,
-                    effectsBindingFailure<eve::EffectId>(definition.code() == eve::StatusCode::Rejected
-                                                             ? eve::DiagnosticCode::InvalidArgument
-                                                             : eve::DiagnosticCode::Failed,
-                                                         definition.status().describe(), "definition"),
+                    eve::Result<eve::EffectId>::failure(eve::Diagnostic::error(
+                        definition.code() == eve::StatusCode::Rejected ? eve::DiagnosticCode::InvalidArgument
+                                                                       : eve::DiagnosticCode::Failed,
+                        definition.status().describe(), "definition", {}, "effects.squirrel")),
                     [](eve::EffectId id) { return eve::Value(id.isNil() ? std::string{} : id.format()); });
             EffectDefinition input = std::move(definition).takeValue();
             return eve::script::projectResult(vm, value->applyCanonical(input, subject, source), [](eve::EffectId id) {
@@ -228,16 +229,18 @@ void Effects::expose(ssq::Table& table) {
     container.addFunc("remove", [vm](EffectContainer* value, const std::string& id, const std::string& reason) {
         if (!value)
             return eve::script::projectResult(
-                vm, effectsBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "effect container must not be null", "container"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "effect container must not be null", "container",
+                                                                      {}, "effects.squirrel")));
         return eve::script::projectResult(vm, value->remove(id, reason));
     });
     container.addFunc("update", [vm](EffectContainer* value, float dtSeconds) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                effectsBindingFailure<EffectUpdateSummary>(eve::DiagnosticCode::InvalidArgument,
-                                                           "effect container must not be null", "container"),
+                eve::Result<EffectUpdateSummary>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 "effect container must not be null",
+                                                                                 "container", {}, "effects.squirrel")),
                 [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
         return eve::script::projectResult(vm, value->update(dtSeconds),
                                           [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
@@ -280,8 +283,9 @@ void Effects::expose(ssq::Table& table) {
     ownedContainer.addFunc("release", [vm](ScriptEffectContainer* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, effectsBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "owned effect container proxy must not be null", "container"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned effect container proxy must not be null",
+                                                                      "container", {}, "effects.squirrel")));
         auto result = Effects::release(value->reference);
         // Retain the coordinates after release so the same script object can
         // report a stale handle and a second release returns StaleHandle.
@@ -294,22 +298,25 @@ void Effects::expose(ssq::Table& table) {
             if (!value)
                 return eve::script::projectResult(
                     vm,
-                    effectsBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                       "owned effect container proxy must not be null", "container"),
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "owned effect container proxy must not be null",
+                        "container", {}, "effects.squirrel")),
                     [](std::string&& id) { return eve::Value(std::move(id)); });
             auto containerView = Effects::resolve(value->reference);
             if (!containerView.isBound())
                 return eve::script::projectResult(
                     vm,
-                    effectsBindingFailure<std::string>(eve::DiagnosticCode::StaleHandle,
-                                                       "owned effect container handle is stale", "container"),
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                             "owned effect container handle is stale",
+                                                                             "container", {}, "effects.squirrel")),
                     [](std::string&& id) { return eve::Value(std::move(id)); });
             auto definition = effectDefinitionFromBinding(type, priority, duration, stackKey, policyNameValue);
             if (!definition)
                 return eve::script::projectResult(
                     vm,
-                    effectsBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                       definition.status().describe(), "definition"),
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             definition.status().describe(),
+                                                                             "definition", {}, "effects.squirrel")),
                     [](std::string&& id) { return eve::Value(std::move(id)); });
             auto input = std::move(definition).takeValue();
             return eve::script::projectResult(vm, containerView->apply(input, subject, source),
@@ -319,15 +326,17 @@ void Effects::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                effectsBindingFailure<EffectUpdateSummary>(
-                    eve::DiagnosticCode::InvalidArgument, "owned effect container proxy must not be null", "container"),
+                eve::Result<EffectUpdateSummary>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "owned effect container proxy must not be null", "container",
+                    {}, "effects.squirrel")),
                 [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
         auto containerView = Effects::resolve(value->reference);
         if (!containerView.isBound())
             return eve::script::projectResult(
                 vm,
-                effectsBindingFailure<EffectUpdateSummary>(eve::DiagnosticCode::StaleHandle,
-                                                           "owned effect container handle is stale", "container"),
+                eve::Result<EffectUpdateSummary>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "owned effect container handle is stale",
+                                           "container", {}, "effects.squirrel")),
                 [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
         return eve::script::projectResult(vm, containerView->update(dt),
                                           [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
@@ -385,13 +394,15 @@ void Effects::expose(ssq::Table& table) {
         "remove", [vm](ScriptEffectContainer* value, const std::string& id, const std::string& reason) {
             if (!value)
                 return eve::script::projectResult(
-                    vm, effectsBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "owned effect container proxy must not be null", "container"));
+                    vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::InvalidArgument, "owned effect container proxy must not be null",
+                            "container", {}, "effects.squirrel")));
             auto containerView = Effects::resolve(value->reference);
             if (!containerView.isBound())
                 return eve::script::projectResult(
-                    vm, effectsBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                    "owned effect container handle is stale", "container"));
+                    vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                          "owned effect container handle is stale",
+                                                                          "container", {}, "effects.squirrel")));
             return eve::script::projectResult(vm, containerView->remove(id, reason));
         });
     ownedContainer.addFunc(
@@ -401,22 +412,25 @@ void Effects::expose(ssq::Table& table) {
             if (!value)
                 return eve::script::projectResult(
                     vm,
-                    effectsBindingFailure<eve::EffectId>(eve::DiagnosticCode::InvalidArgument,
-                                                         "owned effect container proxy must not be null", "container"),
+                    eve::Result<eve::EffectId>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "owned effect container proxy must not be null",
+                        "container", {}, "effects.squirrel")),
                     [](eve::EffectId id) { return eve::Value(id.isNil() ? std::string{} : id.format()); });
             auto containerView = Effects::resolve(value->reference);
             if (!containerView.isBound())
                 return eve::script::projectResult(
                     vm,
-                    effectsBindingFailure<eve::EffectId>(eve::DiagnosticCode::StaleHandle,
-                                                         "owned effect container handle is stale", "container"),
+                    eve::Result<eve::EffectId>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                               "owned effect container handle is stale",
+                                                                               "container", {}, "effects.squirrel")),
                     [](eve::EffectId id) { return eve::Value(id.isNil() ? std::string{} : id.format()); });
             auto definition = effectDefinitionFromBinding(type, priority, duration, stackKey, policyNameValue);
             if (!definition.ok())
                 return eve::script::projectResult(
                     vm,
-                    effectsBindingFailure<eve::EffectId>(eve::DiagnosticCode::InvalidArgument,
-                                                         definition.status().describe(), "definition"),
+                    eve::Result<eve::EffectId>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                               definition.status().describe(),
+                                                                               "definition", {}, "effects.squirrel")),
                     [](eve::EffectId id) { return eve::Value(id.isNil() ? std::string{} : id.format()); });
             auto input = std::move(definition).takeValue();
             return eve::script::projectResult(

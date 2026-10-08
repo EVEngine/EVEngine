@@ -85,6 +85,15 @@ GLSL/WGSL 采用相同公式，但浮点三角函数及覆盖率采样不保证�
 
 修改 GLSL 后运行 `python scripts/compile_weather_shaders.py` 更新嵌入式 SPIR-V。
 WGSL 对应源码位于 `src/modules/weather/shaders/WeatherWgsl.h`，需同步维护并运行后端验证。
+
+## 可交互积雪服务
+
+`weather` 模块同时注册兼容脚本入口 `snow <- eve.Snow()` 与 `SnowField`。它们不再属于
+独立的 `snow` 模块。完整示例与算法说明见[可交互积雪](snow.md)。公开脚本面包括：
+
+- `newField`、`resize`、`getWidth`、`getHeight`、`fill`、`setHeight`、`height`
+- `stampFootprint`、`stampImpact`、`addSnowfall`、`isDirty`、`clearDirty`
+- `applyToHeightmap`、`uploadTexture`、`updateTexture`
 ### Pcg 雷击状态
 
 `ThunderStrikeSettings` 提供 `intensity`、`radius`、`volume` 和 `audioClipCount`；

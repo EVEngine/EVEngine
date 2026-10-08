@@ -18,12 +18,6 @@ using namespace eve::pixelworld;
 
 constexpr const char* kCatalogPanelHostName = "eve_pixelworld_catalog";
 
-template <class T>
-eve::Result<T> fail(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path), {}, "pixelworld.catalog-panel"));
-}
-
 std::vector<MaterialDefinition> definitions(const MaterialCatalog& catalog) {
     return {catalog.definitions().begin(), catalog.definitions().end()};
 }
@@ -171,24 +165,27 @@ std::vector<MaterialCard> PixelWorldCatalogPanel::materialCards() const {
 
 eve::Result<void> PixelWorldCatalogPanel::selectMaterial(std::size_t index) {
     if (index >= draft_.definitions().size())
-        return fail<void>(eve::DiagnosticCode::InvalidArgument,
-                          "material selection is outside the Catalog", "materialIndex");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "material selection is outside the Catalog",
+                                                                 "materialIndex", {}, "pixelworld.catalog-panel"));
     selectedMaterial_ = index;
     return eve::Result<void>::success();
 }
 
 eve::Result<void> PixelWorldCatalogPanel::selectReaction(std::size_t index) {
     if (index >= draft_.reactions().size())
-        return fail<void>(eve::DiagnosticCode::InvalidArgument,
-                          "reaction selection is outside the Catalog", "reactionIndex");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "reaction selection is outside the Catalog",
+                                                                 "reactionIndex", {}, "pixelworld.catalog-panel"));
     selectedReaction_ = index;
     return eve::Result<void>::success();
 }
 
 eve::Result<void> PixelWorldCatalogPanel::selectPhase(std::size_t index) {
     if (index >= draft_.phaseRules().size())
-        return fail<void>(eve::DiagnosticCode::InvalidArgument,
-                          "phase selection is outside the Catalog", "phaseIndex");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "phase selection is outside the Catalog", "phaseIndex",
+                                                                 {}, "pixelworld.catalog-panel"));
     selectedPhase_ = index;
     return eve::Result<void>::success();
 }
@@ -219,8 +216,9 @@ eve::Result<CatalogDraftReceipt> PixelWorldCatalogPanel::replaceMaterial(
     MaterialDefinition definition) {
     const auto index = static_cast<std::size_t>(definition.id);
     if (index >= draft_.definitions().size())
-        return fail<CatalogDraftReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                         "material id is outside the Catalog", "material.id");
+        return eve::Result<CatalogDraftReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "material id is outside the Catalog",
+                                   "material.id", {}, "pixelworld.catalog-panel"));
     auto candidateDefinitions = definitions(draft_);
     candidateDefinitions[index] = std::move(definition);
     return commitCandidate(std::move(candidateDefinitions), reactions(draft_), phases(draft_));
@@ -229,8 +227,9 @@ eve::Result<CatalogDraftReceipt> PixelWorldCatalogPanel::replaceMaterial(
 eve::Result<CatalogDraftReceipt> PixelWorldCatalogPanel::replaceReaction(
     std::size_t index, MaterialReactionRule rule) {
     if (index >= draft_.reactions().size())
-        return fail<CatalogDraftReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                         "reaction index is outside the Catalog", "reactionIndex");
+        return eve::Result<CatalogDraftReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "reaction index is outside the Catalog",
+                                   "reactionIndex", {}, "pixelworld.catalog-panel"));
     auto candidate = reactions(draft_);
     candidate[index] = std::move(rule);
     return commitCandidate(definitions(draft_), std::move(candidate), phases(draft_));
@@ -251,8 +250,9 @@ eve::Result<CatalogDraftReceipt> PixelWorldCatalogPanel::addReaction(
 
 eve::Result<CatalogDraftReceipt> PixelWorldCatalogPanel::removeReaction(std::size_t index) {
     if (index >= draft_.reactions().size())
-        return fail<CatalogDraftReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                         "reaction index is outside the Catalog", "reactionIndex");
+        return eve::Result<CatalogDraftReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "reaction index is outside the Catalog",
+                                   "reactionIndex", {}, "pixelworld.catalog-panel"));
     auto candidate = reactions(draft_);
     candidate.erase(candidate.begin() + static_cast<std::ptrdiff_t>(index));
     return commitCandidate(definitions(draft_), std::move(candidate), phases(draft_));
@@ -261,8 +261,9 @@ eve::Result<CatalogDraftReceipt> PixelWorldCatalogPanel::removeReaction(std::siz
 eve::Result<CatalogDraftReceipt> PixelWorldCatalogPanel::replacePhase(
     std::size_t index, MaterialPhaseRule rule) {
     if (index >= draft_.phaseRules().size())
-        return fail<CatalogDraftReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                         "phase index is outside the Catalog", "phaseIndex");
+        return eve::Result<CatalogDraftReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "phase index is outside the Catalog",
+                                   "phaseIndex", {}, "pixelworld.catalog-panel"));
     auto candidate = phases(draft_);
     candidate[index] = std::move(rule);
     return commitCandidate(definitions(draft_), reactions(draft_), std::move(candidate));
@@ -282,8 +283,9 @@ eve::Result<CatalogDraftReceipt> PixelWorldCatalogPanel::addPhase(MaterialPhaseR
 
 eve::Result<CatalogDraftReceipt> PixelWorldCatalogPanel::removePhase(std::size_t index) {
     if (index >= draft_.phaseRules().size())
-        return fail<CatalogDraftReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                         "phase index is outside the Catalog", "phaseIndex");
+        return eve::Result<CatalogDraftReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "phase index is outside the Catalog",
+                                   "phaseIndex", {}, "pixelworld.catalog-panel"));
     auto candidate = phases(draft_);
     candidate.erase(candidate.begin() + static_cast<std::ptrdiff_t>(index));
     return commitCandidate(definitions(draft_), reactions(draft_), std::move(candidate));
@@ -318,9 +320,9 @@ eve::Result<eve::ui::UIHostHandle> PixelWorldCatalogPanel::open() {
         host = eve::ui::UIHost::resolve(host_);
     }
     if (!host) {
-        return fail<eve::ui::UIHostHandle>(
-            eve::DiagnosticCode::PreconditionViolation,
-            "pixelworld catalog panel requires an active UI ECS world", "uiHost");
+        return eve::Result<eve::ui::UIHostHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "pixelworld catalog panel requires an active UI ECS world",
+            "uiHost", {}, "pixelworld.catalog-panel"));
     }
     host->get().setVisible(true);
     host->get().setLayer(90);
@@ -350,8 +352,9 @@ bool PixelWorldCatalogPanel::isOpen() const {
 eve::Result<void> PixelWorldCatalogPanel::refresh() {
     auto host = eve::ui::UIHost::resolve(host_);
     if (!host)
-        return fail<void>(eve::DiagnosticCode::PreconditionViolation,
-                          "pixelworld catalog panel is not mounted", "uiHost");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "pixelworld catalog panel is not mounted", "uiHost",
+                                                                 {}, "pixelworld.catalog-panel"));
     host->get().setTree(buildWidgetTree());
     return eve::Result<void>::success();
 }

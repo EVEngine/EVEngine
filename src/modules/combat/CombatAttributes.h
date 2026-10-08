@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file CombatAttributes.h @brief Tag-addressed combat attributes, regeneration and change events. */
 
@@ -50,7 +52,7 @@ struct CombatAttributeAdvance {
  * changes clamp before one base-value commit and return owning events; no
  * callback is invoked. advance consumes injected Duration and no wall clock.
  */
-class CombatAttributeRuntime {
+class EVENGINE_API_BACKENDS CombatAttributeRuntime {
 public:
     /** @brief Construct an empty runtime for a stable owning subject id. */
     explicit CombatAttributeRuntime(std::string subject = {}) : values_(std::move(subject)) {}

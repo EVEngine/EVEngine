@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file VoxelCatalog.h
@@ -22,8 +24,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -105,16 +106,16 @@ struct VoxelPick {
  * @lifetime Valid for the process lifetime.
  * @thread Any.
  */
-[[nodiscard]] const char* voxelSocketKindName(VoxelSocketKind kind);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION const char* voxelSocketKindName(VoxelSocketKind kind);
 
 /** @brief True when two facing sockets may join. */
-[[nodiscard]] bool canJoinVoxelSockets(const VoxelSocket& a, const VoxelSocket& b);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION bool canJoinVoxelSockets(const VoxelSocket& a, const VoxelSocket& b);
 
 /** @brief Opposite FaceDir index in PosX/NegX/PosY/NegY/PosZ/NegZ order. */
 [[nodiscard]] int voxelOppositeFace(int face);
 
 /** @brief Classify a sculpted model as empty, partial, or a solid cube. */
-[[nodiscard]] VoxelCellFill voxelClassifyModelFill(const VoxelModelValue& model);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION VoxelCellFill voxelClassifyModelFill(const VoxelModelValue& model);
 
 /** @brief True when @p model contains an occupied cell at (x,y,z). */
 [[nodiscard]] bool isVoxelModelOccupied(const VoxelModelValue& model, int x, int y, int z);
@@ -123,24 +124,23 @@ struct VoxelPick {
  * @brief Raycast occupied cells with MagicaVoxel-style previous-cell attach.
  * @param maxDistance Maximum travel along the normalized ray.
  */
-[[nodiscard]] VoxelPick pickVoxelModel(const VoxelModelValue& model, float ox, float oy, float oz, float dx, float dy,
-                                       float dz, float maxDistance);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION VoxelPick pickVoxelModel(const VoxelModelValue& model, float ox, float oy,
+                                                                  float oz, float dx, float dy, float dz,
+                                                                  float maxDistance);
 
 /** @brief Revisioned project of MagicaVoxel-style sculpted models. */
-class VoxelCatalogTarget final : public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider,
-                                 public IEditingSnapshotProvider {
+class EVENGINE_API_ORCHESTRATION VoxelCatalogTarget final : public ::eve::editing::EditableTargetState,
+                                                            public virtual IEditableTarget,
+                                                            public IDomainOperationTarget,
+                                                            public IDomainOperationTargetStaging,
+                                                            public IPropertyProvider,
+                                                            public IEditingSnapshotProvider {
 public:
     explicit VoxelCatalogTarget(std::string id);
 
     static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.voxel-catalog-properties"); }
 
-    TargetId      targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion    dirtyRegion() const override { return dirty_; }
-    void          clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
 
     /**
@@ -151,19 +151,19 @@ public:
      */
     void* queryCapability(const CapabilityId&) override;
 
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     PropertySchema                          schema(const SelectionSnapshot&) const override;
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
 
-    [[nodiscard]] EditorResult<DomainOperation> makeCreateModel(const VoxelModelValue&) const;
-    [[nodiscard]] EditorResult<DomainOperation> makeDeleteModel(const ObjectId&) const;
-    [[nodiscard]] EditorResult<DomainOperation> makeSetVoxel(const ObjectId& model, int x, int y, int z,
+    [[nodiscard]] Result<DomainOperation> makeCreateModel(const VoxelModelValue&) const;
+    [[nodiscard]] Result<DomainOperation> makeDeleteModel(const ObjectId&) const;
+    [[nodiscard]] Result<DomainOperation> makeSetVoxel(const ObjectId& model, int x, int y, int z,
                                                              bool occupied) const;
 
     const std::vector<VoxelModelValue>& models() const { return models_; }
@@ -178,14 +178,14 @@ public:
 
     std::vector<EditorDiagnostic> validate() const;
     EditorValue                   snapshotValue() const override;
-    EditorResult<void>            loadSnapshot(const EditorValue&);
+    Result<void>            loadSnapshot(const EditorValue&);
 
     [[nodiscard]] std::vector<ObjectId> hullJoinPartners(const ObjectId& model, int face) const;
 
 private:
     bool                          matches(const SelectionSnapshot&) const;
     EditorValue                   contentValue() const;
-    EditorResult<DomainOperation> replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation> replacement(EditorValue, std::string = {}) const;
     /**
      * @brief Mutable model lookup used by occupancy edits.
      * @ownership Borrowed from this target; callers must not delete it.
@@ -195,8 +195,6 @@ private:
     VoxelModelValue* findModelMut(const ObjectId&);
 
     std::string                  id_;
-    Revision                     revision_ = 1;
-    EditRegion                   dirty_;
     std::vector<VoxelModelValue> models_;
 };
 

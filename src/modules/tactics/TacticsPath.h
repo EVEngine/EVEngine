@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file TacticsPath.h @brief Deterministic fixed-cost tactics path queries. */
 
@@ -25,7 +27,7 @@ struct ReachableCell {
  * subsequent board mutations, but represent only the board revision observed
  * during the query and must be recomputed before a state-changing commit.
  */
-class Reachability {
+class EVENGINE_API_DOMAINS Reachability {
 public:
     /** @brief Return reachable cells in deterministic coordinate order. */
     [[nodiscard]] const std::vector<ReachableCell>& cells() const noexcept { return cells_; }
@@ -50,7 +52,7 @@ private:
  * They retain no references and invoke no callbacks. Equal-cost frontier ties
  * are ordered by cost then Cell coordinates, yielding bit-exact results.
  */
-class PathQuery final {
+class EVENGINE_API_DOMAINS PathQuery final {
 public:
     /**
      * @brief Compute all unoccupied reachable cells for a placed subject.

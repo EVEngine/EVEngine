@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -31,7 +33,7 @@ struct GridObject {
  * @brief Intermediate 2D generation result. `cells` store semantic ids (see Semantic.h),
  * not tile GIDs — convert via Palette when applying to a TileLayer.
  */
-class Grid2D {
+class EVENGINE_API_DOMAINS Grid2D {
 public:
     void resize(int width, int height);
     int  getWidth() const;

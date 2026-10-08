@@ -7,12 +7,6 @@
 namespace eve::asset_import {
 namespace {
 
-template <class T>
-Result<T> fail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.import.vegetation-preset"));
-}
-
 const Value* member(const Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -21,14 +15,16 @@ const Value* member(const Value::Object& object, std::string_view name) {
 Result<std::vector<std::string>> strings(const Value* value, std::string_view path) {
     const auto* array = value ? value->getIf<Value::Array>() : nullptr;
     if (!array)
-        return fail<std::vector<std::string>>(DiagnosticCode::ParseError, "arguments must be an array",
-                                              std::string(path));
+        return Result<std::vector<std::string>>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "arguments must be an array", std::string(path), {},
+                              "asset.import.vegetation-preset"));
     std::vector<std::string> result;
     result.reserve(array->size());
     for (const auto& item : *array) {
         if (!item.isString())
-            return fail<std::vector<std::string>>(DiagnosticCode::ParseError, "argument must be a string",
-                                                  std::string(path));
+            return Result<std::vector<std::string>>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "argument must be a string", std::string(path), {},
+                                  "asset.import.vegetation-preset"));
         result.push_back(item.asString());
     }
     return Result<std::vector<std::string>>::success(std::move(result));
@@ -51,35 +47,46 @@ Result<bool> predicate(std::string_view name, const std::vector<std::string>& ar
                        const VegetationPresetContext& context) {
     if (name == "OUTPUT_OPTION_CONTAINS") {
         if (arguments.size() != 1)
-            return fail<bool>(DiagnosticCode::ParseError, "output predicate requires one argument");
+            return Result<bool>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                           "output predicate requires one argument", {}, {},
+                                                           "asset.import.vegetation-preset"));
         return Result<bool>::success(context.outputOptions.contains(arguments[0]));
     }
     if (name == "SHADER_NAME_CONTAINS") return Result<bool>::success(contains(context.shaderName, arguments));
     if (name == "MATERIAL_NAME_CONTAINS") return Result<bool>::success(contains(context.materialName, arguments));
     if (name == "MATERIAL_FLOAT_EQUALS") {
         if (arguments.size() != 2)
-            return fail<bool>(DiagnosticCode::ParseError, "float predicate requires property and value");
+            return Result<bool>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                           "float predicate requires property and value", {}, {},
+                                                           "asset.import.vegetation-preset"));
         char*       end = nullptr;
         errno           = 0;
         const double value = std::strtod(arguments[1].c_str(), &end);
         if (errno != 0 || end != arguments[1].c_str() + arguments[1].size() || !std::isfinite(value))
-            return fail<bool>(DiagnosticCode::ParseError, "float predicate value is invalid");
+            return Result<bool>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                           "float predicate value is invalid", {}, {},
+                                                           "asset.import.vegetation-preset"));
         const auto found = context.materialFloats.find(arguments[0]);
         return Result<bool>::success(found != context.materialFloats.end() && found->second == value);
     }
     if (arguments.size() != 1 && name != "SHADER_PIPELINE_IS_HD" && name != "SHADER_PIPELINE_IS_STANDARD" &&
         name != "SHADER_PIPELINE_IS_UNIVERSAL")
-        return fail<bool>(DiagnosticCode::ParseError, "preset predicate requires one argument", std::string(name));
+        return Result<bool>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                       "preset predicate requires one argument", std::string(name), {},
+                                                       "asset.import.vegetation-preset"));
     if (name == "MATERIAL_KEYWORD_ENABLED" || name == "MATERIAL_HAS_KEYWORD")
         return Result<bool>::success(context.materialKeywords.contains(arguments[0]));
     if (name == "MATERIAL_HAS_PROP") return Result<bool>::success(context.materialProperties.contains(arguments[0]));
     if (name == "MATERIAL_HAS_TEX") return Result<bool>::success(context.materialTextures.contains(arguments[0]));
     if (!arguments.empty())
-        return fail<bool>(DiagnosticCode::ParseError, "pipeline predicate takes no arguments", std::string(name));
+        return Result<bool>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                       "pipeline predicate takes no arguments", std::string(name), {},
+                                                       "asset.import.vegetation-preset"));
     if (name == "SHADER_PIPELINE_IS_HD") return Result<bool>::success(context.shaderPipeline == "HD");
     if (name == "SHADER_PIPELINE_IS_STANDARD") return Result<bool>::success(context.shaderPipeline == "Standard");
     if (name == "SHADER_PIPELINE_IS_UNIVERSAL") return Result<bool>::success(context.shaderPipeline == "Universal");
-    return fail<bool>(DiagnosticCode::Unsupported, "unknown TVE preset predicate", std::string(name));
+    return Result<bool>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unknown TVE preset predicate",
+                                                   std::string(name), {}, "asset.import.vegetation-preset"));
 }
 
 struct Evaluator {
@@ -93,13 +100,17 @@ struct Evaluator {
             const auto* object = value.getIf<Value::Object>();
             const auto* kind   = object ? member(*object, "kind") : nullptr;
             if (!object || !kind || !kind->isString())
-                return fail<void>(DiagnosticCode::ParseError, "preset statement is malformed", sourcePath);
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                               "preset statement is malformed", sourcePath, {},
+                                                               "asset.import.vegetation-preset"));
             if (kind->asString() == "command") {
                 const auto* domain    = member(*object, "domain");
                 const auto* operation = member(*object, "operation");
                 auto        arguments = strings(member(*object, "arguments"), sourcePath);
                 if (!domain || !domain->isString() || !operation || !operation->isString() || !arguments)
-                    return fail<void>(DiagnosticCode::ParseError, "preset command is malformed", sourcePath);
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                   "preset command is malformed", sourcePath, {},
+                                                                   "asset.import.vegetation-preset"));
                 if (domain->asString() == "Include") {
                     auto include = evaluate(joined(operation->asString(), arguments.value()));
                     if (!include) return include;
@@ -110,13 +121,17 @@ struct Evaluator {
                 continue;
             }
             if (kind->asString() != "condition")
-                return fail<void>(DiagnosticCode::ParseError, "unknown preset statement kind", sourcePath);
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                               "unknown preset statement kind", sourcePath, {},
+                                                               "asset.import.vegetation-preset"));
             const auto* name      = member(*object, "predicate");
             const auto* negated   = member(*object, "negated");
             const auto* body      = member(*object, "statements");
             auto        arguments = strings(member(*object, "arguments"), sourcePath);
             if (!name || !name->isString() || !negated || !negated->isBool() || !body || !body->isArray() || !arguments)
-                return fail<void>(DiagnosticCode::ParseError, "preset condition is malformed", sourcePath);
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                               "preset condition is malformed", sourcePath, {},
+                                                               "asset.import.vegetation-preset"));
             auto result = predicate(name->asString(), arguments.value(), context);
             if (!result) return Result<void>::failure(result.status());
             if (result.value() != negated->asBool()) {
@@ -134,8 +149,11 @@ struct Evaluator {
         if (found == definitions.end() && name == "Use Default Flower Settings")
             found = definitions.find("Use Default Flowers Settings");
         if (found == definitions.end())
-            return fail<void>(DiagnosticCode::NotFound, "TVE preset include is missing", name);
-        if (!active.insert(name).second) return fail<void>(DiagnosticCode::Conflict, "TVE preset include cycle", name);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "TVE preset include is missing",
+                                                           name, {}, "asset.import.vegetation-preset"));
+        if (!active.insert(name).second)
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "TVE preset include cycle", name,
+                                                           {}, "asset.import.vegetation-preset"));
         const auto* root    = found->second.getIf<Value::Object>();
         const auto* schema  = root ? member(*root, "schema") : nullptr;
         const auto* version = root ? member(*root, "schemaVersion") : nullptr;
@@ -144,7 +162,9 @@ struct Evaluator {
         if (!root || !schema || !schema->isString() || schema->asString() != "eve.vegetation-conversion-preset" ||
             !version || !version->isInt64() || version->asInt() != 1 || !source || !source->isString() || !body ||
             !body->isArray())
-            return fail<void>(DiagnosticCode::ParseError, "TVE preset definition is malformed", name);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                           "TVE preset definition is malformed", name, {},
+                                                           "asset.import.vegetation-preset"));
         auto result = statements(*body->getIf<Value::Array>(), source->asString());
         active.erase(name);
         return result;

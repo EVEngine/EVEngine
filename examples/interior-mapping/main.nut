@@ -110,8 +110,8 @@ function applyPreset(which) {
 eve_init = function() {
     gfx.setBackgroundColor(0.12, 0.14, 0.18, 1.0);
     if (imShader == null) {
-        // The fragment stage ships as committed SPIR-V: runtime GLSL compilation
-        // needs glslc on PATH and is unavailable on Windows. Regenerate with
+        // The fragment stage ships as committed SPIR-V, so the example needs no
+        // runtime compiler. Regenerate with
         //   glslc -o shaders/interior_mapping.frag.spv shaders/interior_mapping.frag
         local loaded = gfx.loadMeshShaderSpv("", "shaders/interior_mapping.frag.spv");
         if (!loaded.ok) throw "interior-mapping: shader unavailable: " + loaded.status.summary;
@@ -161,15 +161,15 @@ eve_init = function() {
 
 eve_asset_reload <- function(path) {
     if (path.find("interior_mapping.frag") != null) {
-        // Live GLSL reload is a convenience of hosts with glslc on PATH; where it
-        // is unavailable (Windows, no SDK) the committed SPIR-V keeps rendering.
+        // Live GLSL reload uses the engine's own compiler; when it is missing or the
+        // source fails to compile, the committed SPIR-V keeps rendering.
         local src = fs.readText("shaders/interior_mapping.frag");
         local result = gfx.replaceShaderFromGlsl(imShader, "", src);
         if (result.ok) {
             imStatus = "shader reloaded";
             print("[interior-mapping] shader reloaded\n");
         } else {
-            imStatus = "GLSL reload needs glslc; keeping committed SPIR-V";
+            imStatus = "GLSL reload failed; keeping committed SPIR-V";
             print("[interior-mapping] " + imStatus + "\n");
         }
     }

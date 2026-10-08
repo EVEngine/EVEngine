@@ -8,10 +8,6 @@ namespace {
 struct Vertex {
     float x, y, z, nx, ny, nz, u, v, r, g, b, a;
 };
-template <class T>
-Result<T> fail(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "procgen.gtsMeshSplit"));
-}
 Vertex mix(const Vertex& a, const Vertex& b, float t) {
     Vertex       r{};
     const float* pa = &a.x;
@@ -78,13 +74,18 @@ Result<GtsMeshSplitResult> splitGtsMesh(const MeshBuild& source, int xSplits, in
     const int vertexCount = source.getVertexCount(), indexCount = source.getIndexCount();
     if (vertexCount < 3 || indexCount < 3 || indexCount % 3 != 0 || xSplits < 0 || zSplits < 0 || xSplits > 255 ||
         zSplits > 255 || static_cast<int>(pivot) < 0 || static_cast<int>(pivot) > 2)
-        return fail<GtsMeshSplitResult>("GTS mesh split requires a valid triangle mesh, split counts and pivot");
+        return Result<GtsMeshSplitResult>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "GTS mesh split requires a valid triangle mesh, split counts and pivot",
+            "procgen.gtsMeshSplit"));
     float minX = std::numeric_limits<float>::max(), maxX = -minX, minZ = minX, maxZ = -minX;
     for (int i = 0; i < vertexCount; ++i) {
         Vertex v{source.getPositionX(i), source.getPositionY(i), source.getPositionZ(i), source.getNormalX(i),
                  source.getNormalY(i),   source.getNormalZ(i),   source.getUvU(i),       source.getUvV(i),
                  source.getColor(i, 0),  source.getColor(i, 1),  source.getColor(i, 2),  source.getColor(i, 3)};
-        if (!finiteVertex(v)) return fail<GtsMeshSplitResult>("GTS mesh streams must contain only finite values");
+        if (!finiteVertex(v))
+            return Result<GtsMeshSplitResult>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "GTS mesh streams must contain only finite values",
+                                  "procgen.gtsMeshSplit"));
         minX = std::min(minX, v.x);
         maxX = std::max(maxX, v.x);
         minZ = std::min(minZ, v.z);
@@ -92,8 +93,11 @@ Result<GtsMeshSplitResult> splitGtsMesh(const MeshBuild& source, int xSplits, in
     }
     for (int i = 0; i < indexCount; ++i)
         if (source.getIndex(i) < 0 || source.getIndex(i) >= vertexCount)
-            return fail<GtsMeshSplitResult>("GTS mesh index is out of range");
-    if (!(maxX > minX) || !(maxZ > minZ)) return fail<GtsMeshSplitResult>("GTS mesh must have non-zero X/Z bounds");
+            return Result<GtsMeshSplitResult>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "GTS mesh index is out of range", "procgen.gtsMeshSplit"));
+    if (!(maxX > minX) || !(maxZ > minZ))
+        return Result<GtsMeshSplitResult>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "GTS mesh must have non-zero X/Z bounds", "procgen.gtsMeshSplit"));
     GtsMeshSplitResult result;
     result.columns_ = xSplits + 1;
     result.rows_    = zSplits + 1;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/RenderTypes.h"
@@ -27,7 +29,7 @@ using eve::Color;
  * flags. A negative int is a signed transport of those bits, not an erase code.
  * Use tileGid() to inspect the identity without flags, and 0 to erase.
  */
-class TileLayer : public ecs::Entity {
+class EVENGINE_API_WORLD TileLayer : public ecs::Entity {
 public:
     ENTITY(TileLayer, ecs::Entity)
 
@@ -170,6 +172,11 @@ public:
         graphics::Camera2D *camera = nullptr;
         int layer = 0;
         bool visible = true;
+        /**
+         * @brief When true, tiles receive Light2D (GPU lit2d with flat normals, or
+         * CPU modulate when drawn without a texture). Default false keeps legacy unlit maps.
+         */
+        bool receiveLight = false;
         Color tint{1.f, 1.f, 1.f, 1.f};
         /** @brief World-size multiplier for atlas-pixel visuals (UV unchanged). */
         float visualScaleX = 1.f;
@@ -325,6 +332,13 @@ public:
 
     void setVisible(bool visible);
     bool isVisible();
+    /**
+     * @brief Enable Light2D shading for this layer's tiles.
+     * @param receive When true, textured tiles use the lit2d path with a flat normal.
+     */
+    void setReceiveLight(bool receive);
+    /** @brief Whether this layer's tiles receive Light2D. */
+    bool getReceiveLight();
 
     void setTint(float r, float g, float b, float a = 1.f);
 

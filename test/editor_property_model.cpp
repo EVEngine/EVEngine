@@ -53,12 +53,12 @@ public:
         return {};
     }
 
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot &, const PropertyPath &,
+    Result<DomainOperation> makeSet(const SelectionSnapshot &, const PropertyPath &,
                                           const EditorValue &, PropertySetMode) const override {
         return eve::editing::applied<DomainOperation>({});
     }
 
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot &,
+    Result<DomainOperation> makeReset(const SelectionSnapshot &,
                                             const PropertyPath &) const override {
         return eve::editing::applied<DomainOperation>({});
     }

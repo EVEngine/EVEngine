@@ -25,7 +25,7 @@ SelectionSnapshot sourceSelection(const AudioSourceTarget& target) {
 }
 
 template <class Target>
-EditorResult<TransactionReceipt> commit(Target& target, LocalTransactionBackend& transactions,
+Result<TransactionReceipt> commit(Target& target, LocalTransactionBackend& transactions,
                                         const DomainOperation& operation, const char* id) {
     TransactionSpec specification;
     specification.id = TransactionId(id);

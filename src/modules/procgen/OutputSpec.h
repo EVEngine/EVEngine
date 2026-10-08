@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -12,7 +14,7 @@ namespace eve::procgen {
  * @brief Configurable generation sink.
  * target: "grid" | "tilelayer" | "json"
  */
-class OutputSpec {
+class EVENGINE_API_DOMAINS OutputSpec {
 public:
     void        setTarget(const std::string &target);
     std::string getTarget() const;

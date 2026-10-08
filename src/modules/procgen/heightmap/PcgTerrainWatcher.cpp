@@ -3,13 +3,7 @@
 #include <algorithm>
 
 namespace eve::procgen {
-namespace {
-template <class T>
-Result<T> watcherFailure(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message,
-                                                "procgen.pcgTerrainWatcher"));
-}
-}  // namespace
+namespace {}  // namespace
 
 void PcgTerrainWatcher::beginScan() {
     candidate_.clear();
@@ -17,16 +11,23 @@ void PcgTerrainWatcher::beginScan() {
 }
 
 Result<int> PcgTerrainWatcher::addTerrain(const std::string& terrainId) {
-    if (!scanning_) return watcherFailure<int>("beginScan must precede addTerrain");
-    if (terrainId.empty()) return watcherFailure<int>("terrain id must not be empty");
+    if (!scanning_)
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "beginScan must precede addTerrain", "procgen.pcgTerrainWatcher"));
+    if (terrainId.empty())
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain id must not be empty",
+                                                      "procgen.pcgTerrainWatcher"));
     if (std::find(candidate_.begin(), candidate_.end(), terrainId) != candidate_.end())
-        return watcherFailure<int>("terrain ids in one scan must be unique");
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain ids in one scan must be unique", "procgen.pcgTerrainWatcher"));
     candidate_.push_back(terrainId);
     return Result<int>::success(static_cast<int>(candidate_.size()));
 }
 
 Result<int> PcgTerrainWatcher::commitScan() {
-    if (!scanning_) return watcherFailure<int>("beginScan must precede commitScan");
+    if (!scanning_)
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "beginScan must precede commitScan", "procgen.pcgTerrainWatcher"));
     std::vector<PcgTerrainChange> nextChanges;
     if (initialized_) {
         for (const auto& id : candidate_)
@@ -52,12 +53,14 @@ int PcgTerrainWatcher::getTerrainCount() const noexcept { return static_cast<int
 int PcgTerrainWatcher::getChangeCount() const noexcept { return static_cast<int>(changes_.size()); }
 Result<std::string> PcgTerrainWatcher::getChangeTerrainId(int index) const {
     if (index < 0 || index >= static_cast<int>(changes_.size()))
-        return watcherFailure<std::string>("change index is out of range");
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "change index is out of range", "procgen.pcgTerrainWatcher"));
     return Result<std::string>::success(changes_[static_cast<std::size_t>(index)].terrainId);
 }
 Result<int> PcgTerrainWatcher::getChangeType(int index) const {
     if (index < 0 || index >= static_cast<int>(changes_.size()))
-        return watcherFailure<int>("change index is out of range");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "change index is out of range",
+                                                      "procgen.pcgTerrainWatcher"));
     return Result<int>::success(static_cast<int>(changes_[static_cast<std::size_t>(index)].type));
 }
 }  // namespace eve::procgen

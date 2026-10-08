@@ -12,12 +12,6 @@ namespace {
 
 constexpr double kEps = 1e-8;
 
-template <typename T>
-eve::Result<T> fail(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "archspace.document"));
-}
-
 eve::Result<void> ok() { return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)); }
 
 bool isFinite(double v) { return std::isfinite(v); }
@@ -167,16 +161,24 @@ void Document::collectDescendants(const std::string& id, std::vector<std::string
 
 eve::Result<void> Document::insert(Node node) {
     if (nodes_.find(node.id) != nodes_.end())
-        return fail<void>(eve::DiagnosticCode::Conflict, "ArchSpace node id already exists", "id");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "ArchSpace node id already exists", "id", {}, "archspace.document"));
     if (!validateNode(node))
-        return fail<void>(eve::DiagnosticCode::InvalidArgument, "ArchSpace node failed validation", "node");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "ArchSpace node failed validation", "node", {},
+                                                                 "archspace.document"));
     if (node.kind == NodeKind::Site) {
         if (!rootId_.empty())
-            return fail<void>(eve::DiagnosticCode::Conflict, "ArchSpace document already has a site root", "root");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                                                     "ArchSpace document already has a site root",
+                                                                     "root", {}, "archspace.document"));
         rootId_ = node.id;
     } else {
         Node* parent = findMutable(node.parentId);
-        if (!parent) return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace parent node is missing", "parentId");
+        if (!parent)
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                     "ArchSpace parent node is missing", "parentId", {},
+                                                                     "archspace.document"));
         parent->children.push_back(node.id);
     }
     nodes_.emplace(node.id, std::move(node));
@@ -185,18 +187,24 @@ eve::Result<void> Document::insert(Node node) {
 
 eve::Result<void> Document::replace(Node node) {
     Node* existing = findMutable(node.id);
-    if (!existing) return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace node is missing", "id");
+    if (!existing)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "ArchSpace node is missing", "id", {}, "archspace.document"));
     node.parentId = existing->parentId;
     node.kind     = existing->kind;
     node.children = existing->children;
     if (!validateNode(node))
-        return fail<void>(eve::DiagnosticCode::InvalidArgument, "ArchSpace node failed validation", "node");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "ArchSpace node failed validation", "node", {},
+                                                                 "archspace.document"));
     *existing = std::move(node);
     return ok();
 }
 
 eve::Result<void> Document::eraseCascade(const std::string& id) {
-    if (!find(id)) return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace node is missing", "id");
+    if (!find(id))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "ArchSpace node is missing", "id", {}, "archspace.document"));
     std::vector<std::string> order;
     collectDescendants(id, order);
     std::reverse(order.begin(), order.end());
@@ -217,10 +225,13 @@ void Document::clear() {
 eve::Result<void> Document::bootstrap(const std::string& siteId, const std::string& buildingId,
                                       const std::string& levelId, double levelHeight) {
     if (!rootId_.empty() || siteId.empty() || buildingId.empty() || levelId.empty())
-        return fail<void>(eve::DiagnosticCode::PreconditionViolation,
-                          "ArchSpace bootstrap requires an empty document and non-empty ids");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation,
+            "ArchSpace bootstrap requires an empty document and non-empty ids", {}, {}, "archspace.document"));
     if (siteId == buildingId || siteId == levelId || buildingId == levelId)
-        return fail<void>(eve::DiagnosticCode::InvalidArgument, "ArchSpace bootstrap ids must be unique");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "ArchSpace bootstrap ids must be unique", {}, {},
+                                                                 "archspace.document"));
     Node site;
     site.id   = siteId;
     site.kind = NodeKind::Site;
@@ -252,10 +263,14 @@ eve::Result<void> Document::createRoom(const std::string& levelId, const std::st
                                        double slabThickness) {
     const Node* level = find(levelId);
     if (!level || level->kind != NodeKind::Level)
-        return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace room requires an existing level", "levelId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace room requires an existing level", "levelId",
+                                                                 {}, "archspace.document"));
     if (roomId.empty() || !polygonValid(polygon) || wallHeight <= kEps || wallThickness <= kEps ||
         slabThickness <= kEps)
-        return fail<void>(eve::DiagnosticCode::InvalidArgument, "ArchSpace room geometry is invalid", "polygon");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "ArchSpace room geometry is invalid", "polygon", {},
+                                                                 "archspace.document"));
     if (roomName.empty()) roomName = roomId;
 
     Document candidate = *this;
@@ -297,7 +312,9 @@ eve::Result<void> Document::createWall(const std::string& levelId, const std::st
                                        Vec2 start, Vec2 end, double height, double thickness) {
     const Node* level = find(levelId);
     if (!level || level->kind != NodeKind::Level)
-        return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace wall requires an existing level", "levelId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace wall requires an existing level", "levelId",
+                                                                 {}, "archspace.document"));
     Node wall;
     wall.id        = wallId;
     wall.kind      = NodeKind::Wall;
@@ -315,7 +332,9 @@ eve::Result<void> Document::createOpening(const std::string& wallId, const std::
                                           double height, double sill) {
     const Node* wall = find(wallId);
     if (!wall || wall->kind != NodeKind::Wall)
-        return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace opening requires an existing wall", "wallId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace opening requires an existing wall",
+                                                                 "wallId", {}, "archspace.document"));
     Node opening;
     opening.id            = openingId;
     opening.kind          = NodeKind::Opening;
@@ -333,7 +352,9 @@ eve::Result<void> Document::placeItem(const std::string& levelId, const std::str
                                       std::string catalogId, Vec3 position, double yawDegrees) {
     const Node* level = find(levelId);
     if (!level || level->kind != NodeKind::Level)
-        return fail<void>(eve::DiagnosticCode::NotFound, "ArchSpace item requires an existing level", "levelId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace item requires an existing level", "levelId",
+                                                                 {}, "archspace.document"));
     Node item;
     item.id         = itemId;
     item.kind       = NodeKind::Item;

@@ -6,12 +6,6 @@
 
 namespace eve::procgen_animation {
 namespace {
-template <class T>
-Result<T> invalid(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message,
-                                                "procgen.animation.pcgSkinnedMesh"));
-}
-
 bool sameBind(const std::array<float, 16>& left, const std::array<float, 16>& right) {
     return std::equal(left.begin(), left.end(), right.begin());
 }
@@ -23,7 +17,9 @@ Result<void> PcgSkinnedMeshPlan::appendSource(const procgen::MeshBuild& mesh,
                                                const std::string& defaultMaterialId) {
     if (mesh.empty() || mesh.getVertexCount() != skin.getVertexCount() || skin.getBoneCount() <= 0 ||
         defaultMaterialId.empty() || sources_.size() >= 4096)
-        return invalid<void>("Pcg skinned source mesh, skin, material or budget is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Pcg skinned source mesh, skin, material or budget is invalid",
+                                                       "procgen.animation.pcgSkinnedMesh"));
     animation::AnimSkinStreamData data;
     data.vertexCount = skin.getVertexCount();
     data.bindPositions.reserve(static_cast<std::size_t>(data.vertexCount) * 3U);
@@ -53,7 +49,9 @@ Result<void> PcgSkinnedMeshPlan::appendSource(const procgen::MeshBuild& mesh,
 
 Result<void> combinePcgSkinnedMeshesInto(PcgSkinnedMeshResult& output,
                                           const PcgSkinnedMeshPlan& plan) {
-    if (plan.sources_.empty()) return invalid<void>("Pcg skinned combine plan is empty");
+    if (plan.sources_.empty())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Pcg skinned combine plan is empty", "procgen.animation.pcgSkinnedMesh"));
     procgen::PcgMeshCombinePlan meshPlan;
     for (const auto& source : plan.sources_) {
         auto appended = meshPlan.appendSource(source.mesh, source.transform, source.defaultMaterialId);
@@ -100,7 +98,9 @@ Result<void> combinePcgSkinnedMeshesInto(PcgSkinnedMeshResult& output,
             const float weight = skin.vertexWeights[influence];
             const int sourceJoint = skin.vertexSkinJoints[influence];
             if (weight > 0.F && (sourceJoint < 0 || static_cast<std::size_t>(sourceJoint) >= remap.size()))
-                return invalid<void>("Pcg skinned source influence references an invalid joint");
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "Pcg skinned source influence references an invalid joint",
+                    "procgen.animation.pcgSkinnedMesh"));
             streams.vertexSkinJoints.push_back(weight > 0.F ? remap[static_cast<std::size_t>(sourceJoint)] : -1);
             streams.vertexWeights.push_back(weight);
         }

@@ -60,9 +60,9 @@ enum class InteractionIntentKind : std::uint8_t {
 };
 
 /** @brief Human-readable stable spelling of an interaction state (protocol text). */
-[[nodiscard]] std::string_view interactionStateName(InteractionState state) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS std::string_view interactionStateName(InteractionState state) noexcept;
 /** @brief Human-readable stable spelling of an intent kind (protocol text). */
-[[nodiscard]] std::string_view interactionIntentKindName(InteractionIntentKind kind) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS std::string_view interactionIntentKindName(InteractionIntentKind kind) noexcept;
 
 /**
  * @brief One player intention, expressed with stable identities only.
@@ -125,7 +125,7 @@ struct InteractionContext {
  *         state, so two clients may each drive their own copy of the same context.
  * @reentrancy Handlers do not invoke callbacks.
  */
-class InteractionSession final {
+class EVENGINE_API_DOMAINS InteractionSession final {
 public:
     /**
      * @brief Start a session from an immutable context.

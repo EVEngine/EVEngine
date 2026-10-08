@@ -8,10 +8,10 @@ using namespace eve::editing;
 
 namespace {
 SelectionSnapshot select(const VirtualGeometryDocumentTarget& target){SelectionSnapshot s;s.channel="virtualgeometry";s.items.push_back({SelectionDomain::Asset,TargetId(target.targetId()),StableId(target.targetId().value()),"virtualgeometry.import"});return s;}
-void apply(VirtualGeometryDocumentTarget& target,EditorResult<DomainOperation> operation){REQUIRE(operation.ok());REQUIRE(target.applyDomainOperation(operation.value()).ok());}
+void apply(VirtualGeometryDocumentTarget& target,Result<DomainOperation> operation){REQUIRE(operation.ok());REQUIRE(target.applyDomainOperation(operation.value()).ok());}
 class GridResolver final : public IVirtualGeometryMeshResolver {
 public:
-    EditorResult<VirtualGeometryMeshData> resolve(const std::string& id) const override {
+    Result<VirtualGeometryMeshData> resolve(const std::string& id) const override {
         if(id!="grid")return eve::editing::failed<VirtualGeometryMeshData>(EditorStatus::NotFound,RuleId("test.mesh"),"missing mesh");
         VirtualGeometryMeshData mesh;constexpr int size=20;for(int y=0;y<=size;++y)for(int x=0;x<=size;++x)mesh.positions.insert(mesh.positions.end(),{static_cast<float>(x),0.f,static_cast<float>(y)});for(int y=0;y<size;++y)for(int x=0;x<size;++x){const std::uint32_t a=y*(size+1)+x,b=a+1,c=a+size+1,d=c+1;mesh.indices.insert(mesh.indices.end(),{a,c,b,b,c,d});}return eve::editing::applied<VirtualGeometryMeshData>(std::move(mesh));
     }

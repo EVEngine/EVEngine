@@ -34,6 +34,7 @@
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
 #include "graphics/shaders/custom2d_frag_spv.inc"
+#include "graphics/shaders/textured_vert_spv.inc"
 #include "window/Window.h"
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
 using eve::graphics::Color;
@@ -125,7 +126,6 @@ TEST_CASE("graphics.Shader.customSpvOnSprite") {
     CHECK(std::abs(c.r - c.g) < 0.15f);
 }
 
-#if !defined(_WIN32)
 TEST_CASE("graphics.Shader.newShaderGlslc") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
@@ -147,20 +147,68 @@ void main() {
   outColor = texture(MainTex, fragUV) * fragColor * u.data[0];
 }
 )";
+    Shader *sh = nullptr;
     try {
-        Shader *sh = gfx->newShader(frag);
-        REQUIRE(sh != nullptr);
-        sh->declareFloat("factor");
-        sh->sendFloat("factor", 1.f);
-        gfx->setShader(sh);
-        CHECK(gfx->getShader() == sh);
-        gfx->setShader();
-        CHECK(gfx->getShader() == nullptr);
-    } catch (const eve::Exception &e) {
-        // glslc missing on CI hosts is acceptable — mark as soft skip
-        const char *msg = e.what();
-        bool missing = msg && (std::strstr(msg, "glslc") != nullptr);
-        CHECK(missing);
+        sh = gfx->newShader(frag);
+    } catch (const eve::Exception &) {
+        // A build with neither the in-process shaderc archive nor an external glslc
+        // cannot compile GLSL at all; every other failure is a real regression.
+        REQUIRE(!gfx->supportsRuntimeGlslCompilation());
+        return;
     }
+    REQUIRE(sh != nullptr);
+    sh->declareFloat("factor");
+    sh->sendFloat("factor", 1.f);
+    gfx->setShader(sh);
+    CHECK(gfx->getShader() == sh);
+    gfx->setShader();
+    CHECK(gfx->getShader() == nullptr);
 }
-#endif
+
+TEST_CASE("graphics.Shader.newShaderCompilesCustomVertexStage") {
+    // The vertex stage goes through the same compiler, so a custom vertex source must
+    // replace the built-in textured vertex stage rather than being ignored.
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings s;
+    s.width = 160;
+    s.height = 120;
+    s.centered = true;
+    if (!win->setWindowSettings(s)) return;
+
+    const char *vert = R"(#version 450
+layout(location = 0) in vec2 inPosition;
+layout(location = 1) in vec4 inColor;
+layout(location = 2) in vec2 inUV;
+layout(location = 0) out vec4 fragColor;
+layout(location = 1) out vec2 fragUV;
+void main() {
+  gl_Position = vec4(inPosition, 0.0, 1.0);
+  fragColor = inColor;
+  fragUV = vec2(1.0) - inUV;
+}
+)";
+    const char *frag = R"(#version 450
+layout(location = 0) in vec4 fragColor;
+layout(location = 1) in vec2 fragUV;
+layout(location = 0) out vec4 outColor;
+void main() { outColor = fragColor * vec4(fragUV, 0.0, 1.0); }
+)";
+    Shader *sh = nullptr;
+    try {
+        sh = gfx->newShader(vert, frag);
+    } catch (const eve::Exception &) {
+        REQUIRE(!gfx->supportsRuntimeGlslCompilation());
+        return;
+    }
+    REQUIRE(sh != nullptr);
+    // A compiled custom vertex stage differs from the embedded default; equal stages
+    // would mean the vertex source was dropped.
+    const std::vector<uint32_t> builtIn(textured_vert_spv, textured_vert_spv + textured_vert_spv_count);
+    CHECK(sh->vertexSpirv() != builtIn);
+    gfx->setShader(sh);
+    CHECK(gfx->getShader() == sh);
+    gfx->setShader();
+}

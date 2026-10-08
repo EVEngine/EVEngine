@@ -2,17 +2,13 @@
 
 #include "asset/import/AssetImporter.h"
 
+#include "common/Export.h"
 #include "data/HashFunction.h"
 
 #include <algorithm>
 #include <cctype>
 
 namespace eve::asset_import::detail {
-
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.import"));
-}
 
 inline std::string sha256(std::span<const std::uint8_t> bytes) {
     data::HashFunction::Value digest{};
@@ -32,8 +28,9 @@ inline std::string sha256(std::span<const std::uint8_t> bytes) {
 inline Result<asset::EvaManifest> baseManifest(const ImportPackageIdentity& package,
                                                 std::string_view importer) {
     if (package.packageId.isNil() || package.packageName.empty() || package.packageVersion.empty())
-        return failure<asset::EvaManifest>(DiagnosticCode::InvalidArgument,
-                                           "package identity, name and version are required");
+        return Result<asset::EvaManifest>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                     "package identity, name and version are required",
+                                                                     {}, {}, "asset.import"));
     asset::EvaManifest manifest;
     manifest.packageId = package.packageId;
     manifest.packageName = package.packageName;
@@ -61,10 +58,10 @@ inline std::string extension(std::string_view name) {
 }
 
 /** @brief Append the deterministic mandatory import report and bind it from provenance. */
-[[nodiscard]] Result<void> finalizeImportReport(PreparedAssetImport& prepared,
-                                                const ImportPackageIdentity& package,
-                                                std::string_view sourceEngine,
-                                                std::string_view sourceVersion,
-                                                Value::Object options = {});
+[[nodiscard]] EVENGINE_API_PLATFORM Result<void> finalizeImportReport(PreparedAssetImport&         prepared,
+                                                                      const ImportPackageIdentity& package,
+                                                                      std::string_view             sourceEngine,
+                                                                      std::string_view             sourceVersion,
+                                                                      Value::Object                options = {});
 
 }  // namespace eve::asset_import::detail

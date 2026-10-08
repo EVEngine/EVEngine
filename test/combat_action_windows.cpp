@@ -4,6 +4,7 @@
 #include "action/ActionStateWindowBlock.h"
 #include "combat/ActionDamageSink.h"
 #include "combat/ActionWindowState.h"
+#include "combat/MeleeHit.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -116,5 +117,53 @@ TEST_CASE("combatActionWindows.pairHitboxInvulnerabilityAndInterruptCleanup") {
 
     damage.clearWindowState();
     damage.setEnabled(false);
+    windows.setEnabled(false);
+}
+
+TEST_CASE("combatActionWindows.armAndDisarmMeleeHitboxRuntime") {
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+    const eve::action::ActionExecutionId execution(77);
+    ecs::EntityHandle                    sourceHandle{nullptr, typeid(void), 3, 1};
+    const auto                           sourceSubject = subject("11121314-1516-1718-991a-1b1c1d1e1f20");
+    eve::combat::CombatActionWindowState windows(
+        [&](ecs::EntityHandle) { return eve::Result<eve::SubjectRef>::success(sourceSubject); });
+    windows.setEnabled(true);
+
+    class FixedPose final : public eve::combat::IMeleePoseSource {
+    public:
+        [[nodiscard]] eve::Result<eve::combat::MeleePose> pose(eve::SubjectRef, std::string_view) const override {
+            return eve::Result<eve::combat::MeleePose>::success({{0.0, 1.0, 0.0}, 0.0});
+        }
+    } poses;
+    eve::combat::MeleeHitRuntime melee;
+    melee.setPoseSource(poses);
+    REQUIRE(melee
+                .registerHitbox({"weapon.main",
+                                 {eve::combat::MeleeShapeKind::Sphere, 0.4, 0.0},
+                                 {},
+                                 10.0,
+                                 0.0,
+                                 "Damage.Physical.Slash"})
+                .ok());
+    windows.setMeleeHitRuntime(melee);
+
+    eve::action::ActionNotifyContext context;
+    context.executionId = execution;
+    context.source      = sourceHandle;
+    eve::action::ActionTimelineEvent enter{eve::action::ActionTimelineEventKind::StateEnter,
+                                           id("combat-track:windows"),
+                                           id("combat-window:hitbox"),
+                                           id("combat:hitbox-window"),
+                                           eve::Duration::zero(),
+                                           {{"hitbox", eve::Value("weapon.main")}}};
+    REQUIRE(registry.value().dispatch(enter, context).ok());
+    CHECK_EQ(melee.armedCount(), 1u);
+
+    eve::action::ActionTimelineEvent exit = enter;
+    exit.kind                             = eve::action::ActionTimelineEventKind::StateExit;
+    REQUIRE(registry.value().dispatch(exit, context).ok());
+    CHECK_EQ(melee.armedCount(), 0u);
+    windows.clearMeleeHitRuntime();
     windows.setEnabled(false);
 }

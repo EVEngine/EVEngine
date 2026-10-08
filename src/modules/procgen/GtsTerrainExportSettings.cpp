@@ -14,11 +14,6 @@
 
 namespace eve::procgen {
 namespace {
-template <class T>
-Result<T> invalid(const char* message) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, message, "procgen.gtsTerrainExportSettings"));
-}
 bool enumRange(int value, int last) { return value >= 0 && value <= last; }
 bool textureResolutionValid(int value) {
     for (int candidate = 32; candidate <= 8192; candidate *= 2)
@@ -26,13 +21,18 @@ bool textureResolutionValid(int value) {
     return false;
 }
 Result<void> validateList(const std::vector<GtsTerrainExportLodSettings>& levels) {
-    if (levels.size() > 32) return invalid<void>("GTS terrain export supports at most 32 LOD records");
+    if (levels.size() > 32)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain export supports at most 32 LOD records",
+                                                       "procgen.gtsTerrainExportSettings"));
     float previous = 1.0f;
     for (const auto& level : levels) {
         auto valid = level.validate();
         if (!valid) return valid;
         if (level.screenRelativeTransitionHeight >= previous)
-            return invalid<void>("GTS terrain export transition heights must descend");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS terrain export transition heights must descend",
+                                                           "procgen.gtsTerrainExportSettings"));
         previous = level.screenRelativeTransitionHeight;
     }
     return Result<void>::success();
@@ -276,7 +276,9 @@ Result<void> GtsTerrainExportLodSettings::validate() const {
     if (!enumRange(int(saveResolution), 4) || !enumRange(int(normalEdgeMode), 1) || !enumRange(int(mode), 2) ||
         !enumRange(int(materialShader), 1) || !enumRange(int(textureExportMethod), 1) ||
         !enumRange(int(alphaChannel), 1) || !enumRange(int(bakeLighting), 1))
-        return invalid<void>("GTS terrain export enum value is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain export enum value is invalid",
+                                                       "procgen.gtsTerrainExportSettings"));
     if (!std::isfinite(simplifyQuality) || simplifyQuality < 0.0f || simplifyQuality > 1.0f ||
         !std::isfinite(screenRelativeTransitionHeight) || screenRelativeTransitionHeight < 0.0f ||
         screenRelativeTransitionHeight >= 1.0f || vertexColorSmoothing < 0 || vertexColorSmoothing > 128 ||
@@ -284,7 +286,9 @@ Result<void> GtsTerrainExportLodSettings::validate() const {
         !std::isfinite(simplification.vertexLinkDistance) || simplification.vertexLinkDistance < 0.0 ||
         !std::isfinite(simplification.aggressiveness) || simplification.aggressiveness <= 0.0 ||
         simplification.maxIterationCount <= 0 || simplification.maxIterationCount > 100000)
-        return invalid<void>("GTS terrain export LOD value is outside its supported range");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain export LOD value is outside its supported range",
+                                                       "procgen.gtsTerrainExportSettings"));
     return Result<void>::success();
 }
 Result<GtsTerrainLodLevelSettings> GtsTerrainExportLodSettings::compileLevel() const {
@@ -294,7 +298,10 @@ Result<GtsTerrainLodLevelSettings> GtsTerrainExportLodSettings::compileLevel() c
         {simplifyQuality, screenRelativeTransitionHeight, simplification});
 }
 Result<GtsTerrainExportLodSettings> makeGtsTerrainImpostorLod(int level) {
-    if (level < 0) return invalid<GtsTerrainExportLodSettings>("GTS impostor LOD index must be non-negative");
+    if (level < 0)
+        return Result<GtsTerrainExportLodSettings>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "GTS impostor LOD index must be non-negative",
+                              "procgen.gtsTerrainExportSettings"));
     GtsTerrainExportLodSettings value;
     value.namePrefix          = "LOD" + std::to_string(level) + "_";
     value.mode                = GtsTerrainLodMode::Impostor;
@@ -320,7 +327,10 @@ Result<GtsTerrainExportLodSettings> makeGtsTerrainImpostorLod(int level) {
     return Result<GtsTerrainExportLodSettings>::success(std::move(value));
 }
 Result<GtsTerrainExportLodSettings> makeGtsTerrainLowPolyLod(int level) {
-    if (level < 0) return invalid<GtsTerrainExportLodSettings>("GTS low-poly LOD index must be non-negative");
+    if (level < 0)
+        return Result<GtsTerrainExportLodSettings>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "GTS low-poly LOD index must be non-negative",
+                              "procgen.gtsTerrainExportSettings"));
     GtsTerrainExportLodSettings value;
     value.namePrefix           = "LOD" + std::to_string(level) + "_";
     value.mode                 = GtsTerrainLodMode::LowPoly;
@@ -341,7 +351,9 @@ Result<GtsTerrainExportLodSettings> preset(int mode, int level, float quality, f
         mode == int(GtsTerrainLodMode::Impostor) ? makeGtsTerrainImpostorLod(level)
         : mode == int(GtsTerrainLodMode::LowPoly)
             ? makeGtsTerrainLowPolyLod(level)
-            : invalid<GtsTerrainExportLodSettings>("GTS terrain preset mode must be Impostor or LowPoly");
+            : Result<GtsTerrainExportLodSettings>::failure(Diagnostic::error(
+                  DiagnosticCode::InvalidArgument, "GTS terrain preset mode must be Impostor or LowPoly",
+                  "procgen.gtsTerrainExportSettings"));
     if (!made) return made;
     made.value().simplifyQuality                = quality;
     made.value().screenRelativeTransitionHeight = transition;
@@ -378,7 +390,9 @@ Result<void> GtsTerrainExportSettings::configureWorkflow(const GtsTerrainExportW
         !std::isfinite(workflow.colliderSimplifyQuality) || workflow.colliderSimplifyQuality < 0.f ||
         workflow.colliderSimplifyQuality > 1.f || !std::isfinite(workflow.impostorRange) ||
         workflow.impostorRange < 0.0)
-        return invalid<void>("GTS terrain export workflow value is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain export workflow value is invalid",
+                                                       "procgen.gtsTerrainExportSettings"));
     workflow_ = workflow;
     return Result<void>::success();
 }
@@ -401,7 +415,9 @@ Result<std::vector<GtsTerrainLodLevelSettings>> GtsTerrainExportSettings::compil
     auto valid = validateList(sourceLods_);
     if (!valid) return Result<std::vector<GtsTerrainLodLevelSettings>>::failure(valid.status());
     if (sourceLods_.empty())
-        return invalid<std::vector<GtsTerrainLodLevelSettings>>("GTS source export requires at least one LOD");
+        return Result<std::vector<GtsTerrainLodLevelSettings>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "GTS source export requires at least one LOD",
+                              "procgen.gtsTerrainExportSettings"));
     std::vector<GtsTerrainLodLevelSettings> output;
     output.reserve(sourceLods_.size());
     for (const auto& source : sourceLods_) {
@@ -427,36 +443,53 @@ Result<std::string> GtsTerrainExportSettings::snapshotJson() const {
         .toJson();
 }
 Result<void> GtsTerrainExportSettings::restoreJson(const std::string& json) {
-    if (json.size() > 1024U * 1024U) return invalid<void>("GTS terrain export settings JSON exceeds size limit");
+    if (json.size() > 1024U * 1024U)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain export settings JSON exceeds size limit",
+                                                       "procgen.gtsTerrainExportSettings"));
     auto parsed = Value::fromJson(json);
     if (!parsed) return Result<void>::failure(parsed.status());
     auto* root = parsed.value().getIf<Value::Object>();
     if (!root || !root->contains("schema") || !root->contains("version") || !root->contains("sourceLods") ||
         !root->contains("impostorLods"))
-        return invalid<void>("GTS terrain export settings fields are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain export settings fields are invalid",
+                                                       "procgen.gtsTerrainExportSettings"));
     auto* schema  = root->at("schema").getIf<std::string>();
     auto* version = root->at("version").getIf<int64_t>();
     if (!version || (*version < 1 || *version > 3) ||
         (*version == 1 && !exact(*root, {"impostorLods", "schema", "sourceLods", "version"})) ||
         (*version >= 2 && !exact(*root, {"impostorLods", "schema", "sourceLods", "version", "workflow"})))
-        return invalid<void>("GTS terrain export settings fields or version are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain export settings fields or version are invalid",
+                                                       "procgen.gtsTerrainExportSettings"));
     auto* source   = root->at("sourceLods").getIf<Value::Array>();
     auto* impostor = root->at("impostorLods").getIf<Value::Array>();
     if (!schema || *schema != "eve.procgen.gts-terrain-export-settings" || !source || !impostor ||
         source->size() > 32 || impostor->size() > 32)
-        return invalid<void>("GTS terrain export settings schema or counts are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain export settings schema or counts are invalid",
+                                                       "procgen.gtsTerrainExportSettings"));
     GtsTerrainExportWorkflow decodedWorkflow;
     if (*version >= 2 && !decodeWorkflow(root->at("workflow"), decodedWorkflow, *version == 2))
-        return invalid<void>("GTS terrain export workflow is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain export workflow is invalid",
+                                                       "procgen.gtsTerrainExportSettings"));
     std::vector<GtsTerrainExportLodSettings> decodedSource, decodedImpostor;
     for (const auto& encoded : *source) {
         GtsTerrainExportLodSettings value;
-        if (!decodeLod(encoded, value)) return invalid<void>("GTS source export LOD is invalid");
+        if (!decodeLod(encoded, value))
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS source export LOD is invalid",
+                                                           "procgen.gtsTerrainExportSettings"));
         decodedSource.push_back(std::move(value));
     }
     for (const auto& encoded : *impostor) {
         GtsTerrainExportLodSettings value;
-        if (!decodeLod(encoded, value)) return invalid<void>("GTS impostor export LOD is invalid");
+        if (!decodeLod(encoded, value))
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS impostor export LOD is invalid",
+                                                           "procgen.gtsTerrainExportSettings"));
         decodedImpostor.push_back(std::move(value));
     }
     auto sourceValid = validateList(decodedSource);
@@ -477,7 +510,10 @@ Result<void> buildGtsTerrainExportLodsFromHeightmapInto(GtsTerrainLodSet& output
     auto levels = settings.compileSourceLevels();
     if (!levels) return Result<void>::failure(levels.status());
     const auto* first = settings.sourceLodAt(0);
-    if (!first) return invalid<void>("GTS source export requires at least one LOD");
+    if (!first)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS source export requires at least one LOD",
+                                                       "procgen.gtsTerrainExportSettings"));
     MeshBuild base;
     auto      built = buildGtsTerrainBaseMesh(base, heightmap, first->saveResolution, sizeX, sizeY, sizeZ);
     if (!built) return built;
@@ -493,7 +529,9 @@ Result<void> buildGtsTerrainColliderMeshFromHeightmapInto(MeshBuild& output, con
     auto                     valid = validator.configureWorkflow(workflow);
     if (!valid) return valid;
     if (!workflow.addTerrainCollider || workflow.colliderType != GtsTerrainColliderType::Mesh)
-        return invalid<void>("GTS workflow does not request a terrain MeshCollider");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS workflow does not request a terrain MeshCollider",
+                                                       "procgen.gtsTerrainExportSettings"));
     MeshBuild base;
     auto      built = buildGtsTerrainBaseMesh(base, heightmap, workflow.colliderResolution, sizeX, sizeY, sizeZ);
     if (!built) return built;
@@ -506,7 +544,10 @@ Result<void> buildGtsTerrainColliderMeshFromHeightmapInto(MeshBuild& output, con
 
 Result<std::string> encodeGtsTerrainObj(const Heightmap& heightmap, GtsTerrainSaveResolution resolution, float sizeX,
                                         float sizeY, float sizeZ, GtsTerrainObjFaceMode faceMode) {
-    if (!enumRange(int(faceMode), 1)) return invalid<std::string>("GTS terrain OBJ face mode is invalid");
+    if (!enumRange(int(faceMode), 1))
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "GTS terrain OBJ face mode is invalid",
+                                                              "procgen.gtsTerrainExportSettings"));
     MeshBuild validated;
     auto      built = buildGtsTerrainBaseMesh(validated, heightmap, resolution, sizeX, sizeY, sizeZ);
     if (!built) return Result<std::string>::failure(built.status());
@@ -541,7 +582,9 @@ Result<std::string> encodeGtsTerrainObj(const Heightmap& heightmap, GtsTerrainSa
                        << '\n';
         }
     auto text = stream.str();
-    if (text.size() > 512U * 1024U * 1024U) return invalid<std::string>("GTS terrain OBJ exceeds size limit");
+    if (text.size() > 512U * 1024U * 1024U)
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "GTS terrain OBJ exceeds size limit", "procgen.gtsTerrainExportSettings"));
     return Result<std::string>::success(std::move(text));
 }
 
@@ -550,12 +593,16 @@ Result<std::string> encodeGtsMaskedTerrainObj(const Heightmap& heightmap, const 
                                               float sizeZ, GtsTerrainObjFaceMode faceMode, float threshold,
                                               bool invert) {
     if (!enumRange(int(faceMode), 1) || !std::isfinite(threshold) || threshold < 0.f || threshold > 1.f)
-        return invalid<std::string>("GTS masked terrain OBJ settings are invalid");
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "GTS masked terrain OBJ settings are invalid",
+                                                              "procgen.gtsTerrainExportSettings"));
     MeshBuild validated;
     auto      built = buildGtsTerrainBaseMesh(validated, heightmap, resolution, sizeX, sizeY, sizeZ);
     if (!built) return Result<std::string>::failure(built.status());
     if (maskmap.getWidth() < 1 || maskmap.getHeight() < 1)
-        return invalid<std::string>("GTS masked terrain OBJ mask is empty");
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "GTS masked terrain OBJ mask is empty",
+                                                              "procgen.gtsTerrainExportSettings"));
     const int        terrainResolution = heightmap.getWidth(), stride = 1 << int(resolution);
     std::vector<int> vertexIndices(std::size_t(terrainResolution) * std::size_t(terrainResolution), -1);
     struct Vertex {
@@ -620,7 +667,10 @@ Result<std::string> encodeGtsMaskedTerrainObj(const Heightmap& heightmap, const 
         stream << '\n';
     }
     auto text = stream.str();
-    if (text.size() > 512U * 1024U * 1024U) return invalid<std::string>("GTS masked terrain OBJ exceeds size limit");
+    if (text.size() > 512U * 1024U * 1024U)
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "GTS masked terrain OBJ exceeds size limit",
+                                                              "procgen.gtsTerrainExportSettings"));
     return Result<std::string>::success(std::move(text));
 }
 
@@ -632,11 +682,15 @@ Result<int> bakeGtsTerrainVertexColorsInto(MeshBuild& output, const MeshBuild& s
         source.getIndexCount() % 3 || !std::isfinite(terrainSizeX) || terrainSizeX <= 0.f ||
         !std::isfinite(terrainSizeZ) || terrainSizeZ <= 0.f || bakedTexture.getWidth() < 1 ||
         bakedTexture.getHeight() < 1 || !bakedTexture.getData() || !bakedTexture.getPixelGetFunction())
-        return invalid<int>("GTS terrain vertex-color bake input is invalid");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "GTS terrain vertex-color bake input is invalid",
+                                                      "procgen.gtsTerrainExportSettings"));
     const std::size_t pixelSize = bakedTexture.getPixelSize();
     if (!pixelSize || std::size_t(bakedTexture.getWidth()) * std::size_t(bakedTexture.getHeight()) >
                           bakedTexture.getSize() / pixelSize)
-        return invalid<int>("GTS terrain vertex-color texture storage is invalid");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "GTS terrain vertex-color texture storage is invalid",
+                                                      "procgen.gtsTerrainExportSettings"));
     using Color              = image::ImageData::Colorf;
     const int          width = bakedTexture.getWidth(), height = bakedTexture.getHeight();
     std::vector<Color> colors;
@@ -717,7 +771,9 @@ Result<int> bakeGtsTerrainVertexColorsInto(MeshBuild& output, const MeshBuild& s
             float       nx = aby * acz - abz * acy, ny = abz * acx - abx * acz, nz = abx * acy - aby * acx;
             const float length = std::sqrt(nx * nx + ny * ny + nz * nz);
             if (!(length > 0.f) || !std::isfinite(length))
-                return invalid<int>("GTS sharp terrain mesh contains a degenerate triangle");
+                return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "GTS sharp terrain mesh contains a degenerate triangle",
+                                                              "procgen.gtsTerrainExportSettings"));
             nx /= length;
             ny /= length;
             nz /= length;

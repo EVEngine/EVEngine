@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file StandardAbilities.h @brief Registerable standard action-combat ability archetypes. */
 
@@ -16,6 +18,6 @@ namespace eve::combat {
  * presentation/gameplay behavior through Action timeline events and executors.
  * @return Owning definitions, or a structured internal-definition failure.
  */
-[[nodiscard]] Result<std::vector<action::AbilityDefinition>> standardCombatAbilities();
+[[nodiscard]] EVENGINE_API_BACKENDS Result<std::vector<action::AbilityDefinition>> standardCombatAbilities();
 
 }  // namespace eve::combat

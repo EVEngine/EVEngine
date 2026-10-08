@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <functional>
@@ -26,7 +28,7 @@ class UdpSocket;
  *   optional frag header (flags&1): u32 msgId u16 fragCount u16 fragIndex
  *   payload follows.
  */
-class UdpLink {
+class EVENGINE_API_PLATFORM UdpLink {
 public:
     enum class MsgType : uint8_t {
         Reliable = 0,

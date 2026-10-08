@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -18,7 +20,7 @@ namespace eve::animation {
  * Does not own a Texture — pair with Graphics textures in script.
  * Script type: `SpriteSheet`.
  */
-class SpriteSheet {
+class EVENGINE_API_WORLD SpriteSheet {
 public:
     SpriteSheet() = default;
     ~SpriteSheet() = default;

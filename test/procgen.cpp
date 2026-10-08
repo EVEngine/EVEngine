@@ -2065,10 +2065,9 @@ TEST_CASE("procgen.terrain.materialShaderRendersPortableSixteenLayerContract") {
 
 TEST_CASE("procgen.terrain.waterShaderShipsEmbeddedSpirv") {
     // Regression guard for the portability break this stage used to cause: it was
-    // compiled by glslc at runtime, which the Vulkan backend refuses on Windows
-    // outright ("GLSL compile via glslc is not supported on Windows") and which
-    // needs glslc on PATH elsewhere. It is embedded SPIR-V now, so creating and
-    // drawing it must succeed with no external compiler involved.
+    // compiled with glslc at runtime, which packaged builds cannot rely on. It is
+    // embedded SPIR-V now, so creating and drawing it must succeed without any
+    // external compiler.
     auto *gfx = eve::graphics::Graphics::create();
     if (!gfx->isHeadless()) gfx->initHeadless(64, 64);
     Procgen procgen;

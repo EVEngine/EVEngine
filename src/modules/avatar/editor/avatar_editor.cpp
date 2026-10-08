@@ -12,7 +12,9 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::avatar_editor {
 namespace {
@@ -24,10 +26,10 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
     return value ? *value : std::string{};
 }
 
-editor::EditorResult<void> apply(avatar_editing::AvatarDocumentTarget& target,
-                                 editor::EditorResult<editor::DomainOperation> operation) {
+editor::Result<void> apply(avatar_editing::AvatarDocumentTarget& target,
+                                 editor::Result<editor::DomainOperation> operation) {
     if (!operation.ok())
-        return editor::EditorResult<void>::failure(operation.status());
+        return editor::Result<void>::failure(operation.status());
     return target.applyDomainOperation(operation.value());
 }
 
@@ -35,9 +37,9 @@ editor::EditorResult<void> apply(avatar_editing::AvatarDocumentTarget& target,
 
 class AvatarEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override { return type == "avatar"; }
+    std::vector<std::string_view> types() const override { return {"avatar"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type, const editor::EditorValue::Object& request) override {
         (void)type;
         auto document = std::make_unique<avatar_editing::AvatarDocumentTarget>(target.value());
@@ -46,7 +48,7 @@ public:
         if (!kind.empty() || !source.empty()) {
             auto applied = apply(*document, document->makeSetSource(kind.empty() ? document->kind() : kind, source));
             if (!applied.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(applied.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(applied.status());
         }
         const std::string layer = stringField(request, "layer");
         if (!layer.empty()) {
@@ -57,7 +59,7 @@ public:
             value.textureAsset = texture.empty() ? layer + ".png" : texture;
             auto applied = apply(*document, document->makeCreateLayer(value));
             if (!applied.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(applied.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(applied.status());
         }
         const std::string parameter = stringField(request, "parameter");
         if (!parameter.empty()) {
@@ -66,7 +68,7 @@ public:
             value.name = parameter;
             auto applied = apply(*document, document->makeCreateParameter(value));
             if (!applied.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(applied.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(applied.status());
         }
         editor::AutomationOwnedTarget owned;
         owned.target = std::move(document);

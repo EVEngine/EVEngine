@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /** @file EvpackSceneTemplateLoader.h @brief Runtime decoding of canonical scene templates. */
 
@@ -34,7 +35,7 @@ struct LoadedSceneTemplate {
 };
 
 /** @brief Capability-aware scene-template/3 decoder with explicit scene-template/2 compatibility. */
-class EvpackSceneTemplateLoader {
+class EVENGINE_API_BACKENDS EvpackSceneTemplateLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */
     explicit EvpackSceneTemplateLoader(const asset::EvpackResourceReader& reader) noexcept

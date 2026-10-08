@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/RuntimeHandle.h"
@@ -70,7 +72,7 @@ struct SmartObjectExpirationReport {
  * @thread Simulation-thread-affine; no synchronization is provided.
  * @reentrancy Methods do not invoke external callbacks.
  */
-class SmartObjectWorld {
+class EVENGINE_API_PLATFORM SmartObjectWorld {
 public:
     /** @brief Validates and atomically registers one uniquely named object. */
     [[nodiscard]] Result<SmartObjectHandle> registerObject(SmartObjectDefinition definition);

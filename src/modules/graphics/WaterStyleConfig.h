@@ -12,7 +12,7 @@
 namespace eve::graphics {
 
 /** @brief Versioned, backend-neutral configuration for the built-in stylized water surface. */
-struct WaterStyleConfig {
+struct EVENGINE_API_BACKENDS WaterStyleConfig {
     static constexpr std::string_view SchemaId      = "eve.graphics.stylized-water";
     static constexpr std::uint32_t    SchemaVersion = 1;
 

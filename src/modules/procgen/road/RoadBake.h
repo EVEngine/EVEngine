@@ -71,8 +71,8 @@ struct RoadBakeResult {
  * @cost Linear in generated geometry and bounded by `maximumMeshElements` plus `maximumPlacements`.
  * @note Synchronous, owner-thread-only; result retains no pointers into network.
  */
-[[nodiscard]] Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork& network,
-                                                     const RoadBakeOptions& options = {});
+[[nodiscard]] EVENGINE_API_DOMAINS Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork&     network,
+                                                                          const RoadBakeOptions& options = {});
 
 /**
  * @brief Atomically conform a heightmap to nearby baked road surface triangles.

@@ -13,12 +13,6 @@
 namespace eve::asset {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.cook.image"));
-}
-
 std::uint32_t big32(std::span<const std::uint8_t> bytes, std::size_t offset) {
     return (std::uint32_t(bytes[offset]) << 24) | (std::uint32_t(bytes[offset + 1]) << 16) |
            (std::uint32_t(bytes[offset + 2]) << 8) | bytes[offset + 3];
@@ -49,8 +43,8 @@ Result<std::vector<std::uint8_t>> decodePng(std::span<const std::uint8_t> bytes,
                                             std::uint64_t maximumDecodedBytes) {
     static constexpr std::uint8_t signature[] = {0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a};
     if (bytes.size() < 33 || !std::equal(std::begin(signature), std::end(signature), bytes.begin()))
-        return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                  "PNG signature or header is invalid");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "PNG signature or header is invalid", {}, {}, "asset.cook.image"));
     std::size_t cursor = 8;
     bool sawHeader = false;
     bool sawEnd = false;
@@ -59,12 +53,12 @@ Result<std::vector<std::uint8_t>> decodePng(std::span<const std::uint8_t> bytes,
     std::vector<std::uint8_t> compressed;
     while (cursor < bytes.size()) {
         if (bytes.size() - cursor < 12)
-            return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                      "PNG chunk header is truncated");
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "PNG chunk header is truncated", {}, {}, "asset.cook.image"));
         const std::uint32_t size = big32(bytes, cursor);
         if (size > bytes.size() - cursor - 12)
-            return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                      "PNG chunk payload is truncated");
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "PNG chunk payload is truncated", {}, {}, "asset.cook.image"));
         const auto type = bytes.subspan(cursor + 4, 4);
         const auto payload = bytes.subspan(cursor + 8, size);
         const std::uint32_t storedCrc = big32(bytes, cursor + 8 + size);
@@ -72,13 +66,13 @@ Result<std::vector<std::uint8_t>> decodePng(std::span<const std::uint8_t> bytes,
         crc = crc32(crc, type.data(), 4);
         if (!payload.empty()) crc = crc32(crc, payload.data(), static_cast<uInt>(payload.size()));
         if (static_cast<std::uint32_t>(crc) != storedCrc)
-            return failure<std::vector<std::uint8_t>>(DiagnosticCode::HashMismatch,
-                                                      "PNG chunk CRC does not match");
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::HashMismatch, "PNG chunk CRC does not match", {}, {}, "asset.cook.image"));
         const std::string_view name(reinterpret_cast<const char*>(type.data()), 4);
         if (!sawHeader) {
             if (name != "IHDR" || size != 13)
-                return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                          "PNG IHDR must be first");
+                return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "PNG IHDR must be first", {}, {}, "asset.cook.image"));
             width = big32(payload, 0);
             height = big32(payload, 4);
             const std::uint8_t bitDepth = payload[8];
@@ -86,29 +80,31 @@ Result<std::vector<std::uint8_t>> decodePng(std::span<const std::uint8_t> bytes,
             if (width == 0 || height == 0 || width != expectedWidth || height != expectedHeight ||
                 bitDepth != 8 || (colorType != 2 && colorType != 6) || payload[10] != 0 ||
                 payload[11] != 0 || payload[12] != 0)
-                return failure<std::vector<std::uint8_t>>(
-                    DiagnosticCode::Unsupported,
-                    "PNG Cook supports non-interlaced 8-bit RGB/RGBA matching the image definition");
+                return Result<std::vector<std::uint8_t>>::failure(
+                    Diagnostic::error(DiagnosticCode::Unsupported,
+                                      "PNG Cook supports non-interlaced 8-bit RGB/RGBA matching the image definition",
+                                      {}, {}, "asset.cook.image"));
             channels = colorType == 6 ? 4 : 3;
             sawHeader = true;
         } else if (name == "IHDR") {
-            return failure<std::vector<std::uint8_t>>(DiagnosticCode::Conflict,
-                                                      "PNG contains duplicate IHDR");
+            return Result<std::vector<std::uint8_t>>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "PNG contains duplicate IHDR", {}, {}, "asset.cook.image"));
         } else if (name == "IDAT") {
             if (compressed.size() > maximumDecodedBytes ||
                 payload.size() > maximumDecodedBytes - compressed.size())
-                return failure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                          "PNG compressed data exceeds Cook budget");
+                return Result<std::vector<std::uint8_t>>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "PNG compressed data exceeds Cook budget", {},
+                                      {}, "asset.cook.image"));
             compressed.insert(compressed.end(), payload.begin(), payload.end());
         } else if (name == "IEND") {
             if (size != 0 || cursor + 12 != bytes.size())
-                return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                          "PNG IEND or trailing data is invalid");
+                return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "PNG IEND or trailing data is invalid", {}, {}, "asset.cook.image"));
             sawEnd = true;
         } else if ((type[0] & 0x20u) == 0) {
-            return failure<std::vector<std::uint8_t>>(DiagnosticCode::Unsupported,
-                                                      "PNG contains an unsupported critical chunk",
-                                                      std::string(name));
+            return Result<std::vector<std::uint8_t>>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "PNG contains an unsupported critical chunk",
+                                  std::string(name), {}, "asset.cook.image"));
         }
         cursor += std::size_t(size) + 12;
         if (sawEnd) break;
@@ -120,21 +116,22 @@ Result<std::vector<std::uint8_t>> decodePng(std::span<const std::uint8_t> bytes,
         filteredSize > maximumDecodedBytes ||
         rgbaSize > maximumDecodedBytes || rgbaSize + 24 > maximumDecodedBytes ||
         filteredSize > std::numeric_limits<uLongf>::max())
-        return failure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                  "PNG decoded dimensions exceed Cook budget");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "PNG decoded dimensions exceed Cook budget", {}, {}, "asset.cook.image"));
     std::vector<std::uint8_t> filtered(static_cast<std::size_t>(filteredSize));
     uLongf outputSize = static_cast<uLongf>(filtered.size());
     if (uncompress(filtered.data(), &outputSize, compressed.data(), static_cast<uLong>(compressed.size())) != Z_OK ||
         outputSize != filtered.size())
-        return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                  "PNG zlib stream is invalid or has unexpected size");
+        return Result<std::vector<std::uint8_t>>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "PNG zlib stream is invalid or has unexpected size", {}, {},
+                              "asset.cook.image"));
     std::vector<std::uint8_t> raw(static_cast<std::size_t>(rowBytes) * height);
     for (std::uint32_t row = 0; row < height; ++row) {
         const std::size_t sourceBase = std::size_t(row) * (std::size_t(rowBytes) + 1);
         const std::uint8_t filter = filtered[sourceBase];
         if (filter > 4)
-            return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                      "PNG row uses an invalid filter");
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "PNG row uses an invalid filter", {}, {}, "asset.cook.image"));
         const std::size_t destinationBase = std::size_t(row) * std::size_t(rowBytes);
         for (std::size_t column = 0; column < rowBytes; ++column) {
             const std::uint8_t encoded = filtered[sourceBase + 1 + column];
@@ -184,22 +181,25 @@ Result<CookedCanonicalImage> cookCanonicalImageRgba8(
         widthValue->asInt() <= 0 || !heightValue || !heightValue->isInt64() || heightValue->asInt() <= 0 || !encoding ||
         !encoding->isString() || !transfer || !transfer->isString() ||
         (transfer->asString() != "srgb" && transfer->asString() != "linear"))
-        return failure<CookedCanonicalImage>(DiagnosticCode::ParseError,
-                                             "eve.image runtime Cook definition is malformed");
+        return Result<CookedCanonicalImage>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "eve.image runtime Cook definition is malformed", {}, {}, "asset.cook.image"));
     const bool   explicitSchema = version->asInt() == 3;
     const Value* mipValue       = field(*object, "mipCount");
     if ((!explicitSchema && mipValue) ||
         (explicitSchema && (!mipValue || !mipValue->isInt64() || mipValue->asInt() < 1 || mipValue->asInt() > 32)))
-        return failure<CookedCanonicalImage>(DiagnosticCode::ParseError,
-                                             "image mip count requires schema 3 and a positive bounded integer");
+        return Result<CookedCanonicalImage>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "image mip count requires schema 3 and a positive bounded integer", {}, {},
+            "asset.cook.image"));
     const uint32_t mipCount   = explicitSchema ? uint32_t(mipValue->asInt()) : 1;
     const bool     packedMips = encoding->asString() == "rgba8-mips";
     if (encoding->asString() != "png" && encoding->asString() != "tiff" && encoding->asString() != "tga" &&
         !(explicitSchema && packedMips))
-        return failure<CookedCanonicalImage>(DiagnosticCode::Unsupported,
-                                             "runtime RGBA8 Cook supports PNG and admitted TIFF/TGA source encoding");
+        return Result<CookedCanonicalImage>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "runtime RGBA8 Cook supports PNG and admitted TIFF/TGA source encoding", {},
+            {}, "asset.cook.image"));
     if (widthValue->asInt() > UINT32_MAX || heightValue->asInt() > UINT32_MAX)
-        return failure<CookedCanonicalImage>(DiagnosticCode::ParseError, "image dimensions exceed uint32");
+        return Result<CookedCanonicalImage>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "image dimensions exceed uint32", {}, {}, "asset.cook.image"));
     const auto width = static_cast<std::uint32_t>(widthValue->asInt());
     const auto height = static_cast<std::uint32_t>(heightValue->asInt());
     const uint64_t headerBytes   = explicitSchema ? 28 : 24;
@@ -210,8 +210,9 @@ Result<CookedCanonicalImage> cookCanonicalImageRgba8(
         if (fullCount < mipCount) {
             if (maximumDecodedBytes < headerBytes || expectedBytes > maximumDecodedBytes - headerBytes ||
                 pixels > (maximumDecodedBytes - headerBytes - expectedBytes) / 4)
-                return failure<CookedCanonicalImage>(DiagnosticCode::InvalidArgument,
-                                                     "image mip chain exceeds Cook budget");
+                return Result<CookedCanonicalImage>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                               "image mip chain exceeds Cook budget",
+                                                                               {}, {}, "asset.cook.image"));
             expectedBytes += pixels * 4;
         }
         ++fullCount;
@@ -220,13 +221,15 @@ Result<CookedCanonicalImage> cookCanonicalImageRgba8(
         mipHeight = std::max(mipHeight / 2, 1u);
     }
     if ((mipCount != 1 && mipCount != fullCount) || (!packedMips && mipCount != 1))
-        return failure<CookedCanonicalImage>(DiagnosticCode::InvalidArgument,
-                                             "image requires a base level or full halving chain");
+        return Result<CookedCanonicalImage>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "image requires a base level or full halving chain", {},
+                              {}, "asset.cook.image"));
     auto rgba = [&]() -> Result<std::vector<std::uint8_t>> {
         if (packedMips) {
             if (encodedSource.size() != expectedBytes)
-                return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                          "packed mip byte count differs from definition");
+                return Result<std::vector<std::uint8_t>>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "packed mip byte count differs from definition", {},
+                                      {}, "asset.cook.image"));
             return Result<std::vector<std::uint8_t>>::success({encodedSource.begin(), encodedSource.end()});
         }
         if (encoding->asString() == "png") return decodePng(encodedSource, width, height, maximumDecodedBytes);
@@ -234,15 +237,15 @@ Result<CookedCanonicalImage> cookCanonicalImageRgba8(
             auto tga = detail::decodeTgaRgba8(encodedSource, maximumDecodedBytes);
             if (!tga) return Result<std::vector<std::uint8_t>>::failure(tga.status());
             if (tga.value().width != width || tga.value().height != height)
-                return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                          "TGA dimensions differ from definition");
+                return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "TGA dimensions differ from definition", {}, {}, "asset.cook.image"));
             return Result<std::vector<std::uint8_t>>::success(std::move(tga.value().rgba));
         }
         auto tiff = detail::decodeTiffRgba8(encodedSource, maximumDecodedBytes);
         if (!tiff) return Result<std::vector<std::uint8_t>>::failure(tiff.status());
         if (tiff.value().width != width || tiff.value().height != height)
-            return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                      "TIFF dimensions differ from definition");
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "TIFF dimensions differ from definition", {}, {}, "asset.cook.image"));
         return Result<std::vector<std::uint8_t>>::success(std::move(tiff.value().rgba));
     }();
     if (!rgba) return Result<CookedCanonicalImage>::failure(rgba.status());

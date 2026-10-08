@@ -1,15 +1,18 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file Tactics.h @brief Tactics domain composition profile facade. */
 
-#include "common/Module.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
+#include "common/Module.h"
 #include "common/SquirrelOwnership.h"
+#include "tactics/Interaction.h"
+#include "tactics/Presentation.h"
 #include "tactics/TacticsBattle.h"
 #include "tactics/TacticsPersistence.h"
 #include "tactics/TacticsReplay.h"
-#include "tactics/Interaction.h"
-#include "tactics/Presentation.h"
 
 #include <cstddef>
 #include <vector>
@@ -45,7 +48,7 @@ struct TacticsBattleSession {
  *
  * All methods are simulation-thread-affine and invoke no unknown callbacks.
  */
-class Tactics : public Module, public IGameplayControlProvider {
+class EVENGINE_API_DOMAINS Tactics : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     Module_REG(Tactics);
 
@@ -56,6 +59,8 @@ public:
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;

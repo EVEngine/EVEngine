@@ -1,14 +1,16 @@
 #pragma once
-#include "common/Result.h"
+
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "common/Export.h"
+#include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::ui {
 struct PcgPhotoModeRange { double minimum=0,maximum=1;bool integral=false; };
 /** @brief Complete 57-range contract from Pcg PhotoModeMinAndMaxValues. */
-class PcgPhotoModeRanges {
+class EVENGINE_API_WORLD PcgPhotoModeRanges {
 public:
  PcgPhotoModeRanges();
  /** @brief Restore all Pcg range defaults. */ void resetDefaults();

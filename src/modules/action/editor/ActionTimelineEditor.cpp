@@ -13,10 +13,6 @@ namespace {
 
 constexpr std::string_view kReplaceOperation = "action.timeline.replace";
 
-template <class T = void>
-EditorResult<T> editorError(EditorStatus status, std::string rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(std::move(rule)), std::move(message));
-}
 
 std::string commonMessage(const Status& status, std::string fallback) {
     if (!status.diagnostics().empty() && !status.diagnostics().front().message().empty())
@@ -132,25 +128,20 @@ void* ActionTimelineTarget::queryCapability(const CapabilityId& capability) {
     return nullptr;
 }
 
-EditorResult<void> ActionTimelineTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> ActionTimelineTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target.value() != targetId_)
-        return editorError(EditorStatus::Rejected, "editor.action.timeline.target-mismatch",
-                           "Action timeline operation targets another document");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.target-mismatch"), "Action timeline operation targets another document");
     if (operation.type != kReplaceOperation)
-        return editorError(EditorStatus::Unsupported, "editor.action.timeline.operation-unsupported",
-                           "Action timeline target only accepts canonical replace operations");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.action.timeline.operation-unsupported"), "Action timeline target only accepts canonical replace operations");
     const std::string* json = jsonPayload(operation.payload);
     if (!json)
-        return editorError(EditorStatus::Rejected, "editor.action.timeline.payload-invalid",
-                           "Action timeline replacement requires a JSON string");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.payload-invalid"), "Action timeline replacement requires a JSON string");
     auto value = Value::fromJson(*json);
     if (!value)
-        return editorError(EditorStatus::Rejected, "editor.action.timeline.json-invalid",
-                           commonMessage(value.status(), "Action timeline JSON is invalid"));
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.json-invalid"), commonMessage(value.status(), "Action timeline JSON is invalid"));
     auto decoded = action::ActionTimeline::fromValue(value.value());
     if (!decoded)
-        return editorError(EditorStatus::Rejected, "editor.action.timeline.asset-invalid",
-                           commonMessage(decoded.status(), "Action timeline asset is invalid"));
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.asset-invalid"), commonMessage(decoded.status(), "Action timeline asset is invalid"));
     timeline_ = std::move(decoded).takeValue();
     ++revision_;
     return eve::editing::applied<void>();
@@ -162,15 +153,13 @@ std::unique_ptr<IDomainOperationTarget> ActionTimelineTarget::cloneDomainState()
     return clone;
 }
 
-EditorResult<void> ActionTimelineTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> ActionTimelineTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<ActionTimelineTarget*>(candidate.get());
     if (!typed || typed->targetId_ != targetId_)
-        return editorError(EditorStatus::Conflict, "editor.action.timeline.candidate-mismatch",
-                           "Action timeline candidate belongs to another target");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.action.timeline.candidate-mismatch"), "Action timeline candidate belongs to another target");
     auto valid = typed->timeline_.validate();
     if (!valid)
-        return editorError(EditorStatus::Rejected, "editor.action.timeline.candidate-invalid",
-                           commonMessage(valid.status(), "Action timeline candidate is invalid"));
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.candidate-invalid"), commonMessage(valid.status(), "Action timeline candidate is invalid"));
     timeline_ = std::move(typed->timeline_);
     ++revision_;
     return eve::editing::applied<void>();
@@ -184,28 +173,25 @@ bool ActionTimelineTarget::matches(const SelectionSnapshot& selection) const {
     return true;
 }
 
-EditorResult<void> ActionTimelineTarget::assign(action::ActionTimeline candidate) {
+Result<void> ActionTimelineTarget::assign(action::ActionTimeline candidate) {
     auto valid = candidate.validate();
     if (!valid)
-        return editorError(EditorStatus::Rejected, "editor.action.timeline.asset-invalid",
-                           commonMessage(valid.status(), "Action timeline asset is invalid"));
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.asset-invalid"), commonMessage(valid.status(), "Action timeline asset is invalid"));
     timeline_ = std::move(candidate);
     ++revision_;
     return eve::editing::applied<void>();
 }
 
-EditorResult<DomainOperation> ActionTimelineTarget::replacement(const action::ActionTimeline& candidate,
+Result<DomainOperation> ActionTimelineTarget::replacement(const action::ActionTimeline& candidate,
                                                                 std::string                   property) const {
     auto beforeValue = timeline_.toValue();
     auto afterValue  = candidate.toValue();
     if (!beforeValue || !afterValue)
-        return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.encode-failed",
-                                            "Could not encode the action timeline edit");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.action.timeline.encode-failed"), "Could not encode the action timeline edit");
     auto beforeJson = beforeValue.value().toJson();
     auto afterJson  = afterValue.value().toJson();
     if (!beforeJson || !afterJson)
-        return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.encode-failed",
-                                            "Could not serialize the action timeline edit");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.action.timeline.encode-failed"), "Could not serialize the action timeline edit");
     DomainOperation operation;
     operation.type        = std::string(kReplaceOperation);
     operation.inverseType = std::string(kReplaceOperation);
@@ -249,54 +235,47 @@ PropertyReadResult ActionTimelineTarget::read(const SelectionSnapshot& selection
     return {PropertyReadState::Value, projectedUri, {}};
 }
 
-EditorResult<DomainOperation> ActionTimelineTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> ActionTimelineTarget::makeSet(const SelectionSnapshot& selection,
                                                             const PropertyPath& path, const EditorValue& value,
                                                             PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     const auto descriptor = schema(selection).find(path);
     if (!matches(selection) || !descriptor || mode != PropertySetMode::Absolute ||
         !validatePropertyValue(*descriptor, value).ok())
-        return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.property-invalid",
-                                            "Action timeline property assignment is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.action.timeline.property-invalid"), "Action timeline property assignment is invalid");
     action::ActionTimeline candidate = timeline_;
     if (path == PropertyPath("timeline.actionId")) {
         const auto* text   = value.getIf<std::string>();
         auto        parsed = text ? LogicalId::parse(*text) : std::optional<LogicalId>{};
         if (!parsed)
-            return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.action-id",
-                                                "Action id must be a namespace:name logical id");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.action.timeline.action-id"), "Action id must be a namespace:name logical id");
         candidate.actionId = std::move(*parsed);
     } else if (path == PropertyPath("timeline.durationSeconds")) {
         const auto* seconds = value.getIf<double>();
         if (!seconds)
-            return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.duration",
-                                                "Timeline duration must be a number of seconds");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.action.timeline.duration"), "Timeline duration must be a number of seconds");
         auto duration = Duration::fromSeconds(*seconds);
         if (!duration)
-            return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.duration",
-                                                commonMessage(duration.status(), "Timeline duration is invalid"));
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.action.timeline.duration"), commonMessage(duration.status(), "Timeline duration is invalid"));
         candidate.duration = std::move(duration).takeValue();
     } else {
         const auto* uri = value.getIf<std::string>();
         if (!uri)
-            return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.animation-uri",
-                                                "Animation URI must be a string");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.action.timeline.animation-uri"), "Animation URI must be a string");
         candidate.animationUri = *uri;
         if (!candidate.animationSections.empty()) candidate.animationSections.front().animationUri = *uri;
     }
     auto valid = candidate.validate();
     if (!valid)
-        return editorError<DomainOperation>(EditorStatus::Rejected, "editor.action.timeline.asset-invalid",
-                                            commonMessage(valid.status(), "Action timeline property edit is invalid"));
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.action.timeline.asset-invalid"), commonMessage(valid.status(), "Action timeline property edit is invalid"));
     return replacement(candidate, path.value());
 }
 
-EditorResult<DomainOperation> ActionTimelineTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> ActionTimelineTarget::makeReset(const SelectionSnapshot& selection,
                                                               const PropertyPath&      path) const {
     const auto descriptor = schema(selection).find(path);
     if (!descriptor)
-        return editorError<DomainOperation>(EditorStatus::Unsupported, "editor.action.timeline.property-unsupported",
-                                            "Unknown action timeline property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.action.timeline.property-unsupported"), "Unknown action timeline property");
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 
@@ -306,22 +285,19 @@ EditorValue ActionTimelineTarget::snapshotValue() const {
     return toEditorValue(encoded.value());
 }
 
-EditorResult<void> ActionTimelineTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> ActionTimelineTarget::loadSnapshot(const EditorValue& snapshot) {
     if (const std::string* json = jsonPayload(snapshot)) {
         auto value = Value::fromJson(*json);
         if (!value)
-            return editorError(EditorStatus::Rejected, "editor.action.timeline.json-invalid",
-                               commonMessage(value.status(), "Action timeline JSON is invalid"));
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.json-invalid"), commonMessage(value.status(), "Action timeline JSON is invalid"));
         auto decoded = action::ActionTimeline::fromValue(value.value());
         if (!decoded)
-            return editorError(EditorStatus::Rejected, "editor.action.timeline.asset-invalid",
-                               commonMessage(decoded.status(), "Action timeline asset is invalid"));
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.asset-invalid"), commonMessage(decoded.status(), "Action timeline asset is invalid"));
         return assign(std::move(decoded).takeValue());
     }
     auto decoded = action::ActionTimeline::fromValue(toPresentationValue(snapshot));
     if (!decoded)
-        return editorError(EditorStatus::Rejected, "editor.action.timeline.asset-invalid",
-                           commonMessage(decoded.status(), "Action timeline asset is invalid"));
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.asset-invalid"), commonMessage(decoded.status(), "Action timeline asset is invalid"));
     return assign(std::move(decoded).takeValue());
 }
 
@@ -342,11 +318,11 @@ ActionTimelineEditor::ActionTimelineEditor(std::string targetId, action::ActionT
       transactions_(&authority_),
       clipboard_(clipboard ? std::move(clipboard) : std::make_shared<ActionTimelineClipboard>()) {}
 
-EditorResult<void> ActionTimelineEditor::rejected(std::string rule, std::string message) {
-    return editorError(EditorStatus::Rejected, std::move(rule), std::move(message));
+Result<void> ActionTimelineEditor::rejected(std::string rule, std::string message) {
+    return eve::editing::failed<void>(EditorStatus::Rejected, RuleId(std::move(rule)), std::move(message));
 }
 
-EditorResult<void> ActionTimelineEditor::reloadDocument(const EditorValue& snapshot) {
+Result<void> ActionTimelineEditor::reloadDocument(const EditorValue& snapshot) {
     if (transactions_.active())
         return rejected("editor.action.timeline.reload-active-transaction",
                         "Cannot reload a Montage document during an active transaction");
@@ -361,7 +337,7 @@ EditorResult<void> ActionTimelineEditor::reloadDocument(const EditorValue& snaps
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineEditor::configureWorkspace(EditorWorkspace& workspace) const {
+Result<void> ActionTimelineEditor::configureWorkspace(EditorWorkspace& workspace) const {
     EditorWorkspace candidate = workspace;
     struct Panel {
         const char* id;
@@ -390,7 +366,7 @@ EditorResult<void> ActionTimelineEditor::configureWorkspace(EditorWorkspace& wor
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineEditor::commit(action::ActionTimeline candidate, std::string label,
+Result<void> ActionTimelineEditor::commit(action::ActionTimeline candidate, std::string label,
                                                 std::string mergeKey) {
     auto valid = candidate.validate();
     if (!valid)
@@ -417,7 +393,7 @@ EditorResult<void> ActionTimelineEditor::commit(action::ActionTimeline candidate
     transaction.mergeKey     = std::move(mergeKey);
     auto begun               = transactions_.begin(std::move(transaction));
     if (!begun.ok())
-        return editorError(begun.code(), "editor.action.timeline.begin-failed", "Could not begin action edit");
+        return eve::editing::failed<void>(begun.code(), RuleId("editor.action.timeline.begin-failed"), "Could not begin action edit");
 
     DomainOperation operation;
     operation.type        = std::string(kReplaceOperation);
@@ -437,17 +413,17 @@ EditorResult<void> ActionTimelineEditor::commit(action::ActionTimeline candidate
     }
     auto committed = transactions_.commit();
     if (!committed.ok())
-        return editorError(committed.code(), "editor.action.timeline.commit-failed", "Action edit was rejected");
+        return eve::editing::failed<void>(committed.code(), RuleId("editor.action.timeline.commit-failed"), "Action edit was rejected");
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineEditor::addTrack(action::ActionTrack track) {
+Result<void> ActionTimelineEditor::addTrack(action::ActionTrack track) {
     action::ActionTimeline candidate = target_.timeline();
     candidate.tracks.push_back(std::move(track));
     return commit(std::move(candidate), "Add action track", "action.timeline.track.add");
 }
 
-EditorResult<void> ActionTimelineEditor::removeTrack(const LogicalId& trackId) {
+Result<void> ActionTimelineEditor::removeTrack(const LogicalId& trackId) {
     action::ActionTimeline candidate = target_.timeline();
     const auto             found     = std::find_if(candidate.tracks.begin(), candidate.tracks.end(),
                                                     [&](const auto& track) { return track.id == trackId; });
@@ -459,7 +435,7 @@ EditorResult<void> ActionTimelineEditor::removeTrack(const LogicalId& trackId) {
     return commit(std::move(candidate), "Delete action track", "action.timeline.track.delete");
 }
 
-EditorResult<void> ActionTimelineEditor::renameTrack(const LogicalId& trackId, std::string label) {
+Result<void> ActionTimelineEditor::renameTrack(const LogicalId& trackId, std::string label) {
     if (label.empty()) return rejected("editor.action.timeline.track-label", "Action track label must not be empty");
     action::ActionTimeline candidate = target_.timeline();
     auto*                  track     = findTrack(candidate, trackId);
@@ -468,7 +444,7 @@ EditorResult<void> ActionTimelineEditor::renameTrack(const LogicalId& trackId, s
     return commit(std::move(candidate), "Rename action track", "action.timeline.track.rename");
 }
 
-EditorResult<void> ActionTimelineEditor::addSectionSplit(Duration time) {
+Result<void> ActionTimelineEditor::addSectionSplit(Duration time) {
     if (time <= Duration::zero() || time >= target_.timeline().duration)
         return rejected("editor.action.timeline.section-split-range",
                         "Physical section split must be strictly inside the timeline");
@@ -482,7 +458,7 @@ EditorResult<void> ActionTimelineEditor::addSectionSplit(Duration time) {
     return commit(std::move(candidate), "Add physical section split", "action.timeline.section-split.add");
 }
 
-EditorResult<void> ActionTimelineEditor::setSectionSplit(std::size_t index, Duration time) {
+Result<void> ActionTimelineEditor::setSectionSplit(std::size_t index, Duration time) {
     if (index >= target_.timeline().splitTimestamps.size())
         return rejected("editor.action.timeline.section-split-not-found", "Physical section split was not found");
     if (time <= Duration::zero() || time >= target_.timeline().duration)
@@ -494,7 +470,7 @@ EditorResult<void> ActionTimelineEditor::setSectionSplit(std::size_t index, Dura
     return commit(std::move(candidate), "Move physical section split", "action.timeline.section-split.move");
 }
 
-EditorResult<void> ActionTimelineEditor::removeSectionSplit(std::size_t index) {
+Result<void> ActionTimelineEditor::removeSectionSplit(std::size_t index) {
     if (index >= target_.timeline().splitTimestamps.size())
         return rejected("editor.action.timeline.section-split-not-found", "Physical section split was not found");
     action::ActionTimeline candidate = target_.timeline();
@@ -502,14 +478,14 @@ EditorResult<void> ActionTimelineEditor::removeSectionSplit(std::size_t index) {
     return commit(std::move(candidate), "Remove physical section split", "action.timeline.section-split.remove");
 }
 
-EditorResult<void> ActionTimelineEditor::addAnimationSection(action::ActionAnimationSection section) {
+Result<void> ActionTimelineEditor::addAnimationSection(action::ActionAnimationSection section) {
     action::ActionTimeline candidate = target_.timeline();
     candidate.animationSections.push_back(std::move(section));
     sortAnimationSections(candidate);
     return commit(std::move(candidate), "Add montage animation section", "action.timeline.animation-section.add");
 }
 
-EditorResult<void> ActionTimelineEditor::moveAnimationSection(const LogicalId& sectionId, Duration delta) {
+Result<void> ActionTimelineEditor::moveAnimationSection(const LogicalId& sectionId, Duration delta) {
     action::ActionTimeline candidate = target_.timeline();
     auto                   found = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
                                                 [&](const auto& section) { return section.id == sectionId; });
@@ -524,7 +500,7 @@ EditorResult<void> ActionTimelineEditor::moveAnimationSection(const LogicalId& s
     return commit(std::move(candidate), "Move montage animation section", "action.timeline.animation-section.move");
 }
 
-EditorResult<void> ActionTimelineEditor::resizeAnimationSection(const LogicalId& sectionId, Duration start,
+Result<void> ActionTimelineEditor::resizeAnimationSection(const LogicalId& sectionId, Duration start,
                                                                 Duration end, Duration blendIn) {
     const auto found =
         std::find_if(target_.timeline().animationSections.begin(), target_.timeline().animationSections.end(),
@@ -534,7 +510,7 @@ EditorResult<void> ActionTimelineEditor::resizeAnimationSection(const LogicalId&
     return editAnimationSection(sectionId, start, end, blendIn, found->animationUri);
 }
 
-EditorResult<void> ActionTimelineEditor::editAnimationSection(const LogicalId& sectionId, Duration start, Duration end,
+Result<void> ActionTimelineEditor::editAnimationSection(const LogicalId& sectionId, Duration start, Duration end,
                                                               Duration blendIn, std::string animationUri) {
     action::ActionTimeline candidate = target_.timeline();
     auto                   found = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
@@ -549,7 +525,7 @@ EditorResult<void> ActionTimelineEditor::editAnimationSection(const LogicalId& s
     return commit(std::move(candidate), "Resize montage animation section", "action.timeline.animation-section.resize");
 }
 
-EditorResult<void> ActionTimelineEditor::editAnimationSectionSource(const LogicalId& sectionId, Duration sourceStart,
+Result<void> ActionTimelineEditor::editAnimationSectionSource(const LogicalId& sectionId, Duration sourceStart,
                                                                     Duration                 sourceEnd,
                                                                     action::ActionBlendCurve blendCurve) {
     action::ActionTimeline candidate = target_.timeline();
@@ -563,7 +539,7 @@ EditorResult<void> ActionTimelineEditor::editAnimationSectionSource(const Logica
     return commit(std::move(candidate), "Edit montage clip trim", "action.timeline.animation-section.trim");
 }
 
-EditorResult<void> ActionTimelineEditor::editAnimationSectionFull(action::ActionAnimationSection section) {
+Result<void> ActionTimelineEditor::editAnimationSectionFull(action::ActionAnimationSection section) {
     action::ActionTimeline candidate = target_.timeline();
     auto                   found = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
                                                 [&](const auto& value) { return value.id == section.id; });
@@ -574,7 +550,7 @@ EditorResult<void> ActionTimelineEditor::editAnimationSectionFull(action::Action
     return commit(std::move(candidate), "Edit montage animation section", "action.timeline.animation-section.edit");
 }
 
-EditorResult<void> ActionTimelineEditor::removeAnimationSection(const LogicalId& sectionId) {
+Result<void> ActionTimelineEditor::removeAnimationSection(const LogicalId& sectionId) {
     action::ActionTimeline candidate = target_.timeline();
     const auto             before    = candidate.animationSections.size();
     std::erase_if(candidate.animationSections, [&](const auto& section) { return section.id == sectionId; });
@@ -583,7 +559,7 @@ EditorResult<void> ActionTimelineEditor::removeAnimationSection(const LogicalId&
     return commit(std::move(candidate), "Remove montage animation section", "action.timeline.animation-section.remove");
 }
 
-EditorResult<void> ActionTimelineEditor::addNotify(const LogicalId& trackId, action::ActionNotify notify) {
+Result<void> ActionTimelineEditor::addNotify(const LogicalId& trackId, action::ActionNotify notify) {
     action::ActionTimeline candidate = target_.timeline();
     auto*                  track     = findTrack(candidate, trackId);
     if (!track) return rejected("editor.action.timeline.track-not-found", "Action track was not found");
@@ -593,7 +569,7 @@ EditorResult<void> ActionTimelineEditor::addNotify(const LogicalId& trackId, act
     return commit(std::move(candidate), "Add action notify", "action.timeline.notify.add");
 }
 
-EditorResult<void> ActionTimelineEditor::addState(const LogicalId& trackId, action::ActionNotifyState state) {
+Result<void> ActionTimelineEditor::addState(const LogicalId& trackId, action::ActionNotifyState state) {
     action::ActionTimeline candidate = target_.timeline();
     auto*                  track     = findTrack(candidate, trackId);
     if (!track) return rejected("editor.action.timeline.track-not-found", "Action track was not found");
@@ -603,7 +579,7 @@ EditorResult<void> ActionTimelineEditor::addState(const LogicalId& trackId, acti
     return commit(std::move(candidate), "Add action notify state", "action.timeline.state.add");
 }
 
-EditorResult<void> ActionTimelineEditor::moveItem(const LogicalId& itemId, Duration delta) {
+Result<void> ActionTimelineEditor::moveItem(const LogicalId& itemId, Duration delta) {
     action::ActionTimeline candidate = target_.timeline();
     for (auto& track : candidate.tracks) {
         for (auto& notify : track.notifies) {
@@ -630,7 +606,7 @@ EditorResult<void> ActionTimelineEditor::moveItem(const LogicalId& itemId, Durat
     return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
 }
 
-EditorResult<void> ActionTimelineEditor::resizeState(const LogicalId& itemId, Duration start, Duration end) {
+Result<void> ActionTimelineEditor::resizeState(const LogicalId& itemId, Duration start, Duration end) {
     if (start < Duration::zero() || end < start || end > target_.timeline().duration)
         return rejected("editor.action.timeline.state-range", "Notify-state range is outside the timeline");
     action::ActionTimeline candidate = target_.timeline();
@@ -647,7 +623,7 @@ EditorResult<void> ActionTimelineEditor::resizeState(const LogicalId& itemId, Du
     return rejected("editor.action.timeline.state-not-found", "Notify state was not found");
 }
 
-EditorResult<void> ActionTimelineEditor::updateItem(const LogicalId& itemId, LogicalId type, Value::Object payload) {
+Result<void> ActionTimelineEditor::updateItem(const LogicalId& itemId, LogicalId type, Value::Object payload) {
     if (!type.isValid()) return rejected("editor.action.timeline.type-invalid", "Timeline item type is invalid");
     action::ActionTimeline candidate = target_.timeline();
     for (auto& track : candidate.tracks) {
@@ -669,7 +645,7 @@ EditorResult<void> ActionTimelineEditor::updateItem(const LogicalId& itemId, Log
     return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
 }
 
-EditorResult<void> ActionTimelineEditor::addParameterKey(const LogicalId& itemId,
+Result<void> ActionTimelineEditor::addParameterKey(const LogicalId& itemId,
                                                           action::ActionParameterKey key) {
     for (const auto& track : target_.timeline().tracks) {
         const auto found = std::find_if(track.states.begin(), track.states.end(),
@@ -694,7 +670,7 @@ EditorResult<void> ActionTimelineEditor::addParameterKey(const LogicalId& itemId
     return rejected("editor.action.timeline.state-not-found", "Parameter curve was not found");
 }
 
-EditorResult<void> ActionTimelineEditor::editParameterKey(const LogicalId& itemId, std::size_t index,
+Result<void> ActionTimelineEditor::editParameterKey(const LogicalId& itemId, std::size_t index,
                                                            action::ActionParameterKey key) {
     for (const auto& track : target_.timeline().tracks) {
         const auto found = std::find_if(track.states.begin(), track.states.end(),
@@ -719,7 +695,7 @@ EditorResult<void> ActionTimelineEditor::editParameterKey(const LogicalId& itemI
     return rejected("editor.action.timeline.state-not-found", "Parameter curve was not found");
 }
 
-EditorResult<void> ActionTimelineEditor::removeParameterKey(const LogicalId& itemId, std::size_t index) {
+Result<void> ActionTimelineEditor::removeParameterKey(const LogicalId& itemId, std::size_t index) {
     for (const auto& track : target_.timeline().tracks) {
         const auto found = std::find_if(track.states.begin(), track.states.end(),
                                         [&](const auto& state) { return state.id == itemId; });
@@ -743,7 +719,7 @@ EditorResult<void> ActionTimelineEditor::removeParameterKey(const LogicalId& ite
     return rejected("editor.action.timeline.state-not-found", "Parameter curve was not found");
 }
 
-EditorResult<void> ActionTimelineEditor::editItem(const LogicalId& itemId, Duration start, Duration end, LogicalId type,
+Result<void> ActionTimelineEditor::editItem(const LogicalId& itemId, Duration start, Duration end, LogicalId type,
                                                   Value::Object payload) {
     if (!type.isValid()) return rejected("editor.action.timeline.type-invalid", "Timeline item type is invalid");
     if (start < Duration::zero() || end < start || end > target_.timeline().duration)
@@ -775,7 +751,7 @@ EditorResult<void> ActionTimelineEditor::editItem(const LogicalId& itemId, Durat
     return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
 }
 
-EditorResult<void> ActionTimelineEditor::removeItem(const LogicalId& itemId) {
+Result<void> ActionTimelineEditor::removeItem(const LogicalId& itemId) {
     action::ActionTimeline candidate = target_.timeline();
     const auto section = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
                                       [&](const auto& value) { return value.id == itemId; });
@@ -806,7 +782,7 @@ EditorResult<void> ActionTimelineEditor::removeItem(const LogicalId& itemId) {
     return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
 }
 
-EditorResult<void> ActionTimelineEditor::setItemEnabled(const LogicalId& itemId, bool enabled) {
+Result<void> ActionTimelineEditor::setItemEnabled(const LogicalId& itemId, bool enabled) {
     action::ActionTimeline candidate = target_.timeline();
     for (auto& track : candidate.tracks) {
         for (auto& notify : track.notifies) {
@@ -829,7 +805,7 @@ EditorResult<void> ActionTimelineEditor::setItemEnabled(const LogicalId& itemId,
     return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
 }
 
-EditorResult<void> ActionTimelineEditor::setTrackMuted(const LogicalId& trackId, bool muted) {
+Result<void> ActionTimelineEditor::setTrackMuted(const LogicalId& trackId, bool muted) {
     action::ActionTimeline candidate = target_.timeline();
     auto*                  track     = findTrack(candidate, trackId);
     if (!track) return rejected("editor.action.timeline.track-not-found", "Action track was not found");
@@ -838,7 +814,7 @@ EditorResult<void> ActionTimelineEditor::setTrackMuted(const LogicalId& trackId,
                   "action.timeline.track.mute");
 }
 
-EditorResult<void> ActionTimelineEditor::setTrackLocked(const LogicalId& trackId, bool locked) {
+Result<void> ActionTimelineEditor::setTrackLocked(const LogicalId& trackId, bool locked) {
     action::ActionTimeline candidate = target_.timeline();
     auto*                  track     = findTrack(candidate, trackId);
     if (!track) return rejected("editor.action.timeline.track-not-found", "Action track was not found");
@@ -847,7 +823,7 @@ EditorResult<void> ActionTimelineEditor::setTrackLocked(const LogicalId& trackId
                   "action.timeline.track.lock");
 }
 
-EditorResult<std::size_t> ActionTimelineEditor::boxSelect(Duration start, Duration end) {
+Result<std::size_t> ActionTimelineEditor::boxSelect(Duration start, Duration end) {
     if (start < Duration::zero() || end < start || end > target_.timeline().duration)
         return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
                                                  RuleId("editor.action.timeline.selection-range"),
@@ -864,7 +840,7 @@ EditorResult<std::size_t> ActionTimelineEditor::boxSelect(Duration start, Durati
     return eve::editing::applied<std::size_t>(selection_.size());
 }
 
-EditorResult<void> ActionTimelineEditor::selectItem(const LogicalId& itemId, bool additive) {
+Result<void> ActionTimelineEditor::selectItem(const LogicalId& itemId, bool additive) {
     bool found = std::any_of(target_.timeline().animationSections.begin(), target_.timeline().animationSections.end(),
                              [&](const auto& section) { return section.id == itemId; });
     for (const auto& track : target_.timeline().tracks) {
@@ -889,7 +865,7 @@ std::vector<LogicalId> ActionTimelineEditor::selectedItemIds() const {
     return result;
 }
 
-EditorResult<std::size_t> ActionTimelineEditor::copySelection() {
+Result<std::size_t> ActionTimelineEditor::copySelection() {
     clipboard_->clear();
     for (const auto& section : target_.timeline().animationSections)
         if (selection_.contains(section.id.format()))
@@ -914,13 +890,13 @@ LogicalId ActionTimelineEditor::copiedId(const LogicalId& source, const action::
     }
 }
 
-EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) { return pasteItems(offset, nullptr); }
+Result<std::size_t> ActionTimelineEditor::paste(Duration offset) { return pasteItems(offset, nullptr); }
 
-EditorResult<std::size_t> ActionTimelineEditor::pasteToTrack(const LogicalId& trackId, Duration offset) {
+Result<std::size_t> ActionTimelineEditor::pasteToTrack(const LogicalId& trackId, Duration offset) {
     return pasteItems(offset, &trackId);
 }
 
-EditorResult<std::size_t> ActionTimelineEditor::pasteItems(Duration offset, const LogicalId* destinationTrack) {
+Result<std::size_t> ActionTimelineEditor::pasteItems(Duration offset, const LogicalId* destinationTrack) {
     if (clipboard_->items_.empty())
         return eve::editing::failed<std::size_t>(EditorStatus::Rejected,
                                                  RuleId("editor.action.timeline.clipboard-empty"),
@@ -989,7 +965,7 @@ EditorResult<std::size_t> ActionTimelineEditor::pasteItems(Duration offset, cons
     return eve::editing::applied<std::size_t>(count);
 }
 
-EditorResult<void> ActionTimelineEditor::copyTrack(const LogicalId& trackId) {
+Result<void> ActionTimelineEditor::copyTrack(const LogicalId& trackId) {
     const auto* track = findTrack(target_.timeline(), trackId);
     if (!track) return rejected("editor.action.timeline.track-not-found", "Action track was not found");
     clipboard_->clear();
@@ -997,7 +973,7 @@ EditorResult<void> ActionTimelineEditor::copyTrack(const LogicalId& trackId) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<LogicalId> ActionTimelineEditor::pasteTrack() {
+Result<LogicalId> ActionTimelineEditor::pasteTrack() {
     if (!clipboard_->track_)
         return eve::editing::failed<LogicalId>(EditorStatus::Rejected,
                                                RuleId("editor.action.timeline.track-clipboard-empty"),
@@ -1013,12 +989,12 @@ EditorResult<LogicalId> ActionTimelineEditor::pasteTrack() {
     for (auto& state : pasted.states) state.id = copiedId(state.id, candidate);
     sortTrack(pasted);
     auto committed = commit(std::move(candidate), "Paste action timeline track", "action.timeline.track.paste");
-    if (!committed.ok()) return EditorResult<LogicalId>::failure(committed.status());
+    if (!committed.ok()) return Result<LogicalId>::failure(committed.status());
     selection_.clear();
     return eve::editing::applied<LogicalId>(pastedId);
 }
 
-EditorResult<void> ActionTimelineEditor::deleteSelection() {
+Result<void> ActionTimelineEditor::deleteSelection() {
     if (selection_.empty()) return rejected("editor.action.timeline.selection-empty", "No timeline items are selected");
     action::ActionTimeline candidate = target_.timeline();
     std::erase_if(candidate.animationSections,
@@ -1039,17 +1015,17 @@ EditorResult<void> ActionTimelineEditor::deleteSelection() {
     return result;
 }
 
-EditorResult<TransactionReceipt> ActionTimelineEditor::undo() { return transactions_.undo(); }
+Result<TransactionReceipt> ActionTimelineEditor::undo() { return transactions_.undo(); }
 
-EditorResult<TransactionReceipt> ActionTimelineEditor::redo() { return transactions_.redo(); }
+Result<TransactionReceipt> ActionTimelineEditor::redo() { return transactions_.redo(); }
 
-EditorResult<void> ActionTimelineEditor::stop() {
+Result<void> ActionTimelineEditor::stop() {
     auto stopped = seek(Duration::zero());
     if (stopped.ok()) playing_ = false;
     return stopped;
 }
 
-EditorResult<Duration> ActionTimelineEditor::frameStepTarget(std::int64_t frames, double frameRate) const {
+Result<Duration> ActionTimelineEditor::frameStepTarget(std::int64_t frames, double frameRate) const {
     if (!std::isfinite(frameRate) || frameRate <= 0.0)
         return eve::editing::failed<Duration>(EditorStatus::Rejected,
                                               RuleId("editor.action.timeline.frame-rate"),
@@ -1066,21 +1042,21 @@ EditorResult<Duration> ActionTimelineEditor::frameStepTarget(std::int64_t frames
     return eve::editing::applied<Duration>(std::move(target).takeValue());
 }
 
-EditorResult<void> ActionTimelineEditor::stepFrames(std::int64_t frames, double frameRate) {
+Result<void> ActionTimelineEditor::stepFrames(std::int64_t frames, double frameRate) {
     auto target = frameStepTarget(frames, frameRate);
-    if (!target.ok()) return EditorResult<void>::failure(target.status());
+    if (!target.ok()) return Result<void>::failure(target.status());
     auto stepped = seek(target.value());
     if (stepped.ok()) playing_ = false;
     return stepped;
 }
 
-EditorResult<void> ActionTimelineEditor::jumpToEnd() {
+Result<void> ActionTimelineEditor::jumpToEnd() {
     auto jumped = seek(target_.timeline().duration);
     if (jumped.ok()) playing_ = false;
     return jumped;
 }
 
-EditorResult<void> ActionTimelineEditor::seek(Duration time) {
+Result<void> ActionTimelineEditor::seek(Duration time) {
     if (time < Duration::zero() || time > target_.timeline().duration)
         return rejected("editor.action.timeline.seek-range", "Preview seek is outside the timeline");
     previewTime_    = time;
@@ -1089,25 +1065,25 @@ EditorResult<void> ActionTimelineEditor::seek(Duration time) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<std::size_t> ActionTimelineEditor::update(Duration delta) {
+Result<std::size_t> ActionTimelineEditor::update(Duration delta) {
     auto plan = planPreview(delta);
     if (!plan.ok())
         return eve::editing::failed<std::size_t>(plan.code(), RuleId("editor.action.timeline.preview-plan"),
                                                  "Could not prepare preview advance");
     if (plan.code() == EditorStatus::NoOp) {
         previewEvents_.clear();
-        return EditorResult<std::size_t>::success(0, Status::success(EditorStatus::NoOp));
+        return Result<std::size_t>::success(0, Status::success(EditorStatus::NoOp));
     }
     return applyPreviewPlan(std::move(plan).takeValue());
 }
 
-EditorResult<ActionTimelinePreviewPlan> ActionTimelineEditor::planPreview(Duration delta) const {
+Result<ActionTimelinePreviewPlan> ActionTimelineEditor::planPreview(Duration delta) const {
     if (!playing_) {
         ActionTimelinePreviewPlan plan;
         plan.timelineRevision = target_.revision();
         plan.previous         = previewTime_;
         plan.current          = previewTime_;
-        return EditorResult<ActionTimelinePreviewPlan>::success(std::move(plan), Status::success(EditorStatus::NoOp));
+        return Result<ActionTimelinePreviewPlan>::success(std::move(plan), Status::success(EditorStatus::NoOp));
     }
     if (delta < Duration::zero())
         return eve::editing::failed<ActionTimelinePreviewPlan>(EditorStatus::Rejected,
@@ -1134,7 +1110,7 @@ EditorResult<ActionTimelinePreviewPlan> ActionTimelineEditor::planPreview(Durati
     return eve::editing::applied<ActionTimelinePreviewPlan>(std::move(plan));
 }
 
-EditorResult<std::size_t> ActionTimelineEditor::applyPreviewPlan(ActionTimelinePreviewPlan plan) {
+Result<std::size_t> ActionTimelineEditor::applyPreviewPlan(ActionTimelinePreviewPlan plan) {
     if (!playing_ || plan.timelineRevision != target_.revision() || plan.previous != previewTime_ ||
         plan.includeStart == previewStarted_)
         return eve::editing::failed<std::size_t>(EditorStatus::Conflict,
@@ -1155,7 +1131,7 @@ EditorResult<std::size_t> ActionTimelineEditor::applyPreviewPlan(ActionTimelineP
 
 ActionTimelineDocumentWorkspace::ActionTimelineDocumentWorkspace(DocumentService& documents) : documents_(&documents) {}
 
-EditorResult<action::ActionTimeline> ActionTimelineDocumentWorkspace::decode(const EditorValue& content) {
+Result<action::ActionTimeline> ActionTimelineDocumentWorkspace::decode(const EditorValue& content) {
     auto timeline = action::ActionTimeline::fromValue(toPresentationValue(content));
     if (!timeline)
         return eve::editing::failed<action::ActionTimeline>(EditorStatus::Rejected,
@@ -1177,7 +1153,7 @@ const ActionTimelineDocumentWorkspace::Tab* ActionTimelineDocumentWorkspace::fin
     return found == tabs_.end() ? nullptr : &*found;
 }
 
-EditorResult<DocumentId> ActionTimelineDocumentWorkspace::open(DocumentKey key, std::string title,
+Result<DocumentId> ActionTimelineDocumentWorkspace::open(DocumentKey key, std::string title,
                                                                 std::string resourceUri,
                                                                 action::ActionTimeline initialTimeline) {
     if (key.kind != DocumentKind::Timeline)
@@ -1196,15 +1172,15 @@ EditorResult<DocumentId> ActionTimelineDocumentWorkspace::open(DocumentKey key, 
                                                 "Initial Montage timeline could not be encoded");
     auto opened = documents_->open(std::move(key), std::move(title), std::move(resourceUri),
                                    toEditorValue(initial.value()));
-    if (!opened.ok()) return EditorResult<DocumentId>::failure(opened.status());
+    if (!opened.ok()) return Result<DocumentId>::failure(opened.status());
     if (find(opened.value().id)) {
         activeDocument_ = opened.value().id;
         return eve::editing::applied<DocumentId>(activeDocument_);
     }
     auto content = documents_->content(opened.value().id);
-    if (!content.ok()) return EditorResult<DocumentId>::failure(content.status());
+    if (!content.ok()) return Result<DocumentId>::failure(content.status());
     auto timeline = decode(content.value());
-    if (!timeline.ok()) return EditorResult<DocumentId>::failure(timeline.status());
+    if (!timeline.ok()) return Result<DocumentId>::failure(timeline.status());
 
     Tab tab;
     tab.document = opened.value().id;
@@ -1216,7 +1192,7 @@ EditorResult<DocumentId> ActionTimelineDocumentWorkspace::open(DocumentKey key, 
     return eve::editing::applied<DocumentId>(activeDocument_);
 }
 
-EditorResult<void> ActionTimelineDocumentWorkspace::activate(const DocumentId& document) {
+Result<void> ActionTimelineDocumentWorkspace::activate(const DocumentId& document) {
     if (!find(document))
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.action.document.not-open"),
                                           "Montage document tab is not open");
@@ -1224,7 +1200,7 @@ EditorResult<void> ActionTimelineDocumentWorkspace::activate(const DocumentId& d
     return eve::editing::applied<void>();
 }
 
-EditorResult<DocumentSnapshot> ActionTimelineDocumentWorkspace::synchronize(Tab& tab) {
+Result<DocumentSnapshot> ActionTimelineDocumentWorkspace::synchronize(Tab& tab) {
     auto snapshot = documents_->snapshot(tab.document);
     if (!snapshot.ok()) return snapshot;
     if (tab.editor->target().revision() == tab.synchronizedEditorRevision) return snapshot;
@@ -1233,7 +1209,7 @@ EditorResult<DocumentSnapshot> ActionTimelineDocumentWorkspace::synchronize(Tab&
     return edited;
 }
 
-EditorResult<DocumentSnapshot> ActionTimelineDocumentWorkspace::save(const DocumentId& document) {
+Result<DocumentSnapshot> ActionTimelineDocumentWorkspace::save(const DocumentId& document) {
     auto* tab = find(document);
     if (!tab)
         return eve::editing::failed<DocumentSnapshot>(EditorStatus::NotFound,
@@ -1242,13 +1218,13 @@ EditorResult<DocumentSnapshot> ActionTimelineDocumentWorkspace::save(const Docum
     auto synchronized = synchronize(*tab);
     if (!synchronized.ok()) return synchronized;
     auto ticket = documents_->requestSave(document);
-    if (!ticket.ok()) return EditorResult<DocumentSnapshot>::failure(ticket.status());
+    if (!ticket.ok()) return Result<DocumentSnapshot>::failure(ticket.status());
     auto saved = documents_->executeSave(ticket.value());
     if (saved.ok()) tab->savedEditorRevision = tab->editor->target().revision();
     return saved;
 }
 
-EditorResult<DocumentSnapshot> ActionTimelineDocumentWorkspace::reconcile(const DocumentId& document) {
+Result<DocumentSnapshot> ActionTimelineDocumentWorkspace::reconcile(const DocumentId& document) {
     auto* tab = find(document);
     if (!tab)
         return eve::editing::failed<DocumentSnapshot>(EditorStatus::NotFound,
@@ -1258,21 +1234,21 @@ EditorResult<DocumentSnapshot> ActionTimelineDocumentWorkspace::reconcile(const 
     if (!synchronized.ok()) return synchronized;
     auto reconciled = documents_->reconcileExternal(document, [](const EditorValue& content) {
         auto timeline = decode(content);
-        if (!timeline.ok()) return EditorResult<void>::failure(timeline.status());
+        if (!timeline.ok()) return Result<void>::failure(timeline.status());
         return eve::editing::applied<void>();
     });
     if (!reconciled.ok()) return reconciled;
     auto content = documents_->content(document);
-    if (!content.ok()) return EditorResult<DocumentSnapshot>::failure(content.status());
+    if (!content.ok()) return Result<DocumentSnapshot>::failure(content.status());
     if (content.value() == tab->editor->target().snapshotValue()) return reconciled;
     auto loaded = tab->editor->reloadDocument(content.value());
-    if (!loaded.ok()) return EditorResult<DocumentSnapshot>::failure(loaded.status());
+    if (!loaded.ok()) return Result<DocumentSnapshot>::failure(loaded.status());
     tab->synchronizedEditorRevision = tab->editor->target().revision();
     tab->savedEditorRevision        = tab->editor->target().revision();
     return reconciled;
 }
 
-EditorResult<void> ActionTimelineDocumentWorkspace::close(const DocumentId& document,
+Result<void> ActionTimelineDocumentWorkspace::close(const DocumentId& document,
                                                           ActionTimelineCloseMode mode) {
     const auto found = std::find_if(tabs_.begin(), tabs_.end(),
                                     [&](const Tab& tab) { return tab.document == document; });
@@ -1280,7 +1256,7 @@ EditorResult<void> ActionTimelineDocumentWorkspace::close(const DocumentId& docu
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.action.document.not-open"),
                                           "Montage document tab is not open");
     auto snapshot = documents_->snapshot(document);
-    if (!snapshot.ok()) return EditorResult<void>::failure(snapshot.status());
+    if (!snapshot.ok()) return Result<void>::failure(snapshot.status());
     const bool dirty = found->editor->target().revision() != found->savedEditorRevision || snapshot.value().dirty();
     if (dirty && mode == ActionTimelineCloseMode::ProtectDirty)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.action.document.unsaved"),
@@ -1295,13 +1271,13 @@ EditorResult<void> ActionTimelineDocumentWorkspace::close(const DocumentId& docu
     return eve::editing::applied<void>();
 }
 
-EditorResult<std::vector<ActionTimelineTabSnapshot>> ActionTimelineDocumentWorkspace::tabs() const {
+Result<std::vector<ActionTimelineTabSnapshot>> ActionTimelineDocumentWorkspace::tabs() const {
     std::vector<ActionTimelineTabSnapshot> result;
     result.reserve(tabs_.size());
     for (const auto& tab : tabs_) {
         auto snapshot = documents_->snapshot(tab.document);
         if (!snapshot.ok())
-            return EditorResult<std::vector<ActionTimelineTabSnapshot>>::failure(snapshot.status());
+            return Result<std::vector<ActionTimelineTabSnapshot>>::failure(snapshot.status());
         result.push_back({snapshot.value(), tab.document == activeDocument_,
                           snapshot.value().dirty() ||
                               tab.editor->target().revision() != tab.savedEditorRevision});

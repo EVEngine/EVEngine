@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorHostProfile.h"
 #include "editor/EditorProperty.h"
@@ -27,25 +29,25 @@ struct PropertyEditIntent {
 };
 
 /** @brief Shared presenter logic that exposes developer-oriented property rows. */
-class DeveloperPropertyPresenter {
+class EVENGINE_API_ORCHESTRATION DeveloperPropertyPresenter {
 public:
     /** @brief Read every schema property, including advanced/editor-only rows. */
     PropertyPresentation present(const PropertySchema& schema, const SelectionSnapshot& selection,
                                  const IPropertyProvider& provider) const;
     /** @brief Validate a candidate and emit a command payload without mutating the provider. */
-    EditorResult<PropertyEditIntent> editIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
+    Result<PropertyEditIntent> editIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
                                                 const PropertyPath& path, const EditorValue& value,
                                                 PropertySetMode mode = PropertySetMode::Absolute) const;
 };
 
 /** @brief Shared presenter logic that exposes only runtime-safe property rows. */
-class RuntimePropertyPresenter {
+class EVENGINE_API_ORCHESTRATION RuntimePropertyPresenter {
 public:
     /** @brief Read properties marked Runtime and not marked EditorOnly. */
     PropertyPresentation present(const PropertySchema& schema, const SelectionSnapshot& selection,
                                  const IPropertyProvider& provider, const HostProfile& profile) const;
     /** @brief Validate a runtime-visible candidate and emit the same command payload as developer UI. */
-    EditorResult<PropertyEditIntent> editIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
+    Result<PropertyEditIntent> editIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
                                                 const PropertyPath& path, const EditorValue& value,
                                                 const HostProfile& profile,
                                                 PropertySetMode    mode = PropertySetMode::Absolute) const;

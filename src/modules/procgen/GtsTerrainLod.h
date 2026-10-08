@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "procgen/GtsMeshSimplifier.h"
@@ -25,8 +27,9 @@ enum class GtsTerrainSaveResolution : int { Full=0,Half=1,Quarter=2,Eighth=3,Six
  * @param sizeZ World depth of the complete terrain.
  * @return Applied result or a structured error without modifying output.
  */
-[[nodiscard]] Result<void> buildGtsTerrainBaseMesh(MeshBuild& output,const Heightmap& heightmap,
-    GtsTerrainSaveResolution resolution,float sizeX,float sizeY,float sizeZ);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildGtsTerrainBaseMesh(MeshBuild& output, const Heightmap& heightmap,
+                                                                        GtsTerrainSaveResolution resolution,
+                                                                        float sizeX, float sizeY, float sizeZ);
 
 /** @brief Configuration for one sequential GTS terrain mesh LOD. */
 struct GtsTerrainLodLevelSettings {
@@ -36,7 +39,7 @@ struct GtsTerrainLodLevelSettings {
 };
 
 /** @brief Schema-versioned native counterpart of GTSMeshSettings. */
-class GtsTerrainMeshSettings {
+class EVENGINE_API_DOMAINS GtsTerrainMeshSettings {
 public:
     /** @brief Return the SaveResolution enum value in the range 0 through 4. */
     [[nodiscard]] int getSaveResolution() const noexcept { return saveResolution_; }
@@ -84,7 +87,7 @@ struct GtsTerrainLodAssetEntry {
 };
 
 /** @brief Owned script-friendly GTS terrain LOD export manifest. */
-class GtsTerrainLodAssetPlan {
+class EVENGINE_API_DOMAINS GtsTerrainLodAssetPlan {
 public:
     /** @brief Return the number of export entries. */
     [[nodiscard]] int getEntryCount() const;
@@ -99,12 +102,14 @@ public:
     /** @brief Return an entry relative path, or empty. */
     [[nodiscard]] std::string getRelativePath(int index)const;
 private:
-    friend Result<void> planGtsTerrainLodAssetsInto(GtsTerrainLodAssetPlan&,const GtsTerrainLodSet&,const std::string&,const std::string&);
+    friend EVENGINE_API_DOMAINS Result<void> planGtsTerrainLodAssetsInto(GtsTerrainLodAssetPlan&,
+                                                                         const GtsTerrainLodSet&, const std::string&,
+                                                                         const std::string&);
     std::vector<GtsTerrainLodAssetEntry>entries_;
 };
 
 /** @brief Owned result of the GTS split-and-sequential-simplify pipeline. */
-class GtsTerrainLodSet {
+class EVENGINE_API_DOMAINS GtsTerrainLodSet {
 public:
     /** @brief Return the number of tile columns. */
     [[nodiscard]] int getColumnCount() const { return columns_; }
@@ -151,7 +156,7 @@ public:
     [[nodiscard]] Result<void> restoreJson(const std::string& json);
 
 private:
-    friend Result<GtsTerrainLodSet> buildGtsTerrainLods(
+    friend EVENGINE_API_DOMAINS Result<GtsTerrainLodSet> buildGtsTerrainLods(
         const MeshBuild&, int, int, GtsMeshPivot, const std::vector<GtsTerrainLodLevelSettings>&);
     int columns_ = 0;
     int rows_ = 0;
@@ -168,7 +173,7 @@ private:
  * @param levels Ordered near-to-far LOD settings with descending transition heights.
  * @return Owned tiles and levels, or a structured error without observable partial state.
  */
-[[nodiscard]] Result<GtsTerrainLodSet> buildGtsTerrainLods(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<GtsTerrainLodSet> buildGtsTerrainLods(
     const MeshBuild& source, int xSplits, int zSplits, GtsMeshPivot pivot,
     const std::vector<GtsTerrainLodLevelSettings>& levels);
 
@@ -181,17 +186,17 @@ private:
     GtsMeshPivot pivot,const std::vector<GtsTerrainLodLevelSettings>& levels);
 
 /** @brief Atomically replace output with the complete default four-level GTS terrain conversion. */
-[[nodiscard]] Result<void> buildDefaultGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet& output,
-    const Heightmap& heightmap,GtsTerrainSaveResolution resolution,float sizeX,float sizeY,float sizeZ,
-    int subTileSplits,GtsMeshPivot pivot=GtsMeshPivot::None);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildDefaultGtsTerrainLodsFromHeightmapInto(
+    GtsTerrainLodSet& output, const Heightmap& heightmap, GtsTerrainSaveResolution resolution, float sizeX, float sizeY,
+    float sizeZ, int subTileSplits, GtsMeshPivot pivot = GtsMeshPivot::None);
 
 /** @brief Atomically build a complete heightmap conversion using persisted GTS mesh settings. */
-[[nodiscard]] Result<void> buildGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet& output,
-    const Heightmap& heightmap,const GtsTerrainMeshSettings& settings,float sizeX,float sizeY,float sizeZ,
-    GtsMeshPivot pivot=GtsMeshPivot::None);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildGtsTerrainLodsFromHeightmapInto(
+    GtsTerrainLodSet& output, const Heightmap& heightmap, const GtsTerrainMeshSettings& settings, float sizeX,
+    float sizeY, float sizeZ, GtsMeshPivot pivot = GtsMeshPivot::None);
 
 /** @brief Return the four-level quality and transition profile used by GTSMeshSettings. */
-[[nodiscard]] std::vector<GtsTerrainLodLevelSettings> defaultGtsTerrainLodLevels();
+[[nodiscard]] EVENGINE_API_DOMAINS std::vector<GtsTerrainLodLevelSettings> defaultGtsTerrainLodLevels();
 
 /**
  * @brief Build the deterministic object and mesh naming plan used by GTS terrain export.
@@ -200,10 +205,11 @@ private:
  * @param meshFolder Valid relative output folder, normally `Meshes`.
  * @return Row-major, then near-to-far export entries.
  */
-[[nodiscard]] Result<std::vector<GtsTerrainLodAssetEntry>> planGtsTerrainLodAssets(
-    const GtsTerrainLodSet& lods,const std::string& terrainName,const std::string& meshFolder="Meshes");
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<GtsTerrainLodAssetEntry>> planGtsTerrainLodAssets(
+    const GtsTerrainLodSet& lods, const std::string& terrainName, const std::string& meshFolder = "Meshes");
 /** @brief Atomically replace a script-friendly export plan. */
-[[nodiscard]] Result<void> planGtsTerrainLodAssetsInto(GtsTerrainLodAssetPlan& output,
-    const GtsTerrainLodSet& lods,const std::string& terrainName,const std::string& meshFolder="Meshes");
-
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> planGtsTerrainLodAssetsInto(GtsTerrainLodAssetPlan& output,
+                                                                            const GtsTerrainLodSet& lods,
+                                                                            const std::string&      terrainName,
+                                                                            const std::string& meshFolder = "Meshes");
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <assimp/matrix4x4.h>
 #include <cstdint>
@@ -11,10 +13,10 @@
 #include <span>
 #include <string>
 #include <vector>
+#include "common/FramePresentation.h"
 #include "common/Module.h"
 #include "common/Result.h"
 #include "common/WindowSurfaceHost.h"
-#include "common/FramePresentation.h"
 #include "graphics/BlendMode.h"
 #include "graphics/Canvas.h"
 #include "graphics/Color.h"
@@ -28,6 +30,7 @@
 #include "graphics/IPostFX.h"
 #include "graphics/IResourceFactory.h"
 #include "graphics/ISolidRectRenderer.h"
+#include "graphics/RayTracingCaps.h"
 #include "graphics/SurfaceMode.h"
 
 struct aiMesh;
@@ -109,17 +112,17 @@ struct ShadowUpload;
 struct TextureCreateInfo;
 struct TextureSampler;
 
-class Graphics : public Module,
-                 public Canvas,
-                 public IWindowSurfaceHost,
-                 public IGraphics2D,
-                 public IGraphics3D,
-                 public ICanvasFactory,
-                 public ICanvasTarget,
-                 public IResourceFactory,
-                 public ISolidRectRenderer,
-                 public IPostFX,
-                 public IFramePresentation {
+class EVENGINE_API_BACKENDS Graphics : public Module,
+                                       public Canvas,
+                                       public IWindowSurfaceHost,
+                                       public IGraphics2D,
+                                       public IGraphics3D,
+                                       public ICanvasFactory,
+                                       public ICanvasTarget,
+                                       public IResourceFactory,
+                                       public ISolidRectRenderer,
+                                       public IPostFX,
+                                       public IFramePresentation {
 public:
     Module_REG(Graphics);
     Graphics();
@@ -191,6 +194,17 @@ public:
 
     /** @brief Renderer backend id used by sibling modules (e.g. Gpgpu). */
     virtual std::string getBackendName() const = 0;
+
+    /**
+     * @brief Whether this backend and build can compile GLSL to SPIR-V at runtime.
+     *
+     * Vulkan builds answer yes when a compiler is available: the shaderc archive
+     * linked on Windows, or an external `glslc` elsewhere. Backends that only accept
+     * prebuilt bytecode (WebGPU) answer no. Callers that can ship prebuilt SPIR-V
+     * should gate on this instead of probing the platform.
+     * @return True when newShader() may be given GLSL source in this build.
+     */
+    virtual bool supportsRuntimeGlslCompilation() const { return false; }
     /**
      * @brief Observe this provider's resource lifetime without extending it.
      * @return Weak token; expiry
@@ -220,8 +234,28 @@ public:
     // Backends without the GPU-driven path (WebGPU, software) return false and
     // RenderSystem3D falls back to the legacy per-draw path.
 
+    /** @brief True when the backend can run Hybrid clustered deferred lighting. */
+    virtual bool supportsDeferredLighting() const { return false; }
+
+    /**
+     * @brief Fullscreen deferred lighting into the open scene-color pass.
+     * Samples GBuffer + clustered lights + CSM. No-op when unsupported or no GBuffer.
+     * Call after begin3DFrame with view/lighting/shadows/clustered state already set.
+     */
+    virtual void drawDeferredLighting() {}
+
     /** @brief True when the backend can run GPU-driven opaque draws. */
     virtual bool supportsGpuDriven3D() const { return false; }
+
+    /**
+     * @brief True when the Vulkan device enabled the KHR ray-tracing path.
+     * WebGPU and software devices return false; screen-space reflections remain
+     * the portable path.
+     */
+    virtual bool supportsRayTracing() const { return false; }
+
+    /** @brief Probed ray-tracing capabilities (empty when unsupported). */
+    virtual RayTracingCaps rayTracingCaps() const { return {}; }
 
     /** @brief Whether the GPU-driven opaque path is currently enabled. */
     virtual bool gpuDrivenEnabled() const { return false; }
@@ -747,8 +781,18 @@ public:
      * @brief Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D.
      * normal may be null → treated as flat (0.5,0.5,1) only if a default normal tex exists.
      */
-    virtual void drawTexturedRectLitUV(Texture* albedo, Texture* normal, float x, float y, float w, float h, float u0,
-                                       float v0, float u1, float v1, const Color& color) = 0;
+    virtual void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0,
+                                       float v0, float u1, float v1, const Color &color,
+                                       BlendMode blend = BlendMode::Alpha) = 0;
+
+    /**
+     * @brief Lit 2D draw rotated `degrees` clockwise (screen Y-down) around (cx, cy).
+     * Fragment tangent frame is rebuilt from screen/UV derivatives so normal maps
+     * stay aligned with the rotated albedo.
+     */
+    virtual void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w, float h,
+                                              float degrees, float u0, float v0, float u1, float v1, const Color &color,
+                                              BlendMode blend = BlendMode::Alpha) = 0;
 
     /** @brief Upload per-frame / per-canvas 2D lighting constants for subsequent lit draws. */
     virtual void setLighting2D(const Lighting2DUBO &ubo) = 0;
@@ -1233,6 +1277,16 @@ public:
     virtual void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) = 0;
     /** @brief Final display mapping; None preserves linear color before display encoding. */
     enum class SceneToneMapping { None, Aces };
+    /** @brief Requested swapchain present preference. */
+    enum class DisplayOutputMode { Sdr, Auto, Hdr10, ScRgb };
+    /** @brief Color space actually selected for the live swapchain. */
+    enum class DisplayColorSpace { Sdr, ScRgb, Hdr10 };
+    /** @brief Surface present formats the current device/window can offer. */
+    struct DisplayOutputSupport {
+        bool sdr = true;
+        bool hdr10 = false;
+        bool scRgb = false;
+    };
     /** @brief Set final scene display mapping on the graphics/render thread.
      * @details Graphics owns the value
      * until destruction. No input references or callbacks
@@ -1245,6 +1299,39 @@ public:
     [[nodiscard]] virtual Result<void> setSceneToneMapping(SceneToneMapping mode);
     /** @brief Return the current final display mapping; graphics/render thread only. */
     virtual SceneToneMapping getSceneToneMapping() const { return SceneToneMapping::Aces; }
+    /**
+     * @brief Request a present color space on the graphics/render thread.
+     * @details Stores the preference and dirties the swapchain. Auto selects
+     * HDR10, then scRGB, then SDR. Strict Hdr10/ScRgb still soft-fall back to
+     * SDR when the surface cannot offer that pair; inspect
+     * `getActiveDisplayColorSpace()` / `isDisplayHdrActive()` after present
+     * rebuild. WebGPU currently accepts only Sdr/Auto (always SDR).
+     * @return Success, InvalidArgument, or Unsupported without partial mutation.
+     */
+    [[nodiscard]] virtual Result<void> setDisplayOutputMode(DisplayOutputMode mode);
+    /** @brief Return the requested present preference. */
+    virtual DisplayOutputMode getDisplayOutputMode() const;
+    /**
+     * @brief Set paper-white and peak luminance used by HDR present encoding.
+     * @param paperWhiteNits Display-referred luminance of UI/SDR white (80-400).
+     * @param peakNits Maximum highlight luminance (max(paperWhite,200)-10000).
+     * @return Success or InvalidArgument; values are clamped into range.
+     */
+    [[nodiscard]] virtual Result<void> setDisplayHdrCalibration(float paperWhiteNits, float peakNits);
+    /** @brief Paper-white luminance in nits for HDR present encoding. */
+    virtual float getDisplayPaperWhiteNits() const;
+    /** @brief Peak luminance in nits for HDR present encoding. */
+    virtual float getDisplayPeakNits() const;
+    /** @brief Color space of the live swapchain after the last rebuild. */
+    virtual DisplayColorSpace getActiveDisplayColorSpace() const;
+    /** @brief True when the live swapchain is scRGB or HDR10. */
+    virtual bool isDisplayHdrActive() const;
+    /**
+     * @brief Query which present formats the current surface can offer.
+     * @details Requires an initialized windowed backend with a live surface.
+     * Headless and unsupported backends return only `sdr=true`.
+     */
+    [[nodiscard]] virtual Result<DisplayOutputSupport> queryDisplayOutputSupport() const;
     /** @brief Set linear exposure multiplier used by the final scene tone-map resolve. */
     virtual void setSceneExposure(float exposure) = 0;
     /** @brief Current linear manual exposure multiplier. */
@@ -1551,8 +1638,9 @@ public:
     }
 
     /**
-     * @brief Compile GLSL source with glslc (must be on PATH). Empty vertGlsl → default textured vert.
-     * Throws if compilation fails.
+     * @brief Compile GLSL source with the engine's build-time GLSL compiler. Empty vertGlsl → default textured
+     * vert. Windows builds link the Vulkan SDK's shaderc archive; hosts without it fall back to an external
+     * `glslc` on PATH. Throws if compilation fails.
      */
     virtual Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
     Shader *newShader(const std::string &fragGlsl) { return newShader(std::string(), fragGlsl); }
@@ -2031,6 +2119,10 @@ protected:
     bool screenReadbackEnabled = false;
     bool vsyncEnabled = true;
     int presentationVSyncCount_=1;
+    DisplayOutputMode displayOutputMode_ = DisplayOutputMode::Sdr;
+    DisplayColorSpace activeDisplayColorSpace_ = DisplayColorSpace::Sdr;
+    float displayPaperWhiteNits_ = 200.f;
+    float displayPeakNits_ = 1000.f;
     bool graphicsActive = true;
     int msaaSamples = 4;
     PresentOverlayFn presentOverlayFn_ = nullptr;

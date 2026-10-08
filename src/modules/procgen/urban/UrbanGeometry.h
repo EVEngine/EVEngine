@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/urban/UrbanTypes.h"
 
@@ -11,7 +13,7 @@ namespace eve::procgen::urban {
 /** @brief Return the raw (possibly negative) signed area of a polygon ring. */
 double signedArea(const Polygon& poly);
 /** @brief Absolute polygon area. */
-double area(const Polygon& poly);
+EVENGINE_API_DOMAINS double area(const Polygon& poly);
 /** @brief Total length of an open polyline. */
 double polylineLength(const Polyline& pl);
 /** @brief Centroid (area-weighted) of a simple polygon. */
@@ -35,12 +37,12 @@ bool segmentIntersectsPolyline(const Vec2& a, const Vec2& b, const Polyline& pl)
 /** @brief True if any two non-adjacent segments of the open polyline cross. */
 bool polylineSelfIntersects(const Polyline& pl);
 /** @brief Simple polygon test: no self intersections among non-adjacent ring edges. */
-bool polygonIsSimple(const Polygon& poly);
+EVENGINE_API_DOMAINS bool polygonIsSimple(const Polygon& poly);
 
 /** @brief Closest point on segment a-b; returns distance and writes `out`. */
 double closestPointOnSegment(const Vec2& p, const Vec2& a, const Vec2& b, Vec2* out);
 /** @brief Closest point on the polygon boundary; writes edge index + t in [0,1]. */
-Vec2 closestPointOnBoundary(const Polygon& poly, const Vec2& p, BoundaryPosition* pos);
+EVENGINE_API_DOMAINS Vec2 closestPointOnBoundary(const Polygon& poly, const Vec2& p, BoundaryPosition* pos);
 /** @brief Interpolate the boundary point at arc length `s` in [0, perimeter). */
 Vec2 pointAtBoundaryLength(const Polygon& poly, double s, BoundaryPosition* pos);
 
@@ -60,14 +62,15 @@ bool isCollinear(const Vec2& prev, const Vec2& shared, const Vec2& next);
  * @brief Simplify a ring to its approximate polygon: consecutive edges with included
  * angle > 135° are merged into a single side (paper Section 3).
  */
-Polygon approximatePolygon(const Polygon& ring);
+EVENGINE_API_DOMAINS Polygon approximatePolygon(const Polygon& ring);
 
 /**
  * @brief Shape irregularity metric of Eq. (1) over the *approximate* polygon:
  * I = γ1·(1/N)·Σ(θi−θ̄)² + γ2·(1/(N·l̄²))·Σ(li−l̄)².
  * Smaller is more regular; 0 for an ideal regular polygon.
  */
-double shapeIrregularity(const Polygon& approxRing, double gammaAngle = 0.75, double gammaSide = 0.25);
+EVENGINE_API_DOMAINS double shapeIrregularity(const Polygon& approxRing, double gammaAngle = 0.75,
+                                              double gammaSide = 0.25);
 
 /**
  * @brief Split a CCW simple polygon by a polyline whose endpoints lie on the boundary and
@@ -75,8 +78,9 @@ double shapeIrregularity(const Polygon& approxRing, double gammaAngle = 0.75, do
  * to boundary point B; the two resulting CCW rings are returned in `outA`/`outB`.
  * Returns false on degenerate input. Callers verify area constraints afterwards.
  */
-bool splitPolygonByPolyline(const Polygon& poly, const Polyline& split, const BoundaryPosition& posA,
-                            const BoundaryPosition& posB, Polygon& outA, Polygon& outB);
+EVENGINE_API_DOMAINS bool splitPolygonByPolyline(const Polygon& poly, const Polyline& split,
+                                                 const BoundaryPosition& posA, const BoundaryPosition& posB,
+                                                 Polygon& outA, Polygon& outB);
 
 /** @brief Validity of a candidate split: both halves simple, positive area, inside the original. */
 bool validSplit(const Polygon& poly, const Polyline& split, double minHalfArea, Polygon* outA, Polygon* outB,

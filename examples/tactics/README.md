@@ -1,8 +1,8 @@
 # KayKit 战棋示例
 
 这是一个固定镜头的交互式 3D 战棋：4 名冒险者在 12×5 方格地图上迎战 6 种骷髅敌人。
-`tactics` 模块负责棋盘占位、行动顺序、移动合法性和胜负目标；示例脚本负责 HP、技能、
-敌方 AI 及表现层。
+`tactics` 模块负责棋盘占位、行动顺序、移动合法性和胜负目标；示例脚本把 HP、技能、
+敌方 AI 及表现做成脚本 ECS（`Hero` / `Foe` extends `Combatant`，由 `ActorAnimSystem` 驱动）。
 
 ```sh
 make run/linux-debug GAME=examples/tactics

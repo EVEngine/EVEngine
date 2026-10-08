@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file UnitySource.h @brief Bounded Unity package ingestion and project identity index. */
 
@@ -55,8 +57,8 @@ struct UnitySourceIndex {
  * @thread Worker-safe with immutable input; no global state.
  * @reentrancy No callbacks, filesystem access, Unity execution, or partial publication.
  */
-[[nodiscard]] Result<UnitySourceFiles> readUnityPackage(std::span<const std::uint8_t> bytes,
-                                                        const AssetImportLimits&      limits = {});
+[[nodiscard]] EVENGINE_API_PLATFORM Result<UnitySourceFiles> readUnityPackage(std::span<const std::uint8_t> bytes,
+                                                                              const AssetImportLimits& limits = {});
 
 /**
  * @brief Validate project paths and .meta identities and index serialized GUID/fileID references.
@@ -68,7 +70,7 @@ struct UnitySourceIndex {
  * @thread Worker-safe with immutable input.
  * @reentrancy No callbacks, filesystem access, execution, or mutation of input.
  */
-[[nodiscard]] Result<UnitySourceIndex> indexUnitySources(const UnitySourceFiles&  files,
-                                                         const AssetImportLimits& limits = {});
+[[nodiscard]] EVENGINE_API_PLATFORM Result<UnitySourceIndex> indexUnitySources(const UnitySourceFiles&  files,
+                                                                               const AssetImportLimits& limits = {});
 
 }  // namespace eve::asset_import

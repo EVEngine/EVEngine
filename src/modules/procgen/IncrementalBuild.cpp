@@ -12,11 +12,6 @@
 namespace eve::procgen {
 namespace {
 
-template <class T>
-Result<T> fail(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {}, "procgen.incrementalBuild"));
-}
-
 std::uint64_t keyFor(int x, int z) {
     return (std::uint64_t(std::uint32_t(x)) << 32U) | std::uint32_t(z);
 }
@@ -154,9 +149,11 @@ bool IncrementalBuildDelta::isRemoved(int index) const noexcept {
 }
 Result<BuildLayerExecution> IncrementalBuildDelta::getArtifacts(int index) const {
     if (index < 0 || index >= int(changes_.size()))
-        return fail<BuildLayerExecution>(DiagnosticCode::InvalidArgument, "delta index is out of range");
+        return Result<BuildLayerExecution>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "delta index is out of range", {}, {}, "procgen.incrementalBuild"));
     if (changes_[std::size_t(index)].removed)
-        return fail<BuildLayerExecution>(DiagnosticCode::NotFound, "removed cluster has no artifacts");
+        return Result<BuildLayerExecution>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "removed cluster has no artifacts", {}, {}, "procgen.incrementalBuild"));
     return Result<BuildLayerExecution>::success(changes_[std::size_t(index)].artifacts);
 }
 
@@ -164,7 +161,9 @@ Result<IncrementalBuildDelta> IncrementalBuildExecutor::update(const BuildLayerS
                                                                 const PointSet& points, int clusterSizeCells,
                                                                 float cellSizeWorld, const PointSet* orientation) {
     if (clusterSizeCells <= 0 || !std::isfinite(cellSizeWorld) || cellSizeWorld <= 0.f)
-        return fail<IncrementalBuildDelta>(DiagnosticCode::InvalidArgument, "cluster and cell sizes must be positive");
+        return Result<IncrementalBuildDelta>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "cluster and cell sizes must be positive", {},
+                                                                        {}, "procgen.incrementalBuild"));
     const float worldSize = float(clusterSizeCells) * cellSizeWorld;
     std::set<std::pair<int, int>> candidates;
     for (const auto& [key, record] : cache_) candidates.emplace(keyX(key), keyZ(key));
@@ -221,7 +220,9 @@ int IncrementalBuildExecutor::getCachedClusterCount() const noexcept { return in
 
 Result<BuildLayerExecution> IncrementalBuildExecutor::getCachedArtifacts(int clusterX, int clusterZ) const {
     const auto found = cache_.find(keyFor(clusterX, clusterZ));
-    if (found == cache_.end()) return fail<BuildLayerExecution>(DiagnosticCode::NotFound, "cluster is not cached");
+    if (found == cache_.end())
+        return Result<BuildLayerExecution>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "cluster is not cached", {}, {}, "procgen.incrementalBuild"));
     return Result<BuildLayerExecution>::success(found->second.artifacts);
 }
 

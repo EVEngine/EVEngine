@@ -11,17 +11,17 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <stdexcept>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::procgen_editor {
 
 class ProcgenEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override {
-        return type == "procgen-script" || type == "road-network";
-    }
+    std::vector<std::string_view> types() const override { return {"procgen-script", "road-network"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type, const editor::EditorValue::Object&) override {
         editor::AutomationOwnedTarget owned;
         if (type == "road-network")

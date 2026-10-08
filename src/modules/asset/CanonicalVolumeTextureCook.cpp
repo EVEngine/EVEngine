@@ -6,10 +6,6 @@
 
 namespace eve::asset {
 namespace {
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {}, "asset.cook.volume-texture"));
-}
 const Value* field(const Value::Object& object, const char* name) {
     const auto found = object.find(name);
     return found == object.end() ? nullptr : &found->second;
@@ -42,19 +38,22 @@ Result<CookedCanonicalVolumeTexture> cookCanonicalVolumeTextureRgba8(std::span<c
         !exactString(*object, "encoding", "r8") || !exactString(*object, "usage", "noise") || !blob ||
         !blob->isString() || !blob->asString().ends_with("/source.r8") || !positive32(*object, "width", width) ||
         !positive32(*object, "height", height) || !positive32(*object, "depth", depth))
-        return failure<CookedCanonicalVolumeTexture>(DiagnosticCode::ParseError,
-                                                     "volume definition shape or members are invalid");
+        return Result<CookedCanonicalVolumeTexture>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "volume definition shape or members are invalid", {}, {},
+                              "asset.cook.volume-texture"));
     const auto* version = field(*object, "schemaVersion");
     if (!version || !version->isInt64() || version->asInt() != 1 ||
         uint64_t(width) > std::numeric_limits<uint64_t>::max() / height ||
         uint64_t(width) * height > std::numeric_limits<uint64_t>::max() / depth)
-        return failure<CookedCanonicalVolumeTexture>(DiagnosticCode::InvalidArgument,
-                                                     "volume dimensions, version, source bytes or budget are invalid");
+        return Result<CookedCanonicalVolumeTexture>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "volume dimensions, version, source bytes or budget are invalid", {}, {},
+            "asset.cook.volume-texture"));
     const uint64_t voxels = uint64_t(width) * height * depth;
     if (voxels > SIZE_MAX || voxels != sourceR8.size() || maximumDecodedBytes < 24 ||
         voxels > (maximumDecodedBytes - 24) / 4)
-        return failure<CookedCanonicalVolumeTexture>(DiagnosticCode::InvalidArgument,
-                                                     "volume dimensions, version, source bytes or budget are invalid");
+        return Result<CookedCanonicalVolumeTexture>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "volume dimensions, version, source bytes or budget are invalid", {}, {},
+            "asset.cook.volume-texture"));
 
     auto runtime        = *object;
     runtime["encoding"] = Value("rgba8");

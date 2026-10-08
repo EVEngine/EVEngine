@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "animation/MotionBuilder.h"
 #include "animation/MotionSequence.h"
@@ -12,6 +13,10 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+
+namespace ssq {
+class Class;
+}
 
 namespace eve::model3d {
 class ModelData;
@@ -35,6 +40,7 @@ class MotionDatabase;
 class MotionMatcher;
 class ControlAnim;
 class ControlPose;
+class PhysicalBalancePose;
 class AnimSkin;
 class AnimLattice;
 class AnimTrail;
@@ -71,11 +77,24 @@ class SpineAnim;
  * `ControlPose` (pose tracking with the same control laws).
  * Trails: `AnimTrail` records samples and draws fading trajectories.
  */
-class Animation : public Module {
+class EVENGINE_API_WORLD Animation : public Module {
 public:
     Module_REG(Animation);
-    Animation() = default;
+    // Declared, not `= default`: class-level dllexport forces MSVC to compute the
+    // defaulted constructor's exception specification, which needs the destructor of
+    // every member -- and `SpriteSheet` is only forward-declared here (line 47), so an
+    // in-class `= default` is C2027 "can't delete an incomplete type". Defined in
+    // Animation.cpp, which includes animation/SpriteSheet.h.
+    Animation();
     ~Animation() override;
+    // `spriteSequenceCache_` is a container of `unique_ptr`: dllexport instantiates
+    // every member, so the implicitly-defined copy operations would instantiate the
+    // container's copy (hard C2280). Copy is deleted; no move is declared because
+    // `MotionRuntime motions_` is itself neither copyable nor movable
+    // (MotionRuntime.h:130 deletes copy and declares no move), which would make a
+    // defaulted move operation ill-formed.
+    Animation(const Animation &)            = delete;
+    Animation &operator=(const Animation &) = delete;
 
     /** @brief Create a tween (duration in seconds). Returned pointer is owned by script GC. */
     Tween *newTween(float duration = 1.f);
@@ -172,10 +191,22 @@ public:
     ControlAnim *newControlAnim(float frequencyHz = 3.f, float dampingZeta = 1.f,
                                 float response = 1.f);
     ControlPose *newControlPose(AnimSkeleton *skeleton);
+    /**
+     * @brief Impulse-driven balance overlay that wobbles then recovers toward the authored pose.
+     * @param skeleton Borrowed hierarchy; must outlive the returned object.
+     * @return Newly allocated overlay owned by the caller; never null.
+     * @ownership Owned; the caller (or script GC) deletes the object.
+     * @lifetime Independent of this Animation module after construction.
+     * @throws eve::Exception when skeleton is null.
+     * @thread Owner thread only; no callbacks.
+     */
+    PhysicalBalancePose* newPhysicalBalancePose(AnimSkeleton* skeleton);
 
     /**
-     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact
-     * `*.anim.txt` test fixtures (see AnimImporter).
+     * @brief Import skeleton/clip from Assimp-backed ModelData.
+     * @remarks Linked only when `OPTIONAL_DEPS model3d` is enabled
+     *          (`AnimationModelImport.cpp`). Prefer fixture text helpers when
+     *          model3d is trimmed.
      */
     AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
     AnimClip     *newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
@@ -319,5 +350,11 @@ private:
     eve::SimulationTick       lastTick_    = eve::SimulationTick::zero();
     bool                      hasLastTick_ = false;
 };
+
+/**
+ * @brief Register ModelData/Assimp import factories when AnimationModelImport.cpp
+ *        is linked (`OPTIONAL_DEPS model3d`).
+ */
+void exposeAnimationModelImportBindings(ssq::Class &cls);
 
 }  // namespace eve::animation

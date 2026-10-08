@@ -21,14 +21,14 @@ namespace {
 template <class T>
 eve::Result<T> hostFailure(eve::DiagnosticCode code, std::string message, std::string path) {
     return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.script-host"));
+        eve::Diagnostic::error(code, message, path, {}, "procgen.script-host"));
 }
 
 ssq::Table projectHostResult(HSQUIRRELVM vm, eve::Result<eve::Value>&& result) {
     const eve::Status status = result.status();
-    if (!result.ok()) return eve::script::projectStatusResult(vm, status, false, false);
+    if (!result.ok()) return eve::script::projectStatusResult(vm, status);
     eve::Value value = std::move(result).takeValue();
-    return eve::script::projectStatusResult(vm, status, true, true, value);
+    return eve::script::projectStatusResult(vm, status, value);
 }
 
 class ActiveSystemScope {

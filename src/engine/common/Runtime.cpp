@@ -1,11 +1,13 @@
 #include "common/Runtime.h"
 
 #include "common/Assert.h"
+#include "common/Capability.h"
 #include "common/Module.h"
 #include "common/ReflectScript.h"
 #include "common/ScriptCompiler.h"
 #include "common/ScriptError.h"
 #include "common/ScriptModule.h"
+#include "common/SquirrelOwnership.h"
 
 #include <squirrel.h>
 
@@ -449,6 +451,12 @@ void Runtime::shutdown() noexcept {
     if (shutting_down_ || stopped_) return;
     shutting_down_ = true;
     unloadAll();
+    try {
+        cap::forEach<script::ISquirrelRootReleaser>([](script::ISquirrelRootReleaser* owner) {
+            if (owner) owner->releaseSquirrelRoots();
+        });
+    } catch (...) {
+    }
     ModuleManager::detach(this);
     script::clearLastScriptError(handle());
     while (true) {

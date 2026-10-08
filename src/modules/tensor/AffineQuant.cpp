@@ -8,10 +8,6 @@
 
 namespace eve::tensor::affine {
 namespace {
-template <class T>
-Result<T> fail(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message));
-}
 int value(ByteView v, size_t i) {
     const int x = v.bytes[i];
     return v.signedValues && x >= 128 ? x - 256 : x;
@@ -27,11 +23,14 @@ bool product(size_t a, size_t b, size_t limit) { return b == 0 || a <= limit / b
 
 Result<std::vector<uint8_t>> quantize(std::span<const float> input, float scale, int zero, bool sign) {
     if (!(scale > 0) || !std::isfinite(scale) || !validZero(zero, sign))
-        return fail<std::vector<uint8_t>>("Invalid affine scale or zero point");
+        return Result<std::vector<uint8_t>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid affine scale or zero point"));
     std::vector<uint8_t> out;
     out.reserve(input.size());
     for (float x : input) {
-        if (!std::isfinite(x)) return fail<std::vector<uint8_t>>("Nonfinite quantization input");
+        if (!std::isfinite(x))
+            return Result<std::vector<uint8_t>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Nonfinite quantization input"));
         const double rounded = evenRound(static_cast<double>(x) / scale) + zero;
         const int    q       = static_cast<int>(std::clamp(rounded, sign ? -128.0 : 0.0, sign ? 127.0 : 255.0));
         out.push_back(static_cast<uint8_t>(q));
@@ -42,14 +41,17 @@ Result<std::vector<uint8_t>> quantize(std::span<const float> input, float scale,
 Result<QuantizedActivation> dynamicQuantize(std::span<const float> input) {
     float lo = 0, hi = 0;
     for (float x : input) {
-        if (!std::isfinite(x)) return fail<QuantizedActivation>("Nonfinite dynamic quantization input");
+        if (!std::isfinite(x))
+            return Result<QuantizedActivation>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Nonfinite dynamic quantization input"));
         lo = std::min(lo, x);
         hi = std::max(hi, x);
     }
     QuantizedActivation result;
     result.scale = hi == lo ? 1.f : static_cast<float>((static_cast<double>(hi) - lo) / 255.0);
     if (!(result.scale > 0) || !std::isfinite(result.scale))
-        return fail<QuantizedActivation>("Dynamic quantization scale is not representable");
+        return Result<QuantizedActivation>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Dynamic quantization scale is not representable"));
     result.zeroPoint = static_cast<uint8_t>(std::clamp(evenRound(-static_cast<double>(lo) / result.scale), 0.0, 255.0));
     auto bytes       = quantize(input, result.scale, result.zeroPoint, false);
     if (!bytes.ok()) return Result<QuantizedActivation>::failure(bytes.status());
@@ -61,10 +63,12 @@ Result<std::vector<float>> dequantize(ByteView input, std::span<const float> sca
                                       size_t inner) {
     if (scales.empty() || scales.size() != zeros.size() || inner == 0 || !product(scales.size(), inner, SIZE_MAX) ||
         input.bytes.size() % (scales.size() * inner))
-        return fail<std::vector<float>>("Invalid affine channel layout");
+        return Result<std::vector<float>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid affine channel layout"));
     for (size_t i = 0; i < scales.size(); ++i)
         if (!(scales[i] > 0) || !std::isfinite(scales[i]) || !validZero(zeros[i], input.signedValues))
-            return fail<std::vector<float>>("Invalid affine scale or zero point");
+            return Result<std::vector<float>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid affine scale or zero point"));
     std::vector<float> out(input.bytes.size());
     for (size_t i = 0; i < out.size(); ++i) {
         const size_t channel = (i / inner) % scales.size();
@@ -77,7 +81,8 @@ Result<std::vector<int32_t>> matmul(ByteView a, ByteView b, size_t m, size_t k, 
                                     OnnxCompute* compute) {
     if (!validZero(aZero, a.signedValues) || !validZero(bZero, b.signedValues) || !product(m, k, SIZE_MAX) ||
         !product(k, n, SIZE_MAX) || !product(m, n, INT32_MAX) || a.bytes.size() != m * k || b.bytes.size() != k * n)
-        return fail<std::vector<int32_t>>("Invalid integer matmul dimensions or zero points");
+        return Result<std::vector<int32_t>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid integer matmul dimensions or zero points"));
     if (compute && m && n && k) {
         try {
             const int32_t z = bZero;
@@ -93,7 +98,9 @@ Result<std::vector<int32_t>> matmul(ByteView a, ByteView b, size_t m, size_t k, 
             int64_t sum = 0;
             for (size_t j = 0; j < k; ++j)
                 sum += static_cast<int64_t>(value(a, r * k + j) - aZero) * (value(b, j * n + c) - bZero);
-            if (!fits(sum)) return fail<std::vector<int32_t>>("Integer matmul accumulator overflow");
+            if (!fits(sum))
+                return Result<std::vector<int32_t>>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "Integer matmul accumulator overflow"));
             out[r * n + c] = static_cast<int32_t>(sum);
         }
     return Result<std::vector<int32_t>>::success(std::move(out));
@@ -103,36 +110,50 @@ Result<detail::ConvExtent> detail::validateConv(size_t xSize, size_t wSize, bool
                                                 const ConvShape& s, int xZero, std::span<const int32_t> wZeros) {
     for (int d : {s.batch, s.channels, s.height, s.width, s.outputs, s.kernelH, s.kernelW, s.strideH, s.strideW,
                   s.dilationH, s.dilationW, s.groups})
-        if (d <= 0 || d > 65536) return fail<detail::ConvExtent>("Invalid integer convolution dimensions");
+        if (d <= 0 || d > 65536)
+            return Result<detail::ConvExtent>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid integer convolution dimensions"));
     if (s.channels % s.groups || s.outputs % s.groups || s.padTop < 0 || s.padBottom < 0 || s.padLeft < 0 ||
         s.padRight < 0 || !validZero(xZero, xSigned) ||
         (wZeros.size() != 1 && wZeros.size() != static_cast<size_t>(s.outputs)))
-        return fail<detail::ConvExtent>("Invalid convolution groups, padding or zero points");
+        return Result<detail::ConvExtent>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid convolution groups, padding or zero points"));
     for (int z : wZeros)
-        if (!validZero(z, wSigned)) return fail<detail::ConvExtent>("Invalid convolution weight zero point");
+        if (!validZero(z, wSigned))
+            return Result<detail::ConvExtent>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid convolution weight zero point"));
     const int64_t h = static_cast<int64_t>(s.height) + s.padTop + s.padBottom -
                       static_cast<int64_t>(s.dilationH) * (s.kernelH - 1) - 1;
     const int64_t width = static_cast<int64_t>(s.width) + s.padLeft + s.padRight -
                           static_cast<int64_t>(s.dilationW) * (s.kernelW - 1) - 1;
-    if (h < 0 || width < 0) return fail<detail::ConvExtent>("Convolution kernel exceeds padded input");
+    if (h < 0 || width < 0)
+        return Result<detail::ConvExtent>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Convolution kernel exceeds padded input"));
     const int64_t oh = h / s.strideH + 1, ow = width / s.strideW + 1;
     int64_t       outCount = 1;
     for (int64_t d : {static_cast<int64_t>(s.batch), static_cast<int64_t>(s.outputs), oh, ow}) {
-        if (d > INT32_MAX / outCount) return fail<detail::ConvExtent>("Convolution output too large");
+        if (d > INT32_MAX / outCount)
+            return Result<detail::ConvExtent>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Convolution output too large"));
         outCount *= d;
     }
     const int cg         = s.channels / s.groups;
     size_t    inputCount = 1, weightCount = 1;
     for (int d : {s.batch, s.channels, s.height, s.width}) {
-        if (!product(inputCount, d, INT32_MAX)) return fail<detail::ConvExtent>("Convolution input too large");
+        if (!product(inputCount, d, INT32_MAX))
+            return Result<detail::ConvExtent>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Convolution input too large"));
         inputCount *= d;
     }
     for (int d : {s.outputs, cg, s.kernelH, s.kernelW}) {
-        if (!product(weightCount, d, INT32_MAX)) return fail<detail::ConvExtent>("Convolution weights too large");
+        if (!product(weightCount, d, INT32_MAX))
+            return Result<detail::ConvExtent>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Convolution weights too large"));
         weightCount *= d;
     }
     if (outCount > INT32_MAX || xSize != inputCount || wSize != weightCount)
-        return fail<detail::ConvExtent>("Convolution buffer size mismatch or output too large");
+        return Result<detail::ConvExtent>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Convolution buffer size mismatch or output too large"));
     return Result<detail::ConvExtent>::success({oh, ow, outCount});
 }
 Result<std::vector<int32_t>> conv(ByteView x, ByteView w, const ConvShape& s, int xZero,
@@ -171,7 +192,9 @@ Result<std::vector<int32_t>> conv(ByteView x, ByteView w, const ConvShape& s, in
                                 sum += static_cast<int64_t>(value(x, xi) - xZero) *
                                        (value(w, wi) - wZeros[wZeros.size() == 1 ? 0 : o]);
                             }
-                    if (!fits(sum)) return fail<std::vector<int32_t>>("Integer convolution accumulator overflow");
+                    if (!fits(sum))
+                        return Result<std::vector<int32_t>>::failure(Diagnostic::error(
+                            DiagnosticCode::InvalidArgument, "Integer convolution accumulator overflow"));
                     out[((static_cast<size_t>(b) * s.outputs + o) * oh + y) * ow + z] = static_cast<int32_t>(sum);
                 }
     return Result<std::vector<int32_t>>::success(std::move(out));

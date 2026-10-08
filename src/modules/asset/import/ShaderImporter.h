@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "asset/import/AssetImporter.h"
 
@@ -10,6 +12,6 @@ namespace eve::asset_import {
  * @return Owning validated import candidate; stable asset identity is packageId.child("shader:default").
  * @thread Worker-safe. No callbacks, file access or GPU allocation. Failure publishes nothing.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareShaderImport(const ImportPackageIdentity& package,
-                                                              std::string_view             json);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareShaderImport(
+    const ImportPackageIdentity& package, std::string_view json);
 }  // namespace eve::asset_import

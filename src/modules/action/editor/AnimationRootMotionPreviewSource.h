@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file AnimationRootMotionPreviewSource.h @brief Optional AnimClip-backed root-motion preview adapter. */
 
@@ -16,7 +18,7 @@ namespace eve::editor {
  * and hot reload remain observable through the registry. Missing clips surface
  * as NotFound.
  */
-class AnimationRootMotionPreviewSource final : public action::IActionRootMotionSource {
+class EVENGINE_API_EDITORS AnimationRootMotionPreviewSource final : public action::IActionRootMotionSource {
 public:
     /** @brief Construct a sampler for one zero-based root-bone track. */
     explicit AnimationRootMotionPreviewSource(std::uint32_t rootBone = 0) noexcept : rootBone_(rootBone) {}

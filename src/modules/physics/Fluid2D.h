@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <unordered_map>
@@ -14,7 +16,7 @@ namespace eve::physics {
  * @brief Interactive 2D particle fluid (double-density relaxation) in pixel space.
  * Script-owned; independent of Box2D World.
  */
-class Fluid2D {
+class EVENGINE_API_WORLD Fluid2D {
 public:
     explicit Fluid2D(int capacity = 512);
     ~Fluid2D();

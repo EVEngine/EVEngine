@@ -14,11 +14,6 @@
 namespace eve::map {
 namespace {
 
-eve::Result<void> fail(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path), {}, "map.object-contract"));
-}
-
 const eve::Value* member(const eve::Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -82,25 +77,32 @@ eve::Result<void> validateProperty(const std::string& value, const PropertyRule&
     double numeric = 0.0;
     if (rule.kind == "string") {
         if (!rule.choices.empty() && !rule.choices.contains(value))
-            return fail(eve::DiagnosticCode::InvalidArgument, "property value is outside its enum", path);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "property value is outside its enum", path, {}, "map.object-contract"));
     } else if (rule.kind == "int") {
         std::int64_t integer = 0;
         if (!parseInteger(value, integer))
-            return fail(eve::DiagnosticCode::TypeMismatch, "property must be an integer", path);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "property must be an integer", path, {}, "map.object-contract"));
         numeric = static_cast<double>(integer);
     } else if (rule.kind == "number") {
         if (!parseNumber(value, numeric))
-            return fail(eve::DiagnosticCode::TypeMismatch, "property must be a finite number", path);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "property must be a finite number", path, {}, "map.object-contract"));
     } else if (rule.kind == "bool") {
         if (value != "true" && value != "false")
-            return fail(eve::DiagnosticCode::TypeMismatch, "property must be true or false", path);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "property must be true or false", path, {}, "map.object-contract"));
     } else {
-        return fail(eve::DiagnosticCode::Unsupported, "unsupported property kind", path);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Unsupported, "unsupported property kind", path, {}, "map.object-contract"));
     }
     if (rule.minimum && numeric < *rule.minimum)
-        return fail(eve::DiagnosticCode::InvalidArgument, "property is below its minimum", path);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "property is below its minimum", path, {}, "map.object-contract"));
     if (rule.maximum && numeric > *rule.maximum)
-        return fail(eve::DiagnosticCode::InvalidArgument, "property exceeds its maximum", path);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "property exceeds its maximum", path, {}, "map.object-contract"));
     return eve::Result<void>::success();
 }
 
@@ -110,91 +112,103 @@ eve::Result<void> validateMapObjects(std::span<const MapObject> objects, std::st
     auto parsed = eve::Value::fromJson(contractJson);
     if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
     const auto* root = parsed.value().getIf<eve::Value::Object>();
-    if (!root) return fail(eve::DiagnosticCode::TypeMismatch, "contract root must be an object", "$contract");
+    if (!root) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "contract root must be an object", "$contract", {}, "map.object-contract"));
 
     const eve::Value* schema = member(*root, "schema");
     const eve::Value* version = member(*root, "version");
     const eve::Value* typesValue = member(*root, "types");
     if (!schema || !schema->isString() || schema->asString() != "eve.map.object-contract")
-        return fail(eve::DiagnosticCode::InvalidArgument, "unsupported contract schema", "$contract.schema");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "unsupported contract schema", "$contract.schema", {}, "map.object-contract"));
     if (!version || !version->isInt64() || version->asInt() != 1)
-        return fail(eve::DiagnosticCode::UnknownVersion, "unsupported contract version", "$contract.version");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::UnknownVersion, "unsupported contract version", "$contract.version", {}, "map.object-contract"));
     const auto* types = typesValue ? typesValue->getIf<eve::Value::Array>() : nullptr;
-    if (!types) return fail(eve::DiagnosticCode::TypeMismatch, "types must be an array", "$contract.types");
+    if (!types) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "types must be an array", "$contract.types", {}, "map.object-contract"));
 
     bool requireUniqueNames = true;
     bool allowUnknownTypes = false;
     if (!booleanMember(*root, "requireUniqueNames", true, requireUniqueNames))
-        return fail(eve::DiagnosticCode::TypeMismatch, "requireUniqueNames must be boolean",
-                    "$contract.requireUniqueNames");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "requireUniqueNames must be boolean", "$contract.requireUniqueNames", {}, "map.object-contract"));
     if (!booleanMember(*root, "allowUnknownTypes", false, allowUnknownTypes))
-        return fail(eve::DiagnosticCode::TypeMismatch, "allowUnknownTypes must be boolean",
-                    "$contract.allowUnknownTypes");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "allowUnknownTypes must be boolean", "$contract.allowUnknownTypes", {}, "map.object-contract"));
 
     std::map<std::string, TypeRule> rules;
     for (std::size_t typeIndex = 0; typeIndex < types->size(); ++typeIndex) {
         const std::string base = "$contract.types[" + std::to_string(typeIndex) + "]";
         const auto* definition = (*types)[typeIndex].getIf<eve::Value::Object>();
-        if (!definition) return fail(eve::DiagnosticCode::TypeMismatch, "type rule must be an object", base);
+        if (!definition) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "type rule must be an object", base, {}, "map.object-contract"));
         const eve::Value* type = member(*definition, "type");
         if (!type || !type->isString() || type->asString().empty())
-            return fail(eve::DiagnosticCode::InvalidArgument, "type must be a non-empty string", base + ".type");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "type must be a non-empty string", base + ".type", {}, "map.object-contract"));
         TypeRule typeRule;
         if (!booleanMember(*definition, "allowUnknownProperties", false, typeRule.allowUnknownProperties))
-            return fail(eve::DiagnosticCode::TypeMismatch, "allowUnknownProperties must be boolean",
-                        base + ".allowUnknownProperties");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "allowUnknownProperties must be boolean", base + ".allowUnknownProperties", {}, "map.object-contract"));
         const eve::Value* propertiesValue = member(*definition, "properties");
         const auto* properties = propertiesValue ? propertiesValue->getIf<eve::Value::Array>() : nullptr;
         if (propertiesValue && !properties)
-            return fail(eve::DiagnosticCode::TypeMismatch, "properties must be an array", base + ".properties");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "properties must be an array", base + ".properties", {}, "map.object-contract"));
         if (properties) {
             for (std::size_t propertyIndex = 0; propertyIndex < properties->size(); ++propertyIndex) {
                 const std::string propertyPath = base + ".properties[" + std::to_string(propertyIndex) + "]";
                 const auto* definitionObject = (*properties)[propertyIndex].getIf<eve::Value::Object>();
                 if (!definitionObject)
-                    return fail(eve::DiagnosticCode::TypeMismatch, "property rule must be an object", propertyPath);
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "property rule must be an object", propertyPath, {}, "map.object-contract"));
                 const eve::Value* name = member(*definitionObject, "name");
                 const eve::Value* kind = member(*definitionObject, "kind");
                 if (!name || !name->isString() || name->asString().empty())
-                    return fail(eve::DiagnosticCode::InvalidArgument, "property name must be non-empty",
-                                propertyPath + ".name");
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "property name must be non-empty", propertyPath + ".name", {}, "map.object-contract"));
                 if (!kind || !kind->isString())
-                    return fail(eve::DiagnosticCode::TypeMismatch, "property kind must be a string",
-                                propertyPath + ".kind");
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "property kind must be a string", propertyPath + ".kind", {}, "map.object-contract"));
                 PropertyRule propertyRule{name->asString(), kind->asString()};
                 if (!booleanMember(*definitionObject, "required", false, propertyRule.required))
-                    return fail(eve::DiagnosticCode::TypeMismatch, "required must be boolean",
-                                propertyPath + ".required");
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "required must be boolean", propertyPath + ".required", {}, "map.object-contract"));
                 for (std::string_view field : {std::string_view("min"), std::string_view("max")}) {
                     if (const eve::Value* bound = member(*definitionObject, field)) {
                         double number = 0.0;
                         if (!numericValue(*bound, number))
-                            return fail(eve::DiagnosticCode::TypeMismatch, std::string(field) + " must be numeric",
-                                        propertyPath + "." + std::string(field));
+                            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, std::string(field) + " must be numeric", propertyPath + "." + std::string(field), {}, "map.object-contract"));
                         (field == "min" ? propertyRule.minimum : propertyRule.maximum) = number;
                     }
                 }
                 if (propertyRule.minimum && propertyRule.maximum && *propertyRule.minimum > *propertyRule.maximum)
-                    return fail(eve::DiagnosticCode::InvalidArgument, "min must not exceed max", propertyPath);
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "min must not exceed max", propertyPath, {}, "map.object-contract"));
                 if (const eve::Value* enumValue = member(*definitionObject, "enum")) {
                     const auto* choices = enumValue->getIf<eve::Value::Array>();
                     if (!choices)
-                        return fail(eve::DiagnosticCode::TypeMismatch, "enum must be an array", propertyPath + ".enum");
+                        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "enum must be an array", propertyPath + ".enum", {}, "map.object-contract"));
                     for (const eve::Value& choice : *choices) {
                         if (!choice.isString())
-                            return fail(eve::DiagnosticCode::TypeMismatch, "enum values must be strings",
-                                        propertyPath + ".enum");
+                            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::TypeMismatch, "enum values must be strings", propertyPath + ".enum", {}, "map.object-contract"));
                         if (!propertyRule.choices.emplace(choice.asString()).second)
-                            return fail(eve::DiagnosticCode::AlreadyExists, "duplicate enum value",
-                                        propertyPath + ".enum");
+                            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::AlreadyExists, "duplicate enum value", propertyPath + ".enum", {}, "map.object-contract"));
                     }
                 }
                 if (!typeRule.properties.emplace(propertyRule.name, std::move(propertyRule)).second)
-                    return fail(eve::DiagnosticCode::AlreadyExists, "duplicate property rule", propertyPath + ".name");
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::AlreadyExists, "duplicate property rule", propertyPath + ".name", {}, "map.object-contract"));
             }
         }
         if (!rules.emplace(type->asString(), std::move(typeRule)).second)
-            return fail(eve::DiagnosticCode::AlreadyExists, "duplicate type rule", base + ".type");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::AlreadyExists, "duplicate type rule", base + ".type", {}, "map.object-contract"));
     }
 
     std::set<std::string> names;
@@ -203,22 +217,24 @@ eve::Result<void> validateMapObjects(std::span<const MapObject> objects, std::st
         const std::string base = "$objects[" + std::to_string(objectIndex) + "]";
         if (!std::isfinite(object.x) || !std::isfinite(object.y) || !std::isfinite(object.width) ||
             !std::isfinite(object.height) || object.width < 0.f || object.height < 0.f)
-            return fail(eve::DiagnosticCode::InvalidArgument, "object geometry must be finite and non-negative", base);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "object geometry must be finite and non-negative", base, {}, "map.object-contract"));
         if (requireUniqueNames && (!stableName(object.name) || !names.emplace(object.name).second))
-            return fail(eve::DiagnosticCode::Conflict,
-                        "object names must be unique, bounded, non-empty, and control-free", base + ".name");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Conflict, "object names must be unique, bounded, non-empty, and control-free", base + ".name", {}, "map.object-contract"));
         const auto type = rules.find(object.type);
         if (type == rules.end()) {
             if (!allowUnknownTypes)
-                return fail(eve::DiagnosticCode::Unsupported, "object type is not admitted", base + ".type");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Unsupported, "object type is not admitted", base + ".type", {}, "map.object-contract"));
             continue;
         }
         for (const auto& [name, rule] : type->second.properties) {
             const auto property = object.properties.find(name);
             if (property == object.properties.end()) {
                 if (rule.required)
-                    return fail(eve::DiagnosticCode::NotFound, "required property is missing",
-                                base + ".properties." + name);
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::NotFound, "required property is missing", base + ".properties." + name, {}, "map.object-contract"));
                 continue;
             }
             auto valid = validateProperty(property->second, rule, base + ".properties." + name);
@@ -228,8 +244,8 @@ eve::Result<void> validateMapObjects(std::span<const MapObject> objects, std::st
             for (const auto& [name, value] : object.properties) {
                 (void)value;
                 if (!type->second.properties.contains(name))
-                    return fail(eve::DiagnosticCode::Unsupported, "property is not admitted",
-                                base + ".properties." + name);
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Unsupported, "property is not admitted", base + ".properties." + name, {}, "map.object-contract"));
             }
         }
     }

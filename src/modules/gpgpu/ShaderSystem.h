@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "gpgpu/ComputeShader.h"
 
@@ -28,7 +30,7 @@ class Sequence;
  * Script: `eve.ShaderSystem` (extends `eve.System`) wraps this class.
  * C++ ECS: use `packViewComponent` / `unpackViewComponent` in EcsGpu.h.
  */
-class ShaderSystem {
+class EVENGINE_API_WORLD ShaderSystem {
 public:
     static constexpr int kMaxBindings = ComputeShader::kMaxBindings;
     static constexpr int kDefaultLocalSize = 64;

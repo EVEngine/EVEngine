@@ -8,7 +8,7 @@
 namespace eve {
 
 /** @brief Value result for a procedural world-surface projection query. */
-struct EVENGINE_API ProcgenSurfaceHit {
+struct EVENGINE_API_FOUNDATION_INLINE ProcgenSurfaceHit {
     bool         hit      = false;
     std::int64_t objectId = 0;
     float        x        = 0.f;
@@ -20,7 +20,7 @@ struct EVENGINE_API ProcgenSurfaceHit {
 };
 
 /** @brief Optional synchronous world-query capability for procedural generation. */
-class EVENGINE_API IProcgenWorldQuery {
+class EVENGINE_API_FOUNDATION_INLINE IProcgenWorldQuery {
 public:
     static constexpr const char* capabilityName = "IProcgenWorldQuery";
     virtual ~IProcgenWorldQuery() = default;

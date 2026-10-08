@@ -12,39 +12,6 @@
 namespace eve::weapon {
 namespace {
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "weapon.attributes"));
-}
-
-template <typename T>
-eve::Result<T> failure(eve::Status status, std::string, std::string = {}) {
-    return eve::Result<T>::failure(std::move(status));
-}
-
-template <typename T>
-eve::Result<T> failure(eve::StatusCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Status::failure(code, eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message),
-                                                          std::move(path), {}, "weapon.attributes")));
-}
-
-eve::Result<void> failureVoid(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "weapon.attributes"));
-}
-
-eve::Result<void> failureVoid(eve::Status status, std::string, std::string = {}) {
-    return eve::Result<void>::failure(std::move(status));
-}
-
-eve::Result<void> failureVoid(eve::StatusCode code, std::string message, std::string path = {}) {
-    return eve::Result<void>::failure(
-        eve::Status::failure(code, eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message),
-                                                          std::move(path), {}, "weapon.attributes")));
-}
-
 bool selected(std::string_view name) noexcept {
     return name == WeaponAttributeAdapter::manaAttribute || name == WeaponAttributeAdapter::maxManaAttribute ||
            name == WeaponAttributeAdapter::staminaAttribute || name == WeaponAttributeAdapter::maxStaminaAttribute;
@@ -71,7 +38,8 @@ std::string_view maxAttribute(ResourceKind kind) noexcept {
 
 eve::Result<void> WeaponAttributeAdapter::ensure(WeaponEntity& weapon) {
     auto bound = weapon.attributes()->values.bindOwner(ecs::handle_of(&weapon));
-    if (!bound) return failureVoid(bound.code(), "weapon attribute owner could not be bound", "owner");
+    if (!bound) return eve::Result<void>::failure(
+        eve::Status::failure(bound.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attribute owner could not be bound", "owner", {}, "weapon.attributes")));
     if (!weapon.attributes()->values.initialized()) {
         const Resource& resource   = weapon.state()->resource;
         const double    mana       = resource.kind == ResourceKind::Mana ? resource.value : 0.0;
@@ -85,25 +53,29 @@ eve::Result<void> WeaponAttributeAdapter::ensure(WeaponEntity& weapon) {
             eve::attributes::AttributeSnapshotBase{std::string(maxStaminaAttribute), maxStamina}};
         auto initialized = weapon.attributes()->values.initialize(bases);
         if (!initialized)
-            return failureVoid(initialized.code(), "weapon attribute state could not be initialized", "attributes");
+            return eve::Result<void>::failure(
+        eve::Status::failure(initialized.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attribute state could not be initialized", "attributes", {}, "weapon.attributes")));
     }
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
 }
 
 eve::Result<void> WeaponAttributeAdapter::project(WeaponEntity& weapon) {
     auto ready = ensure(weapon);
-    if (!ready) return failureVoid(ready.code(), "weapon attributes are not available", "attributes");
+    if (!ready) return eve::Result<void>::failure(
+        eve::Status::failure(ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attributes are not available", "attributes", {}, "weapon.attributes")));
     Resource& resource = weapon.state()->resource;
     if (!isManaOrStamina(resource.kind)) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     auto current = weapon.attributes()->values.getFinal(currentAttribute(resource.kind));
-    if (!current) return failureVoid(current.code(), "weapon resource attribute could not be read", "resource");
+    if (!current) return eve::Result<void>::failure(
+        eve::Status::failure(current.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon resource attribute could not be read", "resource", {}, "weapon.attributes")));
     auto maximum = weapon.attributes()->values.getFinal(maxAttribute(resource.kind));
-    if (!maximum) return failureVoid(maximum.code(), "weapon maximum resource attribute could not be read", "resource");
+    if (!maximum) return eve::Result<void>::failure(
+        eve::Status::failure(maximum.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon maximum resource attribute could not be read", "resource", {}, "weapon.attributes")));
     if (!std::isfinite(current.value()) || !std::isfinite(maximum.value()) || current.value() < 0.0 ||
         maximum.value() < 0.0 || current.value() > maximum.value() ||
         maximum.value() > static_cast<double>(std::numeric_limits<float>::max()))
-        return failureVoid(eve::DiagnosticCode::InvariantViolation,
-                           "weapon mana/stamina attributes are outside validated bounds", "resource");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "weapon mana/stamina attributes are outside validated bounds", "resource", {}, "weapon.attributes"));
     resource.value = static_cast<float>(current.value());
     resource.max   = static_cast<float>(maximum.value());
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -111,21 +83,30 @@ eve::Result<void> WeaponAttributeAdapter::project(WeaponEntity& weapon) {
 
 eve::Result<double> WeaponAttributeAdapter::read(WeaponEntity& weapon, std::string_view attribute) {
     if (!selected(attribute))
-        return failure<double>(eve::DiagnosticCode::Unsupported,
-                               "weapon attribute is outside the mana/stamina projection", "attribute");
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "weapon attribute is outside the mana/stamina projection", "attribute",
+            {}, "weapon.attributes"));
     auto projected = project(weapon);
-    if (!projected) return failure<double>(projected.code(), "weapon compatibility projection failed", "resource");
+    if (!projected)
+        return eve::Result<double>::failure(eve::Status::failure(
+            projected.code(),
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon compatibility projection failed", "resource",
+                                   {}, "weapon.attributes")));
     auto value = weapon.attributes()->values.getFinal(attribute);
-    if (!value) return failure<double>(value.code(), "weapon attribute read failed", "attribute");
+    if (!value)
+        return eve::Result<double>::failure(eve::Status::failure(
+            value.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attribute read failed",
+                                                 "attribute", {}, "weapon.attributes")));
     return eve::Result<double>::success(value.value());
 }
 
 eve::Result<void> WeaponAttributeAdapter::setBase(WeaponEntity& weapon, std::string_view attribute, double value) {
     if (!selected(attribute))
-        return failureVoid(eve::DiagnosticCode::Unsupported, "weapon attribute is outside the mana/stamina projection",
-                           "attribute");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "weapon attribute is outside the mana/stamina projection", "attribute", {}, "weapon.attributes"));
     auto ready = ensure(weapon);
-    if (!ready) return failureVoid(ready.code(), "weapon attributes are not available", "attributes");
+    if (!ready) return eve::Result<void>::failure(
+        eve::Status::failure(ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attributes are not available", "attributes", {}, "weapon.attributes")));
     auto changed = weapon.attributes()->values.setBase(attribute, value);
     if (!changed) return changed;
     return project(weapon);
@@ -133,16 +114,19 @@ eve::Result<void> WeaponAttributeAdapter::setBase(WeaponEntity& weapon, std::str
 
 eve::Result<void> WeaponAttributeAdapter::consumeTriggerResource(WeaponEntity& weapon) {
     auto ready = ensure(weapon);
-    if (!ready) return failureVoid(ready.code(), "weapon attributes are not available", "attributes");
+    if (!ready) return eve::Result<void>::failure(
+        eve::Status::failure(ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attributes are not available", "attributes", {}, "weapon.attributes")));
     const Resource& resource = weapon.state()->resource;
     if (!isManaOrStamina(resource.kind))
-        return failureVoid(eve::DiagnosticCode::Unsupported, "weapon trigger resource is not mana or stamina",
-                           "resource.kind");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "weapon trigger resource is not mana or stamina", "resource.kind", {}, "weapon.attributes"));
     const auto currentName = currentAttribute(resource.kind);
     auto       current     = weapon.attributes()->values.getFinal(currentName);
-    if (!current) return failureVoid(current.code(), "weapon trigger resource could not be read", "resource");
+    if (!current) return eve::Result<void>::failure(
+        eve::Status::failure(current.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon trigger resource could not be read", "resource", {}, "weapon.attributes")));
     if (!resource.infinite && current.value() < static_cast<double>(resource.cost))
-        return failureVoid(eve::DiagnosticCode::Conflict, "weapon does not have enough mana or stamina", "resource");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "weapon does not have enough mana or stamina", "resource", {}, "weapon.attributes"));
     if (resource.infinite) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     auto changed = weapon.attributes()->values.setBase(
         currentName, std::max(0.0, current.value() - static_cast<double>(resource.cost)));
@@ -154,27 +138,32 @@ eve::Result<eve::attributes::ModifierId> WeaponAttributeAdapter::addModifier(
     WeaponEntity& weapon, std::string id, std::string_view attribute, std::string source,
     eve::attributes::AttributeOperation operation, double value, eve::attributes::ModifierPriority priority) {
     if (!selected(attribute) || source.empty())
-        return failure<eve::attributes::ModifierId>(
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "weapon modifier requires a selected attribute and non-empty source",
-            "modifier");
+            "modifier", {}, "weapon.attributes"));
     auto ready = ensure(weapon);
     if (!ready)
-        return failure<eve::attributes::ModifierId>(ready.code(), "weapon attributes are not available", "attributes");
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Status::failure(
+            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attributes are not available",
+                                                 "attributes", {}, "weapon.attributes")));
     auto added = weapon.attributes()->values.addModifier(eve::attributes::AttributeModifier(
         std::move(id), std::string(attribute), std::move(source), operation, value, priority));
     if (!added) return added;
     auto projected = project(weapon);
     if (!projected)
-        return failure<eve::attributes::ModifierId>(projected.code(), "weapon compatibility projection failed",
-                                                    "resource");
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Status::failure(
+            projected.code(),
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon compatibility projection failed", "resource",
+                                   {}, "weapon.attributes")));
     return added;
 }
 
 eve::Result<eve::attributes::AttributeProjectionSnapshot> WeaponAttributeAdapter::snapshot(WeaponEntity& weapon) {
     auto ready = ensure(weapon);
     if (!ready)
-        return failure<eve::attributes::AttributeProjectionSnapshot>(
-            ready.code(), "weapon attributes are not available", "attributes");
+        return eve::Result<eve::attributes::AttributeProjectionSnapshot>::failure(eve::Status::failure(
+            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attributes are not available",
+                                                 "attributes", {}, "weapon.attributes")));
     const auto names = selectedAttributes();
     return weapon.attributes()->values.snapshot(names);
 }
@@ -183,7 +172,8 @@ eve::Result<void> WeaponAttributeAdapter::restore(WeaponEntity&                 
                                                   const eve::attributes::AttributeProjectionSnapshot& snapshotValue,
                                                   eve::Revision expectedRevision) {
     auto ready = ensure(weapon);
-    if (!ready) return failureVoid(ready.code(), "weapon attributes are not available", "attributes");
+    if (!ready) return eve::Result<void>::failure(
+        eve::Status::failure(ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attributes are not available", "attributes", {}, "weapon.attributes")));
     auto restored = weapon.attributes()->values.restore(snapshotValue, expectedRevision);
     if (!restored) return restored;
     return project(weapon);

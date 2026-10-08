@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EvpackPointGraphLoader.h @brief Runtime binding for compiled PCG assets. */
 
@@ -23,7 +25,7 @@ struct LoadedPointGraph {
 };
 
 /** @brief Capability-aware loader for compiled `eve.pcg-graph/1` execution plans. */
-class EvpackPointGraphLoader {
+class EVENGINE_API_ORCHESTRATION EvpackPointGraphLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */
     explicit EvpackPointGraphLoader(const asset::EvpackResourceReader& reader) noexcept

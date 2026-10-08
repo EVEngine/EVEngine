@@ -12,12 +12,6 @@
 namespace eve::rts {
 namespace {
 
-template <typename T>
-Result<T> invalid(std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message),
-                                                 std::move(path), {}, "rts.content"));
-}
-
 struct StagedDefinition {
     std::string type;
     std::string id;
@@ -87,11 +81,14 @@ Result<void> requireReference(const definitions::DefinitionRegistry& registry,
     if (source == nullptr) return Result<void>::success(Status::success(StatusCode::NoOp));
     const auto* id = source->getIf<std::string>();
     if (id == nullptr)
-        return invalid<void>("RTS content reference must be a string", owner.type + "." + owner.id + "." +
-                                                                            std::string(member));
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS content reference must be a string",
+                              owner.type + "." + owner.id + "." + std::string(member), {}, "rts.content"));
     if (!available(registry, staged, targetType, *id))
-        return invalid<void>("RTS content references an unknown " + std::string(targetType) + " '" + *id + "'",
-                             owner.type + "." + owner.id + "." + std::string(member));
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "RTS content references an unknown " + std::string(targetType) + " '" + *id + "'",
+                              owner.type + "." + owner.id + "." + std::string(member), {}, "rts.content"));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -103,7 +100,9 @@ Result<ContentImportReceipt> RTSContentLoader::load(definitions::DefinitionRegis
     if (!parsed) return Result<ContentImportReceipt>::failure(parsed.status());
     Value root = std::move(parsed).takeValue();
     const auto* object = root.getIf<Value::Object>();
-    if (object == nullptr) return invalid<ContentImportReceipt>("RTS content root must be an object", "root");
+    if (object == nullptr)
+        return Result<ContentImportReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS content root must be an object", "root", {}, "rts.content"));
     static constexpr std::array<std::pair<std::string_view, std::string_view>, 7> arrays{{
         {"weapons", "weapon"}, {"units", "unit"}, {"buildings", "building"}, {"upgrades", "upgrade"},
         {"statusEffects", "effect"}, {"abilities", "ability"}, {"damageMultipliers", "damage_multiplier"},
@@ -115,12 +114,15 @@ Result<ContentImportReceipt> RTSContentLoader::load(definitions::DefinitionRegis
         if (value == nullptr) continue;
         const auto* entries = value->getIf<Value::Array>();
         if (entries == nullptr)
-            return invalid<ContentImportReceipt>("RTS content collection must be an array", std::string(member));
+            return Result<ContentImportReceipt>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "RTS content collection must be an array",
+                                                                           std::string(member), {}, "rts.content"));
         for (std::size_t index = 0; index < entries->size(); ++index) {
             const auto* item = (*entries)[index].getIf<Value::Object>();
             if (item == nullptr)
-                return invalid<ContentImportReceipt>("RTS content item must be an object",
-                                                     std::string(member) + "[" + std::to_string(index) + "]");
+                return Result<ContentImportReceipt>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS content item must be an object",
+                                      std::string(member) + "[" + std::to_string(index) + "]", {}, "rts.content"));
             Value::Object normalized = *item;
             std::string id = text(normalized, "id");
             if (type == "damage_multiplier" && id.empty()) {
@@ -132,11 +134,13 @@ Result<ContentImportReceipt> RTSContentLoader::load(definitions::DefinitionRegis
                 }
             }
             if (id.empty())
-                return invalid<ContentImportReceipt>("RTS content item requires a non-empty id",
-                                                     std::string(member) + "[" + std::to_string(index) + "].id");
+                return Result<ContentImportReceipt>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS content item requires a non-empty id",
+                                      std::string(member) + "[" + std::to_string(index) + "].id", {}, "rts.content"));
             if (!keys.emplace(std::string(type), id).second)
-                return invalid<ContentImportReceipt>("RTS content pack contains a duplicate definition",
-                                                     std::string(type) + ":" + id);
+                return Result<ContentImportReceipt>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "RTS content pack contains a duplicate definition",
+                    std::string(type) + ":" + id, {}, "rts.content"));
             if (type == "weapon") normalizeWeapon(normalized);
             staged.push_back({std::string(type), std::move(id), Value(std::move(normalized))});
         }

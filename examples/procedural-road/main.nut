@@ -10,8 +10,8 @@ persist roadReady = false
 persist roadMaterials = {}
 persist roadPrevKeys = {}
 persist roadSceneName = "straight"
-persist roadSceneList = ["straight", "curve", "bridge", "cross", "t-junction", "y-junction",
-                         "sloped-t", "curve-uphill", "tight-turn", "roundabout", "interchange"]
+persist roadSceneList = ["straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew", "t-junction",
+                         "y-junction", "sloped-t", "curve-uphill", "tight-turn", "roundabout", "interchange"]
 persist roadGalleryMode = false
 persist roadGalleryIndex = 0
 
@@ -78,7 +78,8 @@ function roadCameraForScene(name) {
     } else if (name == "cross") {
         roadCamera.setEye(0.0, 28.0, 18.0);
         roadCamera.setTarget(0.0, 0.3, 0.0);
-    } else if (name == "t-junction" || name == "y-junction") {
+    } else if (name == "tee" || name == "y" || name == "fork" || name == "skew" || name == "t-junction" ||
+               name == "y-junction") {
         roadCamera.setEye(25.0, 27.0, 28.0);
         roadCamera.setTarget(0.0, 0.4, 0.0);
     } else if (name == "sloped-t" || name == "curve-uphill") {
@@ -107,7 +108,8 @@ function roadBuildScene(name) {
     roadRequire(params.setSeed(1), "seed");
     params.setString("scene", name);
     params.setFloat("span", (name == "interchange" || name == "roundabout") ? 48.0 :
-                            (name == "cross" ? 28.0 : 32.0));
+                            (name == "cross" || name == "tee" || name == "y" || name == "fork" || name == "skew" ?
+                                 28.0 : 32.0));
     params.setFloat("bridgeHeight", name == "interchange" ? 8.0 : 6.0);
     params.setInt("lanes", name == "tight-turn" ? 1 : 2);
     local segs = 28;
@@ -231,6 +233,10 @@ function eve_update(dt) {
     if (roadPressed("9")) roadBuildScene("tight-turn");
     if (roadPressed("0")) roadBuildScene("interchange");
     if (roadPressed("r")) roadBuildScene("roundabout");
+    if (roadPressed("t")) roadBuildScene("tee");
+    if (roadPressed("y")) roadBuildScene("y");
+    if (roadPressed("f")) roadBuildScene("fork");
+    if (roadPressed("k")) roadBuildScene("skew");
 
     if (!roadScreenshotSaved && roadFrame > 24) {
         local file = "procedural-road-" + roadSceneName + ".png";

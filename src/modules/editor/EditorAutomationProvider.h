@@ -34,7 +34,8 @@ private:
 
     void refreshProfile();
     std::string commandsJson();
-    EditorResult<void> bindRequestedTarget(const EditorValue::Object& request);
+    std::string        targetList() const;
+    Result<void> bindRequestedTarget(const EditorValue::Object& request);
     std::string createTarget(const EditorValue::Object& request);
     std::string closeTarget(const EditorValue::Object& request);
     std::string startObservation(const EditorValue::Object& request);

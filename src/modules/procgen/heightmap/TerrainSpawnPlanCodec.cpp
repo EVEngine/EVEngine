@@ -14,11 +14,6 @@ constexpr std::size_t kMaximumSnapshotBytes = 128U * 1024U * 1024U;
 constexpr std::uint32_t kMaximumRules = 4096;
 constexpr std::uint32_t kMaximumInstances = 65536;
 
-template <class T>
-Result<T> malformed(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message));
-}
-
 struct Writer {
     std::string bytes;
     template <class T>
@@ -102,7 +97,8 @@ std::string hexEncode(std::string_view bytes) {
 
 Result<std::string> hexDecode(std::string_view text) {
     if ((text.size() & 1U) != 0 || text.size() / 2 > kMaximumSnapshotBytes)
-        return malformed<std::string>("terrain.spawnPlan.restore: invalid payload size");
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.spawnPlan.restore: invalid payload size"));
     auto nibble = [](char c) -> int {
         if (c >= '0' && c <= '9') return c - '0';
         if (c >= 'a' && c <= 'f') return c - 'a' + 10;
@@ -111,7 +107,9 @@ Result<std::string> hexDecode(std::string_view text) {
     std::string result(text.size() / 2, '\0');
     for (std::size_t i = 0; i < result.size(); ++i) {
         const int high = nibble(text[i * 2]), low = nibble(text[i * 2 + 1]);
-        if (high < 0 || low < 0) return malformed<std::string>("terrain.spawnPlan.restore: invalid payload hex");
+        if (high < 0 || low < 0)
+            return Result<std::string>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.spawnPlan.restore: invalid payload hex"));
         result[i] = static_cast<char>((high << 4) | low);
     }
     return Result<std::string>::success(std::move(result));
@@ -342,14 +340,18 @@ bool readRule(Reader& reader, int version, TerrainSpawnRule& output) {
 }  // namespace
 
 Result<std::string> TerrainSpawnPlan::snapshotJson() const {
-    if (rules_.size() > kMaximumRules) return malformed<std::string>("terrain.spawnPlan.snapshot: too many rules");
+    if (rules_.size() > kMaximumRules)
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.spawnPlan.snapshot: too many rules"));
     if (!std::all_of(rules_.begin(), rules_.end(), stringsFit))
-        return malformed<std::string>("terrain.spawnPlan.snapshot: string or instance count exceeds limit");
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain.spawnPlan.snapshot: string or instance count exceeds limit"));
     Writer writer;
     writer.scalar(static_cast<std::uint32_t>(rules_.size()));
     for (const auto& rule : rules_) writeRule(writer, rule);
     if (writer.bytes.size() > kMaximumSnapshotBytes)
-        return malformed<std::string>("terrain.spawnPlan.snapshot: payload exceeds size limit");
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain.spawnPlan.snapshot: payload exceeds size limit"));
     Value::Object root{{"payload", hexEncode(writer.bytes)}, {"schema", "eve.procgen.terrain-spawn-plan"},
                        {"version", 3}};
     return Value(std::move(root)).toJson();
@@ -357,38 +359,46 @@ Result<std::string> TerrainSpawnPlan::snapshotJson() const {
 
 Result<void> TerrainSpawnPlan::restoreJson(const std::string& json) {
     if (json.size() > kMaximumSnapshotBytes * 2 + 1024)
-        return malformed<void>("terrain.spawnPlan.restore: JSON exceeds size limit");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.spawnPlan.restore: JSON exceeds size limit"));
     auto decoded = Value::fromJson(json);
     if (!decoded.ok()) return Result<void>::failure(decoded.status());
     const auto* root = decoded.value().getIf<Value::Object>();
     if (!root || root->size() != 3 || !root->contains("schema") || !root->contains("version") ||
         !root->contains("payload"))
-        return malformed<void>("terrain.spawnPlan.restore: missing or unknown root fields");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "terrain.spawnPlan.restore: missing or unknown root fields"));
     const auto* schema = root->at("schema").getIf<std::string>();
     const auto* version = root->at("version").getIf<std::int64_t>();
     const auto* payload = root->at("payload").getIf<std::string>();
     if (!schema || *schema != "eve.procgen.terrain-spawn-plan" || !version ||
         (*version != 0 && *version != 1 && *version != 2 && *version != 3) ||
         !payload)
-        return malformed<void>("terrain.spawnPlan.restore: unsupported schema or version");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "terrain.spawnPlan.restore: unsupported schema or version"));
     auto bytes = hexDecode(*payload);
     if (!bytes.ok()) return Result<void>::failure(bytes.status());
     Reader reader{bytes.value()};
     std::uint32_t count{};
     if (!reader.scalar(count) || count > kMaximumRules)
-        return malformed<void>("terrain.spawnPlan.restore: invalid rule count");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.spawnPlan.restore: invalid rule count"));
     TerrainSpawnPlan candidate;
     candidate.rules_.reserve(count);
     for (std::uint32_t i = 0; i < count; ++i) {
         TerrainSpawnRule rule;
         if (!readRule(reader, static_cast<int>(*version), rule))
-            return malformed<void>("terrain.spawnPlan.restore: invalid rule payload");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.spawnPlan.restore: invalid rule payload"));
         const auto id = std::visit([](const auto& value) { return value.ruleId; }, rule);
-        if (candidate.contains(id)) return malformed<void>("terrain.spawnPlan.restore: duplicate rule ID");
+        if (candidate.contains(id))
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.spawnPlan.restore: duplicate rule ID"));
         candidate.rules_.push_back(std::move(rule));
     }
     if (reader.offset != reader.bytes.size())
-        return malformed<void>("terrain.spawnPlan.restore: trailing payload data");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.spawnPlan.restore: trailing payload data"));
     rules_.swap(candidate.rules_);
     return Result<void>::success();
 }

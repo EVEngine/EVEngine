@@ -5,7 +5,7 @@ namespace eve::procgen {
 /** @brief Observable lifecycle of a Pcg spawning progress operation. */
 enum class PcgSpawnProgressStatus { Hidden = 0, Active = 1, CancelRequested = 2, Completed = 3 };
 /** @brief Caller-owned, deterministic progress state corresponding to Pcg SpawnProgressBar. @thread Spawning thread only. */
-class PcgSpawnProgress {
+class EVENGINE_API_DOMAINS PcgSpawnProgress {
 public:
     /** @brief Start or advance a spawner rule and reset its fractional progress. */
     [[nodiscard]] Result<PcgSpawnProgressStatus> updateRule(std::string spawnerName, int totalRuleCount,

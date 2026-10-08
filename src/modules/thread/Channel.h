@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <condition_variable>
 #include <memory>
@@ -14,7 +16,7 @@ namespace thread {
  * Values are strings so the API stays overload-free for Squirrel bindings.
  * Exposed to scripts as "ThreadChannel" (network already owns "Channel").
  */
-class Channel {
+class EVENGINE_API_FOUNDATION Channel {
 public:
     Channel();
     explicit Channel(std::string name);

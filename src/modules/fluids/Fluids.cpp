@@ -426,7 +426,7 @@ void Fluids::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Fluids::create, false);
     expose(cls);
     cls.addFunc("fluidRendererSettingsDefaults", [vm = table.getHandle()](Fluids*) {
-        return eve::script::projectStatusResult(vm, eve::Status::success(), true, true,
+        return eve::script::projectStatusResult(vm, eve::Status::success(),
                                                 encodeFluidRendererSettings(FluidRendererSettings{}));
     });
     exposeVolumeFluidType(table);
@@ -588,7 +588,7 @@ void Fluids::expose(ssq::Table& table) {
                      return eve::script::projectResult(vm, renderer->configureRendererSettings(settings.value()));
                  });
     surf.addFunc("rendererSettings", [vm = table.getHandle()](FluidSurfaceRenderer* renderer) {
-        return eve::script::projectStatusResult(vm, eve::Status::success(), true, true,
+        return eve::script::projectStatusResult(vm, eve::Status::success(),
                                                 encodeFluidRendererSettings(renderer->rendererSettings()));
     });
     surf.addFunc("configureSurfaceBlurRadius", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, float radius) {

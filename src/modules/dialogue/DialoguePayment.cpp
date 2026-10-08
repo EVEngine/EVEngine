@@ -10,25 +10,16 @@
 namespace eve::dialogue {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "dialogue.payment"));
-}
-
-eve::Result<void> failureVoid(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "dialogue.payment"));
-}
-
 eve::Result<std::int64_t> positiveInteger(const eve::Value& value, std::string_view path) {
     if (!value.isInt64())
-        return failure<std::int64_t>(eve::DiagnosticCode::InvalidArgument, "dialogue payment amount must be an Int64",
-                                     std::string(path));
+        return eve::Result<std::int64_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "dialogue payment amount must be an Int64",
+                                                                         std::string(path), {}, "dialogue.payment"));
     const std::int64_t amount = value.asInt();
     if (amount <= 0)
-        return failure<std::int64_t>(eve::DiagnosticCode::InvalidArgument, "dialogue payment amount must be positive",
-                                     std::string(path));
+        return eve::Result<std::int64_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "dialogue payment amount must be positive",
+                                                                         std::string(path), {}, "dialogue.payment"));
     return eve::Result<std::int64_t>::success(amount);
 }
 
@@ -56,9 +47,10 @@ eve::Result<std::vector<AccountCost>> buildCosts(const DialogueAccountBindings& 
     for (const auto& item : raw) {
         if (!item.amount) continue;
         if (item.account == nullptr)
-            return failure<std::vector<AccountCost>>(
-                eve::DiagnosticCode::Unsupported,
-                std::string("dialogue ") + item.path + " payment has no account adapter", item.path);
+            return eve::Result<std::vector<AccountCost>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                       std::string("dialogue ") + item.path + " payment has no account adapter",
+                                       item.path, {}, "dialogue.payment"));
         auto costItem = eve::resource::ResourceCost::create(*item.resource, *item.amount);
         if (!costItem) return eve::Result<std::vector<AccountCost>>::failure(costItem.status());
 
@@ -81,25 +73,24 @@ eve::Result<std::vector<AccountCost>> buildCosts(const DialogueAccountBindings& 
     return eve::Result<std::vector<AccountCost>>::success(std::move(result));
 }
 
-eve::Result<void> lifecycleFailure(std::string message) {
-    return failureVoid(eve::DiagnosticCode::Conflict, std::move(message), "transaction.lifecycle");
-}
 
 }  // namespace
 
 eve::Result<void> PaymentSpec::validate() const {
     if (money && *money <= 0)
-        return failureVoid(eve::DiagnosticCode::InvalidArgument, "dialogue money payment must be positive", "money");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue money payment must be positive", "money", {}, "dialogue.payment"));
     if (reputation && *reputation <= 0)
-        return failureVoid(eve::DiagnosticCode::InvalidArgument, "dialogue reputation payment must be positive",
-                           "reputation");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue reputation payment must be positive", "reputation", {}, "dialogue.payment"));
     return eve::Result<void>::success();
 }
 
 eve::Result<PaymentSpec> PaymentSpec::fromValue(const eve::Value& value) {
     if (!value.isObject())
-        return failure<PaymentSpec>(eve::DiagnosticCode::InvalidArgument, "dialogue payment must be an object",
-                                    "payment");
+        return eve::Result<PaymentSpec>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "dialogue payment must be an object", "payment",
+                                                                        {}, "dialogue.payment"));
     PaymentSpec result;
     for (const auto& key : value.keys()) {
         const eve::Value* member = value.find(key);
@@ -112,8 +103,9 @@ eve::Result<PaymentSpec> PaymentSpec::fromValue(const eve::Value& value) {
             if (!amount) return eve::Result<PaymentSpec>::failure(amount.status());
             result.reputation = std::move(amount).takeValue();
         } else {
-            return failure<PaymentSpec>(eve::DiagnosticCode::InvalidArgument, "unknown dialogue payment field",
-                                        "payment." + key);
+            return eve::Result<PaymentSpec>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                            "unknown dialogue payment field",
+                                                                            "payment." + key, {}, "dialogue.payment"));
         }
     }
     return eve::Result<PaymentSpec>::success(std::move(result));
@@ -132,15 +124,17 @@ DialogueStateMutationParticipant::DialogueStateMutationParticipant(eve::IStateMu
 
 eve::Result<void> DialogueStateMutationParticipant::prepare(const eve::transaction::TransactionContext& context) {
     if (context.transactionId().empty())
-        return failureVoid(eve::DiagnosticCode::InvalidArgument, "dialogue state transaction requires a transaction id",
-                           "transactionId");
-    if (phase_ != Phase::Idle) return lifecycleFailure("dialogue state participant is not idle");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue state transaction requires a transaction id", "transactionId", {}, "dialogue.payment"));
+    if (phase_ != Phase::Idle) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue state participant is not idle", "transaction.lifecycle", {}, "dialogue.payment"));
     phase_ = Phase::Prepared;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> DialogueStateMutationParticipant::commit(const eve::transaction::TransactionContext& context) {
-    if (phase_ != Phase::Prepared) return lifecycleFailure("dialogue state participant has no prepared stage");
+    if (phase_ != Phase::Prepared) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue state participant has no prepared stage", "transaction.lifecycle", {}, "dialogue.payment"));
     auto applied = provider_.apply(
         mutations_, eve::MutationContext{context.transactionId(), context.correlationId(), context.causationId()});
     if (!applied) return eve::Result<void>::failure(applied.status());
@@ -151,14 +145,15 @@ eve::Result<void> DialogueStateMutationParticipant::commit(const eve::transactio
 
 eve::Result<void> DialogueStateMutationParticipant::rollback(const eve::transaction::TransactionContext&) {
     if (phase_ != Phase::Prepared)
-        return lifecycleFailure("dialogue state participant has no prepared stage to roll back");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue state participant has no prepared stage to roll back", "transaction.lifecycle", {}, "dialogue.payment"));
     phase_ = Phase::RolledBack;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> DialogueStateMutationParticipant::compensate(const eve::transaction::TransactionContext&) {
-    return failureVoid(eve::DiagnosticCode::Unsupported,
-                       "dialogue state mutation has no generic inverse; it must be last", "transaction.compensation");
+    return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "dialogue state mutation has no generic inverse; it must be last", "transaction.compensation", {}, "dialogue.payment"));
 }
 
 DialoguePaymentAdapter::DialoguePaymentAdapter(DialogueAccountBindings bindings) : bindings_(std::move(bindings)) {}
@@ -169,19 +164,20 @@ eve::Result<eve::transaction::TransactionReceipt> DialoguePaymentAdapter::execut
     std::string transactionId, const PaymentSpec& payment,
     std::span<eve::transaction::ITransactionParticipant*> effects) const {
     if (transactionId.empty())
-        return failure<eve::transaction::TransactionReceipt>(
-            eve::DiagnosticCode::InvalidArgument, "dialogue payment transaction id must not be empty", "transactionId");
+        return eve::Result<eve::transaction::TransactionReceipt>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "dialogue payment transaction id must not be empty", "transactionId",
+            {}, "dialogue.payment"));
 
     for (std::size_t index = 0; index < effects.size(); ++index) {
         if (effects[index] == nullptr)
-            return failure<eve::transaction::TransactionReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                                                 "dialogue payment effect must not be null",
-                                                                 "effects[" + std::to_string(index) + "]");
+            return eve::Result<eve::transaction::TransactionReceipt>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue payment effect must not be null",
+                                       "effects[" + std::to_string(index) + "]", {}, "dialogue.payment"));
         for (std::size_t prior = 0; prior < index; ++prior) {
             if (effects[prior] == effects[index])
-                return failure<eve::transaction::TransactionReceipt>(eve::DiagnosticCode::Conflict,
-                                                                     "dialogue payment effects must be unique",
-                                                                     "effects[" + std::to_string(index) + "]");
+                return eve::Result<eve::transaction::TransactionReceipt>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue payment effects must be unique",
+                                           "effects[" + std::to_string(index) + "]", {}, "dialogue.payment"));
         }
     }
 
@@ -201,8 +197,9 @@ eve::Result<eve::transaction::TransactionReceipt> DialoguePaymentAdapter::execut
     }
     for (auto* effect : effects) participants.push_back(effect);
     if (participants.empty())
-        return failure<eve::transaction::TransactionReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                                             "dialogue payment has no account or effect", "payment");
+        return eve::Result<eve::transaction::TransactionReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue payment has no account or effect",
+                                   "payment", {}, "dialogue.payment"));
 
     eve::transaction::Coordinator coordinator;
     return coordinator.execute(eve::transaction::TransactionContext(std::move(transactionId)), participants);

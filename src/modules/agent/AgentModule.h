@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Module.h"
 
 namespace eve::agent {
@@ -7,7 +9,7 @@ namespace eve::agent {
  * @remarks ModuleManager owns this service. Environment callbacks are rooted only during calls;
  * run/replay reentry is rejected. Returned tables own data and survive module destruction.
  */
-class Agent : public Module {
+class EVENGINE_API_FOUNDATION Agent : public Module {
 public:
     SSQ_REG;
     /** @brief Static module name, independent of registration lifetime. */

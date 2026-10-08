@@ -14,11 +14,6 @@
 namespace eve::tactics {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 /** @brief Whether a cell blocks sight: tagged as a blocker, or not on the board at all. */
 bool blocksSight(const BoardState& board, Cell cell) {
     const auto state = board.cell(cell);
@@ -135,11 +130,14 @@ std::string_view coverLevelName(CoverLevel level) noexcept {
 
 Result<bool> GridLineOfSightPolicy::visible(const BoardState& board, Cell from, Cell to) const {
     if (from.layer != to.layer)
-        return failure<bool>(DiagnosticCode::Unsupported, "line of sight does not cross layers", "from.layer");
+        return Result<bool>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "line of sight does not cross layers", "from.layer"));
     if (!board.contains(from))
-        return failure<bool>(DiagnosticCode::NotFound, "line of sight origin is not on the board", "from");
+        return Result<bool>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "line of sight origin is not on the board", "from"));
     if (!board.contains(to))
-        return failure<bool>(DiagnosticCode::NotFound, "line of sight target is not on the board", "to");
+        return Result<bool>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "line of sight target is not on the board", "to"));
     if (from == to) return Result<bool>::success(true);
 
     bool reverse = false;
@@ -152,11 +150,14 @@ Result<bool> GridLineOfSightPolicy::visible(const BoardState& board, Cell from, 
 
 Result<CoverLevel> GridCoverPolicy::cover(const BoardState& board, Cell attacker, Cell target) const {
     if (attacker.layer != target.layer)
-        return failure<CoverLevel>(DiagnosticCode::Unsupported, "cover does not cross layers", "attacker.layer");
+        return Result<CoverLevel>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "cover does not cross layers", "attacker.layer"));
     if (!board.contains(target))
-        return failure<CoverLevel>(DiagnosticCode::NotFound, "cover target is not on the board", "target");
+        return Result<CoverLevel>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "cover target is not on the board", "target"));
     if (!board.contains(attacker))
-        return failure<CoverLevel>(DiagnosticCode::NotFound, "cover attacker is not on the board", "attacker");
+        return Result<CoverLevel>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "cover attacker is not on the board", "attacker"));
 
     // Full cover first: something sits on the incoming line.
     bool reverse = false;

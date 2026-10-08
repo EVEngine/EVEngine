@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionPreviewController.h @brief Atomic action-preview transport and presentation orchestration. */
 
@@ -16,26 +18,26 @@ namespace eve::editor {
  * The controller borrows services that must outlive it. It invokes no preview
  * host callback while holding a lock and remains owner-thread-only.
  */
-class ActionPreviewController {
+class EVENGINE_API_EDITORS ActionPreviewController {
 public:
     /** @brief Construct with a required presentation sink and optional root-motion provider. */
     ActionPreviewController(ActionTimelineEditor& editor, action::IActionPreviewSink& sink,
                             const action::IActionRootMotionSource* rootMotion = nullptr);
 
     /** @brief Configure root-motion trajectory density in the inclusive range 2..1024. */
-    [[nodiscard]] EditorResult<void> setRootMotionSampleCount(std::uint32_t sampleCount);
+    [[nodiscard]] Result<void> setRootMotionSampleCount(std::uint32_t sampleCount);
     /** @brief Re-present the current cursor without changing transport state. */
-    [[nodiscard]] EditorResult<void> refresh();
+    [[nodiscard]] Result<void> refresh();
     /** @brief Atomically prepare presentation and seek the authoritative preview transport. */
-    [[nodiscard]] EditorResult<void> seek(Duration time);
+    [[nodiscard]] Result<void> seek(Duration time);
     /** @brief Atomically stop presentation, pause transport and return to the first frame. */
-    [[nodiscard]] EditorResult<void> stop();
+    [[nodiscard]] Result<void> stop();
     /** @brief Atomically step signed frames and pause transport at the resulting cursor. */
-    [[nodiscard]] EditorResult<void> stepFrames(std::int64_t frames, double frameRate);
+    [[nodiscard]] Result<void> stepFrames(std::int64_t frames, double frameRate);
     /** @brief Atomically seek to the final frame boundary and pause transport. */
-    [[nodiscard]] EditorResult<void> jumpToEnd();
+    [[nodiscard]] Result<void> jumpToEnd();
     /** @brief Atomically prepare presentation and advance by injected deterministic time. */
-    [[nodiscard]] EditorResult<std::size_t> update(Duration delta);
+    [[nodiscard]] Result<std::size_t> update(Duration delta);
     /** @brief Last frame successfully published to the host. */
     [[nodiscard]] const std::optional<action::ActionPreviewFrame>& lastFrame() const noexcept { return lastFrame_; }
     /** @brief Draw the latest root-motion trajectory into a 3D-capable overlay. */

@@ -19,11 +19,6 @@ const std::string* stringField(const editing::Value& value, const char* key) {
     return entry ? entry->getIf<std::string>() : nullptr;
 }
 
-template <class T>
-editing::Result<T> error(editing::Status status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 editing::SelectionSnapshot selectionFor(editing::IEditableTarget& target, const std::string& item,
                                         const std::string& type) {
     editing::SelectionSnapshot selection;
@@ -54,13 +49,15 @@ editing::Result<editing::CommandPlan> propertySet(editing::IEditableTarget&     
     const auto* path = stringField(request.payload, "path");
     const editing::Value* value = field(request.payload, "value");
     if (!properties || !item || !type || !path || !value)
-        return error<editing::CommandPlan>(editing::Status::Rejected, "avatar.editing.property-payload",
-                                           "Avatar property requires a property target, item, type, path and value");
+        return eve::editing::failed<editing::CommandPlan>(
+            editing::Status::Rejected, editing::RuleId("avatar.editing.property-payload"),
+            "Avatar property requires a property target, item, type, path and value");
     auto operation = properties->makeSet(selectionFor(target, *item, *type), editing::PropertyPath(*path), *value,
                                          editing::PropertySetMode::Absolute);
     if (!operation.ok())
-        return error<editing::CommandPlan>(operation.code(), "avatar.editing.property-operation",
-                                           "Avatar target rejected the property value");
+        return eve::editing::failed<editing::CommandPlan>(operation.code(),
+                                                          editing::RuleId("avatar.editing.property-operation"),
+                                                          "Avatar target rejected the property value");
     editing::CommandPlan plan;
     plan.operations.push_back(std::move(operation.value()));
     plan.summary = editing::Value::Object{{"item", *item}, {"path", *path}};
@@ -74,16 +71,17 @@ editing::Result<editing::CommandPlan> layerCreate(editing::IEditableTarget&     
     const auto* name = stringField(request.payload, "name");
     const auto* texture = stringField(request.payload, "texture");
     if (!avatar || !id || !name || !texture)
-        return error<editing::CommandPlan>(editing::Status::Rejected, "avatar.editing.layer-payload",
-                                           "Avatar layer create requires a document target, id, name and texture");
+        return eve::editing::failed<editing::CommandPlan>(
+            editing::Status::Rejected, editing::RuleId("avatar.editing.layer-payload"),
+            "Avatar layer create requires a document target, id, name and texture");
     AvatarLayerValue layer;
     layer.id           = editing::ObjectId(*id);
     layer.name         = *name;
     layer.textureAsset = *texture;
     auto operation     = avatar->makeCreateLayer(layer);
     if (!operation.ok())
-        return error<editing::CommandPlan>(operation.code(), "avatar.editing.layer-operation",
-                                           "Avatar target rejected the layer");
+        return eve::editing::failed<editing::CommandPlan>(
+            operation.code(), editing::RuleId("avatar.editing.layer-operation"), "Avatar target rejected the layer");
     editing::CommandPlan plan;
     plan.operations.push_back(std::move(operation.value()));
     plan.summary = editing::Value::Object{{"id", *id}, {"name", *name}};
@@ -96,15 +94,17 @@ editing::Result<editing::CommandPlan> parameterCreate(editing::IEditableTarget& 
     const auto* id = stringField(request.payload, "id");
     const auto* name = stringField(request.payload, "name");
     if (!avatar || !id || !name)
-        return error<editing::CommandPlan>(editing::Status::Rejected, "avatar.editing.parameter-payload",
-                                           "Avatar parameter create requires a document target, id and name");
+        return eve::editing::failed<editing::CommandPlan>(
+            editing::Status::Rejected, editing::RuleId("avatar.editing.parameter-payload"),
+            "Avatar parameter create requires a document target, id and name");
     AvatarParameterValue parameter;
     parameter.id   = editing::ObjectId(*id);
     parameter.name = *name;
     auto operation = avatar->makeCreateParameter(parameter);
     if (!operation.ok())
-        return error<editing::CommandPlan>(operation.code(), "avatar.editing.parameter-operation",
-                                           "Avatar target rejected the parameter");
+        return eve::editing::failed<editing::CommandPlan>(operation.code(),
+                                                          editing::RuleId("avatar.editing.parameter-operation"),
+                                                          "Avatar target rejected the parameter");
     editing::CommandPlan plan;
     plan.operations.push_back(std::move(operation.value()));
     plan.summary = editing::Value::Object{{"id", *id}, {"name", *name}};

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Time.h"
 
@@ -31,7 +32,7 @@ class SpineSkeleton;
  * quads for the shared 2D queue. Bind atlas page textures before collecting.
  * Script type: `SpineAnim`.
  */
-class SpineAnim {
+class EVENGINE_API_WORLD SpineAnim {
 public:
     explicit SpineAnim(SpineSkeleton *skeleton);
     ~SpineAnim();

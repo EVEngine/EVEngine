@@ -8,11 +8,6 @@
 
 namespace eve::npc_ai {
 namespace {
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {}, "npc_ai"));
-}
-
 bool compareValues(const BlackboardValue& lhs, CompareOp op, const BlackboardValue& rhs) {
     if (lhs.index() != rhs.index()) return op == CompareOp::NotEqual;
     if (op == CompareOp::Equal) return lhs == rhs;
@@ -52,56 +47,70 @@ NpcAiWorld::NpcAiWorld(NpcAiWorldConfig config) : config_(config) {}
 
 Result<void> NpcAiWorld::validate(const BehaviorDefinition& definition) {
     if (definition.schemaVersion != 1)
-        return failure<void>(DiagnosticCode::Unsupported, "unsupported NPC behavior schema version");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                       "unsupported NPC behavior schema version", {}, {}, "npc_ai"));
     if (definition.id.empty() || definition.initialState.empty())
-        return failure<void>(DiagnosticCode::InvalidArgument, "behavior id and initial state are required");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "behavior id and initial state are required", {}, {}, "npc_ai"));
     std::set<std::string> ids;
     std::set<std::string> schemaKeys;
     for (const auto& key : definition.blackboardSchema) {
         if (key.key.empty() || !schemaKeys.insert(key.key).second)
-            return failure<void>(DiagnosticCode::InvalidArgument,
-                                 "blackboard schema keys must be non-empty and unique");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "blackboard schema keys must be non-empty and unique", {},
+                                                           {}, "npc_ai"));
         if (key.defaultValue && valueType(*key.defaultValue) != key.type)
-            return failure<void>(DiagnosticCode::InvalidArgument,
-                                 "blackboard default value does not match its declared type");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "blackboard default value does not match its declared type",
+                                                           {}, {}, "npc_ai"));
         if (key.required && !key.defaultValue)
-            return failure<void>(DiagnosticCode::InvalidArgument,
-                                 "required blackboard keys need a default for atomic agent creation");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "required blackboard keys need a default for atomic agent creation",
+                {}, {}, "npc_ai"));
     }
     for (const auto& state : definition.states) {
         if (state.id.empty() || !ids.insert(state.id).second)
-            return failure<void>(DiagnosticCode::InvalidArgument, "state ids must be non-empty and unique");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "state ids must be non-empty and unique", {}, {}, "npc_ai"));
         std::set<std::string> taskIds;
         for (const auto& task : state.tasks)
             if (task.id.empty() || task.type.empty() || !taskIds.insert(task.id).second)
-                return failure<void>(DiagnosticCode::InvalidArgument,
-                                     "task ids must be unique per state and task types are required");
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "task ids must be unique per state and task types are required",
+                    {}, {}, "npc_ai"));
     }
     if (!ids.contains(definition.initialState))
-        return failure<void>(DiagnosticCode::NotFound, "initial state does not exist");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "initial state does not exist", {}, {}, "npc_ai"));
     for (const auto& state : definition.states) {
         if (state.parent && (!ids.contains(*state.parent) || *state.parent == state.id))
-            return failure<void>(DiagnosticCode::InvalidArgument, "state parent is missing or self-referential");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "state parent is missing or self-referential", {}, {}, "npc_ai"));
         for (const auto& transition : state.transitions) {
             if (!ids.contains(transition.targetState))
-                return failure<void>(DiagnosticCode::NotFound, "transition target does not exist");
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::NotFound, "transition target does not exist", {}, {}, "npc_ai"));
             if (transition.targetState == state.id && transition.signal.empty())
-                return failure<void>(DiagnosticCode::InvalidArgument,
-                                     "an unconditional self-transition would exhaust the transition budget");
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument,
+                    "an unconditional self-transition would exhaust the transition budget", {}, {}, "npc_ai"));
             for (const auto& predicate : transition.conditions)
                 if (!validPredicate(predicate))
-                    return failure<void>(DiagnosticCode::InvalidArgument, "invalid transition predicate");
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                   "invalid transition predicate", {}, {}, "npc_ai"));
         }
         for (const auto& predicate : state.enterConditions)
             if (!validPredicate(predicate))
-                return failure<void>(DiagnosticCode::InvalidArgument, "invalid enter predicate");
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid enter predicate", {}, {}, "npc_ai"));
     }
     for (const auto& origin : definition.states) {
         std::set<std::string>  chain;
         const StateDefinition* current = &origin;
         while (current->parent) {
             if (!chain.insert(current->id).second)
-                return failure<void>(DiagnosticCode::InvalidArgument, "state parent cycle detected");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                               "state parent cycle detected", {}, {}, "npc_ai"));
             auto it = std::find_if(definition.states.begin(), definition.states.end(),
                                    [&](const auto& s) { return s.id == *current->parent; });
             current = &*it;
@@ -114,8 +123,9 @@ Result<void> NpcAiWorld::registerBehavior(BehaviorDefinition definition) {
     auto checked = validate(definition);
     if (!checked.ok()) return Result<void>::failure(checked.status());
     if (behaviors_.contains(definition.id)) {
-        return failure<void>(DiagnosticCode::AlreadyExists,
-                             "behavior definition already exists; replacement requires an explicit migration");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::AlreadyExists,
+            "behavior definition already exists; replacement requires an explicit migration", {}, {}, "npc_ai"));
     }
     behaviors_.emplace(definition.id, std::move(definition));
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -123,7 +133,8 @@ Result<void> NpcAiWorld::registerBehavior(BehaviorDefinition definition) {
 
 Result<void> NpcAiWorld::registerTaskService(std::string type, std::unique_ptr<ITaskService> service) {
     if (type.empty() || !service)
-        return failure<void>(DiagnosticCode::InvalidArgument, "task service type and owner are required");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "task service type and owner are required", {}, {}, "npc_ai"));
     taskServices_.insert_or_assign(std::move(type), std::move(service));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -131,7 +142,8 @@ Result<void> NpcAiWorld::registerTaskService(std::string type, std::unique_ptr<I
 Result<AgentHandle> NpcAiWorld::createAgent(std::string_view behaviorId) {
     auto behavior = behaviors_.find(std::string(behaviorId));
     if (behavior == behaviors_.end())
-        return failure<AgentHandle>(DiagnosticCode::NotFound, "behavior definition was not registered");
+        return Result<AgentHandle>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "behavior definition was not registered", {}, {}, "npc_ai"));
     std::uint32_t index;
     if (freeSlots_.empty()) {
         index = static_cast<std::uint32_t>(slots_.size());
@@ -148,8 +160,9 @@ Result<AgentHandle> NpcAiWorld::createAgent(std::string_view behaviorId) {
     for (const auto state : activePath(behavior->second, candidate.activeState)) {
         if (!predicatesPass(state.get().enterConditions, candidate)) {
             freeSlots_.push_back(index);
-            return failure<AgentHandle>(DiagnosticCode::PreconditionViolation,
-                                        "initial state path enter conditions are false");
+            return Result<AgentHandle>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                                  "initial state path enter conditions are false", {},
+                                                                  {}, "npc_ai"));
         }
     }
     slots_[index].agent = std::move(candidate);
@@ -160,18 +173,22 @@ Result<AgentHandle> NpcAiWorld::createAgent(std::string_view behaviorId) {
 
 Result<std::reference_wrapper<NpcAiWorld::Agent>> NpcAiWorld::resolve(AgentHandle handle) {
     if (!handle.isValid() || handle.index() >= slots_.size())
-        return failure<std::reference_wrapper<Agent>>(DiagnosticCode::StaleHandle, "NPC agent handle is stale");
+        return Result<std::reference_wrapper<Agent>>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "NPC agent handle is stale", {}, {}, "npc_ai"));
     auto& slot = slots_[handle.index()];
     if (!slot.agent || slot.generation != handle.generation())
-        return failure<std::reference_wrapper<Agent>>(DiagnosticCode::StaleHandle, "NPC agent handle is stale");
+        return Result<std::reference_wrapper<Agent>>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "NPC agent handle is stale", {}, {}, "npc_ai"));
     return Result<std::reference_wrapper<Agent>>::success(std::ref(*slot.agent));
 }
 Result<std::reference_wrapper<const NpcAiWorld::Agent>> NpcAiWorld::resolve(AgentHandle handle) const {
     if (!handle.isValid() || handle.index() >= slots_.size())
-        return failure<std::reference_wrapper<const Agent>>(DiagnosticCode::StaleHandle, "NPC agent handle is stale");
+        return Result<std::reference_wrapper<const Agent>>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "NPC agent handle is stale", {}, {}, "npc_ai"));
     const auto& slot = slots_[handle.index()];
     if (!slot.agent || slot.generation != handle.generation())
-        return failure<std::reference_wrapper<const Agent>>(DiagnosticCode::StaleHandle, "NPC agent handle is stale");
+        return Result<std::reference_wrapper<const Agent>>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "NPC agent handle is stale", {}, {}, "npc_ai"));
     return Result<std::reference_wrapper<const Agent>>::success(std::cref(*slot.agent));
 }
 
@@ -195,7 +212,9 @@ Result<void> NpcAiWorld::destroyAgent(AgentHandle handle) {
 }
 
 Result<void> NpcAiWorld::setBlackboard(AgentHandle handle, std::string key, BlackboardValue value) {
-    if (key.empty()) return failure<void>(DiagnosticCode::InvalidArgument, "blackboard key is required");
+    if (key.empty())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "blackboard key is required", {}, {}, "npc_ai"));
     const std::string traceKey = key;
     auto              resolved = resolve(handle);
     if (!resolved.ok()) return Result<void>::failure(resolved.status());
@@ -204,16 +223,20 @@ Result<void> NpcAiWorld::setBlackboard(AgentHandle handle, std::string key, Blac
     const auto  schema   = std::find_if(behavior.blackboardSchema.begin(), behavior.blackboardSchema.end(),
                                         [&](const auto& item) { return item.key == key; });
     if (!behavior.blackboardSchema.empty() && schema == behavior.blackboardSchema.end())
-        return failure<void>(DiagnosticCode::NotFound, "blackboard key is not declared by the behavior schema");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "blackboard key is not declared by the behavior schema", {}, {}, "npc_ai"));
     if (schema != behavior.blackboardSchema.end() && schema->type != valueType(value))
-        return failure<void>(DiagnosticCode::InvalidArgument, "blackboard value type does not match its schema");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "blackboard value type does not match its schema", {}, {}, "npc_ai"));
     agent.blackboard.insert_or_assign(std::move(key), std::move(value));
     pushTrace({agent.lastTick, handle, TraceKind::BlackboardChanged, traceKey, {}});
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> NpcAiWorld::signal(AgentHandle handle, std::string signalName) {
-    if (signalName.empty()) return failure<void>(DiagnosticCode::InvalidArgument, "signal name is required");
+    if (signalName.empty())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "signal name is required", {}, {}, "npc_ai"));
     auto resolved = resolve(handle);
     if (!resolved.ok()) return Result<void>::failure(resolved.status());
     auto& agent = resolved.value().get();
@@ -225,7 +248,8 @@ Result<void> NpcAiWorld::signal(AgentHandle handle, std::string signalName) {
 Result<void> NpcAiWorld::remember(AgentHandle handle, PerceptionMemory memory) {
     if (memory.subject.empty() || memory.sense.empty() || !std::isfinite(memory.confidence) ||
         memory.confidence < 0.0 || memory.confidence > 1.0 || memory.forgetAfterTicks == 0)
-        return failure<void>(DiagnosticCode::InvalidArgument, "perception memory fields are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "perception memory fields are invalid", {}, {}, "npc_ai"));
     auto resolved = resolve(handle);
     if (!resolved.ok()) return Result<void>::failure(resolved.status());
     auto& agent = resolved.value().get();
@@ -236,7 +260,8 @@ Result<void> NpcAiWorld::remember(AgentHandle handle, PerceptionMemory memory) {
         *found = memory;
     } else {
         if (config_.maxMemoriesPerAgent == 0)
-            return failure<void>(DiagnosticCode::Unsupported, "perception memory is disabled by world configuration");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "perception memory is disabled by world configuration", {}, {}, "npc_ai"));
         if (agent.perception.size() == config_.maxMemoriesPerAgent) {
             auto oldest =
                 std::min_element(agent.perception.begin(), agent.perception.end(), [](const auto& a, const auto& b) {
@@ -259,14 +284,17 @@ Result<void> NpcAiWorld::remember(AgentHandle handle, PerceptionMemory memory) {
 
 Result<void> NpcAiWorld::forget(AgentHandle handle, std::string_view subject, std::string_view sense) {
     if (subject.empty() || sense.empty())
-        return failure<void>(DiagnosticCode::InvalidArgument, "perception subject and sense are required");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "perception subject and sense are required", {}, {}, "npc_ai"));
     auto resolved = resolve(handle);
     if (!resolved.ok()) return Result<void>::failure(resolved.status());
     auto&      agent    = resolved.value().get();
     auto&      memories = agent.perception;
     const auto found = std::find_if(memories.begin(), memories.end(),
                                     [&](const auto& item) { return item.subject == subject && item.sense == sense; });
-    if (found == memories.end()) return failure<void>(DiagnosticCode::NotFound, "perception memory was not found");
+    if (found == memories.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "perception memory was not found", {}, {}, "npc_ai"));
     pushTrace({agent.lastTick, handle, TraceKind::PerceptionForgotten, found->subject, found->sense});
     memories.erase(found);
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -337,7 +365,8 @@ void NpcAiWorld::stopStateTasks(AgentHandle handle, Agent& agent, const StateDef
 
 Result<TickReport> NpcAiWorld::tick(const TickContext& context) {
     if (!std::isfinite(context.deltaSeconds) || context.deltaSeconds < 0.0 || context.maxTransitionsPerAgent == 0)
-        return failure<TickReport>(DiagnosticCode::InvalidArgument, "tick dt and transition budget are invalid");
+        return Result<TickReport>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "tick dt and transition budget are invalid", {}, {}, "npc_ai"));
     TickReport report;
     if (slots_.empty() || context.maxAgents == 0) return Result<TickReport>::success(report);
     std::uint32_t visited = 0;
@@ -351,7 +380,8 @@ Result<TickReport> NpcAiWorld::tick(const TickContext& context) {
         auto&       behavior = behaviors_.at(agent.behaviorId);
         auto        path     = activePath(behavior, agent.activeState);
         if (path.empty())
-            return failure<TickReport>(DiagnosticCode::InvariantViolation, "agent active state is missing");
+            return Result<TickReport>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                 "agent active state is missing", {}, {}, "npc_ai"));
 
         for (auto memory = agent.perception.begin(); memory != agent.perception.end();) {
             const bool expired = context.simulationTick >= memory->observedTick &&
@@ -414,8 +444,8 @@ Result<TickReport> NpcAiWorld::tick(const TickContext& context) {
         for (const auto state : path)
             for (const auto& task : state.get().tasks)
                 if (!taskServices_.contains(task.type))
-                    return failure<TickReport>(DiagnosticCode::NotFound,
-                                               "task service is not registered: " + task.type);
+                    return Result<TickReport>::failure(Diagnostic::error(
+                        DiagnosticCode::NotFound, "task service is not registered: " + task.type, {}, {}, "npc_ai"));
 
         struct StartedTask {
             std::reference_wrapper<const StateDefinition> state;
@@ -523,16 +553,19 @@ Result<AgentArchive> NpcAiWorld::archive(AgentHandle handle) const {
 
 Result<AgentHandle> NpcAiWorld::restoreAgent(const AgentArchive& archive) {
     if (archive.schemaId != AgentArchive::SchemaId || archive.schemaVersion != AgentArchive::SchemaVersion)
-        return failure<AgentHandle>(DiagnosticCode::Unsupported, "unsupported NPC agent archive schema");
+        return Result<AgentHandle>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported NPC agent archive schema", {}, {}, "npc_ai"));
     const auto behaviorIt = behaviors_.find(archive.behaviorId);
     if (behaviorIt == behaviors_.end())
-        return failure<AgentHandle>(DiagnosticCode::NotFound, "archive behavior definition was not registered");
+        return Result<AgentHandle>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "archive behavior definition was not registered", {}, {}, "npc_ai"));
     const auto& behavior = behaviorIt->second;
     if (!findState(behavior, archive.activeState))
-        return failure<AgentHandle>(DiagnosticCode::NotFound, "archive active state does not exist");
+        return Result<AgentHandle>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "archive active state does not exist", {}, {}, "npc_ai"));
     if (archive.perception.size() > config_.maxMemoriesPerAgent)
-        return failure<AgentHandle>(DiagnosticCode::PreconditionViolation,
-                                    "archive exceeds the perception memory budget");
+        return Result<AgentHandle>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "archive exceeds the perception memory budget", {}, {}, "npc_ai"));
 
     Agent candidate;
     candidate.behaviorId  = archive.behaviorId;
@@ -543,38 +576,42 @@ Result<AgentHandle> NpcAiWorld::restoreAgent(const AgentArchive& archive) {
     candidate.lastTick    = archive.lastTick;
     for (const auto& signalName : candidate.signals)
         if (signalName.empty())
-            return failure<AgentHandle>(DiagnosticCode::InvalidArgument, "archive contains an empty signal");
+            return Result<AgentHandle>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "archive contains an empty signal", {}, {}, "npc_ai"));
     std::set<std::pair<std::string, std::string>> memoryKeys;
     for (const auto& memory : candidate.perception) {
         if (memory.subject.empty() || memory.sense.empty() || !std::isfinite(memory.confidence) ||
             memory.confidence < 0.0 || memory.confidence > 1.0 || memory.forgetAfterTicks == 0)
-            return failure<AgentHandle>(DiagnosticCode::InvalidArgument, "archive contains invalid perception memory");
+            return Result<AgentHandle>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "archive contains invalid perception memory", {}, {}, "npc_ai"));
         if (!memoryKeys.emplace(memory.subject, memory.sense).second)
-            return failure<AgentHandle>(DiagnosticCode::InvalidArgument,
-                                        "archive contains duplicate perception memory");
+            return Result<AgentHandle>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "archive contains duplicate perception memory", {}, {}, "npc_ai"));
     }
 
     if (!behavior.blackboardSchema.empty()) {
         if (candidate.blackboard.size() > behavior.blackboardSchema.size())
-            return failure<AgentHandle>(DiagnosticCode::InvalidArgument, "archive contains undeclared blackboard keys");
+            return Result<AgentHandle>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "archive contains undeclared blackboard keys", {}, {}, "npc_ai"));
         for (const auto& [key, value] : candidate.blackboard) {
             const auto spec = std::find_if(behavior.blackboardSchema.begin(), behavior.blackboardSchema.end(),
                                            [&](const auto& item) { return item.key == key; });
             if (spec == behavior.blackboardSchema.end() || spec->type != valueType(value))
-                return failure<AgentHandle>(DiagnosticCode::InvalidArgument,
-                                            "archive blackboard does not match the behavior schema");
+                return Result<AgentHandle>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                      "archive blackboard does not match the behavior schema", {}, {}, "npc_ai"));
         }
         for (const auto& spec : behavior.blackboardSchema)
             if (spec.required && !candidate.blackboard.contains(spec.key))
-                return failure<AgentHandle>(DiagnosticCode::InvalidArgument,
-                                            "archive is missing a required blackboard key");
+                return Result<AgentHandle>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "archive is missing a required blackboard key", {}, {}, "npc_ai"));
     }
 
     const auto path = activePath(behavior, candidate.activeState);
     if (!std::all_of(path.begin(), path.end(),
                      [&](const auto state) { return predicatesPass(state.get().enterConditions, candidate); }))
-        return failure<AgentHandle>(DiagnosticCode::PreconditionViolation,
-                                    "archive active path enter conditions are false");
+        return Result<AgentHandle>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "archive active path enter conditions are false", {}, {}, "npc_ai"));
     std::set<std::string> validTasks;
     for (const auto state : path)
         for (const auto& task : state.get().tasks) validTasks.insert(taskRuntimeKey(state.get().id, task.id));
@@ -582,8 +619,9 @@ Result<AgentHandle> NpcAiWorld::restoreAgent(const AgentArchive& archive) {
     for (const auto& task : archive.tasks) {
         const auto key = taskRuntimeKey(task.stateId, task.taskId);
         if (!validTasks.contains(key) || !archivedTasks.insert(key).second)
-            return failure<AgentHandle>(DiagnosticCode::InvalidArgument,
-                                        "archive task is duplicated or outside the active path");
+            return Result<AgentHandle>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "archive task is duplicated or outside the active path", {}, {}, "npc_ai"));
         candidate.taskRuntime.emplace(key, TaskRuntime{false, task.completed, task.memoryJson});
     }
     std::sort(candidate.perception.begin(), candidate.perception.end(), [](const auto& a, const auto& b) {

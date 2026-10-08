@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioEditingTypes.h"
 
@@ -31,7 +33,7 @@ public:
     virtual void pause() = 0;
     virtual void stop() = 0;
     /** @brief Seek the backend playhead. @return Structured failure when the backend rejects the position. */
-    virtual EditorResult<void> seek(double seconds) = 0;
+    virtual Result<void> seek(double seconds) = 0;
     virtual double tell() const = 0;
     virtual double duration() const = 0;
     virtual bool playing() const = 0;
@@ -39,27 +41,27 @@ public:
 };
 
 /** @brief Revision-safe play/pause/seek/custom-loop state machine for asset audition. */
-class AudioAuditionTransport {
+class EVENGINE_API_BACKENDS AudioAuditionTransport {
 public:
     /** @brief Bind a borrowed backend and stop any previously bound audition. */
-    EditorResult<void> bind(StableId asset, Revision sourceRevision,
+    Result<void> bind(StableId asset, Revision sourceRevision,
                             IAudioTransportBackend* backend);
     /** @brief Configure a bounded loop range; zero end uses the clip duration. */
-    EditorResult<void> setLoop(Revision expectedRevision, bool enabled,
+    Result<void> setLoop(Revision expectedRevision, bool enabled,
                                double startSeconds = 0.0, double endSeconds = 0.0);
-    EditorResult<void> play(Revision expectedRevision);
-    EditorResult<void> pause(Revision expectedRevision);
-    EditorResult<void> stop(Revision expectedRevision);
-    EditorResult<void> seek(Revision expectedRevision, double seconds);
+    Result<void> play(Revision expectedRevision);
+    Result<void> pause(Revision expectedRevision);
+    Result<void> stop(Revision expectedRevision);
+    Result<void> seek(Revision expectedRevision, double seconds);
     /** @brief Poll backend state and wrap the custom loop without changing documents. */
-    EditorResult<AudioTransportSnapshot> update(Revision expectedRevision);
+    Result<AudioTransportSnapshot> update(Revision expectedRevision);
     /** @brief Read the current playhead only for the bound source revision. */
-    EditorResult<AudioTransportSnapshot> snapshot(Revision expectedRevision) const;
+    Result<AudioTransportSnapshot> snapshot(Revision expectedRevision) const;
     /** @brief Stop and forget the borrowed backend. */
     void unbind();
 
 private:
-    EditorResult<void> validateRevision(Revision expectedRevision) const;
+    Result<void> validateRevision(Revision expectedRevision) const;
     AudioTransportSnapshot observe() const;
     StableId asset_;
     Revision revision_ = 0;
@@ -71,13 +73,13 @@ private:
 };
 
 /** @brief Non-owning transport backend for a live OpenAL-backed audio Source. */
-class AudioSourceTransportBackend final : public IAudioTransportBackend {
+class EVENGINE_API_BACKENDS AudioSourceTransportBackend final : public IAudioTransportBackend {
 public:
     explicit AudioSourceTransportBackend(audio::Source* source) : source_(source) {}
     void play() override;
     void pause() override;
     void stop() override;
-    EditorResult<void> seek(double seconds) override;
+    Result<void> seek(double seconds) override;
     double tell() const override;
     double duration() const override;
     bool playing() const override;

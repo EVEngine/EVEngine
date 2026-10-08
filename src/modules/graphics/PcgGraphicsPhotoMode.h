@@ -1,11 +1,13 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/PcgPhotoModeApply.h"
 namespace eve::graphics {
 class Graphics;class RenderControl;class Camera3D;
 /** @brief Pcg graphics quality values retained by the active render composition. */
 struct PcgGraphicsPhotoModeState{float lodBias=2.f;int64_t antiAliasing=1;float shadowDistance=512.f;int64_t shadowResolution=3;int64_t shadowCascades=4;float globalShadowDistanceMultiplier=1.f;};
 /** @brief Explicit owner that projects Pcg graphics fields into the live render pipeline. */
-class PcgGraphicsPhotoModeAuthority final:public IPhotoModeFieldSink{
+class EVENGINE_API_BACKENDS PcgGraphicsPhotoModeAuthority final : public IPhotoModeFieldSink {
 public:
  ~PcgGraphicsPhotoModeAuthority()override;
  /** @brief Bind borrowed owner-thread render targets; none are retained past this authority's lifetime. */

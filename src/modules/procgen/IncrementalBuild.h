@@ -18,7 +18,7 @@ struct BuildClusterChange {
 };
 
 /** @brief Ordered changes required to synchronize a scene-side cluster cache. */
-class IncrementalBuildDelta {
+class EVENGINE_API_DOMAINS IncrementalBuildDelta {
 public:
     [[nodiscard]] int  getCount() const noexcept;
     [[nodiscard]] int  getClusterX(int index) const noexcept;
@@ -39,7 +39,7 @@ private:
  * world-space cluster. Updates are transactional and preserve the old cache on failure.
  * @thread Affine; update and query on the owning thread.
  */
-class IncrementalBuildExecutor {
+class EVENGINE_API_DOMAINS IncrementalBuildExecutor {
 public:
     /**
      * @brief Rebuild only clusters whose layer definition, grid halo, point rows or orientation changed.

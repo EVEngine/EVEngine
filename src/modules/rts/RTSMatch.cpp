@@ -9,11 +9,6 @@
 namespace eve::rts {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "rts.match"));
-}
-
 void emit(Match& match, std::string kind, Faction* faction, int team, std::string reason = {}) {
     auto state = match.state();
     match.events()->values.push_back({++state->updateSequence, std::move(kind),
@@ -97,9 +92,11 @@ void settleTeams(Match& match) {
 
 Result<void> MatchSystem::addParticipant(Match& match, Faction& faction, int team) {
     if (match.state()->phase != MatchPhase::Setup)
-        return failure<void>(DiagnosticCode::Conflict, "cannot add an RTS participant after match start", "match");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "cannot add an RTS participant after match start", "match", {}, "rts.match"));
     if (participant(match, faction) != nullptr)
-        return failure<void>(DiagnosticCode::Conflict, "RTS faction is already a participant", "faction");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "RTS faction is already a participant",
+                                                       "faction", {}, "rts.match"));
     auto link = FactionLink::bind(ecs::handle_of(&faction));
     if (!link) return Result<void>::failure(link.status());
     match.participants()->entries.push_back({std::move(link).takeValue(), team, false, false, {}});
@@ -108,19 +105,24 @@ Result<void> MatchSystem::addParticipant(Match& match, Faction& faction, int tea
 
 Result<void> MatchSystem::start(Match& match) {
     if (match.state()->phase != MatchPhase::Setup)
-        return failure<void>(DiagnosticCode::Conflict, "RTS match is not in setup", "match.phase");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "RTS match is not in setup", "match.phase", {}, "rts.match"));
     if (match.participants()->entries.size() < 2)
-        return failure<void>(DiagnosticCode::PreconditionViolation, "RTS match requires at least two factions",
-                             "participants");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "RTS match requires at least two factions", "participants", {},
+                                                       "rts.match"));
     for (const auto& entry : match.participants()->entries)
         if (entry.faction.resolve() == nullptr)
-            return failure<void>(DiagnosticCode::StaleHandle, "RTS match contains a stale faction", "participants");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::StaleHandle, "RTS match contains a stale faction", "participants", {}, "rts.match"));
     const auto& rules = *match.rules();
     if (rules.rule == VictoryRule::DestroyHeadquarters && rules.archetype.empty())
-        return failure<void>(DiagnosticCode::InvalidArgument, "headquarters victory requires an archetype", "rules");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "headquarters victory requires an archetype", "rules", {}, "rts.match"));
     if (rules.rule == VictoryRule::ResourceTarget &&
         (rules.archetype.empty() || rules.targetValue <= 0.0 || !std::isfinite(rules.targetValue)))
-        return failure<void>(DiagnosticCode::InvalidArgument, "resource victory requires a positive target", "rules");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "resource victory requires a positive target", "rules", {}, "rts.match"));
     match.state()->phase = MatchPhase::Running;
     match.state()->winningTeam = -1;
     emit(match, "match_started", nullptr, -1);
@@ -129,10 +131,12 @@ Result<void> MatchSystem::start(Match& match) {
 
 Result<void> MatchSystem::surrender(Match& match, Faction& faction) {
     if (match.state()->phase != MatchPhase::Running)
-        return failure<void>(DiagnosticCode::Conflict, "RTS match is not running", "match.phase");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "RTS match is not running", "match.phase", {}, "rts.match"));
     auto* entry = participant(match, faction);
     if (entry == nullptr || entry->eliminated)
-        return failure<void>(DiagnosticCode::NotFound, "RTS faction is not an active participant", "faction");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "RTS faction is not an active participant", "faction", {}, "rts.match"));
     destroyFactionEntities(faction);
     eliminate(match, *entry, "surrender", true);
     settleTeams(match);
@@ -145,8 +149,9 @@ Result<std::size_t> MatchSystem::step(Match& match, const MatchResourceQuery& re
     std::size_t eliminated = 0;
     if (match.rules()->rule == VictoryRule::ResourceTarget) {
         if (!resources)
-            return failure<std::size_t>(DiagnosticCode::PreconditionViolation,
-                                        "resource victory requires an authoritative economy query", "resources");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::PreconditionViolation, "resource victory requires an authoritative economy query",
+                "resources", {}, "rts.match"));
         for (auto& entry : match.participants()->entries) {
             if (entry.eliminated) continue;
             auto* faction = dynamic_cast<Faction*>(entry.faction.resolve());

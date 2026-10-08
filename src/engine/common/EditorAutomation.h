@@ -13,7 +13,7 @@ namespace eve {
  * Implementations must return a JSON object for every operation, including
  * rejected requests.
  */
-class EVENGINE_API IEditorAutomation {
+class EVENGINE_API_FOUNDATION_INLINE IEditorAutomation {
 public:
     static constexpr const char* capabilityName = "IEditorAutomation";
     virtual ~IEditorAutomation()                = default;

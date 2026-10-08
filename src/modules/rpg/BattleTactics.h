@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file BattleTactics.h @brief Strict ordered battle-action policies for companions and AI. */
 
@@ -27,7 +29,7 @@ struct BattleTacticsDefinition {
 };
 
 /** @brief Process-local strict catalogue that selects and queues companion/AI actions. */
-class BattleTacticsCatalogue {
+class EVENGINE_API_PLATFORM BattleTacticsCatalogue {
 public:
     /**
      * @brief Validate and atomically replace all tactic definitions.

@@ -1147,6 +1147,125 @@ Result<RoadNetwork> RoadNetwork::makeCross(float span, int lanes) {
     return Result<RoadNetwork>::success(std::move(network));
 }
 
+Result<RoadNetwork> RoadNetwork::makeTee(float span, int lanes) {
+    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
+        return Result<RoadNetwork>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "tee"));
+    RoadNetwork network;
+    const float half = span * 0.5f;
+    RoadStyle  style = groundStyle();
+    style.deckThickness = 0.08f;
+    style.sidewalkWidth = 1.2f;
+    style.curbWidth     = 0.35f;
+    style.curbHeight    = 0.45f;
+    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanes);
+    const float jr          = asphaltHalf + 2.8f;
+    auto        center      = network.addNode(0.f, 0.f, 0.f, jr);
+    auto        south       = network.addNode(0.f, 0.f, half, 2.f);
+    auto        west        = network.addNode(-half, 0.f, 0.f, 2.f);
+    auto        east        = network.addNode(half, 0.f, 0.f, 2.f);
+    for (auto* node : {&center, &south, &west, &east})
+        if (!node->ok()) return Result<RoadNetwork>::failure(node->status());
+    auto westEdge = network.addEdge(west.value(), center.value(),
+                                    {P(-half, 0.f, 0.f), P(-half * 0.5f, 0.f, 0.f), P(0.f, 0.f, 0.f)}, lanes, 0,
+                                    style);
+    auto eastEdge = network.addEdge(center.value(), east.value(),
+                                    {P(0.f, 0.f, 0.f), P(half * 0.5f, 0.f, 0.f), P(half, 0.f, 0.f)}, lanes, 0,
+                                    style);
+    auto southEdge = network.addEdge(center.value(), south.value(),
+                                     {P(0.f, 0.f, 0.f), P(0.f, 0.f, half * 0.5f), P(0.f, 0.f, half)}, lanes, 0,
+                                     style);
+    for (auto* edge : {&westEdge, &eastEdge, &southEdge})
+        if (!edge->ok()) return Result<RoadNetwork>::failure(edge->status());
+    auto turns = network.connectAllTurns(center.value());
+    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
+    return Result<RoadNetwork>::success(std::move(network));
+}
+
+Result<RoadNetwork> RoadNetwork::makeY(float span, int lanes) {
+    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
+        return Result<RoadNetwork>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "y"));
+    return makeFan(span, lanes, {270.f, 30.f, 150.f}, {true, false, false});
+}
+
+Result<RoadNetwork> RoadNetwork::makeFan(float span, int lanes, std::vector<float> armAnglesDeg,
+                                         std::vector<bool> intoHub) {
+    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
+        return Result<RoadNetwork>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "fan"));
+    if (armAnglesDeg.size() < 2u)
+        return Result<RoadNetwork>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "fan needs at least two arm angles", "fan"));
+    if (!intoHub.empty() && intoHub.size() != armAnglesDeg.size())
+        return Result<RoadNetwork>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "intoHub size must match armAnglesDeg", "fan"));
+
+    struct ArmSpec {
+        float degrees = 0.f;
+        bool  intoHub = true;
+    };
+    std::vector<ArmSpec> specs;
+    specs.reserve(armAnglesDeg.size());
+    for (std::size_t index = 0; index < armAnglesDeg.size(); ++index) {
+        if (!std::isfinite(armAnglesDeg[index]))
+            return Result<RoadNetwork>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "arm angles must be finite", "fan"));
+        float degrees = std::fmod(armAnglesDeg[index], 360.f);
+        if (degrees < 0.f) degrees += 360.f;
+        specs.push_back({degrees, intoHub.empty() || intoHub[index]});
+    }
+    std::sort(specs.begin(), specs.end(),
+              [](const ArmSpec& first, const ArmSpec& second) { return first.degrees < second.degrees; });
+    if (intoHub.empty())
+        for (std::size_t index = 0; index < specs.size(); ++index) specs[index].intoHub = index % 2u == 0u;
+    std::vector<ArmSpec> unique;
+    unique.reserve(specs.size());
+    for (const auto& spec : specs)
+        if (unique.empty() || std::fabs(spec.degrees - unique.back().degrees) > 1.f) unique.push_back(spec);
+    if (unique.size() >= 2u && std::fabs(unique.front().degrees + 360.f - unique.back().degrees) <= 1.f)
+        unique.pop_back();
+    if (unique.size() < 2u)
+        return Result<RoadNetwork>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "fan needs at least two distinct arm angles", "fan"));
+
+    RoadNetwork network;
+    const float half = span * 0.5f;
+    RoadStyle  style = groundStyle();
+    style.deckThickness = 0.08f;
+    style.sidewalkWidth = 1.2f;
+    style.curbWidth     = 0.35f;
+    style.curbHeight    = 0.45f;
+    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanes);
+    auto        center      = network.addNode(0.f, 0.f, 0.f, asphaltHalf + 2.8f);
+    if (!center.ok()) return Result<RoadNetwork>::failure(center.status());
+    for (const auto& spec : unique) {
+        const float radians = spec.degrees * 0.01745329252f;
+        const float x = half * std::cos(radians), z = half * std::sin(radians);
+        auto leaf = network.addNode(x, 0.f, z, 2.f);
+        if (!leaf.ok()) return Result<RoadNetwork>::failure(leaf.status());
+        auto edge = spec.intoHub
+                        ? network.addEdge(leaf.value(), center.value(),
+                                          {P(x, 0.f, z), P(x * 0.5f, 0.f, z * 0.5f), P(0.f, 0.f, 0.f)}, lanes, 0,
+                                          style)
+                        : network.addEdge(center.value(), leaf.value(),
+                                          {P(0.f, 0.f, 0.f), P(x * 0.5f, 0.f, z * 0.5f), P(x, 0.f, z)}, lanes, 0,
+                                          style);
+        if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
+    }
+    auto turns = network.connectAllTurns(center.value());
+    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
+    return Result<RoadNetwork>::success(std::move(network));
+}
+
+Result<RoadNetwork> RoadNetwork::makeFork(float span, int lanes) {
+    return makeFan(span, lanes, {60.f, 120.f, 270.f});
+}
+
+Result<RoadNetwork> RoadNetwork::makeSkew(float span, int lanes) {
+    return makeFan(span, lanes, {0.f, 135.f, 270.f});
+}
+
 Result<RoadNetwork> RoadNetwork::makeRoundabout(float span, int lanes) {
     if (!std::isfinite(span) || span < 32.f || lanes < 1 || lanes > 3)
         return Result<RoadNetwork>::failure(Diagnostic::error(
@@ -1213,6 +1332,10 @@ Result<RoadNetwork> RoadNetwork::makeScene(const std::string& scene, float span,
     if (scene == "curve") return makeCurve(std::max(8.f, span * 0.5f), lanes);
     if (scene == "bridge") return makeBridge(span, bridgeHeight, lanes);
     if (scene == "cross") return makeCross(span, lanes);
+    if (scene == "tee" || scene == "t") return makeTee(span, lanes);
+    if (scene == "y") return makeY(span, lanes);
+    if (scene == "fork") return makeFork(span, lanes);
+    if (scene == "skew") return makeSkew(span, lanes);
     if (scene == "t-junction" || scene == "y-junction") return makeThreeArmScene(scene, lanes);
     if (scene == "sloped-t") return makeSlopedJunctionScene(lanes, false);
     if (scene == "curve-uphill") return makeSlopedJunctionScene(lanes, true);
@@ -1221,7 +1344,7 @@ Result<RoadNetwork> RoadNetwork::makeScene(const std::string& scene, float span,
     if (scene == "interchange" || scene.empty()) return makeInterchange(span, bridgeHeight, lanes, seed);
     return Result<RoadNetwork>::failure(Diagnostic::error(
         DiagnosticCode::InvalidArgument,
-        "scene must be straight|curve|bridge|cross|t-junction|y-junction|sloped-t|curve-uphill|tight-turn|roundabout|interchange",
+        "scene must be straight|curve|bridge|cross|tee|t|y|fork|skew|t-junction|y-junction|sloped-t|curve-uphill|tight-turn|roundabout|interchange",
         "scene"));
 }
 

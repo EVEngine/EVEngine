@@ -7,12 +7,7 @@
 #include <string_view>
 
 namespace eve::procgen {
-namespace {
-template <class T>
-Result<T> invalid(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "procgen.gtsTerrainLod"));
-}
-}  // namespace
+namespace {}  // namespace
 
 Result<void> buildGtsTerrainBaseMesh(MeshBuild& output, const Heightmap& heightmap, GtsTerrainSaveResolution resolution,
                                      float sizeX, float sizeY, float sizeZ) {
@@ -20,19 +15,29 @@ Result<void> buildGtsTerrainBaseMesh(MeshBuild& output, const Heightmap& heightm
     const int sourceWidth = heightmap.getWidth(), sourceHeight = heightmap.getHeight();
     if (exponent < 0 || exponent > 4 || sourceWidth < 2 || sourceHeight < 2 || !std::isfinite(sizeX) || sizeX <= 0.f ||
         !std::isfinite(sizeY) || sizeY <= 0.f || !std::isfinite(sizeZ) || sizeZ <= 0.f)
-        return invalid<void>("GTS terrain heightmap or export dimensions are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain heightmap or export dimensions are invalid",
+                                                       "procgen.gtsTerrainLod"));
     const int step = 1 << exponent;
     if ((sourceWidth - 1) % step != 0 || (sourceHeight - 1) % step != 0)
-        return invalid<void>("GTS terrain heightmap intervals must be divisible by the save-resolution stride");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "GTS terrain heightmap intervals must be divisible by the save-resolution stride",
+                              "procgen.gtsTerrainLod"));
     const int           columns = (sourceWidth - 1) / step + 1, rows = (sourceHeight - 1) / step + 1;
     const std::uint64_t vertexCount = std::uint64_t(columns) * std::uint64_t(rows);
     const std::uint64_t indexCount  = std::uint64_t(columns - 1) * std::uint64_t(rows - 1) * 6u;
     if (vertexCount > 8u * 1024u * 1024u || indexCount > 48u * 1024u * 1024u ||
         vertexCount > std::uint64_t(std::numeric_limits<int>::max()) ||
         indexCount > std::uint64_t(std::numeric_limits<int>::max()))
-        return invalid<void>("GTS terrain base mesh exceeds the native export budget");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain base mesh exceeds the native export budget",
+                                                       "procgen.gtsTerrainLod"));
     for (float value : heightmap.data())
-        if (!std::isfinite(value)) return invalid<void>("GTS terrain heightmap contains a non-finite sample");
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS terrain heightmap contains a non-finite sample",
+                                                           "procgen.gtsTerrainLod"));
     MeshBuild candidate;
     candidate.reserve(static_cast<int>(vertexCount), static_cast<int>(indexCount));
     candidate.setActiveGroup("terrain");
@@ -70,7 +75,9 @@ Result<void> buildGtsTerrainBaseMesh(MeshBuild& output, const Heightmap& heightm
         const float length =
             std::sqrt(normals[i] * normals[i] + normals[i + 1] * normals[i + 1] + normals[i + 2] * normals[i + 2]);
         if (!(length > 0.f) || !std::isfinite(length))
-            return invalid<void>("GTS terrain base mesh contains a degenerate vertex normal");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS terrain base mesh contains a degenerate vertex normal",
+                                                           "procgen.gtsTerrainLod"));
         normals[i] /= length;
         normals[i + 1] /= length;
         normals[i + 2] /= length;
@@ -92,17 +99,26 @@ const GtsTerrainLodLevelSettings* GtsTerrainLodSet::levelAt(int index) const {
 }
 
 Result<void> GtsTerrainMeshSettings::setSaveResolution(int value) {
-    if (value < 0 || value > 4) return invalid<void>("GTS save resolution must be in the range 0 through 4");
+    if (value < 0 || value > 4)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS save resolution must be in the range 0 through 4",
+                                                       "procgen.gtsTerrainLod"));
     saveResolution_ = value;
     return Result<void>::success();
 }
 Result<void> GtsTerrainMeshSettings::setLodCount(int value) {
-    if (value < 1 || value > 4) return invalid<void>("GTS LOD count must be in the range 1 through 4");
+    if (value < 1 || value > 4)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS LOD count must be in the range 1 through 4",
+                                                       "procgen.gtsTerrainLod"));
     lodCount_ = value;
     return Result<void>::success();
 }
 Result<void> GtsTerrainMeshSettings::setSubTiles(int value) {
-    if (value < 0 || value > 5) return invalid<void>("GTS sub-tile split count must be in the range 0 through 5");
+    if (value < 0 || value > 5)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS sub-tile split count must be in the range 0 through 5",
+                                                       "procgen.gtsTerrainLod"));
     subTiles_ = value;
     return Result<void>::success();
 }
@@ -111,7 +127,10 @@ float GtsTerrainMeshSettings::getLodQuality(int index) const noexcept {
 }
 Result<void> GtsTerrainMeshSettings::setLodQuality(int index, float percent) {
     if (index < 0 || index >= 4 || !std::isfinite(percent) || percent < 0.f || percent > 100.f)
-        return invalid<void>("GTS LOD quality requires a slot from 0 through 3 and percentage from 0 through 100");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "GTS LOD quality requires a slot from 0 through 3 and percentage from 0 through 100",
+                              "procgen.gtsTerrainLod"));
     lodQuality_[index] = percent;
     return Result<void>::success();
 }
@@ -182,8 +201,9 @@ Result<std::vector<GtsTerrainLodAssetEntry>> planGtsTerrainLodAssets(const GtsTe
         return folder || v.find('/') == std::string::npos;
     };
     if (!safe(terrainName, false) || !safe(meshFolder, true) || meshFolder.front() == '/' || meshFolder.back() == '/')
-        return invalid<std::vector<GtsTerrainLodAssetEntry>>(
-            "terrain name or mesh folder is not a safe relative export name");
+        return Result<std::vector<GtsTerrainLodAssetEntry>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain name or mesh folder is not a safe relative export name",
+            "procgen.gtsTerrainLod"));
     std::vector<GtsTerrainLodAssetEntry> entries;
     for (int tileIndex = 0; tileIndex < lods.getTileCount(); ++tileIndex) {
         auto* tile = lods.tileAt(tileIndex);
@@ -229,13 +249,17 @@ Result<void> planGtsTerrainLodAssetsInto(GtsTerrainLodAssetPlan& output, const G
 
 Result<GtsTerrainLodSet> buildGtsTerrainLods(const MeshBuild& source, int xSplits, int zSplits, GtsMeshPivot pivot,
                                              const std::vector<GtsTerrainLodLevelSettings>& levels) {
-    if (levels.empty()) return invalid<GtsTerrainLodSet>("at least one terrain LOD level is required");
+    if (levels.empty())
+        return Result<GtsTerrainLodSet>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "at least one terrain LOD level is required", "procgen.gtsTerrainLod"));
     float previousTransition = 1.0f;
     for (const auto& level : levels) {
         if (!std::isfinite(level.quality) || level.quality < 0.0f || level.quality > 1.0f ||
             !std::isfinite(level.screenRelativeTransitionHeight) || level.screenRelativeTransitionHeight < 0.0f ||
             level.screenRelativeTransitionHeight > 1.0f || level.screenRelativeTransitionHeight >= previousTransition) {
-            return invalid<GtsTerrainLodSet>("LOD quality or transition sequence is invalid");
+            return Result<GtsTerrainLodSet>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                       "LOD quality or transition sequence is invalid",
+                                                                       "procgen.gtsTerrainLod"));
         }
         previousTransition = level.screenRelativeTransitionHeight;
     }
@@ -276,7 +300,9 @@ Result<GtsTerrainLodSet> buildGtsTerrainLodsFromHeightmap(const Heightmap&      
                                                           float sizeZ, int subTileSplits, GtsMeshPivot pivot,
                                                           const std::vector<GtsTerrainLodLevelSettings>& levels) {
     if (subTileSplits < 0 || subTileSplits > 5)
-        return invalid<GtsTerrainLodSet>("GTS sub-tile split count must be in the profile range 0 through 5");
+        return Result<GtsTerrainLodSet>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "GTS sub-tile split count must be in the profile range 0 through 5",
+            "procgen.gtsTerrainLod"));
     MeshBuild base;
     auto      built = buildGtsTerrainBaseMesh(base, heightmap, resolution, sizeX, sizeY, sizeZ);
     if (!built) return Result<GtsTerrainLodSet>::failure(*built.error());

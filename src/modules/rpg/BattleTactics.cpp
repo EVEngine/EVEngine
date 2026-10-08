@@ -17,12 +17,6 @@ std::unordered_map<std::string, BattleTacticsDefinition> &definitions() {
     return value;
 }
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path), {}, "rpg.battle-tactics"));
-}
-
 bool validId(const std::string &value, bool allowEmpty = false) {
     if (value.empty()) return allowEmpty;
     if (value.size() > 256) return false;
@@ -53,12 +47,14 @@ eve::Result<int> BattleTacticsCatalogue::replaceFromJsonStrict(const std::string
     std::string parseError;
     const auto document = eve::json::Document::parse(json, &parseError);
     if (!document.valid())
-        return failure<int>(eve::DiagnosticCode::ParseError,
-                            parseError.empty() ? "invalid JSON" : parseError, "$");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                parseError.empty() ? "invalid JSON" : parseError, "$",
+                                                                {}, "rpg.battle-tactics"));
     const auto root = document.root();
     if (!root.isArray() || root.size() == 0)
-        return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                            "battle tactics catalogue must be a non-empty array", "$");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "battle tactics catalogue must be a non-empty array",
+                                                                "$", {}, "rpg.battle-tactics"));
     const std::unordered_set<std::string> definitionFields = {"id", "rules"};
     const std::unordered_set<std::string> ruleFields = {
         "skillId", "targetPolicy", "conditionResource", "belowRatio"};
@@ -67,63 +63,73 @@ eve::Result<int> BattleTacticsCatalogue::replaceFromJsonStrict(const std::string
         const auto object = root.at(index);
         const std::string path = "$[" + std::to_string(index) + "]";
         if (!object.isObject())
-            return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                "battle tactics definition must be an object", path);
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "battle tactics definition must be an object", path,
+                                                                    {}, "rpg.battle-tactics"));
         for (const auto &key : object.keys())
             if (!definitionFields.contains(key))
-                return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                    "battle tactics definition contains an unknown field", path + "." + key);
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "battle tactics definition contains an unknown field",
+                    path + "." + key, {}, "rpg.battle-tactics"));
         const auto id = object.get("id");
         const auto rules = object.get("rules");
         if (!id.isString() || !validId(id.asString()))
-            return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                "battle tactics id must be a stable non-empty id", path + ".id");
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "battle tactics id must be a stable non-empty id",
+                                                                    path + ".id", {}, "rpg.battle-tactics"));
         if (proposed.contains(id.asString()))
-            return failure<int>(eve::DiagnosticCode::AlreadyExists,
-                                "duplicate battle tactics id", path + ".id");
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists,
+                                                                    "duplicate battle tactics id", path + ".id", {},
+                                                                    "rpg.battle-tactics"));
         if (!rules.isArray() || rules.size() == 0 || rules.size() > 16)
-            return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                "rules must contain between 1 and 16 entries", path + ".rules");
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "rules must contain between 1 and 16 entries",
+                                                                    path + ".rules", {}, "rpg.battle-tactics"));
         BattleTacticsDefinition definition;
         definition.id = id.asString();
         for (std::size_t ruleIndex = 0; ruleIndex < rules.size(); ++ruleIndex) {
             const auto rule = rules.at(ruleIndex);
             const std::string rulePath = path + ".rules[" + std::to_string(ruleIndex) + "]";
             if (!rule.isObject())
-                return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                    "battle tactic rule must be an object", rulePath);
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "battle tactic rule must be an object",
+                                                                        rulePath, {}, "rpg.battle-tactics"));
             for (const auto &key : rule.keys())
                 if (!ruleFields.contains(key))
-                    return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                        "battle tactic rule contains an unknown field", rulePath + "." + key);
+                    return eve::Result<int>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "battle tactic rule contains an unknown field",
+                        rulePath + "." + key, {}, "rpg.battle-tactics"));
             const auto skillId = rule.get("skillId");
             const auto targetPolicy = rule.get("targetPolicy");
             const auto conditionResource = rule.get("conditionResource");
             const auto belowRatio = rule.get("belowRatio");
             if (!skillId.isString() || !validId(skillId.asString(), true) ||
                 (!skillId.asString().empty() && !SkillRegistry::find(skillId.asString())))
-                return failure<int>(eve::DiagnosticCode::NotFound,
-                                    "skillId must be empty or reference a registered skill",
-                                    rulePath + ".skillId");
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::NotFound, "skillId must be empty or reference a registered skill",
+                    rulePath + ".skillId", {}, "rpg.battle-tactics"));
             BattleTargetPolicy parsedPolicy = BattleTargetPolicy::Auto;
             if (!targetPolicy.isString() || !parsePolicy(targetPolicy.asString(), parsedPolicy))
-                return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                    "targetPolicy is invalid", rulePath + ".targetPolicy");
+                return eve::Result<int>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "targetPolicy is invalid",
+                                           rulePath + ".targetPolicy", {}, "rpg.battle-tactics"));
             const std::string targetType = skillId.asString().empty()
                                                ? "enemySingle"
                                                : SkillRegistry::find(skillId.asString())->targetType;
             if (!policyMatchesTargetType(parsedPolicy, targetType))
-                return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                    "targetPolicy does not match the skill target type",
-                                    rulePath + ".targetPolicy");
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "targetPolicy does not match the skill target type",
+                    rulePath + ".targetPolicy", {}, "rpg.battle-tactics"));
             if (!conditionResource.isString() || !validId(conditionResource.asString(), true) ||
                 !belowRatio.isNumber() || !std::isfinite(belowRatio.asDouble()) ||
                 belowRatio.asDouble() < 0.0 || belowRatio.asDouble() > 1.0)
-                return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                    "conditionResource and belowRatio are invalid", rulePath);
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "conditionResource and belowRatio are invalid",
+                                                                        rulePath, {}, "rpg.battle-tactics"));
             if (parsedPolicy == BattleTargetPolicy::Auto && !conditionResource.asString().empty())
-                return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                    "conditional rules require an explicit target policy", rulePath);
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "conditional rules require an explicit target policy",
+                    rulePath, {}, "rpg.battle-tactics"));
             BattleTacticRule parsed;
             parsed.skillId = skillId.asString();
             parsed.targetPolicy = parsedPolicy;
@@ -132,8 +138,9 @@ eve::Result<int> BattleTacticsCatalogue::replaceFromJsonStrict(const std::string
             definition.rules.push_back(std::move(parsed));
         }
         if (!definition.rules.back().conditionResource.empty())
-            return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                                "the final battle tactic rule must be unconditional", path + ".rules");
+            return eve::Result<int>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "the final battle tactic rule must be unconditional",
+                path + ".rules", {}, "rpg.battle-tactics"));
         proposed.emplace(definition.id, std::move(definition));
     }
     definitions() = std::move(proposed);
@@ -146,12 +153,14 @@ int BattleTacticsCatalogue::count() { return static_cast<int>(definitions().size
 eve::Result<std::string> BattleTacticsCatalogue::queueAction(Battle *battle, RPGActor *actor,
                                                               const std::string &tacticsId) {
     if (!battle || !actor)
-        return failure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                    "battle and actor must not be null", "battle");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "battle and actor must not be null", "battle",
+                                                                        {}, "rpg.battle-tactics"));
     const auto found = definitions().find(tacticsId);
     if (found == definitions().end())
-        return failure<std::string>(eve::DiagnosticCode::NotFound,
-                                    "battle tactics id is not registered", "tacticsId");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                        "battle tactics id is not registered",
+                                                                        "tacticsId", {}, "rpg.battle-tactics"));
     for (const auto &rule : found->second.rules) {
         if (!rule.conditionResource.empty()) {
             const int side = battle->sideOf(actor);
@@ -168,8 +177,9 @@ eve::Result<std::string> BattleTacticsCatalogue::queueAction(Battle *battle, RPG
         if (!queued.ok()) return eve::Result<std::string>::failure(queued.status());
         return eve::Result<std::string>::success(rule.skillId);
     }
-    return failure<std::string>(eve::DiagnosticCode::PreconditionViolation,
-                                "battle tactics has no applicable default rule", "rules");
+    return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                    "battle tactics has no applicable default rule",
+                                                                    "rules", {}, "rpg.battle-tactics"));
 }
 
 }  // namespace eve::rpg

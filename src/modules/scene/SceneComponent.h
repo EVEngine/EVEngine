@@ -12,7 +12,7 @@ namespace eve::scene {
  * Mounts onto a named SceneHost via mountAs / attach.
  * Isomorphic to eve::ui::Component.
  */
-class SceneComponent {
+class EVENGINE_API_PLATFORM SceneComponent {
 public:
     virtual ~SceneComponent() = default;
 

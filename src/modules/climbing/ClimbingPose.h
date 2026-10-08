@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file ClimbingPose.h
@@ -49,9 +50,8 @@ struct ClimbingPoseResult {
  * @thread PostPhysics owner thread.
  * @reentrancy Does not invoke callbacks or scripts.
  */
-[[nodiscard]] eve::Result<ClimbingPoseResult> applyClimbingPose(animation::AnimSkeleton&   skeleton,
-                                                                animation::AnimPose&       pose,
-                                                                const ClimbingAdvance&     advance,
-                                                                const ClimbingPoseBinding& binding);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingPoseResult> applyClimbingPose(
+    animation::AnimSkeleton& skeleton, animation::AnimPose& pose, const ClimbingAdvance& advance,
+    const ClimbingPoseBinding& binding);
 
 }  // namespace eve::climbing

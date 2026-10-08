@@ -21,15 +21,15 @@ public:
     static constexpr const char* kRemoveType  = "procgen.pcg.removeInstances.v1";
 
     /** @brief Build a publish operation whose inverse removes the same batch id. */
-    [[nodiscard]] EditorResult<editing::DomainOperation> planPublish(
+    [[nodiscard]] Result<editing::DomainOperation> planPublish(
         const std::string& batchId, const std::string& assetAttribute = "mesh",
         const std::string& defaultAsset = {}) const;
 
     /** @brief Build a remove operation (inverse empty; redo requires a fresh publish plan). */
-    [[nodiscard]] EditorResult<editing::DomainOperation> planRemove(const std::string& batchId) const;
+    [[nodiscard]] Result<editing::DomainOperation> planRemove(const std::string& batchId) const;
 
     /** @brief Execute a planPublish operation with a live point-set handle. */
-    [[nodiscard]] EditorResult<void> applyPublish(procgen::Procgen& procgen,
+    [[nodiscard]] Result<void> applyPublish(procgen::Procgen& procgen,
                                                   const editing::DomainOperation& operation,
                                                   procgen::ProcgenPointSetHandleRef points) const;
 
@@ -37,7 +37,7 @@ public:
      * @brief Execute a planRemove operation, or undo a publish by applying its inverse payload.
      * @note Passing a publish operation applies its inverse remove.
      */
-    [[nodiscard]] EditorResult<void> apply(procgen::Procgen& procgen,
+    [[nodiscard]] Result<void> apply(procgen::Procgen& procgen,
                                            const editing::DomainOperation& operation) const;
 };
 

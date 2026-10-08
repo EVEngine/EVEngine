@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <glm/mat4x4.hpp>
 
@@ -8,7 +10,7 @@ class Vec2;
 class Vec3;
 
 /** @brief Column-major 4x4 matrix wrapping glm::mat4. */
-class Mat4 {
+class EVENGINE_API_FOUNDATION Mat4 {
 public:
     Mat4();
     explicit Mat4(const glm::mat4 &m);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <SDL2/SDL.h>
 #include <cstdint>
@@ -89,6 +91,6 @@ public:
 };
 
 /** @brief Default backend: Dear ImGui + SDL + Vulkan (see ui/imgui/). */
-std::unique_ptr<UIBackend> createImGuiBackend();
+EVENGINE_API_WORLD std::unique_ptr<UIBackend> createImGuiBackend();
 
 }  // namespace eve::ui

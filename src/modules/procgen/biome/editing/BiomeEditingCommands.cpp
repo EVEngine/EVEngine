@@ -53,11 +53,6 @@ bool readBool(const editing::Value& value, const char* key, bool& output, bool r
     return true;
 }
 
-template <class T>
-editing::Result<T> error(editing::Status status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 editing::Result<void> addCommand(editing::IEditingCommandRegistry& registry, const char* id, const char* displayName,
                                  editing::EditingCommandPlanner planner) {
     editing::EditingCommandDescriptor descriptor;
@@ -90,8 +85,8 @@ editing::SelectionSnapshot selectionFor(const BiomeDocumentTarget& target, const
 editing::Result<editing::CommandPlan> planFrom(editing::Result<editing::DomainOperation> operation,
                                                editing::Value summary) {
     if (!operation.ok())
-        return error<editing::CommandPlan>(operation.code(), "biome.editing.operation",
-                                           "Biome target rejected the planned edit");
+        return eve::editing::failed<editing::CommandPlan>(operation.code(), editing::RuleId("biome.editing.operation"),
+                                                          "Biome target rejected the planned edit");
     editing::CommandPlan plan;
     plan.operations.push_back(std::move(operation).takeValue());
     plan.summary = std::move(summary);
@@ -108,8 +103,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const std::string* id = stringField(request.payload, "id");
             const std::string* spatial = stringField(request.payload, "spatial");
             if (!biome || !id || id->empty() || !spatial || spatial->empty())
-                return error<editing::CommandPlan>(editing::Status::Rejected, "biome.editing.layer-payload",
-                                                   "Biome layer create requires id and spatial asset");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("biome.editing.layer-payload"),
+                                                                  "Biome layer create requires id and spatial asset");
             const std::string* name = stringField(request.payload, "name");
             BiomeLayerValue layer;
             layer.id           = editing::ObjectId(*id);
@@ -120,8 +116,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             double density     = 1.0;
             if (!readInt(request.payload, "priority", layer.priority, false) ||
                 !readNumber(request.payload, "density", density, false))
-                return error<editing::CommandPlan>(editing::Status::Rejected, "biome.editing.layer-number",
-                                                   "Biome layer priority and density must be numbers");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("biome.editing.layer-number"),
+                                                                  "Biome layer priority and density must be numbers");
             layer.density = static_cast<float>(density);
             return planFrom(biome->makeCreateLayer(layer), editing::Value::Object{{"id", *id}});
         });
@@ -135,8 +132,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const std::string* id = stringField(request.payload, "id");
             const std::string* asset = stringField(request.payload, "asset");
             if (!biome || !layer || layer->empty() || !id || id->empty() || !asset || asset->empty())
-                return error<editing::CommandPlan>(editing::Status::Rejected, "biome.editing.asset-payload",
-                                                   "Biome asset create requires layer, id and asset");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("biome.editing.asset-payload"),
+                                                                  "Biome asset create requires layer, id and asset");
             BiomeAssetValue entry;
             entry.id    = editing::ObjectId(*id);
             entry.asset = *asset;
@@ -145,8 +143,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 !readNumber(request.payload, "minScale", minScale, false) ||
                 !readNumber(request.payload, "maxScale", maxScale, false) ||
                 !readBool(request.payload, "randomYaw", entry.randomYaw, false))
-                return error<editing::CommandPlan>(editing::Status::Rejected, "biome.editing.asset-number",
-                                                   "Biome asset weight, scale and yaw must be valid");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("biome.editing.asset-number"),
+                                                                  "Biome asset weight, scale and yaw must be valid");
             entry.weight   = static_cast<float>(weight);
             entry.minScale = static_cast<float>(minScale);
             entry.maxScale = static_cast<float>(maxScale);
@@ -166,8 +165,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const std::string* path = stringField(request.payload, "path");
             const editing::Value* value = field(request.payload, "value");
             if (!biome || !properties || !item || item->empty() || !type || !path || !value)
-                return error<editing::CommandPlan>(editing::Status::Rejected, "biome.editing.property-payload",
-                                                   "Biome property requires item, type, path and value");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("biome.editing.property-payload"),
+                                                                  "Biome property requires item, type, path and value");
             return planFrom(properties->makeSet(selectionFor(*biome, *item, *type), editing::PropertyPath(*path),
                                                 *value, editing::PropertySetMode::Absolute),
                             editing::Value::Object{{"item", *item}, {"path", *path}});

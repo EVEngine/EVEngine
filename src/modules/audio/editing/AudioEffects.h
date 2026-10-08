@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioTarget.h"
 
@@ -19,40 +21,38 @@ struct AudioEffectRecord {
 };
 
 /** @brief Revisioned reversible serial effect chain independent of an audio backend. */
-class AudioEffectChainTarget final : public virtual IEditableTarget,
-                                     public IDomainOperationTarget,
-                                     public IDomainOperationTargetStaging {
+class EVENGINE_API_BACKENDS AudioEffectChainTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging {
 public:
     explicit AudioEffectChainTarget(std::string id);
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Enumerate effect records in processing order. */
     std::vector<AudioEffectRecord> effects() const;
     /** @brief Plan effect creation or replacement. */
-    EditorResult<DomainOperation> makeSet(const AudioEffectRecord& effect) const;
+    Result<DomainOperation> makeSet(const AudioEffectRecord& effect) const;
     /** @brief Plan effect removal. */
-    EditorResult<DomainOperation> makeDelete(const StableId& id) const;
+    Result<DomainOperation> makeDelete(const StableId& id) const;
     /** @brief Plan complete processing-order replacement. */
-    EditorResult<DomainOperation> makeReorder(const std::vector<StableId>& order) const;
+    Result<DomainOperation> makeReorder(const std::vector<StableId>& order) const;
     /** @brief Report invalid parameter ranges and unsafe chain budgets. */
     std::vector<EditorDiagnostic> validate() const;
     /** @brief Capture deterministic schema-version-one effect chain. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a validated effect chain. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
     /** @brief Plan assigning this chain snapshot to an existing mixer bus. */
-    EditorResult<DomainOperation> makeAssignToBus(const AudioMixerTarget& mixer,
+    Result<DomainOperation> makeAssignToBus(const AudioMixerTarget& mixer,
                                                    const ObjectId& bus) const;
 private:
-    std::string id_; Revision revision_ = 1; EditRegion dirty_;
+    std::string                           id_;
     std::map<StableId, AudioEffectRecord> effects_;
     std::vector<StableId> order_;
 };
@@ -61,14 +61,14 @@ private:
 class IAudioEffectChainSink {
 public:
     virtual ~IAudioEffectChainSink() = default;
-    virtual EditorResult<void> publish(const std::string& chain, Revision revision,
+    virtual Result<void> publish(const std::string& chain, Revision revision,
                                        const std::vector<AudioEffectRecord>& effects) = 0;
 };
 
 /** @brief Rejects invalid/stale chains before runtime publication. */
-class AudioEffectChainPublisher {
+class EVENGINE_API_BACKENDS AudioEffectChainPublisher {
 public:
-    EditorResult<void> publish(const AudioEffectChainTarget& chain,
+    Result<void> publish(const AudioEffectChainTarget& chain,
                                Revision expectedRevision,
                                IAudioEffectChainSink& sink) const;
 };

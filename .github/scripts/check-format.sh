@@ -16,8 +16,11 @@ set -euo pipefail
 
 if ! command -v clang-format >/dev/null 2>&1; then
     echo "error: clang-format not found on PATH" >&2
-    echo "  CI installs clang-format-18 and symlinks it; develop locally with:" >&2
-    echo "    sudo apt-get install -y clang-format-18 && sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format" >&2
+    echo "  CI uses clang-format-18. Install the same major locally:" >&2
+    echo "    Linux:  sudo apt-get install -y clang-format-18 && sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format" >&2
+    echo "    macOS:  brew install clang-format" >&2
+    echo "    Windows: winget install LLVM.LLVM (add LLVM bin to PATH) or choco install llvm" >&2
+    echo "  git-clang-format must also be on PATH (ships with LLVM, or: python3 -m pip install clang-format)" >&2
     exit 1
 fi
 
@@ -35,7 +38,9 @@ MERGE_BASE="$(git merge-base "$BASE" HEAD)"
 DIFF_FILE="$(mktemp)"
 trap 'rm -f "$DIFF_FILE"' EXIT
 
-CHANGED_FILES="$(git diff --name-only "$MERGE_BASE" HEAD -- '*.cpp' '*.h' '*.hpp')"
+# Compare against the working tree (not only HEAD) so a dirty local tree is
+# checked the same way CI checks a pushed commit.
+CHANGED_FILES="$(git diff --name-only "$MERGE_BASE" -- '*.cpp' '*.h' '*.hpp')"
 if [ -z "$CHANGED_FILES" ]; then
     echo "ok: no C/C++ files changed"
     exit 0

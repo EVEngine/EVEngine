@@ -16,12 +16,7 @@ struct VegetationAsset::Impl {
     std::vector<float>                      uv;
     std::vector<uint32_t>                   indices;
 };
-namespace {
-template <class T>
-Result<T> failure(DiagnosticCode code, const char* message) {
-    return Result<T>::failure(Diagnostic::error(code, message, {}, {}, "asset.graphics.vegetation"));
-}
-}  // namespace
+namespace {}  // namespace
 VegetationAsset::VegetationAsset(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
 VegetationAsset::~VegetationAsset() = default;
 uint32_t VegetationAsset::vertexCount() const noexcept { return uint32_t(impl_->vertices.size()); }
@@ -30,7 +25,8 @@ Result<std::unique_ptr<VegetationAsset>> VegetationAsset::fromCanonical(const as
     const auto count = mesh.positions.size() / 3;
     if (!count || count > 4'000'000 || mesh.positions.size() % 3 || mesh.normals.size() != count * 3 ||
         mesh.indices.empty() || mesh.indices.size() > 12'000'000 || mesh.indices.size() % 3)
-        return failure<Output>(DiagnosticCode::InvalidArgument, "invalid vegetation mesh geometry");
+        return Result<Output>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "invalid vegetation mesh geometry", {}, {}, "asset.graphics.vegetation"));
     auto stream = [&](const char* name) -> const asset::CanonicalMeshAttribute* {
         auto found = mesh.attributes.find(name);
         return found != mesh.attributes.end() && found->second.components == 4 &&
@@ -44,17 +40,27 @@ Result<std::unique_ptr<VegetationAsset>> VegetationAsset::fromCanonical(const as
     const auto* uv3     = stream("_UNITY_UV3");
     const auto* tangent = stream("TANGENT");
     if (mesh.attributes.contains("TANGENT") && !tangent)
-        return failure<Output>(DiagnosticCode::InvalidArgument, "malformed vegetation tangent stream");
+        return Result<Output>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "malformed vegetation tangent stream", {}, {},
+                                                         "asset.graphics.vegetation"));
     if (!color || !uv0 || !uv1 || !uv3)
-        return failure<Output>(DiagnosticCode::Unsupported, "TVE requires float4 color and complete Unity UV0/UV1/UV4");
+        return Result<Output>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                         "TVE requires float4 color and complete Unity UV0/UV1/UV4", {},
+                                                         {}, "asset.graphics.vegetation"));
     const auto renderUv = mesh.texcoords.find(0);
     if (renderUv == mesh.texcoords.end() || renderUv->second.size() != count * 2)
-        return failure<Output>(DiagnosticCode::InvalidArgument, "vegetation render UV0 is absent or malformed");
+        return Result<Output>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "vegetation render UV0 is absent or malformed", {}, {},
+                                                         "asset.graphics.vegetation"));
     for (auto f : renderUv->second)
         if (!std::isfinite(f))
-            return failure<Output>(DiagnosticCode::InvalidArgument, "nonfinite vegetation render UV");
+            return Result<Output>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                             "nonfinite vegetation render UV", {}, {},
+                                                             "asset.graphics.vegetation"));
     for (auto index : mesh.indices)
-        if (index >= count) return failure<Output>(DiagnosticCode::InvalidArgument, "vegetation index out of range");
+        if (index >= count)
+            return Result<Output>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "vegetation index out of range", {}, {}, "asset.graphics.vegetation"));
     try {
         std::vector<graphics::TvePackedVertex> packed(count);
         auto four = [](const auto& a, size_t at) { return glm::vec4(a[at], a[at + 1], a[at + 2], a[at + 3]); };
@@ -64,7 +70,8 @@ Result<std::unique_ptr<VegetationAsset>> VegetationAsset::fromCanonical(const as
             p.normal          = {mesh.normals[v * 3], mesh.normals[v * 3 + 1], mesh.normals[v * 3 + 2]};
             const auto length = glm::length(p.normal);
             if (!std::isfinite(length) || length < 1e-6f)
-                return failure<Output>(DiagnosticCode::InvalidArgument, "invalid vegetation normal");
+                return Result<Output>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "invalid vegetation normal", {}, {}, "asset.graphics.vegetation"));
             p.color     = four(color->values, v * 4);
             p.texcoord0 = four(uv0->values, v * 4);
             p.texcoord1 = four(uv1->values, v * 4);
@@ -85,14 +92,17 @@ Result<std::unique_ptr<VegetationAsset>> VegetationAsset::fromCanonical(const as
                 if (!std::isfinite(t.x) || !std::isfinite(t.y) || !std::isfinite(t.z) ||
                     (vertex.tangent->w != 1.f && vertex.tangent->w != -1.f) ||
                     glm::length(glm::cross(vertex.normal, t)) < 1e-6f)
-                    return failure<Output>(DiagnosticCode::InvalidArgument, "invalid vegetation tangent frame");
+                    return Result<Output>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                     "invalid vegetation tangent frame", {}, {},
+                                                                     "asset.graphics.vegetation"));
             }
         }
         impl->uv      = renderUv->second;
         impl->indices = mesh.indices;
         return Result<Output>::success(Output(new VegetationAsset(std::move(impl))));
     } catch (const std::bad_alloc&) {
-        return failure<Output>(DiagnosticCode::Failed, "vegetation asset allocation failed");
+        return Result<Output>::failure(Diagnostic::error(DiagnosticCode::Failed, "vegetation asset allocation failed",
+                                                         {}, {}, "asset.graphics.vegetation"));
     }
 }
 Result<std::unique_ptr<VegetationAsset>> VegetationAsset::load(const asset::EvpackResourceReader& reader,
@@ -105,10 +115,15 @@ Result<std::unique_ptr<VegetationAsset>> VegetationAsset::load(const asset::Evpa
     const asset::RuntimeAssetChunk* bulk = nullptr;
     for (const auto& chunk : payload.value().chunks) {
         if (chunk.kind != asset::EvpackChunkKind::Bulk) continue;
-        if (bulk) return failure<Output>(DiagnosticCode::ParseError, "vegetation mesh has multiple bulk chunks");
+        if (bulk)
+            return Result<Output>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                             "vegetation mesh has multiple bulk chunks", {}, {},
+                                                             "asset.graphics.vegetation"));
         bulk = &chunk;
     }
-    if (!bulk) return failure<Output>(DiagnosticCode::NotFound, "vegetation mesh bulk is missing");
+    if (!bulk)
+        return Result<Output>::failure(Diagnostic::error(DiagnosticCode::NotFound, "vegetation mesh bulk is missing",
+                                                         {}, {}, "asset.graphics.vegetation"));
     auto decoded = asset::decodeCanonicalMesh(bulk->bytes, limits);
     if (!decoded) return Result<Output>::failure(decoded.status());
     return fromCanonical(decoded.value());
@@ -125,24 +140,29 @@ Result<graphics::Mesh*> VegetationAsset::createMesh(graphics::Graphics&         
     auto* mesh =
         graphics.newMeshFromArrays(geometry.value().positions.data(), geometry.value().normals.data(), impl_->uv.data(),
                                    int(impl_->vertices.size()), impl_->indices.data(), int(impl_->indices.size()));
-    if (!mesh) return failure<graphics::Mesh*>(DiagnosticCode::Failed, "vegetation backend mesh creation failed");
+    if (!mesh)
+        return Result<graphics::Mesh*>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "vegetation backend mesh creation failed", {}, {}, "asset.graphics.vegetation"));
     auto attached =
         mesh->adoptTangentFrame(std::move(geometry.value().tangents), std::move(geometry.value().bitangents));
     if (!attached) {
         if (!graphics.releaseMesh(mesh))
-            return failure<graphics::Mesh*>(DiagnosticCode::Failed, "vegetation mesh rollback failed");
+            return Result<graphics::Mesh*>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "vegetation mesh rollback failed", {}, {}, "asset.graphics.vegetation"));
         return Result<graphics::Mesh*>::failure(attached.status());
     }
     auto highlights = mesh->adoptMotionHighlights(std::move(geometry.value().motionHighlights));
     if (!highlights) {
         if (!graphics.releaseMesh(mesh))
-            return failure<graphics::Mesh*>(DiagnosticCode::Failed, "vegetation highlight rollback failed");
+            return Result<graphics::Mesh*>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "vegetation highlight rollback failed", {}, {}, "asset.graphics.vegetation"));
         return Result<graphics::Mesh*>::failure(highlights.status());
     }
     auto factors = mesh->adoptVegetationFactors(std::move(geometry.value().vegetationFactors));
     if (!factors) {
         if (!graphics.releaseMesh(mesh))
-            return failure<graphics::Mesh*>(DiagnosticCode::Failed, "vegetation factor rollback failed");
+            return Result<graphics::Mesh*>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "vegetation factor rollback failed", {}, {}, "asset.graphics.vegetation"));
         return Result<graphics::Mesh*>::failure(factors.status());
     }
     return Result<graphics::Mesh*>::success(mesh);
@@ -179,10 +199,14 @@ Result<graphics::Mesh*> VegetationAsset::createGpuFieldMesh(graphics::Graphics& 
         auto* mesh = graphics.newMeshFromArrays(positions.data(), normals.data(), impl_->uv.data(),
                                                 int(impl_->vertices.size()), impl_->indices.data(),
                                                 int(impl_->indices.size()));
-        if (!mesh) return failure<graphics::Mesh*>(DiagnosticCode::Failed, "vegetation rest mesh upload failed");
+        if (!mesh)
+            return Result<graphics::Mesh*>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "vegetation rest mesh upload failed", {}, {}, "asset.graphics.vegetation"));
         auto rollback = [&](Result<void> status) -> Result<graphics::Mesh*> {
             if (!graphics.releaseMesh(mesh))
-                return failure<graphics::Mesh*>(DiagnosticCode::Failed, "vegetation rest mesh rollback failed");
+                return Result<graphics::Mesh*>::failure(Diagnostic::error(DiagnosticCode::Failed,
+                                                                          "vegetation rest mesh rollback failed", {},
+                                                                          {}, "asset.graphics.vegetation"));
             return Result<graphics::Mesh*>::failure(status.status());
         };
         auto attached = mesh->adoptTangentFrame(std::move(tangents), std::move(bitangents));
@@ -193,7 +217,8 @@ Result<graphics::Mesh*> VegetationAsset::createGpuFieldMesh(graphics::Graphics& 
         if (!deformationAttached) return rollback(std::move(deformationAttached));
         return Result<graphics::Mesh*>::success(mesh);
     } catch (const std::bad_alloc&) {
-        return failure<graphics::Mesh*>(DiagnosticCode::Failed, "vegetation rest mesh allocation failed");
+        return Result<graphics::Mesh*>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "vegetation rest mesh allocation failed", {}, {}, "asset.graphics.vegetation"));
     }
 }
 Result<void> VegetationAsset::updateMesh(graphics::Graphics& graphics, graphics::Mesh& mesh,

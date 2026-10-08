@@ -1,16 +1,17 @@
 #include "editor/EditCommand.h"
 #include "map/level/editing/FieldTargets.h"
-#include "snow/editor/SnowFieldTarget.h"
+#include "graphics/lighting/editing/SnowFieldTarget.h"
 
-#include "snow/SnowField.h"
+#include "weather/SnowField.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 using namespace eve::editor;
 using namespace eve::level_editing;
+using eve::lighting_editing::SnowFieldTarget;
 
 TEST_CASE("editor.snow.live_scalar_target_supports_bilinear_preview_and_reversible_brush_edits") {
-    eve::snow::SnowField field(2, 2);
+    eve::weather::SnowField field(2, 2);
     field.fill(1.0F);
     SnowFieldTarget        target("snow-depth", &field);
     ScalarFieldEditCommand command("footprint", &target);

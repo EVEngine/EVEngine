@@ -11,6 +11,7 @@
  * definition parser.
  */
 
+#include "common/Export.h"
 #include "common/Generation.h"
 #include "common/ResourceRef.h"
 #include "common/Result.h"
@@ -143,11 +144,128 @@ struct ReloadOutcome {
 };
 
 /**
+ * @brief Type-erased bookkeeping shared by every `RuntimeInstance<State>`.
+ *
+ * Identity validation, the active flag, the reload policy machine and the error
+ * construction are identical for every domain state, so they live in one
+ * non-template core compiled once in `DefinitionRuntime.cpp` instead of being
+ * instantiated once per state type.
+ *
+ * The payload stays strongly typed at the public API: this core only carries it
+ * as an owning pointer plus the per-state clone/assign/destroy operations. It is
+ * never turned into a dynamic field map.
+ *
+ * Thread affinity matches `RuntimeInstance`: the owning domain thread only.
+ */
+class EVENGINE_API RuntimeInstanceCore {
+public:
+    /** @brief Deep-copies one payload for the copy constructor and copy assignment. */
+    using CloneFunction = void* (*)(const void*);
+    /** @brief Assigns one payload from another payload of the same state type. */
+    using AssignFunction = void (*)(void* destination, const void* source);
+    /** @brief Destroys one payload; must not throw. */
+    using DestroyFunction = void (*)(void*) noexcept;
+    /**
+     * @brief Type-erased rebuild policy callback.
+     * @return A newly allocated payload whose ownership transfers to the core, or a failure
+     *         that leaves the core unchanged.
+     */
+    using RebuildFunction =
+        std::function<eve::Result<void*>(const void*, const InstanceIdentity&, const DefinitionHandle&)>;
+
+    /**
+     * @brief Adopt an already-allocated payload.
+     * @param state Payload this core now owns and destroys with `destroy`.
+     * @ownership Takes ownership of `state`; all four function pointers must stay valid
+     *            for the lifetime of the core.
+     */
+    RuntimeInstanceCore(InstanceIdentity identity, void* state, CloneFunction clone, AssignFunction assign,
+                        DestroyFunction destroy, bool active) noexcept;
+    /** @brief Destroy the adopted payload. */
+    ~RuntimeInstanceCore();
+
+    /** @brief Deep-copy the payload and the bookkeeping. */
+    RuntimeInstanceCore(const RuntimeInstanceCore& other);
+    /** @brief Copy-assign; the copy is made before any mutation, so a throw leaves `*this` intact. */
+    RuntimeInstanceCore& operator=(const RuntimeInstanceCore& other);
+    /** @brief Move the payload and the bookkeeping. */
+    RuntimeInstanceCore(RuntimeInstanceCore&& other) noexcept;
+    /** @brief Move-assign, destroying the current payload. */
+    RuntimeInstanceCore& operator=(RuntimeInstanceCore&& other) noexcept;
+
+    /** @brief Borrow the complete immutable identity. */
+    [[nodiscard]] const InstanceIdentity& identity() const noexcept { return identity_; }
+    /** @brief Borrow the payload; null only after a move. */
+    [[nodiscard]] void* state() noexcept { return state_; }
+    /** @brief Borrow the payload; null only after a move. */
+    [[nodiscard]] const void* state() const noexcept { return state_; }
+    /** @brief Whether the instance participates in active simulation. */
+    [[nodiscard]] bool isActive() const noexcept { return active_; }
+    /** @brief Set active state; this does not reload or rebuild the instance. */
+    void setActive(bool active) noexcept { active_ = active; }
+
+    /**
+     * @brief Verify that a caller's definition handle is the exact current incarnation.
+     * @return Success for an exact match, or StaleHandle/invalid-argument otherwise.
+     */
+    [[nodiscard]] eve::Result<void> checkDefinition(const DefinitionHandle& handle) const;
+
+    /**
+     * @brief Apply a definition replacement with an atomic payload policy.
+     * @param next Exact current handle returned by the DefinitionRegistry.
+     * @param policy Policy to execute for this instance.
+     * @param defaults Payload used only by ReapplyDefaults; required by that policy.
+     * @param rebuild Callback used only by RebuildInstance.
+     * @return Reload transition, or a failure leaving payload and identity intact.
+     * @remarks `RejectWhileActive` rejects active instances. When inactive it
+     *          intentionally keeps values and only advances the generation.
+     */
+    [[nodiscard]] eve::Result<ReloadOutcome> reload(const DefinitionHandle& next, ReloadPolicy policy,
+                                                    const void* defaults, const RebuildFunction& rebuild);
+
+    /**
+     * @brief Swap in an already validated payload of this exact instance.
+     * @param state Newly allocated payload; the core adopts it and destroys it when
+     *              validation fails.
+     * @return Success, or Conflict/StaleHandle when the snapshot belongs to a
+     *         different instance or definition incarnation.
+     */
+    [[nodiscard]] eve::Result<void> restoreExact(const InstanceIdentity& identity, void* state, bool active);
+
+private:
+    InstanceIdentity identity_;
+    void*            state_   = nullptr;
+    CloneFunction    clone_   = nullptr;
+    AssignFunction   assign_  = nullptr;
+    DestroyFunction  destroy_ = nullptr;
+    bool             active_  = true;
+};
+
+/** @brief Payload operations for one state type; used by `RuntimeInstance<State>`. */
+template <class State>
+[[nodiscard]] void* cloneRuntimeState(const void* state) {
+    return new State(*static_cast<const State*>(state));
+}
+
+/** @brief Payload assignment for one state type. */
+template <class State>
+void assignRuntimeState(void* destination, const void* source) {
+    *static_cast<State*>(destination) = *static_cast<const State*>(source);
+}
+
+/** @brief Payload destruction for one state type. */
+template <class State>
+void destroyRuntimeState(void* state) noexcept {
+    delete static_cast<State*>(state);
+}
+
+/**
  * @brief Owns one strongly typed runtime state and its definition identity.
  *
- * `State` is supplied by a domain adapter; this class never erases it into a
- * dynamic field map.  Reload first prepares a complete candidate state and
- * then swaps it at one commit boundary.  A parser, default factory or rebuild
+ * `State` is supplied by a domain adapter; the typed accessors below keep it
+ * strongly typed, and only the shared bookkeeping is type-erased into
+ * `RuntimeInstanceCore`. Reload first prepares a complete candidate state and
+ * then swaps it at one commit boundary. A parser, default factory or rebuild
  * callback failure therefore leaves both state and identity unchanged.
  *
  * The object is confined to its owning simulation/domain thread.  Callbacks
@@ -170,21 +288,14 @@ public:
 private:
     /** @brief Construct a runtime instance from a validated identity and typed state. */
     RuntimeInstance(InstanceIdentity identity, State state, bool active = true)
-        : identity_(std::move(identity)), state_(std::make_unique<State>(std::move(state))), active_(active) {}
+        : core_(std::move(identity), new State(std::move(state)), &cloneRuntimeState<State>, &assignRuntimeState<State>,
+                &destroyRuntimeState<State>, active) {}
 
 public:
     /** @brief Copy a typed runtime instance. */
-    RuntimeInstance(const RuntimeInstance& other)
-        : identity_(other.identity_), state_(std::make_unique<State>(*other.state_)), active_(other.active_) {}
+    RuntimeInstance(const RuntimeInstance&) = default;
     /** @brief Copy-assign a typed runtime instance. */
-    RuntimeInstance& operator=(const RuntimeInstance& other) {
-        if (this == &other) return *this;
-        auto candidate = std::make_unique<State>(*other.state_);
-        identity_      = other.identity_;
-        state_.swap(candidate);
-        active_ = other.active_;
-        return *this;
-    }
+    RuntimeInstance& operator=(const RuntimeInstance&) = default;
     /** @brief Move a typed runtime instance. */
     RuntimeInstance(RuntimeInstance&&) noexcept = default;
     /** @brief Move-assign a typed runtime instance. */
@@ -207,30 +318,22 @@ public:
     }
 
     /** @brief Borrow the complete immutable identity. */
-    [[nodiscard]] const InstanceIdentity& identity() const noexcept { return identity_; }
+    [[nodiscard]] const InstanceIdentity& identity() const noexcept { return core_.identity(); }
     /** @brief Borrow the current typed state. */
-    [[nodiscard]] const State& state() const noexcept { return *state_; }
+    [[nodiscard]] const State& state() const noexcept { return *static_cast<const State*>(core_.state()); }
     /** @brief Mutate typed state on the owning domain thread. */
-    [[nodiscard]] State& state() noexcept { return *state_; }
+    [[nodiscard]] State& state() noexcept { return *static_cast<State*>(core_.state()); }
     /** @brief Whether the instance participates in active simulation. */
-    [[nodiscard]] bool isActive() const noexcept { return active_; }
+    [[nodiscard]] bool isActive() const noexcept { return core_.isActive(); }
     /** @brief Set active state; this does not reload or rebuild the instance. */
-    void setActive(bool active) noexcept { active_ = active; }
+    void setActive(bool active) noexcept { core_.setActive(active); }
 
     /**
      * @brief Verify that a caller's definition handle is the exact current incarnation.
      * @return Success for an exact match, or StaleHandle/invalid-argument otherwise.
      */
     [[nodiscard]] eve::Result<void> checkDefinition(const DefinitionHandle& handle) const {
-        if (!handle.isValid())
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                     "definition handle is invalid", "handle", {},
-                                                                     "common.definitions"));
-        if (handle != identity_.definitionHandle())
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::StaleHandle, "runtime instance refers to a different definition generation",
-                "handle", {}, "common.definitions"));
-        return eve::Result<void>::success();
+        return core_.checkDefinition(handle);
     }
 
     /**
@@ -242,79 +345,27 @@ public:
      * @param rebuild Callback used only by RebuildInstance. It returns a fully
      *        prepared State and may inspect the old state and new handle.
      * @return Reload transition, or a failure leaving state and identity intact.
-     * @remarks `RejectWhileActive` rejects active instances. When inactive it
-     *          intentionally keeps values and only advances the generation.
      */
     [[nodiscard]] eve::Result<ReloadOutcome> reload(const DefinitionHandle& next, ReloadPolicy policy,
                                                     const State& defaults, RebuildFunction rebuild = {}) {
-        if (!next.isValid())
-            return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                              "next definition handle is invalid",
-                                                                              "next", {}, "common.definitions"));
-        if (next.reference != identity_.definition)
-            return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict, "definition reload targets a different logical definition",
-                "next.reference", {}, "common.definitions"));
-        if (next.generation < identity_.definitionGeneration)
-            return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::StaleHandle, "definition reload handle is older than the instance generation",
-                "next.generation", {}, "common.definitions"));
-
-        ReloadOutcome outcome{
-            identity_.instanceId,        identity_.definition, identity_.definitionGeneration, next.generation, policy,
-            ReloadDisposition::Unchanged};
-        if (next.generation == identity_.definitionGeneration)
-            return eve::Result<ReloadOutcome>::success(std::move(outcome), eve::Status::success(eve::StatusCode::NoOp));
-
-        if (policy == ReloadPolicy::RejectWhileActive && active_)
-            return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict, "active runtime instance rejects definition reload", "policy", {},
-                "common.definitions"));
-
-        try {
-            State             candidate(*state_);
-            ReloadDisposition disposition = ReloadDisposition::Kept;
-            if (policy == ReloadPolicy::ReapplyDefaults) {
-                candidate   = defaults;
-                disposition = ReloadDisposition::DefaultsReapplied;
-            } else if (policy == ReloadPolicy::RebuildInstance) {
-                if (!rebuild)
-                    return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument, "rebuild policy requires a rebuild callback", "rebuild",
-                        {}, "common.definitions"));
-                auto rebuilt = rebuild(*state_, identity_, next);
-                if (!rebuilt) return eve::Result<ReloadOutcome>::failure(rebuilt.status());
-                candidate   = std::move(rebuilt).takeValue();
-                disposition = ReloadDisposition::Rebuilt;
-            } else if (policy == ReloadPolicy::RejectWhileActive) {
-                // The active guard was handled above. Inactive instances have
-                // the documented keep-values behavior.
-                disposition = ReloadDisposition::Kept;
-            }
-
-            auto committed = std::make_unique<State>(std::move(candidate));
-            state_.swap(committed);
-            identity_.definitionGeneration = next.generation;
-            outcome.disposition            = disposition;
-            return eve::Result<ReloadOutcome>::success(std::move(outcome),
-                                                       eve::Status::success(eve::StatusCode::Applied));
-        } catch (const std::exception&) {
-            return eve::Result<ReloadOutcome>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "definition reload candidate preparation failed",
-                                       {}, {}, "common.definitions"));
-        } catch (...) {
-            return eve::Result<ReloadOutcome>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "definition reload candidate preparation failed",
-                                       {}, {}, "common.definitions"));
+        RuntimeInstanceCore::RebuildFunction erased;
+        if (rebuild) {
+            erased = [callback = std::move(rebuild)](const void* state, const InstanceIdentity& identity,
+                                                     const DefinitionHandle& handle) -> eve::Result<void*> {
+                auto rebuilt = callback(*static_cast<const State*>(state), identity, handle);
+                if (!rebuilt) return eve::Result<void*>::failure(rebuilt.status());
+                return eve::Result<void*>::success(new State(std::move(rebuilt).takeValue()));
+            };
         }
+        return core_.reload(next, policy, &defaults, erased);
     }
 
     /**
      * @brief Restore an already validated snapshot of this exact instance.
      * @param identity Snapshot identity; it must exactly match the current
      *        instance identity, including definition generation.
-     * @param state Fully decoded candidate state. It is swapped only after all
-     *        caller-side validation and decoding has succeeded.
+     * @param state Fully decoded candidate state. The core adopts it and destroys
+     *        it when the identity does not match.
      * @param active Active flag restored with the state.
      * @return Success, or Conflict/StaleHandle when the snapshot belongs to a
      *         different instance or definition incarnation.
@@ -323,29 +374,11 @@ public:
      *          normal reload protocol and then capture a new snapshot.
      */
     [[nodiscard]] eve::Result<void> restoreExact(const InstanceIdentity& identity, State state, bool active) {
-        if (!identity.isValid())
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                     "runtime snapshot identity is invalid", "identity",
-                                                                     {}, "common.definitions"));
-        if (identity.instanceId != identity_.instanceId || identity.definition != identity_.definition)
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict, "runtime snapshot belongs to a different instance or definition",
-                "identity", {}, "common.definitions"));
-        if (identity.definitionGeneration != identity_.definitionGeneration)
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::StaleHandle, "runtime snapshot definition generation is not current",
-                "identity.definitionGeneration", {}, "common.definitions"));
-
-        auto committed = std::make_unique<State>(std::move(state));
-        state_.swap(committed);
-        active_ = active;
-        return eve::Result<void>::success();
+        return core_.restoreExact(identity, new State(std::move(state)), active);
     }
 
 private:
-    InstanceIdentity       identity_;
-    std::unique_ptr<State> state_;
-    bool                   active_ = true;
+    RuntimeInstanceCore core_;
 };
 
 }  // namespace eve::definition

@@ -10,7 +10,7 @@ struct PhotoModeColor { float r=0, g=0, b=0, a=1; };
 /** @brief Typed payload accepted by authoritative photo-mode domain owners. */
 using PhotoModeValue = std::variant<bool, std::int64_t, float, std::string, PhotoModeColor>;
 /** @brief Authoritative owner selected for a Pcg photo-mode field. */
-enum class PhotoModeDomain { Photo=0, System=1, Graphics=2, Camera=3, Streaming=4, Weather=5, Lighting=6, Water=7, PostFx=8, Terrain=9, Grass=10, Audio=11 };
+enum class PhotoModeDomain { Photo=0, FramePacing=1, Graphics=2, Camera=3, Streaming=4, Weather=5, Lighting=6, Water=7, PostFx=8, Terrain=9, Grass=10, Audio=11 };
 /** @brief One reversible field assignment in a photo-mode transaction. */
 struct PhotoModeAssignment { std::string field; PhotoModeDomain domain=PhotoModeDomain::Photo; PhotoModeValue value; };
 /**
@@ -23,6 +23,10 @@ struct PhotoModeAssignment { std::string field; PhotoModeDomain domain=PhotoMode
  * @brief Optional per-field provider used by the built-in photo-mode capability router.
  *
  * Providers register as capability listeners. Exactly one provider must accept an assignment.
+ * This extension point is reserved for optional domain-owned settings whose provider cannot be
+ * named by the UI module at link time. Stable engine controls use their narrow capabilities
+ * directly, such as IFramePacing and IFramePresentation, instead of making foundation
+ * modules parse PCG field names.
  */
 /** @brief Named ownership response from a photo-mode field provider. */
 enum class PhotoModeFieldAcceptance { Rejected=0, Accepted=1 };

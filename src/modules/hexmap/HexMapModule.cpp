@@ -6,8 +6,8 @@
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "hexmap/HexFeatures.h"
-#include "hexmap/HexMapGenerator.h"
 #include "hexmap/HexSphereMesh.h"
+#include "hexmap/HexTerrainBake.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -17,10 +17,7 @@
 namespace eve::hexmap {
 namespace {
 
-[[nodiscard]] Result<void> invalidArgument(std::string message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap"));
-}
-
+[[nodiscard]] 
 [[nodiscard]] bool validDirection(std::int32_t direction) noexcept {
     return direction >= 0 && direction < kHexDirectionCount;
 }
@@ -56,33 +53,27 @@ void HexMapModule::syncScratch() {
     scratch_.resize(map_.cellCount());
 }
 
-Result<void> HexMapModule::generateMap(graphics::Graphics* gfx, std::uint32_t seed, std::int32_t landPercentage,
-                                       std::int32_t waterLevel, std::int32_t riverPercentage) {
-    if (!gfx) return invalidArgument("generateMap requires a graphics device");
-    if (map_.empty()) return invalidArgument("generateMap requires an existing grid");
+Result<void> HexMapModule::applyTerrain(graphics::Graphics* gfx, const HexTerrainBake& bake) {
+    if (!gfx) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "applyTerrain requires a graphics device", "hexmap"));
+    if (bake.kind != HexTerrainBake::Kind::Planar)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "applyTerrain requires a planar hex.terrain bake", "hexmap"));
 
+    // `applyHexTerrain` validates through `HexMap::reset` before it mutates, so a
+    // rejected bake leaves the live grid and its meshes untouched.
+    auto applied = applyHexTerrain(map_, bake);
+    if (!applied) return applied;
     if (!meshes_.empty()) releaseMeshes(gfx);
-    const std::int32_t cellCountX = map_.cellCountX();
-    const std::int32_t cellCountZ = map_.cellCountZ();
-    auto               reset      = map_.reset(cellCountX, cellCountZ, seed);
-    if (!reset) return reset;
     visibility_.reset(map_.cellCount());
     units_.removeAll(map_, visibility_);
     syncScratch();
     clearMeshSlots();
-
-    HexMapGeneratorSettings settings;
-    settings.seed            = seed;
-    settings.landPercentage  = landPercentage;
-    settings.waterLevel      = waterLevel;
-    settings.riverPercentage = riverPercentage;
-    return generateHexMap(map_, settings);
+    return Result<void>::success();
 }
 
 Result<void> HexMapModule::adoptGrid(graphics::Graphics* gfx, HexMap&& restored,
                                      const std::vector<HexUnitState>& units) {
-    if (!gfx) return invalidArgument("adoptGrid requires a graphics device");
-    if (restored.empty()) return invalidArgument("adoptGrid requires a non-empty grid");
+    if (!gfx) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "adoptGrid requires a graphics device", "hexmap"));
+    if (restored.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "adoptGrid requires a non-empty grid", "hexmap"));
     if (!meshes_.empty()) releaseMeshes(gfx);
     map_ = std::move(restored);
     visibility_.reset(map_.cellCount());
@@ -104,14 +95,14 @@ void HexMapModule::releaseMeshes(graphics::Graphics* gfx) {
 
 Result<void> HexMapModule::newGrid(graphics::Graphics* gfx, std::int32_t cellCountX, std::int32_t cellCountZ,
                                    std::uint32_t seed) {
-    if (!gfx) return invalidArgument("newGrid requires a graphics device");
-    if (cellCountX <= 0 || cellCountZ <= 0) return invalidArgument("hex map size must be positive");
+    if (!gfx) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "newGrid requires a graphics device", "hexmap"));
+    if (cellCountX <= 0 || cellCountZ <= 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map size must be positive", "hexmap"));
     // Script-supplied sizes reach a raw cell allocation, so bound them here rather than
     // let std::bad_alloc escape a native binding. The save format caps the same
     // quantity at kMaxHexGridDimension.
     if (cellCountX > kMaxHexGridDimension || cellCountZ > kMaxHexGridDimension)
-        return invalidArgument("hex map size exceeds the " + std::to_string(kMaxHexGridDimension) +
-                               " cell per side limit");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map size exceeds the " + std::to_string(kMaxHexGridDimension) +
+                               " cell per side limit", "hexmap"));
     // Reset before releasing: `HexMap::reset` validates before it mutates, so a
     // rejected size now leaves the old grid *and* its meshes untouched. Releasing
     // first detached every GPU mesh while the renderables scripts already hold kept
@@ -210,7 +201,7 @@ void HexMapModule::releaseSphereMeshes(graphics::Graphics* gfx) noexcept {
 
 Result<void> HexMapModule::newSphere(graphics::Graphics* gfx, std::int32_t subdivision, float radius,
                                      std::uint32_t seed) {
-    if (gfx == nullptr) return invalidArgument("hex sphere needs a graphics device");
+    if (gfx == nullptr) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex sphere needs a graphics device", "hexmap"));
     // Same ordering rule as `newGrid`: validate through `reset` first, because
     // `HexSphereMap::reset` rejects its arguments before touching the map. Releasing
     // the sphere meshes up front left the planet example's renderables pointing at
@@ -221,26 +212,20 @@ Result<void> HexMapModule::newSphere(graphics::Graphics* gfx, std::int32_t subdi
     return Result<void>::success();
 }
 
-Result<void> HexMapModule::generateSphere(graphics::Graphics* gfx, std::uint32_t seed, std::int32_t landPercentage,
-                                          std::int32_t waterLevel) {
-    if (gfx == nullptr) return invalidArgument("hex sphere needs a graphics device");
-    if (sphere_.empty()) return invalidArgument("hex sphere map has no cells");
+Result<void> HexMapModule::applySphereTerrain(graphics::Graphics* gfx, const HexTerrainBake& bake) {
+    if (gfx == nullptr) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex sphere needs a graphics device", "hexmap"));
+    if (sphere_.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex sphere map has no cells", "hexmap"));
+    if (bake.kind != HexTerrainBake::Kind::Sphere)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "applySphereTerrain requires a hex.sphere bake", "hexmap"));
 
-    HexSphereGeneratorSettings settings{};
-    settings.seed           = seed;
-    settings.landPercentage = landPercentage;
-    settings.waterLevel     = waterLevel;
-
-    // The generator's only failure is an empty map, which the guard above already
-    // rejected, so it cannot leave the cells half-written.
-    auto generated = generateSphereMap(sphere_, settings);
-    if (!generated.ok()) return Result<void>::failure(generated.status());
+    auto applied = applyHexSphereTerrain(sphere_, bake);
+    if (!applied.ok()) return Result<void>::failure(applied.status());
     return rebuildSphere(gfx);
 }
 
 Result<void> HexMapModule::rebuildSphere(graphics::Graphics* gfx) {
-    if (gfx == nullptr) return invalidArgument("hex sphere needs a graphics device");
-    if (sphere_.empty()) return invalidArgument("hex sphere map has no cells");
+    if (gfx == nullptr) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex sphere needs a graphics device", "hexmap"));
+    if (sphere_.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex sphere map has no cells", "hexmap"));
 
     HexMeshData terrain;
     buildSphereTerrainMesh(sphere_, terrain);
@@ -276,7 +261,7 @@ Result<void> HexMapModule::rebuildSphere(graphics::Graphics* gfx) {
 
     upload(terrain, sphereTerrain_);
     upload(water, sphereWater_);
-    if (!uploaded) return invalidArgument("the graphics backend refused the hex sphere mesh upload");
+    if (!uploaded) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "the graphics backend refused the hex sphere mesh upload", "hexmap"));
     return Result<void>::success();
 }
 
@@ -293,7 +278,7 @@ void HexMapModule::expose(ssq::Class& cls) {
     const auto vm = cls.getHandle();
 
     cls.addFunc("newGrid", [vm](HexMapModule* self, graphics::Graphics* gfx, int cellCountX, int cellCountZ, int seed) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         if (seed < 0) seed = 0;
         return script::projectResult(vm, self->newGrid(gfx, cellCountX, cellCountZ, static_cast<std::uint32_t>(seed)));
     });
@@ -396,83 +381,85 @@ void HexMapModule::expose(ssq::Class& cls) {
 
     // --- cell authoring ---
     cls.addFunc("setElevation", [vm](HexMapModule* self, int x, int z, int value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setElevation(fromScriptCell(x, z), value));
     });
     cls.addFunc("setWaterLevel", [vm](HexMapModule* self, int x, int z, int value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setWaterLevel(fromScriptCell(x, z), value));
     });
     cls.addFunc("setTerrainType", [vm](HexMapModule* self, int x, int z, int value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setTerrainType(fromScriptCell(x, z), value));
     });
     cls.addFunc("setUrbanLevel", [vm](HexMapModule* self, int x, int z, int value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setUrbanLevel(fromScriptCell(x, z), value));
     });
     cls.addFunc("setFarmLevel", [vm](HexMapModule* self, int x, int z, int value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setFarmLevel(fromScriptCell(x, z), value));
     });
     cls.addFunc("setPlantLevel", [vm](HexMapModule* self, int x, int z, int value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setPlantLevel(fromScriptCell(x, z), value));
     });
     cls.addFunc("setSpecialIndex", [vm](HexMapModule* self, int x, int z, int value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setSpecialIndex(fromScriptCell(x, z), value));
     });
     cls.addFunc("setWalled", [vm](HexMapModule* self, int x, int z, bool value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setWalled(fromScriptCell(x, z), value));
     });
     cls.addFunc("setOutgoingRiver", [vm](HexMapModule* self, int x, int z, int direction) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         if (!validDirection(direction))
-            return script::projectResult(vm, invalidArgument("river direction must be in [0, 5]"));
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "river direction must be in [0, 5]", "hexmap")));
         return script::projectResult(vm, self->map().setOutgoingRiver(fromScriptCell(x, z), toDirection(direction)));
     });
     cls.addFunc("removeRiver", [vm](HexMapModule* self, int x, int z) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().removeRiver(fromScriptCell(x, z)));
     });
     cls.addFunc("addRoad", [vm](HexMapModule* self, int x, int z, int direction) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         if (!validDirection(direction))
-            return script::projectResult(vm, invalidArgument("road direction must be in [0, 5]"));
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "road direction must be in [0, 5]", "hexmap")));
         return script::projectResult(vm, self->map().addRoad(fromScriptCell(x, z), toDirection(direction)));
     });
     cls.addFunc("removeRoads", [vm](HexMapModule* self, int x, int z) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().removeRoads(fromScriptCell(x, z)));
     });
 
     // --- brush authoring ---
     cls.addFunc("editElevation", [vm](HexMapModule* self, int x, int z, int radius, int delta) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().editElevation(fromScriptCell(x, z), radius, delta));
     });
     cls.addFunc("editWaterLevel", [vm](HexMapModule* self, int x, int z, int radius, int delta) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().editWaterLevel(fromScriptCell(x, z), radius, delta));
     });
     cls.addFunc("editTerrainType", [vm](HexMapModule* self, int x, int z, int radius, int terrainType) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().editTerrainType(fromScriptCell(x, z), radius, terrainType));
     });
     cls.addFunc("editFeatureLevel", [vm](HexMapModule* self, int x, int z, int radius, int feature, int delta) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().editFeatureLevel(fromScriptCell(x, z), radius, feature, delta));
     });
 
-    // --- generation ---
-    cls.addFunc("generateMap", [vm](HexMapModule* self, graphics::Graphics* gfx, int seed, int landPercentage,
-                                    int waterLevel, int riverPercentage) {
-        if (!self || !gfx) return script::projectResult(vm, invalidArgument("hex map module is not available"));
-        if (seed < 0) seed = 0;
-        return script::projectResult(vm, self->generateMap(gfx, static_cast<std::uint32_t>(seed), landPercentage,
-                                                           waterLevel, riverPercentage));
+    // --- terrain apply (procgen produces the bake) ---
+    cls.addFunc("applyTerrain", [vm](HexMapModule* self, graphics::Graphics* gfx, ssq::Object bake) {
+        if (!self || !gfx) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
+        auto owned = script::valueFromSquirrel(bake);
+        if (!owned)
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "applyTerrain requires a hex.terrain bake object", "hexmap")));
+        auto decoded = hexTerrainBakeFromValue(owned.value());
+        if (!decoded) return script::projectResult(vm, Result<void>::failure(decoded.status()));
+        return script::projectResult(vm, self->applyTerrain(gfx, decoded.value()));
     });
 
     // --- fog of war ---
@@ -483,11 +470,11 @@ void HexMapModule::expose(ssq::Class& cls) {
         return self != nullptr && self->map().isExplorable(fromScriptCell(x, z));
     });
     cls.addFunc("setExplored", [vm](HexMapModule* self, int x, int z, bool value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setExplored(fromScriptCell(x, z), value));
     });
     cls.addFunc("setExplorable", [vm](HexMapModule* self, int x, int z, bool value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->map().setExplorable(fromScriptCell(x, z), value));
     });
     cls.addFunc("isCellVisible", [](HexMapModule* self, int x, int z) {
@@ -516,7 +503,7 @@ void HexMapModule::expose(ssq::Class& cls) {
             [](std::int32_t id) { return Value(static_cast<std::int64_t>(id)); });
     });
     cls.addFunc("removeUnit", [vm](HexMapModule* self, int unitId) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(
             vm, self->units().removeUnit(self->map(), self->visibility(), self->scratch(), unitId));
     });
@@ -550,25 +537,25 @@ void HexMapModule::expose(ssq::Class& cls) {
                                      project);
     });
     cls.addFunc("travelUnit", [vm](HexMapModule* self, int unitId, ssq::Object path) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         auto owned = script::valueFromSquirrel(path);
-        if (!owned) return script::projectResult(vm, invalidArgument("unit path must be an array of [x, z] cells"));
+        if (!owned) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unit path must be an array of [x, z] cells", "hexmap")));
         if (!owned.value().isArray())
-            return script::projectResult(vm, invalidArgument("unit path must be an array of [x, z] cells"));
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unit path must be an array of [x, z] cells", "hexmap")));
         std::vector<std::int32_t> cells;
         const Value&              list = owned.value();
         cells.reserve(list.arraySize());
         for (std::size_t i = 0; i < list.arraySize(); ++i) {
             const Value& entry = list.at(i);
             if (!entry.isArray() || entry.arraySize() < 2)
-                return script::projectResult(vm, invalidArgument("unit path entries must be [x, z] pairs"));
+                return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unit path entries must be [x, z] pairs", "hexmap")));
             const Value& ax = entry.at(0);
             const Value& az = entry.at(1);
             if (!ax.isNumeric() || !az.isNumeric())
-                return script::projectResult(vm, invalidArgument("unit path entries must hold numeric cells"));
+                return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unit path entries must hold numeric cells", "hexmap")));
             const std::int32_t index =
                 self->map().indexOf(fromScriptCell(static_cast<int>(ax.asInt()), static_cast<int>(az.asInt())));
-            if (index < 0) return script::projectResult(vm, invalidArgument("unit path leaves the hex map"));
+            if (index < 0) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unit path leaves the hex map", "hexmap")));
             cells.push_back(index);
         }
         return script::projectResult(vm,
@@ -610,16 +597,15 @@ void HexMapModule::expose(ssq::Class& cls) {
 
     // --- persistence ---
     cls.addFunc("saveMap", [vm](HexMapModule* self) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         std::vector<std::uint8_t> bytes;
         auto                      saved = saveHexMap(self->map(), self->units().snapshot(), bytes);
         if (!saved) return script::projectResult(vm, std::move(saved));
         return script::projectStatusResult(
-            vm, saved.status(), true, true,
-            Value::string(std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size())));
+            vm, saved.status(), Value::string(std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size())));
     });
     cls.addFunc("loadMap", [vm](HexMapModule* self, graphics::Graphics* gfx, std::string blob) {
-        if (!self || !gfx) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self || !gfx) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         std::vector<std::uint8_t> bytes(blob.begin(), blob.end());
         HexMap                    restored;
         std::vector<HexUnitState> units;
@@ -631,20 +617,22 @@ void HexMapModule::expose(ssq::Class& cls) {
     // --- spherical map ---
     cls.addFunc(
         "newSphere", [vm](HexMapModule* self, graphics::Graphics* gfx, int subdivision, float radius, int seed) {
-            if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+            if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
             if (seed < 0) seed = 0;
             return script::projectResult(vm,
                                          self->newSphere(gfx, subdivision, radius, static_cast<std::uint32_t>(seed)));
         });
-    cls.addFunc("generateSphere", [vm](HexMapModule* self, graphics::Graphics* gfx, int seed, int landPercentage,
-                                       int waterLevel) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
-        if (seed < 0) seed = 0;
-        return script::projectResult(
-            vm, self->generateSphere(gfx, static_cast<std::uint32_t>(seed), landPercentage, waterLevel));
+    cls.addFunc("applySphereTerrain", [vm](HexMapModule* self, graphics::Graphics* gfx, ssq::Object bake) {
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
+        auto owned = script::valueFromSquirrel(bake);
+        if (!owned)
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "applySphereTerrain requires a hex.sphere bake object", "hexmap")));
+        auto decoded = hexTerrainBakeFromValue(owned.value());
+        if (!decoded) return script::projectResult(vm, Result<void>::failure(decoded.status()));
+        return script::projectResult(vm, self->applySphereTerrain(gfx, decoded.value()));
     });
     cls.addFunc("rebuildSphere", [vm](HexMapModule* self, graphics::Graphics* gfx) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->rebuildSphere(gfx));
     });
     cls.addFunc("sphereReady", [](HexMapModule* self) { return self != nullptr && !self->sphere().empty(); });
@@ -699,19 +687,19 @@ void HexMapModule::expose(ssq::Class& cls) {
                                                  project);
                 });
     cls.addFunc("sphereSetElevation", [vm](HexMapModule* self, int cell, int value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->sphere().setElevation(cell, value));
     });
     cls.addFunc("sphereSetTerrainType", [vm](HexMapModule* self, int cell, int value) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->sphere().setTerrainType(cell, value));
     });
     cls.addFunc("sphereEditElevation", [vm](HexMapModule* self, int cell, int radius, int delta) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->sphere().editElevation(cell, radius, delta));
     });
     cls.addFunc("sphereEditTerrainType", [vm](HexMapModule* self, int cell, int radius, int terrainType) {
-        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (!self) return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map module is not available", "hexmap")));
         return script::projectResult(vm, self->sphere().editTerrainType(cell, radius, terrainType));
     });
     cls.addFunc("sphereTerrainMesh",

@@ -312,9 +312,10 @@ bool triangulateBoundary(const std::vector<V3>& polygon, std::vector<std::array<
 float laneCenterOffset(const RoadStyle& style, int lanesForward, int lanesBackward, int laneIndex,
                        RoadLaneDirection direction) {
     const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanesForward + lanesBackward);
-    if (direction == RoadLaneDirection::Forward)
+    if (lanesBackward <= 0 || direction == RoadLaneDirection::Backward)
         return -asphaltHalf + style.laneWidth * (static_cast<float>(laneIndex) + 0.5f);
-    return asphaltHalf - style.laneWidth * (static_cast<float>(laneIndex) + 0.5f);
+    const float opposingBoundary = -asphaltHalf + style.laneWidth * static_cast<float>(lanesBackward);
+    return opposingBoundary + style.laneWidth * (static_cast<float>(laneIndex) + 0.5f);
 }
 
 void appendBox(MeshBuild& mesh, V3 center, V3 side, V3 up, V3 forward, float hx, float hy, float hz,
@@ -348,16 +349,21 @@ void appendStripQuad(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 d, V3 normal, float u
     mesh.addVertex(b.x, b.y, b.z, normal.x, normal.y, normal.z, u1, v0);
     mesh.addVertex(c.x, c.y, c.z, normal.x, normal.y, normal.z, u1, v1);
     mesh.addVertex(d.x, d.y, d.z, normal.x, normal.y, normal.z, u0, v1);
-    mesh.addTriangle(base, base + 1, base + 2);
-    mesh.addTriangle(base, base + 2, base + 3);
+    const V3 firstAreaNormal  = cross(b - a, c - a);
+    const V3 secondAreaNormal = cross(c - a, d - a);
+    if (dot(firstAreaNormal, firstAreaNormal) > 1e-12f) mesh.addTriangle(base, base + 1, base + 2);
+    if (dot(secondAreaNormal, secondAreaNormal) > 1e-12f) mesh.addTriangle(base, base + 2, base + 3);
 }
 
 /** @brief Emit a quad whose winding matches @p normal (mesh3D expects object-space CCW). */
 void appendOrientedQuad(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 d, V3 normal, float u0, float u1, float v0, float v1,
                         RoadMaterial material) {
     const V3 n = normalize(normal);
-    // Tris (a,b,c) / (a,c,d); flip corner order when the geometric normal fights n.
-    if (dot(cross(b - a, c - a), n) < 0.f) {
+    // Use both constituent triangles so a deliberately collapsed edge still
+    // gets the winding of its non-degenerate half.
+    const V3 geometricNormal = cross(b - a, c - a) + cross(c - a, d - a);
+    if (dot(geometricNormal, geometricNormal) <= 1e-12f) return;
+    if (dot(geometricNormal, n) < 0.f) {
         appendStripQuad(mesh, a, d, c, b, n, u0, u1, v1, v0, material);
     } else {
         appendStripQuad(mesh, a, b, c, d, n, u0, u1, v0, v1, material);
@@ -366,13 +372,15 @@ void appendOrientedQuad(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 d, V3 normal, floa
 
 void appendOrientedTri(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 normal, float uvMeters, RoadMaterial material) {
     const V3 n = normalize(normal);
+    const V3 areaNormal = cross(b - a, c - a);
+    if (dot(areaNormal, areaNormal) <= 1e-12f) return;
     const float uvScale = 1.f / std::max(uvMeters, 0.1f);
     mesh.setActiveGroup(roadMaterialGroup(material));
     const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
     mesh.addVertex(a.x, a.y, a.z, n.x, n.y, n.z, a.x * uvScale, a.z * uvScale);
     mesh.addVertex(b.x, b.y, b.z, n.x, n.y, n.z, b.x * uvScale, b.z * uvScale);
     mesh.addVertex(c.x, c.y, c.z, n.x, n.y, n.z, c.x * uvScale, c.z * uvScale);
-    if (dot(cross(b - a, c - a), n) < 0.f)
+    if (dot(areaNormal, n) < 0.f)
         mesh.addTriangle(base, base + 2, base + 1);
     else
         mesh.addTriangle(base, base + 1, base + 2);
@@ -444,6 +452,8 @@ void capProfileRing(MeshBuild& mesh, const SplineFrameSample& frame, const RoadP
     const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
     for (const V3& p : ring) mesh.addVertex(p.x, p.y, p.z, nrm.x, nrm.y, nrm.z, 0.f, 0.f);
     for (std::size_t i = 1; i + 1 < ring.size(); ++i) {
+        const V3 areaNormal = cross(ring[i] - ring[0], ring[i + 1] - ring[0]);
+        if (dot(areaNormal, areaNormal) <= 1e-12f) continue;
         if (outward)
             mesh.addTriangle(base, base + static_cast<std::uint32_t>(i), base + static_cast<std::uint32_t>(i + 1));
         else
@@ -488,6 +498,13 @@ void capProfileShoulders(MeshBuild& mesh, const SplineFrameSample& frame, const 
         }
         const auto count = static_cast<std::uint32_t>(end - begin);
         for (std::uint32_t i = 1; i + 1 < count; ++i) {
+            const auto& originPoint = profile.points[begin];
+            const auto& pointA      = profile.points[begin + i];
+            const auto& pointB      = profile.points[begin + i + 1];
+            const V3    edgeA       = side * (pointA.side - originPoint.side) + up * (pointA.up - originPoint.up);
+            const V3    edgeB       = side * (pointB.side - originPoint.side) + up * (pointB.up - originPoint.up);
+            const V3    areaNormal  = cross(edgeA, edgeB);
+            if (dot(areaNormal, areaNormal) <= 1e-12f) continue;
             if (outward)
                 mesh.addTriangle(base, base + i, base + i + 1);
             else
@@ -587,6 +604,7 @@ Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSampl
                 const float hw = style.markingWidth * 0.5f;
                 const V3    p0 = pa + (pb - pa) * t0;
                 const V3    p1 = pa + (pb - pa) * t1;
+                if (length(p1 - p0) <= 1e-5f) return Result<void>::success();
                 const V3    s0 = normalize(sa + (sb - sa) * t0);
                 const V3    s1 = normalize(sa + (sb - sa) * t1);
                 const V3    u0 = normalize(ua + (ub - ua) * t0);
@@ -631,18 +649,19 @@ Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSampl
     if (!leftEdge.ok()) return leftEdge;
     auto rightEdge = paintLine(asphaltHalf - style.markingWidth, false, RoadMaterial::Marking);
     if (!rightEdge.ok()) return rightEdge;
+    const float divider = -asphaltHalf + style.laneWidth * static_cast<float>(edge.lanesBackward);
     for (int lane = 1; lane < edge.lanesForward; ++lane) {
-        const float lateral = -asphaltHalf + style.laneWidth * static_cast<float>(lane);
+        const float lateral = (edge.lanesBackward > 0 ? divider : -asphaltHalf) +
+                              style.laneWidth * static_cast<float>(lane);
         auto        line    = paintLine(lateral, true, RoadMaterial::Marking);
         if (!line.ok()) return line;
     }
     for (int lane = 1; lane < edge.lanesBackward; ++lane) {
-        const float lateral = asphaltHalf - style.laneWidth * static_cast<float>(lane);
+        const float lateral = -asphaltHalf + style.laneWidth * static_cast<float>(lane);
         auto        line    = paintLine(lateral, true, RoadMaterial::Marking);
         if (!line.ok()) return line;
     }
     if (edge.lanesForward > 0 && edge.lanesBackward > 0) {
-        const float divider = -asphaltHalf + style.laneWidth * static_cast<float>(edge.lanesForward);
         const float offset  = std::max(0.08f, style.markingWidth);
         auto        first   = paintLine(divider - offset, false, RoadMaterial::MarkingYellow);
         if (!first.ok()) return first;
@@ -1315,7 +1334,8 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
         V3 fwd{f.forwardX, f.forwardY, f.forwardZ};
         if (edge.from == node.id) fwd = fwd * -1.f;
         const V3    nrm = normalize(V3{f.upX, f.upY, f.upZ});
-        const float stripeW = edge.style.laneWidth * static_cast<float>(edge.lanesForward) * 0.45f;
+        const float stripeW =
+            edge.style.laneWidth * static_cast<float>(edge.lanesForward + edge.lanesBackward) * 0.45f;
         for (int s = 0; s < 4; ++s) {
             const float along = static_cast<float>(s) * 0.5f;
             const V3    c     = origin - fwd * along + nrm * 0.04f;

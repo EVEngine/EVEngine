@@ -3,6 +3,7 @@
 #include "devtools/AiPanel.hpp"
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/McpDevBridge.hpp"
+#include "devtools/McpScriptTools.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/ReloadSession.h"
 #include "devtools/RenderVision.hpp"
@@ -172,6 +173,11 @@ void DevTool::enableRenderTrace(bool on) {
 
 void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     if (!vm) return;
+    // Drop script tools registered against another VM *before* touching it: if
+    // that VM went away without detach(), its memory is freed and sq_release
+    // into it would corrupt the heap. Passing the incoming VM as the owner means
+    // nothing is released here, only discarded.
+    clearScriptTools(vm);
     detach();
     vm_           = vm;
     sampleLocals_ = sampleLocals;
@@ -204,6 +210,9 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
 
 void DevTool::detach() {
     ScenarioRecorder::instance().cancel();
+    // Handlers registered by project scripts live in this VM; drop them while it
+    // is still valid so the references are released, not leaked.
+    clearScriptTools(vm_);
     if (runtime_) {
         runtime_->setErrorHandler({});
         runtime_ = nullptr;
@@ -253,6 +262,8 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
     try {
         ssq::Table eveTbl = vm.find("eve").toTable();
         ssq::Table dev    = eveTbl.addTable("dev");
+        // Project-script MCP export surface (eve.mcp.tool/remove/tools/clear).
+        exposeMcpScriptApi(vm);
 
         dev.addFunc("pause", [this]() {
             debugger().pause(PauseReason::PauseKey);

@@ -6,12 +6,6 @@
 
 namespace eve::asset_graphics {
 namespace {
-template <typename T>
-Result<T> fail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.graphics.vegetation-scene-instance"));
-}
-
 std::string folded(std::string value) {
     for (char& character : value) character = static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
     return value;
@@ -23,9 +17,9 @@ Result<VegetationSceneAssociation> VegetationSceneAssociationLoader::load(
     auto scene = asset_scene::EvpackSceneTemplateLoader(reader_).load(sceneTemplate, capabilities);
     if (!scene) return Result<VegetationSceneAssociation>::failure(scene.status());
     if (scene.value().sourceGuid.empty())
-        return fail<VegetationSceneAssociation>(DiagnosticCode::Unsupported,
-                                                "legacy Scene Template has no source GUID for manager association",
-                                                sceneTemplate.format());
+        return Result<VegetationSceneAssociation>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "legacy Scene Template has no source GUID for manager association",
+            sceneTemplate.format(), {}, "asset.graphics.vegetation-scene-instance"));
     auto candidates = reader_.listAssets("eve.vegetation-scene/1", capabilities, 4096);
     if (!candidates) return Result<VegetationSceneAssociation>::failure(candidates.status());
     std::optional<LoadedVegetationScene> match;
@@ -35,15 +29,15 @@ Result<VegetationSceneAssociation> VegetationSceneAssociationLoader::load(
         if (!manager) return Result<VegetationSceneAssociation>::failure(manager.status());
         if (folded(manager.value().sourceGuid) != expected) continue;
         if (match)
-            return fail<VegetationSceneAssociation>(DiagnosticCode::Conflict,
-                                                    "Scene Template matches multiple vegetation managers",
-                                                    sceneTemplate.format());
+            return Result<VegetationSceneAssociation>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "Scene Template matches multiple vegetation managers",
+                                  sceneTemplate.format(), {}, "asset.graphics.vegetation-scene-instance"));
         match.emplace(std::move(manager).takeValue());
     }
     if (!match)
-        return fail<VegetationSceneAssociation>(DiagnosticCode::NotFound,
-                                                "Scene Template has no vegetation manager",
-                                                sceneTemplate.format());
+        return Result<VegetationSceneAssociation>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Scene Template has no vegetation manager",
+                              sceneTemplate.format(), {}, "asset.graphics.vegetation-scene-instance"));
     auto masks = loadVegetationSceneElementMasks(reader_, *match, capabilities);
     if (!masks) return Result<VegetationSceneAssociation>::failure(masks.status());
     return Result<VegetationSceneAssociation>::success(
@@ -68,8 +62,9 @@ Result<std::unique_ptr<VegetationSceneInstance>> VegetationSceneInstance::create
             std::move(runtime).takeValue(), std::move(live).takeValue()));
         return Result<std::unique_ptr<VegetationSceneInstance>>::success(std::move(result));
     } catch (const std::bad_alloc&) {
-        return fail<std::unique_ptr<VegetationSceneInstance>>(
-            DiagnosticCode::Failed, "vegetation scene instance allocation failed");
+        return Result<std::unique_ptr<VegetationSceneInstance>>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "vegetation scene instance allocation failed", {}, {},
+                              "asset.graphics.vegetation-scene-instance"));
     }
 }
 

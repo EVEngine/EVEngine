@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -33,7 +35,7 @@ struct VolumeFluidDiffuseSnapshot {
  * @details Fixed input/time ordering repeats on one build, with float tolerance
  * across platforms. No RNG or automatic emission is used by this pool.
  */
-class VolumeFluidDiffuse final {
+class EVENGINE_API_DOMAINS VolumeFluidDiffuse final {
 public:
     /** @brief Creates an empty pool with capacity 2048; use restore to configure a different capacity. */
     VolumeFluidDiffuse() = default;

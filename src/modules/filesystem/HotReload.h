@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -31,7 +33,7 @@ namespace eve::filesystem {
  * script layer to `dofile` / reload. This is what makes hot reload work on
  * read-only mobile bundles (iOS app bundle / Android APK).
  */
-class HotReload : public Module {
+class EVENGINE_API_FOUNDATION HotReload : public Module {
 public:
     Module_REG(HotReload);
 

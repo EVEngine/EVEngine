@@ -13,11 +13,11 @@ constexpr size_t kMaxPayloadElements = 100'000;
 
 }  // namespace
 
-EditorResult<EditorValue> EditorCommandService::error(EditorStatus status, const char* rule, std::string message) {
+Result<EditorValue> EditorCommandService::error(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<EditorValue>(status, RuleId(rule), std::move(message));
 }
 
-EditorResult<void> EditorCommandService::checkExecutionPolicy(const CommandDescriptor& descriptor,
+Result<void> EditorCommandService::checkExecutionPolicy(const CommandDescriptor& descriptor,
                                                              const CommandId&          id, CommandSource source,
                                                              const EditorValue& payload,
                                                              const HostProfile& profile) const {
@@ -36,12 +36,7 @@ EditorResult<void> EditorCommandService::checkExecutionPolicy(const CommandDescr
     return eve::editing::applied<void>();
 }
 
-template <class Output>
-EditorResult<Output> denyPolicy(EditorResult<void>&& policy) {
-    return EditorResult<Output>::failure(policy.status());
-}
-
-EditorResult<EditorValue> EditorCommandService::registerCommand(CommandDescriptor    descriptor,
+Result<EditorValue> EditorCommandService::registerCommand(CommandDescriptor    descriptor,
                                                                 EditorCommandHandler handler, bool replace) {
     if (!descriptor.id || descriptor.ownerModule.empty() || !handler)
         return error(EditorStatus::Rejected, "editor.command.invalid-registration",
@@ -61,7 +56,7 @@ EditorResult<EditorValue> EditorCommandService::registerCommand(CommandDescripto
     return eve::editing::applied<EditorValue>(EditorValue{});
 }
 
-EditorResult<EditorValue> EditorCommandService::registerPlannedCommand(CommandDescriptor         descriptor,
+Result<EditorValue> EditorCommandService::registerPlannedCommand(CommandDescriptor         descriptor,
                                                                        EditorCommandPlanner      planner,
                                                                        EditorCommandPlanExecutor executor,
                                                                        bool                      replace) {
@@ -130,7 +125,7 @@ std::vector<CommandDescriptor> EditorCommandService::commands(const HostProfile&
     return result;
 }
 
-EditorResult<EditorValue> EditorCommandService::execute(const CommandId& id, const CommandContext& context,
+Result<EditorValue> EditorCommandService::execute(const CommandId& id, const CommandContext& context,
                                                         const EditorValue& payload) const {
     auto it = std::find_if(commands_.begin(), commands_.end(),
                            [&](const Registration& entry) { return entry.descriptor.id == id; });
@@ -140,7 +135,7 @@ EditorResult<EditorValue> EditorCommandService::execute(const CommandId& id, con
         return error(EditorStatus::Failed, "editor.command.missing-profile", "Command context has no host profile");
     if (auto policy = checkExecutionPolicy(it->descriptor, id, context.source, payload, *context.profile);
         !policy.ok())
-        return denyPolicy<EditorValue>(std::move(policy));
+        return Result<EditorValue>::failure(std::move(policy).status());
 
     if (!it->handler)
         return error(EditorStatus::Unsupported, "editor.command.requires-plan",
@@ -156,7 +151,7 @@ EditorResult<EditorValue> EditorCommandService::execute(const CommandId& id, con
     }
 }
 
-EditorResult<CommandPlan> EditorCommandService::plan(const CommandRequest& request, const HostProfile& profile) const {
+Result<CommandPlan> EditorCommandService::plan(const CommandRequest& request, const HostProfile& profile) const {
     auto failure = [](EditorStatus status, const char* rule, std::string message) {
         return eve::editing::failed<CommandPlan>(status, RuleId(rule), std::move(message));
     };
@@ -167,7 +162,7 @@ EditorResult<CommandPlan> EditorCommandService::plan(const CommandRequest& reque
                        "Command is not registered: " + request.id.value());
     if (auto policy = checkExecutionPolicy(it->descriptor, request.id, request.source, request.payload, profile);
         !policy.ok())
-        return denyPolicy<CommandPlan>(std::move(policy));
+        return Result<CommandPlan>::failure(std::move(policy).status());
     if (request.expectedRevision && *request.expectedRevision != request.context.targetRevision)
         return failure(EditorStatus::Conflict, "editor.command.revision-conflict",
                        "Expected revision does not match the captured context");
@@ -175,7 +170,7 @@ EditorResult<CommandPlan> EditorCommandService::plan(const CommandRequest& reque
         return failure(EditorStatus::Unsupported, "editor.command.planning-unsupported",
                        "Command does not provide a planning handler");
     try {
-        EditorResult<CommandPlan> result = it->planner(request);
+        Result<CommandPlan> result = it->planner(request);
         if (result.ok()) {
             result.value().command      = request.id;
             result.value().target       = request.context.target;
@@ -197,7 +192,7 @@ EditorResult<CommandPlan> EditorCommandService::plan(const CommandRequest& reque
     }
 }
 
-EditorResult<TransactionReceipt> EditorCommandService::executePlan(const CommandRequest& request,
+Result<TransactionReceipt> EditorCommandService::executePlan(const CommandRequest& request,
                                                                    const CommandPlan&    plan,
                                                                    const HostProfile&    profile) const {
     auto failure = [](EditorStatus status, const char* rule, std::string message) {
@@ -225,7 +220,7 @@ EditorResult<TransactionReceipt> EditorCommandService::executePlan(const Command
                        "Command registration changed after planning");
     if (auto policy = checkExecutionPolicy(it->descriptor, request.id, request.source, request.payload, profile);
         !policy.ok())
-        return denyPolicy<TransactionReceipt>(std::move(policy));
+        return Result<TransactionReceipt>::failure(std::move(policy).status());
     if (request.payload != plan.plannedPayload || request.source != plan.plannedSource)
         return failure(EditorStatus::Rejected, "editor.command.plan-input-mismatch",
                        "Plan payload or source differs from the validated request");

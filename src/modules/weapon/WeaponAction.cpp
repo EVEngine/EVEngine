@@ -9,19 +9,14 @@
 namespace eve::weapon {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 eve::Result<eve::LogicalId> weaponActionId(const WeaponDefinition& weapon) {
     if (weapon.id.empty())
-        return failure<eve::LogicalId>(eve::DiagnosticCode::InvalidArgument, "weapon definition id must not be empty",
-                                       "weapon.id");
+        return eve::Result<eve::LogicalId>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "weapon definition id must not be empty", "weapon.id"));
     const auto id = eve::LogicalId::fromParts("weapon", "attack." + weapon.id);
     if (!id)
-        return failure<eve::LogicalId>(eve::DiagnosticCode::InvalidArgument,
-                                       "weapon id cannot form a valid action logical id", "weapon.id");
+        return eve::Result<eve::LogicalId>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "weapon id cannot form a valid action logical id", "weapon.id"));
     return eve::Result<eve::LogicalId>::success(*id);
 }
 
@@ -29,8 +24,8 @@ eve::Result<eve::Duration> seconds(float value, const char* path) {
     auto duration = eve::Duration::fromSeconds(static_cast<double>(value));
     if (!duration) return eve::Result<eve::Duration>::failure(duration.status());
     if (duration.value().nanoseconds() < 0)
-        return failure<eve::Duration>(eve::DiagnosticCode::InvalidArgument,
-                                      "weapon action duration must be non-negative", path);
+        return eve::Result<eve::Duration>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "weapon action duration must be non-negative", path));
     return duration;
 }
 
@@ -54,9 +49,9 @@ eve::Result<std::optional<eve::resource::CostSpec>> weaponCost(const WeaponDefin
     // the legacy template leaves resource.cost at its zero default.
     if (weapon.resource.kind == ResourceKind::Ammo && amount <= 0.0) amount = 1.0;
     if (!std::isfinite(amount) || amount <= 0.0 || std::floor(amount) != amount || amount >= std::ldexp(1.0, 63))
-        return failure<std::optional<eve::resource::CostSpec>>(eve::DiagnosticCode::InvalidArgument,
-                                                               "weapon resource cost must be a finite positive integer",
-                                                               "resource.cost");
+        return eve::Result<std::optional<eve::resource::CostSpec>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "weapon resource cost must be a finite positive integer", "resource.cost"));
 
     auto cost = eve::resource::CostSpec::single(resourceName(weapon.resource.kind), static_cast<std::int64_t>(amount));
     if (!cost) return eve::Result<std::optional<eve::resource::CostSpec>>::failure(cost.status());

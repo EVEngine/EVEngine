@@ -9,11 +9,6 @@
 namespace eve::physics::action_adapter {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 }  // namespace
 
 ActionCollisionIgnoreState::ActionCollisionIgnoreState(World3D& world, ActionCollisionPairResolver resolver)
@@ -52,21 +47,26 @@ World3D* ActionCollisionIgnoreState::liveWorld() const noexcept {
 Result<ActionCollisionIgnoreState::PairKey> ActionCollisionIgnoreState::resolvePair(
     ecs::EntityHandle subject, std::string_view channel) const {
     World3D* world = liveWorld();
-    if (!world) return failure<PairKey>(DiagnosticCode::StaleHandle, "collision world is no longer live", "world");
+    if (!world)
+        return Result<PairKey>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "collision world is no longer live", "world"));
     if (!resolver_)
-        return failure<PairKey>(DiagnosticCode::NotFound, "collision pair resolver is unavailable", "resolver");
+        return Result<PairKey>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "collision pair resolver is unavailable", "resolver"));
     auto pair = resolver_(subject, channel);
     if (!pair) return Result<PairKey>::failure(pair.status());
     if (!pair.value().first.isValid() || !pair.value().second.isValid() ||
         pair.value().first.world != worldHandle_ || pair.value().second.world != worldHandle_)
-        return failure<PairKey>(DiagnosticCode::InvalidArgument,
-                                "collision pair must contain two links owned by this world", "pair");
+        return Result<PairKey>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "collision pair must contain two links owned by this world", "pair"));
     PairKey key{pair.value().first.body, pair.value().second.body};
     if (key.first == key.second)
-        return failure<PairKey>(DiagnosticCode::InvalidArgument, "collision pair bodies must be distinct", "pair");
+        return Result<PairKey>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "collision pair bodies must be distinct", "pair"));
     if (key.second < key.first) std::swap(key.first, key.second);
     if (!world->findBody(key.first) || !world->findBody(key.second))
-        return failure<PairKey>(DiagnosticCode::StaleHandle, "collision pair contains a stale body", "pair");
+        return Result<PairKey>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "collision pair contains a stale body", "pair"));
     return Result<PairKey>::success(key);
 }
 
@@ -74,16 +74,20 @@ Result<void> ActionCollisionIgnoreState::enter(const eve::action::ActionStateWin
                                                 const eve::action::ActionTimelineEvent& event,
                                                 const eve::action::ActionNotifyContext& context) {
     if (!supports(binding.kind))
-        return failure<void>(DiagnosticCode::Unsupported, "physics adapter does not own this window kind", "kind");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "physics adapter does not own this window kind", "kind"));
     std::optional<ecs::EntityHandle> subject;
     if (binding.targetIndex) {
         if (*binding.targetIndex >= context.targets.size())
-            return failure<void>(DiagnosticCode::NotFound, "collision target index is unavailable", "targetIndex");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "collision target index is unavailable", "targetIndex"));
         subject = context.targets[*binding.targetIndex];
     } else {
         subject = context.source;
     }
-    if (!subject) return failure<void>(DiagnosticCode::NotFound, "collision window has no source or target", "subject");
+    if (!subject)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "collision window has no source or target", "subject"));
     auto pair = resolvePair(*subject, binding.resource);
     if (!pair) return Result<void>::failure(pair.status());
 
@@ -92,15 +96,16 @@ Result<void> ActionCollisionIgnoreState::enter(const eve::action::ActionStateWin
     if (activeFound != active_.end()) {
         if (activeFound->second == pair.value())
             return Result<void>::success(Status::success(StatusCode::NoOp));
-        return failure<void>(DiagnosticCode::Conflict,
-                             "collision-window key resolves to a different body pair", "itemId");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "collision-window key resolves to a different body pair", "itemId"));
     }
 
     World3D* world = liveWorld();
     Body3D* first = world ? world->findBody(pair.value().first) : nullptr;
     Body3D* second = world ? world->findBody(pair.value().second) : nullptr;
     if (!world || !first || !second)
-        return failure<void>(DiagnosticCode::StaleHandle, "collision pair became stale during enter", "pair");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "collision pair became stale during enter", "pair"));
     auto pairFound = pairs_.find(pair.value());
     if (pairFound == pairs_.end()) {
         const bool restoreEnabled = world->isBodyPairCollisionEnabled(first, second);
@@ -116,7 +121,8 @@ Result<void> ActionCollisionIgnoreState::exit(const eve::action::ActionStateWind
                                                const eve::action::ActionTimelineEvent& event,
                                                const eve::action::ActionNotifyContext& context) {
     if (!supports(binding.kind))
-        return failure<void>(DiagnosticCode::Unsupported, "physics adapter does not own this window kind", "kind");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "physics adapter does not own this window kind", "kind"));
     const ActiveKey activeKey{context.executionId, event.itemId.format()};
     const auto activeFound = active_.find(activeKey);
     if (activeFound == active_.end()) return Result<void>::success(Status::success(StatusCode::NoOp));

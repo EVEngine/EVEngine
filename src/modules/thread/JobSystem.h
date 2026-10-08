@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstddef>
 #include <functional>
@@ -285,7 +287,7 @@ public:
  * @param workerCount Worker thread count; <= 0 means hardware concurrency.
  * @return New JobSystem; the caller owns it and must delete it.
  */
-JobSystem *createJobSystem(int workerCount = 0);
+EVENGINE_API_FOUNDATION JobSystem *createJobSystem(int workerCount = 0);
 
 }  // namespace thread
 }  // namespace eve

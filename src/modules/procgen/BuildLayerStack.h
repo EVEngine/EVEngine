@@ -32,7 +32,7 @@ struct BuildLayerRegion {
 };
 
 /** @brief Immutable-by-convention result of one complete build-stack execution. */
-class BuildLayerExecution {
+class EVENGINE_API_DOMAINS BuildLayerExecution {
 public:
     [[nodiscard]] int         getCount() const noexcept;
     [[nodiscard]] std::string getId(int index) const;
@@ -54,7 +54,7 @@ private:
  * partial artifacts if a layer fails. No scene, renderer or physics state is owned.
  * @thread Affine; mutate and execute on the owning thread.
  */
-class BuildLayerStack {
+class EVENGINE_API_DOMAINS BuildLayerStack {
 public:
     /** @brief Append a grid-to-mesh tile layer. Layer ids are unique. */
     [[nodiscard]] Result<void> addTileLayer(std::string id, bool enabled, float cellSize, float height,

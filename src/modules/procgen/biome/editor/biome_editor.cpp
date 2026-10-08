@@ -11,6 +11,8 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
+#include <vector>
 
 namespace eve::biome_editor {
 namespace {
@@ -26,9 +28,9 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
 
 class BiomeEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override { return type == "biome" || type == "biome-rules"; }
+    std::vector<std::string_view> types() const override { return {"biome", "biome-rules"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type,
         const editor::EditorValue::Object& request) override {
         (void)type;
@@ -42,10 +44,10 @@ public:
             created.spatialAsset = stringField(request, "spatial");
             auto operation = biome->makeCreateLayer(created);
             if (!operation.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(operation.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(operation.status());
             auto applied = biome->applyDomainOperation(operation.value());
             if (!applied.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(applied.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(applied.status());
         }
         editor::AutomationOwnedTarget owned;
         owned.target = std::move(biome);

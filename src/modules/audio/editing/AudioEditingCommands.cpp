@@ -14,11 +14,6 @@ const editing::Value* field(const editing::Value& value, const char* key) {
     return found == object->end() ? nullptr : &found->second;
 }
 
-template <class T>
-editing::Result<T> error(editing::Status status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 editing::SelectionSnapshot selectionFor(editing::IEditableTarget& target) {
     editing::SelectionSnapshot selection;
     selection.channel = "audio";
@@ -49,13 +44,15 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const auto* path = pathValue ? pathValue->getIf<std::string>() : nullptr;
             const editing::Value* value = field(request.payload, "value");
             if (!properties || !path || !value)
-                return error<editing::CommandPlan>(editing::Status::Rejected, "audio.editing.property-payload",
-                                                   "Audio property requires a source target, path and value");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("audio.editing.property-payload"),
+                    "Audio property requires a source target, path and value");
             auto operation = properties->makeSet(selectionFor(target), editing::PropertyPath(*path), *value,
                                                  editing::PropertySetMode::Absolute);
             if (!operation.ok())
-                return error<editing::CommandPlan>(operation.code(), "audio.editing.property-operation",
-                                                   "Audio source rejected the property value");
+                return eve::editing::failed<editing::CommandPlan>(operation.code(),
+                                                                  editing::RuleId("audio.editing.property-operation"),
+                                                                  "Audio source rejected the property value");
             editing::CommandPlan plan;
             plan.operations.push_back(std::move(operation.value()));
             plan.summary = editing::Value::Object{{"path", *path}};

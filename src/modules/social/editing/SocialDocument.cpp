@@ -6,10 +6,6 @@
 
 namespace eve::social_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* o = value.getIf<EditorValue::Object>();
     if (!o) return nullptr;
@@ -19,7 +15,7 @@ const EditorValue* field(const EditorValue& value, const char* key) {
 EditorValue entityValue(const SocialEntityRecord& e) {
     return EditorValue::Object{{"id", e.id.value()}, {"label", e.label}, {"category", e.category}};
 }
-EditorResult<SocialEntityRecord> parseEntity(const EditorValue& value) {
+Result<SocialEntityRecord> parseEntity(const EditorValue& value) {
     const auto* i        = field(value, "id");
     const auto* l        = field(value, "label");
     const auto* c        = field(value, "category");
@@ -27,8 +23,8 @@ EditorResult<SocialEntityRecord> parseEntity(const EditorValue& value) {
     const auto* label    = l ? l->getIf<std::string>() : nullptr;
     const auto* category = c ? c->getIf<std::string>() : nullptr;
     if (!id || id->empty() || !label || label->empty() || !category)
-        return fail<SocialEntityRecord>(EditorStatus::Rejected, "editor.social.invalid-entity",
-                                        "Social entity requires identity, label and category");
+        return eve::editing::failed<SocialEntityRecord>(EditorStatus::Rejected, RuleId("editor.social.invalid-entity"),
+                                                        "Social entity requires identity, label and category");
     return eve::editing::applied<SocialEntityRecord>({StableId(*id), *label, *category});
 }
 EditorValue edgeValue(const SocialEdgeRecord& e) {
@@ -36,7 +32,7 @@ EditorValue edgeValue(const SocialEdgeRecord& e) {
         {"id", e.id.value()}, {"source", e.source.value()}, {"target", e.target.value()}, {"kind", e.kind},
         {"type", e.type},     {"weight", e.weight}};
 }
-EditorResult<SocialEdgeRecord> parseEdge(const EditorValue& value) {
+Result<SocialEdgeRecord> parseEdge(const EditorValue& value) {
     auto str = [&](const char* k) -> const std::string* {
         const auto* v = field(value, k);
         return v ? v->getIf<std::string>() : nullptr;
@@ -49,8 +45,9 @@ EditorResult<SocialEdgeRecord> parseEdge(const EditorValue& value) {
     if (!id || id->empty() || !source || source->empty() || !target || target->empty() || !kind ||
         !kinds.contains(*kind) || !type || !weight || !std::isfinite(*weight) ||
         ((*kind == "assignment" || *kind == "relation") && type->empty()))
-        return fail<SocialEdgeRecord>(EditorStatus::Rejected, "editor.social.invalid-edge",
-                                      "Social edge requires ids, supported kind/type and finite weight");
+        return eve::editing::failed<SocialEdgeRecord>(
+            EditorStatus::Rejected, RuleId("editor.social.invalid-edge"),
+            "Social edge requires ids, supported kind/type and finite weight");
     return eve::editing::applied<SocialEdgeRecord>(
         {StableId(*id), StableId(*source), StableId(*target), *kind, *type, *weight});
 }
@@ -79,101 +76,113 @@ std::vector<T> values(const std::map<StableId, T>& m) {
 
 SocialDocumentTarget::SocialDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor SocialDocumentTarget::describe() const {
-    return {TargetId(id_), "social-document", revision_, false, {editorCapabilityId()}};
+    return {TargetId(id_), "social-document", revisionValue(), false, {editorCapabilityId()}};
 }
 void* SocialDocumentTarget::queryCapability(const CapabilityId& capability) {
     return capability == editorCapabilityId() ? static_cast<SocialDocumentTarget*>(this) : nullptr;
 }
-EditorResult<void> SocialDocumentTarget::applyDomainOperation(const DomainOperation& o) {
+Result<void> SocialDocumentTarget::applyDomainOperation(const DomainOperation& o) {
     if (o.target != TargetId(id_))
-        return fail<void>(EditorStatus::Rejected, "editor.social.target", "Operation targets another social document");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.target"),
+                                          "Operation targets another social document");
     if (o.type == "social.entity.set.v1") {
         auto v = parseEntity(o.payload);
-        if (!v.ok()) return fail<void>(v.code(), "editor.social.entity-payload", "Invalid entity payload");
+        if (!v.ok())
+            return eve::editing::failed<void>(v.code(), RuleId("editor.social.entity-payload"),
+                                              "Invalid entity payload");
         entities_.insert_or_assign(v.value().id, v.value());
     } else if (o.type == "social.edge.set.v1") {
         auto v = parseEdge(o.payload);
-        if (!v.ok()) return fail<void>(v.code(), "editor.social.edge-payload", "Invalid edge payload");
+        if (!v.ok())
+            return eve::editing::failed<void>(v.code(), RuleId("editor.social.edge-payload"), "Invalid edge payload");
         if (!entities_.contains(v.value().source) || !entities_.contains(v.value().target))
-            return fail<void>(EditorStatus::Conflict, "editor.social.missing-endpoint",
-                              "Social edge endpoints must exist");
+            return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.social.missing-endpoint"),
+                                              "Social edge endpoints must exist");
         edges_.insert_or_assign(v.value().id, v.value());
     } else if (o.type == "social.entity.delete.v1" || o.type == "social.edge.delete.v1") {
         const auto* id = o.payload.getIf<std::string>();
         if (!id)
-            return fail<void>(EditorStatus::Rejected, "editor.social.delete-payload", "Delete requires a stable id");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.delete-payload"),
+                                              "Delete requires a stable id");
         const StableId stable(*id);
         if (o.type == "social.entity.delete.v1") {
             for (const auto& [edgeId, e] : edges_) {
                 (void)edgeId;
                 if (e.source == stable || e.target == stable)
-                    return fail<void>(EditorStatus::Conflict, "editor.social.entity-in-use",
-                                      "Entity is referenced by an edge");
+                    return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.social.entity-in-use"),
+                                                      "Entity is referenced by an edge");
             }
             if (!entities_.erase(stable))
-                return fail<void>(EditorStatus::NotFound, "editor.social.entity-not-found", "Entity was not found");
+                return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.social.entity-not-found"),
+                                                  "Entity was not found");
         } else if (!edges_.erase(stable))
-            return fail<void>(EditorStatus::NotFound, "editor.social.edge-not-found", "Edge was not found");
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.social.edge-not-found"),
+                                              "Edge was not found");
     } else
-        return fail<void>(EditorStatus::Rejected, "editor.social.operation", "Unsupported social operation");
-    ++revision_;
-    dirty_.include(0, 0);
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.operation"),
+                                          "Unsupported social operation");
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> SocialDocumentTarget::cloneDomainState() const {
     return std::make_unique<SocialDocumentTarget>(*this);
 }
-EditorResult<void> SocialDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> SocialDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* t = dynamic_cast<SocialDocumentTarget*>(candidate.get());
     if (!t || t->id_ != id_)
-        return fail<void>(EditorStatus::Rejected, "editor.social.staging", "Invalid staged social state");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.staging"),
+                                          "Invalid staged social state");
     *this = *t;
     return eve::editing::applied<void>();
 }
 std::vector<SocialEntityRecord>        SocialDocumentTarget::entities() const { return values(entities_); }
 std::vector<SocialEdgeRecord>          SocialDocumentTarget::edges() const { return values(edges_); }
-EditorResult<DomainOperation> SocialDocumentTarget::makeSetEntity(const SocialEntityRecord& e) const {
+Result<DomainOperation> SocialDocumentTarget::makeSetEntity(const SocialEntityRecord& e) const {
     if (!parseEntity(entityValue(e)).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.social.invalid-entity",
-                                     "Cannot plan invalid entity");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.social.invalid-entity"),
+                                                              "Cannot plan invalid entity");
     const auto f = entities_.find(e.id);
     return eve::editing::applied<DomainOperation>(
         op("social.entity.set.v1", f == entities_.end() ? "social.entity.delete.v1" : "social.entity.set.v1", id_,
            entityValue(e), f == entities_.end() ? EditorValue(e.id.value()) : entityValue(f->second), e.id));
 }
-EditorResult<DomainOperation> SocialDocumentTarget::makeDeleteEntity(const StableId& id) const {
+Result<DomainOperation> SocialDocumentTarget::makeDeleteEntity(const StableId& id) const {
     const auto f = entities_.find(id);
     if (f == entities_.end())
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.social.entity-not-found", "Entity was not found");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.social.entity-not-found"),
+                                                     "Entity was not found");
     for (const auto& [edgeId, e] : edges_) {
         (void)edgeId;
         if (e.source == id || e.target == id)
-            return fail<DomainOperation>(EditorStatus::Conflict, "editor.social.entity-in-use",
-                                         "Entity is referenced by an edge");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Conflict, RuleId("editor.social.entity-in-use"),
+                                                         "Entity is referenced by an edge");
     }
     return eve::editing::applied<DomainOperation>(
         op("social.entity.delete.v1", "social.entity.set.v1", id_, id.value(), entityValue(f->second), id));
 }
-EditorResult<DomainOperation> SocialDocumentTarget::makeSetEdge(const SocialEdgeRecord& e) const {
+Result<DomainOperation> SocialDocumentTarget::makeSetEdge(const SocialEdgeRecord& e) const {
     if (!parseEdge(edgeValue(e)).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.social.invalid-edge", "Cannot plan invalid edge");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.social.invalid-edge"),
+                                                     "Cannot plan invalid edge");
     if (!entities_.contains(e.source) || !entities_.contains(e.target))
-        return fail<DomainOperation>(EditorStatus::Conflict, "editor.social.missing-endpoint",
-                                     "Social edge endpoints must exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Conflict, RuleId("editor.social.missing-endpoint"),
+                                                     "Social edge endpoints must exist");
     for (const auto& [id, current] : edges_)
         if (id != e.id && current.source == e.source && current.target == e.target && current.kind == e.kind &&
             current.type == e.type)
-            return fail<DomainOperation>(EditorStatus::Conflict, "editor.social.duplicate-edge",
-                                         "Equivalent social edge already exists");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Conflict, RuleId("editor.social.duplicate-edge"),
+                                                         "Equivalent social edge already exists");
     const auto f = edges_.find(e.id);
     return eve::editing::applied<DomainOperation>(
         op("social.edge.set.v1", f == edges_.end() ? "social.edge.delete.v1" : "social.edge.set.v1", id_, edgeValue(e),
            f == edges_.end() ? EditorValue(e.id.value()) : edgeValue(f->second), e.id));
 }
-EditorResult<DomainOperation> SocialDocumentTarget::makeDeleteEdge(const StableId& id) const {
+Result<DomainOperation> SocialDocumentTarget::makeDeleteEdge(const StableId& id) const {
     const auto f = edges_.find(id);
     if (f == edges_.end())
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.social.edge-not-found", "Edge was not found");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.social.edge-not-found"),
+                                                     "Edge was not found");
     return eve::editing::applied<DomainOperation>(
         op("social.edge.delete.v1", "social.edge.set.v1", id_, id.value(), edgeValue(f->second), id));
 }
@@ -214,34 +223,35 @@ EditorValue SocialDocumentTarget::snapshotValue() const {
     return EditorValue::Object{
         {"schemaVersion", int64_t{1}}, {"entities", std::move(entities)}, {"edges", std::move(edges)}};
 }
-EditorResult<void> SocialDocumentTarget::loadSnapshot(const EditorValue& s) {
+Result<void> SocialDocumentTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *ns = field(s, "entities"), *es = field(s, "edges");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     const auto* nodes   = ns ? ns->getIf<EditorValue::Array>() : nullptr;
     const auto* edges   = es ? es->getIf<EditorValue::Array>() : nullptr;
     if (!version || *version != 1 || !nodes || !edges)
-        return fail<void>(EditorStatus::Rejected, "editor.social.snapshot", "Invalid social snapshot envelope");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.snapshot"),
+                                          "Invalid social snapshot envelope");
     SocialDocumentTarget c(id_);
     for (const auto& e : *nodes) {
         auto p = parseEntity(e);
         if (!p.ok() || !c.entities_.emplace(p.value().id, p.value()).second)
-            return fail<void>(EditorStatus::Rejected, "editor.social.snapshot-entity",
-                              "Invalid or duplicate snapshot entity");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.snapshot-entity"),
+                                              "Invalid or duplicate snapshot entity");
     }
     for (const auto& e : *edges) {
         auto p = parseEdge(e);
         if (!p.ok() || !c.edges_.emplace(p.value().id, p.value()).second)
-            return fail<void>(EditorStatus::Rejected, "editor.social.snapshot-edge",
-                              "Invalid or duplicate snapshot edge");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.snapshot-edge"),
+                                              "Invalid or duplicate snapshot edge");
     }
     for (const auto& d : c.validate())
         if (d.severity() == DiagnosticSeverity::Error)
-            return fail<void>(EditorStatus::Rejected, "editor.social.snapshot-invariant",
-                              "Social snapshot violates graph invariants");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.snapshot-invariant"),
+                                              "Social snapshot violates graph invariants");
     entities_ = std::move(c.entities_);
     edges_    = std::move(c.edges_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 

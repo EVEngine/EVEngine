@@ -9,11 +9,6 @@
 namespace eve {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool hasOnlyEnvelopeFields(const Value::Object& object) {
     static const std::set<std::string> fields = {"contentHash", "instanceId",    "payload", "revision",
                                                  "schema",      "schemaVersion", "tick",    "type"};
@@ -25,13 +20,13 @@ bool hasOnlyEnvelopeFields(const Value::Object& object) {
 Result<std::uint64_t> readUint64(const Value& value, std::string_view field) {
     const auto* text = value.getIf<std::string>();
     if (!text || text->empty())
-        return failure<std::uint64_t>(DiagnosticCode::ParseError, "snapshot integer must be a decimal string",
-                                      std::string(field));
+        return Result<std::uint64_t>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "snapshot integer must be a decimal string", std::string(field)));
     std::uint64_t output    = 0;
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), output);
     if (error != std::errc{} || end != text->data() + text->size())
-        return failure<std::uint64_t>(DiagnosticCode::ParseError, "snapshot integer is out of range",
-                                      std::string(field));
+        return Result<std::uint64_t>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "snapshot integer is out of range", std::string(field)));
     return Result<std::uint64_t>::success(output);
 }
 
@@ -49,9 +44,11 @@ Result<std::string> canonicalHashInputFor(const SnapshotEnvelope& snapshot) {
 
 Result<void> validateHeader(const SnapshotEnvelope& snapshot) {
     if (snapshot.type.empty())
-        return failure<void>(DiagnosticCode::InvalidArgument, "snapshot type must not be empty", "type");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot type must not be empty", "type"));
     if (!snapshot.schema.isValid())
-        return failure<void>(DiagnosticCode::InvalidArgument, "snapshot schema must be a valid logical ID", "schema");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot schema must be a valid logical ID", "schema"));
     return Result<void>::success();
 }
 
@@ -67,14 +64,16 @@ Result<void> verifySnapshotEnvelope(const SnapshotEnvelope& snapshot, const Snap
     auto valid = validateHeader(snapshot);
     if (!valid.ok()) return valid;
     if (!hashProvider)
-        return failure<void>(DiagnosticCode::Unsupported, "snapshot hash provider is required", "contentHash");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "snapshot hash provider is required", "contentHash"));
 
     auto input = snapshotHashInput(snapshot);
     if (!input.ok()) return Result<void>::failure(input.status());
     auto computed = hashProvider(input.value());
     if (!computed.ok()) return Result<void>::failure(computed.status());
     if (std::move(computed).takeValue() != snapshot.contentHash)
-        return failure<void>(DiagnosticCode::HashMismatch, "snapshot content hash does not match", "contentHash");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::HashMismatch, "snapshot content hash does not match", "contentHash"));
     return Result<void>::success();
 }
 
@@ -88,9 +87,9 @@ Result<void> validateSnapshotPayloadMetadata(const Value& payload, Revision revi
         auto parsed = readUint64(found->second, field);
         if (!parsed.ok()) return Result<void>::failure(parsed.status());
         if (parsed.value() != expected)
-            return failure<void>(DiagnosticCode::Conflict,
-                                 "snapshot payload " + std::string(field) + " disagrees with the envelope",
-                                 "payload." + std::string(field));
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "snapshot payload " + std::string(field) + " disagrees with the envelope",
+                "payload." + std::string(field)));
         return Result<void>::success();
     };
 
@@ -109,8 +108,8 @@ Result<SnapshotEnvelope> makeSnapshotEnvelope(std::string type, LogicalId schema
     auto             valid = validateHeader(snapshot);
     if (!valid.ok()) return Result<SnapshotEnvelope>::failure(valid.status());
     if (!hashProvider)
-        return failure<SnapshotEnvelope>(DiagnosticCode::Unsupported, "snapshot hash provider is required",
-                                         "contentHash");
+        return Result<SnapshotEnvelope>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "snapshot hash provider is required", "contentHash"));
     auto input = snapshotHashInput(snapshot);
     if (!input.ok()) return Result<SnapshotEnvelope>::failure(input.status());
     auto hash = hashProvider(input.value());
@@ -137,8 +136,8 @@ Result<Value> snapshotEnvelopeValue(const SnapshotEnvelope& snapshot) {
 Result<SnapshotEnvelope> parseSnapshotEnvelopeValue(const Value& value, const SnapshotHashProvider& hashProvider) {
     const auto* object = value.getIf<Value::Object>();
     if (!object || !hasOnlyEnvelopeFields(*object))
-        return failure<SnapshotEnvelope>(DiagnosticCode::ParseError,
-                                         "snapshot envelope must be an object with the exact public fields");
+        return Result<SnapshotEnvelope>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "snapshot envelope must be an object with the exact public fields", {}));
 
     const auto type          = value.getIf<Value::Object>()->find("type");
     const auto schemaText    = object->find("schema");
@@ -152,13 +151,15 @@ Result<SnapshotEnvelope> parseSnapshotEnvelopeValue(const Value& value, const Sn
         instanceId == object->end() || revision == object->end() || tick == object->end() ||
         contentHash == object->end() || payload == object->end() || !type->second.isString() ||
         !schemaText->second.isString() || !instanceId->second.isString() || !contentHash->second.isString())
-        return failure<SnapshotEnvelope>(DiagnosticCode::ParseError, "snapshot envelope has invalid fields");
+        return Result<SnapshotEnvelope>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "snapshot envelope has invalid fields", {}));
 
     const auto schema       = LogicalId::parse(*schemaText->second.getIf<std::string>());
     const auto persistentId = PersistentId::parse(*instanceId->second.getIf<std::string>());
     const auto contentId    = ContentId::parse(*contentHash->second.getIf<std::string>());
     if (!schema || !persistentId || !contentId)
-        return failure<SnapshotEnvelope>(DiagnosticCode::ParseError, "snapshot envelope has invalid identity fields");
+        return Result<SnapshotEnvelope>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "snapshot envelope has invalid identity fields", {}));
 
     auto version = readUint64(schemaVersion->second, "schemaVersion");
     if (!version.ok()) return Result<SnapshotEnvelope>::failure(version.status());
@@ -194,9 +195,12 @@ Result<SnapshotEnvelope> parseSnapshotEnvelope(std::string_view json, const Snap
 
 Result<void> SnapshotMigrationChain::add(LogicalId schema, SchemaVersion from, SchemaVersion to, Migration migration) {
     if (!schema.isValid() || from.value() >= to.value() || !migration)
-        return failure<void>(DiagnosticCode::InvalidArgument, "invalid snapshot migration edge");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid snapshot migration edge", {}));
     const Key key{schema.format(), from.value()};
-    if (steps_.contains(key)) return failure<void>(DiagnosticCode::Conflict, "snapshot migration edge already exists");
+    if (steps_.contains(key))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "snapshot migration edge already exists", {}));
     steps_.emplace(key, Step{to, std::move(migration)});
     return Result<void>::success();
 }
@@ -206,21 +210,22 @@ Result<SnapshotEnvelope> SnapshotMigrationChain::migrate(SnapshotEnvelope snapsh
     auto verified = verifySnapshotEnvelope(snapshot, hashProvider);
     if (!verified.ok()) return Result<SnapshotEnvelope>::failure(verified.status());
     if (snapshot.schemaVersion.value() > targetVersion.value())
-        return failure<SnapshotEnvelope>(DiagnosticCode::UnknownVersion,
-                                         "snapshot schema version is newer than the supported target", "schemaVersion");
+        return Result<SnapshotEnvelope>::failure(
+            Diagnostic::error(DiagnosticCode::UnknownVersion,
+                              "snapshot schema version is newer than the supported target", "schemaVersion"));
     if (snapshot.schemaVersion == targetVersion) return Result<SnapshotEnvelope>::success(std::move(snapshot));
 
     while (snapshot.schemaVersion.value() < targetVersion.value()) {
         const Key  key{snapshot.schema.format(), snapshot.schemaVersion.value()};
         const auto step = steps_.find(key);
         if (step == steps_.end())
-            return failure<SnapshotEnvelope>(DiagnosticCode::Unsupported,
-                                             "no snapshot migration step reaches the requested version",
-                                             "schemaVersion");
+            return Result<SnapshotEnvelope>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported,
+                                  "no snapshot migration step reaches the requested version", "schemaVersion"));
         if (step->second.to.value() > targetVersion.value())
-            return failure<SnapshotEnvelope>(DiagnosticCode::Unsupported,
-                                             "snapshot migration step overshoots the requested version",
-                                             "schemaVersion");
+            return Result<SnapshotEnvelope>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported,
+                                  "snapshot migration step overshoots the requested version", "schemaVersion"));
         auto payload = step->second.migration(snapshot.payload);
         if (!payload.ok()) return Result<SnapshotEnvelope>::failure(payload.status());
         snapshot.payload       = std::move(payload).takeValue();

@@ -48,7 +48,7 @@ void openLocked(const std::string& path, bool explicitInit) {
     g_open = true;
     g_explicitInit = explicitInit;
     g_logPath = path;
-    g_logFile << "==== " << nowStamp() << " EVEngine session start ====\n";
+    g_logFile << "==== " << nowStamp() << " " << kSessionStartMarker << " ====\n";
     g_logFile.flush();
 }
 
@@ -89,6 +89,18 @@ void recordCrashEvent(const std::string& report) {
 std::string crashLogPath() {
     std::lock_guard<std::mutex> lock(g_logMutex);
     return g_logPath;
+}
+
+void recordSessionStart() {
+    std::lock_guard<std::mutex> lock(g_logMutex);
+    ensureOpenLocked();
+    if (!g_open || !g_logFile) return;
+    g_logFile << "==== " << nowStamp() << " " << kSessionStartMarker << " ====\n";
+    g_logFile.flush();
+}
+
+void recordSessionEnd(int exitCode) {
+    recordLogEvent("info", std::string(kSessionEndMarker) + " " + std::to_string(exitCode) + ")");
 }
 
 }  // namespace eve

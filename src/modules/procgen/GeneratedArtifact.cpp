@@ -22,12 +22,12 @@ namespace {
 
 eve::Result<GeneratedArtifact> rejectedArtifact(eve::DiagnosticCode code, std::string message) {
     return eve::Result<GeneratedArtifact>::failure(
-        eve::Diagnostic::error(code, std::move(message), "generatedArtifact"));
+        eve::Diagnostic::error(code, message, "generatedArtifact"));
 }
 
 eve::Result<ArtifactPart> rejectedPart(eve::DiagnosticCode code, std::string message) {
     return eve::Result<ArtifactPart>::failure(
-        eve::Diagnostic::error(code, std::move(message), "generatedArtifact.part"));
+        eve::Diagnostic::error(code, message, "generatedArtifact.part"));
 }
 
 std::uint64_t fnv1a(std::string_view text) noexcept {

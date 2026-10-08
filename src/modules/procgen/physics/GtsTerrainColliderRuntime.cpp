@@ -30,11 +30,6 @@ int destroy(std::vector<ColliderLink>& links) {
     links.clear();
     return count;
 }
-template <class T>
-Result<T> invalid(std::string message) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "procgen.physics.gtsTerrainCollider"));
-}
 }  // namespace
 struct GtsTerrainColliderRuntime::Impl {
     std::vector<ColliderLink> tiles;
@@ -46,21 +41,27 @@ Result<std::uint64_t> GtsTerrainColliderRuntime::replace(const procgen::GtsTerra
                                                          int level, float ox, float oy, float oz) {
     if (!world.isValid() || level < 0 || level >= lods.getLevelCount() || !std::isfinite(ox) || !std::isfinite(oy) ||
         !std::isfinite(oz))
-        return invalid<std::uint64_t>("GTS collider world, level or origin is invalid");
+        return Result<std::uint64_t>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                "GTS collider world, level or origin is invalid",
+                                                                "procgen.physics.gtsTerrainCollider"));
     std::vector<ColliderLink> candidate(static_cast<std::size_t>(lods.getTileCount()));
     try {
         for (int tileIndex = 0; tileIndex < lods.getTileCount(); ++tileIndex) {
             const auto* tile = lods.tileAt(tileIndex);
             if (!tile || level >= static_cast<int>(tile->levels.size())) {
                 destroy(candidate);
-                return invalid<std::uint64_t>("GTS collider tile level is missing");
+                return Result<std::uint64_t>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "GTS collider tile level is missing",
+                                                                        "procgen.physics.gtsTerrainCollider"));
             }
             const auto& mesh = tile->levels[static_cast<std::size_t>(level)];
             if (mesh.empty()) continue;
             auto* body = world.newBody("static", ox + tile->offsetX, oy, oz + tile->offsetZ);
             if (!body) {
                 destroy(candidate);
-                return invalid<std::uint64_t>("GTS collider body creation failed");
+                return Result<std::uint64_t>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "GTS collider body creation failed",
+                                                                        "procgen.physics.gtsTerrainCollider"));
             }
             ColliderLink link{world.runtimeHandle(), body->runtimeHandle()};
             candidate[static_cast<std::size_t>(tileIndex)] = link;

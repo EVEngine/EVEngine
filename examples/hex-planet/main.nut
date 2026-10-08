@@ -118,8 +118,8 @@ function createShaders(st) {
     if (st.terrainShader != null) return true;
 
     // The engine's built-in Mesh3D vertex stage already produces the varyings both
-    // fragment stages consume, so only the fragment stages ship -- as SPIR-V, because
-    // runtime GLSL compilation is unavailable on Windows.
+    // fragment stages consume, so only the fragment stages are shipped -- as SPIR-V,
+    // which needs no runtime compiler.
     local terrain = gfx.loadMeshShaderSpv("", "shaders/hex_planet_terrain.frag.spv");
     if (!terrain.ok) {
         print("hex planet: terrain shader failed: " + terrain.status.summary + "\n");
@@ -198,6 +198,22 @@ function reportDistribution(st) {
           (hexmap.sphereWaterMesh() != null) + "\n");
 }
 
+function fillSphereTerrain(st) {
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return paramsResult;
+    local params = paramsResult.value;
+    params.setSeed(st.seed);
+    local defaults = procgen.applyAlgorithmDefaults("hex.sphere", params);
+    if (!defaults.ok) return defaults;
+    params.setInt("subdivision", st.subdivision);
+    params.setFloat("radius", st.radius);
+    params.setInt("landPercentage", st.landPercent);
+    params.setInt("waterLevel", st.waterLevel);
+    local baked = procgen.generateHexSphere(params);
+    if (!baked.ok) return baked;
+    return hexmap.applySphereTerrain(gfx, baked.value);
+}
+
 function buildPlanet(st) {
     local created = hexmap.newSphere(gfx, st.subdivision, st.radius, st.seed);
     if (!created.ok) {
@@ -206,7 +222,7 @@ function buildPlanet(st) {
         return false;
     }
 
-    local generated = hexmap.generateSphere(gfx, st.seed, st.landPercent, st.waterLevel);
+    local generated = fillSphereTerrain(st);
     if (!generated.ok) {
         st.statusText = "generate failed: " + generated.status.summary;
         print("hex planet: " + st.statusText + "\n");
@@ -224,7 +240,7 @@ function buildPlanet(st) {
 }
 
 function regenerate(st) {
-    local generated = hexmap.generateSphere(gfx, st.seed, st.landPercent, st.waterLevel);
+    local generated = fillSphereTerrain(st);
     if (!generated.ok) {
         st.statusText = "generate failed: " + generated.status.summary;
         return;

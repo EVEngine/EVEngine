@@ -2751,3 +2751,105 @@ TEST_CASE("procgen.road.scenes.crosswalksFaceUpOnEveryArm") {
     }
     CHECK_GE(crosswalkTriangles, 32);
 }
+
+TEST_CASE("procgen.road.scenes.latestCommonAngleFactoriesUseUnifiedBake") {
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 28;
+    options.includeNavigation   = false;
+    options.includePiers        = false;
+    options.includeMarkings     = false;
+
+    std::vector<Result<RoadNetwork>> scenes;
+    scenes.push_back(RoadNetwork::makeTee(28.f, 2));
+    scenes.push_back(RoadNetwork::makeY(28.f, 2));
+    scenes.push_back(RoadNetwork::makeFork(28.f, 2));
+    scenes.push_back(RoadNetwork::makeSkew(28.f, 2));
+    for (float gap : {60.f, 90.f, 120.f, 135.f, 28.f})
+        scenes.push_back(RoadNetwork::makeFan(28.f, 2, {0.f, gap, 180.f + gap * 0.5f}));
+
+    for (auto& scene : scenes) {
+        REQUIRE(scene.ok());
+        REQUIRE_EQ(scene.value().edgeCount(), 3);
+        auto baked = bakeRoadNetwork(scene.value(), options);
+        REQUIRE(baked.ok());
+        auto asphalt = copyRoadGroup(baked.value().mesh, "asphalt");
+        REQUIRE(asphalt);
+        CHECK(roadTriangleCoversXZ(*asphalt, 0.f, 0.f));
+        checkNoDegenerateRoadTriangles(baked.value().mesh, "asphalt");
+    }
+    CHECK(RoadNetwork::makeScene("tee", 24.f, 4.f, 2, 1).ok());
+    CHECK(RoadNetwork::makeScene("y", 24.f, 4.f, 2, 1).ok());
+    CHECK(RoadNetwork::makeScene("fork", 24.f, 4.f, 2, 1).ok());
+    CHECK(RoadNetwork::makeScene("skew", 24.f, 4.f, 2, 1).ok());
+}
+
+TEST_CASE("procgen.road.scenes.commonConnectionsEmitNoDegenerateTriangles") {
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 20;
+    options.turnSamples         = 8;
+    options.includePiers        = false;
+
+    for (const std::string scene : {"cross", "tee", "y", "fork", "skew", "sloped-t", "curve-uphill",
+                                    "y-junction", "tight-turn", "roundabout"}) {
+        auto network = RoadNetwork::makeScene(scene, 48.f, 6.f, 2, 1);
+        REQUIRE(network.ok());
+        auto baked = bakeRoadNetwork(network.value(), options);
+        REQUIRE(baked.ok());
+        for (const auto& groupName : baked.value().mesh.groupNames())
+            checkNoDegenerateRoadTriangles(baked.value().mesh, groupName);
+    }
+}
+
+TEST_CASE("procgen.road.bidirectional.asymmetricLaneCentersFollowLatestConvention") {
+    RoadNetwork network;
+    const auto  from = network.addNode(-20.f, 0.f, 0.f, 2.f);
+    const auto  to   = network.addNode(20.f, 0.f, 0.f, 2.f);
+    REQUIRE(from.ok());
+    REQUIRE(to.ok());
+    REQUIRE(network.addEdge(from.value(), to.value(), {{}, {}}, 1, 2).ok());
+    RoadBakeOptions options;
+    options.includeJunctions = false;
+    options.includePiers     = false;
+    auto baked               = bakeRoadNetwork(network, options);
+    REQUIRE(baked.ok());
+    REQUIRE_EQ(baked.value().overlay.lanes.size(), 3u);
+
+    bool sawForward = false, sawBackward = false;
+    for (const auto& lane : baked.value().overlay.lanes) {
+        REQUIRE_GE(lane.xyz.size(), 3u);
+        const float z = lane.xyz[2];
+        if (lane.inDirection == RoadLaneDirection::Forward) {
+            sawForward = true;
+            CHECK_GT(z, 3.2f);
+            CHECK_LT(z, 3.8f);
+        } else {
+            sawBackward = true;
+            CHECK_LT(z, 0.25f);
+        }
+    }
+    CHECK(sawForward);
+    CHECK(sawBackward);
+}
+
+TEST_CASE("procgen.road.scenes.latestYFactoryConnectsBothExits") {
+    auto network = RoadNetwork::makeY(28.f, 2);
+    REQUIRE(network.ok());
+    std::uint32_t hub = 0, incoming = 0;
+    std::vector<std::uint32_t> outgoing;
+    for (const auto& node : network.value().nodes())
+        if (std::hypot(node.x, node.z) < 1e-4f) hub = node.id;
+    REQUIRE_NE(hub, 0u);
+    for (const auto& edge : network.value().edges()) {
+        if (edge.to == hub) incoming = edge.id;
+        if (edge.from == hub) outgoing.push_back(edge.id);
+    }
+    REQUIRE_NE(incoming, 0u);
+    REQUIRE_EQ(outgoing.size(), 2u);
+    for (const auto outEdge : outgoing) {
+        const auto found = std::find_if(network.value().laneLinks().begin(), network.value().laneLinks().end(),
+                                        [&](const RoadLaneConnection& link) {
+                                            return link.inEdge == incoming && link.outEdge == outEdge;
+                                        });
+        CHECK(found != network.value().laneLinks().end());
+    }
+}

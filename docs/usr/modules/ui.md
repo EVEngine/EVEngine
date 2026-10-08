@@ -268,8 +268,33 @@ ImGui 样式栈自然作用于子树；子节点只覆盖自己声明的 token�
 原生控件原语，因此尺寸、禁用态和编辑结果语义一致。文本输入持有 UTF-8 `std::string` 并在
 ImGui 请求扩容时增长，不再使用 1 KiB/512 字节固定缓冲；SDL/ImGui 后端继续负责平台 IME。
 
-轻量动效可用 `animateItemOpacity(id, target, durationMs)`；它只改节点瞬态 opacity，不污染
-JSON 资产或 StyleClass 注册表。`getLayoutDiagnostics()` 输出各节点测量尺寸和横纵溢出，
+轻量动效由 `UiTweenDriver` 驱动，在 `beginFrameAndRender()` / `tickTweens(nowMs)` 中推进：
+
+- `animateHostPos(x, y, durationMs, ease = "smoothstep", delayMs = 0)` — 宿主窗口位置
+- `animateHostSize(w, h, durationMs, ease, delayMs)` — 宿主显式尺寸
+- `animateHostOverlayAlpha(alpha, durationMs, ease, delayMs)` — 叠加层背景透明度
+- `animateItemOpacity(id, opacity, durationMs, ease, delayMs)` — 节点瞬态 opacity（不写 JSON / StyleClass）
+- `animateItemPos(id, x, y, durationMs, ease, delayMs)` — 绝对定位节点偏移（自动 `absolute`）
+
+`durationMs <= 0` 且无 delay 时立即跳到终点；再次对同一属性调用会替换未完成的补间。
+`cancelHostTweens()` / `cancelItemTweens(id)` / `cancelAllTweens()` 取消选中宿主上的待定补间。
+缓动名与 Motion/Math 对齐（`smoothstep` 为默认，另有 linear、Quad/Cubic/Sine/Expo、Back/Elastic/Bounce）；
+未知名称按 linear 处理。
+
+需要 loops / Sequence / Punch，或与 `SimulationStep` 同拍时，用 `eve.Animation()` 的 Motion
+经 UI 侧 sink 推送写回（animation 模块启用时编译 `UiMotionSinks`）：
+
+```cpp
+UiHostPosSink posSink(hostHandle);
+UiNodeOpacitySink opacitySink(hostHandle, "panel");
+anim->motionVec2({0,0}, {120,60}, 0.35f).ease("outQuad").bind(posSink);
+anim->motion(0.f, 1.f, 0.25f).ease("outCubic").bind(opacitySink);
+anim->advance(step);  // 与游戏时钟同泵
+```
+
+无 animation 的裁剪构建仍保留上方 `animate*` 便利路径；sink 桥接 TU 会被排除。
+
+`getLayoutDiagnostics()` 输出各节点测量尺寸和横纵溢出，
 `getAccessibilitySnapshot()` 输出语义节点的 role/name/description、enabled 与 focused 状态，
 供调试器和自动化读取而不触碰 ImGui 内部对象。
 
@@ -284,7 +309,7 @@ JSON 资产或 StyleClass 注册表。`getLayoutDiagnostics()` 输出各节点�
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `beginBuild()`、`beginCard()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginMenu()`、`beginMenuBar()`、`beginNinePatch()`、`beginRow()`、`beginSidebar()`、`beginSplitPane()`、`beginStatusBar()`、`beginScrollList()`、`beginToolbar()`、`beginToolbox()`、`beginWindow()`、`bindOwner()`
-- `animateHostPos()`、`animateItemOpacity()`、`badge()`、`button()`、`checkbox()`、`colorPalette()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getColorA()`、`getColorB()`、`getColorG()`、`getColorR()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
+- `animateHostPos()`、`animateHostSize()`、`animateHostOverlayAlpha()`、`animateItemOpacity()`、`animateItemPos()`、`cancelHostTweens()`、`cancelItemTweens()`、`cancelAllTweens()`、`tickTweens()`、`getHostTweenCount()`、`getItemTweenCount()`、`badge()`、`button()`、`checkbox()`、`colorPalette()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getColorA()`、`getColorB()`、`getColorG()`、`getColorR()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
 - `getFocusedId()`、`getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`、`moveFocus()`
 - `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
 - `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemAlignSelf()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemSelected()`、`setItemFlexBasis()`、`setItemFlexGrow()`、`setItemFlexShrink()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
@@ -292,6 +317,14 @@ JSON 资产或 StyleClass 注册表。`getLayoutDiagnostics()` 输出各节点�
 - `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`、`setImageNinePatchFile()`
 - `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`、`getLayoutDiagnostics()`、`getAccessibilitySnapshot()`
 - `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
+- `inspect()`、`inspectClose()`、`inspectRefresh()`、`inspectSelectClass()`、`inspectObject()`、`inspectSetPickHandler()`、`inspectPickScene()`、`inspectAddInstance()`、`propertySchema()`
+- `dbOpen()`、`dbClose()`、`dbRefresh()`、`dbSelectClass()`、`dbRegister()`、`dbCreateInstance()`、`dbUnregister()`
+- `editorOpen()`、`editorClose()`、`editorSelectPanel()`、`sceneOpen()`、`sceneClose()`、`sceneSelectNode()`、`sceneSetPickHandler()`
+
+`propertySchema(instance)` 返回脚本实例经反射派生的属性 schema 表（`typeId` /
+`version` / `properties[]`，含 `path`、`kind`、`displayName`、`readOnly`、数值约束与
+`choices`）。`editor="color"|"vec2"|"vec3"|"vec4"|slider|combo` 等 attribute 决定 kind；
+可编辑面板请用 `inspectObject(instance)`，不要把 schema 表当成第二权威状态。
 
 ## 引擎纹理控件
 

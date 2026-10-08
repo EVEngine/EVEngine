@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "fluids/editing/FluidTarget.h"
 
@@ -38,26 +40,24 @@ struct VolumeFluidAuthoringPreview {
  * @thread Editor-thread affine.
  * @reentrancy Does not invoke callbacks.
  */
-class VolumeFluidTarget final : public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION VolumeFluidTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IPropertyProvider {
 public:
     explicit VolumeFluidTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query the property capability. @return Borrowed pointer owned by this target.
      * @lifetime Valid until target destruction. */
     void*                         queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return an immutable copy of current authoring settings. */
     VolumeFluidAuthoringSettings settings() const { return settings_; }
@@ -69,18 +69,16 @@ public:
     /** @brief Capture schema eve.volume-fluid-authoring version one. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a strict version-one authoring document. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     bool                         matches(const SelectionSnapshot& selection) const;
     std::string                  id_;
-    Revision                     revision_ = 1;
-    EditRegion                   dirty_;
     VolumeFluidAuthoringSettings settings_;
 };
 
 /** @brief Atomic bridge from a validated authoring document to a live solver. */
-class VolumeFluidRuntimeApplier {
+class EVENGINE_API_ORCHESTRATION VolumeFluidRuntimeApplier {
 public:
     /**
      * @brief Apply solver settings through the canonical snapshot restore transaction.
@@ -89,7 +87,7 @@ public:
      * @details Explicit editor publication only. Copies live snapshot state and may reallocate
      * solver storage, so callers must not invoke it from a per-frame preview or simulation loop.
      */
-    EditorResult<void> apply(const VolumeFluidTarget& target, fluids::VolumeFluid* simulation) const;
+    Result<void> apply(const VolumeFluidTarget& target, fluids::VolumeFluid* simulation) const;
 };
 
 }  // namespace eve::fluids_editing

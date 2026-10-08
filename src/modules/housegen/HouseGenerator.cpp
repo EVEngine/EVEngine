@@ -11,12 +11,6 @@
 namespace eve::housegen {
 namespace {
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "housegen.generate"));
-}
-
 const HouseComponent *pick(const std::vector<std::reference_wrapper<const HouseComponent>> &choices,
                            std::mt19937                                                    &rng) {
     if (choices.empty()) return nullptr;
@@ -136,13 +130,16 @@ std::vector<std::reference_wrapper<const HouseComponent>> compatibleOnFace(
 eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &out) const {
     HouseLayout generated;
     if (r.width < 3 || r.depth < 3 || r.floors < 1 || r.maxAttempts < 1) {
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "house needs a 3x3 plot, at least one floor and one attempt");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "house needs a 3x3 plot, at least one floor and one attempt", {}, {},
+            "housegen.generate"));
     }
     if (!oneOf(r.footprint, {"auto", "rectangle", "l_shape", "t_shape"}) ||
         !oneOf(r.roof, {"auto", "gable", "flat", "shed"}) ||
         !oneOf(r.entrance, {"auto", "north", "east", "south", "west"})) {
-        return failure<void>(eve::DiagnosticCode::Unsupported, "unsupported footprint, roof or entrance mode");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                                                 "unsupported footprint, roof or entrance mode", {}, {},
+                                                                 "housegen.generate"));
     }
     const auto foundation = library_.byCategory("foundation", r.style);
     const auto floor      = library_.byCategory("floor", r.style);
@@ -150,8 +147,9 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
     const auto door       = library_.byCategory("door", r.style);
     const auto roof       = library_.byCategory("roof", r.style);
     if (!has(foundation) || !has(floor) || !has(wall) || !has(door) || !has(roof)) {
-        return failure<void>(eve::DiagnosticCode::NotFound,
-                             "library needs foundation, floor, wall, door and roof categories");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "library needs foundation, floor, wall, door and roof categories", {}, {},
+            "housegen.generate"));
     }
 
     std::mt19937 rng(r.seed);
@@ -195,7 +193,8 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
             generated.instances.push_back({pick(floor, rng)->id, x, y, z, 0});
         }
         if (maxX < minX || maxY < minY)
-            return failure<void>(eve::DiagnosticCode::Failed, "footprint collapsed after inset");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "footprint collapsed after inset", {}, {}, "housegen.generate"));
         generated.rooms.push_back({z == 0 ? "living" : "upper", minX, minY, maxX - minX + 1, maxY - minY + 1});
 
         using Face = std::tuple<int, int, SocketDirection>;
@@ -235,9 +234,10 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
             }
             const auto *selected = pick(choices, rng);
             if (!selected) {
-                return failure<void>(
+                return eve::Result<void>::failure(eve::Diagnostic::error(
                     eve::DiagnosticCode::NotFound,
-                    "no socket-compatible " + std::string(isEntrance ? "door" : "wall") + " component");
+                    "no socket-compatible " + std::string(isEntrance ? "door" : "wall") + " component", {}, {},
+                    "housegen.generate"));
             }
             generated.instances.push_back({selected->id, x, y, z, rotation});
         }

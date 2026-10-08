@@ -216,11 +216,6 @@ const eve::SnapshotMigrationChain& eventStreamMigrations() {
     return chain;
 }
 
-template <class T>
-eve::Result<T> snapshotFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message)));
-}
-
 }  // namespace
 
 EventConsumer::EventConsumer(GameEventLog* stream, EventSequence sequence)
@@ -259,7 +254,7 @@ GameEventLog::GameEventLog(eve::UuidEntropySource entropy, eve::UuidClock clock)
 
 eve::Result<EventSequence> GameEventLog::append(GameEvent envelope) {
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<EventSequence>::failure(eve::Diagnostic::error(code, std::move(message)));
+        return eve::Result<EventSequence>::failure(eve::Diagnostic::error(code, message));
     };
     if (envelope.type.empty()) return failure(eve::DiagnosticCode::InvalidArgument, "event type must not be empty");
     if (!envelope.schemaId.isValid())
@@ -404,7 +399,7 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
     auto        document = eve::json::Document::parse(std::string(json), &error);
     const auto  root     = document.root();
     const auto  invalid  = [&](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message)));
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, message));
     };
     const int snapshotVersion = root.getInt("version");
     if (!document.valid() || !root.isObject() || (snapshotVersion != 1 && snapshotVersion != 2)) {
@@ -535,11 +530,11 @@ eve::Result<eve::SnapshotEnvelope> GameEventLog::snapshot(const eve::SnapshotHas
 eve::Result<void> GameEventLog::restoreSnapshot(const eve::SnapshotEnvelope&     source,
                                                 const eve::SnapshotHashProvider& hashProvider) {
     if (source.type != "game_event.stream" || source.schema != eventStreamSchema())
-        return snapshotFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "snapshot does not belong to game_event::GameEventLog");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to game_event::GameEventLog"));
     if (!instanceId_.isNil() && source.instanceId != instanceId_)
-        return snapshotFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "snapshot instanceId does not match game_event::GameEventLog");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "snapshot instanceId does not match game_event::GameEventLog"));
     auto migrated = eventStreamMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     auto metadata = eve::validateSnapshotPayloadMetadata(migrated.value().payload, migrated.value().revision,
@@ -553,8 +548,8 @@ eve::Result<void> GameEventLog::restoreSnapshot(const eve::SnapshotEnvelope&    
     auto restored               = candidate.restore(std::move(payload).takeValue());
     if (!restored.ok()) return eve::Result<void>::failure(restored.status());
     if (candidate.snapshotTick_ != migrated.value().tick)
-        return snapshotFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "event stream payload tick disagrees with snapshot envelope");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "event stream payload tick disagrees with snapshot envelope"));
     candidate.instanceId_   = migrated.value().instanceId;
     candidate.revision_     = migrated.value().revision;
     candidate.snapshotTick_ = migrated.value().tick;

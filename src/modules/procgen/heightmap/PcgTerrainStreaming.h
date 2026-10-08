@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/PcgPhotoModeApply.h"
 #include "procgen/heightmap/TerrainStreaming.h"
@@ -20,7 +22,7 @@ struct PcgTerrainStreamingState {
  * @lifetime The target cache must outlive this authority or be detached with setTarget(nullptr, scale).
  * @thread Game thread only; callbacks and scripts are not invoked.
  */
-class PcgTerrainStreamingAuthority final : public IPhotoModeFieldSink {
+class EVENGINE_API_DOMAINS PcgTerrainStreamingAuthority final : public IPhotoModeFieldSink {
 public:
     ~PcgTerrainStreamingAuthority() override;
 

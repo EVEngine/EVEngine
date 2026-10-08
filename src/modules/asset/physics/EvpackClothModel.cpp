@@ -5,11 +5,6 @@
 namespace eve::asset_physics {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {}, "asset.physics.cloth-model"));
-}
-
 }  // namespace
 
 Result<LoadedClothModel> EvpackClothModelLoader::load(const AssetRef&                  model,
@@ -18,8 +13,9 @@ Result<LoadedClothModel> EvpackClothModelLoader::load(const AssetRef&           
     auto payload = reader_.read(model, "eve.cloth-model/1", capabilities, maximumDecodedBytes);
     if (!payload) return Result<LoadedClothModel>::failure(payload.status());
     if (payload.value().chunks.size() != 1 || payload.value().chunks.front().kind != asset::EvpackChunkKind::Definition)
-        return failure<LoadedClothModel>(DiagnosticCode::ParseError,
-                                         "eve.cloth-model/1 must contain exactly one definition chunk");
+        return Result<LoadedClothModel>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "eve.cloth-model/1 must contain exactly one definition chunk",
+                              {}, {}, "asset.physics.cloth-model"));
 
     asset::RuntimeDefinitionLimits limits;
     limits.maximumBytes = maximumDecodedBytes;

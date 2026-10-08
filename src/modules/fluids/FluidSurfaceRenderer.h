@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief Screen-space fluid surface reconstruction (SSF).
@@ -98,7 +100,7 @@ struct FluidRendererSettings {
 };
 
 /** @brief Buffer-level screen-space fluid renderer. */
-class FluidSurfaceRenderer {
+class EVENGINE_API_DOMAINS FluidSurfaceRenderer {
 public:
     /**
      * @param params camera / resolution / material tuning.

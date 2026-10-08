@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/Params.h"
 #include "procgen/texture/NoiseField.h"
@@ -24,7 +26,7 @@ namespace eve::procgen {
  *   3. optional multiplicative island falloff (kills map corners, not the shape)
  *   4. smoothstep → solid coastline; hills / ridges only inland
  */
-class TerrainSampler {
+class EVENGINE_API_DOMAINS TerrainSampler {
 public:
     TerrainSampler() = default;
 

@@ -12,12 +12,6 @@
 namespace eve::climbing {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.snapshot"));
-}
-
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -213,9 +207,9 @@ eve::Value eventArrayValue(const std::vector<ClimbingEvent>& events) {
 eve::Result<std::vector<ClimbingEvent>> readEvents(const eve::Value& value, std::uint64_t nextExecutionId) {
     const auto* array = value.getIf<eve::Value::Array>();
     if (!array || array->size() > ClimbingRuntime::PendingEventCapacity)
-        return failure<std::vector<ClimbingEvent>>(eve::DiagnosticCode::ParseError,
-                                                   "pending climbing events must be a bounded array",
-                                                   "pendingEvents");
+        return eve::Result<std::vector<ClimbingEvent>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "pending climbing events must be a bounded array",
+                                   "pendingEvents", {}, "climbing.snapshot"));
     std::vector<ClimbingEvent> events;
     events.reserve(array->size());
     eve::SimulationTick previousTick = eve::SimulationTick::zero();
@@ -230,31 +224,31 @@ eve::Result<std::vector<ClimbingEvent>> readEvents(const eve::Value& value, std:
             !readString(*object, "actionId", event.actionId) || event.actionId.empty() ||
             !readUint64String(*object, "tick", tick) || !readUint64String(*object, "executionId", executionId) ||
             executionId == 0 || executionId >= nextExecutionId)
-            return failure<std::vector<ClimbingEvent>>(eve::DiagnosticCode::ParseError,
-                                                       "pending climbing event is missing or inconsistent",
-                                                       "pendingEvents." + std::to_string(index));
+            return eve::Result<std::vector<ClimbingEvent>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "pending climbing event is missing or inconsistent",
+                "pendingEvents." + std::to_string(index), {}, "climbing.snapshot"));
         if (const eve::Value* metadataValue = field(*object, "metadata")) {
             const auto* metadata = metadataValue->getIf<eve::Value::Array>();
             if (!metadata)
-                return failure<std::vector<ClimbingEvent>>(eve::DiagnosticCode::ParseError,
-                                                           "climbing event metadata must be an array",
-                                                           "pendingEvents." + std::to_string(index) + ".metadata");
+                return eve::Result<std::vector<ClimbingEvent>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "climbing event metadata must be an array",
+                    "pendingEvents." + std::to_string(index) + ".metadata", {}, "climbing.snapshot"));
             event.metadata.reserve(metadata->size());
             for (const eve::Value& item : *metadata) {
                 const auto* text = item.getIf<std::string>();
                 if (!text || text->empty())
-                    return failure<std::vector<ClimbingEvent>>(
+                    return eve::Result<std::vector<ClimbingEvent>>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::ParseError, "climbing event metadata must contain non-empty strings",
-                        "pendingEvents." + std::to_string(index) + ".metadata");
+                        "pendingEvents." + std::to_string(index) + ".metadata", {}, "climbing.snapshot"));
                 event.metadata.push_back(*text);
             }
         }
         event.tick        = eve::SimulationTick(tick);
         event.executionId = ClimbingExecutionId(executionId);
         if (!first && event.tick < previousTick)
-            return failure<std::vector<ClimbingEvent>>(eve::DiagnosticCode::InvariantViolation,
-                                                       "pending climbing events must be ordered by tick",
-                                                       "pendingEvents." + std::to_string(index) + ".tick");
+            return eve::Result<std::vector<ClimbingEvent>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvariantViolation, "pending climbing events must be ordered by tick",
+                "pendingEvents." + std::to_string(index) + ".tick", {}, "climbing.snapshot"));
         first        = false;
         previousTick = event.tick;
         events.push_back(std::move(event));
@@ -317,8 +311,9 @@ eve::Value anchorValue(ClimbingAnchorGraphHandleRef graph, const ClimbingAnchorN
 eve::Result<ClimbingCandidate> readCandidate(const eve::Value& value, std::int64_t snapshotVersion) {
     const auto* object = value.getIf<eve::Value::Object>();
     if (!object)
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::ParseError, "runtime candidate must be an object",
-                                          "execution.candidate");
+        return eve::Result<ClimbingCandidate>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "runtime candidate must be an object",
+                                   "execution.candidate", {}, "climbing.snapshot"));
     ClimbingCandidate result;
     std::uint64_t     world = 0, body = 0, shape = 0, definitionGeneration = 1;
     std::int64_t      bodyId = 0, shapeId = 0, ignoredBodyId = 0, score = 0, kind = 0, support = 0;
@@ -351,8 +346,9 @@ eve::Result<ClimbingCandidate> readCandidate(const eve::Value& value, std::int64
         kind > static_cast<std::int64_t>(ClimbingActionKind::BarSwing) ||
         !readInt64(*object, "support", support) ||
         support < 0 || support > static_cast<std::int64_t>(HangSupport::Free))
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::ParseError,
-                                          "runtime candidate has missing or invalid fields", "execution.candidate");
+        return eve::Result<ClimbingCandidate>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "runtime candidate has missing or invalid fields",
+                                   "execution.candidate", {}, "climbing.snapshot"));
     if ((snapshotVersion >= 4 && (!depthValue || !gapValue || !clearanceValue || !slopeValue || !curvatureValue ||
                                   !field(*object, "supportShapeTag") || !field(*object, "supportMaterialId") ||
                                   !field(*object, "probeRecipe"))) ||
@@ -368,8 +364,9 @@ eve::Result<ClimbingCandidate> readCandidate(const eve::Value& value, std::int64
         supportMaterialId > std::numeric_limits<int>::max() ||
         (field(*object, "probeRecipe") && !readInt64(*object, "probeRecipe", probeRecipe)) || probeRecipe < 0 ||
         probeRecipe > static_cast<std::int64_t>(ClimbingProbeRecipe::AnchorGraph))
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::ParseError,
-                                          "runtime candidate metrics are missing or invalid", "execution.candidate");
+        return eve::Result<ClimbingCandidate>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "runtime candidate metrics are missing or invalid",
+                                   "execution.candidate", {}, "climbing.snapshot"));
     result.definitionGeneration = definitionGeneration;
     result.world           = physics::PhysicsWorldHandle::fromPacked(world);
     result.obstacleBody    = physics::PhysicsBodyHandle::fromPacked(body);
@@ -441,7 +438,9 @@ eve::Result<eve::Value> ClimbingRuntime::snapshot() const {
 
 eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::World3D& world) {
     const auto* root = value.getIf<eve::Value::Object>();
-    if (!root) return failure<void>(eve::DiagnosticCode::ParseError, "runtime snapshot must be an object");
+    if (!root)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "runtime snapshot must be an object", {}, {}, "climbing.snapshot"));
     std::string   schemaId;
     std::int64_t  version = -1;
     std::string   phaseText;
@@ -454,20 +453,27 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
         !readString(*root, "phase", phaseText) ||
         (version >= 1 && !readString(*root, "terminalCode", terminalCode))) {
         if (version > SnapshotSchemaVersion)
-            return failure<void>(eve::DiagnosticCode::UnknownVersion, "climbing.restore.version_unsupported",
-                                 "schemaVersion");
-        return failure<void>(eve::DiagnosticCode::ParseError, "invalid climbing runtime snapshot envelope");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion,
+                                                                     "climbing.restore.version_unsupported",
+                                                                     "schemaVersion", {}, "climbing.snapshot"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "invalid climbing runtime snapshot envelope", {}, {},
+                                                                 "climbing.snapshot"));
     }
     if (version >= 4 && !readString(*root, "previousActionId", candidatePreviousActionId))
-        return failure<void>(eve::DiagnosticCode::ParseError, "invalid previous climbing action id",
-                             "previousActionId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "invalid previous climbing action id",
+                                                                 "previousActionId", {}, "climbing.snapshot"));
     if (field(*root, "nextExecutionId") && !readUint64String(*root, "nextExecutionId", candidateNextExecutionId))
-        return failure<void>(eve::DiagnosticCode::ParseError, "invalid next climbing execution id", "nextExecutionId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "invalid next climbing execution id",
+                                                                 "nextExecutionId", {}, "climbing.snapshot"));
     if (field(*root, "definitionGeneration") &&
         (!readUint64String(*root, "definitionGeneration", candidateDefinitionGeneration) ||
          candidateDefinitionGeneration == 0))
-        return failure<void>(eve::DiagnosticCode::ParseError, "invalid climbing definition generation",
-                             "definitionGeneration");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "invalid climbing definition generation",
+                                                                 "definitionGeneration", {}, "climbing.snapshot"));
     ClimbingProfile candidateProfile = profile_;
     if (const eve::Value* profileValue = field(*root, "profile")) {
         auto decodedProfile = decodeClimbingProfileDefinition(*profileValue);
@@ -476,18 +482,22 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
     }
     ClimbingPhase candidatePhase;
     if (!readPhase(phaseText, candidatePhase))
-        return failure<void>(eve::DiagnosticCode::ParseError, "invalid climbing runtime phase", "phase");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "invalid climbing runtime phase", "phase", {}, "climbing.snapshot"));
     const eve::Value* executionValue = field(*root, "execution");
     if (!executionValue)
-        return failure<void>(eve::DiagnosticCode::ParseError, "runtime snapshot execution field is required",
-                             "execution");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "runtime snapshot execution field is required",
+                                                                 "execution", {}, "climbing.snapshot"));
     std::optional<Execution> candidateExecution;
     if (!executionValue->isNull()) {
         const auto*       state               = executionValue->getIf<eve::Value::Object>();
         const eve::Value* actionValue         = state ? field(*state, "action") : nullptr;
         const eve::Value* candidateValueField = state ? field(*state, "candidate") : nullptr;
         if (!state || !actionValue || !candidateValueField)
-            return failure<void>(eve::DiagnosticCode::ParseError, "invalid climbing execution object", "execution");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "invalid climbing execution object", "execution",
+                                                                     {}, "climbing.snapshot"));
         auto action = decodeClimbingActionDefinition(*actionValue);
         if (!action) return eve::Result<void>::failure(action.status());
         auto candidate = readCandidate(*candidateValueField, version);
@@ -496,14 +506,16 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
         std::uint64_t executionId = 1;
         std::uint64_t executionDefinitionGeneration = candidateDefinitionGeneration;
         if (field(*state, "executionId") && !readUint64String(*state, "executionId", executionId))
-            return failure<void>(eve::DiagnosticCode::ParseError, "invalid climbing execution id",
-                                 "execution.executionId");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "invalid climbing execution id",
+                                                                     "execution.executionId", {}, "climbing.snapshot"));
         parsed.executionId      = ClimbingExecutionId(executionId);
         if (field(*state, "definitionGeneration") &&
             (!readUint64String(*state, "definitionGeneration", executionDefinitionGeneration) ||
              executionDefinitionGeneration == 0))
-            return failure<void>(eve::DiagnosticCode::ParseError, "invalid execution definition generation",
-                                 "execution.definitionGeneration");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid execution definition generation",
+                                       "execution.definitionGeneration", {}, "climbing.snapshot"));
         parsed.definitionGeneration = executionDefinitionGeneration;
         parsed.action           = std::move(action).takeValue();
         parsed.candidate        = std::move(candidate).takeValue();
@@ -527,16 +539,19 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
             !readBool(*state, "landContactReleased", parsed.landContactReleased, false, false) ||
             !readBool(*state, "compactCollisionActive", parsed.compactCollisionActive, false, false) ||
             !readBool(*state, "branchWindowOpen", parsed.branchWindowOpen, false, false))
-            return failure<void>(eve::DiagnosticCode::ParseError,
-                                 "climbing execution has missing or inconsistent fields", "execution");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "climbing execution has missing or inconsistent fields", "execution",
+                {}, "climbing.snapshot"));
         const eve::Value* anchorField = field(*state, "anchor");
         if (version >= 3 && !anchorField)
-            return failure<void>(eve::DiagnosticCode::ParseError,
-                                 "runtime snapshot anchor field is required", "execution.anchor");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "runtime snapshot anchor field is required",
+                                                                     "execution.anchor", {}, "climbing.snapshot"));
         if (anchorField && !anchorField->isNull()) {
             if (version < 3)
-                return failure<void>(eve::DiagnosticCode::ParseError,
-                                     "legacy runtime snapshot cannot contain an anchor claim", "execution.anchor");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "legacy runtime snapshot cannot contain an anchor claim",
+                    "execution.anchor", {}, "climbing.snapshot"));
             const auto* anchor = anchorField->getIf<eve::Value::Object>();
             std::uint64_t graphHandle = 0, graphOwnerEpoch = 0, nodeGraphGeneration = 0;
             std::uint64_t reservationId = 0, reservationGraphGeneration = 0, claimGeneration = 0;
@@ -557,8 +572,9 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
                 slot > static_cast<std::int64_t>(std::numeric_limits<std::uint32_t>::max()) ||
                 !readUint64String(*anchor, "agentId", agentId) || agentId == 0 ||
                 !readUint64String(*anchor, "executionId", occupantExecutionId) || occupantExecutionId == 0)
-                return failure<void>(eve::DiagnosticCode::ParseError,
-                                     "runtime anchor claim has missing or invalid fields", "execution.anchor");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "runtime anchor claim has missing or invalid fields",
+                    "execution.anchor", {}, "climbing.snapshot"));
             parsed.anchorGraph.handle = eve::RuntimeHandle<ClimbingAnchorGraphHandleTag>::fromPacked(graphHandle);
             parsed.anchorGraph.ownerEpoch = graphOwnerEpoch;
             parsed.anchorNode = {std::move(graphId), std::move(nodeId), nodeGraphGeneration};
@@ -567,25 +583,29 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
                                         {ClimbingAnchorAgentId(agentId), ClimbingExecutionId(occupantExecutionId)}};
             if (!parsed.anchorGraph.isValid() || nodeGraphGeneration != reservationGraphGeneration ||
                 parsed.executionId != parsed.anchorReservation.occupant.executionId)
-                return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "runtime anchor identities are inconsistent", "execution.anchor");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                         "runtime anchor identities are inconsistent",
+                                                                         "execution.anchor", {}, "climbing.snapshot"));
         }
         parsed.elapsed  = eve::Duration::fromNanoseconds(elapsedNs);
         parsed.duration = eve::Duration::fromNanoseconds(durationNs);
         parsed.lastTick = eve::SimulationTick(lastTick);
         if (parsed.duration != parsed.action.duration || parsed.elapsed > parsed.duration)
-            return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                                 "execution timing disagrees with pinned action", "execution.durationNs");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                     "execution timing disagrees with pinned action",
+                                                                     "execution.durationNs", {}, "climbing.snapshot"));
         const bool graphBound = parsed.anchorGraph.isValid();
         if (world.runtimeHandle() != parsed.candidate.world || !world.findBody(parsed.candidate.obstacleBody) ||
             (!graphBound && !world.findShape(parsed.candidate.obstacleShape)))
-            return failure<void>(eve::DiagnosticCode::StaleHandle, "climbing restore target link is stale",
-                                 "execution.candidate");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                     "climbing restore target link is stale",
+                                                                     "execution.candidate", {}, "climbing.snapshot"));
         if (graphBound) {
             auto graph = Climbing::resolveAnchorGraph(parsed.anchorGraph);
             if (!graph.isBound() || graph->body() != parsed.candidate.obstacleBody)
-                return failure<void>(eve::DiagnosticCode::StaleHandle,
-                                     "climbing restore anchor graph link is stale", "execution.anchor.graph");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "climbing restore anchor graph link is stale",
+                    "execution.anchor.graph", {}, "climbing.snapshot"));
             auto resolved = graph->resolveNode(world, parsed.anchorNode);
             if (!resolved)
                 return eve::Result<void>::failure(resolved.status());
@@ -596,32 +616,36 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
         candidateExecution = std::move(parsed);
     }
     if (activePhase(candidatePhase) != candidateExecution.has_value())
-        return failure<void>(eve::DiagnosticCode::InvariantViolation, "active phase and execution presence disagree",
-                             "execution");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                 "active phase and execution presence disagree",
+                                                                 "execution", {}, "climbing.snapshot"));
     if (!field(*root, "nextExecutionId")) {
         candidateNextExecutionId = candidateExecution ? candidateExecution->executionId.value() + 1 : 1;
     }
     if (candidateNextExecutionId == 0 ||
         (candidateExecution && (candidateExecution->executionId.isZero() ||
                                 candidateNextExecutionId <= candidateExecution->executionId.value())))
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "next execution id must follow the restored execution", "nextExecutionId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                 "next execution id must follow the restored execution",
+                                                                 "nextExecutionId", {}, "climbing.snapshot"));
     std::vector<ClimbingEvent> candidateEvents;
     if (const eve::Value* eventValue = field(*root, "pendingEvents")) {
         auto parsedEvents = readEvents(*eventValue, candidateNextExecutionId);
         if (!parsedEvents) return eve::Result<void>::failure(parsedEvents.status());
         candidateEvents = std::move(parsedEvents).takeValue();
     } else if (version >= 2) {
-        return failure<void>(eve::DiagnosticCode::ParseError, "runtime snapshot pendingEvents field is required",
-                             "pendingEvents");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "runtime snapshot pendingEvents field is required",
+                                                                 "pendingEvents", {}, "climbing.snapshot"));
     }
 
     if (execution_ && execution_->anchorGraph.isValid() &&
         (!candidateExecution || execution_->anchorGraph != candidateExecution->anchorGraph ||
          execution_->anchorReservation.id != candidateExecution->anchorReservation.id ||
          execution_->anchorReservation.claimGeneration != candidateExecution->anchorReservation.claimGeneration))
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "restore cannot overwrite a different live anchor claim", "execution.anchor");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "restore cannot overwrite a different live anchor claim", "execution.anchor",
+            {}, "climbing.snapshot"));
     if (candidateExecution && candidateExecution->anchorGraph.isValid()) {
         const bool alreadyOwned = execution_ && execution_->anchorGraph == candidateExecution->anchorGraph &&
                                   execution_->anchorReservation.id == candidateExecution->anchorReservation.id &&
@@ -630,8 +654,9 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
         if (!alreadyOwned) {
             auto graph = Climbing::resolveAnchorGraph(candidateExecution->anchorGraph);
             if (!graph.isBound())
-                return failure<void>(eve::DiagnosticCode::StaleHandle,
-                                     "climbing restore anchor graph link became stale", "execution.anchor.graph");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "climbing restore anchor graph link became stale",
+                    "execution.anchor.graph", {}, "climbing.snapshot"));
             auto claimed = graph->restoreReservation(candidateExecution->anchorReservation);
             if (!claimed) return eve::Result<void>::failure(claimed.status());
             candidateExecution->anchorReservation = std::move(claimed).takeValue();

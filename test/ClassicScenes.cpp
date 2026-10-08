@@ -57,7 +57,7 @@ using eve::graphics::Color;
 #include "image/ImageData.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
-#include "system/System.h"
+#include "os/OS.h"
 #include "timer/Timer.h"
 #include "window/Window.h"
 #include "RenderImageAudit.h"
@@ -477,7 +477,7 @@ void paceViewFrame(eve::timer::Timer *timer, float frameStart, float hz) {
     const float budget = 1.f / std::max(hz, 1.f);
     const float remain = budget - (timer->getTime() - frameStart);
     if (remain < 0.001f) return;
-    eve::system::System::create()->sleepMilliseconds(int(remain * 1000.f + 0.5f));
+    eve::os::OS::create()->sleepMilliseconds(int(remain * 1000.f + 0.5f));
 }
 
 float viewSecondsPerPhase() {

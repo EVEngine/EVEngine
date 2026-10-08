@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 技能释放流程：冷却 / 消耗 / 读条 / 授予效果。
 //
@@ -17,7 +19,7 @@ namespace eve::rpg {
 class RPGActor;
 struct SkillDefinition;
 
-class SkillSystem {
+class EVENGINE_API_PLATFORM SkillSystem {
 public:
     /** @brief 返回 false 表示禁止释放；通过 outReason 说明原因。 */
     using CastCondition =

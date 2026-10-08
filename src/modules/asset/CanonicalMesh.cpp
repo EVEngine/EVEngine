@@ -8,11 +8,6 @@
 namespace eve::asset {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.mesh"));
-}
-
 std::uint32_t little32(std::span<const std::uint8_t> bytes, std::size_t offset) {
     return std::uint32_t(bytes[offset]) | (std::uint32_t(bytes[offset + 1]) << 8) |
            (std::uint32_t(bytes[offset + 2]) << 16) | (std::uint32_t(bytes[offset + 3]) << 24);
@@ -28,7 +23,8 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
     static constexpr std::uint8_t magic[] = {'E', 'V', 'M', 'E', 'S', 'H', 0};
     if (bytes.size() < 24 || !std::equal(std::begin(magic), std::end(magic), bytes.begin()) ||
         (bytes[7] != 1 && bytes[7] != 2 && bytes[7] != 3))
-        return failure<CanonicalMeshData>(DiagnosticCode::ParseError, "canonical mesh header is invalid");
+        return Result<CanonicalMeshData>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "canonical mesh header is invalid", {}, {}, "asset.mesh"));
     const auto vertexCount = little32(bytes, 8), indexCount = little32(bytes, 12);
     const auto flags = little32(bytes, 16), countField = little32(bytes, 20);
     const bool legacy = bytes[7] == 1;
@@ -41,12 +37,15 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
     const bool extended = bytes[7] == 3 && !standardV3;
     const bool colored = standardV3 && (flags & 2u);
     if (extended && bytes.size() < 28)
-        return failure<CanonicalMeshData>(DiagnosticCode::ParseError, "canonical attribute header truncated");
+        return Result<CanonicalMeshData>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "canonical attribute header truncated", {}, {}, "asset.mesh"));
     if (!vertexCount || !indexCount || indexCount % 3 || flags > (legacy || standardV3 ? 3u : 1u) ||
         (legacy && countField))
-        return failure<CanonicalMeshData>(DiagnosticCode::ParseError, "canonical mesh metadata is invalid");
+        return Result<CanonicalMeshData>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "canonical mesh metadata is invalid", {}, {}, "asset.mesh"));
     if (vertexCount > limits.maximumVertices || indexCount > limits.maximumIndices)
-        return failure<CanonicalMeshData>(DiagnosticCode::InvalidArgument, "canonical mesh exceeds limits");
+        return Result<CanonicalMeshData>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "canonical mesh exceeds limits", {}, {}, "asset.mesh"));
     const uint32_t uvCount         = legacy ? ((flags & 2u) ? 1u : 0u) : countField;
     const uint32_t attributeCount  = extended ? little32(bytes, 24) : 0;
     const uint64_t uvOffset        = extended ? 28ull : 24ull;
@@ -55,7 +54,8 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
     uint64_t       floatsPerVertex =
         3ull + ((flags & 1u) ? 3 : 0) + uint64_t(uvCount) * 2 + (colored ? 4ull : 0ull);
     if (header > bytes.size() || header > limits.maximumDecodedBytes)
-        return failure<CanonicalMeshData>(DiagnosticCode::InvalidArgument, "canonical descriptors exceed budget");
+        return Result<CanonicalMeshData>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "canonical descriptors exceed budget", {}, {}, "asset.mesh"));
     CanonicalMeshData result;
     std::string       previousName;
     for (uint32_t i = 0; i < attributeCount; ++i) {
@@ -69,13 +69,15 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
                 continue;
             }
             if (ended || !((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'))
-                return failure<CanonicalMeshData>(DiagnosticCode::ParseError, "invalid attribute semantic");
+                return Result<CanonicalMeshData>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid attribute semantic", {}, {}, "asset.mesh"));
             name.push_back(char(c));
         }
         const auto components = little32(bytes, at + 64);
         if (!ended || name.empty() || name <= previousName || name == "POSITION" || name == "NORMAL" ||
             name.starts_with("TEXCOORD_") || !components || components > 4 || little32(bytes, at + 68))
-            return failure<CanonicalMeshData>(DiagnosticCode::ParseError, "invalid attribute descriptor");
+            return Result<CanonicalMeshData>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid attribute descriptor", {}, {}, "asset.mesh"));
         previousName = name;
         floatsPerVertex += components;
         result.attributes.emplace(std::move(name), CanonicalMeshAttribute{components, {}});
@@ -85,10 +87,12 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
     if (header > bytes.size() || header > limits.maximumDecodedBytes ||
         indexBytes > limits.maximumDecodedBytes - header ||
         floatsPerVertex > (limits.maximumDecodedBytes - header - indexBytes) / 4 / vertexCount)
-        return failure<CanonicalMeshData>(DiagnosticCode::InvalidArgument, "canonical mesh exceeds byte budget");
+        return Result<CanonicalMeshData>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "canonical mesh exceeds byte budget", {}, {}, "asset.mesh"));
     const uint64_t expected = header + uint64_t(vertexCount) * floatsPerVertex * 4 + uint64_t(indexCount) * 4;
     if (expected != bytes.size() || expected > limits.maximumDecodedBytes)
-        return failure<CanonicalMeshData>(DiagnosticCode::InvalidArgument, "canonical mesh byte size is invalid");
+        return Result<CanonicalMeshData>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "canonical mesh byte size is invalid", {}, {}, "asset.mesh"));
     result.positions.reserve(std::size_t(vertexCount) * 3);
     if (flags & 1u) result.normals.reserve(std::size_t(vertexCount) * 3);
     if (colored) result.colors.reserve(std::size_t(vertexCount) * 4);
@@ -96,8 +100,8 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
     for (uint32_t set = 0; set < uvCount; ++set) {
         const auto id = legacy ? 0u : little32(bytes, size_t(uvOffset) + size_t(set) * 4);
         if (set && id <= previous)
-            return failure<CanonicalMeshData>(DiagnosticCode::ParseError,
-                                              "UV set descriptors must be strictly increasing");
+            return Result<CanonicalMeshData>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "UV set descriptors must be strictly increasing", {}, {}, "asset.mesh"));
         previous = id;
         result.texcoords[id].reserve(size_t(vertexCount) * 2);
     }
@@ -140,7 +144,8 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
         const std::uint32_t value = little32(bytes, cursor);
         cursor += 4;
         if (value >= vertexCount)
-            return failure<CanonicalMeshData>(DiagnosticCode::ParseError, "canonical mesh index exceeds vertex count");
+            return Result<CanonicalMeshData>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "canonical mesh index exceeds vertex count", {}, {}, "asset.mesh"));
         result.indices.push_back(value);
     }
     return Result<CanonicalMeshData>::success(std::move(result));

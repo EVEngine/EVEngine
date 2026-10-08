@@ -142,7 +142,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
 Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
                                                std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.mips"));
+        return Result<Texture *>::failure(Diagnostic::error(code, message, {}, {}, "graphics.texture.mips"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto maximum = device.physical_device.properties.limits.maxImageDimension2D;
@@ -202,7 +202,7 @@ Result<Texture *> Graphics::newTextureArrayRgba16f(uint32_t width, uint32_t heig
                                                    std::span<const uint16_t> rgbaHalf) {
     auto fail = [](DiagnosticCode code, std::string message) {
         return Result<Texture *>::failure(
-            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.array"));
+            Diagnostic::error(code, message, {}, {}, "graphics.texture.array"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -256,7 +256,7 @@ Result<Texture *> Graphics::newTexture3DRgba8(uint32_t width, uint32_t height, u
                                               std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
         return Result<Texture *>::failure(
-            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.volume"));
+            Diagnostic::error(code, message, {}, {}, "graphics.texture.volume"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -1129,11 +1129,21 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
     if (it == texturesByPath.end() || !it->second) return false;
 
     ensureFileTexturesReady();
+    // The provider hands back a cache-owned ImageData; the pin keeps it alive until
+    // the pixels have been copied out of it.
     image::ImageData *data = nullptr;
+    eve::ResourcePin  keepAlive;
     try {
         auto *imgMod = image::Image::create();
-        eve::ref<image::ImageData> cached(imgMod->newImageDataFromFile(filename));
-        data = cached.get();
+        data         = imgMod->newImageDataFromFile(filename);
+        if (data != nullptr) {
+            auto pinned = eve::ResourceManager::getInstance().pin(data);
+            if (!pinned.ok()) return false;
+            keepAlive = std::move(pinned).takeValue();
+            // The pin is the authority from here on; the borrowed pointer may have gone
+            // stale before the pin was taken.
+            data = static_cast<image::ImageData *>(keepAlive.get());
+        }
     } catch (...) {
         return false;
     }

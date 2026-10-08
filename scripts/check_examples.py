@@ -54,6 +54,7 @@ NON_RUNNABLE_EXAMPLES: Mapping[str, str] = {
     "live2d-backend-plugin": "Live2D 后端替换插件的 C++ 骨架（CMakeLists.txt），随宿主工程编译，不是 eve 可运行项目。",
     "native-plugin": "SDK 原生插件示例（CMakeLists.txt + hello_plugin.cpp），由 CMake 构建后再被脚本加载。",
     "shader_effect_package": "打包好的 shader effect 资产包（effect.vert/frag + parameters.json），供其它示例引用。",
+    "particle-effects": "粒子特效 JSON 资产包（fire/smoke/impact/trail/weather.effect.json），由 Particles::newEffectFromFile 加载，不是 eve 可运行项目。",
     "surface-fluid-dynamic": "C++ 侧流体示例（main.cpp），随构建系统编译，不是 eve 可运行项目。",
 }
 

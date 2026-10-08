@@ -12,7 +12,9 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::voxel_editor {
 namespace {
@@ -26,17 +28,15 @@ const editor::EditorValue* field(const editor::EditorValue::Object& request, con
 
 class VoxelEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override {
-        return type == "voxel-catalog" || type == "voxel-model";
-    }
+    std::vector<std::string_view> types() const override { return {"voxel-catalog", "voxel-model"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view, const editor::EditorValue::Object& request) override {
         auto catalog = std::make_unique<voxel_editing::VoxelCatalogTarget>(target.value());
         if (const editor::EditorValue* snapshot = field(request, "snapshot")) {
             auto loaded = catalog->loadSnapshot(*snapshot);
             if (!loaded.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(loaded.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(loaded.status());
         }
         editor::AutomationOwnedTarget owned;
         owned.target = std::move(catalog);

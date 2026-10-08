@@ -72,6 +72,8 @@ jobs:
       fuzz: ${{ steps.scope.outputs.fuzz }}
       webgpu: ${{ steps.scope.outputs.webgpu }}
       tools: ${{ steps.scope.outputs.tools }}
+      test_mode: ${{ steps.scope.outputs.test_mode }}
+      test_label_regex: ${{ steps.scope.outputs.test_label_regex }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -84,17 +86,22 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             python3 scripts/ci_change_scope.py \
               --base "$BASE_SHA" --head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE_SHA" ] && \
+               [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            python3 scripts/ci_change_scope.py \
+              --base "$BEFORE_SHA" --head "$HEAD_SHA" --diff-mode direct \
+              --github-output "$GITHUB_OUTPUT"
           else
             python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
           fi
 
-  # Fast source-only gate for formatting, module boundaries, architecture
-  # contracts and the Python scripts that make later CI results trustworthy.
+  # Fast source-only gate. Local equivalent: `make check` (scripts/check_source_quality.sh).
   source-quality:
     name: Source quality
     runs-on: ubuntu-24.04
@@ -123,69 +130,16 @@ jobs:
           sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
           python3 -m pip install --user --quiet pillow ruff
 
-      - name: Check changed lines are clang-format clean
-        run: bash .github/scripts/check-format.sh "${{ github.event.pull_request.base.sha || 'origin/dev' }}"
-
-      - name: Check module dependency layering
-        timeout-minutes: 5
-        run: python3 scripts/module_depgraph.py --check
-
-      - name: Check script bindings are documented (all modules)
-        timeout-minutes: 5
-        run: python3 scripts/check_bindings.py --strict
-
-      - name: Check binding gap ownership and budget metadata
-        timeout-minutes: 5
-        run: python3 scripts/check_binding_gap_metadata.py
-
-      - name: Check declared module layers vs includes
-        timeout-minutes: 5
-        run: python3 scripts/module_depgraph.py --check-layers
+      - name: Run source-quality gate
+        # Same entry point as local `make check`. Groups inside
+        # scripts/check_source_quality.sh show up in the job log.
+        timeout-minutes: 15
+        run: make check CI_BASE="${{ github.event.pull_request.base.sha || 'origin/dev' }}"
 
       - name: Report dependency graph
         timeout-minutes: 5
         if: always()
         run: python3 scripts/module_depgraph.py
-
-      - name: Check test source manifest
-        timeout-minutes: 5
-        run: python3 scripts/check_test_manifest.py
-
-      - name: Check examples layout and overview registration
-        # Every examples/<name>/ is either a runnable example (main.nut +
-        # config.nut) or explicitly exempted with a reason, owns a README.md and
-        # is listed in examples/README.md.  A new example therefore cannot dodge
-        # the runtime smoke test in the Linux lane by simply not being runnable.
-        timeout-minutes: 5
-        run: python3 scripts/check_examples.py
-
-      - name: Check critical return-value diagnostics
-        timeout-minutes: 5
-        run: python3 scripts/check_nodiscard.py
-
-      - name: Check release version consistency
-        timeout-minutes: 5
-        run: python3 scripts/release.py check-versions
-
-      - name: Check bounded quality debt and profile matrix
-        timeout-minutes: 5
-        run: make check/quality
-
-      - name: Audit top-level architecture contracts and changed API shapes
-        timeout-minutes: 5
-        run: |
-          python3 scripts/check_architecture_contracts.py \
-            --base "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD^' }}"
-      - name: Ruff lint CI and repository scripts
-        timeout-minutes: 5
-        run: python3 -m ruff check scripts
-
-      - name: Test CI and repository scripts
-        timeout-minutes: 10
-        # -X utf8 so the runner's own output never follows the host ANSI code
-        # page; on Linux CI this is already the default. Test modules are
-        # imported by the runner, so they cannot guard their own stdio.
-        run: python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
 
   profile-matrix:
     name: Profile ${{ matrix.profile }}
@@ -371,10 +325,14 @@ jobs:
       - name: Build win32 debug
         # A PR that changes the third-party patch/cache key must do a full cold
         # dependency plus engine/test build. Recent windows-2025 runners can
-        # exceed 60 minutes without any compiler failure as the full test
-        # manifest grows, so retain a bounded hang guard while allowing the
-        # cold build and final unit-test link to finish.
-        timeout-minutes: 75
+        # exceed 60 minutes without any compiler failure as the full test manifest
+        # grows, so retain a bounded hang guard while allowing the cold build and
+        # final unit-test link to finish. Measured on 2026-09-19: a passing cold
+        # build took 51.6 min, while two dev pushes and this PR were killed by the
+        # former 60-minute guard standing at 98% of the compile steps — the win32
+        # build genuinely needs ~62-66 min now — so keep the 80-minute guard the
+        # Dawn lane already uses.
+        timeout-minutes: 80
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -406,11 +364,16 @@ jobs:
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        timeout-minutes: 40
+        # Run 35519931809 reached 5548/5550 passing cases when the 40-minute
+        # guard fired. Keep a bounded margin for the final structural tests and
+        # normal hosted-runner variance when CI/build files require a full run.
+        timeout-minutes: 50
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/win32-debug
+        run: >-
+          make test/win32-debug
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Capture Vulkan parity artifacts
         timeout-minutes: 10
@@ -594,17 +557,40 @@ jobs:
         timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/win32
+        run: >-
+          make test/win32
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Sample settlement release benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/win32 -C Release
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-windows.log
+
+      - name: Upload settlement benchmark sample
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-windows-release
+          path: build/settlement-benchmark-windows.log
+          if-no-files-found: error
 
   android:
     name: Android
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    # A cold NDK build can consume almost the entire 45-minute build-step budget
-    # before Gradle packages the finished native library. Keep the step timeout
-    # below as the hang guard while leaving enough job budget for setup/cleanup.
-    timeout-minutes: 90
+    # Cold NDK rebuilds (PR sccache is READ_ONLY; graphics header churn →
+    # ~55-60 min of C++) leave little room for Gradle packaging of the ~2GB
+    # debug libmain.so. Keep the build-step timeout as the hang guard while
+    # leaving job budget for setup/cleanup beyond that step.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
@@ -634,14 +620,14 @@ jobs:
 
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Android SDK
         timeout-minutes: 20
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: >-
             platform-tools
@@ -662,7 +648,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android debug
-        timeout-minutes: 60
+        timeout-minutes: 90
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \
@@ -713,14 +699,14 @@ jobs:
 
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Android SDK
         timeout-minutes: 20
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: >-
             platform-tools
@@ -761,8 +747,12 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     # The full isolated test suite now exceeds 30 minutes on hosted Apple
-    # Silicon, and the native Dawn lane still follows it in this job.
-    timeout-minutes: 135
+    # Silicon, and the native Dawn lane still follows it in this job. Measured
+    # on 2026-09-21: the standard build plus its test suite took 24.8 + 31.9
+    # minutes, and a cache-cold Dawn Metal build needs more than 40 minutes on
+    # its own (sccache reported 163 hits against 2533 misses), so keep a hang
+    # guard that a cold cache can still finish inside.
+    timeout-minutes: 180
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
@@ -801,7 +791,13 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx debug
-        timeout-minutes: 40
+        # Same reasoning as the win32 guard above: a cache-cold pull-request ref
+        # compiles the whole engine. Run 37331690856 was killed at exactly 60m
+        # standing at ~90% with 421 sccache hits / 3549 misses / 3549 write
+        # errors and no compiler error, while the warm sibling run 37316201997
+        # finished the whole macOS job. Keep a bounded hang guard with room for
+        # the cold/write-fail case (match Windows debug's 90m budget).
+        timeout-minutes: 90
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -809,12 +805,15 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        # Run 35376121813 reached 5403/5451 passing cases before the former
-        # 30-minute guard terminated ctest; retain a bounded completion margin.
-        timeout-minutes: 40
+        # Run 37420229018 reached 5492/5868 passing cases before the 40-minute
+        # guard terminated ctest (Linux finished the same 5868 cases). Match the
+        # Windows 50-minute margin for hosted-runner variance.
+        timeout-minutes: 50
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/macosx-debug
+        run: >-
+          make test/macosx-debug
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Report network phase timings
         if: always()
@@ -869,7 +868,11 @@ jobs:
           fi
 
       - name: Build native Dawn Metal lane
-        timeout-minutes: 40
+        # A warm sccache builds this lane in 10-29 minutes (10.4 on PR #443,
+        # 28.6 on dev), but a cache-cold pull-request ref compiles the whole
+        # webgpu-native unit_test target and ran past the former 40-minute guard
+        # on PR #428. Keep this a hang guard rather than a build budget.
+        timeout-minutes: 90
         run: cmake --build build/webgpu-macos --target unit_test -j "$(sysctl -n hw.ncpu)"
 
       - name: Report C/C++ compilation cache
@@ -946,7 +949,29 @@ jobs:
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/macosx
+        run: >-
+          make test/macosx
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Sample settlement release benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/macosx
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-macos.log
+
+      - name: Upload settlement benchmark sample
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-macos-release
+          path: build/settlement-benchmark-macos.log
+          if-no-files-found: error
 
   ios:
     name: iOS
@@ -990,7 +1015,9 @@ jobs:
         run: bash .github/scripts/setup-ios-signing.sh
 
       - name: Build ios debug
-        timeout-minutes: 40
+        # Healthy iOS debug builds finish in ~32-35 min; macOS arm64 capacity
+        # jitter can push xcodebuild past 40 without a compile error.
+        timeout-minutes: 50
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
@@ -1048,7 +1075,7 @@ jobs:
         run: bash .github/scripts/setup-ios-signing.sh
 
       - name: Build ios release
-        timeout-minutes: 40
+        timeout-minutes: 50
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
@@ -1216,7 +1243,8 @@ jobs:
           # CTEST_JOBS=2: Lavapipe renders several window/GPU tests in
           # parallel; -j4 hits a pre-existing race (voxel.render.sceneHillsIsland
           # SEGFAULT) that is not reproducible in isolation.
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2 \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Verify resource test results without skipped or warning-only cases
         timeout-minutes: 20
@@ -1354,6 +1382,26 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: xvfb-run -a -s "-screen 0 1280x800x24" make test/linux
+
+      - name: Sample settlement release benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/linux
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-linux.log
+
+      - name: Upload settlement benchmark sample
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-linux-release
+          path: build/settlement-benchmark-linux.log
+          if-no-files-found: error
 
   linux-asan:
     name: Linux (ASan+UBSan)

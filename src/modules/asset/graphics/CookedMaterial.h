@@ -1,5 +1,7 @@
 #pragma once
+
 #include "asset/EvpackResourceReader.h"
+#include "common/Export.h"
 #include "graphics/BlendMode.h"
 #include "graphics/Color.h"
 #include "graphics/PbrSurface.h"
@@ -22,6 +24,7 @@ struct CookedMaterial {
  * @thread Reentrant; reader is borrowed synchronously, no callbacks or retained pointers.
  * @return Validated owning material or a diagnostic; no externally visible mutation.
  */
-[[nodiscard]] Result<CookedMaterial> readCookedMaterial(const asset::EvpackResourceReader& reader, const AssetRef& ref,
-                                                        const asset::EvpackCapabilities& caps);
+[[nodiscard]] EVENGINE_API_WORLD Result<CookedMaterial> readCookedMaterial(const asset::EvpackResourceReader& reader,
+                                                                           const AssetRef&                    ref,
+                                                                           const asset::EvpackCapabilities&   caps);
 }  // namespace eve::asset_graphics::detail

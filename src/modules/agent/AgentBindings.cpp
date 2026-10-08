@@ -7,10 +7,6 @@
 
 namespace eve::agent {
 namespace {
-template <class T>
-Result<T> bindingError(DiagnosticCode code, std::string text) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(text), {}, {}, "agent.script"));
-}
 struct StackScope {
     HSQUIRRELVM vm;
     SQInteger   top;
@@ -38,7 +34,8 @@ private:
         sq_pushobject(vm, environment_.getRaw());
         sq_pushstring(vm, method, -1);
         if (SQ_FAILED(sq_get(vm, -2)))
-            return bindingError<Observation>(DiagnosticCode::NotFound, "Missing environment method");
+            return Result<Observation>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "Missing environment method", {}, {}, "agent.script"));
         sq_pushobject(vm, environment_.getRaw());
         const bool resetting = std::string_view(method) == "reset";
         if (resetting) {
@@ -52,8 +49,9 @@ private:
             sq_getlasterror(vm);
             const SQChar* text      = nullptr;
             const auto    converted = sq_getstring(vm, -1, &text);
-            return bindingError<Observation>(DiagnosticCode::CallbackFailure,
-                                             SQ_SUCCEEDED(converted) && text ? text : "Environment callback failed");
+            return Result<Observation>::failure(Diagnostic::error(
+                DiagnosticCode::CallbackFailure, SQ_SUCCEEDED(converted) && text ? text : "Environment callback failed",
+                {}, {}, "agent.script"));
         }
         auto value = script::valueFromSquirrel(vm, -1);
         if (!value) return Result<Observation>::failure(value.status());
@@ -101,7 +99,8 @@ void Agent::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Agent::getName);
     cls.addFunc("run", [vm](Agent* self, ssq::Table config, ssq::Table environment) {
         if (self->active_)
-            return project(vm, bindingError<Value>(DiagnosticCode::Conflict, "Agent run/replay reentry"));
+            return project(vm, Result<Value>::failure(Diagnostic::error(
+                                   DiagnosticCode::Conflict, "Agent run/replay reentry", {}, {}, "agent.script")));
         ActiveScope active(self->active_);
         auto        value = script::valueFromSquirrel(config);
         if (!value) return project(vm, Result<Value>::failure(value.status()));
@@ -132,7 +131,9 @@ void Agent::expose(ssq::Class& cls) {
     });
     cls.addFunc("replay", [vm](Agent* self, ssq::Table trace, ssq::Table environment, float tolerance) {
         if (self->active_)
-            return script::projectResult(vm, bindingError<void>(DiagnosticCode::Conflict, "Agent run/replay reentry"));
+            return script::projectResult(
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Agent run/replay reentry", {},
+                                                            {}, "agent.script")));
         ActiveScope active(self->active_);
         auto        value = script::valueFromSquirrel(trace);
         if (!value) return script::projectResult(vm, Result<void>::failure(value.status()));

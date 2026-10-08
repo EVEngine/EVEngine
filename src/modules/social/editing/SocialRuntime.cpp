@@ -2,7 +2,7 @@
 #include "social/editing/SocialDocument.h"
 
 namespace eve::social_editing {
-EditorResult<void> SocialRuntimeApplier::apply(const SocialDocumentTarget& document,
+Result<void> SocialRuntimeApplier::apply(const SocialDocumentTarget& document,
                                                social::SocialGraph* runtime) const {
     if (!runtime)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.runtime"),
@@ -10,7 +10,7 @@ EditorResult<void> SocialRuntimeApplier::apply(const SocialDocumentTarget& docum
     const auto diagnostics = document.validate();
     for (const auto& d : diagnostics)
         if (d.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     runtime->clear();
     for (const auto& e : document.edges()) {
         bool accepted = false;

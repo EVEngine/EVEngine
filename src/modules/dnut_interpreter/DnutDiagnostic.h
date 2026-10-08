@@ -2,6 +2,8 @@
 
 /** @file DnutDiagnostic.h @brief Domain-neutral source diagnostics for `.dnut` documents. */
 
+#include "common/Export.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -37,6 +39,6 @@ struct DnutDiagnostic {
  * @return True when at least one entry has error severity.
  * @thread Reentrant and side-effect free.
  */
-[[nodiscard]] bool hasErrors(const std::vector<DnutDiagnostic>& diagnostics);
+[[nodiscard]] EVENGINE_API_PLATFORM bool hasErrors(const std::vector<DnutDiagnostic>& diagnostics);
 
 }  // namespace eve::dnut

@@ -11,7 +11,7 @@
 namespace eve {
 
 /** @brief Engine-neutral description of one generated reflection or light probe. */
-struct EVENGINE_API ProcgenProbeDesc {
+struct EVENGINE_API_FOUNDATION_INLINE ProcgenProbeDesc {
     std::uint64_t sourcePointId = 0;
     std::string resource;
     int type = 0;
@@ -31,7 +31,7 @@ struct EVENGINE_API ProcgenProbeDesc {
  * @brief Optional graphics consumer for complete generated probe batches.
  * Implementations own all runtime resources and replace a batch atomically. Inputs are borrowed only for the call.
  */
-class EVENGINE_API IProcgenProbeSink {
+class EVENGINE_API_FOUNDATION_INLINE IProcgenProbeSink {
 public:
     static constexpr const char* capabilityName = "IProcgenProbeSink";
     virtual ~IProcgenProbeSink() = default;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorTransactionConsumer.h"
 
@@ -8,7 +10,7 @@
 namespace eve::editor {
 
 /** @brief Executes, groups, rolls back and replays arbitrary edit commands. */
-class EditorTransactions {
+class EVENGINE_API_ORCHESTRATION EditorTransactions {
 public:
     /** @brief Begin a canonical checked transaction. */
     [[nodiscard]] eve::Result<TransactionId> beginTransaction(TransactionSpec specification);

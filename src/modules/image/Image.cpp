@@ -88,9 +88,9 @@ ImageData* Image::newPastedImageData(ImageData* src, int sx, int sy, int w, int 
     return res;
 }
 
-std::vector<eve::ref<ImageData>> Image::newCubeFaces(ImageData* src) {
+std::vector<eve::script::Owned<ImageData>> Image::newCubeFaces(ImageData* src) {
     // The faces array is always ordered +x, -x, +y, -y, +z, -z.
-    std::vector<eve::ref<ImageData>> faces;
+    std::vector<eve::script::Owned<ImageData>> faces;
 
     int totalW = src->getWidth();
     int totalH = src->getHeight();
@@ -149,8 +149,8 @@ std::vector<eve::ref<ImageData>> Image::newCubeFaces(ImageData* src) {
     return faces;
 }
 
-std::vector<eve::ref<ImageData>> Image::newVolumeLayers(ImageData* src) {
-    std::vector<eve::ref<ImageData>> layers;
+std::vector<eve::script::Owned<ImageData>> Image::newVolumeLayers(ImageData* src) {
+    std::vector<eve::script::Owned<ImageData>> layers;
 
     int totalW = src->getWidth();
     int totalH = src->getHeight();
@@ -239,12 +239,10 @@ void Image::expose(ssq::Table& table) {
     });
     paint.addFunc("currentImageResult", [vm = paint.getHandle()](UvPaintSession* self) {
         auto result = self->currentImageResult();
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<ImageData>(vm, std::move(result).takeValue());
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     paint.addFunc("copyCurrentTo", [vm = paint.getHandle()](UvPaintSession* self, ImageData* destination) {
         if (!destination)

@@ -399,11 +399,11 @@ void exposeSceneEditorSessions(ssq::Table& table, ssq::Class& module) {
         "SceneEditorSession", std::function<SceneEditorSession*()>([]() -> SceneEditorSession* { return nullptr; }),
         true);
     const auto project = [vm](editing::Result<editing::TransactionReceipt> result) {
-        return script::projectStatusResult(vm, result.status(), result.ok(), false);
+        return script::projectStatusResult(vm, result.status());
     };
     cls.addFunc("execute", [vm, project](SceneEditorSession* self, std::string command, ssq::Object payload) {
         auto value = script::valueFromSquirrel(payload);
-        if (!value.ok()) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value.ok()) return script::projectStatusResult(vm, value.status());
         return project(self->execute(std::move(command), editing::toEditingValue(value.value())));
     });
     cls.addFunc("undo", [project](SceneEditorSession* self) { return project(self->undo()); });
@@ -411,7 +411,7 @@ void exposeSceneEditorSessions(ssq::Table& table, ssq::Class& module) {
         std::vector<std::string> ids;
         for (std::size_t i = 0; i < commands.size(); ++i) ids.push_back(commands.get<std::string>(i));
         auto result = self->restrictCommands(ids);
-        return script::projectStatusResult(vm, result.status(), result.ok(), false);
+        return script::projectStatusResult(vm, result.status());
     });
     cls.addFunc("redo", [project](SceneEditorSession* self) { return project(self->redo()); });
     cls.addFunc("saveJson", &SceneEditorSession::saveJson);
@@ -419,7 +419,7 @@ void exposeSceneEditorSessions(ssq::Table& table, ssq::Class& module) {
         return project(self->restoreJson(json));
     });
     cls.addFunc("snapshot", [vm](SceneEditorSession* self) {
-        return script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, true,
+        return script::projectStatusResult(vm, Status::success(StatusCode::Applied),
                                            editing::toPresentationValue(self->snapshot()));
     });
     cls.addFunc("getRevision", &SceneEditorSession::revision);
@@ -429,12 +429,12 @@ void exposeSceneEditorSessions(ssq::Table& table, ssq::Class& module) {
         copied.reserve(vertices.size());
         for (std::size_t index = 0; index < vertices.size(); ++index) copied.push_back(vertices.get<float>(index));
         auto result = self->cachePhysicsPlacementHull(editing::ObjectId(object), std::move(copied), maxVertices);
-        return script::projectStatusResult(vm, result.status(), result.ok(), false);
+        return script::projectStatusResult(vm, result.status());
     });
     cls.addFunc("cachePhysicsPlacementCompound", [vm](SceneEditorSession* self, const std::string& object,
                                                       const std::string& resourceKey, ssq::Array parts) {
         auto value = script::valueFromSquirrel(parts);
-        if (!value.ok()) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value.ok()) return script::projectStatusResult(vm, value.status());
         auto                                  editingValue = editing::toEditingValue(value.value());
         const auto*                           values       = editingValue.getIf<editing::Value::Array>();
         std::vector<PhysicsPlacementCollider> colliders;
@@ -442,91 +442,86 @@ void exposeSceneEditorSessions(ssq::Table& table, ssq::Class& module) {
             colliders.reserve(values->size());
             for (const auto& partValue : *values) {
                 auto part = placementCollider(partValue);
-                if (!part.ok()) return script::projectStatusResult(vm, part.status(), false, false);
+                if (!part.ok()) return script::projectStatusResult(vm, part.status());
                 colliders.push_back(std::move(part.value()));
             }
         }
         auto result = self->cachePhysicsPlacementCompound(editing::ObjectId(object), resourceKey, std::move(colliders));
-        return script::projectStatusResult(vm, result.status(), result.ok(), false);
+        return script::projectStatusResult(vm, result.status());
     });
     cls.addFunc("savePhysicsPlacementColliderCacheJson", &SceneEditorSession::savePhysicsPlacementColliderCacheJson);
     cls.addFunc("restorePhysicsPlacementColliderCacheJson", [vm](SceneEditorSession* self, const std::string& json) {
         auto result = self->restorePhysicsPlacementColliderCacheJson(json);
-        return script::projectStatusResult(vm, result.status(), result.ok(), false);
+        return script::projectStatusResult(vm, result.status());
     });
     cls.addFunc("removePhysicsPlacementHull", [vm](SceneEditorSession* self, const std::string& object) {
         auto result = self->removePhysicsPlacementHull(editing::ObjectId(object));
-        return script::projectStatusResult(vm, result.status(), result.ok(), false);
+        return script::projectStatusResult(vm, result.status());
     });
     cls.addFunc("beginPhysicsPlacement", [vm](SceneEditorSession* self, ssq::Object payload) {
         auto value = script::valueFromSquirrel(payload);
-        if (!value.ok()) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value.ok()) return script::projectStatusResult(vm, value.status());
         auto request = placementRequest(editing::toEditingValue(value.value()));
-        if (!request.ok()) return script::projectStatusResult(vm, request.status(), false, false);
+        if (!request.ok()) return script::projectStatusResult(vm, request.status());
         auto result = self->beginPhysicsPlacement(std::move(request.value()));
-        return script::projectStatusResult(vm, result.status(), result.ok(), false);
+        return script::projectStatusResult(vm, result.status());
     });
     cls.addFunc("updatePhysicsPlacement", [vm](SceneEditorSession* self, float x, float y, float z, float dt) {
         auto result = self->updatePhysicsPlacement(x, y, z, dt);
-        if (!result.ok()) return script::projectStatusResult(vm, result.status(), false, false);
-        return script::projectStatusResult(vm, result.status(), true, true,
+        if (!result.ok()) return script::projectStatusResult(vm, result.status());
+        return script::projectStatusResult(vm, result.status(),
                                            editing::toPresentationValue(placementValue(result.value())));
     });
     cls.addFunc("updatePhysicsPlacementPose", [vm](SceneEditorSession* self, float x, float y, float z, float rotationX,
                                                    float rotationY, float rotationZ, float dt) {
         auto result = self->updatePhysicsPlacementPose(x, y, z, rotationX, rotationY, rotationZ, dt);
-        if (!result.ok()) return script::projectStatusResult(vm, result.status(), false, false);
-        return script::projectStatusResult(vm, result.status(), true, true,
+        if (!result.ok()) return script::projectStatusResult(vm, result.status());
+        return script::projectStatusResult(vm, result.status(),
                                            editing::toPresentationValue(placementValue(result.value())));
     });
     cls.addFunc("updatePhysicsPlacementTransform",
                 [vm](SceneEditorSession* self, ssq::Array position, ssq::Array rotation, ssq::Array scale, float dt) {
                     if (position.size() != 3 || rotation.size() != 3 || scale.size() != 3)
                         return script::projectStatusResult(
-                            vm,
-                            Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                              "Placement transform arrays require three values")),
-                            false, false);
+                            vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                  "Placement transform arrays require three values")));
                     auto result = self->updatePhysicsPlacementTransform(
                         position.get<float>(0), position.get<float>(1), position.get<float>(2), rotation.get<float>(0),
                         rotation.get<float>(1), rotation.get<float>(2), scale.get<float>(0), scale.get<float>(1),
                         scale.get<float>(2), dt);
-                    if (!result.ok()) return script::projectStatusResult(vm, result.status(), false, false);
-                    return script::projectStatusResult(vm, result.status(), true, true,
+                    if (!result.ok()) return script::projectStatusResult(vm, result.status());
+                    return script::projectStatusResult(vm, result.status(),
                                                        editing::toPresentationValue(placementValue(result.value())));
                 });
     cls.addFunc("alignPhysicsPlacementToSurface",
                 [vm](SceneEditorSession* self, ssq::Array from, ssq::Array to, float offset, float dt) {
                     if (from.size() != 3 || to.size() != 3)
                         return script::projectStatusResult(
-                            vm,
-                            Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                              "Surface alignment endpoints require three values")),
-                            false, false);
+                            vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                  "Surface alignment endpoints require three values")));
                     auto result = self->alignPhysicsPlacementToSurface(from.get<float>(0), from.get<float>(1),
                                                                        from.get<float>(2), to.get<float>(0),
                                                                        to.get<float>(1), to.get<float>(2), offset, dt);
-                    if (!result.ok()) return script::projectStatusResult(vm, result.status(), false, false);
-                    return script::projectStatusResult(vm, result.status(), true, true,
+                    if (!result.ok()) return script::projectStatusResult(vm, result.status());
+                    return script::projectStatusResult(vm, result.status(),
                                                        editing::toPresentationValue(placementValue(result.value())));
                 });
     cls.addFunc("commitPhysicsPlacement",
                 [project](SceneEditorSession* self) { return project(self->commitPhysicsPlacement()); });
     cls.addFunc("cancelPhysicsPlacement", [vm](SceneEditorSession* self) {
         auto result = self->cancelPhysicsPlacement();
-        return script::projectStatusResult(vm, result.status(), result.ok(), false);
+        return script::projectStatusResult(vm, result.status());
     });
     cls.addFunc("isPhysicsPlacementActive", [](SceneEditorSession* self) { return self->physicsPlacementActive(); });
     module.addFunc("createSession", [vm](SceneEditorModule*, const std::string& id) {
         if (id.empty())
-            return script::projectStatusResult(vm,
-                                               Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                                                 "Scene target id must not be empty")),
-                                               false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "Scene target id must not be empty")));
         auto object =
             script::makeOwnedSquirrelInstance<SceneEditorSession>(vm, std::make_unique<SceneEditorSession>(id));
-        if (!object.ok()) return script::projectStatusResult(vm, object.status(), false, false);
-        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        if (!object.ok()) return script::projectStatusResult(vm, object.status());
+        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
         result.set("value", std::move(object).takeValue());
         result.set("ownership", std::string("owned"));
         return result;
@@ -535,17 +530,16 @@ void exposeSceneEditorSessions(ssq::Table& table, ssq::Class& module) {
         auto* scene = ModuleManager::getInstance<scene::Scene>("Scene");
         if (!scene || id.empty())
             return script::projectStatusResult(
-                vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                  "Live scene editing requires Scene module and a nonempty target id")),
-                false, false);
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                          "Live scene editing requires Scene module and a nonempty target id")));
         auto host = scene->findHost(hostName);
-        if (!host.ok()) return script::projectStatusResult(vm, host.status(), false, false);
+        if (!host.ok()) return script::projectStatusResult(vm, host.status());
         auto object = script::makeOwnedSquirrelInstance<SceneEditorSession>(
             vm, std::make_unique<SceneEditorSession>(
                     std::make_unique<scene_editing::SceneHostEditorTarget>(id, host.value())));
-        if (!object.ok()) return script::projectStatusResult(vm, object.status(), false, false);
-        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        if (!object.ok()) return script::projectStatusResult(vm, object.status());
+        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
         result.set("value", std::move(object).takeValue());
         result.set("ownership", std::string("owned"));
         return result;

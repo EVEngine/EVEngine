@@ -81,7 +81,6 @@ TEST_CASE("graphics.shaderReload.rejectsForeignFacade") {
     CHECK_EQ(replaced.diagnostics().front().code(), DiagnosticCode::StaleHandle);
 }
 
-#if !defined(_WIN32)
 TEST_CASE("graphics.shaderReload.glslFailureKeepsLastGoodPipeline") {
     Graphics *graphics = initializedGraphics();
     REQUIRE(graphics != nullptr);
@@ -91,6 +90,8 @@ TEST_CASE("graphics.shaderReload.glslFailureKeepsLastGoodPipeline") {
     void *const originalGpuHandle = shader->gpuHandle;
     const auto originalFragment = shader->fragmentSpirv();
 
+    // Invalid source must be reported as a compile diagnostic on every platform now
+    // that the engine compiles GLSL in-process instead of rejecting it on Windows.
     auto replaced = graphics->replaceShaderFromGlsl(
         *shader, {}, "#version 450\nthis is deliberately invalid GLSL\n");
     REQUIRE(!replaced.ok());
@@ -99,4 +100,3 @@ TEST_CASE("graphics.shaderReload.glslFailureKeepsLastGoodPipeline") {
     CHECK(shader->gpuHandle == originalGpuHandle);
     CHECK_EQ(shader->fragmentSpirv(), originalFragment);
 }
-#endif

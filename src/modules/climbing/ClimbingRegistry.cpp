@@ -3,11 +3,6 @@
 namespace eve::climbing {
 namespace {
 
-template <class T>
-eve::Result<T> registryFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing"));
-}
-
 }  // namespace
 
 eve::Result<ClimbingRuntimeHandleRef> Climbing::newRuntime() {
@@ -22,8 +17,8 @@ eve::script::Borrowed<ClimbingRuntime> Climbing::resolve(ClimbingRuntimeHandleRe
 eve::Result<void> Climbing::release(ClimbingRuntimeHandleRef reference) {
     Climbing* module = ModuleManager::getInstance<Climbing>("Climbing");
     if (!module)
-        return registryFailure<void>(eve::DiagnosticCode::StaleHandle, "Climbing module is no longer loaded",
-                                     "runtime");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Climbing module is no longer loaded", "runtime", {}, "climbing"));
     return module->runtimes_.erase(reference);
 }
 
@@ -51,8 +46,8 @@ eve::script::Borrowed<ClimbingAnchorGraphInstance> Climbing::resolveAnchorGraph(
 eve::Result<void> Climbing::releaseAnchorGraph(ClimbingAnchorGraphHandleRef reference) {
     Climbing* module = ModuleManager::getInstance<Climbing>("Climbing");
     if (!module)
-        return registryFailure<void>(eve::DiagnosticCode::StaleHandle, "Climbing module is no longer loaded",
-                                     "anchorGraph");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Climbing module is no longer loaded", "anchorGraph", {}, "climbing"));
     return module->anchorGraphs_.erase(reference);
 }
 

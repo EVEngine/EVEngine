@@ -16,7 +16,7 @@
 - [事件](modules/event.md)：泵送平台事件，并用字符串消息队列在模块或线程之间传递通知。
 - [响应式编程](modules/rx.md)：UniRx 风格推送流，Subject 家族 + LINQ 操作符 + ReactiveProperty + 事件桥接。
 - [计时器](modules/timer.md)：读取启动后的高精度时间和帧间隔。
-- [系统信息](modules/system.md)：查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。
+- [OS](modules/os.md)：查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。
 - [键盘](modules/keyboard.md)：查询按键状态、键盘重复和文本输入。
 - [鼠标](modules/mouse.md)：查询鼠标位置、按键和指针可见状态；当前脚本绑定不含相对模式设置。
 - [触摸](modules/touch.md)：按索引读取当前触点数量和归一化/屏幕坐标。
@@ -39,14 +39,18 @@
 
 - [脚本 ECS](modules/entity.md)：通过 Component、Entity 和 System 声明数据组合与批量更新逻辑。
 - [物理（Box2D / Box3D）](modules/physics.md)：2D World/Body/Fixture（像素坐标 + meter）与 3D World3D/Body3D/Shape3D（米）；接触事件与 `rayCast` / `queryAABB` / `testPoint` 拾取查询。
+- [几何破碎 Destruction](modules/physics_destruction.md)：预切几何集合、连接图与场驱动断边；可选 [DestructionFx](modules/physics_destruction_graphics.md) 骨块绘制与 Sleep 合批。
 - [Tilemap](modules/map.md)：创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染。
 - [粒子](modules/particles.md)：用代码或 JSON 创建发射器，配置运动、颜色、寿命并进行更新和渲染。
 - [像素物质世界](modules/pixelworld.md)：64×64 分块的确定性沙、水、火焰与可破坏二维材料仿真。
 - [PixelWorld 确定性重放](modules/pixelworld_replay.md)：命令日志、周期 checkpoint 与首个 Tick/Chunk 分歧定位。
 - [PixelWorld 兴趣区 Streaming](modules/pixelworld_streaming.md)：Chunk 兴趣区、增量更新、驱逐 tombstone 与权威校正。
 - [PixelWorld Catalog 编辑器](modules/pixelworld_editor.md)：可挂载的材质浏览、属性、反应与相变规则事务式编辑面板。
-- [动画](modules/animation.md)：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、控制论程序动画（`ControlAnim` / `ControlPose`）、以及拖尾轨迹（`AnimTrail`）。
+- [动画](modules/animation.md)：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、控制论程序动画（`ControlAnim` / `ControlPose`）、受击晃动与平衡恢复（`PhysicalBalancePose`）、以及拖尾轨迹（`AnimTrail`）。
 - [攀爬与跑酷](modules/climbing.md)：前方障碍/顶部落点探测、确定性动作选择，以及受 Physics 胶囊体约束的 vault / mantle 执行。
+- [行动与 Ability 协议](modules/action.md)：脚本拥有的 `ActionRuntime` / `AbilityRuntime`；grant、冷却、激活与直接 action 提交。
+- [通用结算](modules/settlement.md)：确定性结算管线与规则文档；脚本 ledger runtime 与各玩法域 `configureSettlementRulesJson`。
+- [NPC AI](modules/npc_ai.md)：层级状态树、黑板、感知记忆与确定性调度的脚本世界入口。
 - [RPG 系统](modules/rpg.md)：组合属性、效果、状态、技能、施法与伤害结算。
 - [背包 / 物品栏](modules/inventory.md)：物品定义、背包容器、转移、装备栏与可插拔接纳/容量/堆叠规则。
 - [卡牌游戏工具](modules/cardgame.md)：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌与费用置灰（参考 UiCard）。
@@ -68,11 +72,12 @@
 ## 表现与场景
 
 - [图形渲染](modules/graphics.md)：清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染；Camera2D/3D 提供屏幕↔世界与拾取射线。
+- [实时雾气](modules/graphics_fog.md)：MAC 流体、世界空间光线步进、Froxel 积分与解析体积光；艺术层不回写密度。
 - [体素](modules/voxel.md)：32³ chunk 体素世界，贪婪矩形合并 + 实例化渲染、跨 chunk 接缝消隐、顶点 AO、DDA 射线拾取、自动流式地形生成与存档。
 - [Sprite-Stacking](modules/spritestack.md)：把 3D 模型切成多层 RGBA 图，以叠片方式渲染成伪 3D 物体（经典 billboard 切片 / 水平俯视切片）。
 - [昼夜循环](modules/daynight.md)：随时间驱动的太阳轨道、程序化天空盒（IBL），以及月光 / 星光 / 火焰 / 萤火虫等夜间光照系统。
 - [天气系统](modules/weather.md)：实时降水 / 闪电 / 风场，含雨、雪、雷暴预置与风暴氛围。
-- [可交互积雪](modules/snow.md)：深度场积雪，真实位移深坑 + POM 微细节 + 降雪回填（脚印 / 弹坑 / 行走痕迹）。
+- [天气](modules/weather.md)及其[可交互积雪服务](modules/snow.md)：降水、风、雷暴，以及深度场积雪的真实位移、POM 微细节与降雪回填。
 - [Avatar 分层渲染](modules/avatar.md)：Image 图层 / Live2D / VRoid 立绘，表达式、口型与动作。
 - [对话与剧情](modules/dialogue.md)：角色舞台、打字机、选项分支、口型与台词池（.dnut）。
 - [3D 相机控制器](modules/camera.md)：跟随 / 环绕 / 俯视 / 第一人称 / 过场视角序列。

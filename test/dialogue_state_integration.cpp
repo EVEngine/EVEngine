@@ -2,7 +2,9 @@
 #include "dialogue/ConversationAuthoring.h"
 #include "dialogue/Dialogue.h"
 #include "dialogue/DialogueFlow.h"
+#include "dialogue/DialogueSequence.h"
 #include "dialogue/DialogueState.h"
+#include "dnut_interpreter/SequenceRuntime.h"
 #include "statepatch/StateAccessAdapter.h"
 #include "statepatch/StatePatch.h"
 #include "transaction/Transaction.h"
@@ -32,10 +34,11 @@ using eve::Value;
 using eve::dialogue::CommandRequest;
 using eve::dialogue::CommandRequestKind;
 using eve::dialogue::CommandResponse;
-using eve::dialogue::ConversationAsset;
-using eve::dialogue::ConversationRunner;
 using eve::dialogue::DialogueFlow;
 using eve::dialogue::DialogueStateContext;
+using eve::dnut::SequenceAsset;
+using eve::dnut::SequenceNode;
+using eve::dnut::SequenceRuntime;
 
 class TestWorld final : public IStateQuery {
 public:
@@ -84,64 +87,64 @@ public:
     }
 };
 
-ConversationAsset makeWorldBranchAsset() {
-    ConversationAsset asset;
+SequenceAsset makeWorldBranchAsset() {
+    SequenceAsset asset;
     asset.id    = "p1.world-branch";
     asset.entry = "branch";
-    asset.parameters.push_back(ConversationAsset::Parameter{"mood"});
+    asset.parameters.push_back(eve::dnut::SequenceParameter{"mood"});
 
-    ConversationAsset::Node branch;
+    SequenceNode branch;
     branch.id   = "branch";
-    branch.kind = ConversationAsset::Node::Kind::Branch;
-    branch.routes.emplace_back("world", "world-line",
-                               Value::Object{{"state", Value("mood")}, {"equals", Value("calm")}});
-    branch.routes.emplace_back("else", "local-line");
+    branch.type = "branch";
+    branch.routes.push_back(
+        {"world", Value::Object{{"state", Value("mood")}, {"equals", Value("calm")}}, "world-line"});
+    branch.routes.push_back({"else", {}, "local-line"});
 
-    ConversationAsset::Node worldLine;
+    SequenceNode worldLine;
     worldLine.id   = "world-line";
-    worldLine.kind = ConversationAsset::Node::Kind::Line;
+    worldLine.type = "line";
     worldLine.next = "end";
 
-    ConversationAsset::Node localLine = worldLine;
-    localLine.id                      = "local-line";
+    SequenceNode localLine = worldLine;
+    localLine.id           = "local-line";
 
-    ConversationAsset::Node end;
+    SequenceNode end;
     end.id   = "end";
-    end.kind = ConversationAsset::Node::Kind::End;
+    end.type = "end";
 
     asset.nodes = {branch, worldLine, localLine, end};
     return asset;
 }
 
-ConversationAsset makeFacadeAsset() {
-    ConversationAsset asset;
+SequenceAsset makeFacadeAsset() {
+    SequenceAsset asset;
     asset.id    = "p1.facade";
     asset.entry = "branch";
 
-    ConversationAsset::Node branch;
+    SequenceNode branch;
     branch.id   = "branch";
-    branch.kind = ConversationAsset::Node::Kind::Branch;
-    branch.routes.emplace_back("custom", "operation", Value::Object{{"policy", Value("facade.test")}});
-    branch.routes.emplace_back("else", "end");
+    branch.type = "branch";
+    branch.routes.push_back({"custom", Value::Object{{"policy", Value("facade.test")}}, "operation"});
+    branch.routes.push_back({"else", {}, "end"});
 
-    ConversationAsset::Node operation;
-    operation.id         = "operation";
-    operation.kind       = ConversationAsset::Node::Kind::Command;
-    operation.target     = "market.buy";
-    operation.expression = "operationResult";
-    operation.next       = "action";
+    SequenceNode operation;
+    operation.id   = "operation";
+    operation.type = "command";
+    operation.payload.set("name", Value("market.buy"));
+    operation.payload.set("resultLocal", Value("operationResult"));
+    operation.next = "action";
 
-    ConversationAsset::Node action;
-    action.id          = "action";
-    action.kind        = ConversationAsset::Node::Kind::Command;
-    action.target      = "combat.attack";
-    action.commandKind = CommandRequestKind::GameplayAction;
-    action.expression  = "actionResult";
-    action.next        = "end";
+    SequenceNode action;
+    action.id   = "action";
+    action.type = "command";
+    action.payload.set("name", Value("combat.attack"));
+    action.payload.set("kind", Value("gameplay"));
+    action.payload.set("resultLocal", Value("actionResult"));
+    action.next = "end";
 
-    ConversationAsset::Node end;
+    SequenceNode end;
     end.id   = "end";
-    end.kind = ConversationAsset::Node::Kind::End;
+    end.type = "end";
 
     asset.nodes = {branch, operation, action, end};
     return asset;
@@ -159,23 +162,28 @@ TEST_CASE("dialogueState.conversationLocalsDoNotBecomeWorldState") {
     TestWorld            world;
     DialogueStateContext context(world.subject);
     context.setQueryProvider(&world);
-    ConversationAsset asset = makeWorldBranchAsset();
+    SequenceAsset asset = makeWorldBranchAsset();
 
-    ConversationRunner runner;
-    runner.setConditionEvaluator([&context](const Value& specification) { return context.evaluate(specification); });
+    eve::dnut::StepKindRegistry registry;
+    eve::dialogue::registerDialogueSequenceSteps(registry).expect("dialogue sequence vocabulary");
+    SequenceRuntime runner;
+    runner.setStepRegistry(&registry);
+    runner.setConditionEvaluator([&context](const Value& specification) {
+        const auto result = context.evaluate(specification);
+        return eve::dnut::SequenceConditionOutcome{
+            result.passed(), std::string(eve::decision::conditionReasonCodeName(result.reasonCode())), {}};
+    });
 
-    eve::StateValue bindings = eve::StateValue::object();
-    bindings.set("mood", eve::StateValue::string("local-mood"));
-    CHECK(runner.startChecked(&asset, std::move(bindings)).ok());
+    Value bindings = Value::Object{{"mood", Value("local-mood")}};
+    CHECK(runner.start(&asset, std::move(bindings)).ok());
     CHECK(runner.currentNodeId() == "world-line");
     CHECK(runner.bindings().find("mood")->asString() == "local-mood");
 
-    runner.locals().set("localOnly", eve::StateValue::boolean(true));
+    runner.locals().set("localOnly", Value(true));
     CHECK(!world.value(world.subject, "localOnly").has_value());
     REQUIRE(runner.lastConditionResult() != nullptr);
-    CHECK(runner.lastConditionResult()->passed());
-    CHECK(static_cast<int>(runner.lastConditionResult()->reasonCode()) ==
-          static_cast<int>(eve::decision::ConditionReasonCode::Passed));
+    CHECK(runner.lastConditionResult()->passed);
+    CHECK(runner.lastConditionResult()->reason == "passed");
 }
 
 TEST_CASE("dialogueState.usesSharedConditionExplanation") {
@@ -312,7 +320,7 @@ TEST_CASE("dialogueState.dialogueFlowConfiguresAllCrossDomainHooks") {
     CHECK(mutation.lastCount == 1);
     CHECK(mutation.lastContext.transactionId == "tx-facade");
 
-    ConversationAsset asset    = makeFacadeAsset();
+    SequenceAsset     asset    = makeFacadeAsset();
     auto*             document = new eve::dialogue::ConversationDocument(asset);
     CHECK(flow.applyDocumentChecked(document).ok());
     delete document;

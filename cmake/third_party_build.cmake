@@ -213,6 +213,30 @@ function(check_third_party_project name repo)
             -DCMAKE_RELWITHDEBINFO_POSTFIX=md
         )
     endif()
+    # SDL keeps the video subsystem's state in the library itself. The engine
+    # links SDL from several link groups, so with the archive alone every group
+    # and every test executable owns a copy and a window the test created is
+    # invisible to the engine's modules (the particles/graphics/procgen failures
+    # in spec section 7.3). Building SDL shared *as well as* static gives the
+    # dynamic route a single instance, while the archive-only OBJECT route
+    # (release/SDK) keeps linking the static library. SDL_STATIC_PIC is needed
+    # because that archive also ends up inside the group shared objects on ELF.
+    if(NOT ANDROID AND NOT IOS AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS"
+       AND NOT EMSCRIPTEN AND NOT BUILD_PLATFORM STREQUAL "webgpu")
+        list(APPEND _eve_tp_cmake_args
+            -DSDL_SHARED=ON
+            -DSDL_STATIC=ON
+            -DSDL_STATIC_PIC=ON)
+        # box3d keeps its world registry in file scope and Box2D registers contact
+        # types in file scope. The engine reaches both from more than one link
+        # group, so the dynamic route needs one shared copy of each; the patch
+        # files build a dynamic twin next to the canonical archive (see
+        # cmake/patches/box3d-shared-library.patch and box2d-shared-library.patch)
+        # rather than switching the library type, so the archive route keeps
+        # linking a static library and the release artifact stays one
+        # self-contained executable. No flag is passed here: the twin is always
+        # built, which also keeps this install tree usable by both routes.
+    endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND _eve_tp_cmake_args
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
@@ -369,6 +393,84 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-apple-fpu-detection.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Eleventh patch: Box3D upstream selects the STATIC MSVC CRT so that
+    # _crtBreakAlloc leak checking works standalone, while the engine and every
+    # other third-party archive use the dynamic CRT. An executable link only warns
+    # about that mix (LNK4098); a shared library cannot link at all, because
+    # MSVCRTD.lib's startup object cannot resolve __acrt_initialize /
+    # __vcrt_initialize once the static CRT is also in the image. Paths are
+    # relative to the box3d submodule root.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box3d-dynamic-crt.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/box3d
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Thirteenth patch: box3d keeps its world registry (b3_worlds) in file scope,
+    # so a statically linked copy per link group means every group owns different
+    # worlds and a world the test code created is unknown to the engine's modules.
+    # The patch adds a dynamic twin (box3d-dynamic) next to the canonical archive
+    # and installs it in bin/; thirdparty_libs.cmake picks the twin for the shared
+    # route and the archive for the OBJECT / release SDK route, which stays one
+    # self-contained executable. Building both forms removes any dependence on
+    # which configuration built this install tree. Paths are relative to the box3d
+    # submodule root.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box3d-shared-library.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/box3d
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Fourteenth patch: Box2D keeps its contact-type registry (b2Contact's
+    # s_registers / s_initialized) in file scope, and the engine wraps rigid
+    # bodies from two different link groups (EVWorld's physics module and the
+    # EVDomains physics satellites). Two archive copies therefore disagree about
+    # which contacts exist, which surfaces as "Box2D assertion failed:
+    # s_initialized == true" when one group destroys a contact the other created
+    # (spec section 7.25). Same shape as the box3d patch: a dynamic twin next to
+    # the canonical archive, its runtime image installed in bin/ next to the other
+    # shared dependencies, plus explicit data-symbol exports (MSVC's all-symbols
+    # .def generation covers functions only). Paths are relative to the
+    # third-party aggregate root.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box2d-shared-library.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box2d-shared-library.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Twelfth patch: SDL2's library carries a CRT-less _DllMainCRTStartup stub
+    # while HAVE_LIBC is undefined, which is SDL's default on MSVC. The linker
+    # then takes that stub as the entry point of any DLL linking the library, so
+    # the CRT's startup object is never pulled and ucrt/vcruntime are never
+    # searched: every engine link group DLL failed with LNK2019
+    # __acrt_initialize / __vcrt_initialize in MSVCRTD.lib(utility.obj). SDL
+    # ships the SDL_STATIC_LIB guard (bug 4034) for the static build; upstream
+    # also made the static library use the system C library (commit 26a56a4).
+    # This pinned 2.0.16 predates that CMake change, and the narrow guard macro is
+    # verified to leave SDL's public headers byte-identical (HAVE_LIBC=1 there
+    # does not). The same patch drops /NODEFAULTLIB from the *shared* target, so
+    # SDL2.dll is CRT-backed like its consumers.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-static-library-crt-entry.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+
+    # Fifteenth patch: the same pinned SDL 2.0.16 loads Wayland dynamically, so it
+    # never links libwayland-client. With Wayland headers from 1.20 on,
+    # wl_proxy_marshal() routes through wl_proxy_marshal_flags(), which leaves
+    # direct references behind in the objects SDL compiles; the static archive
+    # never notices (the engine links the Wayland libraries itself, see
+    # cmake/system_libraries.cmake) but building SDL *shared* fails with
+    # "undefined reference to wl_proxy_marshal_flags" on current Linux images.
+    # Paths are relative to the third-party aggregate root.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-shared-wayland-link.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which
@@ -421,6 +523,12 @@ function(check_third_party_project name repo)
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
     target_link_directories(eve_engine_includes INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib)
+    # Recorded for cmake/thirdparty_libs.cmake: on ELF/Mach-O the archive route has
+    # to select a third-party archive by path, because the linker prefers the
+    # same-named shared library that also lives in this directory.
+    set(EVENGINE_TP_LIB_DIR
+        "${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib"
+        CACHE INTERNAL "Third-party install lib directory")
 endfunction()
 
 # Load third party project from github
@@ -463,6 +571,8 @@ function(load_third_party)
         target_include_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/include")
         eve_external_include("${_eve_prebuilt_tp}/include")
         target_link_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/lib")
+        set(EVENGINE_TP_LIB_DIR "${_eve_prebuilt_tp}/lib" CACHE INTERNAL
+            "Third-party install lib directory")
         set(EVENGINE_THIRD_PARTY_BINARY_ONLY ON CACHE INTERNAL
             "Use installed third-party prefix" FORCE)
         # Read the install tree's version stamp (written by

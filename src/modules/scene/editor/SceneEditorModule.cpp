@@ -12,6 +12,8 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
+#include <vector>
 
 namespace eve::scene_editor {
 namespace {
@@ -27,9 +29,9 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
 
 class SceneEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override { return type == "scene" || type == "scene-host"; }
+    std::vector<std::string_view> types() const override { return {"scene", "scene-host"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type,
         const editor::EditorValue::Object& request) override {
         editor::AutomationOwnedTarget owned;
@@ -42,11 +44,11 @@ public:
                 create.name = object;
                 auto operation = sceneTarget->makeCreate(create);
                 if (!operation.ok())
-                    return editor::EditorResult<editor::AutomationOwnedTarget>::failure(
+                    return editor::Result<editor::AutomationOwnedTarget>::failure(
                         operation.status());
                 auto applied = sceneTarget->applyDomainOperation(operation.value());
                 if (!applied.ok())
-                    return editor::EditorResult<editor::AutomationOwnedTarget>::failure(
+                    return editor::Result<editor::AutomationOwnedTarget>::failure(
                         applied.status());
             }
             owned.target = std::move(sceneTarget);

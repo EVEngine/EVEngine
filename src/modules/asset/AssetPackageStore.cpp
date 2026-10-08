@@ -16,12 +16,6 @@
 namespace eve::asset {
 namespace {
 
-template <class T>
-Result<T> storeFailure(DiagnosticCode code, std::string message, const std::filesystem::path& path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), path.string(), {},
-                                                "asset.package.store"));
-}
-
 Result<void> writeExclusiveAndFlush(const std::filesystem::path& path,
                                     std::span<const std::uint8_t> bytes) {
 #if defined(_WIN32)
@@ -72,17 +66,19 @@ Result<std::vector<std::uint8_t>> readBounded(const std::filesystem::path& path,
     std::error_code ec;
     const auto size = std::filesystem::file_size(path, ec);
     if (ec || size > maximumBytes || size > (std::numeric_limits<std::size_t>::max)())
-        return storeFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                       "temporary package size is outside limits", path);
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                            "temporary package size is outside limits",
+                                                                            path.string(), {}, "asset.package.store"));
     std::ifstream input(path, std::ios::binary);
     if (!input)
-        return storeFailure<std::vector<std::uint8_t>>(DiagnosticCode::Failed,
-                                                       "cannot reopen temporary package", path);
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "cannot reopen temporary package", path.string(), {}, "asset.package.store"));
     std::vector<std::uint8_t> bytes(static_cast<std::size_t>(size));
     if (!bytes.empty()) input.read(reinterpret_cast<char*>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
     if (!input || input.peek() != std::ifstream::traits_type::eof())
-        return storeFailure<std::vector<std::uint8_t>>(DiagnosticCode::Failed,
-                                                       "temporary package changed while reading", path);
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::Failed,
+                                                                            "temporary package changed while reading",
+                                                                            path.string(), {}, "asset.package.store"));
     return Result<std::vector<std::uint8_t>>::success(std::move(bytes));
 }
 
@@ -139,13 +135,16 @@ Result<PackagePublishReceipt> AtomicAssetPackageStore::publishEva(
     const std::filesystem::path& destination, const EvaManifest& manifest,
     std::vector<EvaArchiveEntry> entries, const EvaArchiveLimits& limits) {
     if (destination.empty() || destination.filename().empty())
-        return storeFailure<PackagePublishReceipt>(DiagnosticCode::InvalidArgument,
-                                                   "package destination is empty", destination);
+        return Result<PackagePublishReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "package destination is empty", destination.string(), {},
+                              "asset.package.store"));
     auto built = buildEvaArchive(manifest, std::move(entries), limits);
     if (!built) return Result<PackagePublishReceipt>::failure(built.status());
     std::error_code ec;
     if (!destination.parent_path().empty()) std::filesystem::create_directories(destination.parent_path(), ec);
-    if (ec) return storeFailure<PackagePublishReceipt>(DiagnosticCode::Failed, ec.message(), destination);
+    if (ec)
+        return Result<PackagePublishReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, ec.message(), destination.string(), {}, "asset.package.store"));
     const auto temporary = temporaryPath(destination, ++sequence_);
     TemporaryCleanup cleanup(temporary);
     auto written = writeExclusiveAndFlush(temporary, built.value());
@@ -155,8 +154,9 @@ Result<PackagePublishReceipt> AtomicAssetPackageStore::publishEva(
     auto verified = parseEvaArchive(reopened.value(), limits);
     if (!verified) return Result<PackagePublishReceipt>::failure(verified.status());
     if (beforeReplace_ && beforeReplace_(temporary, destination) == PackagePublishGateDecision::Reject)
-        return storeFailure<PackagePublishReceipt>(DiagnosticCode::Cancelled,
-                                                   "package replacement rejected before commit", destination);
+        return Result<PackagePublishReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::Cancelled, "package replacement rejected before commit",
+                              destination.string(), {}, "asset.package.store"));
     auto replaced = replaceFile(temporary, destination);
     if (!replaced) return Result<PackagePublishReceipt>::failure(replaced.status());
     cleanup.release();
@@ -168,13 +168,16 @@ Result<PackagePublishReceipt> AtomicAssetPackageStore::publishEvpack(
     const std::filesystem::path& destination, std::span<const std::uint8_t> bytes,
     const EvpackLimits& limits, const EvpackTrust& trust) {
     if (destination.empty() || destination.filename().empty())
-        return storeFailure<PackagePublishReceipt>(DiagnosticCode::InvalidArgument,
-                                                   "package destination is empty", destination);
+        return Result<PackagePublishReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "package destination is empty", destination.string(), {},
+                              "asset.package.store"));
     auto admitted = parseEvpack(bytes, limits, trust);
     if (!admitted) return Result<PackagePublishReceipt>::failure(admitted.status());
     std::error_code ec;
     if (!destination.parent_path().empty()) std::filesystem::create_directories(destination.parent_path(), ec);
-    if (ec) return storeFailure<PackagePublishReceipt>(DiagnosticCode::Failed, ec.message(), destination);
+    if (ec)
+        return Result<PackagePublishReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, ec.message(), destination.string(), {}, "asset.package.store"));
     const auto temporary = temporaryPath(destination, ++sequence_);
     TemporaryCleanup cleanup(temporary);
     auto written = writeExclusiveAndFlush(temporary, bytes);
@@ -184,8 +187,9 @@ Result<PackagePublishReceipt> AtomicAssetPackageStore::publishEvpack(
     auto verified = parseEvpack(reopened.value(), limits, trust);
     if (!verified) return Result<PackagePublishReceipt>::failure(verified.status());
     if (beforeReplace_ && beforeReplace_(temporary, destination) == PackagePublishGateDecision::Reject)
-        return storeFailure<PackagePublishReceipt>(DiagnosticCode::Cancelled,
-                                                   "package replacement rejected before commit", destination);
+        return Result<PackagePublishReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::Cancelled, "package replacement rejected before commit",
+                              destination.string(), {}, "asset.package.store"));
     auto replaced = replaceFile(temporary, destination);
     if (!replaced) return Result<PackagePublishReceipt>::failure(replaced.status());
     cleanup.release();

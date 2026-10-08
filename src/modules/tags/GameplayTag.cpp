@@ -9,11 +9,6 @@
 namespace eve::tags {
 namespace {
 
-template <typename T>
-Result<T> invalid(std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 std::string idText(GameplayTagId id) {
     std::ostringstream stream;
     stream << std::hex << std::setfill('0') << std::setw(16) << id.value();
@@ -62,7 +57,9 @@ bool gameplayTagMatches(std::string_view candidate, std::string_view query, Game
 }
 
 Result<GameplayTagId> GameplayTagRegistry::registerTag(std::string name, std::string description) {
-    if (!isValidGameplayTagName(name)) return invalid<GameplayTagId>("Invalid gameplay-tag name", "name");
+    if (!isValidGameplayTagName(name))
+        return Result<GameplayTagId>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid gameplay-tag name", "name"));
     const GameplayTagId id = gameplayTagId(name);
     if (const auto existing = definitionsByName_.find(name); existing != definitionsByName_.end()) {
         if (existing->second.description != description)
@@ -118,30 +115,41 @@ Result<Value> GameplayTagRegistry::toValue() const {
 }
 
 Result<GameplayTagRegistry> GameplayTagRegistry::fromValue(const Value& value) {
-    if (!value.isObject()) return invalid<GameplayTagRegistry>("Gameplay-tag registry must be an object", "$");
+    if (!value.isObject())
+        return Result<GameplayTagRegistry>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Gameplay-tag registry must be an object", "$"));
     const Value* schema  = member(value, "schema");
     const Value* version = member(value, "version");
     const Value* tags    = member(value, "tags");
     if (!schema || !schema->isString() || schema->asString() != "eve.gameplay-tags")
-        return invalid<GameplayTagRegistry>("Unsupported gameplay-tag schema", "schema");
+        return Result<GameplayTagRegistry>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Unsupported gameplay-tag schema", "schema"));
     if (!version || !version->isInt64() || version->asInt() != 1)
-        return invalid<GameplayTagRegistry>("Unsupported gameplay-tag schema version", "version");
-    if (!tags || !tags->isArray()) return invalid<GameplayTagRegistry>("Gameplay tags must be an array", "tags");
+        return Result<GameplayTagRegistry>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Unsupported gameplay-tag schema version", "version"));
+    if (!tags || !tags->isArray())
+        return Result<GameplayTagRegistry>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Gameplay tags must be an array", "tags"));
 
     GameplayTagRegistry candidate;
     for (std::size_t i = 0; i < tags->arraySize(); ++i) {
         const auto&       entry = tags->at(i);
         const std::string path  = "tags[" + std::to_string(i) + "]";
-        if (!entry.isObject()) return invalid<GameplayTagRegistry>("Gameplay-tag entry must be an object", path);
+        if (!entry.isObject())
+            return Result<GameplayTagRegistry>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Gameplay-tag entry must be an object", path));
         const Value* name        = member(entry, "name");
         const Value* description = member(entry, "description");
         const Value* id          = member(entry, "id");
         if (!name || !name->isString())
-            return invalid<GameplayTagRegistry>("Gameplay-tag name must be a string", path + ".name");
+            return Result<GameplayTagRegistry>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "Gameplay-tag name must be a string", path + ".name"));
         if (!description || !description->isString())
-            return invalid<GameplayTagRegistry>("Gameplay-tag description must be a string", path + ".description");
+            return Result<GameplayTagRegistry>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "Gameplay-tag description must be a string", path + ".description"));
         if (!id || !id->isString() || id->asString() != idText(gameplayTagId(name->asString())))
-            return invalid<GameplayTagRegistry>("Gameplay-tag id does not match its canonical name", path + ".id");
+            return Result<GameplayTagRegistry>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "Gameplay-tag id does not match its canonical name", path + ".id"));
         auto registered = candidate.registerTag(name->asString(), description->asString());
         if (!registered) return Result<GameplayTagRegistry>::failure(registered.status());
     }

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 背包模块的核心数据结构：物品定义、运行时堆叠、变更事件。
 // 全部 key 使用字符串，便于 JSON 配置与跨版本兼容。
@@ -10,7 +12,7 @@
 namespace eve::inventory {
 
 /** @brief 物品模板（进程级注册表中的定义，不含运行时数量）。 */
-struct ItemDefinition {
+struct EVENGINE_API_FOUNDATION ItemDefinition {
     std::string id;
     std::string displayName;
     int maxStack = 1;
@@ -27,7 +29,7 @@ struct ItemDefinition {
 };
 
 /** @brief 容器中的一格堆叠（空槽：itemId 为空或 quantity <= 0）。 */
-struct ItemStack {
+struct EVENGINE_API_FOUNDATION ItemStack {
     int instanceId = 0;
     std::string itemId;
     int quantity = 0;

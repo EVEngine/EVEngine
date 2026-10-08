@@ -53,6 +53,8 @@ int EconomySystem::getIncome(int player, const std::string& type) { return ledge
 
 int EconomySystem::getExpense(int player, const std::string& type) { return ledger(player).getExpense(type); }
 
+EconomyLedger::Snapshot EconomySystem::snapshot(int player) { return ledger(player).snapshot(); }
+
 void EconomySystem::registerHook(const std::string& name, EconomyHook fn) {
     EV_PARAM_CHECK(!name.empty(), "hook name must not be empty");
     hooks()[name] = std::move(fn);

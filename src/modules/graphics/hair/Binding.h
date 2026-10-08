@@ -60,7 +60,7 @@ struct RootAttach {
  * @thread Affine to the caller; not synchronized.
  * @reentrancy Does not invoke callbacks.
  */
-class GroomBinding {
+class EVENGINE_API_BACKENDS GroomBinding {
 public:
     /**
      * @brief Project every strand root onto the closest rest-mesh triangle.

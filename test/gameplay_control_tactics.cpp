@@ -1,6 +1,8 @@
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayControlJson.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "tactics/Tactics.h"
 
 #include "zeroerr/assert.h"
@@ -190,4 +192,39 @@ TEST_CASE("gameplay.control.providerLifecycleMakesMissingConfigurationObservable
         CHECK_EQ(eve::cap::listenerCount<eve::IGameplayControlProvider>(), before + 1);
     }
     CHECK_EQ(eve::cap::listenerCount<eve::IGameplayControlProvider>(), before);
+}
+
+TEST_CASE("gameplay.control.tacticsEnumeratesItsBattleInstances") {
+    ecs::Table            world;
+    ecs::ScopedTable      guard(world);
+    eve::tactics::Tactics tactics;
+
+    const auto first  = subject("00000000-0000-7000-8000-0000000004a1");
+    const auto second = subject("00000000-0000-7000-8000-0000000004a2");
+    const auto one    = tactics.newBattle(first, 41);
+    const auto two    = tactics.newBattle(second, 42);
+    REQUIRE(one.ok());
+    REQUIRE(two.ok());
+
+    // 实例身份就是 battle 的 subject，与 observeGameplay 解析用的键一致。
+    const auto instances = tactics.gameplayInstances();
+    REQUIRE_EQ(instances.size(), std::size_t{2});
+    CHECK_EQ(instances[0].format(), first.format());
+    CHECK_EQ(instances[1].format(), second.format());
+
+    eve::IGameplayInstanceCatalog* catalog = nullptr;
+    eve::cap::forEach<eve::IGameplayInstanceCatalog>([&](auto* candidate) {
+        if (candidate != nullptr && candidate->gameplayDomain() == "tactics") catalog = candidate;
+    });
+    REQUIRE(catalog != nullptr);
+
+    auto scoped = eve::executeGameplayControlJson(
+        R"({"schemaId":"evengine.gameplay-control-request","schemaVersion":1,"op":"instances","domain":"tactics"})");
+    REQUIRE(scoped.ok());
+    CHECK(scoped.value().find(first.format()) != std::string::npos);
+    CHECK(scoped.value().find(second.format()) != std::string::npos);
+
+    // 目录在 provider 生命周期内注册与注销。
+    CHECK_EQ(eve::cap::listenerCount<eve::IGameplayInstanceCatalog>(),
+             eve::cap::listenerCount<eve::IGameplayControlProvider>());
 }

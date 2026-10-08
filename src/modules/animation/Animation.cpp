@@ -20,6 +20,7 @@
 #include "animation/AnimSyncGroup.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
+#include "animation/PhysicalBalancePose.h"
 #include "animation/MotionBuilder.h"
 #include "animation/MotionSequence.h"
 #include "animation/MotionScriptBindings.h"
@@ -90,6 +91,11 @@ bool updateDeformedNormalsFromArray(AnimLattice *self, ssq::Array posArr, ssq::A
 }  // namespace
 
 Module_IMPL(Animation, new Animation());
+
+// Defaulted out of line: `SpriteSheet.h` is included above, so the destructor of
+// `unique_ptr<SpriteSheet>` (needed for this constructor's exception specification)
+// sees a complete type; Animation.h only forward-declares `SpriteSheet`.
+Animation::Animation() = default;
 
 Animation::~Animation() {
     // Owned players may outlive the module if script GC still holds them; detach.
@@ -381,13 +387,8 @@ ControlAnim *Animation::newControlAnim(float frequencyHz, float dampingZeta, flo
 
 ControlPose *Animation::newControlPose(AnimSkeleton *skeleton) { return new ControlPose(skeleton); }
 
-AnimSkeleton *Animation::newSkeletonFromModel(eve::model3d::ModelData *model) {
-    return AnimImporter::loadSkeletonFromModel(model);
-}
-
-AnimClip *Animation::newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
-                                      int animIndex) {
-    return AnimImporter::loadClipFromModel(model, skeleton, animIndex);
+PhysicalBalancePose* Animation::newPhysicalBalancePose(AnimSkeleton* skeleton) {
+    return new PhysicalBalancePose(skeleton);
 }
 
 AnimSkeleton *Animation::newSkeletonFromAnimationFixtureText(const std::string &path) {
@@ -407,18 +408,8 @@ AnimClip *Animation::newClipFromAnimationFixtureText(const std::string &path) {
     return clip;
 }
 
-AnimSkin *Animation::newSkinFromModel(eve::model3d::ModelData *model, int meshIndex,
-                                      AnimSkeleton *skeleton) {
-    return AnimSkin::fromModel(model, meshIndex, skeleton);
-}
-
 AnimLattice *Animation::newLattice(int divX, int divY, int divZ) {
     return new AnimLattice(divX, divY, divZ);
-}
-
-AnimLattice *Animation::newLatticeFromModel(eve::model3d::ModelData *model, int meshIndex,
-                                            int divX, int divY, int divZ) {
-    return AnimLattice::fromModel(model, meshIndex, divX, divY, divZ);
 }
 
 AnimTrail *Animation::newTrail(int capacity) { return new AnimTrail(capacity); }
@@ -855,6 +846,7 @@ void Animation::expose(ssq::Table &table) {
     lattice.addFunc("getDeformedNormals", &AnimLattice::getDeformedNormals);
 
     exposeAnimPlayerBindings(table);
+    exposePhysicalBalancePoseBindings(table);
 
     auto graph = table.addClass<AnimGraph>(
         "AnimGraph", std::function<AnimGraph *()>([]() -> AnimGraph * { return nullptr; }), true);
@@ -1339,13 +1331,13 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newMotionMatcher", &Animation::newMotionMatcher);
     cls.addFunc("newControlAnim", &Animation::newControlAnim);
     cls.addFunc("newControlPose", &Animation::newControlPose);
-    cls.addFunc("newSkeletonFromModel", &Animation::newSkeletonFromModel);
-    cls.addFunc("newClipFromModel", &Animation::newClipFromModel);
+    cls.addFunc("newPhysicalBalancePose", &Animation::newPhysicalBalancePose);
     cls.addFunc("newSkeletonFromAnimationFixtureText", &Animation::newSkeletonFromAnimationFixtureText);
     cls.addFunc("newClipFromAnimationFixtureText", &Animation::newClipFromAnimationFixtureText);
-    cls.addFunc("newSkinFromModel", &Animation::newSkinFromModel);
     cls.addFunc("newLattice", &Animation::newLattice);
-    cls.addFunc("newLatticeFromModel", &Animation::newLatticeFromModel);
+#if defined(EVE_ANIMATION_MODEL3D)
+    exposeAnimationModelImportBindings(cls);
+#endif
     cls.addFunc("newTrail", &Animation::newTrail);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);

@@ -255,13 +255,31 @@ public:
     [[nodiscard]] static Result<RoadNetwork> makeBridge(float length = 36.f, float height = 6.f, int lanes = 2);
     /** @brief Scene 4: simple ground-level 4-way cross (one junction disc). */
     [[nodiscard]] static Result<RoadNetwork> makeCross(float span = 32.f, int lanes = 2);
+    /** @brief Ground-level T-junction with an east-west through road and south stem. */
+    [[nodiscard]] static Result<RoadNetwork> makeTee(float span = 32.f, int lanes = 2);
+    /** @brief Ground-level Y-junction with three arms separated by 120 degrees. */
+    [[nodiscard]] static Result<RoadNetwork> makeY(float span = 32.f, int lanes = 2);
+    /**
+     * @brief Build a ground-level N-way fan from absolute arm angles in degrees.
+     * @param span Overall leaf-to-leaf scene extent; must be at least 16 metres.
+     * @param lanes Forward lanes per arm in [1,4].
+     * @param armAnglesDeg At least two finite angles; duplicates within one degree are merged.
+     * @param intoHub Optional direction per input arm (true means leaf-to-hub); empty alternates after sorting.
+     * @return A validated network or a structured input/topology diagnostic.
+     */
+    [[nodiscard]] static Result<RoadNetwork> makeFan(float span, int lanes, std::vector<float> armAnglesDeg,
+                                                     std::vector<bool> intoHub = {});
+    /** @brief Three-way scene with a 60-degree acute fork. */
+    [[nodiscard]] static Result<RoadNetwork> makeFork(float span = 32.f, int lanes = 2);
+    /** @brief Three-way scene with 135-degree skew corners. */
+    [[nodiscard]] static Result<RoadNetwork> makeSkew(float span = 32.f, int lanes = 2);
     /** @brief Build a four-entry roundabout from ordinary nodes, curved edges and lane links. */
     [[nodiscard]] static Result<RoadNetwork> makeRoundabout(float span = 48.f, int lanes = 1);
 
     /**
      * @brief Dispatch a named debug/demo scene.
-     * @param scene One of: straight, curve, bridge, cross, t-junction, y-junction, sloped-t, curve-uphill,
-     * tight-turn, roundabout, interchange.
+     * @param scene One of: straight, curve, bridge, cross, tee/t-junction, y/y-junction, fork, skew, sloped-t,
+     * curve-uphill, tight-turn, roundabout, interchange.
      */
     [[nodiscard]] static Result<RoadNetwork> makeScene(const std::string& scene, float span = 36.f,
                                                        float bridgeHeight = 6.f, int lanes = 2, std::uint32_t seed = 1);

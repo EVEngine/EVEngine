@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <vector>
@@ -18,24 +20,35 @@ class AnimSkeleton;
 class AnimClip;
 
 /**
- * @brief Import AnimSkeleton / AnimClip from an Assimp scene (FBX/glTF/etc),
- * or from compact `*.anim.txt` fixtures derived from those assets.
+ * @brief Animation import helpers.
+ *
+ * Compact `*.anim.txt` fixtures (export/import*) always link with the animation
+ * module. Assimp `aiScene` / ModelData loaders live in optional bridge TUs
+ * (`AnimImporterAssimp.cpp`, `AnimImporterModel.cpp`) compiled only when
+ * `OPTIONAL_DEPS model3d` is present.
  */
-class AnimImporter {
+class EVENGINE_API_WORLD AnimImporter {
 public:
-    /** @brief Build skeleton from the scene node hierarchy (depth-first). */
+    /**
+     * @brief Build skeleton from the scene node hierarchy (depth-first).
+     * @remarks Requires the model3d/Assimp bridge TU.
+     */
     static AnimSkeleton *loadSkeleton(const aiScene *scene);
 
-    /** @brief Load clip by index; maps node-name channels onto skeleton bones. */
+    /**
+     * @brief Load clip by index; maps node-name channels onto skeleton bones.
+     * @remarks Requires the model3d/Assimp bridge TU.
+     */
     static AnimClip *loadClip(const aiScene *scene, const AnimSkeleton *skeleton, int animIndex = 0);
 
-    /** @brief Convenience: ModelData wrappers (implemented in AnimImporterModel.cpp). */
+    /** @brief ModelData wrappers (AnimImporterModel.cpp; requires model3d). */
     static AnimSkeleton *loadSkeletonFromModel(const model3d::ModelData *model);
     static AnimClip *loadClipFromModel(const model3d::ModelData *model, const AnimSkeleton *skeleton,
                                        int animIndex = 0);
     static int         getAnimationCountFromModel(const model3d::ModelData *model);
     static std::string getAnimationNameFromModel(const model3d::ModelData *model, int animIndex);
 
+    /** @brief Assimp scene helpers (AnimImporterAssimp.cpp; requires model3d). */
     static int         getAnimationCount(const aiScene *scene);
     static std::string getAnimationName(const aiScene *scene, int animIndex);
 

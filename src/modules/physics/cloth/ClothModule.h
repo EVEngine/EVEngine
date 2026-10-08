@@ -14,7 +14,7 @@ class ClothModel;
 namespace eve::cloth {
 
 /** @brief Script-facing owner and factory for 2D, 3D, and GPU cloth runtimes. */
-class Cloth : public eve::Module {
+class EVENGINE_API_DOMAINS Cloth : public eve::Module {
 public:
     Module_REG(Cloth);
 

@@ -38,11 +38,6 @@ void boundedDebugPush(std::vector<T>& values, T value) {
     if (values.size() < maxDebugEntries) values.push_back(std::move(value));
 }
 
-template <class T>
-eve::Result<T> climbingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing"));
-}
-
 inline bool isFinite(float value) { return std::isfinite(value); }
 
 inline bool isFinite(Vec3 value) { return isFinite(value.x) && isFinite(value.y) && isFinite(value.z); }

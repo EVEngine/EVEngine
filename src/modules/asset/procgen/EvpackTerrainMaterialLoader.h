@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /** @file EvpackTerrainMaterialLoader.h @brief Runtime canonical terrain-layer semantics. */
 
@@ -52,7 +53,7 @@ struct LoadedTerrainMaterial {
 };
 
 /** @brief Strict `eve.terrain-material/3` EVDEF loader with one-version compatibility. */
-class EvpackTerrainMaterialLoader {
+class EVENGINE_API_ORCHESTRATION EvpackTerrainMaterialLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */
     explicit EvpackTerrainMaterialLoader(const asset::EvpackResourceReader& reader) noexcept : reader_(reader) {}

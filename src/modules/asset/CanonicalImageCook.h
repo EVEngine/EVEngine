@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file CanonicalImageCook.h @brief Safe source-image conversion to runtime EVIMG payloads. */
 
@@ -31,9 +33,8 @@ struct CookedCanonicalImage {
  * EVIMG v1; image/3 emits EVIMG v2 with mip count.
  * @thread Worker-safe; uses no global decoder state.
  */
-[[nodiscard]] Result<CookedCanonicalImage> cookCanonicalImageRgba8(
-    std::span<const std::uint8_t> definition,
-    std::span<const std::uint8_t> encodedSource,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<CookedCanonicalImage> cookCanonicalImageRgba8(
+    std::span<const std::uint8_t> definition, std::span<const std::uint8_t> encodedSource,
     std::uint64_t maximumDecodedBytes);
 
 }  // namespace eve::asset

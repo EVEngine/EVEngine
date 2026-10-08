@@ -11,10 +11,6 @@ bool finite(const LocationPose& pose) {
            std::isfinite(pose.qx) && std::isfinite(pose.qy) && std::isfinite(pose.qz) &&
            std::isfinite(pose.qw);
 }
-template <class T>
-Result<T> invalid(std::string message, DiagnosticCode code = DiagnosticCode::InvalidArgument) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), "scene.locationProfile"));
-}
 bool validSnapshot(const LocationSnapshot& value) {
     return finite(value.camera) && (!value.player || finite(*value.player));
 }
@@ -70,13 +66,16 @@ bool parseSnapshot(const Value& value, LocationSnapshot& output) {
 Result<void> LocationProfile::saveLocation(const LocationPose& camera,
                                            const std::optional<LocationPose>& player) {
     LocationSnapshot candidate{camera, player};
-    if (!validSnapshot(candidate)) return invalid<void>("location poses must be finite");
+    if (!validSnapshot(candidate))
+        return Result<void>::failure(Diagnostic::error({}, "location poses must be finite", "scene.locationProfile"));
     saved_ = candidate;
     return Result<void>::success();
 }
 
 Result<LocationSnapshot> LocationProfile::loadLocation() {
-    if (!saved_) return invalid<LocationSnapshot>("no saved startup location", DiagnosticCode::NotFound);
+    if (!saved_)
+        return Result<LocationSnapshot>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "no saved startup location", "scene.locationProfile"));
     auto result = *saved_;
     saved_.reset();
     return Result<LocationSnapshot>::success(std::move(result));
@@ -84,10 +83,12 @@ Result<LocationSnapshot> LocationProfile::loadLocation() {
 
 Result<int> LocationProfile::addBookmark(LocationBookmark bookmark) {
     if (bookmark.name.empty() || !finite(bookmark.camera) || (bookmark.player && !finite(*bookmark.player)))
-        return invalid<int>("bookmark requires a name and finite poses");
+        return Result<int>::failure(
+            Diagnostic::error({}, "bookmark requires a name and finite poses", "scene.locationProfile"));
     if (std::any_of(bookmarks_.begin(), bookmarks_.end(),
                     [&](const LocationBookmark& value) { return value.name == bookmark.name; }))
-        return invalid<int>("bookmark name already exists", DiagnosticCode::Conflict);
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "bookmark name already exists", "scene.locationProfile"));
     bookmarks_.push_back(std::move(bookmark));
     return Result<int>::success(static_cast<int>(bookmarks_.size() - 1));
 }
@@ -95,8 +96,9 @@ Result<int> LocationProfile::addBookmark(LocationBookmark bookmark) {
 Result<void> LocationProfile::overrideBookmark(int index, const LocationSnapshot& snapshot,
                                                std::string controller, std::string scene) {
     if (index < 0 || index >= getBookmarkCount())
-        return invalid<void>("bookmark index is out of range");
-    if (!validSnapshot(snapshot)) return invalid<void>("bookmark poses must be finite");
+        return Result<void>::failure(Diagnostic::error({}, "bookmark index is out of range", "scene.locationProfile"));
+    if (!validSnapshot(snapshot))
+        return Result<void>::failure(Diagnostic::error({}, "bookmark poses must be finite", "scene.locationProfile"));
     auto candidate = bookmarks_[static_cast<std::size_t>(index)];
     candidate.camera = snapshot.camera;
     candidate.player = snapshot.player;
@@ -108,7 +110,8 @@ Result<void> LocationProfile::overrideBookmark(int index, const LocationSnapshot
 
 Result<int> LocationProfile::removeBookmark(int index, int selectedIndex) {
     if (index < 0 || index >= getBookmarkCount() || selectedIndex < 0 || selectedIndex >= getBookmarkCount())
-        return invalid<int>("bookmark or selection index is out of range");
+        return Result<int>::failure(
+            Diagnostic::error({}, "bookmark or selection index is out of range", "scene.locationProfile"));
     const int oldLast = getBookmarkCount() - 1;
     bookmarks_.erase(bookmarks_.begin() + index);
     int adjusted = selectedIndex == oldLast ? selectedIndex - 1 : selectedIndex;
@@ -118,21 +121,27 @@ Result<int> LocationProfile::removeBookmark(int index, int selectedIndex) {
 
 Result<LocationSnapshot> LocationProfile::loadBookmark(int index) const {
     const auto* bookmark = bookmarkAt(index);
-    if (!bookmark) return invalid<LocationSnapshot>("bookmark index is out of range");
+    if (!bookmark)
+        return Result<LocationSnapshot>::failure(
+            Diagnostic::error({}, "bookmark index is out of range", "scene.locationProfile"));
     return Result<LocationSnapshot>::success(LocationSnapshot{bookmark->camera, bookmark->player});
 }
 
 Result<int> LocationProfile::previousBookmark(int selectedIndex) const {
-    if (bookmarks_.empty()) return invalid<int>("location profile has no bookmarks", DiagnosticCode::NotFound);
+    if (bookmarks_.empty())
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "location profile has no bookmarks", "scene.locationProfile"));
     if (selectedIndex < 0 || selectedIndex >= getBookmarkCount())
-        return invalid<int>("selection index is out of range");
+        return Result<int>::failure(Diagnostic::error({}, "selection index is out of range", "scene.locationProfile"));
     return Result<int>::success(selectedIndex == 0 ? getBookmarkCount() - 1 : selectedIndex - 1);
 }
 
 Result<int> LocationProfile::nextBookmark(int selectedIndex) const {
-    if (bookmarks_.empty()) return invalid<int>("location profile has no bookmarks", DiagnosticCode::NotFound);
+    if (bookmarks_.empty())
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "location profile has no bookmarks", "scene.locationProfile"));
     if (selectedIndex < 0 || selectedIndex >= getBookmarkCount())
-        return invalid<int>("selection index is out of range");
+        return Result<int>::failure(Diagnostic::error({}, "selection index is out of range", "scene.locationProfile"));
     return Result<int>::success(selectedIndex == getBookmarkCount() - 1 ? 0 : selectedIndex + 1);
 }
 
@@ -143,17 +152,20 @@ const LocationBookmark* LocationProfile::bookmarkAt(int index) const noexcept {
 Result<std::string> LocationProfile::getBookmarkName(int index) const {
     const auto* value = bookmarkAt(index);
     return value ? Result<std::string>::success(value->name)
-                 : invalid<std::string>("bookmark index is out of range");
+                 : Result<std::string>::failure(
+                       Diagnostic::error({}, "bookmark index is out of range", "scene.locationProfile"));
 }
 Result<std::string> LocationProfile::getBookmarkController(int index) const {
     const auto* value = bookmarkAt(index);
     return value ? Result<std::string>::success(value->controller)
-                 : invalid<std::string>("bookmark index is out of range");
+                 : Result<std::string>::failure(
+                       Diagnostic::error({}, "bookmark index is out of range", "scene.locationProfile"));
 }
 Result<std::string> LocationProfile::getBookmarkScene(int index) const {
     const auto* value = bookmarkAt(index);
     return value ? Result<std::string>::success(value->scene)
-                 : invalid<std::string>("bookmark index is out of range");
+                 : Result<std::string>::failure(
+                       Diagnostic::error({}, "bookmark index is out of range", "scene.locationProfile"));
 }
 
 Result<std::string> LocationProfile::serializeJson() const {
@@ -173,7 +185,10 @@ Result<void> LocationProfile::restoreJson(std::string_view json) {
     auto decoded = Value::fromJson(json);
     if (!decoded) return Result<void>::failure(decoded.status());
     const auto* root = decoded.value().getIf<Value::Object>();
-    const auto fail = [] { return invalid<void>("invalid location profile schema", DiagnosticCode::ParseError); };
+    const auto  fail = [] {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid location profile schema", "scene.locationProfile"));
+    };
     if (!root || !onlyFields(*root, {"schemaId", "schemaVersion", "saved", "bookmarks"})) return fail();
     const auto schema = root->find("schemaId"), version = root->find("schemaVersion");
     const auto saved = root->find("saved"), bookmarks = root->find("bookmarks");

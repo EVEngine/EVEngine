@@ -62,8 +62,8 @@ On launch the demo auto-plays coverage `0 → 1`, writes PNGs under
 
 - `main.nut` — scene, character load, tendrils, auto-capture
 - `shaders/venom.frag` — coverage / goo / edge shader (samples albedo). It ships compiled as
-  `shaders/venom.frag.spv` and is loaded with `gfx.loadMeshShaderSpv`, because runtime GLSL
-  compilation needs `glslc` on `PATH` and is unavailable on Windows. Regenerate with
+  `shaders/venom.frag.spv` and is loaded with `gfx.loadMeshShaderSpv`, so the example needs
+  no runtime compiler. Regenerate with
   `glslc -o shaders/venom.frag.spv shaders/venom.frag`
 - `config.nut` — window + modules (`model3d`)
 - `assets/quaternius/` — CC0 character glTF + textures

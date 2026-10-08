@@ -1,13 +1,15 @@
 #pragma once
-#include "editing/EditingProtocol.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <vector>
+#include "common/Export.h"
+#include "editing/EditingProtocol.h"
 namespace eve::network { class Network; }
 namespace eve::network_editing {
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorDiagnostic=editing::Diagnostic;
-template<class T>using EditorResult=editing::Result<T>; using EditorStatus=editing::Status;
+using editing::Result; using EditorStatus=editing::Status;
 using RuleId=editing::RuleId;
 /** @brief One copied network telemetry sample; safe after the runtime module changes. */
 struct NetworkTelemetrySample {
@@ -16,10 +18,10 @@ struct NetworkTelemetrySample {
     double timeSeconds=0,sendBytesPerSecond=0,receiveBytesPerSecond=0,errorRate=0;
 };
 /** @brief UI-independent bounded history and network health diagnostics. */
-class NetworkTelemetryModel {
+class EVENGINE_API_BACKENDS NetworkTelemetryModel {
 public:
     explicit NetworkTelemetryModel(std::size_t capacity=300);
-    EditorResult<void> ingest(NetworkTelemetrySample);
+    Result<void> ingest(NetworkTelemetrySample);
     const std::deque<NetworkTelemetrySample>& samples() const { return samples_; }
     std::vector<EditorDiagnostic> diagnostics() const;
     void clear();
@@ -30,6 +32,6 @@ private:
 /** @brief Optional bridge collecting a copied snapshot from the Network module. */
 class NetworkTelemetryCollector {
 public:
-    EditorResult<void> collect(network::Network*,double,NetworkTelemetryModel&) const;
+    Result<void> collect(network::Network*,double,NetworkTelemetryModel&) const;
 };
 } // namespace eve::network_editing

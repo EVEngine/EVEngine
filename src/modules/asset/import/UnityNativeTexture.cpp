@@ -47,17 +47,17 @@ Result<PreparedAssetImport> prepareUnityNativeTexture(const UnityProjectImportRe
     const auto&            bytes = request.files.at(source.path);
     const std::string_view text(reinterpret_cast<const char*>(bytes.data()), bytes.size());
     if (text.find("\nTexture2D:") == std::string_view::npos)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported, "native asset is not a text Texture2D",
-                                                    source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "native asset is not a text Texture2D", source.path, {}, "asset.import"));
     try {
         const auto width = number(text, "m_Width"), height = number(text, "m_Height");
         const auto mips = number(text, "m_MipCount"), transfer = number(text, "m_ColorSpace");
         if (number(text, "m_TextureFormat") != 12 || number(text, "m_TextureDimension") != 2 ||
             number(text, "m_ImageCount") != 1 || transfer > 1 || number(text, "size") != 0 ||
             !field(text, "path").empty())
-            return detail::failure<PreparedAssetImport>(
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
                 DiagnosticCode::Unsupported, "requires embedded BC3 Texture2D with one image and known color space",
-                source.path);
+                source.path, {}, "asset.import"));
         if (!width || !height || width > 0xffffffffu || height > 0xffffffffu ||
             width > request.limits.maximumDecodedBytes / 4 / height || !mips || mips > 33)
             throw std::runtime_error("Texture2D dimensions or mip count exceed budget");
@@ -115,8 +115,9 @@ Result<PreparedAssetImport> prepareUnityNativeTexture(const UnityProjectImportRe
         auto& definitionEntry = out.value().entries.front();
         auto parsed = Value::fromJson(std::string(definitionEntry.bytes.begin(), definitionEntry.bytes.end()));
         if (!parsed || !parsed.value().isObject())
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                        "generated native texture definition is invalid", source.path);
+            return Result<PreparedAssetImport>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "generated native texture definition is invalid",
+                                  source.path, {}, "asset.import"));
         auto& object = *parsed.value().getIf<Value::Object>();
         const auto oldBlob = object.at("blob").asString();
         const auto newBlob = definitionEntry.path.substr(0, definitionEntry.path.rfind('/') + 1) + "source.rgba8-mips";
@@ -138,7 +139,8 @@ Result<PreparedAssetImport> prepareUnityNativeTexture(const UnityProjectImportRe
                                         "transfer converted to canonical image semantics"});
         return out;
     } catch (const std::exception& error) {
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument, error.what(), source.path);
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, error.what(), source.path, {}, "asset.import"));
     }
 }
 }  // namespace eve::asset_import

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "scene/editing/SceneEditingTypes.h"
 
@@ -41,7 +43,7 @@ public:
     virtual std::vector<SceneComponentPayloadRef> components(const TargetId& scene,
                                                               const ObjectId& object) const = 0;
     /** @brief Resolve the authoritative mutation target for one component selection. */
-    virtual EditorResult<IDomainOperationTarget*> payloadOperationTarget(
+    virtual Result<IDomainOperationTarget*> payloadOperationTarget(
         const SelectionSnapshot& selection) const = 0;
     /** @brief Validate the current payload and return inspector diagnostics. */
     virtual std::vector<EditorDiagnostic> validateComponent(const SceneComponentPayloadRef& component) const = 0;
@@ -53,7 +55,7 @@ public:
  * This adapter keeps no duplicate component values. It translates stable scene
  * component selections to the selection expected by the module-owned target.
  */
-class SceneComponentPropertyBindings final : public ISceneComponentPayloadProvider {
+class EVENGINE_API_BACKENDS SceneComponentPropertyBindings final : public ISceneComponentPayloadProvider {
 public:
     using Validator = std::function<std::vector<EditorDiagnostic>()>;
 
@@ -62,7 +64,7 @@ public:
     const std::string& componentType() const override { return componentType_; }
 
     /** @brief Bind one stable scene component to an existing module editor target. */
-    EditorResult<void> bind(SceneComponentPayloadRef component,
+    Result<void> bind(SceneComponentPayloadRef component,
                             SelectionItem moduleSelection,
                             IPropertyProvider* properties,
                             IDomainOperationTarget* operations,
@@ -72,17 +74,17 @@ public:
 
     std::vector<SceneComponentPayloadRef> components(const TargetId& scene,
                                                       const ObjectId& object) const override;
-    EditorResult<IDomainOperationTarget*> payloadOperationTarget(
+    Result<IDomainOperationTarget*> payloadOperationTarget(
         const SelectionSnapshot& selection) const override;
     std::vector<EditorDiagnostic> validateComponent(
         const SceneComponentPayloadRef& component) const override;
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection,
                                           const PropertyPath& path, const EditorValue& value,
                                           PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
 
 private:
@@ -95,7 +97,7 @@ private:
     };
 
     /** @brief Translate a scene selection. @return Result containing a borrowed binding pointer. @lifetime The pointer is valid until this binding collection is mutated or destroyed. */
-    EditorResult<std::pair<const Binding*, SelectionSnapshot>> translate(
+    Result<std::pair<const Binding*, SelectionSnapshot>> translate(
         const SelectionSnapshot& selection) const;
     /** @brief Find an exact binding. @return Borrowed pointer into this collection, or null. @lifetime Valid until the collection is mutated or destroyed. */
     const Binding* find(const TargetId& scene, const StableId& component) const;
@@ -113,40 +115,39 @@ public:
         return CapabilityId("eve.editor.target.scene-component-payloads");
     }
     /** @brief Enumerate all registered component payloads on one scene object. */
-    virtual EditorResult<std::vector<SceneComponentPayloadRef>> componentPayloads(
+    virtual Result<std::vector<SceneComponentPayloadRef>> componentPayloads(
         const TargetId& scene, const ObjectId& object) const = 0;
     /** @brief Resolve the property provider for a homogeneous component selection. */
-    virtual EditorResult<IPropertyProvider*> propertyProvider(const SelectionSnapshot& selection) const = 0;
+    virtual Result<IPropertyProvider*> propertyProvider(const SelectionSnapshot& selection) const = 0;
     /** @brief Resolve the operation target that must receive the provider's planned operations. */
-    virtual EditorResult<IDomainOperationTarget*> operationTarget(const SelectionSnapshot& selection) const = 0;
+    virtual Result<IDomainOperationTarget*> operationTarget(const SelectionSnapshot& selection) const = 0;
     /** @brief Validate a stable component reference using its owning module. */
-    virtual EditorResult<std::vector<EditorDiagnostic>> validatePayload(
+    virtual Result<std::vector<EditorDiagnostic>> validatePayload(
         const SceneComponentPayloadRef& component) const = 0;
 };
 
 /** @brief Non-owning registry and scene-facing router for component payload providers. */
-class SceneComponentPayloadRegistry final : public ISceneComponentPayloadTarget {
+class EVENGINE_API_BACKENDS SceneComponentPayloadRegistry final : public ISceneComponentPayloadTarget {
 public:
     /** @brief Register one provider; component types must be non-empty and unique. */
-    EditorResult<void> registerProvider(ISceneComponentPayloadProvider* provider);
+    Result<void> registerProvider(ISceneComponentPayloadProvider* provider);
     /** @brief Remove a provider only when the exact registered instance matches. */
     SceneComponentChange unregisterProvider(ISceneComponentPayloadProvider* provider);
 
-    EditorResult<std::vector<SceneComponentPayloadRef>> componentPayloads(
+    Result<std::vector<SceneComponentPayloadRef>> componentPayloads(
         const TargetId& scene, const ObjectId& object) const override;
-    EditorResult<IPropertyProvider*> propertyProvider(const SelectionSnapshot& selection) const override;
-    EditorResult<IDomainOperationTarget*> operationTarget(const SelectionSnapshot& selection) const override;
-    EditorResult<std::vector<EditorDiagnostic>> validatePayload(
+    Result<IPropertyProvider*> propertyProvider(const SelectionSnapshot& selection) const override;
+    Result<IDomainOperationTarget*> operationTarget(const SelectionSnapshot& selection) const override;
+    Result<std::vector<EditorDiagnostic>> validatePayload(
         const SceneComponentPayloadRef& component) const override;
 
 private:
-    EditorResult<ISceneComponentPayloadProvider*> resolve(const SelectionSnapshot& selection) const;
+    Result<ISceneComponentPayloadProvider*> resolve(const SelectionSnapshot& selection) const;
     std::map<std::string, ISceneComponentPayloadProvider*> providers_;
 };
 
 /** @brief Build a property selection for one or more homogeneous component references. */
-EditorResult<SelectionSnapshot> makeSceneComponentSelection(
-    std::string channel, const std::vector<SceneComponentPayloadRef>& components,
-    std::uint64_t sequence = 0);
+EVENGINE_API_BACKENDS Result<SelectionSnapshot> makeSceneComponentSelection(
+    std::string channel, const std::vector<SceneComponentPayloadRef>& components, std::uint64_t sequence = 0);
 
 }  // namespace eve::scene_editing

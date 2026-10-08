@@ -5,19 +5,15 @@
 #include <unordered_map>
 
 namespace eve::procgen {
-namespace {
-template <class T>
-Result<T> invalid(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "procgen.pcgMeshLod"));
-}
-}
+namespace {}
 
 PcgMeshTransform::PcgMeshTransform() noexcept {
     matrix_[0] = matrix_[5] = matrix_[10] = matrix_[15] = 1.F;
 }
 Result<void> PcgMeshTransform::setElement(int row, int column, float value) {
     if (row < 0 || row >= 4 || column < 0 || column >= 4 || !std::isfinite(value))
-        return invalid<void>("Pcg mesh transform element is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Pcg mesh transform element is invalid", "procgen.pcgMeshLod"));
     matrix_[static_cast<std::size_t>(row * 4 + column)] = value;
     return Result<void>::success();
 }
@@ -29,18 +25,24 @@ float PcgMeshTransform::getElement(int row, int column) const noexcept {
 Result<void> PcgMeshCombinePlan::appendSource(const MeshBuild& mesh, const PcgMeshTransform& transform,
                                                const std::string& defaultMaterialId) {
     if (mesh.empty() || sources_.size() >= 4096 || defaultMaterialId.empty())
-        return invalid<void>("Pcg mesh combine source, material identity or source budget is invalid");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Pcg mesh combine source, material identity or source budget is invalid",
+            "procgen.pcgMeshLod"));
     const int vertices = mesh.getVertexCount(), indices = mesh.getIndexCount();
     if (vertices <= 0 || indices <= 0 || indices % 3 != 0 ||
         mesh.positions().size() != static_cast<std::size_t>(vertices) * 3U ||
         mesh.normals().size() != static_cast<std::size_t>(vertices) * 3U ||
         mesh.uvs().size() != static_cast<std::size_t>(vertices) * 2U ||
         (mesh.hasVertexColors() && mesh.colors().size() != static_cast<std::size_t>(vertices) * 4U))
-        return invalid<void>("Pcg mesh combine source streams are invalid");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Pcg mesh combine source streams are invalid", "procgen.pcgMeshLod"));
     for (float value : transform.matrix_) if (!std::isfinite(value))
-        return invalid<void>("Pcg mesh combine transform is non-finite");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "Pcg mesh combine transform is non-finite", "procgen.pcgMeshLod"));
     for (std::uint32_t index : mesh.indices()) if (index >= static_cast<std::uint32_t>(vertices))
-        return invalid<void>("Pcg mesh combine source index is out of range");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "Pcg mesh combine source index is out of range",
+                                                           "procgen.pcgMeshLod"));
     sources_.push_back(Source{mesh, transform, defaultMaterialId});
     return Result<void>::success();
 }
@@ -48,7 +50,9 @@ void PcgMeshCombinePlan::clear() noexcept { sources_.clear(); }
 int PcgMeshCombinePlan::getSourceCount() const noexcept { return static_cast<int>(sources_.size()); }
 
 Result<int> combinePcgStaticMeshesInto(MeshBuild& output, const PcgMeshCombinePlan& plan) {
-    if (plan.sources_.empty()) return invalid<int>("Pcg static mesh combine plan is empty");
+    if (plan.sources_.empty())
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "Pcg static mesh combine plan is empty", "procgen.pcgMeshLod"));
     std::uint64_t vertexCount = 0, indexCount = 0;
     bool anyColors = false;
     for (const auto& source : plan.sources_) {
@@ -59,7 +63,9 @@ Result<int> combinePcgStaticMeshesInto(MeshBuild& output, const PcgMeshCombinePl
     if (vertexCount > 8U * 1024U * 1024U || indexCount > 48U * 1024U * 1024U ||
         vertexCount > static_cast<std::uint64_t>(std::numeric_limits<int>::max()) ||
         indexCount > static_cast<std::uint64_t>(std::numeric_limits<int>::max()))
-        return invalid<int>("Pcg static mesh combine output exceeds native mesh budgets");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "Pcg static mesh combine output exceeds native mesh budgets",
+                                                      "procgen.pcgMeshLod"));
     MeshBuild candidate;
     candidate.reserve(static_cast<int>(vertexCount), static_cast<int>(indexCount));
     std::vector<float> colors;
@@ -78,8 +84,10 @@ Result<int> combinePcgStaticMeshesInto(MeshBuild& output, const PcgMeshCombinePl
             const float pz=m[8]*x+m[9]*y+m[10]*z+m[11];
             const float tx=m[0]*nx+m[1]*ny+m[2]*nz,ty=m[4]*nx+m[5]*ny+m[6]*nz;
             const float tz=m[8]*nx+m[9]*ny+m[10]*nz;
-            if(!std::isfinite(px)||!std::isfinite(py)||!std::isfinite(pz)||!std::isfinite(tx)||
-               !std::isfinite(ty)||!std::isfinite(tz))return invalid<int>("Pcg static mesh transform overflowed");
+            if (!std::isfinite(px) || !std::isfinite(py) || !std::isfinite(pz) || !std::isfinite(tx) ||
+                !std::isfinite(ty) || !std::isfinite(tz))
+                return Result<int>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "Pcg static mesh transform overflowed", "procgen.pcgMeshLod"));
             candidate.addVertex(px,py,pz,tx,ty,tz,mesh.getUvU(vertex),mesh.getUvV(vertex));
             if(anyColors)for(int component=0;component<4;++component)
                 colors.push_back(mesh.hasVertexColors()?mesh.getColor(vertex,component):1.F);
@@ -87,7 +95,10 @@ Result<int> combinePcgStaticMeshesInto(MeshBuild& output, const PcgMeshCombinePl
         for (int triangle = 0; triangle < mesh.getIndexCount() / 3; ++triangle) {
             const int group = mesh.getTriangleGroup(triangle);
             std::string material = group >= 0 ? mesh.getGroupName(group) : source.defaultMaterialId;
-            if(material.empty())return invalid<int>("Pcg static mesh triangle has no material identity");
+            if (material.empty())
+                return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "Pcg static mesh triangle has no material identity",
+                                                              "procgen.pcgMeshLod"));
             auto [found, inserted] = materialMap.emplace(material,buckets.size());
             if(inserted)buckets.push_back(Bucket{material,{}});
             auto& indices=buckets[found->second].indices;
@@ -110,9 +121,12 @@ Result<void> PcgMeshLodProfile::appendLevel(float transition, float fade, float 
     if (levels_.size() >= 4 || !std::isfinite(transition) || transition < 0.F || transition > 1.F ||
         !std::isfinite(fade) || fade < 0.F || fade > 1.F || !std::isfinite(quality) || quality < 0.F ||
         quality > 1.F || (combineSubMeshes && !combineMeshes))
-        return invalid<void>("Pcg mesh LOD level values are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Pcg mesh LOD level values are invalid", "procgen.pcgMeshLod"));
     if (!levels_.empty() && transition >= levels_.back().screenRelativeTransitionHeight)
-        return invalid<void>("Pcg mesh LOD transition heights must be strictly descending");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Pcg mesh LOD transition heights must be strictly descending",
+                                                       "procgen.pcgMeshLod"));
     PcgMeshLodLevel level;
     level.screenRelativeTransitionHeight = transition;
     level.fadeTransitionWidth = fade;
@@ -135,7 +149,8 @@ Result<void> PcgMeshLodProfile::setLevelRendererState(int index, int skinQuality
     if (index < 0 || index >= static_cast<int>(levels_.size()) || !validSkinQuality ||
         shadowCastingMode < 0 || shadowCastingMode > 3 || motionVectorMode < 0 || motionVectorMode > 2 ||
         !validLightProbe || reflectionProbeUsage < 0 || reflectionProbeUsage > 2)
-        return invalid<void>("Pcg mesh LOD renderer state is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Pcg mesh LOD renderer state is invalid", "procgen.pcgMeshLod"));
     PcgMeshLodRendererState state;
     state.skinQuality = skinQuality;
     state.shadowCastingMode = shadowCastingMode;
@@ -168,7 +183,8 @@ Result<void> PcgMeshLodProfile::setFadePolicy(int fadeMode, bool animateCrossFad
                                                float animationDuration) {
     if ((fadeMode < 0 || fadeMode > 2) || !std::isfinite(animationDuration) || animationDuration <= 0.F ||
         (animateCrossFading && fadeMode == 0))
-        return invalid<void>("Pcg mesh LOD fade policy is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Pcg mesh LOD fade policy is invalid", "procgen.pcgMeshLod"));
     fadeMode_ = fadeMode;
     animateCrossFading_ = animateCrossFading;
     crossFadeAnimationDuration_ = animationDuration;
@@ -217,7 +233,9 @@ Result<void> buildPcgMeshLodsInto(PcgMeshLodSet& output, const MeshBuild& source
                                    const PcgMeshLodProfile& profile) {
     const auto& levels = profile.levels();
     if (source.empty() || levels.empty() || levels.size() > 4)
-        return invalid<void>("Pcg mesh LOD requires a non-empty mesh and one through four levels");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Pcg mesh LOD requires a non-empty mesh and one through four levels",
+            "procgen.pcgMeshLod"));
     PcgMeshLodSet candidate;
     candidate.levels_ = levels;
     candidate.fadeMode_ = profile.getFadeMode();
@@ -237,10 +255,14 @@ Result<void> buildPcgMeshLodsInto(PcgMeshLodSet& output, const MeshBuild& source
 Result<void> buildPcgCombinedMeshLodsInto(PcgMeshLodSet& output, const PcgMeshCombinePlan& plan,
                                            const PcgMeshLodProfile& profile) {
     if (profile.levels().empty())
-        return invalid<void>("Pcg combined mesh LOD requires at least one level");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Pcg combined mesh LOD requires at least one level",
+                                                       "procgen.pcgMeshLod"));
     for (const PcgMeshLodLevel& level : profile.levels())
         if (!level.combineMeshes)
-            return invalid<void>("Every Pcg combined mesh LOD level must enable mesh combination");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "Every Pcg combined mesh LOD level must enable mesh combination",
+                "procgen.pcgMeshLod"));
     MeshBuild combined;
     auto combinedResult = combinePcgStaticMeshesInto(combined, plan);
     if (!combinedResult.ok()) return Result<void>::failure(combinedResult.status());

@@ -164,7 +164,7 @@ public:
         auto        json = eve::json::Document::parse(s, &error);
         if (!json.valid())
             return eve::Result<std::unique_ptr<LevelDocument>>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(error), {}, {}, "editor.level"));
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, error, {}, {}, "editor.level"));
         auto owned = eve::Value::fromJson(s);
         if (!owned.ok()) return eve::Result<std::unique_ptr<LevelDocument>>::failure(owned.status());
         const auto fail = [](const std::string& message, eve::DiagnosticCode code = eve::DiagnosticCode::Unsupported) {

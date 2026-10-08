@@ -8,11 +8,6 @@
 namespace eve::procgen_editing {
 namespace {
 
-template <class T>
-EditorResult<T> splineError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -44,7 +39,7 @@ EditorValue settingsValue(const SplinePathSettings& settings) {
     return EditorValue::Object{{"kind", settings.kind}, {"closed", settings.closed}};
 }
 
-EditorResult<SplinePathControlPoint> parsePoint(const EditorValue& value) {
+Result<SplinePathControlPoint> parsePoint(const EditorValue& value) {
     const auto string = [&](const char* name) {
         const auto* entry = field(value, name);
         return entry ? entry->getIf<std::string>() : nullptr;
@@ -91,22 +86,24 @@ EditorResult<SplinePathControlPoint> parsePoint(const EditorValue& value) {
         !std::isfinite(*outZ) || !std::isfinite(resolvedRoll) || !std::isfinite(resolvedScaleX) ||
         !std::isfinite(resolvedScaleY) || !std::isfinite(resolvedPitch) || !std::isfinite(resolvedYaw) ||
         resolvedScaleX <= 0.0 || resolvedScaleY <= 0.0)
-        return splineError<SplinePathControlPoint>(EditorStatus::Rejected, "editor.spline.invalid-point",
-                                                   "Spline point requires a stable id, order and finite coordinates");
+        return eve::editing::failed<SplinePathControlPoint>(
+            EditorStatus::Rejected, RuleId("editor.spline.invalid-point"),
+            "Spline point requires a stable id, order and finite coordinates");
     return eve::editing::applied<SplinePathControlPoint>(
         {StableId(*id), *order, *x, *y, *z, *inX, *inY, *inZ, *outX, *outY, *outZ, resolvedRoll, resolvedScaleX,
          resolvedScaleY, breakBefore ? *breakBefore : false, resolvedPitch, resolvedYaw});
 }
 
-EditorResult<SplinePathSettings> parseSettings(const EditorValue& value) {
+Result<SplinePathSettings> parseSettings(const EditorValue& value) {
     const auto*                 kindValue   = field(value, "kind");
     const auto*                 closedValue = field(value, "closed");
     const auto*                 kind        = kindValue ? kindValue->getIf<std::string>() : nullptr;
     const auto*                 closed      = closedValue ? closedValue->getIf<bool>() : nullptr;
     const std::set<std::string> kinds{"linear", "catmullRom", "bezier"};
     if (!kind || !kinds.contains(*kind) || !closed)
-        return splineError<SplinePathSettings>(EditorStatus::Rejected, "editor.spline.invalid-settings",
-                                               "Spline settings require a supported kind and closure flag");
+        return eve::editing::failed<SplinePathSettings>(EditorStatus::Rejected,
+                                                        RuleId("editor.spline.invalid-settings"),
+                                                        "Spline settings require a supported kind and closure flag");
     return eve::editing::applied<SplinePathSettings>({*kind, *closed});
 }
 
@@ -130,7 +127,7 @@ SplinePathDocument::SplinePathDocument(std::string id) : id_(std::move(id)) {}
 TargetDescriptor SplinePathDocument::describe() const {
     return {TargetId(id_),
             "spline-path-document",
-            revision_,
+            revisionValue(),
             false,
             {ISplinePathDocumentEditTarget::editingCapabilityId()}};
 }
@@ -141,45 +138,48 @@ void* SplinePathDocument::queryCapability(const CapabilityId& capability) {
                : nullptr;
 }
 
-EditorResult<void> SplinePathDocument::applyDomainOperation(const DomainOperation& value) {
+Result<void> SplinePathDocument::applyDomainOperation(const DomainOperation& value) {
     if (value.target != TargetId(id_))
-        return splineError<void>(EditorStatus::Rejected, "editor.spline.target-mismatch",
-                                 "Spline operation targets another document");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spline.target-mismatch"),
+                                          "Spline operation targets another document");
     if (value.type == "spline.snapshot.replace.v1") {
         SplinePathDocument candidate(id_);
         auto               loaded = candidate.loadSnapshot(value.payload);
         if (!loaded.ok())
-            return splineError<void>(loaded.code(), "editor.spline.invalid-replacement", loaded.status().describe());
-        candidate.revision_ = revision_ + 1;
-        candidate.dirty_.include(0, 0);
+            return eve::editing::failed<void>(loaded.code(), RuleId("editor.spline.invalid-replacement"),
+                                              loaded.status().describe());
+        candidate.setRevision(revisionValue() + 1);
+        candidate.widenDirty(0, 0);
         *this = std::move(candidate);
         return eve::editing::applied<void>();
     }
     if (value.type == "spline.point.set.v1") {
         auto parsed = parsePoint(value.payload);
         if (!parsed.ok())
-            return splineError<void>(parsed.code(), "editor.spline.invalid-point", "Invalid spline point");
+            return eve::editing::failed<void>(parsed.code(), RuleId("editor.spline.invalid-point"),
+                                              "Invalid spline point");
         points_[parsed.value().id] = std::move(parsed.value());
     } else if (value.type == "spline.point.delete.v1") {
         auto parsed = parsePoint(value.payload);
         if (!parsed.ok() || !points_.erase(parsed.value().id))
-            return splineError<void>(EditorStatus::NotFound, "editor.spline.point-not-found",
-                                     "Spline point was not found");
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.spline.point-not-found"),
+                                              "Spline point was not found");
     } else if (value.type == "spline.settings.set.v1") {
         auto parsed = parseSettings(value.payload);
         if (!parsed.ok())
-            return splineError<void>(parsed.code(), "editor.spline.invalid-settings", "Invalid spline settings");
+            return eve::editing::failed<void>(parsed.code(), RuleId("editor.spline.invalid-settings"),
+                                              "Invalid spline settings");
         settings_ = std::move(parsed.value());
     } else {
-        return splineError<void>(EditorStatus::Unsupported, "editor.spline.operation-unsupported",
-                                 "Spline operation is unsupported");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.spline.operation-unsupported"),
+                                          "Spline operation is unsupported");
     }
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeInsertPointAt(int segment, double t,
+Result<DomainOperation> SplinePathDocument::makeInsertPointAt(int segment, double t,
                                                                     const StableId& point) const {
     const auto                       ordered = points();
     std::vector<std::pair<int, int>> segments;
@@ -189,17 +189,18 @@ EditorResult<DomainOperation> SplinePathDocument::makeInsertPointAt(int segment,
     const int segmentCount = static_cast<int>(segments.size());
     if (point.empty() || points_.contains(point) || segment < 0 || segment >= segmentCount || !std::isfinite(t) ||
         t <= 0.0 || t >= 1.0)
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.insert-invalid",
-                                            "Spline insertion requires a unique id, valid segment and t in (0,1)");
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::Rejected, RuleId("editor.spline.insert-invalid"),
+            "Spline insertion requires a unique id, valid segment and t in (0,1)");
     auto runtime = compilePath();
     if (!runtime.ok())
-        return splineError<DomainOperation>(runtime.code(), "editor.spline.insert-incomplete",
-                                            runtime.status().describe());
+        return eve::editing::failed<DomainOperation>(runtime.code(), RuleId("editor.spline.insert-incomplete"),
+                                                     runtime.status().describe());
     auto sampled = runtime.value().evaluateResult((static_cast<float>(segment) + static_cast<float>(t)) /
                                                   static_cast<float>(segmentCount));
     if (!sampled.ok())
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.insert-sample-failed",
-                                            sampled.status().describe());
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::Rejected, RuleId("editor.spline.insert-sample-failed"), sampled.status().describe());
     SplinePathDocument     candidate(*this);
     auto                   candidatePoints = ordered;
     const int              firstIndex      = segments[static_cast<std::size_t>(segment)].first;
@@ -252,14 +253,14 @@ EditorResult<DomainOperation> SplinePathDocument::makeInsertPointAt(int segment,
                                                             id_, candidate.snapshotValue(), snapshotValue(), point));
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeSnapPoint(const StableId& point, double gridSize) const {
+Result<DomainOperation> SplinePathDocument::makeSnapPoint(const StableId& point, double gridSize) const {
     const auto found = points_.find(point);
     if (found == points_.end())
-        return splineError<DomainOperation>(EditorStatus::NotFound, "editor.spline.snap-point-missing",
-                                            "Spline point was not found");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.spline.snap-point-missing"),
+                                                     "Spline point was not found");
     if (!std::isfinite(gridSize) || gridSize <= 0.0)
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.snap-grid-invalid",
-                                            "Spline snap grid size must be finite and positive");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spline.snap-grid-invalid"),
+                                                     "Spline snap grid size must be finite and positive");
     auto snapped = found->second;
     snapped.x    = std::round(snapped.x / gridSize) * gridSize;
     snapped.y    = std::round(snapped.y / gridSize) * gridSize;
@@ -267,10 +268,10 @@ EditorResult<DomainOperation> SplinePathDocument::makeSnapPoint(const StableId& 
     return makeSetPoint(snapped);
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeSnapAll(double gridSize) const {
+Result<DomainOperation> SplinePathDocument::makeSnapAll(double gridSize) const {
     if (!std::isfinite(gridSize) || gridSize <= 0.0)
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.snap-grid-invalid",
-                                            "Spline snap grid size must be finite and positive");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spline.snap-grid-invalid"),
+                                                     "Spline snap grid size must be finite and positive");
     SplinePathDocument candidate(*this);
     for (auto& [unused, point] : candidate.points_) {
         (void)unused;
@@ -283,10 +284,10 @@ EditorResult<DomainOperation> SplinePathDocument::makeSnapAll(double gridSize) c
                                                             StableId("snap-all")));
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeFlipDirection() const {
+Result<DomainOperation> SplinePathDocument::makeFlipDirection() const {
     if (points_.size() < 2u)
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.flip-incomplete",
-                                            "Spline direction requires at least two points");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spline.flip-incomplete"),
+                                                     "Spline direction requires at least two points");
     std::vector<std::vector<SplinePathControlPoint>> chunks(1);
     for (const auto& point : points()) {
         if (point.breakBefore) chunks.emplace_back();
@@ -316,16 +317,17 @@ EditorResult<DomainOperation> SplinePathDocument::makeFlipDirection() const {
                                                             reversed.front().id));
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeSetChunkBreak(const StableId& point, bool disconnected) const {
+Result<DomainOperation> SplinePathDocument::makeSetChunkBreak(const StableId& point, bool disconnected) const {
     if (settings_.closed && disconnected)
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.chunk-break-closed",
-                                            "Closed splines cannot contain disconnected chunks");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spline.chunk-break-closed"),
+                                                     "Closed splines cannot contain disconnected chunks");
     auto       ordered = points();
     const auto found =
         std::find_if(ordered.begin(), ordered.end(), [&](const auto& value) { return value.id == point; });
     if (found == ordered.end() || found == ordered.begin())
-        return splineError<DomainOperation>(EditorStatus::NotFound, "editor.spline.chunk-break-point-invalid",
-                                            "Chunk boundary requires an existing non-first point");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound,
+                                                     RuleId("editor.spline.chunk-break-point-invalid"),
+                                                     "Chunk boundary requires an existing non-first point");
     const auto index = static_cast<std::size_t>(found - ordered.begin());
     if (disconnected && !found->breakBefore) {
         std::size_t chunkStart = index;
@@ -333,28 +335,32 @@ EditorResult<DomainOperation> SplinePathDocument::makeSetChunkBreak(const Stable
         std::size_t chunkEnd = index;
         while (chunkEnd + 1u < ordered.size() && !ordered[chunkEnd + 1u].breakBefore) ++chunkEnd;
         if (index - chunkStart < 2u || chunkEnd - index + 1u < 2u)
-            return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.chunk-break-singleton",
-                                                "Splitting must leave at least two points in each chunk");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
+                                                         RuleId("editor.spline.chunk-break-singleton"),
+                                                         "Splitting must leave at least two points in each chunk");
     }
     auto updated        = *found;
     updated.breakBefore = disconnected;
     return makeSetPoint(updated);
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeAppendChunk(const SplinePathControlPoint& first,
+Result<DomainOperation> SplinePathDocument::makeAppendChunk(const SplinePathControlPoint& first,
                                                                   const SplinePathControlPoint& second) const {
     if (settings_.closed)
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.append-chunk-closed",
-                                            "Closed splines cannot append disconnected chunks");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
+                                                     RuleId("editor.spline.append-chunk-closed"),
+                                                     "Closed splines cannot append disconnected chunks");
     if (first.id.empty() || second.id.empty() || first.id == second.id || points_.contains(first.id) ||
         points_.contains(second.id))
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.append-chunk-id-invalid",
-                                            "Appended chunk points require two new distinct stable ids");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
+                                                     RuleId("editor.spline.append-chunk-id-invalid"),
+                                                     "Appended chunk points require two new distinct stable ids");
     auto parsedFirst  = parsePoint(pointValue(first));
     auto parsedSecond = parsePoint(pointValue(second));
     if (!parsedFirst.ok() || !parsedSecond.ok())
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.append-chunk-point-invalid",
-                                            "Appended chunk points must be finite and valid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
+                                                     RuleId("editor.spline.append-chunk-point-invalid"),
+                                                     "Appended chunk points must be finite and valid");
     SplinePathDocument candidate(*this);
     auto               ordered           = candidate.points();
     auto               appendedFirst     = parsedFirst.value();
@@ -370,10 +376,10 @@ EditorResult<DomainOperation> SplinePathDocument::makeAppendChunk(const SplinePa
                                                             appendedFirst.id));
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeDeleteChunk(int chunk) const {
+Result<DomainOperation> SplinePathDocument::makeDeleteChunk(int chunk) const {
     if (chunk < 0)
-        return splineError<DomainOperation>(EditorStatus::NotFound, "editor.spline.chunk-not-found",
-                                            "Spline chunk was not found");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.spline.chunk-not-found"),
+                                                     "Spline chunk was not found");
     auto                                             ordered = points();
     std::vector<std::vector<SplinePathControlPoint>> chunks;
     for (const auto& point : ordered) {
@@ -381,8 +387,8 @@ EditorResult<DomainOperation> SplinePathDocument::makeDeleteChunk(int chunk) con
         chunks.back().push_back(point);
     }
     if (static_cast<std::size_t>(chunk) >= chunks.size())
-        return splineError<DomainOperation>(EditorStatus::NotFound, "editor.spline.chunk-not-found",
-                                            "Spline chunk was not found");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.spline.chunk-not-found"),
+                                                     "Spline chunk was not found");
     chunks.erase(chunks.begin() + chunk);
     SplinePathDocument candidate(*this);
     candidate.points_.clear();
@@ -400,15 +406,15 @@ EditorResult<DomainOperation> SplinePathDocument::makeDeleteChunk(int chunk) con
                                                             StableId("delete-chunk")));
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeSetPointRotation(const StableId& point, double pitchDegrees,
+Result<DomainOperation> SplinePathDocument::makeSetPointRotation(const StableId& point, double pitchDegrees,
                                                                        double yawDegrees, double rollDegrees) const {
     const auto found = points_.find(point);
     if (found == points_.end())
-        return splineError<DomainOperation>(EditorStatus::NotFound, "editor.spline.rotation-point-missing",
-                                            "Spline point was not found");
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::NotFound, RuleId("editor.spline.rotation-point-missing"), "Spline point was not found");
     if (!std::isfinite(pitchDegrees) || !std::isfinite(yawDegrees) || !std::isfinite(rollDegrees))
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.rotation-invalid",
-                                            "Spline point rotation must be finite");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spline.rotation-invalid"),
+                                                     "Spline point rotation must be finite");
     auto updated         = found->second;
     updated.pitchDegrees = pitchDegrees;
     updated.yawDegrees   = yawDegrees;
@@ -416,21 +422,22 @@ EditorResult<DomainOperation> SplinePathDocument::makeSetPointRotation(const Sta
     return makeSetPoint(updated);
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeResetPointRotation(const StableId& point) const {
+Result<DomainOperation> SplinePathDocument::makeResetPointRotation(const StableId& point) const {
     return makeSetPointRotation(point, 0.0, 0.0, 0.0);
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeCenterPoint(const StableId& point) const {
+Result<DomainOperation> SplinePathDocument::makeCenterPoint(const StableId& point) const {
     const auto ordered = points();
     const auto found =
         std::find_if(ordered.begin(), ordered.end(), [&](const auto& value) { return value.id == point; });
     if (found == ordered.end())
-        return splineError<DomainOperation>(EditorStatus::NotFound, "editor.spline.center-point-missing",
-                                            "Spline point was not found");
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::NotFound, RuleId("editor.spline.center-point-missing"), "Spline point was not found");
     const auto index = static_cast<std::size_t>(found - ordered.begin());
     if (index == 0u || index + 1u >= ordered.size() || found->breakBefore || ordered[index + 1u].breakBefore)
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.center-point-endpoint",
-                                            "Only an interior point of one connected chunk can be centered");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
+                                                     RuleId("editor.spline.center-point-endpoint"),
+                                                     "Only an interior point of one connected chunk can be centered");
     auto updated = *found;
     updated.x    = (ordered[index - 1u].x + ordered[index + 1u].x) * 0.5;
     updated.y    = (ordered[index - 1u].y + ordered[index + 1u].y) * 0.5;
@@ -438,10 +445,11 @@ EditorResult<DomainOperation> SplinePathDocument::makeCenterPoint(const StableId
     return makeSetPoint(updated);
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeMirrorAxis(std::string_view axis) const {
+Result<DomainOperation> SplinePathDocument::makeMirrorAxis(std::string_view axis) const {
     if (axis != "x" && axis != "y" && axis != "z")
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.mirror-axis-invalid",
-                                            "Spline mirror axis must be x, y, or z");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
+                                                     RuleId("editor.spline.mirror-axis-invalid"),
+                                                     "Spline mirror axis must be x, y, or z");
     SplinePathDocument candidate(*this);
     for (auto& [unused, point] : candidate.points_) {
         (void)unused;
@@ -461,19 +469,20 @@ std::unique_ptr<IDomainOperationTarget> SplinePathDocument::cloneDomainState() c
     return std::make_unique<SplinePathDocument>(*this);
 }
 
-EditorResult<void> SplinePathDocument::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> SplinePathDocument::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* spline = dynamic_cast<SplinePathDocument*>(candidate.get());
     if (!spline || spline->id_ != id_)
-        return splineError<void>(EditorStatus::Rejected, "editor.spline.invalid-candidate",
-                                 "Spline candidate does not match this document");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spline.invalid-candidate"),
+                                          "Spline candidate does not match this document");
     *this = std::move(*spline);
     return eve::editing::applied<void>();
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeSetPoint(const SplinePathControlPoint& point) const {
+Result<DomainOperation> SplinePathDocument::makeSetPoint(const SplinePathControlPoint& point) const {
     auto parsed = parsePoint(pointValue(point));
     if (!parsed.ok())
-        return splineError<DomainOperation>(parsed.code(), "editor.spline.invalid-point", "Invalid spline point");
+        return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.spline.invalid-point"),
+                                                     "Invalid spline point");
     const auto found  = points_.find(point.id);
     const bool exists = found != points_.end();
     return eve::editing::applied<DomainOperation>(operation(
@@ -481,24 +490,25 @@ EditorResult<DomainOperation> SplinePathDocument::makeSetPoint(const SplinePathC
         pointValue(parsed.value()), exists ? pointValue(found->second) : pointValue(parsed.value()), point.id));
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeDeletePoint(const StableId& point) const {
+Result<DomainOperation> SplinePathDocument::makeDeletePoint(const StableId& point) const {
     const auto found = points_.find(point);
     if (found == points_.end())
-        return splineError<DomainOperation>(EditorStatus::NotFound, "editor.spline.point-not-found",
-                                            "Spline point was not found");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.spline.point-not-found"),
+                                                     "Spline point was not found");
     return eve::editing::applied<DomainOperation>(operation("spline.point.delete.v1", "spline.point.set.v1", id_,
                                                             pointValue(found->second), pointValue(found->second),
                                                             point));
 }
 
-EditorResult<DomainOperation> SplinePathDocument::makeSetSettings(const SplinePathSettings& settings) const {
+Result<DomainOperation> SplinePathDocument::makeSetSettings(const SplinePathSettings& settings) const {
     auto parsed = parseSettings(settingsValue(settings));
     if (!parsed.ok())
-        return splineError<DomainOperation>(parsed.code(), "editor.spline.invalid-settings", "Invalid spline settings");
+        return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.spline.invalid-settings"),
+                                                     "Invalid spline settings");
     if (settings.closed &&
         std::any_of(points_.begin(), points_.end(), [](const auto& entry) { return entry.second.breakBefore; }))
-        return splineError<DomainOperation>(EditorStatus::Rejected, "editor.spline.closed-has-breaks",
-                                            "Reconnect all spline chunks before closing the path");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spline.closed-has-breaks"),
+                                                     "Reconnect all spline chunks before closing the path");
     return eve::editing::applied<DomainOperation>(operation("spline.settings.set.v1", "spline.settings.set.v1", id_,
                                                             settingsValue(parsed.value()), settingsValue(settings_),
                                                             StableId("settings")));
@@ -517,12 +527,12 @@ std::vector<SplinePathControlPoint> SplinePathDocument::points() const {
     return result;
 }
 
-EditorResult<procgen::SplinePath> SplinePathDocument::compilePath() const {
+Result<procgen::SplinePath> SplinePathDocument::compilePath() const {
     procgen::SplinePath path;
     auto                kind = path.setKindResult(settings_.kind);
     if (!kind.ok())
-        return splineError<procgen::SplinePath>(EditorStatus::Rejected, "editor.spline.compile-kind",
-                                                kind.status().describe());
+        return eve::editing::failed<procgen::SplinePath>(EditorStatus::Rejected, RuleId("editor.spline.compile-kind"),
+                                                         kind.status().describe());
     for (const auto& point : points()) {
         auto added = path.addPointResult(
             {static_cast<float>(point.x), static_cast<float>(point.y), static_cast<float>(point.z),
@@ -531,14 +541,14 @@ EditorResult<procgen::SplinePath> SplinePathDocument::compilePath() const {
              static_cast<float>(point.rollDegrees), static_cast<float>(point.scaleX), static_cast<float>(point.scaleY),
              point.breakBefore, static_cast<float>(point.pitchDegrees), static_cast<float>(point.yawDegrees)});
         if (!added.ok())
-            return splineError<procgen::SplinePath>(EditorStatus::Rejected, "editor.spline.compile-point",
-                                                    added.status().describe());
+            return eve::editing::failed<procgen::SplinePath>(
+                EditorStatus::Rejected, RuleId("editor.spline.compile-point"), added.status().describe());
     }
     path.setClosed(settings_.closed);
     auto ready = path.evaluateResult(0.f);
     if (!ready.ok())
-        return splineError<procgen::SplinePath>(EditorStatus::Rejected, "editor.spline.compile-incomplete",
-                                                ready.status().describe());
+        return eve::editing::failed<procgen::SplinePath>(
+            EditorStatus::Rejected, RuleId("editor.spline.compile-incomplete"), ready.status().describe());
     return eve::editing::applied<procgen::SplinePath>(std::move(path));
 }
 
@@ -552,7 +562,7 @@ EditorValue SplinePathDocument::snapshotValue() const {
                                {"points", std::move(points)}};
 }
 
-EditorResult<void> SplinePathDocument::loadSnapshot(const EditorValue& snapshot) {
+Result<void> SplinePathDocument::loadSnapshot(const EditorValue& snapshot) {
     const auto* schemaValue  = field(snapshot, "schema");
     const auto* versionValue = field(snapshot, "schemaVersion");
     const auto* kindValue    = field(snapshot, "kind");
@@ -563,37 +573,37 @@ EditorResult<void> SplinePathDocument::loadSnapshot(const EditorValue& snapshot)
     const auto* points       = pointsValue ? pointsValue->getIf<EditorValue::Array>() : nullptr;
     if (!schema || *schema != "eve.procgen.splinePath" || !version || *version != 1 || !kindValue || !closedValue ||
         !points)
-        return splineError<void>(EditorStatus::Unsupported, "editor.spline.invalid-snapshot",
-                                 "Spline snapshot schema is unsupported");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.spline.invalid-snapshot"),
+                                          "Spline snapshot schema is unsupported");
     auto settings = parseSettings(EditorValue::Object{{"kind", *kindValue}, {"closed", *closedValue}});
     if (!settings.ok())
-        return splineError<void>(settings.code(), "editor.spline.invalid-snapshot-settings",
-                                 "Spline snapshot settings are invalid");
+        return eve::editing::failed<void>(settings.code(), RuleId("editor.spline.invalid-snapshot-settings"),
+                                          "Spline snapshot settings are invalid");
     SplinePathDocument candidate(id_);
     candidate.settings_ = std::move(settings.value());
     for (const auto& value : *points) {
         auto parsed = parsePoint(value);
         if (!parsed.ok() || candidate.points_.contains(parsed.value().id))
-            return splineError<void>(EditorStatus::Rejected, "editor.spline.invalid-snapshot-point",
-                                     "Spline snapshot contains invalid or duplicate points");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spline.invalid-snapshot-point"),
+                                              "Spline snapshot contains invalid or duplicate points");
         candidate.points_[parsed.value().id] = std::move(parsed.value());
     }
     if (candidate.settings_.closed && std::any_of(candidate.points_.begin(), candidate.points_.end(),
                                                   [](const auto& entry) { return entry.second.breakBefore; }))
-        return splineError<void>(EditorStatus::Rejected, "editor.spline.invalid-snapshot-breaks",
-                                 "Closed spline snapshot cannot contain disconnected chunks");
-    candidate.revision_ = revision_ + 1;
-    candidate.dirty_.clear();
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spline.invalid-snapshot-breaks"),
+                                          "Closed spline snapshot cannot contain disconnected chunks");
+    candidate.setRevision(revisionValue() + 1);
+    candidate.clearDirtyRegion();
     *this = std::move(candidate);
     return eve::editing::applied<void>();
 }
 
-EditorResult<procgen::SplinePath> compileSplinePathSnapshot(const EditorValue& snapshot) {
+Result<procgen::SplinePath> compileSplinePathSnapshot(const EditorValue& snapshot) {
     SplinePathDocument document("spline-preview");
     auto               loaded = document.loadSnapshot(snapshot);
     if (!loaded.ok())
-        return splineError<procgen::SplinePath>(loaded.code(), "editor.spline.snapshot-compile",
-                                                loaded.status().describe());
+        return eve::editing::failed<procgen::SplinePath>(loaded.code(), RuleId("editor.spline.snapshot-compile"),
+                                                         loaded.status().describe());
     return document.compilePath();
 }
 

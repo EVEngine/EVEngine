@@ -10,11 +10,6 @@
 namespace eve::tactics {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 struct FrontierNode {
     int  cost = 0;
     Cell cell;
@@ -41,14 +36,15 @@ struct SearchOutcome {
  */
 Result<Cell> resolveQueryOrigin(const BoardState& board, SubjectRef subject, int budget) {
     if (!subject.isValid())
-        return failure<Cell>(DiagnosticCode::InvalidArgument,
-                             "tactics reachability requires a valid subject", "subject");
+        return Result<Cell>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "tactics reachability requires a valid subject", "subject"));
     if (budget < 0)
-        return failure<Cell>(DiagnosticCode::InvalidArgument,
-                             "tactics reachability budget must be non-negative", "budget");
+        return Result<Cell>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "tactics reachability budget must be non-negative", "budget"));
     const auto origin = board.position(subject);
     if (!origin)
-        return failure<Cell>(DiagnosticCode::NotFound, "tactics reachability subject is not placed", "subject");
+        return Result<Cell>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics reachability subject is not placed", "subject"));
     return Result<Cell>::success(*origin);
 }
 
@@ -118,19 +114,21 @@ Result<int> Reachability::cost(Cell cellValue) const {
     const auto found = std::lower_bound(cells_.begin(), cells_.end(), cellValue,
                                         [](const ReachableCell& entry, Cell value) { return entry.cell < value; });
     if (found == cells_.end() || found->cell != cellValue)
-        return failure<int>(DiagnosticCode::NotFound, "tactics cell is not reachable", "cell");
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics cell is not reachable", "cell"));
     return Result<int>::success(found->cost);
 }
 
 Result<std::vector<Cell>> Reachability::pathTo(Cell target) const {
     if (!contains(target))
-        return failure<std::vector<Cell>>(DiagnosticCode::NotFound, "tactics target is not reachable", "target");
+        return Result<std::vector<Cell>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics target is not reachable", "target"));
     std::vector<Cell> result{target};
     while (result.back() != origin_) {
         const auto found = predecessor_.find(result.back());
         if (found == predecessor_.end())
-            return failure<std::vector<Cell>>(DiagnosticCode::InvariantViolation,
-                                              "tactics reachability predecessor chain is incomplete", "path");
+            return Result<std::vector<Cell>>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "tactics reachability predecessor chain is incomplete", "path"));
         result.push_back(found->second);
     }
     std::reverse(result.begin(), result.end());
@@ -162,14 +160,15 @@ Result<std::vector<Cell>> PathQuery::path(const BoardState& board, SubjectRef su
     auto outcome = expand(board, subject, origin.value(), budget, target);
     if (!outcome) return Result<std::vector<Cell>>::failure(outcome.status());
     if (!outcome.value().best.contains(target))
-        return failure<std::vector<Cell>>(DiagnosticCode::NotFound, "tactics target is not reachable", "target");
+        return Result<std::vector<Cell>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics target is not reachable", "target"));
 
     std::vector<Cell> result{target};
     while (result.back() != origin.value()) {
         const auto found = outcome.value().predecessor.find(result.back());
         if (found == outcome.value().predecessor.end())
-            return failure<std::vector<Cell>>(DiagnosticCode::InvariantViolation,
-                                              "tactics reachability predecessor chain is incomplete", "path");
+            return Result<std::vector<Cell>>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "tactics reachability predecessor chain is incomplete", "path"));
         result.push_back(found->second);
     }
     std::reverse(result.begin(), result.end());
@@ -179,8 +178,8 @@ Result<std::vector<Cell>> PathQuery::path(const BoardState& board, SubjectRef su
 Result<std::vector<Cell>> PathQuery::cellsInRange(const BoardState& board, Cell origin, int minimum, int maximum,
                                                   CellRangeMetric metric) {
     if (minimum < 0 || maximum < minimum)
-        return failure<std::vector<Cell>>(DiagnosticCode::InvalidArgument,
-                                          "tactics range bounds must be ordered and non-negative", "range");
+        return Result<std::vector<Cell>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "tactics range bounds must be ordered and non-negative", "range"));
     std::vector<Cell> result;
     for (const Cell cell : board.cells()) {
         const std::int64_t deltaX = static_cast<std::int64_t>(cell.x) - origin.x;
