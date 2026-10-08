@@ -2,6 +2,7 @@
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/ConsolePanel.hpp"
+#include "devtools/FrameStatsPanel.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpScriptTools.hpp"
 #include "devtools/McpServer.hpp"
@@ -249,6 +250,8 @@ AiPanel& DevTool::ai() { return AiPanel::instance(); }
 
 ConsolePanel& DevTool::console() { return ConsolePanel::instance(); }
 
+FrameStatsPanel& DevTool::frameStats() { return FrameStatsPanel::instance(); }
+
 void DevTool::poll() {
     DebugAdapter::instance().poll();
     McpServer::instance().poll();
@@ -257,6 +260,8 @@ void DevTool::poll() {
 void DevTool::drawAiPanel() { AiPanel::instance().drawImGui(); }
 
 void DevTool::drawConsolePanel() { ConsolePanel::instance().drawImGui(); }
+
+void DevTool::drawFrameStatsPanel() { FrameStatsPanel::instance().drawImGui(); }
 
 void DevTool::exposeScriptApi(ssq::VM& vm) {
     try {
@@ -502,6 +507,30 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         consoleTbl.addFunc("setVisible", [](bool on) { ConsolePanel::instance().setVisible(on); });
         consoleTbl.addFunc("toggleVisible", []() { ConsolePanel::instance().toggleVisible(); });
         consoleTbl.addFunc("draw", [this]() { drawConsolePanel(); });
+
+        // FPS / frame-time overlay (sampled from load.nut each frame).
+        ssq::Table statsTbl = dev.addTable("stats");
+        statsTbl.addFunc("sample", [](float dt) {
+            FrameStatsPanel::instance().sample(dt);
+            return std::string("ok");
+        });
+        statsTbl.addFunc("setEntityCount", [](int n) {
+            FrameStatsPanel::instance().setEntityCount(n);
+            return std::string("ok");
+        });
+        statsTbl.addFunc("clearEntityCount", []() {
+            FrameStatsPanel::instance().clearEntityCount();
+            return std::string("ok");
+        });
+        statsTbl.addFunc("fps", []() { return FrameStatsPanel::instance().fps(); });
+        statsTbl.addFunc("frameMs", []() { return FrameStatsPanel::instance().frameMs(); });
+        statsTbl.addFunc("entityCount", []() { return FrameStatsPanel::instance().entityCount(); });
+        statsTbl.addFunc("hasEntityCount", []() { return FrameStatsPanel::instance().hasEntityCount(); });
+        statsTbl.addFunc("format", []() { return FrameStatsPanel::instance().format(); });
+        statsTbl.addFunc("isVisible", []() { return FrameStatsPanel::instance().isVisible(); });
+        statsTbl.addFunc("setVisible", [](bool on) { FrameStatsPanel::instance().setVisible(on); });
+        statsTbl.addFunc("toggleVisible", []() { FrameStatsPanel::instance().toggleVisible(); });
+        statsTbl.addFunc("draw", [this]() { drawFrameStatsPanel(); });
 
         // Native binding is arity-3; keep `setBreakpoint(file, line)` working.
         ssq::Script bpWrap = vm.compileSource(
