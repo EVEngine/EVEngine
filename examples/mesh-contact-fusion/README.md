@@ -1,15 +1,20 @@
 # Mesh Contact Fusion（接触带融合）
 
-并排演示 **提交式静态合并** 与 **实时动态粘合**：
+并排演示 **硬拼接** vs **间隙 soft-snap 焊合** vs **实时 A←B 熔贴**：
 
 | 位置（相机朝 −Z） | API | 行为 |
 |---|---|---|
-| 左 | `eve.MeshMergePlan` + `eve.mergeStaticMeshes` | 默认 **关闭** 接触带融合（两块立方体硬相交） |
-| 中 | 同上，`setEnableContactBlend(true)` | 材质权重写入顶点色；示例把 alpha 烘成 RGB 热带。静态路径 **关闭 soft-snap / normalsBlend**（多源互相最近点会凹缝，法线混合在光照下也像凹缝） |
-| 右 | `eve.MeshAdhereLive` | 球体 A soft-snap 到地面 B；滑条改半径/强度/抬升后立即 `evaluate` + `derivedMeshResult` 上传 |
+| 左 | `mergeStaticMeshes` blend OFF | 两块立方体硬相交（对照） |
+| 中 | blend ON + **softSnap**，源之间留小间隙 | 对面顶点互相拉近，缝被焊住；接触权重烘成顶点色 |
+| 右 | `MeshAdhereLive` | 细分圆柱 soft-snap 到地面；灰色 ghost = 熔贴前，橙色 = 熔贴后 |
 
-共享 CPU 原语是 `MeshContactBlend`；图节点路径 `deform.meshAdhere` 与 live 会话走同一套 A←B
-最近点融合。设计说明见
+要点：
+
+- **深重叠 + soft-snap 会把缝“凹”进去**——那是最近点互相拉入体积，不是焊合。本示例中路用的是**间隙焊合**。
+- 静态默认仍可关融合；这里中路显式打开 soft-snap 是为了让几何变化一眼可见。
+- 动态路径默认 soft-snap；源抬升必须落在 `edgeRadius` 内，否则查询打不中。
+
+设计说明见
 [`docs/dev/superpowers/specs/2026-10-08-mesh-merge-adhere-plan.md`](../../docs/dev/superpowers/specs/2026-10-08-mesh-merge-adhere-plan.md)。
 
 ## 运行
@@ -27,23 +32,22 @@ make run/<platform>-debug GAME=examples/mesh-contact-fusion
 
 ## 操作
 
-- **Edge / Material radius**、**Strength**：脏标记 live 会话并重算派生网格（源 A 保持权威）。
-- **Source lift**：抬高 A 相对地面，再 `setSource` + evaluate，观察接触带跟随。
-- **Soft snap**：只作用于右侧 live 会话；关闭后 A 仍写接触权重但不贴位置。
-- **Bake live**：`bakeToMesh` 冻结当前派生后重新 activate，便于对照「提交 vs 持续」。
+- **Edge / Material radius**、**Strength**、**Source lift**：脏标记右侧 live 并重算。
+- **Soft snap**：只作用于右侧 live；关掉后圆柱回到未贴合姿态（仍保留权重逻辑）。
+- **Bake live**：冻结派生后再 activate。
 
 成功标记：
 
-- 控制台打印 `MESH_CONTACT_FUSION_PASS static=blend-off+on live=MeshAdhereLive ...`
+- 控制台打印 `MESH_CONTACT_FUSION_PASS hard+gapWeld+liveMelt ...`
 - 当前目录写出 `mesh-contact-fusion.png`
 
 ## 文件
 
 | 路径 | 说明 |
 |---|---|
-| `main.nut` | 静态双路径 + live 会话、UI、截图 |
+| `main.nut` | 硬拼接 / 间隙焊合 / live 熔贴 + UI |
 | `config.nut` | 1280×720、`hotReload = true` |
 
 ## 契约
 
-可运行示例（`main.nut` + `config.nut`），参与 `scripts/smoke_examples.sh`：至少存活 2 秒且无错误标记。
+可运行示例（`main.nut` + `config.nut`），参与 `scripts/smoke_examples.sh`。
