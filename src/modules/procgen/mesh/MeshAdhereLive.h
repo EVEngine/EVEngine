@@ -40,9 +40,19 @@ public:
     [[nodiscard]] Result<std::uint64_t> evaluateResult(bool force = false);
     [[nodiscard]] bool                  isDirty() const noexcept { return dirty_; }
 
-    /** @brief Borrow derived mesh; empty until first successful evaluate. */
+    /**
+     * @brief Borrow derived mesh; null until first successful evaluate.
+     * @ownership Borrowed from this session; callers must not delete the pointer.
+     * @lifetime Valid until the next successful `evaluateResult`, `bakeToMeshResult`,
+     *           `removeSetup`, or destruction of this session.
+     */
     [[nodiscard]] const MeshBuild* derivedMesh() const noexcept;
-    /** @brief Borrow immutable source A baseline. */
+    /**
+     * @brief Borrow immutable source A baseline; null when inactive or empty.
+     * @ownership Borrowed from this session; callers must not delete the pointer.
+     * @lifetime Valid until `setSourceResult`, `removeSetup`, `bakeToMeshResult`,
+     *           or destruction of this session.
+     */
     [[nodiscard]] const MeshBuild* sourceMesh() const noexcept;
 
     /** @brief Drop derived state and restore inactive; keeps no derived publication. */
