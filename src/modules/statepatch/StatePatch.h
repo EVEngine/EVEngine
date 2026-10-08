@@ -15,9 +15,12 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::statepatch {
+
+class StatePatchStateAdapter;
 
 /** @brief Handle domain for module-owned state-patch stores. */
 struct StateStoreHandleTag {};
@@ -268,13 +271,16 @@ private:
 class StatePatch : public Module {
 public:
     Module_REG(StatePatch);
-    StatePatch()           = default;
-    ~StatePatch() override = default;
+    StatePatch() = default;
+    /** @brief Withdraw world-state capability listeners before owned stores are destroyed. */
+    ~StatePatch() override;
 
     /**
      * @brief Allocates a state store and returns its ownership reference.
      * @return A generation-qualified reference; the current StatePatch module owns the store.
      * @remarks The reference becomes stale after release, module unload, or reload.
+     *          Each live store is also registered as an `IStateQuery` / `IStateMutation`
+     *          listener so dialogue and other consumers can discover it via `cap::`.
      */
     [[nodiscard]] static eve::Result<StateStoreHandleRef> newStore();
     /** @brief Resolves a live store as a non-owning observation. */
@@ -292,7 +298,11 @@ public:
     [[nodiscard]] static bool isBatchStale(StateBatchHandleRef reference) noexcept;
 
 private:
+    void attachWorldAdapter(Store& store);
+    void detachWorldAdapter(Store& store);
+
     eve::script::RuntimeObjectRegistry<Store, StateStoreHandleTag> stores_;
+    std::unordered_map<Store*, std::unique_ptr<StatePatchStateAdapter>> worldAdapters_;
 };
 
 }  // namespace eve::statepatch

@@ -40,6 +40,13 @@ Scene::Scene() {
     registerSceneArtifactProvider();
 }
 
+Scene::~Scene() {
+    if (vm_) {
+        for (auto &item : delayedDetaches_) sq_release(vm_, &item.instance);
+    }
+    delayedDetaches_.clear();
+}
+
 Module_IMPL(Scene, new Scene());
 
 namespace {
@@ -280,14 +287,27 @@ eve.SceneEntity <- class extends eve.Entity {
     _scene = null
     hostName = ""
     nodeId = ""
+    _enabled = true
 
     function scene() { return _scene }
     function node() {
         if (_scene == null) return null
         return _scene.getNodeRefAt(hostName, nodeId)
     }
+    function isEnabled() { return _enabled }
+    function setEnabled(enabled) {
+        local next = !!enabled
+        if (_enabled == next) return
+        _enabled = next
+        if (_enabled) onEnable()
+        else onDisable()
+    }
+    function enable() { setEnabled(true) }
+    function disable() { setEnabled(false) }
     function onAttach() {}
     function onDetach() {}
+    function onEnable() {}
+    function onDisable() {}
     function update(dt) {}
 }
 )SQ";
@@ -343,6 +363,20 @@ eve.Scene["detachEntityAt"] <- function(hostName, nodeId, inst) {
     inst.onDetach()
     inst.destroy()
     return unrootEntityAt(hostName, nodeId, idx)
+}
+
+eve.Scene["scheduleDetachEntity"] <- function(nodeId, inst) {
+    // Native scheduleDetachEntityAt is bound on the class; this is the selected-host helper.
+    return scheduleDetachEntityAt(currentHostName(), nodeId, inst)
+}
+
+eve.Scene["collectIdsWith"] <- function(cls, hostName = null) {
+    if (hostName == null) hostName = currentHostName()
+    local out = []
+    foreach (id in collectIds()) {
+        if (hasEntityAt(hostName, id, cls)) out.push(id)
+    }
+    return out
 }
 
 eve.Scene["getEntity"] <- function(nodeId, cls) {
@@ -416,6 +450,9 @@ eve.SceneNodeRef["hasEntity"] <- function(cls) {
 }
 eve.SceneNodeRef["entitiesOf"] <- function() {
     return getScene().entitiesOfAt(getHostName(), getNodeId())
+}
+eve.SceneNodeRef["scheduleDetachEntity"] <- function(inst) {
+    return getScene().scheduleDetachEntityAt(getHostName(), getNodeId(), inst)
 }
 
 // ---- eve.SceneNodeRef: generic link system ----
@@ -1037,8 +1074,81 @@ void Scene::updateScripts(float dt) {
         }
     }
     for (auto &h : snapshot) sq_addref(vm_, &h);
-    for (auto &h : snapshot) callMethod(h, "update", dt);
+    for (auto &h : snapshot) {
+        // Skip disabled entities; enable/disable is a script-side flag on SceneEntity.
+        const SQInteger top = sq_gettop(vm_);
+        sq_pushobject(vm_, h);
+        sq_pushstring(vm_, "_enabled", -1);
+        bool enabled = true;
+        if (SQ_SUCCEEDED(sq_get(vm_, -2))) {
+            SQBool flag = SQTrue;
+            if (SQ_SUCCEEDED(sq_getbool(vm_, -1, &flag))) enabled = flag != SQFalse;
+        }
+        sq_settop(vm_, top);
+        if (enabled) callMethod(h, "update", dt);
+    }
     for (auto &h : snapshot) sq_release(vm_, &h);
+    flushDelayedDetaches();
+}
+
+bool Scene::scheduleDetachEntityAt(const std::string &hostName, const std::string &nodeId,
+                                   ssq::Object instance) {
+    if (!vm_) return false;
+    HSQOBJECT raw = instance.getRaw();
+    if (raw._type != OT_INSTANCE) return false;
+    SceneHost *h = resolveHost(hostName);
+    if (!h) return false;
+    SceneNode *n = borrowSceneResult(h->findById(nodeId));
+    if (!n || !n->objectId) return false;
+    SceneObject *obj = findSceneObjectById(n->objectId);
+    if (!obj) return false;
+    bool found = false;
+    for (const auto &b : obj->scriptBindings()->instances) {
+        if (sameScriptObject(b, raw)) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) return false;
+    for (const auto &pending : delayedDetaches_) {
+        if (pending.hostName == (hostName.empty() ? h->getName() : hostName) && pending.nodeId == nodeId &&
+            sameScriptObject(pending.instance, raw))
+            return true;
+    }
+    DelayedDetach item;
+    item.hostName = hostName.empty() ? h->getName() : hostName;
+    item.nodeId   = nodeId;
+    item.instance = raw;
+    sq_addref(vm_, &item.instance);
+    delayedDetaches_.push_back(item);
+    return true;
+}
+
+void Scene::flushDelayedDetaches() {
+    if (!vm_ || delayedDetaches_.empty() || flushingDelayedDetaches_) return;
+    flushingDelayedDetaches_ = true;
+    std::vector<DelayedDetach> pending;
+    pending.swap(delayedDetaches_);
+    for (auto &item : pending) {
+        // Reuse the script detach path so onDetach/destroy/unroot stay consistent.
+        // Locate index then mirror detachEntityAt.
+        SceneHost *h = resolveHost(item.hostName);
+        SceneNode *n = h ? borrowSceneResult(h->findById(item.nodeId)) : nullptr;
+        SceneObject *obj = (n && n->objectId) ? findSceneObjectById(n->objectId) : nullptr;
+        if (obj) {
+            auto &vec = obj->scriptBindings()->instances;
+            for (size_t i = 0; i < vec.size(); ++i) {
+                if (!sameScriptObject(vec[i], item.instance)) continue;
+                callMethod0(item.instance, "onDetach");
+                callMethod0(item.instance, "destroy");
+                unrootEntityAt(item.hostName, item.nodeId, int(i));
+                break;
+            }
+        }
+        sq_release(vm_, &item.instance);
+    }
+    flushingDelayedDetaches_ = false;
+    // Nested scheduleDetach during flush is drained on the next updateScripts.
 }
 
 std::string Scene::currentHostName() const {
@@ -1315,6 +1425,11 @@ void Scene::expose(ssq::Class &cls) {
                     return self->rootEntity(hostName, nodeId, instance);
                 });
     cls.addFunc("unrootEntityAt", &Scene::unrootEntityAt);
+    cls.addFunc("scheduleDetachEntityAt",
+                [](Scene *self, std::string hostName, std::string nodeId,
+                   ssq::Object instance) {
+                    return self->scheduleDetachEntityAt(hostName, nodeId, instance);
+                });
     cls.addFunc("forEachEntity",
                 [](Scene *self, std::string hostName, std::string nodeId,
                    ssq::Object cb) {

@@ -2,8 +2,11 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Capability.h"
+#include "common/CapabilityOwned.h"
 
+#include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace {
@@ -279,4 +282,40 @@ TEST_CASE("capability.nestedDispatchUsesCurrentRegistry") {
     CHECK_EQ(nested[0], "early");
     CHECK_EQ(nested[1], "a");
     CHECK_EQ(nested[2], "b");
+}
+
+TEST_CASE("capability.providerRefBindsOnceAndIsNonCopyable") {
+    Reset reset;
+    static_assert(!std::is_copy_constructible_v<eve::cap::ProviderRef<IGreeter>>);
+    static_assert(!std::is_copy_assignable_v<eve::cap::ProviderRef<IGreeter>>);
+
+    Hello hello;
+    eve::cap::provide<IGreeter>(&hello);
+    eve::cap::ProviderRef<IGreeter> greeter = eve::cap::ProviderRef<IGreeter>::bind();
+    REQUIRE(greeter);
+    CHECK_EQ(greeter->greet(), "hello");
+
+    // Revoke does not auto-clear a cached ProviderRef; lifetime is the caller's.
+    eve::cap::revoke<IGreeter>(&hello);
+    CHECK(greeter.get() == &hello);
+}
+
+TEST_CASE("capability.ownedProvideAcquireAndStaleUnload") {
+    Reset reset;
+    auto hello = std::make_shared<Hello>();
+    auto handle =
+        eve::cap::OwnedProviderRegistry<IGreeter>::provide("greeter.main", hello);
+    REQUIRE(handle);
+    auto lease = eve::cap::OwnedProviderRegistry<IGreeter>::acquire(handle.value());
+    REQUIRE(lease);
+    CHECK_EQ(lease.value()->greet(), "hello");
+    // Borrowed query slot mirrors the owned publication.
+    REQUIRE(eve::cap::query<IGreeter>() != nullptr);
+    CHECK_EQ(eve::cap::query<IGreeter>()->greet(), "hello");
+
+    auto unloaded = eve::cap::OwnedProviderRegistry<IGreeter>::unload(handle.value());
+    REQUIRE(unloaded);
+    auto stale = eve::cap::OwnedProviderRegistry<IGreeter>::acquire(handle.value());
+    CHECK(!stale);
+    CHECK(eve::cap::query<IGreeter>() == nullptr);
 }
