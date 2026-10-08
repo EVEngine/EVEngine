@@ -3,8 +3,10 @@
 #include "common/Diagnostic.h"
 
 #include <algorithm>
+#include <cerrno>
 #include <charconv>
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 #include <optional>
 #include <string>
@@ -35,10 +37,13 @@ std::optional<std::string_view> attribute(std::string_view element, std::string_
 }
 
 std::optional<float> number(std::string_view text) {
-    float value = 0.f;
-    const auto parsed = std::from_chars(text.data(), text.data() + text.size(), value);
-    if (parsed.ec != std::errc{} || parsed.ptr != text.data() + text.size() || !std::isfinite(value))
-        return std::nullopt;
+    if (text.empty()) return std::nullopt;
+    if (text.find_first_of(" \t\n\r\f\v") != std::string_view::npos) return std::nullopt;
+    const std::string copy(text);
+    char*             end = nullptr;
+    errno                 = 0;
+    const float value     = std::strtof(copy.c_str(), &end);
+    if (end != copy.c_str() + copy.size() || errno == ERANGE || !std::isfinite(value)) return std::nullopt;
     return value;
 }
 
