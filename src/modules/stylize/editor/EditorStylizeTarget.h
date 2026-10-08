@@ -15,7 +15,7 @@ class StylizeOffscreenPreviewService {
 public:
     StylizeOffscreenPreviewService(GraphicsOffscreenPreviewService* previews, graphics::Graphics* graphics)
         : previews_(previews), graphics_(graphics) {}
-    EditorResult<OffscreenPreviewArtifact> render(const StylizeRecipeTarget& document, graphics::Texture* source,
+    Result<OffscreenPreviewArtifact> render(const StylizeRecipeTarget& document, graphics::Texture* source,
                                                   const StableId& previewId, int width, int height) const;
 
 private:

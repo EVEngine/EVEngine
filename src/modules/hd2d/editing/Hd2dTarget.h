@@ -21,8 +21,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -71,24 +70,24 @@ public:
      * @lifetime Valid until this target is destroyed or the capability is explicitly invalidated.
      */
     void*                                   queryCapability(const CapabilityId&) override;
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     PropertySchema                          schema(const SelectionSnapshot&) const override;
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
     const Hd2dAssetValue&                   value() const { return value_; }
     std::vector<EditorDiagnostic>           validate() const;
     EditorValue                             snapshotValue() const;
-    EditorResult<void>                      loadSnapshot(const EditorValue&);
+    Result<void>                      loadSnapshot(const EditorValue&);
 
 private:
     bool                          matches(const SelectionSnapshot&) const;
     EditorValue                   contentValue() const;
-    EditorResult<DomainOperation> replacement(EditorValue, std::string) const;
+    Result<DomainOperation> replacement(EditorValue, std::string) const;
     std::string                   id_;
     Hd2dAssetValue                value_;
 };
@@ -100,22 +99,22 @@ struct Hd2dFramePreview {
 /** @brief Pure sprite animation scrub evaluator. */
 class EVENGINE_API_ORCHESTRATION Hd2dFramePreviewService {
 public:
-    EditorResult<Hd2dFramePreview> evaluate(const Hd2dDocumentTarget&, float time) const;
+    Result<Hd2dFramePreview> evaluate(const Hd2dDocumentTarget&, float time) const;
 };
 /** @brief Resolves an HD-2D sprite texture. */
 class IHd2dTextureResolver {
 public:
     virtual ~IHd2dTextureResolver()                                            = default;
-    virtual EditorResult<graphics::Texture*> texture(const std::string&) const = 0;
+    virtual Result<graphics::Texture*> texture(const std::string&) const = 0;
 };
 /** @brief Candidate-first live Sprite3D/TileMap3D preset publication. */
 class EVENGINE_API_ORCHESTRATION Hd2dDocumentRuntime {
 public:
     Hd2dDocumentRuntime();
     ~Hd2dDocumentRuntime();
-    EditorResult<hd2d::Sprite3D*>  publishSprite(const Hd2dDocumentTarget&, hd2d::Hd2D*, graphics::Graphics*,
+    Result<hd2d::Sprite3D*>  publishSprite(const Hd2dDocumentTarget&, hd2d::Hd2D*, graphics::Graphics*,
                                                  graphics::Camera3D*, const IHd2dTextureResolver&);
-    EditorResult<hd2d::TileMap3D*> publishTileMap(const Hd2dDocumentTarget&, hd2d::Hd2D*);
+    Result<hd2d::TileMap3D*> publishTileMap(const Hd2dDocumentTarget&, hd2d::Hd2D*);
     Revision                       revision() const { return revision_; }
 
 private:

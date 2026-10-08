@@ -39,7 +39,7 @@ public:
     [[nodiscard]] GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                                      const GraphPinRecord& to) const override;
     /** @brief Construct an editor node from the runtime operation catalogue. */
-    [[nodiscard]] EditorResult<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& operation) const;
+    [[nodiscard]] Result<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& operation) const;
     /** @brief Validate schema, node properties, edges, and graph topology without executing. */
     [[nodiscard]] MeshModifierGraphCompileResult compile(const GraphDocumentData& graph) const;
     /**

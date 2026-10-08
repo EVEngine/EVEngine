@@ -138,6 +138,13 @@ bool DecalManager::remove(int id) {
     return false;
 }
 
+bool DecalManager::contains(int id) const {
+    for (const auto& d : decals_) {
+        if (d.id == id) return true;
+    }
+    return false;
+}
+
 void DecalManager::clearAll() { decals_.clear(); }
 
 int DecalManager::count() const { return int(decals_.size()); }

@@ -118,7 +118,7 @@ bool number(const EditorValue* value, float& out) {
     out = static_cast<float>(*n);
     return true;
 }
-EditorResult<HouseKitComponentValue> parseComponent(const EditorValue& value) {
+Result<HouseKitComponentValue> parseComponent(const EditorValue& value) {
     HouseKitComponentValue out;
     const auto *editorId = field(value, "editorId"), *id = field(value, "id"), *model = field(value, "model"),
                *category   = field(value, "category");
@@ -221,7 +221,7 @@ EditorValue requestValue(const housegen::HouseRequest& r) {
                                {"requiredRooms", strings(r.requiredRooms)},
                                {"maxAttempts", int64_t{r.maxAttempts}}};
 }
-EditorResult<housegen::HouseRequest> parseRequest(const EditorValue& value) {
+Result<housegen::HouseRequest> parseRequest(const EditorValue& value) {
     housegen::HouseRequest r;
     uint32_t*              unused = nullptr;
     (void)unused;
@@ -355,7 +355,7 @@ EditorValue HouseGenDocumentTarget::contentValue() const {
     for (const auto& c : components_) components.push_back(componentValue(c));
     return EditorValue::Object{{"components", std::move(components)}, {"request", requestValue(request_)}};
 }
-EditorResult<DomainOperation> HouseGenDocumentTarget::replacement(EditorValue content,
+Result<DomainOperation> HouseGenDocumentTarget::replacement(EditorValue content,
                                                                    std::string property) const {
     DomainOperation op;
     op.type        = "housegen.document.replace.v1";
@@ -368,7 +368,7 @@ EditorResult<DomainOperation> HouseGenDocumentTarget::replacement(EditorValue co
     op.mergeKey = "housegen:" + id_ + ":" + (property.empty() ? "structure" : property);
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> HouseGenDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& path,
+Result<DomainOperation> HouseGenDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& path,
                                                               const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, path);
     auto d = schema(s).find(path);
@@ -405,7 +405,7 @@ EditorResult<DomainOperation> HouseGenDocumentTarget::makeSet(const SelectionSna
                                                      "House component edit invalidates the kit");
     return replacement(candidate.contentValue(), path.value());
 }
-EditorResult<DomainOperation> HouseGenDocumentTarget::makeReset(const SelectionSnapshot& s,
+Result<DomainOperation> HouseGenDocumentTarget::makeReset(const SelectionSnapshot& s,
                                                                 const PropertyPath&      path) const {
     auto d = schema(s).find(path);
     if (!d)
@@ -413,7 +413,7 @@ EditorResult<DomainOperation> HouseGenDocumentTarget::makeReset(const SelectionS
                                                      "Unknown house component property");
     return makeSet(s, path, d->defaultValue, PropertySetMode::Absolute);
 }
-EditorResult<DomainOperation> HouseGenDocumentTarget::makeCreateComponent(
+Result<DomainOperation> HouseGenDocumentTarget::makeCreateComponent(
     const HouseKitComponentValue& component) const {
     if (component.id.empty() || std::any_of(components_.begin(), components_.end(), [&](const auto& c) {
             return c.id == component.id || c.component.id == component.component.id;
@@ -428,7 +428,7 @@ EditorResult<DomainOperation> HouseGenDocumentTarget::makeCreateComponent(
                                                      "House runtime rejected the component");
     return replacement(candidate.contentValue());
 }
-EditorResult<DomainOperation> HouseGenDocumentTarget::makeDeleteComponent(const ObjectId& id) const {
+Result<DomainOperation> HouseGenDocumentTarget::makeDeleteComponent(const ObjectId& id) const {
     if (std::none_of(components_.begin(), components_.end(), [&](const auto& c) { return c.id == id; }))
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.housegen.component"),
                                                      "House component does not exist");
@@ -436,7 +436,7 @@ EditorResult<DomainOperation> HouseGenDocumentTarget::makeDeleteComponent(const 
     std::erase_if(candidate.components_, [&](const auto& c) { return c.id == id; });
     return replacement(candidate.contentValue());
 }
-EditorResult<DomainOperation> HouseGenDocumentTarget::makeSetRequest(const housegen::HouseRequest& request) const {
+Result<DomainOperation> HouseGenDocumentTarget::makeSetRequest(const housegen::HouseRequest& request) const {
     auto candidate     = *this;
     candidate.request_ = request;
     if (hasErrors(candidate.validate()))
@@ -490,7 +490,7 @@ std::vector<EditorDiagnostic> HouseGenDocumentTarget::validate() const {
             "House request exceeds 256 required rooms"));
     return out;
 }
-EditorResult<void> HouseGenDocumentTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> HouseGenDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "housegen.document.replace.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.housegen.operation"),
                                           "House operation mismatch");
@@ -525,7 +525,7 @@ EditorResult<void> HouseGenDocumentTarget::applyDomainOperation(const DomainOper
 std::unique_ptr<IDomainOperationTarget> HouseGenDocumentTarget::cloneDomainState() const {
     return std::make_unique<HouseGenDocumentTarget>(*this);
 }
-EditorResult<void> HouseGenDocumentTarget::commitDomainState(
+Result<void> HouseGenDocumentTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<HouseGenDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
@@ -537,7 +537,7 @@ EditorResult<void> HouseGenDocumentTarget::commitDomainState(
 EditorValue HouseGenDocumentTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> HouseGenDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> HouseGenDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto *versionValue = field(snapshot, "schemaVersion"), *content = field(snapshot, "content");
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)

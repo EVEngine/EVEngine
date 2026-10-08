@@ -34,8 +34,7 @@ using editing::TargetDescriptor;
 using editing::TargetId;
 using editing::Value;
 
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::Result;
 
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;

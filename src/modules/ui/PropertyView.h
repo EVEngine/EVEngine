@@ -5,6 +5,7 @@
 #include "property_access/PropertyAccess.h"
 #include "ui/Component.h"
 
+#include <functional>
 #include <string>
 
 namespace eve::ui {
@@ -17,6 +18,14 @@ struct PropertyViewOptions {
     bool showEditorOnly = false;
     bool showReadOnly = true;
     bool groupCategories = true;
+    /**
+     * @brief Optional callback after Array/Map structural mutations (append/remove).
+     *
+     * Hosts that do not rebuild from `IPropertyAccess` subscriptions (for example
+     * the Inspector panel) should rebuild their tree here so child widget ids stay
+     * aligned with the model.
+     */
+    std::function<void()> onStructureChange;
 };
 
 /** @brief Return the stable widget id generated for a property path. */

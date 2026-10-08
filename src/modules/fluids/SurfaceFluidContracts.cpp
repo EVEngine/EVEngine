@@ -10,21 +10,12 @@
 namespace eve::fluids {
 namespace {
 
-eve::Result<void> staleSolver(const char* path) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::PreconditionViolation, "Surface-fluid adapter has no live borrowed solver", path));
-}
-
-eve::Result<void> invalidInput(const char* path, const char* message) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path));
-}
-
 eve::Result<void> applied() { return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)); }
 
 eve::Result<void> validateTick(const eve::SimulationStep& step, eve::SimulationTick lastTick, const char* path) {
     const double seconds = step.delta.seconds();
     if (!std::isfinite(seconds) || seconds < 0.0)
-        return invalidInput(path, "Surface-fluid duration must be finite and non-negative");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Surface-fluid duration must be finite and non-negative", path));
     if (!(step.tick > lastTick))
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::PreconditionViolation, "Surface-fluid simulation tick must increase strictly", path));
@@ -34,14 +25,15 @@ eve::Result<void> validateTick(const eve::SimulationStep& step, eve::SimulationT
 eve::Result<void> validateDuration(eve::Duration duration, const char* path) {
     const double seconds = duration.seconds();
     if (!std::isfinite(seconds) || seconds < 0.0)
-        return invalidInput(path, "Surface pose duration must be finite and non-negative");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Surface pose duration must be finite and non-negative", path));
     return applied();
 }
 
 }  // namespace
 
 eve::Result<void> FluidSimulationAdapter::step(const eve::SimulationStep& stepValue) {
-    if (!solver_) return staleSolver("fluids.surfaceSimulation.solver");
+    if (!solver_) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::PreconditionViolation, "Surface-fluid adapter has no live borrowed solver", "fluids.surfaceSimulation.solver"));
     auto valid = validateTick(stepValue, lastTick_, "fluids.surfaceSimulation.step");
     if (!valid) return valid;
     solver_->step(static_cast<float>(stepValue.delta.seconds()));
@@ -61,23 +53,25 @@ std::span<const FluidParticle> FluidSimulationAdapter::particles() const noexcep
 eve::Result<void> FluidSurfaceConstraintAdapter::build(const std::vector<glm::vec3>&     positions,
                                                        const std::vector<std::uint32_t>& indices,
                                                        const std::vector<glm::vec2>&     uvs) {
-    if (!binding_) return staleSolver("fluids.surfaceConstraint.binding");
+    if (!binding_) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::PreconditionViolation, "Surface-fluid adapter has no live borrowed solver", "fluids.surfaceConstraint.binding"));
     if (!binding_->build(positions, indices, uvs))
-        return invalidInput("fluids.surfaceConstraint.topology",
-                            "Surface constraint topology is not a valid triangle mesh");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Surface constraint topology is not a valid triangle mesh", "fluids.surfaceConstraint.topology"));
     return applied();
 }
 
 eve::Result<void> FluidSurfaceConstraintAdapter::setTransform(const glm::mat4& transform) {
-    if (!binding_) return staleSolver("fluids.surfaceConstraint.binding");
+    if (!binding_) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::PreconditionViolation, "Surface-fluid adapter has no live borrowed solver", "fluids.surfaceConstraint.binding"));
     binding_->setTransform(transform);
     return applied();
 }
 
 eve::Result<void> FluidSurfaceConstraintAdapter::setDeformedPositions(const std::vector<glm::vec3>& worldPositions) {
-    if (!binding_) return staleSolver("fluids.surfaceConstraint.binding");
+    if (!binding_) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::PreconditionViolation, "Surface-fluid adapter has no live borrowed solver", "fluids.surfaceConstraint.binding"));
     if (!binding_->setDeformedPositions(worldPositions))
-        return invalidInput("fluids.surfaceConstraint.pose", "Deformed surface vertex count does not match topology");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Deformed surface vertex count does not match topology", "fluids.surfaceConstraint.pose"));
     return applied();
 }
 
@@ -141,14 +135,13 @@ ScreenSpaceSurfaceReconstructionAdapter::~ScreenSpaceSurfaceReconstructionAdapte
 
 eve::Result<void> ScreenSpaceSurfaceReconstructionAdapter::reconstruct(std::span<const glm::vec3> positions,
                                                                        float                      particleRadius) {
-    if (!renderer_) return staleSolver("fluids.screenSpaceReconstruction.renderer");
+    if (!renderer_) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::PreconditionViolation, "Surface-fluid adapter has no live borrowed solver", "fluids.screenSpaceReconstruction.renderer"));
     if (!std::isfinite(particleRadius) || particleRadius <= 0.f)
-        return invalidInput("fluids.screenSpaceReconstruction.particleRadius",
-                            "Screen-space particle radius must be finite and positive");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Screen-space particle radius must be finite and positive", "fluids.screenSpaceReconstruction.particleRadius"));
     for (const glm::vec3& position : positions) {
         if (!std::isfinite(position.x) || !std::isfinite(position.y) || !std::isfinite(position.z))
-            return invalidInput("fluids.screenSpaceReconstruction.positions",
-                                "Screen-space particle positions must be finite");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Screen-space particle positions must be finite", "fluids.screenSpaceReconstruction.positions"));
     }
     const std::vector<glm::vec3> ownedPositions(positions.begin(), positions.end());
     renderer_->render(ownedPositions, particleRadius);
@@ -156,7 +149,8 @@ eve::Result<void> ScreenSpaceSurfaceReconstructionAdapter::reconstruct(std::span
 }
 
 eve::Result<void> ScreenSpaceSurfaceReconstructionAdapter::occlude(std::span<const float> sceneDepth, float depthBias) {
-    if (!renderer_) return staleSolver("fluids.screenSpaceReconstruction.renderer");
+    if (!renderer_) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::PreconditionViolation, "Surface-fluid adapter has no live borrowed solver", "fluids.screenSpaceReconstruction.renderer"));
     return renderer_->occludeWithSceneDepth(sceneDepth, depthBias);
 }
 

@@ -71,7 +71,7 @@ struct Chunk {
 
 eve::Status malformed(std::string message) {
     return eve::Status::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::SerializationError, std::move(message), "snapshot", {}, "pixelworld"));
+        eve::DiagnosticCode::SerializationError, message, "snapshot", {}, "pixelworld"));
 }
 
 template <class T>
@@ -417,7 +417,7 @@ eve::Result<PixelCatalogReloadReceipt> PixelWorld::reloadMaterialCatalog(
     MaterialCatalog catalog, std::uint64_t expectedFingerprint) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<PixelCatalogReloadReceipt>::failure(eve::Diagnostic::error(
-            code, std::move(message), std::move(path), {}, "pixelworld.catalog-reload"));
+            code, message, path, {}, "pixelworld.catalog-reload"));
     };
     if (!impl_->paused)
         return reject(eve::DiagnosticCode::PreconditionViolation,
@@ -519,7 +519,7 @@ eve::Result<std::size_t> PixelWorld::paintCircleChecked(int centerX, int centerY
 eve::Result<PixelEditReceipt> PixelWorld::applyEdit(const PixelEditCommand& command) {
     const auto reject = [](std::string message, std::string path) {
         return eve::Result<PixelEditReceipt>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::PreconditionViolation, std::move(message), std::move(path), {},
+            eve::DiagnosticCode::PreconditionViolation, message, path, {},
             "pixelworld.edit"));
     };
     if (command.sequence != impl_->lastEditSequence + 1)
@@ -619,7 +619,7 @@ eve::Result<std::vector<PixelFragment>> PixelWorld::extractUnsupportedFragments(
     PixelRegion region, int supportY, std::uint32_t minimumCells) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<std::vector<PixelFragment>>::failure(eve::Diagnostic::error(
-            code, std::move(message), std::move(path), {}, "pixelworld.fragment.extract"));
+            code, message, path, {}, "pixelworld.fragment.extract"));
     };
     const std::int64_t width = std::int64_t(region.maxX) - region.minX + 1;
     const std::int64_t height = std::int64_t(region.maxY) - region.minY + 1;
@@ -705,7 +705,7 @@ eve::Result<PixelFragmentRasterReceipt> PixelWorld::rasterizeFragment(
     const PixelFragment& fragment, int originX, int originY) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<PixelFragmentRasterReceipt>::failure(eve::Diagnostic::error(
-            code, std::move(message), std::move(path), {}, "pixelworld.fragment.rasterize"));
+            code, message, path, {}, "pixelworld.fragment.rasterize"));
     };
     if (fragment.source != worldLink())
         return reject(eve::DiagnosticCode::StaleHandle,
@@ -1441,7 +1441,7 @@ eve::Result<PixelChunkApplyReceipt> PixelWorld::applyChunkBatch(
     const PixelChunkBatch& batch, std::uint64_t expectedRevision) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<PixelChunkApplyReceipt>::failure(eve::Diagnostic::error(
-            code, std::move(message), std::move(path), {}, "pixelworld.chunk-batch"));
+            code, message, path, {}, "pixelworld.chunk-batch"));
     };
     if (impl_->revision != expectedRevision)
         return reject(eve::DiagnosticCode::Conflict, "local world revision is stale", "expectedRevision");

@@ -68,6 +68,47 @@ class SignatureIndexTests(unittest.TestCase):
         self.assertIsNotNone(signature)
         self.assertEqual([parameter.name for parameter in signature[1]], ["pixelWidth"])
 
+    def test_member_signature_resolves_nodiscard_inline_getters(self) -> None:
+        source = (
+            Path("effect.h"),
+            "class ParticleEffect {\n"
+            "public:\n"
+            "    [[nodiscard]] float getTimelineSeconds() const { return 0.f; }\n"
+            '    [[nodiscard("check me")]] bool isTimelinePlaying() const;\n'
+            "};\n",
+        )
+
+        index = SignatureIndex(dict([source]))
+        seconds = index.member("ParticleEffect", "getTimelineSeconds")
+        playing = index.member("ParticleEffect", "isTimelinePlaying")
+
+        self.assertIsNotNone(seconds)
+        self.assertEqual(seconds[0], "float")
+        self.assertEqual(seconds[1], [])
+        self.assertIsNotNone(playing)
+        self.assertEqual(playing[0], "bool")
+        self.assertEqual(playing[1], [])
+
+    def test_nodiscard_message_paren_is_not_the_parameter_list(self) -> None:
+        """[[nodiscard("...")]] contains '('; that must not become arg0."""
+        source = (
+            Path("renderer.h"),
+            "class PixelWorldGraphics {\n"
+            "public:\n"
+            '    [[nodiscard("retain and delete the returned PixelWorldAtlasRenderer")]]\n'
+            "    PixelWorldAtlasRenderer* newRenderer(int originX, int originY, int width, int height);\n"
+            "};\n",
+        )
+
+        signature = SignatureIndex(dict([source])).member("PixelWorldGraphics", "newRenderer")
+
+        self.assertIsNotNone(signature)
+        self.assertEqual(signature[0], "PixelWorldAtlasRenderer*")
+        self.assertEqual(
+            [parameter.name for parameter in signature[1]],
+            ["originX", "originY", "width", "height"],
+        )
+
 
 class CatalogExportTests(unittest.TestCase):
     def test_json_and_dts_export_round_trip_fields(self) -> None:
@@ -96,6 +137,40 @@ class CatalogExportTests(unittest.TestCase):
             self.assertIn('"schema": "eve.binding-api"', payload)
             self.assertIn('"key": "graphics/Graphics.drawSolidRect"', payload)
             self.assertIn("drawSolidRect(x: float, y: float): void;", dts_path.read_text(encoding="utf-8"))
+
+
+class BindMethodScrapeTests(unittest.TestCase):
+    def test_bind_method_literal_names_are_scraped(self) -> None:
+        from generate_binding_contracts import extract_contracts
+
+        root = Path(__file__).resolve().parents[2]
+        sources = {
+            root / "src/modules/animation/OrientationWarping.h": (
+                "namespace eve::animation {\n"
+                "class OrientationWarping {\n"
+                "public:\n"
+                "    void setEnabled(bool enabled);\n"
+                "    bool isEnabled() const;\n"
+                "};\n"
+                "}\n"
+            ),
+            root / "src/modules/animation/OrientationWarpingBindings.cpp": (
+                "namespace eve::animation {\n"
+                "void expose(ssq::Table& table) {\n"
+                "    auto cls = table.addClass<OrientationWarping>(\n"
+                '        "OrientationWarping", std::function<OrientationWarping*()>([]() { return nullptr; }), true);\n'
+                '    script::bindMethod(cls, "setEnabled", &OrientationWarping::setEnabled);\n'
+                '    script::bindMethod(cls, "isEnabled", &OrientationWarping::isEnabled);\n'
+                "}\n"
+                "}\n"
+            ),
+        }
+
+        contracts, unresolved = extract_contracts(sources)
+        keys = {contract.key for contract in contracts}
+        self.assertEqual(unresolved, [])
+        self.assertIn("animation/OrientationWarping.setEnabled", keys)
+        self.assertIn("animation/OrientationWarping.isEnabled", keys)
 
 
 if __name__ == "__main__":

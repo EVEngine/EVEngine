@@ -49,7 +49,7 @@ void* MaterialDocumentTarget::queryCapability(const CapabilityId& capability) {
     return nullptr;
 }
 
-EditorResult<void> MaterialDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> MaterialDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.target-mismatch"),
                                           "Material operation targets another document");
@@ -78,7 +78,7 @@ std::unique_ptr<IDomainOperationTarget> MaterialDocumentTarget::cloneDomainState
     return std::make_unique<MaterialDocumentTarget>(*this);
 }
 
-EditorResult<void> MaterialDocumentTarget::commitDomainState(
+Result<void> MaterialDocumentTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<MaterialDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
@@ -106,7 +106,7 @@ PropertyReadResult MaterialDocumentTarget::read(const SelectionSnapshot& selecti
     return {PropertyReadState::Value, found->second, {}};
 }
 
-EditorResult<DomainOperation> MaterialDocumentTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> MaterialDocumentTarget::makeSet(const SelectionSnapshot& selection,
                                                                const PropertyPath& path,
                                                                const EditorValue& value,
                                                                PropertySetMode mode) const {
@@ -123,7 +123,7 @@ EditorResult<DomainOperation> MaterialDocumentTarget::makeSet(const SelectionSna
                                                      RuleId("editor.material.property-unsupported"),
                                                      "Unknown material property: " + path.value());
     auto valid = validateAssignment(*descriptor, value);
-    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
+    if (!valid.ok()) return Result<DomainOperation>::failure(valid.status());
     const auto previous = values_.find(path.value());
     if (previous == values_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.material.property-missing"),
@@ -145,7 +145,7 @@ EditorResult<DomainOperation> MaterialDocumentTarget::makeSet(const SelectionSna
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> MaterialDocumentTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> MaterialDocumentTarget::makeReset(const SelectionSnapshot& selection,
                                                                  const PropertyPath& path) const {
     auto descriptor = materialSchema().find(path);
     if (!descriptor)
@@ -164,7 +164,7 @@ EditorValue MaterialDocumentTarget::snapshotValue() const {
     return EditorValue(std::move(root));
 }
 
-EditorResult<void> MaterialDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> MaterialDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionValue = objectField(snapshot, "schemaVersion");
     const EditorValue* propertiesValue = objectField(snapshot, "properties");
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;
@@ -607,7 +607,7 @@ std::map<std::string, EditorValue> MaterialDocumentTarget::defaults() {
     return result;
 }
 
-EditorResult<void> MaterialDocumentTarget::validateAssignment(const PropertyDescriptor& descriptor,
+Result<void> MaterialDocumentTarget::validateAssignment(const PropertyDescriptor& descriptor,
                                                                const EditorValue& value) {
     return validatePropertyValue(descriptor, value);
 }

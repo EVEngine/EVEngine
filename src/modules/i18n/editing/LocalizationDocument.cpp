@@ -35,7 +35,7 @@ const EditorValue* field(const EditorValue& value, const char* key) {
 
 }  // namespace
 
-EditorResult<void> LocalizationDocument::addRow(std::string key, std::string sourceText, std::string context) {
+Result<void> LocalizationDocument::addRow(std::string key, std::string sourceText, std::string context) {
     if (key.empty() || sourceText.empty())
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.localization.invalid-source"),
                                           "Localization key and source text are required");
@@ -51,7 +51,7 @@ EditorResult<void> LocalizationDocument::addRow(std::string key, std::string sou
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> LocalizationDocument::removeRow(const std::string& key) {
+Result<void> LocalizationDocument::removeRow(const std::string& key) {
     if (rows_.erase(key) == 0)
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.localization.key-not-found"),
                                           "Localization key was not found: " + key);
@@ -59,7 +59,7 @@ EditorResult<void> LocalizationDocument::removeRow(const std::string& key) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> LocalizationDocument::setVariant(const std::string& key, std::string locale,
+Result<void> LocalizationDocument::setVariant(const std::string& key, std::string locale,
                                                     LocalizationVariant variant) {
     auto row = rows_.find(key);
     if (row == rows_.end())
@@ -144,7 +144,7 @@ EditorValue LocalizationDocument::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"rows", std::move(rows)}};
 }
 
-EditorResult<void> LocalizationDocument::loadSnapshot(const EditorValue& snapshot) {
+Result<void> LocalizationDocument::loadSnapshot(const EditorValue& snapshot) {
     const auto* schema    = field(snapshot, "schemaVersion");
     const auto* rowsValue = field(snapshot, "rows");
     const auto* version   = schema ? schema->getIf<int64_t>() : nullptr;

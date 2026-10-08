@@ -132,6 +132,31 @@ checkout is on that commit.
   one owner; the per-family inventory, the third-party/submodule patches and the
   traps are in
   `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md` §7.25.
+- **Annotating a declaration for the SHARED split.** When you add a symbol that
+  crosses a link-group boundary (a new module API, or new dev code that a higher
+  group or a test uses), the declaration needs `EVENGINE_API_<GROUP>` — ELF group
+  libraries export default-visibility symbols anyway, so *only* the Windows job
+  notices a missing macro (`LNK2019`/`LNK2001` + `LNK1120`). Four rules that each
+  cost a full CI cycle to learn:
+  1. The header must be able to see `common/Export.h`; otherwise the macro parses
+     as a type name (`C2079 ... uses undefined class 'eve::rpg::EVENGINE_API_PLATFORM'`)
+     and breaks **every** platform.
+  2. Annotate the whole family the linker will reach, not just the one symbol CI
+     named: one target fails per run.
+  3. Check the class before using a class-level macro. A class that holds a
+     `unique_ptr`/`optional` member whose type this header only forward declares
+     must declare its constructor, destructor and move operations *out of line*
+     (defaulted in the `.cpp` that sees the complete type); an in-class
+     `= default` makes the export pull in the member's deleter
+     (`C2027 use of undefined type` + `C2338 can't delete an incomplete type`).
+     A class with an implicitly deleted copy assignment needs those two spelled
+     `= delete` (`C2280`). Never put a class-level macro on a class with an
+     `inline static` data member (`C2491`).
+  4. Local compile checks lie unless the translation units actually rebuild:
+     Ninja's "unscanned" dependency tracking does not reliably recompile a `.cpp`
+     after a header edit, so touch every `.cpp` that includes the header (or
+     delete their `.obj`) before building. Details and the full trap list: §7.31
+     and §7.32 of the same spec.
 - **Run the full suite in CI, not locally.** Locally, verify the *link* (build
   both routes plus `make check`) and let CI run every platform's cases. A local
   full `ctest` starts thousands of test executables, so one group library that

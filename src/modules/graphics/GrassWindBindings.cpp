@@ -5,10 +5,6 @@
 #include "graphics/VegetationWind.h"
 namespace eve::graphics {
 namespace {
-Result<void> missing() {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "grass.wind: non-null shader, state and profile required"));
-}
 }  // namespace
 void exposeGrassWindBindings(ssq::Table& table) {
     auto state = table.addClass("VegetationWindState", ssq::Class::Ctor<VegetationWindState()>());
@@ -40,17 +36,20 @@ void exposeGrassWindBindings(ssq::Table& table) {
     });
     table.addFunc("advanceVegetationWind", [vm = table.getHandle()](VegetationWindState* s, float x, float y, float z,
                                                                     float strength, float dt) {
-        auto result = s ? advanceVegetationWind(*s, {x, y, z}, strength, dt) : missing();
+        auto result = s ? advanceVegetationWind(*s, {x, y, z}, strength, dt) : Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "grass.wind: non-null shader, state and profile required"));
         return eve::script::projectResult(vm, std::move(result));
     });
     table.addFunc("initializeVegetationWind",
                   [vm = table.getHandle()](VegetationWindState* s, float x, float y, float z, float strength) {
-                      auto result = s ? initializeVegetationWind(*s, {x, y, z}, strength) : missing();
+                      auto result = s ? initializeVegetationWind(*s, {x, y, z}, strength) : Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "grass.wind: non-null shader, state and profile required"));
                       return eve::script::projectResult(vm, std::move(result));
                   });
     table.addFunc("applyGrassWind", [vm = table.getHandle()](Shader* shader, const VegetationWindState* s,
                                                              const VegetationWindProfile* p, float seconds) {
-        auto result = shader && s && p ? applyGrassWind(*shader, *s, *p, seconds) : missing();
+        auto result = shader && s && p ? applyGrassWind(*shader, *s, *p, seconds) : Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "grass.wind: non-null shader, state and profile required"));
         return eve::script::projectResult(vm, std::move(result));
     });
     table.addFunc("applyTreeWind",
@@ -59,7 +58,8 @@ void exposeGrassWindBindings(ssq::Table& table) {
                                            float seconds) {
                       auto result = shader && s && p && treeProfile
                                         ? applyTreeWind(*shader, *s, *p, *treeProfile, seconds)
-                                        : missing();
+                                        : Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "grass.wind: non-null shader, state and profile required"));
                       return eve::script::projectResult(vm, std::move(result));
                   });
     table.addFunc("advanceVegetationWindAudio",
@@ -67,7 +67,8 @@ void exposeGrassWindBindings(ssq::Table& table) {
                                            float dt, bool enabled, bool clipAvailable) {
                       auto result = state ? advanceVegetationWindAudio(*state, strength, transitionTime, dt, enabled,
                                                                       clipAvailable)
-                                          : missing();
+                                          : Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "grass.wind: non-null shader, state and profile required"));
                       return eve::script::projectResult(vm, std::move(result));
                   });
 }

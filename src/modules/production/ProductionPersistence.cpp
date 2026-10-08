@@ -15,7 +15,7 @@ namespace {
 template <class T>
 eve::Result<T> persistenceFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
     return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "production.persistence"));
+        eve::Diagnostic::error(code, message, path, {}, "production.persistence"));
 }
 
 std::string quote(std::string_view value) {

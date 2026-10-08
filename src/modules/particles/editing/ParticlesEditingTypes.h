@@ -18,8 +18,7 @@ using editing::Revision;
 using editing::RuleId;
 using editing::Status;
 using editing::Value;
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::Result;
 using EditorStatus = editing::Status;
 using EditorValue = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;

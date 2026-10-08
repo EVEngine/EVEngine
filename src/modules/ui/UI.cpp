@@ -35,11 +35,13 @@
 #include "graphics/Graphics.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
+#include "property_access/squirrel/ReflectedPropertyModel.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <SDL2/SDL_events.h>
+#include <squirrel.h>
+#include <simplesquirrel/simplesquirrel.hpp>
 
 #if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 #include <Poco/JSON/Array.h>
@@ -49,7 +51,6 @@
 #endif
 
 #include <algorithm>
-#include <chrono>
 #include <cstdio>
 #include <cstring>
 #include <iterator>
@@ -58,6 +59,129 @@
 
 namespace eve::ui {
 namespace {
+
+UI *uiFromStack(HSQUIRRELVM vm) {
+    UI *self = nullptr;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, reinterpret_cast<SQUserPointer *>(&self), nullptr)) || !self) return nullptr;
+    return self;
+}
+
+std::string optionalEase(HSQUIRRELVM vm, SQInteger idx, SQInteger n) {
+    if (n < idx) return "smoothstep";
+    const SQChar *ease = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, idx, &ease)) || !ease) return "smoothstep";
+    return ease;
+}
+
+float optionalDelay(HSQUIRRELVM vm, SQInteger idx, SQInteger n) {
+    if (n < idx) return 0.f;
+    SQFloat delay = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, idx, &delay))) return 0.f;
+    return float(delay);
+}
+
+/** Script: animateHostPos(x, y, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostPos(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6) return sq_throwerror(vm, "UI.animateHostPos expects (x, y, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat x = 0.f, y = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &x)) || SQ_FAILED(sq_getfloat(vm, 3, &y)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostPos expects float x/y/durationMs");
+    self->animateHostPos(float(x), float(y), float(durationMs), optionalEase(vm, 5, n), optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateHostSize(w, h, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostSize(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6) return sq_throwerror(vm, "UI.animateHostSize expects (w, h, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat w = 0.f, h = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &w)) || SQ_FAILED(sq_getfloat(vm, 3, &h)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostSize expects float w/h/durationMs");
+    self->animateHostSize(float(w), float(h), float(durationMs), optionalEase(vm, 5, n), optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateHostOverlayAlpha(alpha, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostOverlayAlpha(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 3 || n > 5)
+        return sq_throwerror(vm, "UI.animateHostOverlayAlpha expects (alpha, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat alpha = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &alpha)) || SQ_FAILED(sq_getfloat(vm, 3, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostOverlayAlpha expects float alpha/durationMs");
+    self->animateHostOverlayAlpha(float(alpha), float(durationMs), optionalEase(vm, 4, n), optionalDelay(vm, 5, n));
+    return 0;
+}
+
+/** Script: animateItemOpacity(id, opacity, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateItemOpacity(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6)
+        return sq_throwerror(vm, "UI.animateItemOpacity expects (id, opacity, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    const SQChar *id      = nullptr;
+    SQFloat       opacity = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id)) || SQ_FAILED(sq_getfloat(vm, 3, &opacity)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateItemOpacity expects (string id, float opacity, float durationMs)");
+    self->animateItemOpacity(id ? id : "", float(opacity), float(durationMs), optionalEase(vm, 5, n),
+                             optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateItemPos(id, x, y, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateItemPos(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 5 || n > 7)
+        return sq_throwerror(vm, "UI.animateItemPos expects (id, x, y, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    const SQChar *id = nullptr;
+    SQFloat       x = 0.f, y = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id)) || SQ_FAILED(sq_getfloat(vm, 3, &x)) || SQ_FAILED(sq_getfloat(vm, 4, &y)) ||
+        SQ_FAILED(sq_getfloat(vm, 5, &durationMs)))
+        return sq_throwerror(vm, "UI.animateItemPos expects (string id, float x/y/durationMs)");
+    self->animateItemPos(id ? id : "", float(x), float(y), float(durationMs), optionalEase(vm, 6, n),
+                         optionalDelay(vm, 7, n));
+    return 0;
+}
+
+/** Script: cancelItemTweens([id]). */
+SQInteger sqCancelItemTweens(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 1 || n > 2) return sq_throwerror(vm, "UI.cancelItemTweens expects ([id])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    if (n < 2) {
+        self->cancelItemTweens("");
+        return 0;
+    }
+    const SQChar *id = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id))) return sq_throwerror(vm, "UI.cancelItemTweens id must be a string");
+    self->cancelItemTweens(id ? id : "");
+    return 0;
+}
+
+void addOptionalTweenFunc(ssq::Class &cls, const char *name, SQFUNCTION func, SQInteger minParams,
+                          const SQChar *typemask) {
+    HSQUIRRELVM vm = cls.getHandle();
+    sq_pushobject(vm, cls.getRaw());
+    sq_pushstring(vm, name, -1);
+    sq_newclosure(vm, func, 0);
+    sq_setparamscheck(vm, -minParams, typemask);
+    sq_newslot(vm, -3, SQFalse);
+    sq_poptop(vm);
+}
 
 std::string jsonQuoted(const std::string &value) {
     std::string out = "\"";
@@ -453,62 +577,18 @@ void UI::beginFrameAndRender() {
     if (!isBackendReady()) {
         if (!initBackend()) return;
     }
-    updateHostTweens();
+    tickTweens(uiTweenWallClockMs());
     if (inspector_ && inspector_->isOpen()) inspector_->sync();
     if (databasePanel_ && databasePanel_->isOpen()) databasePanel_->sync();
     backend_->newFrame();
     UISystem::render();
 }
 
-void UI::updateHostTweens() {
-    if (hostTweens_.empty() && itemTweens_.empty()) return;
-    const double now =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    for (auto &t : hostTweens_) {
-        auto host = UIHost::resolve(t.host);
-        if (!host) continue;
-        auto         m       = host->get().meta();
-        const double elapsed = now - t.startMs;
-        if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
-            m->hasPos = true;
-            m->posX = t.toX;
-            m->posY = t.toY;
-            t.host    = {};  // done; removed below
-            continue;
-        }
-        const float k = float(elapsed / t.durationMs);
-        const float ease = k * k * (3.f - 2.f * k);  // smoothstep
-        m->hasPos = true;
-        m->posX = t.fromX + (t.toX - t.fromX) * ease;
-        m->posY = t.fromY + (t.toY - t.fromY) * ease;
-    }
-    hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                                     [](const HostTween &t) { return !UIHost::resolve(t.host).has_value(); }),
-                      hostTweens_.end());
-    for (auto &t : itemTweens_) {
-        auto host = UIHost::resolve(t.host);
-        if (!host) continue;
-        auto node = host->get().findById(t.nodeId);
-        if (!node) {
-            t.host = {};
-            continue;
-        }
-        const double elapsed = now - t.startMs;
-        if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
-            node->get().opacity = t.to;
-            t.host = {};
-            continue;
-        }
-        const float k = float(elapsed / t.durationMs);
-        const float ease = k * k * (3.f - 2.f * k);
-        node->get().opacity = t.from + (t.to - t.from) * ease;
-    }
-    itemTweens_.erase(
-        std::remove_if(itemTweens_.begin(), itemTweens_.end(),
-                       [](const ItemTween &t) { return !UIHost::resolve(t.host).has_value(); }),
-        itemTweens_.end());
-}
+void UI::tickTweens(double nowMs) { tweens_.tick(nowMs); }
+
+std::size_t UI::getHostTweenCount() const { return tweens_.hostTweenCount(); }
+
+std::size_t UI::getItemTweenCount() const { return tweens_.itemTweenCount(); }
 
 void UI::dispatchEvents() {
     // Copy before dispatch: UISystem::dispatchEvents() consumes the pending list.
@@ -1603,22 +1683,19 @@ void UI::setHostPercent(float w, float h) {
     m->percentH = h;
 }
 
-void UI::animateHostPos(float x, float y, float durationMs) {
-    auto host = resolveSelected();
-    if (!host) return;
-    auto      m = host->get().meta();
-    HostTween t;
-    t.host = selected_;
-    t.fromX = m->hasPos ? m->posX : 0.f;
-    t.fromY = m->hasPos ? m->posY : 0.f;
-    t.toX = x;
-    t.toY = y;
-    t.startMs =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    t.durationMs = std::max(0.0, double(durationMs));
-    m->hasPos = true;
-    hostTweens_.push_back(t);
+void UI::animateHostPos(float x, float y, float durationMs, const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostPos(selected_, x, y, durationMs, ease, delayMs, uiTweenWallClockMs());
+}
+
+void UI::animateHostSize(float w, float h, float durationMs, const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostSize(selected_, w, h, durationMs, ease, delayMs, uiTweenWallClockMs());
+}
+
+void UI::animateHostOverlayAlpha(float alpha, float durationMs, const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostOverlayAlpha(selected_, alpha, durationMs, ease, delayMs, uiTweenWallClockMs());
 }
 
 std::string UI::consumeClick() { return UISystem::consumeClick(); }
@@ -1665,31 +1742,34 @@ std::string UI::defineStyleClass(const std::string &name, const std::string &par
     return styleClassStatusName(eve::ui::defineStyleClass(name, parent));
 }
 
-void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs) {
-    auto host = resolveSelected();
-    if (!host) return;
-    auto node = host->get().findById(id);
-    if (!node) return;
-    itemTweens_.erase(std::remove_if(itemTweens_.begin(), itemTweens_.end(),
-                                    [&](const ItemTween &t) {
-                                        return t.host.table == selected_.table &&
-                                               t.host.type == selected_.type &&
-                                               t.host.id == selected_.id &&
-                                               t.host.generation == selected_.generation &&
-                                               t.nodeId == id;
-                                    }),
-                      itemTweens_.end());
-    ItemTween tween;
-    tween.host = selected_;
-    tween.nodeId = id;
-    tween.from = node->get().opacity;
-    tween.to = std::clamp(opacity, 0.f, 1.f);
-    tween.startMs =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    tween.durationMs = std::max(0.0, double(durationMs));
-    if (tween.durationMs <= 0.0) node->get().opacity = tween.to;
-    else itemTweens_.push_back(std::move(tween));
+void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs, const std::string &ease,
+                            float delayMs) {
+    if (!resolveSelected()) return;
+    // Script-facing facade: missing hosts/nodes are no-ops (same as other UI setters).
+    tweens_.animateItemOpacity(selected_, id, opacity, durationMs, ease, delayMs, uiTweenWallClockMs())
+        .ignore("UI.animateItemOpacity: host/node unavailable");
+}
+
+void UI::animateItemPos(const std::string &id, float x, float y, float durationMs, const std::string &ease,
+                        float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateItemPos(selected_, id, x, y, durationMs, ease, delayMs, uiTweenWallClockMs())
+        .ignore("UI.animateItemPos: host/node unavailable");
+}
+
+void UI::cancelHostTweens() {
+    if (!resolveSelected()) return;
+    tweens_.cancelHost(selected_);
+}
+
+void UI::cancelItemTweens(const std::string &id) {
+    if (!resolveSelected()) return;
+    tweens_.cancelItem(selected_, id);
+}
+
+void UI::cancelAllTweens() {
+    if (!resolveSelected()) return;
+    tweens_.cancelAll(selected_);
 }
 
 std::string UI::setStyleClassColor(const std::string &name, const std::string &property, float r,
@@ -2450,6 +2530,66 @@ bool UI::inspectAddInstance() {
     return inspector_ && inspector_->addInstance();
 }
 
+namespace {
+
+const char *propertyKindName(property_access::PropertyKind kind) {
+    using property_access::PropertyKind;
+    switch (kind) {
+        case PropertyKind::Auto: return "auto";
+        case PropertyKind::Bool: return "bool";
+        case PropertyKind::Integer: return "integer";
+        case PropertyKind::Number: return "number";
+        case PropertyKind::String: return "string";
+        case PropertyKind::Enum: return "enum";
+        case PropertyKind::Color: return "color";
+        case PropertyKind::Vec2: return "vec2";
+        case PropertyKind::Vec3: return "vec3";
+        case PropertyKind::Vec4: return "vec4";
+        case PropertyKind::AssetRef: return "assetRef";
+        case PropertyKind::ObjectRef: return "objectRef";
+        case PropertyKind::Struct: return "struct";
+        case PropertyKind::Array: return "array";
+        case PropertyKind::Map: return "map";
+        case PropertyKind::Action: return "action";
+        case PropertyKind::ReadOnlyText: return "readOnlyText";
+    }
+    return "auto";
+}
+
+}  // namespace
+
+ssq::Object UI::propertySchema(ssq::Object instance) {
+    Runtime *runtime = ModuleManager::runtime();
+    if (!runtime) return ssq::Object();
+    if (instance.getType() != ssq::Type::INSTANCE) return ssq::Object(runtime->handle());
+    property_access::ReflectedPropertyModel model(*runtime, instance);
+    ssq::VM &vm = runtime->vm();
+    ssq::Table out = vm.newTable();
+    out.set("typeId", model.schema().typeId);
+    out.set("version", static_cast<int>(model.schema().version));
+    ssq::Array properties = vm.newArray();
+    for (const property_access::PropertyDescriptor &property : model.schema().properties) {
+        ssq::Table entry = vm.newTable();
+        entry.set("path", property.path);
+        entry.set("kind", std::string(propertyKindName(property.kind)));
+        entry.set("displayName", property.displayName);
+        entry.set("description", property.description);
+        entry.set("category", property.category);
+        entry.set("readOnly", property_access::hasFlag(property.flags, property_access::PropertyFlag::ReadOnly));
+        entry.set("presenterHint", property.presenterHint);
+        entry.set("units", property.numeric.units);
+        if (property.numeric.minimum) entry.set("min", *property.numeric.minimum);
+        if (property.numeric.maximum) entry.set("max", *property.numeric.maximum);
+        if (property.numeric.step) entry.set("step", *property.numeric.step);
+        ssq::Array choices = vm.newArray();
+        for (const std::string &choice : property.choices) choices.push(choice);
+        entry.set("choices", choices);
+        properties.push(entry);
+    }
+    out.set("properties", properties);
+    return out;
+}
+
 bool UI::dbOpen() {
     if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
     databasePanel_->open();
@@ -2743,8 +2883,19 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostAnchor", &UI::setHostAnchor);
     cls.addFunc("setHostSize", &UI::setHostSize);
     cls.addFunc("setHostPercent", &UI::setHostPercent);
-    cls.addFunc("animateHostPos", &UI::animateHostPos);
-    cls.addFunc("animateItemOpacity", &UI::animateItemOpacity);
+    // Trailing ease/delay (and cancelItemTweens id) are optional in script; C++
+    // defaults do not reach Squirrel through member-function pointers.
+    addOptionalTweenFunc(cls, "animateHostPos", sqAnimateHostPos, 4, _SC("xfffsf"));
+    addOptionalTweenFunc(cls, "animateHostSize", sqAnimateHostSize, 4, _SC("xfffsf"));
+    addOptionalTweenFunc(cls, "animateHostOverlayAlpha", sqAnimateHostOverlayAlpha, 3, _SC("xffsf"));
+    addOptionalTweenFunc(cls, "animateItemOpacity", sqAnimateItemOpacity, 4, _SC("xsffsf"));
+    addOptionalTweenFunc(cls, "animateItemPos", sqAnimateItemPos, 5, _SC("xsfffsf"));
+    cls.addFunc("cancelHostTweens", &UI::cancelHostTweens);
+    addOptionalTweenFunc(cls, "cancelItemTweens", sqCancelItemTweens, 1, _SC("xs"));
+    cls.addFunc("cancelAllTweens", &UI::cancelAllTweens);
+    cls.addFunc("tickTweens", &UI::tickTweens);
+    cls.addFunc("getHostTweenCount", &UI::getHostTweenCount);
+    cls.addFunc("getItemTweenCount", &UI::getItemTweenCount);
     cls.addFunc("consumeClick", &UI::consumeClick);
     cls.addFunc("consumeChange", &UI::consumeChange);
     cls.addFunc("dragDropSupport", &UI::dragDropSupport);
@@ -2795,6 +2946,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("inspectSetPickHandler", &UI::inspectSetPickHandler);
     cls.addFunc("inspectPickScene", &UI::inspectPickScene);
     cls.addFunc("inspectAddInstance", &UI::inspectAddInstance);
+    cls.addFunc("propertySchema", &UI::propertySchema);
 
     cls.addFunc("dbOpen", &UI::dbOpen);
     cls.addFunc("dbClose", &UI::dbClose);

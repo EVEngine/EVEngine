@@ -9,7 +9,7 @@ namespace {
 
 template <class T>
 eve::Result<T> invalid(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, message, path));
 }
 
 eve::Result<const eve::Value::Object*> objectWithFields(const eve::Value& value,

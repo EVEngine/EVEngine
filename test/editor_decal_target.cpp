@@ -18,13 +18,13 @@ SelectionSnapshot selection(const char* target) {
 class Assets final : public IDecalRuntimeAssetResolver {
 public:
     std::map<std::string,eve::graphics::Texture*> values;
-    EditorResult<eve::graphics::Texture*> texture(const std::string& asset) const override {
+    Result<eve::graphics::Texture*> texture(const std::string& asset) const override {
         auto found=values.find(asset);if(found==values.end())return eve::editing::failed<eve::graphics::Texture*>(
             EditorStatus::NotFound,RuleId("test.decal.texture"),"missing texture");
         return eve::editing::applied<eve::graphics::Texture*>(found->second);
     }
 };
-EditorResult<void> set(DecalDocumentTarget&target,const char*path,EditorValue value){auto op=target.makeSet(selection(target.targetId().value().c_str()),PropertyPath(path),value,PropertySetMode::Absolute);if(!op.ok())return EditorResult<void>::failure(op.status());return target.applyDomainOperation(op.value());}
+Result<void> set(DecalDocumentTarget&target,const char*path,EditorValue value){auto op=target.makeSet(selection(target.targetId().value().c_str()),PropertyPath(path),value,PropertySetMode::Absolute);if(!op.ok())return Result<void>::failure(op.status());return target.applyDomainOperation(op.value());}
 }
 
 TEST_CASE("editor.decal.properties_are_reversible_persistent_and_gizmo_ready") {

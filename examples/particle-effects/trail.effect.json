@@ -1,0 +1,50 @@
+{
+  "type": "eve.particle-effect",
+  "version": 2,
+  "parameters": { "intensity": 1.0 },
+  "emitters": [
+    {
+      "name": "ribbon",
+      "emitter": {
+        "buffer": 512,
+        "emitterLife": -1,
+        "emissionRate": 0.0,
+        "emissionRateOverDistance": 0.35,
+        "particleLifetime": [0.35, 0.55],
+        "particleSize": [10.0, 10.0],
+        "sizes": [1.0, 0.15],
+        "speed": [0.0, 0.0],
+        "renderMode": "ribbon",
+        "ribbon": { "width": 1.15, "minSegmentLength": 2.0 },
+        "blendMode": "additive",
+        "colorOverLifetime": [
+          [0.0, 0.55, 0.9, 1.0, 0.9],
+          [0.5, 0.2, 0.55, 1.0, 0.55],
+          [1.0, 0.05, 0.1, 0.4, 0.0]
+        ],
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.0 }
+        ]
+      }
+    },
+    {
+      "name": "sparks",
+      "emitter": {
+        "buffer": 192,
+        "emitterLife": -1,
+        "emissionRateOverDistance": 0.12,
+        "particleLifetime": [0.2, 0.45],
+        "particleSize": [3.0, 7.0],
+        "sizes": [1.0, 0.1],
+        "speed": [20.0, 60.0],
+        "spread": 1.2,
+        "blendMode": "additive",
+        "colorStart": [0.8, 0.95, 1.0, 1.0],
+        "colorEnd": [0.1, 0.3, 1.0, 0.0],
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "emission", "scale": 1.0 }
+        ]
+      }
+    }
+  ]
+}

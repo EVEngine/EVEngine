@@ -23,6 +23,22 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = (ROOT / "src" / "engine", ROOT / "src" / "modules")
 SOURCE_SUFFIXES = {".h", ".hpp", ".cpp"}
 
+# C++ attributes such as [[nodiscard]] / [[nodiscard("...")]] may precede a
+# declaration. Skip them before matching the return type so member bindings to
+# attributed getters stay resolvable. Attribute bodies may contain '(' (message
+# arguments), so callers must take the function '(' from the end of the regex
+# match rather than the first '(' after match.start().
+CXX_ATTRIBUTE = r"(?:\[\[[^\]]*\]\]\s*)*"
+CXX_DECL_PREFIX = (
+    r"(?:virtual\s+|static\s+|inline\s+|constexpr\s+|explicit\s+|"
+    rf"{CXX_ATTRIBUTE})*"
+)
+
+
+def declaration_opening_paren(match: re.Match[str]) -> int:
+    """Return the index of the function '(' that ends a declaration regex match."""
+    return match.end() - 1
+
 
 @dataclass
 class Parameter:
@@ -264,12 +280,12 @@ class SignatureIndex:
         lookup_class = self.aliases.get(class_name, class_name)
         candidates: list[tuple[str, list[Parameter]]] = []
         declaration_pattern = re.compile(
-            rf"(?m)(?:^|[;{{}}])\s*(?:virtual\s+|static\s+|inline\s+|constexpr\s+|explicit\s+)*"
+            rf"(?m)(?:^|[;{{}}])\s*{CXX_DECL_PREFIX}"
             rf"([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(method)}\s*\(")
         for block in self.classes.get(lookup_class, []):
             masked = mask_comments(block)
             for match in declaration_pattern.finditer(masked):
-                opening = masked.find("(", match.start())
+                opening = declaration_opening_paren(match)
                 closing = matching(block, opening)
                 if closing is None:
                     continue
@@ -277,13 +293,14 @@ class SignatureIndex:
                                    parse_parameters(block[opening + 1 : closing])))
         if not candidates:
             definition_pattern = re.compile(
-                rf"(?m)([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(lookup_class)}::{re.escape(method)}\s*\(")
+                rf"(?m){CXX_DECL_PREFIX}"
+                rf"([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(lookup_class)}::{re.escape(method)}\s*\(")
             needle = f"{lookup_class}::{method}"
             for path, source in self.sources.items():
                 if needle not in source:
                     continue
                 for match in definition_pattern.finditer(self.masked[path]):
-                    opening = self.masked[path].find("(", match.start())
+                    opening = declaration_opening_paren(match)
                     closing = matching(source, opening)
                     if closing is None:
                         continue
@@ -297,7 +314,7 @@ class SignatureIndex:
                 for block in blocks:
                     masked = mask_comments(block)
                     for match in declaration_pattern.finditer(masked):
-                        opening = masked.find("(", match.start())
+                        opening = declaration_opening_paren(match)
                         closing = matching(block, opening)
                         if closing is not None:
                             inherited.append((match.group(1).strip().splitlines()[-1].strip(),
@@ -319,14 +336,16 @@ class SignatureIndex:
     def free(self, name: str) -> tuple[str, list[Parameter]] | None:
         if name in self.free_cache:
             return self.free_cache[name]
-        pattern = re.compile(rf"(?m)^\s*(?:static\s+)?([A-Za-z_][\w:\s<>,*&]*?)\b{re.escape(name)}\s*\(")
+        pattern = re.compile(
+            rf"(?m)^\s*(?:static\s+|{CXX_ATTRIBUTE})*"
+            rf"([A-Za-z_][\w:\s<>,*&]*?)\b{re.escape(name)}\s*\(")
         candidates = []
         needle = f"{name}("
         for path, source in self.sources.items():
             if needle not in source and f"{name} (" not in source:
                 continue
             for match in pattern.finditer(self.masked[path]):
-                opening = self.masked[path].find("(", match.start())
+                opening = declaration_opening_paren(match)
                 closing = matching(source, opening)
                 if closing is not None:
                     candidates.append((match.group(1).strip(), parse_parameters(source[opening + 1 : closing])))
@@ -392,7 +411,13 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
     signatures = SignatureIndex(sources)
     contracts: dict[str, Contract] = {}
     unresolved: list[str] = []
-    call_pattern = re.compile(r"\b([A-Za-z_]\w*)\.addFunc\s*\(")
+    # SimpleSquirrel addFunc plus the table-driven helpers in SquirrelBindContext.h.
+    # Helpers must be qualified (`script::bindMethod`) so the helper definitions themselves
+    # are not scraped. Method names stay string literals in argument 1.
+    call_pattern = re.compile(
+        r"(?:(?:eve::)?script::(?P<helper>bindMethod|bindNullSafe)\s*\()|"
+        r"(?:(?P<receiver>[A-Za-z_]\w*)\.addFunc\s*\()"
+    )
     for path, source in sources.items():
         relative = path.relative_to(ROOT).parts
         if (enabled_modules is not None and len(relative) >= 3 and relative[:2] == ("src", "modules")
@@ -403,32 +428,56 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
         for match in call_pattern.finditer(masked):
             opening = source.find("(", match.start())
             closing = matching(source, opening)
+            helper = match.group("helper")
+            receiver = match.group("receiver") or ""
+            label = helper or f"{receiver}.addFunc"
             if closing is None:
-                unresolved.append(f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: unclosed addFunc")
+                unresolved.append(
+                    f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: unclosed {label}"
+                )
                 continue
             arguments = split_top_level(source[opening + 1 : closing])
-            method_match = re.match(r'\s*"([^"]+)"', arguments[0]) if arguments else None
-            if not method_match or len(arguments) < 2:
-                unresolved.append(f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: dynamic addFunc")
+            if helper:
+                # bindMethod(cls, "name", expr) / bindNullSafe(cls, "name", getter, whenNull)
+                if len(arguments) < 3:
+                    unresolved.append(
+                        f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: dynamic {helper}"
+                    )
+                    continue
+                method_match = re.match(r'\s*"([^"]+)"', arguments[1])
+                expression = ",".join(arguments[2:3] if helper == "bindNullSafe" else arguments[2:])
+                receiver_expr = arguments[0].strip()
+            else:
+                method_match = re.match(r'\s*"([^"]+)"', arguments[0]) if arguments else None
+                if not method_match or len(arguments) < 2:
+                    unresolved.append(
+                        f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: dynamic addFunc"
+                    )
+                    continue
+                expression = ",".join(arguments[1:])
+                receiver_expr = receiver
+            if not method_match:
+                unresolved.append(
+                    f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: dynamic {label}"
+                )
                 continue
             method = method_match.group(1)
-            expression = ",".join(arguments[1:])
             signature = callable_signature(expression, signatures)
             if signature is None:
                 unresolved.append(
-                    f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: {match.group(1)}.{method}"
+                    f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: {label}.{method}"
                 )
                 continue
             cpp_class, return_cpp, parameters = signature
             script_class = ""
-            for position, receiver, bound_class in reversed(bindings):
-                if position < match.start() and receiver == match.group(1):
+            for position, bound_receiver, bound_class in reversed(bindings):
+                if position < match.start() and bound_receiver == receiver_expr:
                     script_class = bound_class
                     break
             if not script_class:
-                script_class = cpp_class if match.group(1) not in {"table", "eve", "root", "vm"} else ""
+                script_class = cpp_class if receiver_expr not in {"table", "eve", "root", "vm", "cls"} else ""
             if (parameters and cpp_class == "" and "*" in parameters[0].cpp_type
-                    and match.group(1) not in {"table", "eve", "root", "vm"}):
+                    and receiver_expr not in {"table", "eve", "root", "vm"}):
                 parameters = parameters[1:]
             mapped_return, return_nullable = script_type(return_cpp)
             ownership = "borrowed" if "*" in return_cpp else "value"
@@ -614,8 +663,12 @@ def source_files() -> dict[Path, str]:
     result = {}
     for root in SOURCE_ROOTS:
         for path in root.rglob("*"):
-            if path.suffix in SOURCE_SUFFIXES and ".generated." not in path.name:
-                result[path] = path.read_text(encoding="utf-8", errors="replace")
+            if path.suffix not in SOURCE_SUFFIXES or ".generated." in path.name:
+                continue
+            # Helper templates only — their addFunc(name, ...) bodies are not contracts.
+            if path.name == "SquirrelBindContext.h":
+                continue
+            result[path] = path.read_text(encoding="utf-8", errors="replace")
     return result
 
 

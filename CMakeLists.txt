@@ -692,6 +692,16 @@ macro(create_module libname folder)
 
     file(READ ${CMAKE_CURRENT_BINARY_DIR}/${folder}_src.txt module_src)
     string(REPLACE "\n" ";" module_src "${module_src}")
+    # Drop empty entries from trailing newlines. A module whose only TUs were
+    # optional-bridge exclusions must not call add_library with no SOURCES.
+    list(FILTER module_src EXCLUDE REGEX "^$")
+    if(NOT module_src)
+        message(FATAL_ERROR
+            "Module '${folder}' (${libname}) has no sources after "
+            "EVENGINE_EXCLUDED_MODULE_FILES filtering. Either keep a stub TU, "
+            "remove the module from this profile, or make its optional dep a "
+            "hard DEPS so the module is disabled when the bridge is absent.")
+    endif()
 
     # Xcode + OBJECT libraries often emit hashed object filenames that the
     # dependent link phase still references without the hash (duplicate basenames
@@ -1118,10 +1128,12 @@ macro(get_available_build)
 
     # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
     # module keeps ByteData (needed by gpgpu/webgpu) but drops the JSON/XML/
-    # DataModule files that require Poco. Font/FreeType is supported on WASM.
+    # DataModule files that require Poco. Font/FreeType is supported on WASM
+    # via the Emscripten port. Snow.cpp follows weather's OPTIONAL_DEPS procgen
+    # (see src/modules/CMakeLists.txt) rather than an Emscripten-only list.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         set(_eve_excluded_module_files
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp;Snow.cpp;SnowField.cpp")
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp")
         set(_eve_module_exclusion_help
             "Exact basenames excluded from module source scan on Emscripten")
     else()

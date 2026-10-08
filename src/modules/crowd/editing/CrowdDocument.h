@@ -14,7 +14,7 @@
 namespace eve::crowd_editing {
 using CapabilityId=editing::CapabilityId; using DiagnosticSeverity=editing::DiagnosticSeverity;
 using DomainOperation=editing::DomainOperation; using EditRegion=editing::EditRegion;
-using EditorDiagnostic=editing::Diagnostic; template<class T>using EditorResult=editing::Result<T>;
+using EditorDiagnostic=editing::Diagnostic; using editing::Result;
 using EditorStatus=editing::Status; using EditorValue=editing::Value;
 using IDomainOperationTarget=editing::IDomainOperationTarget;
 using IDomainOperationTargetStaging=editing::IDomainOperationTargetStaging;
@@ -89,9 +89,9 @@ public:
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(
+    [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Enumerate agents in stable-id order. */
@@ -101,17 +101,17 @@ public:
     /** @brief Enumerate paths in stable-id order. */
     std::vector<CrowdPathRecord> paths() const;
     /** @brief Plan reversible agent creation or replacement. */
-    EditorResult<DomainOperation> makeSetAgent(const CrowdAgentRecord& record) const;
+    Result<DomainOperation> makeSetAgent(const CrowdAgentRecord& record) const;
     /** @brief Plan reversible agent deletion. */
-    EditorResult<DomainOperation> makeDeleteAgent(const StableId& id) const;
+    Result<DomainOperation> makeDeleteAgent(const StableId& id) const;
     /** @brief Plan reversible zone creation or replacement. */
-    EditorResult<DomainOperation> makeSetZone(const CrowdZoneRecord& record) const;
+    Result<DomainOperation> makeSetZone(const CrowdZoneRecord& record) const;
     /** @brief Plan reversible zone deletion. */
-    EditorResult<DomainOperation> makeDeleteZone(const StableId& id) const;
+    Result<DomainOperation> makeDeleteZone(const StableId& id) const;
     /** @brief Plan reversible path creation or replacement. */
-    EditorResult<DomainOperation> makeSetPath(const CrowdPathRecord& record) const;
+    Result<DomainOperation> makeSetPath(const CrowdPathRecord& record) const;
     /** @brief Plan reversible path deletion when no agent references it. */
-    EditorResult<DomainOperation> makeDeletePath(const StableId& id) const;
+    Result<DomainOperation> makeDeletePath(const StableId& id) const;
     /** @brief Validate geometry, numeric limits and cross references. */
     std::vector<EditorDiagnostic> validate() const;
     /** @brief Produce deterministic path, zone and agent overlay primitives. */
@@ -119,7 +119,7 @@ public:
     /** @brief Capture deterministic schema-version-one authoring data. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load validated authoring data. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     std::string                          id_;
@@ -138,7 +138,7 @@ namespace eve::crowd_editing {
 class EVENGINE_API_BACKENDS CrowdRuntimeApplier {
 public:
     /** @brief Replace runtime agents from a validated document; path agents seek their first waypoint. */
-    EditorResult<void> apply(const CrowdDocumentTarget& document, crowd::Crowd* runtime) const;
+    Result<void> apply(const CrowdDocumentTarget& document, crowd::Crowd* runtime) const;
 };
 
 }  // namespace eve::crowd_editing

@@ -6,7 +6,7 @@
 namespace eve::audio_editing {
 namespace {}  // namespace
 
-EditorResult<void> AudioAuditionTransport::bind(StableId asset, Revision revision, IAudioTransportBackend* backend) {
+Result<void> AudioAuditionTransport::bind(StableId asset, Revision revision, IAudioTransportBackend* backend) {
     if (asset.empty() || revision == 0 || !backend)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.transport-bind"),
                                           "Audition requires asset identity, revision and playback backend");
@@ -21,7 +21,7 @@ EditorResult<void> AudioAuditionTransport::bind(StableId asset, Revision revisio
     backend_->setNativeLooping(false);
     return eve::editing::applied<void>();
 }
-EditorResult<void> AudioAuditionTransport::validateRevision(Revision expected) const {
+Result<void> AudioAuditionTransport::validateRevision(Revision expected) const {
     if (!backend_)
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.audio.transport-unbound"),
                                           "No audition source is bound");
@@ -30,7 +30,7 @@ EditorResult<void> AudioAuditionTransport::validateRevision(Revision expected) c
                                           "Audition source revision is stale");
     return eve::editing::applied<void>();
 }
-EditorResult<void> AudioAuditionTransport::setLoop(Revision expected, bool enabled, double start,
+Result<void> AudioAuditionTransport::setLoop(Revision expected, bool enabled, double start,
                                                    double end) {
     auto valid = validateRevision(expected);
     if (!valid.ok()) return valid;
@@ -45,7 +45,7 @@ EditorResult<void> AudioAuditionTransport::setLoop(Revision expected, bool enabl
     backend_->setNativeLooping(false);
     return eve::editing::applied<void>();
 }
-EditorResult<void> AudioAuditionTransport::play(Revision expected) {
+Result<void> AudioAuditionTransport::play(Revision expected) {
     auto valid = validateRevision(expected);
     if (!valid.ok()) return valid;
     if (loopEnabled_ && (backend_->tell() < loopStart_ || backend_->tell() >= loopEnd_)) {
@@ -56,7 +56,7 @@ EditorResult<void> AudioAuditionTransport::play(Revision expected) {
     state_ = AudioTransportState::Playing;
     return eve::editing::applied<void>();
 }
-EditorResult<void> AudioAuditionTransport::pause(Revision expected) {
+Result<void> AudioAuditionTransport::pause(Revision expected) {
     auto valid = validateRevision(expected);
     if (!valid.ok()) return valid;
     if (state_ != AudioTransportState::Playing) {
@@ -66,7 +66,7 @@ EditorResult<void> AudioAuditionTransport::pause(Revision expected) {
     state_ = AudioTransportState::Paused;
     return eve::editing::applied<void>();
 }
-EditorResult<void> AudioAuditionTransport::stop(Revision expected) {
+Result<void> AudioAuditionTransport::stop(Revision expected) {
     auto valid = validateRevision(expected);
     if (!valid.ok()) return valid;
     if (state_ == AudioTransportState::Stopped) {
@@ -76,7 +76,7 @@ EditorResult<void> AudioAuditionTransport::stop(Revision expected) {
     state_ = AudioTransportState::Stopped;
     return eve::editing::applied<void>();
 }
-EditorResult<void> AudioAuditionTransport::seek(Revision expected, double seconds) {
+Result<void> AudioAuditionTransport::seek(Revision expected, double seconds) {
     auto valid = validateRevision(expected);
     if (!valid.ok()) return valid;
     const double duration = backend_->duration();
@@ -95,14 +95,14 @@ AudioTransportSnapshot AudioAuditionTransport::observe() const {
             loopStart_,
             loopEnd_};
 }
-EditorResult<AudioTransportSnapshot> AudioAuditionTransport::snapshot(Revision expected) const {
+Result<AudioTransportSnapshot> AudioAuditionTransport::snapshot(Revision expected) const {
     auto valid = validateRevision(expected);
     if (!valid.ok())
         return eve::editing::failed<AudioTransportSnapshot>(valid.code(), RuleId("editor.audio.transport-stale"),
                                                             "Audition source is absent or stale");
     return eve::editing::applied<AudioTransportSnapshot>(observe());
 }
-EditorResult<AudioTransportSnapshot> AudioAuditionTransport::update(Revision expected) {
+Result<AudioTransportSnapshot> AudioAuditionTransport::update(Revision expected) {
     auto valid = validateRevision(expected);
     if (!valid.ok()) {
         const EditorStatus status = valid.code();

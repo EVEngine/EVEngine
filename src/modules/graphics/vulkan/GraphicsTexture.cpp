@@ -142,7 +142,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
 Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
                                                std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.mips"));
+        return Result<Texture *>::failure(Diagnostic::error(code, message, {}, {}, "graphics.texture.mips"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto maximum = device.physical_device.properties.limits.maxImageDimension2D;
@@ -202,7 +202,7 @@ Result<Texture *> Graphics::newTextureArrayRgba16f(uint32_t width, uint32_t heig
                                                    std::span<const uint16_t> rgbaHalf) {
     auto fail = [](DiagnosticCode code, std::string message) {
         return Result<Texture *>::failure(
-            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.array"));
+            Diagnostic::error(code, message, {}, {}, "graphics.texture.array"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -256,7 +256,7 @@ Result<Texture *> Graphics::newTexture3DRgba8(uint32_t width, uint32_t height, u
                                               std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
         return Result<Texture *>::failure(
-            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.volume"));
+            Diagnostic::error(code, message, {}, {}, "graphics.texture.volume"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;

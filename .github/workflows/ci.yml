@@ -586,10 +586,11 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    # A cold NDK build can consume almost the entire 45-minute build-step budget
-    # before Gradle packages the finished native library. Keep the step timeout
-    # below as the hang guard while leaving enough job budget for setup/cleanup.
-    timeout-minutes: 90
+    # Cold NDK rebuilds (PR sccache is READ_ONLY; graphics header churn →
+    # ~55-60 min of C++) leave little room for Gradle packaging of the ~2GB
+    # debug libmain.so. Keep the build-step timeout as the hang guard while
+    # leaving job budget for setup/cleanup beyond that step.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
@@ -619,14 +620,14 @@ jobs:
 
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Android SDK
         timeout-minutes: 20
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: >-
             platform-tools
@@ -647,7 +648,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android debug
-        timeout-minutes: 60
+        timeout-minutes: 90
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \
@@ -698,14 +699,14 @@ jobs:
 
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Android SDK
         timeout-minutes: 20
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: >-
             platform-tools
@@ -791,11 +792,12 @@ jobs:
 
       - name: Build macosx debug
         # Same reasoning as the win32 guard above: a cache-cold pull-request ref
-        # compiles the whole engine, and run 35611511939 was killed standing at
-        # 40m13s with 1442 sccache hits / 2576 misses and no compiler error, while
-        # the same step finished in 38.2 min on the warm run 35554916566. Keep a
-        # bounded hang guard with room for the cold case.
-        timeout-minutes: 60
+        # compiles the whole engine. Run 37331690856 was killed at exactly 60m
+        # standing at ~90% with 421 sccache hits / 3549 misses / 3549 write
+        # errors and no compiler error, while the warm sibling run 37316201997
+        # finished the whole macOS job. Keep a bounded hang guard with room for
+        # the cold/write-fail case (match Windows debug's 90m budget).
+        timeout-minutes: 90
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -803,9 +805,10 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        # Run 35376121813 reached 5403/5451 passing cases before the former
-        # 30-minute guard terminated ctest; retain a bounded completion margin.
-        timeout-minutes: 40
+        # Run 37420229018 reached 5492/5868 passing cases before the 40-minute
+        # guard terminated ctest (Linux finished the same 5868 cases). Match the
+        # Windows 50-minute margin for hosted-runner variance.
+        timeout-minutes: 50
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
@@ -1012,7 +1015,9 @@ jobs:
         run: bash .github/scripts/setup-ios-signing.sh
 
       - name: Build ios debug
-        timeout-minutes: 40
+        # Healthy iOS debug builds finish in ~32-35 min; macOS arm64 capacity
+        # jitter can push xcodebuild past 40 without a compile error.
+        timeout-minutes: 50
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
@@ -1070,7 +1075,7 @@ jobs:
         run: bash .github/scripts/setup-ios-signing.sh
 
       - name: Build ios release
-        timeout-minutes: 40
+        timeout-minutes: 50
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"

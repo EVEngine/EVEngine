@@ -21,7 +21,7 @@ EditorValidationService::EditorValidationService() {
                                   }});
 }
 
-EditorResult<void> EditorValidationService::registerRule(std::string owner, RuleId id, Rule rule) {
+Result<void> EditorValidationService::registerRule(std::string owner, RuleId id, Rule rule) {
     if (owner.empty() || id.empty() || !rule)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.validation.invalid-rule"),
                                          "Validation owner, rule id and callback are required");

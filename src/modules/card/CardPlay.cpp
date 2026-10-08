@@ -77,7 +77,7 @@ namespace {
 eve::Result<void> cardLifecycleConflict(std::string message) {
     return eve::Result<void>::failure(
         eve::Status::failure(eve::StatusCode::Conflict,
-                             eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), "card.play")));
+                             eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, "card.play")));
 }
 
 class CardTransferParticipant final : public eve::transaction::ITransactionParticipant {
@@ -347,7 +347,7 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(C
         details.emplace_back("reason", decision::conditionReasonCodeName(condition.reasonCode()));
         return eve::Result<eve::transaction::TransactionReceipt>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "card play condition was rejected",
-                                   "condition", std::move(details)));
+                                   "condition", details));
     }
 
     auto cost = manaCost(definition);

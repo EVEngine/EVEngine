@@ -22,7 +22,7 @@ class FakeTransformSource final : public ISplineBindingTransformSource {
 public:
     std::map<std::pair<std::string, std::string>, SplineBindingPose> poses;
 
-    EditorResult<SplineBindingPose> resolve(const std::string& host, const std::string& object) const override {
+    Result<SplineBindingPose> resolve(const std::string& host, const std::string& object) const override {
         const auto found = poses.find({host, object});
         if (found == poses.end())
             return eve::editing::failed<SplineBindingPose>(EditorStatus::Conflict, RuleId("test.source-stale"),

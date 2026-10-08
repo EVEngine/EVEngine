@@ -833,12 +833,12 @@ static eve::Result<SchemaRegistrationStatus> registrationResult(SchemaRegistrati
                                                                 std::string path = {}) {
     if (status == SchemaRegistrationStatus::Conflict)
         return eve::Result<SchemaRegistrationStatus>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, error.empty() ? "schema version is already registered" : std::move(error),
-            std::move(path), {}, "schema"));
+            eve::DiagnosticCode::Conflict, error.empty() ? "schema version is already registered" : error,
+            path, {}, "schema"));
     if (status == SchemaRegistrationStatus::Invalid)
         return eve::Result<SchemaRegistrationStatus>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, error.empty() ? "invalid schema definition" : std::move(error),
-            std::move(path), {}, "schema"));
+            eve::DiagnosticCode::InvalidArgument, error.empty() ? "invalid schema definition" : error,
+            path, {}, "schema"));
     return eve::Result<SchemaRegistrationStatus>::success(status, eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -872,7 +872,7 @@ eve::Result<SchemaRegistrationStatus> SchemaRegistry::registerFromJsonVersioned(
     if (!parseDefinition(json, definition, &error))
         return eve::Result<SchemaRegistrationStatus>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                   error.empty() ? "invalid schema JSON" : std::move(error), {}, {}, "schema"));
+                                   error.empty() ? "invalid schema JSON" : error, {}, {}, "schema"));
     return registerVersioned(definition);
 }
 

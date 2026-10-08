@@ -39,20 +39,20 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                         queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return settings whose changed values require subsystem restart. */
     std::vector<PropertyPath> pendingRestart() const;
     /** @brief Capture values without ever serializing raw sensitive values. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load matching-schema values. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     /** @brief Find a setting descriptor. @return Borrowed pointer into the immutable descriptor table, or null.

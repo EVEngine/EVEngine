@@ -19,7 +19,7 @@ const EditorValue* runtimeField(const EditorValue& value, const char* key) {
 
 }  // namespace
 
-EditorResult<animation::AnimStateMachine*> AnimationStateGraphRuntimeBuilder::build(
+Result<animation::AnimStateMachine*> AnimationStateGraphRuntimeBuilder::build(
     const GraphDocumentData& graph, animation::AnimSkeleton* skeleton, const ClipResolver& clips) const {
     if (!skeleton || !clips)
         return eve::editing::failed<animation::AnimStateMachine*>(EditorStatus::Rejected,
@@ -28,7 +28,7 @@ EditorResult<animation::AnimStateMachine*> AnimationStateGraphRuntimeBuilder::bu
     AnimationStateGraphDomain domain;
     const AnimationGraphCompileResult compiled = domain.compile(graph);
     if (compiled.status != EditorStatus::Applied)
-        return EditorResult<animation::AnimStateMachine*>::failure(
+        return Result<animation::AnimStateMachine*>::failure(
             eve::Status(compiled.status, compiled.diagnostics));
 
     std::map<GraphNodeId, const GraphNodeRecord*> nodes;

@@ -122,15 +122,15 @@ public:
     ActionTimelineWidget(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry);
 
     /** @brief Configure host-space dimensions used for layout and hit testing. */
-    [[nodiscard]] EditorResult<void> setViewport(float width, float rowHeight, float labelWidth = 120.0f);
+    [[nodiscard]] Result<void> setViewport(float width, float rowHeight, float labelWidth = 120.0f);
     /** @brief Set deterministic drag/seek snapping; zero disables snapping. */
-    [[nodiscard]] EditorResult<void> setSnapInterval(Duration interval);
+    [[nodiscard]] Result<void> setSnapInterval(Duration interval);
     /** @brief Set the visible timeline interval used for zoomed projection and interaction. */
-    [[nodiscard]] EditorResult<void> setVisibleRange(Duration start, Duration end);
+    [[nodiscard]] Result<void> setVisibleRange(Duration start, Duration end);
     /** @brief Zoom the visible interval around a normalized anchor in [0, 1]. */
-    [[nodiscard]] EditorResult<void> zoom(double factor, double normalizedAnchor = 0.5);
+    [[nodiscard]] Result<void> zoom(double factor, double normalizedAnchor = 0.5);
     /** @brief Pan the visible interval by an exact timeline delta, clamped to the asset. */
-    [[nodiscard]] EditorResult<void> pan(Duration delta);
+    [[nodiscard]] Result<void> pan(Duration delta);
     /** @brief Project the current authoritative timeline plus any active drag preview. */
     [[nodiscard]] TimelineWidgetLayout layout() const;
     /** @brief Emit rows, items, handles and playhead to an arbitrary overlay host. */
@@ -139,11 +139,11 @@ public:
     [[nodiscard]] std::optional<TimelineHit> hitTest(float x, float y) const;
 
     /** @brief Select an item and begin a pointer drag. */
-    [[nodiscard]] EditorResult<void> pointerDown(float x, float y, bool additiveSelection = false);
+    [[nodiscard]] Result<void> pointerDown(float x, float y, bool additiveSelection = false);
     /** @brief Update the non-authoritative drag preview. */
-    [[nodiscard]] EditorResult<void> pointerMove(float x);
+    [[nodiscard]] Result<void> pointerMove(float x);
     /** @brief Commit the active drag as one undoable edit. */
-    [[nodiscard]] EditorResult<void> pointerUp(float x);
+    [[nodiscard]] Result<void> pointerUp(float x);
     /** @brief Cancel a drag without mutating the timeline. */
     void cancelPointer() noexcept { drag_.reset(); }
     /** @brief Current pointer-drag lifecycle state. */
@@ -152,26 +152,26 @@ public:
     }
 
     /** @brief Seek the editor preview cursor from a host-space coordinate. */
-    [[nodiscard]] EditorResult<void> seek(float x);
+    [[nodiscard]] Result<void> seek(float x);
     /** @brief Convert a host-space coordinate to its snapped authoritative timeline time. */
     [[nodiscard]] Duration timeAt(float x) const noexcept { return xToTime(x); }
     /** @brief Present and apply selected item timing, type and JSON payload fields. */
-    [[nodiscard]] EditorResult<void> inspectSelection(IEditorInspector& inspector);
+    [[nodiscard]] Result<void> inspectSelection(IEditorInspector& inspector);
 
     /** @brief Return standard menu entries with current enabled state. */
     [[nodiscard]] std::vector<TimelineWidgetCommandDescriptor> commands() const;
     /** @brief Execute a standard menu command. */
-    [[nodiscard]] EditorResult<void> invoke(TimelineWidgetCommand command);
+    [[nodiscard]] Result<void> invoke(TimelineWidgetCommand command);
     /** @brief Execute a normalized shortcut such as Ctrl+C, Delete or Space. */
-    [[nodiscard]] EditorResult<void> handleShortcut(std::string_view shortcut);
+    [[nodiscard]] Result<void> handleShortcut(std::string_view shortcut);
 
     /** @brief Notify types suitable for an instant or state insertion picker. */
     [[nodiscard]] std::vector<action::ActionNotifyDescriptor> insertableTypes(action::ActionNotifyShape shape) const;
     /** @brief Insert a validated instant notify at the preview cursor. */
-    [[nodiscard]] EditorResult<void> addNotifyAtCursor(const LogicalId& trackId, std::string_view type,
+    [[nodiscard]] Result<void> addNotifyAtCursor(const LogicalId& trackId, std::string_view type,
                                                        Value::Object payload);
     /** @brief Insert a validated notify state beginning at the preview cursor. */
-    [[nodiscard]] EditorResult<void> addStateAtCursor(const LogicalId& trackId, std::string_view type,
+    [[nodiscard]] Result<void> addStateAtCursor(const LogicalId& trackId, std::string_view type,
                                                       Duration duration, Value::Object payload);
 
 private:
@@ -190,7 +190,7 @@ private:
     [[nodiscard]] Duration                xToTime(float x) const noexcept;
     [[nodiscard]] std::optional<Duration> magneticSnap(Duration candidate,
                                                        const LogicalId& excludedItem) const noexcept;
-    [[nodiscard]] EditorResult<void>      updateDrag(float x);
+    [[nodiscard]] Result<void>      updateDrag(float x);
     [[nodiscard]] LogicalId               generatedItemId();
 
     ActionTimelineEditor&               editor_;

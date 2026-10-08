@@ -1,24 +1,19 @@
 #include "map/TileConfig.h"
 #include "map/TileOrientation.h"
 
+#include "common/Json.h"
 #include "common/Module.h"
+#include "common/Xml.h"
 #include "data/DataModule.h"
-#include "data/JsonDocument.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/FileData.h"
 #include "filesystem/HotReload.h"
 #include "graphics/Graphics.h"
 
-#include <Poco/DOM/DOMParser.h>
-#include <Poco/DOM/Document.h>
-#include <Poco/DOM/Element.h>
-#include <Poco/DOM/NodeList.h>
-#include <Poco/Dynamic/Var.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-
 #include <algorithm>
 #include <array>
+#include <cmath>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -28,78 +23,33 @@
 namespace eve::map {
 namespace {
 
-float asFloat(const Poco::Dynamic::Var &v, float fallback) {
-    try {
-        if (v.isEmpty()) return fallback;
-        return static_cast<float>(v.convert<double>());
-    } catch (...) {
-        return fallback;
-    }
+using Json = eve::json::Value;
+
+uint32_t asUInt32(const Json &v, uint32_t fallback) {
+    if (!v) return fallback;
+    if (v.isInt64()) return uint32_t(uint64_t(v.asInt64(0)) & 0xffffffffu);
+    const double d = v.asDouble(static_cast<double>(fallback));
+    if (!std::isfinite(d) || d < 0.0 || d > 4294967295.0) return fallback;
+    return uint32_t(d);
 }
 
-int asInt(const Poco::Dynamic::Var &v, int fallback) {
-    try {
-        if (v.isEmpty()) return fallback;
-        return v.convert<int>();
-    } catch (...) {
-        return fallback;
-    }
-}
-
-uint32_t asUInt32(const Poco::Dynamic::Var &v, uint32_t fallback) {
-    try {
-        if (v.isEmpty()) return fallback;
-        return uint32_t(v.convert<uint64_t>() & 0xffffffffu);
-    } catch (...) {
-        return fallback;
-    }
-}
-
-bool asBool(const Poco::Dynamic::Var &v, bool fallback) {
-    try {
-        if (v.isEmpty()) return fallback;
-        return v.convert<bool>();
-    } catch (...) {
-        return fallback;
-    }
-}
-
-std::string asString(const Poco::Dynamic::Var &v) {
-    try {
-        if (v.isEmpty()) return {};
-        return v.convert<std::string>();
-    } catch (...) {
-        return {};
-    }
-}
-
-bool readVec2(Poco::JSON::Object::Ptr o, const char *key, float &a, float &b) {
-    if (!o || !o->has(key)) return false;
-    Poco::JSON::Array::Ptr arr;
-    try {
-        arr = o->getArray(key);
-    } catch (...) {
-        return false;
-    }
-    if (!arr || arr->size() < 2) return false;
-    a = asFloat(arr->get(0), a);
-    b = asFloat(arr->get(1), b);
+bool readVec2(const Json &o, const char *key, float &a, float &b) {
+    if (!o || !o.has(key)) return false;
+    const Json arr = o.get(key);
+    if (!arr.isArray() || arr.size() < 2) return false;
+    a = arr.at(0).asFloat(a);
+    b = arr.at(1).asFloat(b);
     return true;
 }
 
-bool readVec4(Poco::JSON::Object::Ptr o, const char *key, float &a, float &b, float &c, float &d) {
-    if (!o || !o->has(key)) return false;
-    Poco::JSON::Array::Ptr arr;
-    try {
-        arr = o->getArray(key);
-    } catch (...) {
-        return false;
-    }
-    if (!arr || arr->size() < 4) return false;
-    a = asFloat(arr->get(0), a);
-    b = asFloat(arr->get(1), b);
-    c = asFloat(arr->get(2), c);
-    d = asFloat(arr->get(3), d);
+bool readVec4(const Json &o, const char *key, float &a, float &b, float &c, float &d) {
+    if (!o || !o.has(key)) return false;
+    const Json arr = o.get(key);
+    if (!arr.isArray() || arr.size() < 4) return false;
+    a = arr.at(0).asFloat(a);
+    b = arr.at(1).asFloat(b);
+    c = arr.at(2).asFloat(c);
+    d = arr.at(3).asFloat(d);
     return true;
 }
 
@@ -126,208 +76,187 @@ graphics::Texture *tryLoadTexture(const std::string &path) {
 }
 
 struct TilesetInfo {
-    std::string image;
+    std::string                                  image;
     std::string                                  sourcePath;
-    int firstGid = 1;
-    int columns = 1;
-    int tileW = 32;
-    int tileH = 32;
-    int margin = 0;
-    int spacing = 0;
-    std::vector<TileLayer::Tileset::Visual> visuals;
-    std::vector<TileLayer::Tileset::Animation> animations;
+    int                                          firstGid = 1;
+    int                                          columns  = 1;
+    int                                          tileW    = 32;
+    int                                          tileH    = 32;
+    int                                          margin   = 0;
+    int                                          spacing  = 0;
+    std::vector<TileLayer::Tileset::Visual>      visuals;
+    std::vector<TileLayer::Tileset::Animation>   animations;
     std::vector<TileLayer::Tileset::TerrainRule> terrainRules;
-    std::vector<TileLayer::Tileset::CustomData> customData;
+    std::vector<TileLayer::Tileset::CustomData>  customData;
 };
 
-TileLayer::Tileset::Visual readTileVisual(Poco::JSON::Object::Ptr o, int fallbackGid) {
+TileLayer::Tileset::Visual readTileVisual(const Json &o, int fallbackGid) {
     TileLayer::Tileset::Visual visual;
-    if (!o) return visual;
-    visual.gid = o->has("gid") ? asInt(o->get("gid"), fallbackGid) : fallbackGid;
+    if (!o || !o.isObject()) return visual;
+    visual.gid = o.has("gid") ? o.getInt("gid", fallbackGid) : fallbackGid;
     float x = 0.f, y = 0.f, w = 0.f, h = 0.f;
     if (readVec4(o, "region", x, y, w, h)) {
-        visual.x = int(x);
-        visual.y = int(y);
-        visual.width = int(w);
+        visual.x      = int(x);
+        visual.y      = int(y);
+        visual.width  = int(w);
         visual.height = int(h);
     }
     readVec2(o, "pivot", visual.pivotX, visual.pivotY);
-    visual.sortBias = o->has("sortBias") ? asFloat(o->get("sortBias"), 0.f) : 0.f;
+    visual.sortBias = o.has("sortBias") ? o.getFloat("sortBias", 0.f) : 0.f;
     float fw = 1.f, fh = 1.f;
     if (readVec2(o, "footprint", fw, fh)) {
         visual.footprintW = std::max(1, int(fw));
         visual.footprintH = std::max(1, int(fh));
     }
-    visual.walkable = o->has("walkable") ? asBool(o->get("walkable"), true) : true;
-    visual.cost = o->has("cost") ? std::max(0.001f, asFloat(o->get("cost"), 1.f)) : 1.f;
-    if (o->has("properties")) {
-        try {
-            auto properties = o->getArray("properties");
-            for (size_t index = 0; properties && index < properties->size(); ++index) {
-                auto property = properties->getObject(static_cast<unsigned int>(index));
-                if (!property || !property->has("name") || !property->has("value")) continue;
-                const std::string name = asString(property->get("name"));
-                if (name == "walkable")
-                    visual.walkable = asBool(property->get("value"), true);
-                else if (name == "cost")
-                    visual.cost = std::max(0.001f, asFloat(property->get("value"), 1.f));
-                else if (name == "enterMask")
-                    visual.enterMask = uint8_t(asInt(property->get("value"), 0xff) & 0xff);
-                else if (name == "exitMask")
-                    visual.exitMask = uint8_t(asInt(property->get("value"), 0xff) & 0xff);
-                else if (name == "opaque")
-                    visual.opaque = asBool(property->get("value"), false);
-                else if (name == "semanticFlags")
-                    visual.semanticFlags = uint32_t(asInt(property->get("value"), 0));
-            }
-        } catch (...) {
+    visual.walkable = o.has("walkable") ? o.getBool("walkable", true) : true;
+    visual.cost     = o.has("cost") ? std::max(0.001f, o.getFloat("cost", 1.f)) : 1.f;
+    if (o.has("properties")) {
+        const Json properties = o.get("properties");
+        for (size_t index = 0; properties.isArray() && index < properties.size(); ++index) {
+            const Json property = properties.at(index);
+            if (!property.isObject() || !property.has("name") || !property.has("value")) continue;
+            const std::string name = property.getString("name");
+            if (name == "walkable")
+                visual.walkable = property.get("value").asBool(true);
+            else if (name == "cost")
+                visual.cost = std::max(0.001f, property.get("value").asFloat(1.f));
+            else if (name == "enterMask")
+                visual.enterMask = uint8_t(property.get("value").asInt(0xff) & 0xff);
+            else if (name == "exitMask")
+                visual.exitMask = uint8_t(property.get("value").asInt(0xff) & 0xff);
+            else if (name == "opaque")
+                visual.opaque = property.get("value").asBool(false);
+            else if (name == "semanticFlags")
+                visual.semanticFlags = uint32_t(property.get("value").asInt(0));
         }
     }
-    if (o->has("objectgroup")) {
-        try {
-            auto group   = o->getObject("objectgroup");
-            auto objects = group ? group->getArray("objects") : nullptr;
-            for (size_t index = 0; objects && index < objects->size(); ++index) {
-                auto object = objects->getObject(unsigned(index));
-                if (!object) continue;
-                float x      = object->has("x") ? asFloat(object->get("x"), 0.f) : 0.f;
-                float y      = object->has("y") ? asFloat(object->get("y"), 0.f) : 0.f;
-                float width  = object->has("width") ? asFloat(object->get("width"), 0.f) : 0.f;
-                float height = object->has("height") ? asFloat(object->get("height"), 0.f) : 0.f;
-                if (object->has("polygon")) {
-                    auto  polygon = object->getArray("polygon");
-                    float minX = 0.f, minY = 0.f, maxX = 0.f, maxY = 0.f;
-                    for (size_t pointIndex = 0; polygon && pointIndex < polygon->size(); ++pointIndex) {
-                        auto point = polygon->getObject(unsigned(pointIndex));
-                        if (!point) continue;
-                        const float px = asFloat(point->get("x"), 0.f);
-                        const float py = asFloat(point->get("y"), 0.f);
-                        minX           = std::min(minX, px);
-                        minY           = std::min(minY, py);
-                        maxX           = std::max(maxX, px);
-                        maxY           = std::max(maxY, py);
-                    }
-                    x += minX;
-                    y += minY;
-                    width  = maxX - minX;
-                    height = maxY - minY;
+    if (o.has("objectgroup")) {
+        const Json group   = o.get("objectgroup");
+        const Json objects = group.isObject() ? group.get("objects") : Json{};
+        for (size_t index = 0; objects.isArray() && index < objects.size(); ++index) {
+            const Json object = objects.at(index);
+            if (!object.isObject()) continue;
+            float ox     = object.has("x") ? object.getFloat("x", 0.f) : 0.f;
+            float oy     = object.has("y") ? object.getFloat("y", 0.f) : 0.f;
+            float width  = object.has("width") ? object.getFloat("width", 0.f) : 0.f;
+            float height = object.has("height") ? object.getFloat("height", 0.f) : 0.f;
+            if (object.has("polygon")) {
+                const Json polygon = object.get("polygon");
+                float      minX = 0.f, minY = 0.f, maxX = 0.f, maxY = 0.f;
+                for (size_t pointIndex = 0; polygon.isArray() && pointIndex < polygon.size(); ++pointIndex) {
+                    const Json point = polygon.at(pointIndex);
+                    if (!point.isObject()) continue;
+                    const float px = point.getFloat("x", 0.f);
+                    const float py = point.getFloat("y", 0.f);
+                    minX           = std::min(minX, px);
+                    minY           = std::min(minY, py);
+                    maxX           = std::max(maxX, px);
+                    maxY           = std::max(maxY, py);
                 }
-                if (width > 0.f && height > 0.f) visual.collisionShapes.push_back({x, y, width, height});
+                ox += minX;
+                oy += minY;
+                width  = maxX - minX;
+                height = maxY - minY;
             }
-            if (!visual.collisionShapes.empty()) visual.walkable = false;
-        } catch (...) {
+            if (width > 0.f && height > 0.f) visual.collisionShapes.push_back({ox, oy, width, height});
         }
+        if (!visual.collisionShapes.empty()) visual.walkable = false;
     }
     return visual;
 }
 
-TilesetInfo readTilesetObject(Poco::JSON::Object::Ptr o) {
+TilesetInfo readTilesetObject(const Json &o) {
     TilesetInfo info;
-    if (!o) return info;
-    if (o->has("image")) info.image = asString(o->get("image"));
-    else if (o->has("texture")) info.image = asString(o->get("texture"));
-    if (o->has("firstgid")) info.firstGid = asInt(o->get("firstgid"), 1);
-    else if (o->has("firstGid")) info.firstGid = asInt(o->get("firstGid"), 1);
-    if (o->has("columns")) info.columns = asInt(o->get("columns"), 1);
-    if (o->has("tilewidth")) info.tileW = asInt(o->get("tilewidth"), 32);
-    else if (o->has("tileWidth")) info.tileW = asInt(o->get("tileWidth"), 32);
-    if (o->has("tileheight")) info.tileH = asInt(o->get("tileheight"), 32);
-    else if (o->has("tileHeight")) info.tileH = asInt(o->get("tileHeight"), 32);
-    if (o->has("margin")) info.margin = asInt(o->get("margin"), 0);
-    if (o->has("spacing")) info.spacing = asInt(o->get("spacing"), 0);
-    if (info.columns <= 0 && o->has("imagewidth") && info.tileW > 0) {
-        const int iw = asInt(o->get("imagewidth"), 0);
+    if (!o || !o.isObject()) return info;
+    if (o.has("image"))
+        info.image = o.getString("image");
+    else if (o.has("texture"))
+        info.image = o.getString("texture");
+    if (o.has("firstgid"))
+        info.firstGid = o.getInt("firstgid", 1);
+    else if (o.has("firstGid"))
+        info.firstGid = o.getInt("firstGid", 1);
+    if (o.has("columns")) info.columns = o.getInt("columns", 1);
+    if (o.has("tilewidth"))
+        info.tileW = o.getInt("tilewidth", 32);
+    else if (o.has("tileWidth"))
+        info.tileW = o.getInt("tileWidth", 32);
+    if (o.has("tileheight"))
+        info.tileH = o.getInt("tileheight", 32);
+    else if (o.has("tileHeight"))
+        info.tileH = o.getInt("tileHeight", 32);
+    if (o.has("margin")) info.margin = o.getInt("margin", 0);
+    if (o.has("spacing")) info.spacing = o.getInt("spacing", 0);
+    if (info.columns <= 0 && o.has("imagewidth") && info.tileW > 0) {
+        const int iw = o.getInt("imagewidth", 0);
         if (iw > 0) info.columns = std::max(1, (iw - info.margin) / (info.tileW + info.spacing));
     }
-    if (o->has("tiles")) {
-        try {
-            auto arr = o->getArray("tiles");
-            if (arr) {
-                for (size_t i = 0; i < arr->size(); ++i) {
-                    auto tile = arr->getObject(static_cast<unsigned int>(i));
-                    const int localId = tile && tile->has("id") ? asInt(tile->get("id"), int(i))
-                                                                : int(i);
-                    const int gid = tile && tile->has("gid")
-                                        ? asInt(tile->get("gid"), info.firstGid + localId)
-                                        : info.firstGid + localId;
-                    auto visual = readTileVisual(tile, gid);
-                    if (visual.gid > 0) info.visuals.push_back(visual);
-                    if (!tile) continue;
-                    if (tile->has("animation")) {
-                        auto frames = tile->getArray("animation");
-                        TileLayer::Tileset::Animation animation;
-                        animation.gid = gid;
-                        if (frames) {
-                            for (size_t frameIndex = 0; frameIndex < frames->size(); ++frameIndex) {
-                                auto frame = frames->getObject(static_cast<unsigned int>(frameIndex));
-                                if (!frame) continue;
-                                const int frameLocal = asInt(frame->get("tileid"), localId);
-                                const int duration = frame->has("duration")
-                                                         ? asInt(frame->get("duration"), 100)
-                                                         : 100;
-                                animation.frames.push_back(
-                                    {info.firstGid + frameLocal, std::max(1, duration)});
-                            }
-                        }
-                        if (!animation.frames.empty()) info.animations.push_back(std::move(animation));
-                    }
-                    if (tile->has("terrain") && tile->has("neighborMask")) {
-                        info.terrainRules.push_back(
-                            {gid, asInt(tile->get("terrain"), 0),
-                             asInt(tile->get("neighborMask"), 0) & 0xff});
-                    }
-                    if (tile->has("properties")) {
-                        auto properties = tile->getArray("properties");
-                        if (properties) {
-                            for (size_t propertyIndex = 0; propertyIndex < properties->size();
-                                 ++propertyIndex) {
-                                auto property =
-                                    properties->getObject(static_cast<unsigned int>(propertyIndex));
-                                if (!property || !property->has("name") || !property->has("value"))
-                                    continue;
-                                const std::string type = property->has("type")
-                                                             ? asString(property->get("type"))
-                                                             : "string";
-                                info.customData.push_back(
-                                    {gid, asString(property->get("name")), type,
-                                     asString(property->get("value"))});
-                            }
-                        }
-                    }
+    if (o.has("tiles")) {
+        const Json arr = o.get("tiles");
+        for (size_t i = 0; arr.isArray() && i < arr.size(); ++i) {
+            const Json tile    = arr.at(i);
+            const int  localId = tile.isObject() && tile.has("id") ? tile.getInt("id", int(i)) : int(i);
+            const int  gid     = tile.isObject() && tile.has("gid") ? tile.getInt("gid", info.firstGid + localId)
+                                                                   : info.firstGid + localId;
+            auto       visual  = readTileVisual(tile, gid);
+            if (visual.gid > 0) info.visuals.push_back(visual);
+            if (!tile.isObject()) continue;
+            if (tile.has("animation")) {
+                const Json                    frames = tile.get("animation");
+                TileLayer::Tileset::Animation animation;
+                animation.gid = gid;
+                for (size_t frameIndex = 0; frames.isArray() && frameIndex < frames.size(); ++frameIndex) {
+                    const Json frame = frames.at(frameIndex);
+                    if (!frame.isObject()) continue;
+                    const int frameLocal = frame.getInt("tileid", localId);
+                    const int duration   = frame.has("duration") ? frame.getInt("duration", 100) : 100;
+                    animation.frames.push_back({info.firstGid + frameLocal, std::max(1, duration)});
+                }
+                if (!animation.frames.empty()) info.animations.push_back(std::move(animation));
+            }
+            if (tile.has("terrain") && tile.has("neighborMask")) {
+                info.terrainRules.push_back(
+                    {gid, tile.getInt("terrain", 0), tile.getInt("neighborMask", 0) & 0xff});
+            }
+            if (tile.has("properties")) {
+                const Json properties = tile.get("properties");
+                for (size_t propertyIndex = 0; properties.isArray() && propertyIndex < properties.size();
+                     ++propertyIndex) {
+                    const Json property = properties.at(propertyIndex);
+                    if (!property.isObject() || !property.has("name") || !property.has("value")) continue;
+                    const std::string type = property.has("type") ? property.getString("type") : "string";
+                    info.customData.push_back(
+                        {gid, property.getString("name"), type, property.get("value").asString()});
                 }
             }
-        } catch (...) {
         }
     }
-    if (o->has("wangsets")) {
-        try {
-            auto sets = o->getArray("wangsets");
-            for (size_t setIndex = 0; sets && setIndex < sets->size(); ++setIndex) {
-                auto set = sets->getObject(static_cast<unsigned int>(setIndex));
-                if (!set || !set->has("wangtiles")) continue;
-                auto wangTiles = set->getArray("wangtiles");
-                for (size_t tileIndex = 0; wangTiles && tileIndex < wangTiles->size(); ++tileIndex) {
-                    auto wangTile = wangTiles->getObject(static_cast<unsigned int>(tileIndex));
-                    if (!wangTile || !wangTile->has("tileid") || !wangTile->has("wangid")) continue;
-                    auto wangId = wangTile->getArray("wangid");
-                    if (!wangId || wangId->size() != 8) continue;
-                    const int gid = info.firstGid + asInt(wangTile->get("tileid"), 0);
-                    // Tiled orders Wang positions N, NE, E, SE, S, SW, W, NW.
-                    // EVEngine terrain masks order NW, N, NE, E, SE, S, SW, W.
-                    constexpr int tiledToTerrainBit[8] = {1, 2, 3, 4, 5, 6, 7, 0};
-                    for (int color = 1; color <= 255; ++color) {
-                        int  mask    = 0;
-                        bool present = false;
-                        for (int position = 0; position < 8; ++position) {
-                            if (asInt(wangId->get(static_cast<unsigned int>(position)), 0) != color) continue;
-                            present = true;
-                            mask |= 1 << tiledToTerrainBit[position];
-                        }
-                        if (present) info.terrainRules.push_back({gid, int(setIndex) * 256 + color, mask});
+    if (o.has("wangsets")) {
+        const Json sets = o.get("wangsets");
+        for (size_t setIndex = 0; sets.isArray() && setIndex < sets.size(); ++setIndex) {
+            const Json set = sets.at(setIndex);
+            if (!set.isObject() || !set.has("wangtiles")) continue;
+            const Json wangTiles = set.get("wangtiles");
+            for (size_t tileIndex = 0; wangTiles.isArray() && tileIndex < wangTiles.size(); ++tileIndex) {
+                const Json wangTile = wangTiles.at(tileIndex);
+                if (!wangTile.isObject() || !wangTile.has("tileid") || !wangTile.has("wangid")) continue;
+                const Json wangId = wangTile.get("wangid");
+                if (!wangId.isArray() || wangId.size() != 8) continue;
+                const int gid = info.firstGid + wangTile.getInt("tileid", 0);
+                // Tiled orders Wang positions N, NE, E, SE, S, SW, W, NW.
+                // EVEngine terrain masks order NW, N, NE, E, SE, S, SW, W.
+                constexpr int tiledToTerrainBit[8] = {1, 2, 3, 4, 5, 6, 7, 0};
+                for (int color = 1; color <= 255; ++color) {
+                    int  mask    = 0;
+                    bool present = false;
+                    for (int position = 0; position < 8; ++position) {
+                        if (wangId.at(size_t(position)).asInt(0) != color) continue;
+                        present = true;
+                        mask |= 1 << tiledToTerrainBit[position];
                     }
+                    if (present) info.terrainRules.push_back({gid, int(setIndex) * 256 + color, mask});
                 }
             }
-        } catch (...) {
         }
     }
     return info;
@@ -359,7 +288,7 @@ bool readImportText(eve::filesystem::Filesystem *fs, const std::string &path, st
     return !text.empty();
 }
 
-Poco::JSON::Object::Ptr readJsonObject(eve::filesystem::Filesystem *fs, const std::string &path, std::string *error) {
+eve::json::Document readJsonDocument(eve::filesystem::Filesystem *fs, const std::string &path, std::string *error) {
     if (!fs) {
         if (error) *error = "map.import.filesystem-unavailable: " + path;
         return {};
@@ -369,28 +298,19 @@ Poco::JSON::Object::Ptr readJsonObject(eve::filesystem::Filesystem *fs, const st
         if (error) *error = "map.import.external-tileset-empty: " + path;
         return {};
     }
-    auto                               *dataModule = eve::data::DataModule::create();
-    std::string                         decodeError;
-    std::unique_ptr<data::JsonDocument> document(dataModule->decodeJson(text, &decodeError));
-    if (!document || !document->isObject()) {
+    std::string decodeError;
+    auto        document = eve::json::Document::parse(text, &decodeError);
+    if (!document.valid() || !document.root().isObject()) {
         if (error)
             *error = "map.import.external-tileset-invalid-json: " + path +
                      (decodeError.empty() ? std::string{} : " (" + decodeError + ")");
         return {};
     }
-    return document->object();
+    return document;
 }
 
-int xmlInt(Poco::XML::Element *element, const std::string &name, int fallback) {
-    if (!element || !element->hasAttribute(name)) return fallback;
-    try {
-        return std::stoi(element->getAttribute(name));
-    } catch (...) {
-        return fallback;
-    }
-}
-
-TilesetInfo readTsxTileset(eve::filesystem::Filesystem *fs, const std::string &path, int firstGid, std::string *error) {
+TilesetInfo readTsxTileset(eve::filesystem::Filesystem *fs, const std::string &path, int firstGid,
+                           std::string *error) {
     TilesetInfo info;
     info.firstGid = firstGid;
     std::string text;
@@ -398,112 +318,94 @@ TilesetInfo readTsxTileset(eve::filesystem::Filesystem *fs, const std::string &p
         if (error) *error = "map.import.external-tileset-empty: " + path;
         return info;
     }
-    try {
-        Poco::XML::DOMParser               parser;
-        Poco::AutoPtr<Poco::XML::Document> document = parser.parseString(text);
-        auto                              *root     = document ? document->documentElement() : nullptr;
-        if (!root || root->tagName() != "tileset") throw std::runtime_error("root is not tileset");
-        info.columns                              = xmlInt(root, "columns", 1);
-        info.tileW                                = xmlInt(root, "tilewidth", 32);
-        info.tileH                                = xmlInt(root, "tileheight", 32);
-        info.margin                               = xmlInt(root, "margin", 0);
-        info.spacing                              = xmlInt(root, "spacing", 0);
-        Poco::AutoPtr<Poco::XML::NodeList> images = root->getElementsByTagName("image");
-        if (images && images->length() > 0) {
-            auto *image = dynamic_cast<Poco::XML::Element *>(images->item(0));
-            if (image) info.image = resolveAssetPath(path, image->getAttribute("source"));
-        }
-        Poco::AutoPtr<Poco::XML::NodeList> tiles = root->getElementsByTagName("tile");
-        for (unsigned long index = 0; tiles && index < tiles->length(); ++index) {
-            auto *tile = dynamic_cast<Poco::XML::Element *>(tiles->item(index));
-            if (!tile || tile->parentNode() != root) continue;
-            TileLayer::Tileset::Visual visual;
-            const int                  localId            = xmlInt(tile, "id", int(index));
-            visual.gid                                    = firstGid + localId;
-            Poco::AutoPtr<Poco::XML::NodeList> properties = tile->getElementsByTagName("property");
-            for (unsigned long propertyIndex = 0; properties && propertyIndex < properties->length(); ++propertyIndex) {
-                auto *property = dynamic_cast<Poco::XML::Element *>(properties->item(propertyIndex));
-                if (!property) continue;
-                const std::string name  = property->getAttribute("name");
-                const std::string type  = property->getAttribute("type");
-                const std::string value = property->getAttribute("value");
-                info.customData.push_back({visual.gid, name, type.empty() ? "string" : type, value});
-                if (name == "walkable")
-                    visual.walkable = value != "false" && value != "0";
-                else if (name == "cost") {
-                    try {
-                        visual.cost = std::max(0.001f, std::stof(value));
-                    } catch (...) {
-                    }
-                } else if (name == "enterMask") {
-                    visual.enterMask = uint8_t(xmlInt(property, "value", 0xff));
-                } else if (name == "exitMask") {
-                    visual.exitMask = uint8_t(xmlInt(property, "value", 0xff));
-                } else if (name == "opaque") {
-                    visual.opaque = value != "false" && value != "0";
-                } else if (name == "semanticFlags") {
-                    visual.semanticFlags = uint32_t(xmlInt(property, "value", 0));
-                }
-            }
-            Poco::AutoPtr<Poco::XML::NodeList> collisionObjects = tile->getElementsByTagName("object");
-            for (unsigned long objectIndex = 0; collisionObjects && objectIndex < collisionObjects->length();
-                 ++objectIndex) {
-                auto *object = dynamic_cast<Poco::XML::Element *>(collisionObjects->item(objectIndex));
-                if (!object) continue;
-                const float x      = float(xmlInt(object, "x", 0));
-                const float y      = float(xmlInt(object, "y", 0));
-                const float width  = float(xmlInt(object, "width", 0));
-                const float height = float(xmlInt(object, "height", 0));
-                if (width > 0.f && height > 0.f) visual.collisionShapes.push_back({x, y, width, height});
-            }
-            if (!visual.collisionShapes.empty()) visual.walkable = false;
-            info.visuals.push_back(visual);
-            Poco::AutoPtr<Poco::XML::NodeList> frames = tile->getElementsByTagName("frame");
-            TileLayer::Tileset::Animation      animation;
-            animation.gid = visual.gid;
-            for (unsigned long frameIndex = 0; frames && frameIndex < frames->length(); ++frameIndex) {
-                auto *frame = dynamic_cast<Poco::XML::Element *>(frames->item(frameIndex));
-                if (frame)
-                    animation.frames.push_back(
-                        {firstGid + xmlInt(frame, "tileid", localId), std::max(1, xmlInt(frame, "duration", 100))});
-            }
-            if (!animation.frames.empty()) info.animations.push_back(std::move(animation));
-        }
-        Poco::AutoPtr<Poco::XML::NodeList> wangSets = root->getElementsByTagName("wangset");
-        for (unsigned long setIndex = 0; wangSets && setIndex < wangSets->length(); ++setIndex) {
-            auto *set = dynamic_cast<Poco::XML::Element *>(wangSets->item(setIndex));
-            if (!set) continue;
-            Poco::AutoPtr<Poco::XML::NodeList> wangTiles = set->getElementsByTagName("wangtile");
-            for (unsigned long tileIndex = 0; wangTiles && tileIndex < wangTiles->length(); ++tileIndex) {
-                auto *wangTile = dynamic_cast<Poco::XML::Element *>(wangTiles->item(tileIndex));
-                if (!wangTile) continue;
-                std::array<int, 8> values{};
-                std::stringstream  stream(wangTile->getAttribute("wangid"));
-                std::string        token;
-                int                count = 0;
-                while (count < 8 && std::getline(stream, token, ',')) {
-                    try {
-                        values[size_t(count)] = std::stoi(token);
-                    } catch (...) {
-                        values[size_t(count)] = 0;
-                    }
-                    ++count;
-                }
-                if (count != 8) continue;
-                constexpr int tiledToTerrainBit[8] = {1, 2, 3, 4, 5, 6, 7, 0};
-                for (int color = 1; color <= 255; ++color) {
-                    int mask = 0;
-                    for (int position = 0; position < 8; ++position)
-                        if (values[size_t(position)] == color) mask |= 1 << tiledToTerrainBit[position];
-                    if (mask != 0)
-                        info.terrainRules.push_back(
-                            {firstGid + xmlInt(wangTile, "tileid", 0), int(setIndex) * 256 + color, mask});
-                }
-            }
-        }
-    } catch (const std::exception &exception) {
-        if (error) *error = "map.import.external-tsx-invalid: " + path + " (" + exception.what() + ")";
+    std::string parseError;
+    auto        document = eve::xml::Document::parse(text, &parseError);
+    auto        root     = document.root();
+    if (!document.valid() || !root || root.tagName() != "tileset") {
+        if (error)
+            *error = "map.import.external-tsx-invalid: " + path +
+                     (parseError.empty() ? " (root is not tileset)" : " (" + parseError + ")");
         return {};
+    }
+    info.columns = root.getIntAttribute("columns", 1);
+    info.tileW   = root.getIntAttribute("tilewidth", 32);
+    info.tileH   = root.getIntAttribute("tileheight", 32);
+    info.margin  = root.getIntAttribute("margin", 0);
+    info.spacing = root.getIntAttribute("spacing", 0);
+    const auto images = root.elementsByTag("image");
+    if (!images.empty()) info.image = resolveAssetPath(path, images.front().getAttribute("source"));
+    const auto tiles = root.children("tile");
+    for (size_t index = 0; index < tiles.size(); ++index) {
+        const auto                &tile = tiles[index];
+        TileLayer::Tileset::Visual visual;
+        const int                  localId = tile.getIntAttribute("id", int(index));
+        visual.gid                         = firstGid + localId;
+        for (const auto &property : tile.elementsByTag("property")) {
+            const std::string name  = property.getAttribute("name");
+            const std::string type  = property.getAttribute("type");
+            const std::string value = property.getAttribute("value");
+            info.customData.push_back({visual.gid, name, type.empty() ? "string" : type, value});
+            if (name == "walkable")
+                visual.walkable = value != "false" && value != "0";
+            else if (name == "cost") {
+                try {
+                    visual.cost = std::max(0.001f, std::stof(value));
+                } catch (...) {
+                }
+            } else if (name == "enterMask") {
+                visual.enterMask = uint8_t(property.getIntAttribute("value", 0xff));
+            } else if (name == "exitMask") {
+                visual.exitMask = uint8_t(property.getIntAttribute("value", 0xff));
+            } else if (name == "opaque") {
+                visual.opaque = value != "false" && value != "0";
+            } else if (name == "semanticFlags") {
+                visual.semanticFlags = uint32_t(property.getIntAttribute("value", 0));
+            }
+        }
+        for (const auto &object : tile.elementsByTag("object")) {
+            const float x      = float(object.getIntAttribute("x", 0));
+            const float y      = float(object.getIntAttribute("y", 0));
+            const float width  = float(object.getIntAttribute("width", 0));
+            const float height = float(object.getIntAttribute("height", 0));
+            if (width > 0.f && height > 0.f) visual.collisionShapes.push_back({x, y, width, height});
+        }
+        if (!visual.collisionShapes.empty()) visual.walkable = false;
+        info.visuals.push_back(visual);
+        TileLayer::Tileset::Animation animation;
+        animation.gid = visual.gid;
+        for (const auto &frame : tile.elementsByTag("frame")) {
+            animation.frames.push_back({firstGid + frame.getIntAttribute("tileid", localId),
+                                        std::max(1, frame.getIntAttribute("duration", 100))});
+        }
+        if (!animation.frames.empty()) info.animations.push_back(std::move(animation));
+    }
+    const auto wangSets = root.elementsByTag("wangset");
+    for (size_t setIndex = 0; setIndex < wangSets.size(); ++setIndex) {
+        const auto &set = wangSets[setIndex];
+        for (const auto &wangTile : set.elementsByTag("wangtile")) {
+            std::array<int, 8> values{};
+            std::stringstream  stream(wangTile.getAttribute("wangid"));
+            std::string        token;
+            int                count = 0;
+            while (count < 8 && std::getline(stream, token, ',')) {
+                try {
+                    values[size_t(count)] = std::stoi(token);
+                } catch (...) {
+                    values[size_t(count)] = 0;
+                }
+                ++count;
+            }
+            if (count != 8) continue;
+            constexpr int tiledToTerrainBit[8] = {1, 2, 3, 4, 5, 6, 7, 0};
+            for (int color = 1; color <= 255; ++color) {
+                int mask = 0;
+                for (int position = 0; position < 8; ++position)
+                    if (values[size_t(position)] == color) mask |= 1 << tiledToTerrainBit[position];
+                if (mask != 0)
+                    info.terrainRules.push_back(
+                        {firstGid + wangTile.getIntAttribute("tileid", 0), int(setIndex) * 256 + color, mask});
+            }
+        }
     }
     return info;
 }
@@ -511,13 +413,13 @@ TilesetInfo readTsxTileset(eve::filesystem::Filesystem *fs, const std::string &p
 void applyTileset(TileLayer *layer, const TilesetInfo &info) {
     if (!layer) return;
     layer->setTilesetTileSize(info.tileW, info.tileH);
-    graphics::Texture *tex = tryLoadTexture(info.image);
+    graphics::Texture *tex     = tryLoadTexture(info.image);
     layer->resource()->texturePath = info.image;
     layer->setTileset(tex, info.firstGid, info.columns, info.margin, info.spacing);
-    layer->tileset()->visuals = info.visuals;
-    layer->tileset()->animations = info.animations;
+    layer->tileset()->visuals      = info.visuals;
+    layer->tileset()->animations   = info.animations;
     layer->tileset()->terrainRules = info.terrainRules;
-    layer->tileset()->customData = info.customData;
+    layer->tileset()->customData   = info.customData;
 }
 
 void appendTileset(TileLayer *layer, const TilesetInfo &info) {
@@ -539,34 +441,25 @@ void applyTilesets(TileLayer *layer, const std::vector<TilesetInfo> &infos) {
     for (size_t index = 1; index < infos.size(); ++index) appendTileset(layer, infos[index]);
 }
 
-bool decodeLayerData(Poco::JSON::Object::Ptr layerObj, size_t expectedCount,
-                     std::vector<uint32_t> &out, std::string *error) {
-    if (!layerObj || !layerObj->has("data")) {
+bool decodeLayerData(const Json &layerObj, size_t expectedCount, std::vector<uint32_t> &out, std::string *error) {
+    if (!layerObj || !layerObj.has("data")) {
         if (error) *error = "missing data";
         return false;
     }
 
-    try {
-        if (layerObj->isArray("data")) {
-            auto arr = layerObj->getArray("data");
-            if (!arr) {
-                if (error) *error = "invalid data array";
-                return false;
-            }
-            out.resize(arr->size());
-            for (size_t i = 0; i < arr->size(); ++i) out[i] = asUInt32(arr->get(static_cast<unsigned int>(i)), 0);
-            if (expectedCount > 0 && out.size() != expectedCount) {
-                if (error) *error = "gid count mismatch";
-                return false;
-            }
-            return true;
+    const Json data = layerObj.get("data");
+    if (data.isArray()) {
+        out.resize(data.size());
+        for (size_t i = 0; i < data.size(); ++i) out[i] = asUInt32(data.at(i), 0);
+        if (expectedCount > 0 && out.size() != expectedCount) {
+            if (error) *error = "gid count mismatch";
+            return false;
         }
-    } catch (...) {
+        return true;
     }
 
-    std::string encoding = layerObj->has("encoding") ? asString(layerObj->get("encoding")) : "";
-    std::string compression =
-        layerObj->has("compression") ? asString(layerObj->get("compression")) : "";
+    const std::string encoding    = layerObj.has("encoding") ? layerObj.getString("encoding") : "";
+    const std::string compression = layerObj.has("compression") ? layerObj.getString("compression") : "";
     if (encoding != "base64") {
         if (error) *error = "unsupported encoding";
         return false;
@@ -576,16 +469,16 @@ bool decodeLayerData(Poco::JSON::Object::Ptr layerObj, size_t expectedCount,
         return false;
     }
 
-    const std::string b64 = asString(layerObj->get("data"));
-    size_t decodedLen = 0;
+    const std::string b64 = data.asString();
+    size_t            decodedLen = 0;
     std::unique_ptr<char[]> decoded(eve::data::decode("base64", b64.data(), b64.size(), decodedLen));
     if (!decoded) {
         if (error) *error = "base64 decode failed";
         return false;
     }
 
-    const char *bytes = decoded.get();
-    size_t nbytes = decodedLen;
+    const char *bytes  = decoded.get();
+    size_t      nbytes = decodedLen;
     std::unique_ptr<char[]> inflated;
     if (!compression.empty()) {
         if (compression != "zlib" && compression != "gzip") {
@@ -603,7 +496,7 @@ bool decodeLayerData(Poco::JSON::Object::Ptr layerObj, size_t expectedCount,
             if (error) *error = "decompress failed";
             return false;
         }
-        bytes = inflated.get();
+        bytes  = inflated.get();
         nbytes = rawsize;
     }
 
@@ -615,56 +508,52 @@ bool decodeLayerData(Poco::JSON::Object::Ptr layerObj, size_t expectedCount,
     out.resize(count);
     for (size_t i = 0; i < count; ++i) {
         const unsigned char *p = reinterpret_cast<const unsigned char *>(bytes) + i * 4;
-        out[i] = uint32_t(p[0]) | (uint32_t(p[1]) << 8) | (uint32_t(p[2]) << 16) |
-                 (uint32_t(p[3]) << 24);
+        out[i] = uint32_t(p[0]) | (uint32_t(p[1]) << 8) | (uint32_t(p[2]) << 16) | (uint32_t(p[3]) << 24);
     }
     return true;
 }
 
-void applyLayerDraw(TileLayer *layer, Poco::JSON::Object::Ptr layerObj) {
+void applyLayerDraw(TileLayer *layer, const Json &layerObj) {
     if (!layer || !layerObj) return;
-    if (layerObj->has("visible"))
-        layer->setVisible(asBool(layerObj->get("visible"), true));
-    if (layerObj->has("layer"))
-        layer->setLayer(asInt(layerObj->get("layer"), layer->getLayer()));
-    else if (layerObj->has("id"))
-        layer->setLayer(asInt(layerObj->get("id"), layer->getLayer()));
+    if (layerObj.has("visible")) layer->setVisible(layerObj.getBool("visible", true));
+    if (layerObj.has("layer"))
+        layer->setLayer(layerObj.getInt("layer", layer->getLayer()));
+    else if (layerObj.has("id"))
+        layer->setLayer(layerObj.getInt("id", layer->getLayer()));
     float r = 1, g = 1, b = 1, a = 1;
     if (readVec4(layerObj, "tint", r, g, b, a))
         layer->setTint(r, g, b, a);
-    else if (layerObj->has("opacity")) {
-        a = asFloat(layerObj->get("opacity"), 1.f);
+    else if (layerObj.has("opacity")) {
+        a = layerObj.getFloat("opacity", 1.f);
         layer->setTint(1.f, 1.f, 1.f, a);
     }
     float ox = layer->getX(), oy = layer->getY();
-    if (layerObj->has("x")) ox = asFloat(layerObj->get("x"), ox);
-    if (layerObj->has("offsetx")) ox += asFloat(layerObj->get("offsetx"), 0.f);
-    if (layerObj->has("y")) oy = asFloat(layerObj->get("y"), oy);
-    if (layerObj->has("offsety")) oy += asFloat(layerObj->get("offsety"), 0.f);
-    if (layerObj->has("x") || layerObj->has("y") || layerObj->has("offsetx") ||
-        layerObj->has("offsety"))
+    if (layerObj.has("x")) ox = layerObj.getFloat("x", ox);
+    if (layerObj.has("offsetx")) ox += layerObj.getFloat("offsetx", 0.f);
+    if (layerObj.has("y")) oy = layerObj.getFloat("y", oy);
+    if (layerObj.has("offsety")) oy += layerObj.getFloat("offsety", 0.f);
+    if (layerObj.has("x") || layerObj.has("y") || layerObj.has("offsetx") || layerObj.has("offsety"))
         layer->setOrigin(ox, oy);
 }
 
-bool isTileLayerObject(Poco::JSON::Object::Ptr o) {
-    if (!o) return false;
-    if (o->has("type")) {
-        const std::string t = asString(o->get("type"));
+bool isTileLayerObject(const Json &o) {
+    if (!o || !o.isObject()) return false;
+    if (o.has("type")) {
+        const std::string t = o.getString("type");
         if (!t.empty() && t != "tilelayer") return false;
     }
-    return o->has("data") || o->has("chunks");
+    return o.has("data") || o.has("chunks");
 }
 
-bool isObjectGroup(Poco::JSON::Object::Ptr o) {
-    if (!o) return false;
-    if (!o->has("type")) return false;
-    return asString(o->get("type")) == "objectgroup";
+bool isObjectGroup(const Json &o) {
+    if (!o || !o.isObject() || !o.has("type")) return false;
+    return o.getString("type") == "objectgroup";
 }
 
-bool parseOrientation(Poco::JSON::Object::Ptr root, TileLayer::Config *cfg, std::string *error) {
+bool parseOrientation(const Json &root, TileLayer::Config *cfg, std::string *error) {
     if (!root || !cfg) return false;
-    if (!root->has("orientation")) return true;
-    const std::string o = asString(root->get("orientation"));
+    if (!root.has("orientation")) return true;
+    const std::string o = root.getString("orientation");
     if (o.empty() || o == "orthogonal")
         cfg->orientation = MapOrientation::Orthogonal;
     else if (o == "isometric")
@@ -677,33 +566,36 @@ bool parseOrientation(Poco::JSON::Object::Ptr root, TileLayer::Config *cfg, std:
         if (error) *error = "unknown orientation: " + o;
         return false;
     }
-    if (root->has("staggeraxis")) {
-        const std::string a = asString(root->get("staggeraxis"));
-        cfg->staggerAxis = (a == "x") ? StaggerAxis::X : StaggerAxis::Y;
+    if (root.has("staggeraxis")) {
+        const std::string a = root.getString("staggeraxis");
+        cfg->staggerAxis    = (a == "x") ? StaggerAxis::X : StaggerAxis::Y;
     }
-    if (root->has("staggerindex")) {
-        const std::string i = asString(root->get("staggerindex"));
-        cfg->staggerIndex = (i == "even") ? StaggerIndex::Even : StaggerIndex::Odd;
+    if (root.has("staggerindex")) {
+        const std::string i = root.getString("staggerindex");
+        cfg->staggerIndex   = (i == "even") ? StaggerIndex::Even : StaggerIndex::Odd;
     }
-    if (root->has("hexsidelength"))
-        cfg->hexSideLength = asFloat(root->get("hexsidelength"), 0.f);
+    if (root.has("hexsidelength")) cfg->hexSideLength = root.getFloat("hexsidelength", 0.f);
     return true;
 }
 
-bool applyMapGlobals(TileLayer *layer, Poco::JSON::Object::Ptr root, std::string *error) {
+bool applyMapGlobals(TileLayer *layer, const Json &root, std::string *error) {
     if (!layer || !root) return false;
 
-    int mapW = layer->getMapWidth();
-    int mapH = layer->getMapHeight();
+    int   mapW  = layer->getMapWidth();
+    int   mapH  = layer->getMapHeight();
     float tileW = layer->getTileWidth();
     float tileH = layer->getTileHeight();
 
-    if (root->has("width")) mapW = asInt(root->get("width"), mapW);
-    if (root->has("height")) mapH = asInt(root->get("height"), mapH);
-    if (root->has("tilewidth")) tileW = asFloat(root->get("tilewidth"), tileW);
-    else if (root->has("tileWidth")) tileW = asFloat(root->get("tileWidth"), tileW);
-    if (root->has("tileheight")) tileH = asFloat(root->get("tileheight"), tileH);
-    else if (root->has("tileHeight")) tileH = asFloat(root->get("tileHeight"), tileH);
+    if (root.has("width")) mapW = root.getInt("width", mapW);
+    if (root.has("height")) mapH = root.getInt("height", mapH);
+    if (root.has("tilewidth"))
+        tileW = root.getFloat("tilewidth", tileW);
+    else if (root.has("tileWidth"))
+        tileW = root.getFloat("tileWidth", tileW);
+    if (root.has("tileheight"))
+        tileH = root.getFloat("tileheight", tileH);
+    else if (root.has("tileHeight"))
+        tileH = root.getFloat("tileHeight", tileH);
 
     if (mapW != layer->getMapWidth() || mapH != layer->getMapHeight()) layer->resize(mapW, mapH);
     layer->setTileSize(tileW, tileH);
@@ -718,10 +610,9 @@ bool applyMapGlobals(TileLayer *layer, Poco::JSON::Object::Ptr root, std::string
         if (readVec2(root, "renderSpacing", spacingX, spacingY)) {
             layer->setRenderSpacing(spacingX, spacingY);
         } else {
-            if (root->has("cellGapX")) gapX = asFloat(root->get("cellGapX"), gapX);
-            if (root->has("cellGapY")) gapY = asFloat(root->get("cellGapY"), gapY);
-            if (root->has("cellGapX") || root->has("cellGapY"))
-                layer->setCellGap(gapX, gapY);
+            if (root.has("cellGapX")) gapX = root.getFloat("cellGapX", gapX);
+            if (root.has("cellGapY")) gapY = root.getFloat("cellGapY", gapY);
+            if (root.has("cellGapX") || root.has("cellGapY")) layer->setCellGap(gapX, gapY);
         }
     }
 
@@ -731,52 +622,38 @@ bool applyMapGlobals(TileLayer *layer, Poco::JSON::Object::Ptr root, std::string
     if (readVec2(root, "origin", ox, oy))
         layer->setOrigin(ox, oy);
     else {
-        if (root->has("x")) ox = asFloat(root->get("x"), ox);
-        if (root->has("y")) oy = asFloat(root->get("y"), oy);
-        if (root->has("x") || root->has("y")) layer->setOrigin(ox, oy);
+        if (root.has("x")) ox = root.getFloat("x", ox);
+        if (root.has("y")) oy = root.getFloat("y", oy);
+        if (root.has("x") || root.has("y")) layer->setOrigin(ox, oy);
     }
 
-    if (root->has("layer"))
-        layer->setLayer(asInt(root->get("layer"), layer->getLayer()));
-    if (root->has("visible"))
-        layer->setVisible(asBool(root->get("visible"), layer->isVisible()));
-    if (root->has("autoReload"))
-        layer->resource()->autoReload = asBool(root->get("autoReload"), true);
+    if (root.has("layer")) layer->setLayer(root.getInt("layer", layer->getLayer()));
+    if (root.has("visible")) layer->setVisible(root.getBool("visible", layer->isVisible()));
+    if (root.has("autoReload")) layer->resource()->autoReload = root.getBool("autoReload", true);
 
     float r = 1, g = 1, b = 1, a = 1;
     if (readVec4(root, "tint", r, g, b, a)) layer->setTint(r, g, b, a);
 
-    if (root->has("tileset") && !root->isArray("tileset")) {
-        try {
-            auto o = root->getObject("tileset");
-            if (o && !o->has("source")) applyTileset(layer, readTilesetObject(o));
-        } catch (...) {
+    if (root.has("tileset") && !root.get("tileset").isArray()) {
+        const Json tileset = root.get("tileset");
+        if (tileset.isObject() && !tileset.has("source")) applyTileset(layer, readTilesetObject(tileset));
+    } else if (root.has("tilesets")) {
+        const Json arr = root.get("tilesets");
+        for (size_t i = 0; arr.isArray() && i < arr.size(); ++i) {
+            const Json o = arr.at(i);
+            if (!o.isObject() || o.has("source")) continue;
+            applyTileset(layer, readTilesetObject(o));
+            break;
         }
-    } else if (root->has("tilesets")) {
-        try {
-            auto arr = root->getArray("tilesets");
-            if (arr) {
-                for (size_t i = 0; i < arr->size(); ++i) {
-                    try {
-                        auto o = arr->getObject(static_cast<unsigned int>(i));
-                        if (o && o->has("source")) continue;
-                        applyTileset(layer, readTilesetObject(o));
-                        break;
-                    } catch (...) {
-                    }
-                }
-            }
-        } catch (...) {
-        }
-    } else if (root->has("image") || root->has("texture")) {
+    } else if (root.has("image") || root.has("texture")) {
         applyTileset(layer, readTilesetObject(root));
     }
     return true;
 }
 
-bool applyFlatLayerData(TileLayer *layer, Poco::JSON::Object::Ptr root, std::string *error) {
-    const int mapW = layer->getMapWidth();
-    const int mapH = layer->getMapHeight();
+bool applyFlatLayerData(TileLayer *layer, const Json &root, std::string *error) {
+    const int    mapW = layer->getMapWidth();
+    const int    mapH = layer->getMapHeight();
     const size_t need = size_t(std::max(0, mapW) * std::max(0, mapH));
     if (need == 0) {
         if (error) *error = "empty map size";
@@ -792,58 +669,58 @@ bool applyFlatLayerData(TileLayer *layer, Poco::JSON::Object::Ptr root, std::str
     return true;
 }
 
-bool applyOneLayerObject(TileLayer *layer, Poco::JSON::Object::Ptr layerObj, int mapW, int mapH,
-                         std::string *error) {
+bool applyOneLayerObject(TileLayer *layer, const Json &layerObj, int mapW, int mapH, std::string *error) {
     if (!layer || !layerObj) return false;
-    if (layerObj->has("chunks")) {
-        try {
-            auto chunks = layerObj->getArray("chunks");
-            if (!chunks || chunks->size() == 0) return false;
-            int minX = 0, minY = 0, maxX = 0, maxY = 0;
-            bool first = true;
-            for (size_t i = 0; i < chunks->size(); ++i) {
-                auto chunk = chunks->getObject(static_cast<unsigned int>(i));
-                if (!chunk) continue;
-                const int x = asInt(chunk->get("x"), 0), y = asInt(chunk->get("y"), 0);
-                const int w = asInt(chunk->get("width"), 0), h = asInt(chunk->get("height"), 0);
-                if (w <= 0 || h <= 0) continue;
-                if (first) {
-                    minX = x; minY = y; maxX = x + w; maxY = y + h; first = false;
-                } else {
-                    minX = std::min(minX, x); minY = std::min(minY, y);
-                    maxX = std::max(maxX, x + w); maxY = std::max(maxY, y + h);
-                }
+    if (layerObj.has("chunks")) {
+        const Json chunks = layerObj.get("chunks");
+        if (!chunks.isArray() || chunks.size() == 0) return false;
+        int  minX = 0, minY = 0, maxX = 0, maxY = 0;
+        bool first = true;
+        for (size_t i = 0; i < chunks.size(); ++i) {
+            const Json chunk = chunks.at(i);
+            if (!chunk.isObject()) continue;
+            const int x = chunk.getInt("x", 0), y = chunk.getInt("y", 0);
+            const int w = chunk.getInt("width", 0), h = chunk.getInt("height", 0);
+            if (w <= 0 || h <= 0) continue;
+            if (first) {
+                minX = x;
+                minY = y;
+                maxX = x + w;
+                maxY = y + h;
+                first = false;
+            } else {
+                minX = std::min(minX, x);
+                minY = std::min(minY, y);
+                maxX = std::max(maxX, x + w);
+                maxY = std::max(maxY, y + h);
             }
-            if (first) return false;
-            float shiftX = 0.f, shiftY = 0.f;
-            layer->tileToWorld(minX, minY, shiftX, shiftY);
-            layer->resize(maxX - minX, maxY - minY);
-            layer->setOrigin(shiftX, shiftY);
-            auto &gids = layer->tiles()->gids;
-            for (size_t i = 0; i < chunks->size(); ++i) {
-                auto chunk = chunks->getObject(static_cast<unsigned int>(i));
-                if (!chunk) continue;
-                const int x = asInt(chunk->get("x"), 0), y = asInt(chunk->get("y"), 0);
-                const int w = asInt(chunk->get("width"), 0), h = asInt(chunk->get("height"), 0);
-                if (w <= 0 || h <= 0) continue;
-                std::vector<uint32_t> data;
-                if (!decodeLayerData(chunk, size_t(w * h), data, error)) return false;
-                for (int cy = 0; cy < h; ++cy)
-                    for (int cx = 0; cx < w; ++cx)
-                        gids[size_t((y - minY + cy) * layer->getMapWidth() + x - minX + cx)] =
-                            data[size_t(cy * w + cx)];
-            }
-            layer->rebuildSpatialIndex();
-            applyLayerDraw(layer, layerObj);
-            return true;
-        } catch (...) {
-            if (error) *error = "invalid chunk layer";
-            return false;
         }
+        if (first) return false;
+        float shiftX = 0.f, shiftY = 0.f;
+        layer->tileToWorld(minX, minY, shiftX, shiftY);
+        layer->resize(maxX - minX, maxY - minY);
+        layer->setOrigin(shiftX, shiftY);
+        auto &gids = layer->tiles()->gids;
+        for (size_t i = 0; i < chunks.size(); ++i) {
+            const Json chunk = chunks.at(i);
+            if (!chunk.isObject()) continue;
+            const int x = chunk.getInt("x", 0), y = chunk.getInt("y", 0);
+            const int w = chunk.getInt("width", 0), h = chunk.getInt("height", 0);
+            if (w <= 0 || h <= 0) continue;
+            std::vector<uint32_t> data;
+            if (!decodeLayerData(chunk, size_t(w * h), data, error)) return false;
+            for (int cy = 0; cy < h; ++cy)
+                for (int cx = 0; cx < w; ++cx)
+                    gids[size_t((y - minY + cy) * layer->getMapWidth() + x - minX + cx)] =
+                        data[size_t(cy * w + cx)];
+        }
+        layer->rebuildSpatialIndex();
+        applyLayerDraw(layer, layerObj);
+        return true;
     }
     int w = mapW, h = mapH;
-    if (layerObj->has("width")) w = asInt(layerObj->get("width"), w);
-    if (layerObj->has("height")) h = asInt(layerObj->get("height"), h);
+    if (layerObj.has("width")) w = layerObj.getInt("width", w);
+    if (layerObj.has("height")) h = layerObj.getInt("height", h);
     if (w != layer->getMapWidth() || h != layer->getMapHeight()) layer->resize(w, h);
 
     const size_t need =
@@ -860,43 +737,32 @@ bool applyOneLayerObject(TileLayer *layer, Poco::JSON::Object::Ptr layerObj, int
     return true;
 }
 
-void parseObjectGroup(Poco::JSON::Object::Ptr group, std::vector<MapObject> &out) {
-    if (!group || !group->has("objects")) return;
-    Poco::JSON::Array::Ptr arr;
-    try {
-        arr = group->getArray("objects");
-    } catch (...) {
-        return;
-    }
-    if (!arr) return;
-    for (size_t i = 0; i < arr->size(); ++i) {
-        Poco::JSON::Object::Ptr o;
-        try {
-            o = arr->getObject(static_cast<unsigned int>(i));
-        } catch (...) {
-            continue;
-        }
-        if (!o) continue;
+void parseObjectGroup(const Json &group, std::vector<MapObject> &out) {
+    if (!group || !group.has("objects")) return;
+    const Json arr = group.get("objects");
+    if (!arr.isArray()) return;
+    for (size_t i = 0; i < arr.size(); ++i) {
+        const Json o = arr.at(i);
+        if (!o.isObject()) continue;
         MapObject mo;
-        if (o->has("name")) mo.name = asString(o->get("name"));
-        if (o->has("type")) mo.type = asString(o->get("type"));
-        else if (o->has("class")) mo.type = asString(o->get("class"));
-        mo.x = o->has("x") ? asFloat(o->get("x"), 0.f) : 0.f;
-        mo.y = o->has("y") ? asFloat(o->get("y"), 0.f) : 0.f;
-        mo.width = o->has("width") ? asFloat(o->get("width"), 0.f) : 0.f;
-        mo.height = o->has("height") ? asFloat(o->get("height"), 0.f) : 0.f;
-        if (o->has("gid")) mo.gid = uint32_t(asInt(o->get("gid"), 0));
-        if (o->has("properties")) {
-            try {
-                auto properties = o->getArray("properties");
-                for (size_t propertyIndex = 0; properties && propertyIndex < properties->size();
-                     ++propertyIndex) {
-                    auto property = properties->getObject(static_cast<unsigned int>(propertyIndex));
-                    if (!property || !property->has("name") || !property->has("value")) continue;
-                    const std::string name = asString(property->get("name"));
-                    if (!name.empty()) mo.properties.emplace(name, asString(property->get("value")));
-                }
-            } catch (...) {
+        if (o.has("name")) mo.name = o.getString("name");
+        if (o.has("type"))
+            mo.type = o.getString("type");
+        else if (o.has("class"))
+            mo.type = o.getString("class");
+        mo.x      = o.has("x") ? o.getFloat("x", 0.f) : 0.f;
+        mo.y      = o.has("y") ? o.getFloat("y", 0.f) : 0.f;
+        mo.width  = o.has("width") ? o.getFloat("width", 0.f) : 0.f;
+        mo.height = o.has("height") ? o.getFloat("height", 0.f) : 0.f;
+        if (o.has("gid")) mo.gid = uint32_t(o.getInt("gid", 0));
+        if (o.has("properties")) {
+            const Json properties = o.get("properties");
+            for (size_t propertyIndex = 0; properties.isArray() && propertyIndex < properties.size();
+                 ++propertyIndex) {
+                const Json property = properties.at(propertyIndex);
+                if (!property.isObject() || !property.has("name") || !property.has("value")) continue;
+                const std::string name = property.getString("name");
+                if (!name.empty()) mo.properties.emplace(name, property.get("value").asString());
             }
         }
         out.push_back(std::move(mo));
@@ -913,94 +779,83 @@ void abandonLayers(std::vector<TileLayer *> &layers) {
 }
 
 struct LayerEntry {
-    Poco::JSON::Object::Ptr object;
-    float                   offsetX = 0.f;
-    float                   offsetY = 0.f;
-    float                   opacity = 1.f;
-    bool                    visible = true;
+    Json  object;
+    float offsetX = 0.f;
+    float offsetY = 0.f;
+    float opacity = 1.f;
+    bool  visible = true;
 };
 
-void flattenLayers(Poco::JSON::Array::Ptr source, std::vector<LayerEntry> &out, float parentX = 0.f,
-                   float parentY = 0.f, float parentOpacity = 1.f, bool parentVisible = true) {
-    for (size_t index = 0; source && index < source->size(); ++index) {
-        Poco::JSON::Object::Ptr object;
-        try {
-            object = source->getObject(unsigned(index));
-        } catch (...) {
+void flattenLayers(const Json &source, std::vector<LayerEntry> &out, float parentX = 0.f, float parentY = 0.f,
+                   float parentOpacity = 1.f, bool parentVisible = true) {
+    for (size_t index = 0; source.isArray() && index < source.size(); ++index) {
+        const Json object = source.at(index);
+        if (!object.isObject()) continue;
+        const float offsetX =
+            parentX + (object.has("offsetx") ? object.getFloat("offsetx", 0.f) : 0.f);
+        const float offsetY =
+            parentY + (object.has("offsety") ? object.getFloat("offsety", 0.f) : 0.f);
+        const float opacity =
+            parentOpacity * (object.has("opacity") ? object.getFloat("opacity", 1.f) : 1.f);
+        const bool visible =
+            parentVisible && (!object.has("visible") || object.getBool("visible", true));
+        if (object.has("type") && object.getString("type") == "group" && object.has("layers")) {
+            flattenLayers(object.get("layers"), out, offsetX, offsetY, opacity, visible);
             continue;
         }
-        if (!object) continue;
-        const float offsetX = parentX + (object->has("offsetx") ? asFloat(object->get("offsetx"), 0.f) : 0.f);
-        const float offsetY = parentY + (object->has("offsety") ? asFloat(object->get("offsety"), 0.f) : 0.f);
-        const float opacity = parentOpacity * (object->has("opacity") ? asFloat(object->get("opacity"), 1.f) : 1.f);
-        const bool  visible = parentVisible && (!object->has("visible") || asBool(object->get("visible"), true));
-        if (object->has("type") && asString(object->get("type")) == "group" && object->has("layers")) {
-            try {
-                flattenLayers(object->getArray("layers"), out, offsetX, offsetY, opacity, visible);
-            } catch (...) {
-            }
-            continue;
-        }
-        out.push_back({object, parentX, parentY, parentOpacity, parentVisible});
+        out.push_back({object, offsetX, offsetY, opacity, visible});
     }
 }
 
-std::vector<TilesetInfo> readTilesets(Poco::JSON::Object::Ptr root, const std::string &mapPath,
+std::vector<TilesetInfo> readTilesets(const Json &root, const std::string &mapPath,
                                       eve::filesystem::Filesystem *fs, std::string *error) {
     std::vector<TilesetInfo> result;
-    if (root->has("tilesets")) {
-        try {
-            auto arr = root->getArray("tilesets");
-            if (arr) {
-                for (size_t i = 0; i < arr->size(); ++i) {
-                    try {
-                        auto o = arr->getObject(static_cast<unsigned int>(i));
-                        if (!o) continue;
-                        const int firstGid = o->has("firstgid") ? asInt(o->get("firstgid"), 1) : 1;
-                        if (o->has("source")) {
-                            const std::string source = resolveAssetPath(mapPath, asString(o->get("source")));
-                            if (std::filesystem::path(source).extension() == ".tsx") {
-                                TilesetInfo info = readTsxTileset(fs, source, firstGid, error);
-                                if (error && !error->empty()) return {};
-                                info.sourcePath = source;
-                                result.push_back(std::move(info));
-                                continue;
-                            }
-                            auto external = readJsonObject(fs, source, error);
-                            if (!external) return {};
-                            external->set("firstgid", firstGid);
-                            TilesetInfo info = readTilesetObject(external);
-                            info.sourcePath  = source;
-                            info.image       = resolveAssetPath(source, info.image);
-                            result.push_back(std::move(info));
-                            continue;
-                        }
-                        TilesetInfo info = readTilesetObject(o);
-                        info.image       = resolveAssetPath(mapPath, info.image);
-                        result.push_back(std::move(info));
-                    } catch (...) {
-                        if (error) *error = "map.import.tileset-entry-invalid: index=" + std::to_string(i);
-                        return {};
-                    }
-                }
-            }
-        } catch (...) {
+    // Keep external JSON documents alive: TilesetInfo reads image paths as
+    // strings (copied), but we still need the Document while reading fields.
+    std::vector<eve::json::Document> ownedDocs;
+    if (root.has("tilesets")) {
+        const Json arr = root.get("tilesets");
+        if (!arr.isArray()) {
             if (error) *error = "map.import.tilesets-invalid";
             return {};
         }
-    } else if (root->has("tileset") && !root->isArray("tileset")) {
-        try {
-            auto o = root->getObject("tileset");
-            if (o && !o->has("source")) {
-                TilesetInfo info = readTilesetObject(o);
-                info.image       = resolveAssetPath(mapPath, info.image);
-                result.push_back(std::move(info));
+        for (size_t i = 0; i < arr.size(); ++i) {
+            const Json o = arr.at(i);
+            if (!o.isObject()) {
+                if (error) *error = "map.import.tileset-entry-invalid: index=" + std::to_string(i);
+                return {};
             }
-        } catch (...) {
-            if (error) *error = "map.import.tileset-invalid";
-            return {};
+            const int firstGid = o.has("firstgid") ? o.getInt("firstgid", 1) : 1;
+            if (o.has("source")) {
+                const std::string source = resolveAssetPath(mapPath, o.getString("source"));
+                if (std::filesystem::path(source).extension() == ".tsx") {
+                    TilesetInfo info = readTsxTileset(fs, source, firstGid, error);
+                    if (error && !error->empty()) return {};
+                    info.sourcePath = source;
+                    result.push_back(std::move(info));
+                    continue;
+                }
+                ownedDocs.push_back(readJsonDocument(fs, source, error));
+                if (!ownedDocs.back().valid()) return {};
+                TilesetInfo info = readTilesetObject(ownedDocs.back().root());
+                info.firstGid    = firstGid;
+                info.sourcePath  = source;
+                info.image       = resolveAssetPath(source, info.image);
+                result.push_back(std::move(info));
+                continue;
+            }
+            TilesetInfo info = readTilesetObject(o);
+            info.image       = resolveAssetPath(mapPath, info.image);
+            result.push_back(std::move(info));
         }
-    } else if (root->has("image") || root->has("texture")) {
+    } else if (root.has("tileset") && !root.get("tileset").isArray()) {
+        const Json o = root.get("tileset");
+        if (o.isObject() && !o.has("source")) {
+            TilesetInfo info = readTilesetObject(o);
+            info.image       = resolveAssetPath(mapPath, info.image);
+            result.push_back(std::move(info));
+        }
+    } else if (root.has("image") || root.has("texture")) {
         TilesetInfo info = readTilesetObject(root);
         info.image       = resolveAssetPath(mapPath, info.image);
         result.push_back(std::move(info));
@@ -1010,30 +865,32 @@ std::vector<TilesetInfo> readTilesets(Poco::JSON::Object::Ptr root, const std::s
     return result;
 }
 
-std::vector<TileLayer *> loadMapObject(Poco::JSON::Object::Ptr root, const std::string &path,
-                                       eve::filesystem::Filesystem *fs,
+std::vector<TileLayer *> loadMapObject(const Json &root, const std::string &path, eve::filesystem::Filesystem *fs,
                                        std::vector<MapObject> *objects, std::string *error) {
     std::vector<TileLayer *> out;
-    if (!root) {
+    if (!root || !root.isObject()) {
         if (error) *error = "config root must be object";
         return out;
     }
 
-    int mapW = 10, mapH = 10;
+    int   mapW  = 10, mapH = 10;
     float tileW = 32.f, tileH = 32.f;
-    if (root->has("width")) mapW = asInt(root->get("width"), mapW);
-    if (root->has("height")) mapH = asInt(root->get("height"), mapH);
-    if (root->has("tilewidth")) tileW = asFloat(root->get("tilewidth"), tileW);
-    else if (root->has("tileWidth")) tileW = asFloat(root->get("tileWidth"), tileW);
-    if (root->has("tileheight")) tileH = asFloat(root->get("tileheight"), tileH);
-    else if (root->has("tileHeight")) tileH = asFloat(root->get("tileHeight"), tileH);
+    if (root.has("width")) mapW = root.getInt("width", mapW);
+    if (root.has("height")) mapH = root.getInt("height", mapH);
+    if (root.has("tilewidth"))
+        tileW = root.getFloat("tilewidth", tileW);
+    else if (root.has("tileWidth"))
+        tileW = root.getFloat("tileWidth", tileW);
+    if (root.has("tileheight"))
+        tileH = root.getFloat("tileheight", tileH);
+    else if (root.has("tileHeight"))
+        tileH = root.getFloat("tileHeight", tileH);
 
-    // Validate orientation early on a temp config.
     TileLayer::Config orientCheck;
     if (!parseOrientation(root, &orientCheck, error)) return out;
 
     std::vector<TilesetInfo> tilesets = readTilesets(root, path, fs, error);
-    if (root->has("tilesets") && tilesets.empty() && error && !error->empty()) return out;
+    if (root.has("tilesets") && tilesets.empty() && error && !error->empty()) return out;
     if (objects) objects->clear();
 
     auto bindResource = [&](TileLayer *layer) {
@@ -1058,48 +915,44 @@ std::vector<TileLayer *> loadMapObject(Poco::JSON::Object::Ptr root, const std::
             if (auto *hot = eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
                 hot->bind(tileset.sourcePath, "tilemap");
         }
-        if (root->has("autoReload"))
-            res->autoReload = asBool(root->get("autoReload"), true);
+        if (root.has("autoReload")) res->autoReload = root.getBool("autoReload", true);
     };
 
-    if (root->has("layers")) {
-        try {
-            auto arr = root->getArray("layers");
-            if (arr) {
-                std::vector<LayerEntry> entries;
-                flattenLayers(arr, entries);
-                int sort = 0;
-                for (const LayerEntry &entry : entries) {
-                    Poco::JSON::Object::Ptr lo = entry.object;
-                    if (objects && isObjectGroup(lo)) {
-                        parseObjectGroup(lo, *objects);
-                        continue;
-                    }
-                    if (!isTileLayerObject(lo)) continue;
-                    TileLayer *layer = TileLayer::createLayer(mapW, mapH, tileW, tileH);
-                    if (!applyMapGlobals(layer, root, error)) {
-                        abandonLayers(out);
-                        layer->clear();
-                        layer->setVisible(false);
-                        return {};
-                    }
-                    applyTilesets(layer, tilesets);
-                    if (!applyOneLayerObject(layer, lo, mapW, mapH, error)) {
-                        abandonLayers(out);
-                        layer->clear();
-                        layer->setVisible(false);
-                        return {};
-                    }
-                    if (!lo->has("layer") && !lo->has("id")) layer->setLayer(sort);
-                    layer->setOrigin(layer->getX() + entry.offsetX, layer->getY() + entry.offsetY);
-                    layer->draw()->visible = layer->draw()->visible && entry.visible;
-                    layer->draw()->tint.a *= entry.opacity;
-                    ++sort;
-                    bindResource(layer);
-                    out.push_back(layer);
+    if (root.has("layers")) {
+        const Json arr = root.get("layers");
+        if (arr.isArray()) {
+            std::vector<LayerEntry> entries;
+            flattenLayers(arr, entries);
+            int sort = 0;
+            for (const LayerEntry &entry : entries) {
+                const Json &lo = entry.object;
+                if (objects && isObjectGroup(lo)) {
+                    parseObjectGroup(lo, *objects);
+                    continue;
                 }
+                if (!isTileLayerObject(lo)) continue;
+                TileLayer *layer = TileLayer::createLayer(mapW, mapH, tileW, tileH);
+                if (!applyMapGlobals(layer, root, error)) {
+                    abandonLayers(out);
+                    layer->clear();
+                    layer->setVisible(false);
+                    return {};
+                }
+                applyTilesets(layer, tilesets);
+                if (!applyOneLayerObject(layer, lo, mapW, mapH, error)) {
+                    abandonLayers(out);
+                    layer->clear();
+                    layer->setVisible(false);
+                    return {};
+                }
+                if (!lo.has("layer") && !lo.has("id")) layer->setLayer(sort);
+                layer->setOrigin(layer->getX() + entry.offsetX, layer->getY() + entry.offsetY);
+                layer->draw()->visible = layer->draw()->visible && entry.visible;
+                layer->draw()->tint.a *= entry.opacity;
+                ++sort;
+                bindResource(layer);
+                out.push_back(layer);
             }
-        } catch (...) {
         }
         if (!out.empty()) return out;
     }
@@ -1111,7 +964,7 @@ std::vector<TileLayer *> loadMapObject(Poco::JSON::Object::Ptr root, const std::
         return {};
     }
     applyTilesets(layer, tilesets);
-    if (root->has("data")) {
+    if (root.has("data")) {
         if (!applyFlatLayerData(layer, root, error)) {
             layer->clear();
             layer->setVisible(false);
@@ -1125,52 +978,45 @@ std::vector<TileLayer *> loadMapObject(Poco::JSON::Object::Ptr root, const std::
 
 }  // namespace
 
-bool applyConfigDocument(TileLayer *layer, data::JsonDocument *doc) {
-    if (!layer || !doc || !doc->isObject()) return false;
-    auto root = doc->object();
-    if (!root) return false;
+[[nodiscard]] eve::Result<void> applyConfigDocument(TileLayer* layer, eve::json::Value root) {
+    auto fail = [](eve::DiagnosticCode code, const std::string& message) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, message, "map.config"));
+    };
+    if (!layer || !root || !root.isObject())
+        return fail(eve::DiagnosticCode::InvalidArgument, "config root must be an object");
 
     std::string err;
-    if (!applyMapGlobals(layer, root, &err)) return false;
+    if (!applyMapGlobals(layer, root, &err))
+        return fail(eve::DiagnosticCode::Failed, err.empty() ? "map globals rejected" : err);
 
-    if (root->has("layers")) {
-        try {
-            auto arr = root->getArray("layers");
-            if (arr) {
-                for (size_t i = 0; i < arr->size(); ++i) {
-                    Poco::JSON::Object::Ptr lo;
-                    try {
-                        lo = arr->getObject(static_cast<unsigned int>(i));
-                    } catch (...) {
-                        continue;
-                    }
-                    if (!isTileLayerObject(lo)) continue;
-                    return applyOneLayerObject(layer, lo, layer->getMapWidth(),
-                                               layer->getMapHeight(), nullptr);
-                }
-            }
-        } catch (...) {
+    if (root.has("layers")) {
+        const Json arr = root.get("layers");
+        for (size_t i = 0; arr.isArray() && i < arr.size(); ++i) {
+            const Json lo = arr.at(i);
+            if (!isTileLayerObject(lo)) continue;
+            if (!applyOneLayerObject(layer, lo, layer->getMapWidth(), layer->getMapHeight(), &err))
+                return fail(eve::DiagnosticCode::Failed, err.empty() ? "tile layer apply failed" : err);
+            return eve::Result<void>::success();
         }
     }
 
-    if (root->has("data")) return applyFlatLayerData(layer, root, nullptr);
-    return true;
+    if (root.has("data")) {
+        if (!applyFlatLayerData(layer, root, &err))
+            return fail(eve::DiagnosticCode::Failed, err.empty() ? "layer data apply failed" : err);
+        return eve::Result<void>::success();
+    }
+    return eve::Result<void>::success();
 }
 
 bool applyConfigText(TileLayer *layer, const std::string &json, std::string *error) {
-    auto *dm = eve::data::DataModule::create();
     std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
-    if (!doc) {
+    auto        doc = eve::json::Document::parse(json, &err);
+    if (!doc.valid()) {
         if (error) *error = err.empty() ? "invalid json" : err;
         return false;
     }
-    if (!doc->isObject()) {
-        if (error) *error = "config root must be object";
-        return false;
-    }
-    auto root = doc->object();
-    if (!root) {
+    const Json root = doc.root();
+    if (!root.isObject()) {
         if (error) *error = "config root must be object";
         return false;
     }
@@ -1190,27 +1036,17 @@ bool applyConfigText(TileLayer *layer, const std::string &json, std::string *err
         rollback();
         return false;
     }
-    if (root->has("layers")) {
-        try {
-            auto arr = root->getArray("layers");
-            if (arr) {
-                for (size_t i = 0; i < arr->size(); ++i) {
-                    Poco::JSON::Object::Ptr lo;
-                    try {
-                        lo = arr->getObject(static_cast<unsigned int>(i));
-                    } catch (...) {
-                        continue;
-                    }
-                    if (!isTileLayerObject(lo)) continue;
-                    if (applyOneLayerObject(layer, lo, layer->getMapWidth(), layer->getMapHeight(), error)) return true;
-                    rollback();
-                    return false;
-                }
-            }
-        } catch (...) {
+    if (root.has("layers")) {
+        const Json arr = root.get("layers");
+        for (size_t i = 0; arr.isArray() && i < arr.size(); ++i) {
+            const Json lo = arr.at(i);
+            if (!isTileLayerObject(lo)) continue;
+            if (applyOneLayerObject(layer, lo, layer->getMapWidth(), layer->getMapHeight(), error)) return true;
+            rollback();
+            return false;
         }
     }
-    if (root->has("data")) {
+    if (root.has("data")) {
         if (applyFlatLayerData(layer, root, error)) return true;
         rollback();
         return false;
@@ -1233,16 +1069,15 @@ bool loadConfigFile(TileLayer *layer, const std::string &path, std::string *erro
         return false;
     }
 
-    auto                               *dataModule = eve::data::DataModule::create();
-    std::string                         decodeError;
-    std::unique_ptr<data::JsonDocument> document(dataModule->decodeJson(text, &decodeError));
-    if (!document || !document->isObject()) {
+    std::string decodeError;
+    auto        document = eve::json::Document::parse(text, &decodeError);
+    if (!document.valid() || !document.root().isObject()) {
         if (error) *error = decodeError.empty() ? "map.import.invalid-json" : decodeError;
         return false;
     }
-    auto                     root     = document->object();
+    const Json               root     = document.root();
     std::vector<TilesetInfo> tilesets = readTilesets(root, path, fs, error);
-    if (root->has("tilesets") && tilesets.empty() && error && !error->empty()) return false;
+    if (root.has("tilesets") && tilesets.empty() && error && !error->empty()) return false;
 
     const TileLayer::Config   oldConfig   = *layer->config();
     const TileLayer::Tiles    oldTiles    = *layer->tiles();
@@ -1307,25 +1142,19 @@ bool loadTilesetManifestFile(TileLayer *layer, const std::string &path, std::str
         return false;
     }
     const std::string text(static_cast<const char *>(data->getData()), data->getSize());
-    auto *dm = eve::data::DataModule::create();
-    std::string decodeError;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(text, &decodeError));
-    if (!doc || !doc->isObject()) {
+    std::string       decodeError;
+    auto              doc = eve::json::Document::parse(text, &decodeError);
+    if (!doc.valid() || !doc.root().isObject()) {
         if (error) *error = decodeError.empty() ? "invalid tileset manifest" : decodeError;
         return false;
     }
-    auto root = doc->object();
-    if (root->has("tileset")) {
-        try {
-            root = root->getObject("tileset");
-        } catch (...) {
+    Json root = doc.root();
+    if (root.has("tileset")) {
+        root = root.get("tileset");
+        if (!root.isObject()) {
             if (error) *error = "tileset must be an object";
             return false;
         }
-    }
-    if (!root) {
-        if (error) *error = "tileset manifest root must be an object";
-        return false;
     }
     const TilesetInfo info = readTilesetObject(root);
     if (info.image.empty()) {
@@ -1341,14 +1170,13 @@ bool loadTilesetManifestFile(TileLayer *layer, const std::string &path, std::str
 
 std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,
                                      std::string *error) {
-    auto *dm = eve::data::DataModule::create();
     std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
-    if (!doc || !doc->isObject()) {
+    auto        doc = eve::json::Document::parse(json, &err);
+    if (!doc.valid() || !doc.root().isObject()) {
         if (error) *error = err.empty() ? "invalid json" : err;
         return {};
     }
-    return loadMapObject(doc->object(), {}, nullptr, objects, error);
+    return loadMapObject(doc.root(), {}, nullptr, objects, error);
 }
 
 std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,
@@ -1367,14 +1195,13 @@ std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObj
         if (error) *error = "empty file: " + path;
         return {};
     }
-    auto *dm = eve::data::DataModule::create();
     std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(text, &err));
-    if (!doc || !doc->isObject()) {
+    auto        doc = eve::json::Document::parse(text, &err);
+    if (!doc.valid() || !doc.root().isObject()) {
         if (error) *error = err.empty() ? "invalid json" : err;
         return {};
     }
-    return loadMapObject(doc->object(), path, fs, objects, error);
+    return loadMapObject(doc.root(), path, fs, objects, error);
 }
 
 std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error) {

@@ -4,7 +4,7 @@
 
 namespace eve::crowd_editing {
 
-EditorResult<void> CrowdRuntimeApplier::apply(const CrowdDocumentTarget& document,
+Result<void> CrowdRuntimeApplier::apply(const CrowdDocumentTarget& document,
                                               crowd::Crowd* runtime) const {
     if (!runtime)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.crowd.runtime"),
@@ -12,7 +12,7 @@ EditorResult<void> CrowdRuntimeApplier::apply(const CrowdDocumentTarget& documen
     const auto diagnostics = document.validate();
     for (const auto& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     const auto agents = document.agents();
     if (agents.size() > static_cast<std::size_t>(runtime->getMaxAgents()))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.crowd.runtime-capacity"),

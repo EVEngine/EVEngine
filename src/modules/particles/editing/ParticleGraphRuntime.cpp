@@ -32,7 +32,7 @@ const std::string& text(const EditorValue& value, const char* key) {
 
 }  // namespace
 
-EditorResult<void> ParticleGraphRuntimeBuilder::apply(const GraphDocumentData& graph,
+Result<void> ParticleGraphRuntimeBuilder::apply(const GraphDocumentData& graph,
                                                       particles::ParticleEmitter* emitter,
                                                       const TextureResolver& textures) const {
     if (!emitter)
@@ -41,7 +41,7 @@ EditorResult<void> ParticleGraphRuntimeBuilder::apply(const GraphDocumentData& g
     ParticleGraphDomain domain;
     const ParticleGraphCompileResult compiled = domain.compile(graph);
     if (compiled.status != EditorStatus::Applied)
-        return EditorResult<void>::failure(eve::Status(compiled.status, compiled.diagnostics));
+        return Result<void>::failure(eve::Status(compiled.status, compiled.diagnostics));
     const EditorValue* emission = field(compiled.configuration, "emission");
     const EditorValue* motion = field(compiled.configuration, "motion");
     const EditorValue* collision = field(compiled.configuration, "collision");

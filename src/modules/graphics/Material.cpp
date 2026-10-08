@@ -10,7 +10,7 @@ namespace eve::graphics {
 
 namespace {
 eve::Diagnostic invalidMaterial(std::string message) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message));
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message);
 }
 }  // namespace
 

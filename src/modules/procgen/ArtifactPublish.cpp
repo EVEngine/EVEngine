@@ -124,10 +124,6 @@ PublicationBuffer makePublicationBuffer(const GeneratedArtifact& artifact) {
     return buffer;
 }
 
-eve::Result<void> participantFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 /** @brief Adapts one PreparedPublication to the common transaction protocol. */
 class ProviderParticipant final : public eve::transaction::ITransactionParticipant {
 public:
@@ -143,8 +139,7 @@ public:
 
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Idle)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact provider participant is not idle", name_ + ".prepare");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact provider participant is not idle", name_ + ".prepare"));
         // Do not initialize a placeholder Result and then move-assign over it:
         // in assertion builds move assignment intentionally rejects overwriting
         // an unobserved Result.  Returning from this lambda constructs the one
@@ -165,16 +160,14 @@ public:
         if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
         stage_ = std::move(prepared).takeValue();
         if (!stage_)
-            return participantFailure(eve::DiagnosticCode::InvariantViolation,
-                                      "artifact provider returned a null prepared stage", name_ + ".prepare");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "artifact provider returned a null prepared stage", name_ + ".prepare"));
         phase_ = Phase::Prepared;
         return eve::Result<void>::success();
     }
 
     [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared || !stage_)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact provider participant is not prepared", name_ + ".commit");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact provider participant is not prepared", name_ + ".commit"));
         stage_->commit();
         stage_.reset();
         phase_ = Phase::Committed;
@@ -183,8 +176,7 @@ public:
 
     [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact provider participant is not prepared", name_ + ".rollback");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact provider participant is not prepared", name_ + ".rollback"));
         stage_->rollback();
         stage_.reset();
         phase_ = Phase::RolledBack;
@@ -193,10 +185,8 @@ public:
 
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Committed)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact provider participant is not committed", name_ + ".compensate");
-        return participantFailure(eve::DiagnosticCode::Unsupported,
-                                  "artifact provider publication has no inverse compensation", name_ + ".compensate");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact provider participant is not committed", name_ + ".compensate"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "artifact provider publication has no inverse compensation", name_ + ".compensate"));
     }
 
 private:
@@ -223,23 +213,19 @@ public:
 
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Idle)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact store participant is not idle", "procgen.artifact-store.prepare");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact store participant is not idle", "procgen.artifact-store.prepare"));
         auto staged = store_->stagePublish(std::move(artifact_));
         if (!staged.ok()) return eve::Result<void>::failure(staged.status());
         stage_ = std::move(staged).takeValue();
         if (!stage_)
-            return participantFailure(eve::DiagnosticCode::InvariantViolation,
-                                      "artifact store returned a null prepared stage",
-                                      "procgen.artifact-store.prepare");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "artifact store returned a null prepared stage", "procgen.artifact-store.prepare"));
         phase_ = Phase::Prepared;
         return eve::Result<void>::success();
     }
 
     [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared || !stage_)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact store participant is not prepared", "procgen.artifact-store.commit");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact store participant is not prepared", "procgen.artifact-store.commit"));
         stage_->commit();
         stage_.reset();
         phase_ = Phase::Committed;
@@ -248,8 +234,7 @@ public:
 
     [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact store participant is not prepared", "procgen.artifact-store.rollback");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact store participant is not prepared", "procgen.artifact-store.rollback"));
         stage_->rollback();
         stage_.reset();
         phase_ = Phase::RolledBack;
@@ -258,12 +243,8 @@ public:
 
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Committed)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact store participant is not committed",
-                                      "procgen.artifact-store.compensate");
-        return participantFailure(eve::DiagnosticCode::Unsupported,
-                                  "artifact store publication has no inverse compensation",
-                                  "procgen.artifact-store.compensate");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact store participant is not committed", "procgen.artifact-store.compensate"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "artifact store publication has no inverse compensation", "procgen.artifact-store.compensate"));
     }
 
 private:
@@ -285,16 +266,14 @@ public:
 
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Idle)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact restore participant is not idle", name_ + ".prepare");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact restore participant is not idle", name_ + ".prepare"));
         phase_ = Phase::Prepared;
         return eve::Result<void>::success();
     }
 
     [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact restore participant is not prepared", name_ + ".commit");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact restore participant is not prepared", name_ + ".commit"));
         auto restored = provider_->restoreState(*state_);
         if (!restored.ok()) return eve::Result<void>::failure(restored.status());
         phase_ = Phase::Committed;
@@ -303,16 +282,14 @@ public:
 
     [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact restore participant is not prepared", name_ + ".rollback");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact restore participant is not prepared", name_ + ".rollback"));
         phase_ = Phase::RolledBack;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Committed)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact restore participant is not committed", name_ + ".compensate");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact restore participant is not committed", name_ + ".compensate"));
         provider_->clearState();
         phase_ = Phase::Compensated;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -336,18 +313,14 @@ public:
 
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Idle)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact store restore participant is not idle",
-                                      "procgen.artifact-store.restore.prepare");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact store restore participant is not idle", "procgen.artifact-store.restore.prepare"));
         phase_ = Phase::Prepared;
         return eve::Result<void>::success();
     }
 
     [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact store restore participant is not prepared",
-                                      "procgen.artifact-store.restore.commit");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact store restore participant is not prepared", "procgen.artifact-store.restore.commit"));
         auto restored = store_->restoreState(*state_);
         if (!restored.ok()) return eve::Result<void>::failure(restored.status());
         phase_ = Phase::Committed;
@@ -356,18 +329,14 @@ public:
 
     [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact store restore participant is not prepared",
-                                      "procgen.artifact-store.restore.rollback");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact store restore participant is not prepared", "procgen.artifact-store.restore.rollback"));
         phase_ = Phase::RolledBack;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Committed)
-            return participantFailure(eve::DiagnosticCode::PreconditionViolation,
-                                      "artifact store restore participant is not committed",
-                                      "procgen.artifact-store.restore.compensate");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "artifact store restore participant is not committed", "procgen.artifact-store.restore.compensate"));
         store_->clear();
         phase_ = Phase::Compensated;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -389,16 +358,12 @@ eve::Result<void> addProviderParticipant(
     if (!required) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     Adapter* adapter = eve::cap::query<Adapter>();
     if (!adapter)
-        return participantFailure(eve::DiagnosticCode::Unsupported,
-                                  std::string("required artifact adapter is unavailable: ") + name,
-                                  std::string("artifact.adapters.") + name);
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, std::string("required artifact adapter is unavailable: ") + name, std::string("artifact.adapters.") + name));
     try {
         owners.emplace_back(std::make_unique<ProviderParticipant>(name, *adapter, publication));
         participants.push_back(owners.back().get());
     } catch (...) {
-        return participantFailure(eve::DiagnosticCode::Failed,
-                                  std::string("failed to allocate artifact participant: ") + name,
-                                  std::string("artifact.adapters.") + name);
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::string("failed to allocate artifact participant: ") + name, std::string("artifact.adapters.") + name));
     }
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }

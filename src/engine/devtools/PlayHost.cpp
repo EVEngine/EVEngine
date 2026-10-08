@@ -33,7 +33,7 @@ Result<const Value::Object*> asObject(const Value& value, std::string path) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
         return Result<const Value::Object*>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "play value must be an object", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "play value must be an object", path));
     return Result<const Value::Object*>::success(object);
 }
 
@@ -101,7 +101,7 @@ Result<Value> walkPath(const Value& root, std::string_view dotted, std::string p
     auto         parts   = splitPath(dotted);
     if (parts.empty())
         return Result<Value>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "observation field path must not be empty", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "observation field path must not be empty", path));
     for (std::size_t index = 0; index < parts.size(); ++index) {
         const auto* object = current->getIf<Value::Object>();
         if (!object)
@@ -161,7 +161,7 @@ Result<std::vector<std::string>> stringArray(const Value& value, std::string pat
     const auto* array = value.getIf<Value::Array>();
     if (!array)
         return Result<std::vector<std::string>>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "play array must contain strings", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "play array must contain strings", path));
     std::vector<std::string> out;
     for (std::size_t index = 0; index < array->size(); ++index) {
         if (!(*array)[index].isString())
@@ -719,7 +719,7 @@ Result<Value> snapshotRoot(HSQUIRRELVM vm, std::string_view rootName) {
     if (json.empty())
         return Result<Value>::failure(
             Diagnostic::error(DiagnosticCode::Failed,
-                              error.empty() ? "script snapshot capture failed" : std::move(error), "observation"));
+                              error.empty() ? "script snapshot capture failed" : error, "observation"));
     auto parsed = Value::fromJson(json);
     if (!parsed) return Result<Value>::failure(parsed.status());
     auto object = asObject(parsed.value(), "snapshot");
@@ -789,7 +789,7 @@ public:
         std::string error;
         if (!capture->savePng(path, &width, &height, &error))
             return Result<Value>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, error.empty() ? "engine screenshot failed" : std::move(error), "capture"));
+                DiagnosticCode::Failed, error.empty() ? "engine screenshot failed" : error, "capture"));
         return Result<Value>::success(Value(Value::Object{{"height", Value(static_cast<std::int64_t>(height))},
                                                           {"path", Value(std::move(path))},
                                                           {"width", Value(static_cast<std::int64_t>(width))}}));
@@ -804,7 +804,7 @@ public:
         std::string json = Snapshot::instance().capture(vm, &error);
         if (json.empty())
             return Result<std::string>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, error.empty() ? "checkpoint capture failed" : std::move(error), "checkpoint"));
+                DiagnosticCode::Failed, error.empty() ? "checkpoint capture failed" : error, "checkpoint"));
         return Result<std::string>::success(std::move(json));
     }
 
@@ -816,7 +816,7 @@ public:
         std::string error;
         if (!Snapshot::instance().restore(vm, std::string(json), &error))
             return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, error.empty() ? "checkpoint restore failed" : std::move(error), "checkpoint"));
+                DiagnosticCode::Failed, error.empty() ? "checkpoint restore failed" : error, "checkpoint"));
         return Result<void>::success();
     }
 

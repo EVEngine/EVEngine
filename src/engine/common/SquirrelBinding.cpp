@@ -21,7 +21,7 @@ struct ConversionContext {
 
 Diagnostic conversionError(const ConversionContext& context, DiagnosticCode code, std::string message,
                            std::string path) {
-    return Diagnostic::error(code, std::move(message), std::move(path), {}, context.options.source);
+    return Diagnostic::error(code, message, path, {}, context.options.source);
 }
 
 std::string childPath(std::string_view parent, std::size_t index) {

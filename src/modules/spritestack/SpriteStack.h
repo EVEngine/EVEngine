@@ -8,6 +8,10 @@
 #include <string>
 #include <vector>
 
+namespace ssq {
+class Class;
+}
+
 namespace eve::graphics {
 class Camera2D;
 class Graphics;
@@ -41,6 +45,7 @@ struct SliceOptions {
 };
 
 std::vector<image::ImageData *> sliceMeshToLayers(const SliceInput &, const SliceOptions &);
+/** @brief Assimp-backed bake; compiled only when the model3d module is linked. */
 EVENGINE_API_WORLD std::vector<image::ImageData *> sliceModelToLayers(model3d::ModelData *, const SliceOptions &);
 EVENGINE_API_WORLD std::vector<image::ImageData *> slicePrimitiveToLayers(const std::string &, const SliceOptions &);
 
@@ -138,5 +143,8 @@ public:
                                                int imageW, int imageH, const std::string &axis,
                                                float thickness);
 };
+
+/** @brief Register sliceModel when SpriteStackModel.cpp is linked (model3d on). */
+void exposeSpriteStackModelBindings(ssq::Class &cls);
 
 }  // namespace eve::spritestack

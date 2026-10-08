@@ -93,7 +93,9 @@ struct HexMapGeneratorSettings {
  * @param map Grid to fill. Its size and seed must already be set by
  *            `HexMap::reset`; the settings' own seed only drives the generator's
  *            internal choices, so two calls with the same settings and the same
- *            grid produce the same map.
+ *            grid produce the same map. Scripts do not call this: they bake
+ *            through `procgen.generateHexTerrain` and apply with
+ *            `hexmap.applyTerrain`.
  * @param settings Generator tunables.
  * @return Success, or InvalidArgument when the grid is empty.
  * @cost Proportional to the cell count; allocates one scratch value per cell.

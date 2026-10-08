@@ -23,7 +23,7 @@ EditorValue bindingValue(const SplinePointBinding& binding) {
 
 }  // namespace
 
-EditorResult<SplineBindingPose> SceneQuerySplineBindingSource::resolve(const std::string& host,
+Result<SplineBindingPose> SceneQuerySplineBindingSource::resolve(const std::string& host,
                                                                        const std::string& object) const {
     if (!query_)
         return eve::editing::failed<SplineBindingPose>(EditorStatus::Unsupported,
@@ -39,7 +39,7 @@ EditorResult<SplineBindingPose> SceneQuerySplineBindingSource::resolve(const std
 
 SplinePathBinder::SplinePathBinder(std::string documentTarget) : documentTarget_(std::move(documentTarget)) {}
 
-EditorResult<void> SplinePathBinder::bindResult(const SplinePathDocument& document, const StableId& point,
+Result<void> SplinePathBinder::bindResult(const SplinePathDocument& document, const StableId& point,
                                                 std::string host, std::string object,
                                                 const ISplineBindingTransformSource& source) {
     if (document.targetId().value() != documentTarget_)
@@ -61,14 +61,14 @@ EditorResult<void> SplinePathBinder::bindResult(const SplinePathDocument& docume
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> SplinePathBinder::unbindResult(const StableId& point) {
+Result<void> SplinePathBinder::unbindResult(const StableId& point) {
     if (!bindings_.erase(point))
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.spline.binding-not-found"),
                                           "Spline point binding was not found");
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> SplinePathBinder::refreshResult(SplinePathDocument&                  document,
+Result<void> SplinePathBinder::refreshResult(SplinePathDocument&                  document,
                                                    const ISplineBindingTransformSource& source) const {
     if (document.targetId().value() != documentTarget_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spline.binding-target-mismatch"),
@@ -124,7 +124,7 @@ EditorValue SplinePathBinder::snapshotValue() const {
                                {"bindings", EditorValue(std::move(bindings))}};
 }
 
-EditorResult<void> SplinePathBinder::loadSnapshot(const EditorValue& snapshot) {
+Result<void> SplinePathBinder::loadSnapshot(const EditorValue& snapshot) {
     const auto* schemaValue   = field(snapshot, "schema");
     const auto* versionValue  = field(snapshot, "version");
     const auto* documentValue = field(snapshot, "document");

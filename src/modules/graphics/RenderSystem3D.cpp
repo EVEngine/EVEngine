@@ -1,14 +1,17 @@
 #include "graphics/RenderSystem3D.h"
-#include "graphics/DiffuseLightProbeRegistry.h"
+#include "common/Capability.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
+#include "common/Status.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/DepthPyramid.h"
+#include "graphics/DiffuseLightProbeRegistry.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/IRayTracing.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -95,6 +98,7 @@ void collectLights3D(std::vector<PackedLight3D>& out, size_t maxCount) {
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [d] = *it;
         if (!d->enabled) continue;
+        if (d->volumetricOnly) continue;  // emissive proxies skip surface lighting
         PackedLight3D pl;
         pl.data    = d;
         pl.isPoint = (d->type != "dir");
@@ -680,12 +684,13 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     RenderControl* rc = gfx.getRenderControl();
     rc->ensureCompiled();
-    const bool doShadow       = rc->hasPass("shadow");
-    const bool doGBuffer      = rc->hasPass("gbuffer");
-    const bool doDecal        = rc->hasPass("decal");
-    const bool doForward      = rc->hasPass("forward");
-    const bool doHair         = rc->hasPass("hair");
-    const bool allowClustered = rc->isEnabled("clustered");
+    const bool doShadow           = rc->hasPass("shadow");
+    const bool doGBuffer          = rc->hasPass("gbuffer");
+    const bool doDecal            = rc->hasPass("decal");
+    const bool doDeferredLighting = rc->hasPass("deferredLighting");
+    const bool doForward          = rc->hasPass("forward");
+    const bool doHair             = rc->hasPass("hair");
+    const bool allowClustered     = rc->isEnabled("clustered");
 
     std::vector<PackedLight3D> packed;
     collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
@@ -718,7 +723,10 @@ void RenderSystem3D::render(Graphics& gfx) {
     }
     gfx.setMesh3DShadows(shadowUpload);
 
-    const bool useClustered = allowClustered && packed.size() > size_t(Lighting3DPack::kMaxLights);
+    // Hybrid always builds the clustered light table so deferred lighting and
+    // transparent Forward+ share one upload. ForwardPlus still gates on light count.
+    const bool useClustered =
+        allowClustered && (doDeferredLighting || packed.size() > size_t(Lighting3DPack::kMaxLights));
     // Light split / directional promotion is camera-independent: compute once,
     // then each camera view bakes its own clustered table from these lists.
     std::vector<ClusteredLightGpu> clusteredPoints;
@@ -1001,10 +1009,9 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     if (!doForward && !doHair) return;
 
-    // GPU-driven intent must be set BEFORE begin3DFrame: when the stage-2 cull
-    // chain is live, begin3DFrame defers opening the scene color pass so the
-    // compute section can be recorded before the opaque draws.
-    const bool gpuDrivenWanted = rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
+    // GPU-driven opaque is a ForwardPlus path; Hybrid lights core opaque via
+    // deferredLighting and must not also submit GPU-driven lit draws.
+    const bool gpuDrivenWanted = !doDeferredLighting && rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
     gfx.gpuDrivenSetEnabled(gpuDrivenWanted);
 
     if (defaultCam) {
@@ -1017,6 +1024,32 @@ void RenderSystem3D::render(Graphics& gfx) {
     }
     gfx.begin3DFrame();
     if (!gfx.had3DThisFrame()) return;
+
+    // Phase C Hybrid: fullscreen clustered deferred lighting fills scene color
+    // for core PBR opaque/masked pixels written to the GBuffer. Transparent and
+    // extended-feature opaques still go through Forward+ below.
+    if (doDeferredLighting && defaultCam && !cams.empty()) {
+        eve::debug::rtPassBegin("DeferredLighting");
+        const CameraView& cv = cams[0];
+        gfx.setMesh3DViewProj(cv.viewProj);
+        gfx.setMesh3DView(cv.view);
+        gfx.setMesh3DClip(cv.data->nearZ, cv.data->farZ);
+        gfx.setMesh3DCameraPos(cv.eye);
+        gfx.setMesh3DEnv(cv.data->envMap, cv.data->envIntensity);
+        gfx.setMesh3DEnvProbe(cv.data->envProbeCenter, cv.data->envProbeExtent);
+        gfx.setMesh3DLighting(cv.lighting);
+        if (cv.clusteredValid) {
+            gfx.setMesh3DClusteredLighting(cv.clustered);
+        } else {
+            // Orthographic / empty: drawDeferredLighting synthesizes a valid
+            // empty cluster table from the frame UBO primary light.
+            ClusteredLightingUpload off{};
+            off.active = false;
+            gfx.setMesh3DClusteredLighting(off);
+        }
+        gfx.drawDeferredLighting();
+        eve::debug::rtPassEnd("DeferredLighting");
+    }
 
     auto drawPersistentPrimitives = [&]() {
         if (cams.empty()) return;
@@ -1062,6 +1095,33 @@ void RenderSystem3D::render(Graphics& gfx) {
         if (a->sortPriority != b->sortPriority) return a->sortPriority < b->sortPriority;
         return a->projectedDepth > b->projectedDepth;
     });
+
+    // Core metallic-roughness opaque/masked already lit by deferredLighting —
+    // skip their Forward+ draws. Custom shaders, extended PBR, unlit, instances,
+    // light probes, and x-ray stay on the forward path.
+    auto isDeferredCoreOpaque = [&](const CulledItem& item) -> bool {
+        if (!doDeferredLighting) return false;
+        if (item.surfaceMode == SurfaceMode::Transparent) return false;
+        if (item.hair || item.xray || item.speedTreeFade) return false;
+        if (item.mr->instances || item.lightProbeUsage != 0) return false;
+        if (item.shader) return false;
+        Material* mat = item.material;
+        if (mat) {
+            if (mat->effectiveShader()) return false;
+            if (mat->isTransparentHair()) return false;
+            const std::string model = mat->getShadingModel();
+            if (model != "pbr") return false;
+            if (!mat->getReceiveLight()) return false;
+            if (mat->hasPbrSurface()) {
+                const PbrSurface s = mat->pbrSurface();
+                if (s.clearcoatFactor > 1e-4f || s.anisotropyStrength > 1e-4f) return false;
+            }
+        } else {
+            if (item.mr->shader) return false;
+            if (!item.mr->receiveLight) return false;
+        }
+        return true;
+    };
 
     auto bindLegacyMaterial = [&](Renderable3D::MeshRenderer* mr) {
         gfx.setMesh3DSurface(mr->isHair ? SurfaceMode::Transparent : SurfaceMode::Opaque, BlendMode::Alpha, false,
@@ -1318,7 +1378,10 @@ void RenderSystem3D::render(Graphics& gfx) {
         }
         if (!gpuDrivenUsed) {
             if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
-            for (const CulledItem* item : opaque) drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+            for (const CulledItem* item : opaque) {
+                if (isDeferredCoreOpaque(*item)) continue;
+                drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+            }
         }
         if (defaultCam && !g_forwardDrawers.empty()) {
             if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
@@ -1358,6 +1421,7 @@ void RenderSystem3D::render(Graphics& gfx) {
     const bool doAO      = rc->isEnabled("ao");
     const bool doRTGI    = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
     const bool doSSR     = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
+    const bool doRTX     = rc->isEnabled("rtx");
     bool       aoApplied = false;
     auto       applyAO   = [&]() {
         if (!doAO || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
@@ -1387,7 +1451,7 @@ void RenderSystem3D::render(Graphics& gfx) {
         aoApplied = true;
     };
 
-    const bool doReflectionLighting = doRTGI || doSSR;
+    const bool doReflectionLighting = doRTGI || doSSR || doRTX;
     if (doReflectionLighting && defaultCam && gfx.had3DThisFrame()) {
         GBuffer* gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
@@ -1427,7 +1491,62 @@ void RenderSystem3D::render(Graphics& gfx) {
                     }
                 }
 
-                if (doSSR) {
+                // Hardware RT reflections (optional module). Prefer RTX when
+                // available; fall through to SSR on NoOp / failure / absent provider.
+                if (doRTX) {
+                    if (auto* rt = eve::cap::query<IRayTracing>()) {
+                        if (rt->isAvailable()) {
+                            ScreenSpaceReflection* ssr        = gfx.pipelineScreenSpaceReflection();
+                            Canvas*                reflCanvas = ssr->getReflectionCanvas();
+                            if (reflCanvas) {
+                                // Switching canvas ends the open scene-color pass so RT
+                                // can sample the finished frame on the present CB.
+                                Canvas* prevCanvas = gfx.getCanvas();
+                                gfx.setCanvas(reflCanvas);
+
+                                rt->clearScene();
+                                constexpr size_t kMaxRtMeshes = 64;
+                                size_t           registered   = 0;
+                                for (const CulledItem* item : opaque) {
+                                    if (!item || !item->mesh || registered >= kMaxRtMeshes) continue;
+                                    auto added = rt->addMesh(item->mesh, item->model);
+                                    if (added.ok()) {
+                                        ++registered;
+                                        (void)added.value();
+                                    } else {
+                                        added.ignore();
+                                    }
+                                }
+                                bool produced = false;
+                                if (registered > 0) {
+                                    auto rebuilt = rt->rebuildScene();
+                                    if (rebuilt.ok()) {
+                                        glm::mat4 viewProj = !cams.empty() ? cams.front().viewProj : glm::mat4(1.f);
+                                        glm::mat4 invVP    = glm::inverse(viewProj);
+                                        glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
+                                        auto      applied =
+                                            rt->applyReflections(&gfx, sceneColor, depth, gb->getNormalTexture(),
+                                                                 reflCanvas, invVP, viewProj, eye);
+                                        if (applied.ok() && applied.code() != eve::StatusCode::NoOp) {
+                                            ssrTexture = ssr->getReflectionTexture();
+                                            produced   = true;
+                                        } else {
+                                            applied.ignore();
+                                        }
+                                    } else {
+                                        rebuilt.ignore();
+                                    }
+                                }
+                                (void)produced;
+                                gfx.setCanvas(prevCanvas);
+                            }
+                        }
+                    }
+                }
+
+                // Portable SSR path: explicit ssr/reflectionChain, or RTX requested
+                // but hardware did not produce a usable reflection texture.
+                if ((doSSR || doRTX) && !ssrTexture) {
                     ScreenSpaceReflection* ssr = gfx.pipelineScreenSpaceReflection();
                     if (ssr->getQuality() != rc->getReflectionQuality()) ssr->setQuality(rc->getReflectionQuality());
                     ssr->setEnabled(true);

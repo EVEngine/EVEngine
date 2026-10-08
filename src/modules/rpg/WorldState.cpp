@@ -18,12 +18,6 @@ bool validId(std::string_view id) {
 
 std::string scope(std::string_view mapId) { return "world.object:" + std::string(mapId); }
 
-eve::Result<void> invalid(std::string path) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, "world-state IDs must be non-empty, bounded, and control-free",
-        std::move(path), {}, "rpg.world-state"));
-}
-
 }  // namespace
 
 bool WorldState::isObjectConsumed(std::string_view mapId, std::string_view objectId) const {
@@ -35,8 +29,12 @@ bool WorldState::isObjectConsumed(std::string_view mapId, std::string_view objec
 }
 
 eve::Result<void> WorldState::consumeObject(std::string_view mapId, std::string_view objectId) {
-    if (!validId(mapId)) return invalid("mapId");
-    if (!validId(objectId)) return invalid("objectId");
+    if (!validId(mapId)) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "world-state IDs must be non-empty, bounded, and control-free",
+        "mapId", {}, "rpg.world-state"));
+    if (!validId(objectId)) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "world-state IDs must be non-empty, bounded, and control-free",
+        "objectId", {}, "rpg.world-state"));
     if (isObjectConsumed(mapId, objectId))
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     gameState_->setSelfVariable(scope(mapId), std::string(objectId), 1.0);
@@ -44,8 +42,12 @@ eve::Result<void> WorldState::consumeObject(std::string_view mapId, std::string_
 }
 
 eve::Result<void> WorldState::resetObject(std::string_view mapId, std::string_view objectId) {
-    if (!validId(mapId)) return invalid("mapId");
-    if (!validId(objectId)) return invalid("objectId");
+    if (!validId(mapId)) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "world-state IDs must be non-empty, bounded, and control-free",
+        "mapId", {}, "rpg.world-state"));
+    if (!validId(objectId)) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "world-state IDs must be non-empty, bounded, and control-free",
+        "objectId", {}, "rpg.world-state"));
     if (!isObjectConsumed(mapId, objectId))
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     gameState_->setSelfVariable(scope(mapId), std::string(objectId), 0.0);

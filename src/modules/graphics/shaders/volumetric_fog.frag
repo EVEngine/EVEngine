@@ -139,7 +139,10 @@ void main() {
     float dens = density * heightFactor * distFactor * densityShape;
 
     float cosTheta = dot(-rayDir, lightDir);
-    float phase = mix(1.0, henyeyGreenstein(cosTheta, g) * 4.0, 0.35);
+    // Dual-lobe: keep most energy forward for sun shafts-in-fog, plus soft fill.
+    float forward = henyeyGreenstein(cosTheta, g);
+    float back = henyeyGreenstein(cosTheta, -g * 0.45);
+    float phase = mix(1.0, mix(back, forward, 0.8) * 4.0, 0.40);
     float stepOptical = dens * stepLen;
     inScatter += fogColor * phase * stepOptical * transmittance * intensity;
     transmittance *= exp(-stepOptical);

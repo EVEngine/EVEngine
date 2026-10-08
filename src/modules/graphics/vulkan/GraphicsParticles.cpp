@@ -4,6 +4,7 @@
 
 #include "graphics/shaders/particle_resident_comp_spv.inc"
 #include "graphics/shaders/particle_resident_frag_spv.inc"
+#include "graphics/shaders/particle_resident_sort_comp_spv.inc"
 #include "graphics/shaders/particle_resident_vert_spv.inc"
 
 #include <algorithm>
@@ -50,6 +51,30 @@ struct alignas(16) ParticleDrawPush {
 };
 
 static_assert(sizeof(ParticleDrawPush) == 112, "particle draw push layout must match GLSL");
+
+struct alignas(16) ParticleSortPush {
+    std::uint32_t passKind     = 0;
+    std::uint32_t sortMode     = 0;
+    std::uint32_t paddedCount  = 0;
+    std::uint32_t bitonicK     = 0;
+    std::uint32_t bitonicJ     = 0;
+    std::uint32_t _pad0        = 0;
+    float         camera[2]{};
+};
+
+static_assert(sizeof(ParticleSortPush) == 32, "particle sort push layout must match GLSL");
+
+struct SortRecord {
+    std::uint32_t key   = 0;
+    std::uint32_t index = 0;
+};
+
+static_assert(sizeof(SortRecord) == 8, "sort record must match GLSL");
+
+std::uint32_t nextPow2Count(std::uint32_t value) {
+    if (value <= 1u) return 1u;
+    return std::bit_ceil(value);
+}
 
 vk::Pipeline createParticleDrawPipeline(vkb::Device& device, const vkb::BuiltRenderPass& renderPass,
                                         vk::PipelineLayout layout, vk::ShaderModule vert, vk::ShaderModule frag,
@@ -119,12 +144,18 @@ struct Graphics::GpuParticleResource {
         vkb::GenericBuffer spawns;
         vkb::GenericBuffer scratchState;
         vkb::GenericBuffer scratchMeta;
+        vkb::GenericBuffer sortRecords;
+        vkb::GenericBuffer sortedIndices;
         vk::DescriptorSet  computeSet{};
         vk::DescriptorSet  drawSet{};
+        vk::DescriptorSet  sortSet{};
         GpuTexture*        drawTexture = nullptr;
         GpuTexture*        drawDepthTexture = nullptr;
+        vk::Buffer         drawSortedIndices = nullptr;
+        vk::Buffer         drawMeta          = nullptr;
         std::uint64_t      serial      = 0;
         bool               initialized = false;
+        bool               hasSortedIndices = false;
     };
 
     std::uint32_t                 capacity = 0;
@@ -161,6 +192,7 @@ void Graphics::releaseGpuParticleEmitter(GpuParticleHandle handle) {
     for (const auto& slot : found->second->slots) {
         if (slot.computeSet) sets.push_back(slot.computeSet);
         if (slot.drawSet) sets.push_back(slot.drawSet);
+        if (slot.sortSet) sets.push_back(slot.sortSet);
     }
     if (!sets.empty() && descriptorPool) device->freeDescriptorSets(descriptorPool, sets);
     delete found->second;
@@ -225,27 +257,43 @@ void Graphics::createGpuParticlePipelines() {
         vk::DescriptorSetLayoutBinding(1, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eVertex),
         vk::DescriptorSetLayoutBinding(2, vk::DescriptorType::eCombinedImageSampler, 1,
                                        vk::ShaderStageFlagBits::eFragment),
+        vk::DescriptorSetLayoutBinding(3, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eVertex),
+        vk::DescriptorSetLayoutBinding(4, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eVertex),
     };
     gpuParticleDrawSetLayout_ = device->createDescriptorSetLayout(vk::DescriptorSetLayoutCreateInfo({}, drawBindings));
+
+    std::array<vk::DescriptorSetLayoutBinding, 4> sortBindings{};
+    for (std::uint32_t binding = 0; binding < sortBindings.size(); ++binding) {
+        sortBindings[binding] = {binding, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eCompute};
+    }
+    gpuParticleSortSetLayout_ =
+        device->createDescriptorSetLayout(vk::DescriptorSetLayoutCreateInfo({}, sortBindings));
 
     const auto computePush    = pushConstantRange(vk::ShaderStageFlagBits::eCompute, sizeof(ParticleComputePush));
     gpuParticleComputeLayout_ = createPipelineLayout(device, gpuParticleComputeSetLayout_, &computePush);
     const auto drawPush       = pushConstantRange(vk::ShaderStageFlagBits::eVertex, sizeof(ParticleDrawPush));
     gpuParticleDrawLayout_    = createPipelineLayout(device, gpuParticleDrawSetLayout_, &drawPush);
+    const auto sortPush       = pushConstantRange(vk::ShaderStageFlagBits::eCompute, sizeof(ParticleSortPush));
+    gpuParticleSortLayout_    = createPipelineLayout(device, gpuParticleSortSetLayout_, &sortPush);
 
-    const auto computeSpv = std::vector<std::uint32_t>(particle_resident_comp_spv,
-                                                       particle_resident_comp_spv + particle_resident_comp_spv_count);
-    vk::ShaderModule computeModule = vkb::PipelineBuilder::createShaderModule(device.instance, computeSpv);
-    vk::PipelineShaderStageCreateInfo stage{};
-    stage.stage  = vk::ShaderStageFlagBits::eCompute;
-    stage.module = computeModule;
-    stage.pName  = "main";
-    vk::ComputePipelineCreateInfo computeInfo{};
-    computeInfo.stage  = stage;
-    computeInfo.layout = gpuParticleComputeLayout_;
-    auto computeResult = device->createComputePipeline({}, computeInfo);
-    if (computeResult.result == vk::Result::eSuccess) gpuParticleComputePipeline_ = computeResult.value;
-    device->destroyShaderModule(computeModule);
+    auto createComputePipeline = [&](const std::uint32_t* words, std::size_t count, vk::PipelineLayout layout) {
+        const auto spv = std::vector<std::uint32_t>(words, words + count);
+        vk::ShaderModule module = vkb::PipelineBuilder::createShaderModule(device.instance, spv);
+        vk::PipelineShaderStageCreateInfo stage{};
+        stage.stage  = vk::ShaderStageFlagBits::eCompute;
+        stage.module = module;
+        stage.pName  = "main";
+        vk::ComputePipelineCreateInfo info{};
+        info.stage  = stage;
+        info.layout = layout;
+        auto result = device->createComputePipeline({}, info);
+        device->destroyShaderModule(module);
+        return result.result == vk::Result::eSuccess ? result.value : vk::Pipeline{};
+    };
+    gpuParticleComputePipeline_ =
+        createComputePipeline(particle_resident_comp_spv, particle_resident_comp_spv_count, gpuParticleComputeLayout_);
+    gpuParticleSortPipeline_ = createComputePipeline(particle_resident_sort_comp_spv,
+                                                     particle_resident_sort_comp_spv_count, gpuParticleSortLayout_);
 
     const auto vertSpv    = std::vector<std::uint32_t>(particle_resident_vert_spv,
                                                        particle_resident_vert_spv + particle_resident_vert_spv_count);
@@ -267,6 +315,61 @@ void Graphics::createGpuParticlePipelines() {
     device->destroyShaderModule(frag);
 }
 
+void Graphics::rebuildGpuParticleDrawPipelines(const vkb::BuiltRenderPass &target) {
+    if (!gpuParticleDrawLayout_ || !target) return;
+    auto destroyPipe = [&](vk::Pipeline &p) {
+        if (p) {
+            device->destroyPipeline(p);
+            p = nullptr;
+        }
+    };
+    destroyPipe(gpuParticleAlphaPipeline_);
+    destroyPipe(gpuParticleAdditivePipeline_);
+    destroyPipe(gpuParticlePremultipliedPipeline_);
+    destroyPipe(gpuParticleMultiplyPipeline_);
+    destroyPipe(gpuParticleOpaquePipeline_);
+    const auto vertSpv = std::vector<std::uint32_t>(particle_resident_vert_spv,
+                                                    particle_resident_vert_spv + particle_resident_vert_spv_count);
+    const auto fragSpv = std::vector<std::uint32_t>(particle_resident_frag_spv,
+                                                    particle_resident_frag_spv + particle_resident_frag_spv_count);
+    vk::ShaderModule vert = vkb::PipelineBuilder::createShaderModule(device.instance, vertSpv);
+    vk::ShaderModule frag = vkb::PipelineBuilder::createShaderModule(device.instance, fragSpv);
+    gpuParticleAlphaPipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Alpha);
+    gpuParticleAdditivePipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Additive);
+    gpuParticlePremultipliedPipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Premultiplied);
+    gpuParticleMultiplyPipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Multiply);
+    gpuParticleOpaquePipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Opaque);
+    device->destroyShaderModule(vert);
+    device->destroyShaderModule(frag);
+}
+
+void Graphics::ensureHdrGpuParticleDrawPipelines() {
+    if (hdrGpuParticleAlphaPipeline_ || !gpuParticleDrawLayout_ || !hdrOffscreenRenderPass) return;
+    const auto vertSpv = std::vector<std::uint32_t>(particle_resident_vert_spv,
+                                                    particle_resident_vert_spv + particle_resident_vert_spv_count);
+    const auto fragSpv = std::vector<std::uint32_t>(particle_resident_frag_spv,
+                                                    particle_resident_frag_spv + particle_resident_frag_spv_count);
+    vk::ShaderModule vert = vkb::PipelineBuilder::createShaderModule(device.instance, vertSpv);
+    vk::ShaderModule frag = vkb::PipelineBuilder::createShaderModule(device.instance, fragSpv);
+    hdrGpuParticleAlphaPipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Alpha);
+    hdrGpuParticleAdditivePipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Additive);
+    hdrGpuParticlePremultipliedPipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Premultiplied);
+    hdrGpuParticleMultiplyPipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Multiply);
+    hdrGpuParticleOpaquePipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Opaque);
+    device->destroyShaderModule(vert);
+    device->destroyShaderModule(frag);
+}
+
 void Graphics::destroyGpuParticleResources() {
     gpuParticleDraws_.clear();
     for (auto& [handle, resource] : gpuParticles_) {
@@ -275,6 +378,7 @@ void Graphics::destroyGpuParticleResources() {
         for (const auto& slot : resource->slots) {
             if (slot.computeSet) sets.push_back(slot.computeSet);
             if (slot.drawSet) sets.push_back(slot.drawSet);
+            if (slot.sortSet) sets.push_back(slot.sortSet);
         }
         if (!sets.empty() && descriptorPool) device->freeDescriptorSets(descriptorPool, sets);
         delete resource;
@@ -285,19 +389,29 @@ void Graphics::destroyGpuParticleResources() {
         pipeline = nullptr;
     };
     destroyPipeline(gpuParticleComputePipeline_);
+    destroyPipeline(gpuParticleSortPipeline_);
     destroyPipeline(gpuParticleAlphaPipeline_);
     destroyPipeline(gpuParticleAdditivePipeline_);
     destroyPipeline(gpuParticlePremultipliedPipeline_);
     destroyPipeline(gpuParticleMultiplyPipeline_);
     destroyPipeline(gpuParticleOpaquePipeline_);
+    destroyPipeline(hdrGpuParticleAlphaPipeline_);
+    destroyPipeline(hdrGpuParticleAdditivePipeline_);
+    destroyPipeline(hdrGpuParticlePremultipliedPipeline_);
+    destroyPipeline(hdrGpuParticleMultiplyPipeline_);
+    destroyPipeline(hdrGpuParticleOpaquePipeline_);
     if (gpuParticleComputeLayout_) device->destroyPipelineLayout(gpuParticleComputeLayout_);
     if (gpuParticleDrawLayout_) device->destroyPipelineLayout(gpuParticleDrawLayout_);
+    if (gpuParticleSortLayout_) device->destroyPipelineLayout(gpuParticleSortLayout_);
     gpuParticleComputeLayout_ = nullptr;
     gpuParticleDrawLayout_    = nullptr;
+    gpuParticleSortLayout_    = nullptr;
     if (gpuParticleComputeSetLayout_) device->destroyDescriptorSetLayout(gpuParticleComputeSetLayout_);
     if (gpuParticleDrawSetLayout_) device->destroyDescriptorSetLayout(gpuParticleDrawSetLayout_);
+    if (gpuParticleSortSetLayout_) device->destroyDescriptorSetLayout(gpuParticleSortSetLayout_);
     gpuParticleComputeSetLayout_ = nullptr;
     gpuParticleDrawSetLayout_    = nullptr;
+    gpuParticleSortSetLayout_    = nullptr;
 }
 
 void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
@@ -307,14 +421,34 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
     using BufferUsage               = vk::BufferUsageFlagBits;
     using Memory                    = vk::MemoryPropertyFlagBits;
 
+    auto latestDraw = [&](GpuParticleHandle handle) -> const GpuParticleDraw* {
+        for (auto it = gpuParticleDraws_.rbegin(); it != gpuParticleDraws_.rend(); ++it) {
+            if (it->handle == handle) return &it->draw;
+        }
+        return nullptr;
+    };
+
     for (auto& [handle, owned] : gpuParticles_) {
-        (void)handle;
         auto& resource = *owned;
-        if (!resource.pendingUpdate && !resource.pendingReset) continue;
+        const GpuParticleDraw* drawRequest = latestDraw(handle);
+        GpuParticleSortMode sortMode = drawRequest ? drawRequest->sortMode : GpuParticleSortMode::None;
+        if (drawRequest && drawRequest->facing == GpuParticleFacingMode::Ribbon)
+            sortMode = GpuParticleSortMode::Birth;
+        if (sortMode == GpuParticleSortMode::Distance &&
+            !(drawRequest && drawRequest->cameraEnabled))
+            sortMode = GpuParticleSortMode::None;
+        const bool needsSort = sortMode != GpuParticleSortMode::None && gpuParticleSortPipeline_;
+        if (!resource.pendingUpdate && !resource.pendingReset && !needsSort) continue;
         if (resource.slots.size() < requiredSlots) resource.slots.resize(requiredSlots);
-        auto&                slot       = resource.slots[frameSlot % resource.slots.size()];
+        const bool runUpdate = resource.pendingUpdate || resource.pendingReset;
+        auto&                slot       = runUpdate ? resource.slots[frameSlot % resource.slots.size()]
+                                                    : resource.slots[std::size_t(std::max(resource.lastOutputSlot, 0))];
+        if (!runUpdate && resource.lastOutputSlot < 0) continue;
         const vk::DeviceSize stateBytes = vk::DeviceSize(resource.capacity) * sizeof(GpuParticleSpawn);
         const vk::DeviceSize metaBytes  = sizeof(ParticleMeta);
+        const std::uint32_t  paddedSort = nextPow2Count(resource.capacity);
+        const vk::DeviceSize sortBytes  = vk::DeviceSize(paddedSort) * sizeof(SortRecord);
+        const vk::DeviceSize indexBytes = vk::DeviceSize(resource.capacity) * sizeof(std::uint32_t);
 
         if (!slot.state.buffer) {
             const auto stateUsage = BufferUsage::eStorageBuffer | BufferUsage::eTransferSrc | BufferUsage::eTransferDst;
@@ -328,10 +462,18 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
             slot.scratchMeta.allocate(frameToken(), device, metaUsage, metaBytes);
             slot.spawns.allocate(frameToken(), device, BufferUsage::eStorageBuffer, stateBytes,
                                  Memory::eHostVisible | Memory::eHostCoherent);
+            slot.sortRecords.allocate(frameToken(), device, BufferUsage::eStorageBuffer, sortBytes);
+            slot.sortedIndices.allocate(frameToken(), device, BufferUsage::eStorageBuffer, indexBytes);
             const ParticleMeta zero{};
             slot.meta.updateLocal(frameToken(), zero);
         }
+        if (!slot.sortRecords.buffer) {
+            slot.sortRecords.allocate(frameToken(), device, BufferUsage::eStorageBuffer, sortBytes);
+            slot.sortedIndices.allocate(frameToken(), device, BufferUsage::eStorageBuffer, indexBytes);
+        }
+        slot.hasSortedIndices = false;
 
+        if (runUpdate) {
         if (slot.initialized && slot.serial > resource.statsSerial) {
             const auto* meta = static_cast<const ParticleMeta*>(slot.meta.map());
             if (meta) {
@@ -452,20 +594,15 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
         afterCompute[0].srcAccessMask = vk::AccessFlagBits::eShaderWrite;
         afterCompute[0].dstAccessMask = vk::AccessFlagBits::eShaderRead;
         afterCompute[1].buffer        = slot.meta.buffer;
-        afterCompute[1].size          = sizeof(vk::DrawIndirectCommand);
+        afterCompute[1].size          = VK_WHOLE_SIZE;
         afterCompute[1].srcAccessMask = vk::AccessFlagBits::eShaderWrite;
-        afterCompute[1].dstAccessMask = vk::AccessFlagBits::eTransferRead;
+        afterCompute[1].dstAccessMask =
+            needsSort ? (vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eTransferRead)
+                      : vk::AccessFlagBits::eTransferRead;
         cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader,
-                           vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eTransfer, {}, nullptr,
-                           afterCompute, nullptr);
-        cb.copyBuffer(slot.meta.buffer, slot.indirect.buffer, vk::BufferCopy{0, 0, sizeof(vk::DrawIndirectCommand)});
-        vk::BufferMemoryBarrier indirectReady{};
-        indirectReady.buffer        = slot.indirect.buffer;
-        indirectReady.size          = sizeof(vk::DrawIndirectCommand);
-        indirectReady.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
-        indirectReady.dstAccessMask = vk::AccessFlagBits::eIndirectCommandRead;
-        cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eDrawIndirect, {}, nullptr,
-                           indirectReady, nullptr);
+                           needsSort ? vk::PipelineStageFlagBits::eComputeShader
+                                     : (vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eTransfer),
+                           {}, nullptr, afterCompute, nullptr);
 
         slot.initialized        = true;
         slot.serial             = ++resource.stats.submittedFrames;
@@ -473,6 +610,99 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
         resource.pendingUpdate  = false;
         resource.pendingReset   = false;
         resource.spawns.clear();
+        }  // runUpdate
+
+        if (needsSort && slot.initialized && slot.state.buffer && slot.sortRecords.buffer) {
+            if (!slot.sortSet) {
+                vk::DescriptorSetAllocateInfo allocate{};
+                allocate.descriptorPool     = descriptorPool;
+                allocate.descriptorSetCount = 1;
+                allocate.pSetLayouts        = &gpuParticleSortSetLayout_;
+                slot.sortSet                = device->allocateDescriptorSets(allocate).front();
+            }
+            std::array<vk::DescriptorBufferInfo, 4> sortInfos{};
+            std::array<vk::WriteDescriptorSet, 4>   sortWrites{};
+            updateStorageBinding(sortWrites[0], sortInfos[0], slot.sortSet, 0, slot.state.buffer, stateBytes);
+            updateStorageBinding(sortWrites[1], sortInfos[1], slot.sortSet, 1, slot.meta.buffer, metaBytes);
+            updateStorageBinding(sortWrites[2], sortInfos[2], slot.sortSet, 2, slot.sortRecords.buffer, sortBytes);
+            updateStorageBinding(sortWrites[3], sortInfos[3], slot.sortSet, 3, slot.sortedIndices.buffer, indexBytes);
+            device->updateDescriptorSets(sortWrites, nullptr);
+
+            ParticleSortPush sortPush{};
+            sortPush.sortMode    = static_cast<std::uint32_t>(sortMode);
+            sortPush.paddedCount = paddedSort;
+            if (drawRequest) {
+                sortPush.camera[0] = drawRequest->cameraX;
+                sortPush.camera[1] = drawRequest->cameraY;
+            }
+
+            auto dispatchSort = [&](std::uint32_t passKind, std::uint32_t k = 0, std::uint32_t j = 0) {
+                sortPush.passKind = passKind;
+                sortPush.bitonicK = k;
+                sortPush.bitonicJ = j;
+                cb.bindPipeline(vk::PipelineBindPoint::eCompute, gpuParticleSortPipeline_);
+                cb.bindDescriptorSets(vk::PipelineBindPoint::eCompute, gpuParticleSortLayout_, 0, slot.sortSet,
+                                      nullptr);
+                cb.pushConstants(gpuParticleSortLayout_, vk::ShaderStageFlagBits::eCompute, 0, sizeof(sortPush),
+                                 &sortPush);
+                const std::uint32_t groups =
+                    passKind == 2u ? (resource.capacity + 63u) / 64u : (paddedSort + 63u) / 64u;
+                cb.dispatch(groups, 1, 1);
+                vk::BufferMemoryBarrier barrier{};
+                barrier.buffer = passKind == 2u ? slot.sortedIndices.buffer : slot.sortRecords.buffer;
+                barrier.size   = VK_WHOLE_SIZE;
+                barrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
+                barrier.dstAccessMask =
+                    passKind == 2u ? vk::AccessFlagBits::eShaderRead
+                                   : (vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eShaderWrite);
+                cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader,
+                                   passKind == 2u ? vk::PipelineStageFlagBits::eVertexShader
+                                                  : vk::PipelineStageFlagBits::eComputeShader,
+                                   {}, nullptr, barrier, nullptr);
+            };
+
+            dispatchSort(0u);
+            for (std::uint32_t k = 2; k <= paddedSort; k <<= 1) {
+                for (std::uint32_t j = k >> 1; j > 0; j >>= 1) dispatchSort(1u, k, j);
+            }
+            dispatchSort(2u);
+            slot.hasSortedIndices = true;
+
+            // Particle state/meta were read by the sort passes; make them visible to the vertex stage.
+            std::array<vk::BufferMemoryBarrier, 2> toVertex{};
+            toVertex[0].buffer        = slot.state.buffer;
+            toVertex[0].size          = VK_WHOLE_SIZE;
+            toVertex[0].srcAccessMask = vk::AccessFlagBits::eShaderRead;
+            toVertex[0].dstAccessMask = vk::AccessFlagBits::eShaderRead;
+            toVertex[1].buffer        = slot.meta.buffer;
+            toVertex[1].size          = VK_WHOLE_SIZE;
+            toVertex[1].srcAccessMask = vk::AccessFlagBits::eShaderRead;
+            toVertex[1].dstAccessMask = vk::AccessFlagBits::eShaderRead;
+            cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader, vk::PipelineStageFlagBits::eVertexShader, {},
+                               nullptr, toVertex, nullptr);
+        }
+
+        if (runUpdate) {
+            if (needsSort) {
+                // Sort only reads meta; re-acquire TransferRead for the indirect copy.
+                vk::BufferMemoryBarrier metaToTransfer{};
+                metaToTransfer.buffer        = slot.meta.buffer;
+                metaToTransfer.size          = VK_WHOLE_SIZE;
+                metaToTransfer.srcAccessMask = vk::AccessFlagBits::eShaderRead;
+                metaToTransfer.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+                cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader, vk::PipelineStageFlagBits::eTransfer, {},
+                                   nullptr, metaToTransfer, nullptr);
+            }
+            cb.copyBuffer(slot.meta.buffer, slot.indirect.buffer,
+                          vk::BufferCopy{0, 0, sizeof(vk::DrawIndirectCommand)});
+            vk::BufferMemoryBarrier indirectReady{};
+            indirectReady.buffer        = slot.indirect.buffer;
+            indirectReady.size          = sizeof(vk::DrawIndirectCommand);
+            indirectReady.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+            indirectReady.dstAccessMask = vk::AccessFlagBits::eIndirectCommandRead;
+            cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eDrawIndirect, {},
+                               nullptr, indirectReady, nullptr);
+        }
     }
 }
 
@@ -497,7 +727,16 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
         allocate.pSetLayouts        = &gpuParticleDrawSetLayout_;
         slot.drawSet                = device->allocateDescriptorSets(allocate).front();
     }
-    if (slot.drawTexture != gpuTexture || slot.drawDepthTexture != gpuDepthTexture) {
+    // Binding 3 is always present in the vertex layout; bind a real buffer even when
+    // sorting is off (flipbook.w gates the indirection).
+    if (!slot.sortedIndices.buffer) {
+        const vk::DeviceSize indexBytes = vk::DeviceSize(resource.capacity) * sizeof(std::uint32_t);
+        slot.sortedIndices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eStorageBuffer, indexBytes);
+    }
+    const bool drawDescriptorsDirty = slot.drawTexture != gpuTexture || slot.drawDepthTexture != gpuDepthTexture ||
+                                      slot.drawSortedIndices != slot.sortedIndices.buffer ||
+                                      slot.drawMeta != slot.meta.buffer;
+    if (drawDescriptorsDirty) {
         vk::DescriptorImageInfo image{};
         image.sampler     = gpuTexture->sampler;
         image.imageView   = gpuTexture->imageView();
@@ -509,7 +748,13 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
         vk::DescriptorBufferInfo state{};
         state.buffer = slot.state.buffer;
         state.range  = VK_WHOLE_SIZE;
-        std::array<vk::WriteDescriptorSet, 3> writes{};
+        vk::DescriptorBufferInfo indices{};
+        indices.buffer = slot.sortedIndices.buffer;
+        indices.range  = VK_WHOLE_SIZE;
+        vk::DescriptorBufferInfo metaInfo{};
+        metaInfo.buffer = slot.meta.buffer;
+        metaInfo.range  = VK_WHOLE_SIZE;
+        std::array<vk::WriteDescriptorSet, 5> writes{};
         writes[0].dstSet          = slot.drawSet;
         writes[0].dstBinding      = 0;
         writes[0].descriptorCount = 1;
@@ -525,17 +770,47 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
         writes[2].descriptorCount = 1;
         writes[2].descriptorType  = vk::DescriptorType::eCombinedImageSampler;
         writes[2].pImageInfo      = &depthImage;
+        writes[3].dstSet          = slot.drawSet;
+        writes[3].dstBinding      = 3;
+        writes[3].descriptorCount = 1;
+        writes[3].descriptorType  = vk::DescriptorType::eStorageBuffer;
+        writes[3].pBufferInfo     = &indices;
+        writes[4].dstSet          = slot.drawSet;
+        writes[4].dstBinding      = 4;
+        writes[4].descriptorCount = 1;
+        writes[4].descriptorType  = vk::DescriptorType::eStorageBuffer;
+        writes[4].pBufferInfo     = &metaInfo;
         device->updateDescriptorSets(writes, nullptr);
-        slot.drawTexture      = gpuTexture;
-        slot.drawDepthTexture = gpuDepthTexture;
+        slot.drawTexture         = gpuTexture;
+        slot.drawDepthTexture    = gpuDepthTexture;
+        slot.drawSortedIndices   = slot.sortedIndices.buffer;
+        slot.drawMeta            = slot.meta.buffer;
     }
 
-    vk::Pipeline pipeline = gpuParticleAlphaPipeline_;
+    vk::Pipeline pipeline = presentComposeActive_ && hdrGpuParticleAlphaPipeline_
+                                ? hdrGpuParticleAlphaPipeline_
+                                : gpuParticleAlphaPipeline_;
     switch (request.draw.blend) {
-        case BlendMode::Additive: pipeline = gpuParticleAdditivePipeline_; break;
-        case BlendMode::Premultiplied: pipeline = gpuParticlePremultipliedPipeline_; break;
-        case BlendMode::Multiply: pipeline = gpuParticleMultiplyPipeline_; break;
-        case BlendMode::Opaque: pipeline = gpuParticleOpaquePipeline_; break;
+        case BlendMode::Additive:
+            pipeline = presentComposeActive_ && hdrGpuParticleAdditivePipeline_
+                           ? hdrGpuParticleAdditivePipeline_
+                           : gpuParticleAdditivePipeline_;
+            break;
+        case BlendMode::Premultiplied:
+            pipeline = presentComposeActive_ && hdrGpuParticlePremultipliedPipeline_
+                           ? hdrGpuParticlePremultipliedPipeline_
+                           : gpuParticlePremultipliedPipeline_;
+            break;
+        case BlendMode::Multiply:
+            pipeline = presentComposeActive_ && hdrGpuParticleMultiplyPipeline_
+                           ? hdrGpuParticleMultiplyPipeline_
+                           : gpuParticleMultiplyPipeline_;
+            break;
+        case BlendMode::Opaque:
+            pipeline = presentComposeActive_ && hdrGpuParticleOpaquePipeline_
+                           ? hdrGpuParticleOpaquePipeline_
+                           : gpuParticleOpaquePipeline_;
+            break;
         case BlendMode::Alpha:
         default: break;
     }
@@ -549,18 +824,21 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
     push.cameraParticle[1] = request.draw.cameraEnabled ? 1.f : 0.f;
     push.cameraParticle[2] = request.draw.particleWidth;
     push.cameraParticle[3] = request.draw.particleHeight;
-    push.sizeMode[0]       = request.draw.sizeStart;
-    push.sizeMode[1]       = request.draw.sizeEnd;
-    push.sizeMode[2]       = request.draw.stretchFactor;
-    push.sizeMode[3]       = float(request.draw.facing);
+    const bool ribbon = request.draw.facing == GpuParticleFacingMode::Ribbon;
+    push.sizeMode[0]  = request.draw.sizeStart;
+    push.sizeMode[1]  = request.draw.sizeEnd;
+    push.sizeMode[2]  = ribbon ? request.draw.ribbonWidth : request.draw.stretchFactor;
+    push.sizeMode[3]  = float(request.draw.facing);
     std::copy_n(request.draw.colorStart, 4, push.colorStart);
     std::copy_n(request.draw.colorEnd, 4, push.colorEnd);
     push.flipbook[0] = std::uint32_t(std::max(request.draw.hframes, 1));
     push.flipbook[1] = std::uint32_t(std::max(request.draw.vframes, 1));
     push.flipbook[2] = std::bit_cast<std::uint32_t>(request.draw.axisRotationRadians);
+    push.flipbook[3] = slot.hasSortedIndices ? 1u : 0u;
     push.soft[0]     = request.draw.softParticles && request.draw.sceneDepth ? 1.f : 0.f;
     push.soft[1]     = request.draw.particleDepth;
     push.soft[2]     = std::max(request.draw.softFadeDistance, 1e-5f);
+    push.soft[3]     = ribbon ? request.draw.ribbonMinSegmentLength : 0.f;
 
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gpuParticleDrawLayout_, 0, slot.drawSet, nullptr);

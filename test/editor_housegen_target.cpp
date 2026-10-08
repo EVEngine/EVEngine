@@ -8,7 +8,7 @@ using namespace eve::housegen_editing;
 using namespace eve::editing;
 
 namespace {
-void apply(HouseGenDocumentTarget& target, EditorResult<DomainOperation> operation) {
+void apply(HouseGenDocumentTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok()); REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }
 HouseKitComponentValue component(const char* id, const char* category) {

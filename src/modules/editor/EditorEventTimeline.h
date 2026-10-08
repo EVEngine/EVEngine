@@ -47,12 +47,12 @@ struct EditorTimelinePage {
 class EVENGINE_API_ORCHESTRATION EditorEventTimeline {
 public:
     /** @brief Set retained event capacity; shrinking drops oldest events. */
-    EditorResult<void> setCapacity(std::size_t capacity);
+    Result<void> setCapacity(std::size_t capacity);
     /** @brief Copy one event, assigning a monotonic sequence when it is zero. */
-    EditorResult<std::uint64_t> append(EditorTimelineEvent event,
+    Result<std::uint64_t> append(EditorTimelineEvent event,
                                        std::size_t maximumPayloadNodes = 10000);
     /** @brief Query a deterministic page; stale generations return Conflict. */
-    EditorResult<EditorTimelinePage> query(const EditorTimelineQuery& filter,
+    Result<EditorTimelinePage> query(const EditorTimelineQuery& filter,
                                            std::size_t offset, std::size_t limit,
                                            std::optional<std::uint64_t> generation = std::nullopt) const;
     /** @brief Clear retained events while preserving the next sequence number. */

@@ -40,7 +40,7 @@ bool finiteNumber(const editor::EditorValue* value, float& out) {
 
 }  // namespace
 
-editor::EditorResult<editor::EditorValue> encodeTerrainDocument(const procgen::Heightmap& heightmap, float spacingX,
+editor::Result<editor::EditorValue> encodeTerrainDocument(const procgen::Heightmap& heightmap, float spacingX,
                                                                 float spacingZ, const TerrainDocumentLimits& limits) {
     const std::uint64_t width   = static_cast<std::uint64_t>(heightmap.getWidth());
     const std::uint64_t height  = static_cast<std::uint64_t>(heightmap.getHeight());
@@ -70,7 +70,7 @@ editor::EditorResult<editor::EditorValue> encodeTerrainDocument(const procgen::H
                                     {"heights", std::move(heights)}});
 }
 
-editor::EditorResult<TerrainDocumentData> decodeTerrainDocument(const editor::EditorValue&   value,
+editor::Result<TerrainDocumentData> decodeTerrainDocument(const editor::EditorValue&   value,
                                                                 const TerrainDocumentLimits& limits) {
     const auto*                                     object = value.getIf<editor::EditorValue::Object>();
     static const std::set<std::string, std::less<>> allowed{"schema",   "schemaVersion", "width",  "height",

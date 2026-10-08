@@ -7,11 +7,13 @@ struct FSIn{@location(0) color:vec4f,@location(1) uv:vec2f};struct U{data:array<
 fn p(i:u32)->f32{return u.data[i/4u][i%4u];}fn tex(uv:vec2f)->vec4f{return textureSampleLevel(mainTex,samp,clamp(uv,vec2f(0),vec2f(1)),0);}
 )wgsl";
 inline constexpr const char *kVolScreen=R"wgsl(
+fn spotAtten(uv:vec2f,light:vec2f,beam:vec2f,cosO:f32,cosI:f32)->f32{if cosO<=-1.5{return 1.0;}let fromL=uv-light;let fl=length(fromL);if fl<=1e-4{return 1.0;}let bl=length(beam);if bl<=1e-6{return 0.0;}return smoothstep(cosO,cosI,dot(fromL/fl,beam/bl));}
 @fragment fn fs_main(i:FSIn)->@location(0)vec4f{let light=vec2f(p(0),p(1));let count=i32(clamp(p(6),1,96));let delta=(i.uv-light)*p(4)/f32(count);var uv=i.uv;var illum=vec3f(0);var decay=1.0;
-for(var q=0;q<96;q++){if q>=count{break;}uv-=delta;illum+=tex(uv).rgb*decay*p(5);decay*=p(3);}let fog=vec3f(p(9),p(10),p(11))*max(p(8),0);let shaft=vec3f(p(12),p(13),p(14));let rgb=(illum*shaft*p(2)+fog)*max(p(17),0);return vec4f(rgb,clamp(max(rgb.r,max(rgb.g,rgb.b)),0,1))*i.color;}
+for(var q=0;q<96;q++){if q>=count{break;}uv-=delta;illum+=tex(uv).rgb*decay*p(5);decay*=p(3);}let fog=vec3f(p(9),p(10),p(11))*max(p(8),0);let shaft=vec3f(p(12),p(13),p(14));var rgb=(illum*shaft*p(2)+fog)*max(p(17),0);rgb*=spotAtten(i.uv,light,vec2f(p(18),p(19)),p(20),p(21));return vec4f(rgb,clamp(max(rgb.r,max(rgb.g,rgb.b)),0,1))*i.color;}
 )wgsl";
 inline constexpr const char *kVolRay=R"wgsl(
-@fragment fn fs_main(i:FSIn)->@location(0)vec4f{let z=tex(i.uv).r;if z>=.999{return vec4f(0);}let d=max(p(19),0);let c=vec3f(p(20),p(21),p(22));let light=normalize(vec3f(p(16),p(17),p(18)));let phase=.35+.65*max(light.y,0);let a=clamp((1-z)*d*max(p(23),0)*(1+max(p(28),0))*.35,0,.9);return vec4f(c*phase,a)*i.color;}
+fn hg(c:f32,g:f32)->f32{let g2=g*g;return (1-g2)/(12.566*pow(max(1e-4,1+g2-2*g*c),1.5));}
+@fragment fn fs_main(i:FSIn)->@location(0)vec4f{let z=tex(i.uv).r;if z>=.999{return vec4f(0);}let d=max(p(19),0);let c=vec3f(p(20),p(21),p(22));let light=normalize(vec3f(p(16),p(17),p(18)));let pack=p(29);var g=select(0.6,clamp(fract(pack)*1.98-0.99,-0.99,0.99),fract(pack)>1e-5);let phase=mix(hg(light.y,g*-0.5),hg(light.y,g),0.75);let a=clamp((1-z)*d*max(p(23),0)*(1+max(p(28),0))*phase*.55,0,.9);return vec4f(c*phase,a)*i.color;}
 )wgsl";
 inline constexpr const char *kVolFog=R"wgsl(
 @fragment fn fs_main(i:FSIn)->@location(0)vec4f{let z=tex(i.uv).r;if z>=.999{return vec4f(0);}let start=max(p(29),0);let end=max(p(30),start+.001);let dist=mix(max(p(24),.001),max(p(25),1),z);let range=smoothstep(start,end,dist);let height=mix(.65,1.0,clamp(i.uv.y,0,1));let a=clamp(range*max(p(19),0)*max(p(23),0)*height,0,.95);return vec4f(vec3f(p(20),p(21),p(22)),a)*i.color;}

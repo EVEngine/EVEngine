@@ -40,6 +40,7 @@ set(EVE_TEST_DOMAINS
     animation
     physics
     fluids
+    gpuagents
     procgen
     map
     voxel
@@ -130,6 +131,7 @@ set(EVE_TEST_MODULE_DOMAIN
 
     # --- simulation-heavy domains
     "fluids;fluids"
+    "gpuagents;gpuagents"
     "procgen;procgen"
     "map;map"
     "hexmap;map"
@@ -145,6 +147,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "definitions;rpg"
     "authority;rpg"
     "decision;rpg"
+    "emergence;rpg"
     "production;rpg"
     "orders;rpg"
     "settlement;rpg"
@@ -225,6 +228,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "i18n_script;core"
     "image_script;core"
     "json;core"
+    "xml;core"
     "medialoader_model_link;core"
     "=model;core"
     "module_lazy_bind;core"

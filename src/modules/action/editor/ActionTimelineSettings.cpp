@@ -2,7 +2,7 @@
 
 namespace eve::editor {
 
-EditorResult<void> ActionTimelineEditor::setMontageSettings(action::ActionMontageSettings settings) {
+Result<void> ActionTimelineEditor::setMontageSettings(action::ActionMontageSettings settings) {
     action::ActionTimeline candidate = target_.timeline();
     if (candidate.montage == settings) return eve::editing::noOp();
     candidate.montage = std::move(settings);

@@ -2,16 +2,13 @@
 #include "common/Export.h"
 
 
+#include "common/Json.h"
 #include "common/Result.h"
 #include "map/MapObject.h"
 #include "map/TileLayer.h"
 
 #include <string>
 #include <vector>
-
-namespace eve::data {
-class JsonDocument;
-}
 
 namespace eve::map {
 
@@ -27,8 +24,9 @@ struct RpgMakerImportReceipt {
 /**
  * @brief Apply map/layer JSON onto an existing TileLayer (Config + Tiles + Tileset + Draw).
  * Multi-layer documents only apply the first tile layer when called on one entity.
+ * @return Success, or InvalidArgument / Failed when the root is unusable or layer data fails.
  */
-bool applyConfigDocument(TileLayer *layer, data::JsonDocument *doc);
+[[nodiscard]] eve::Result<void> applyConfigDocument(TileLayer* layer, eve::json::Value root);
 
 /** @brief Parse JSON text and apply onto one layer. */
 EVENGINE_API_WORLD bool applyConfigText(TileLayer *layer, const std::string &json, std::string *error = nullptr);

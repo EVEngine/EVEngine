@@ -141,7 +141,7 @@ eve::Diagnostic stageDiagnostic(std::string_view stage, const eve::Status& statu
     details.emplace_back("status", std::string(eve::statusCodeName(status.code())));
     return eve::Diagnostic::error(eve::DiagnosticCode::CallbackFailure,
                                   "settlement stage failed: " + std::string(stage),
-                                  "settlement.stage." + std::string(stage), std::move(details));
+                                  "settlement.stage." + std::string(stage), details);
 }
 
 eve::Status stageFailureStatus(std::string_view stage, const eve::Status& status) {
@@ -570,7 +570,7 @@ void SettlementContext::recordMutationViolation(std::string message, std::string
     if (mutationViolation_) return;
     try {
         mutationViolation_.emplace(
-            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), std::move(path)));
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, path));
     } catch (...) {
         // A late mutation is a contract violation. If recording its
         // diagnostic itself cannot allocate, fail closed instead of allowing

@@ -49,6 +49,31 @@ double numericValue(const Value &value) {
     return 0.0;
 }
 
+bool parseNumber(const std::string &text, bool integer, Value &out) {
+    if (integer) {
+        std::int64_t  parsed    = 0;
+        const auto    converted = std::from_chars(text.data(), text.data() + text.size(), parsed);
+        if (converted.ec != std::errc() || converted.ptr != text.data() + text.size()) return false;
+        out = Value(parsed);
+        return true;
+    }
+    char *end = nullptr;
+    errno     = 0;
+    const double parsed = std::strtod(text.c_str(), &end);
+    if (text.empty() || errno == ERANGE || end != text.c_str() + text.size()) return false;
+    out = Value(parsed);
+    return true;
+}
+
+Value::Array componentArray(const Value &value, std::size_t count) {
+    Value::Array result(count, Value(0.0));
+    if (const auto *items = value.getIf<Value::Array>()) {
+        for (std::size_t index = 0; index < count && index < items->size(); ++index)
+            result[index] = Value(numericValue((*items)[index]));
+    }
+    return result;
+}
+
 AccessibilityRole accessibilityRole(PropertyKind kind, bool readOnly) {
     if (readOnly) return AccessibilityRole::Text;
     switch (kind) {
@@ -57,12 +82,194 @@ AccessibilityRole accessibilityRole(PropertyKind kind, bool readOnly) {
         case PropertyKind::Number: return AccessibilityRole::Slider;
         case PropertyKind::Action: return AccessibilityRole::Button;
         case PropertyKind::Enum: return AccessibilityRole::List;
+        case PropertyKind::Color: return AccessibilityRole::Slider;
         case PropertyKind::String:
         case PropertyKind::AssetRef:
         case PropertyKind::ObjectRef:
         case PropertyKind::Auto: return AccessibilityRole::TextInput;
-        default: return AccessibilityRole::Text;
+        default: return AccessibilityRole::Region;
     }
+}
+
+WidgetDesc scalarElementEditor(const std::string &elementId, const std::string &elementLabel,
+                               const Value &element, std::function<void(Value)> writeElement) {
+    if (const auto *boolean = element.getIf<bool>()) {
+        return checkbox(elementLabel, *boolean, elementId,
+                        [writeElement = std::move(writeElement)](bool next) { writeElement(Value(next)); });
+    }
+    if (element.getIf<std::int64_t>() || element.getIf<double>()) {
+        return inputText(elementLabel, valueText(element), elementId,
+                         [writeElement = std::move(writeElement),
+                          integer = element.getIf<std::int64_t>() != nullptr](const std::string &next) {
+                             Value parsed;
+                             if (parseNumber(next, integer, parsed)) writeElement(std::move(parsed));
+                         });
+    }
+    if (element.getIf<std::string>() || element.isNull()) {
+        return inputText(elementLabel, valueText(element), elementId,
+                         [writeElement = std::move(writeElement)](const std::string &next) {
+                             writeElement(Value(next));
+                         });
+    }
+    return text(elementLabel + " = " + valueText(element), elementId);
+}
+
+WidgetDesc makeCompositeEditor(property_access::IPropertyAccess &model, const PropertyViewOptions &options,
+                               const PropertyDescriptor &property, const Value &value,
+                               const std::vector<std::string> &labels) {
+    const std::string id     = propertyWidgetId(options, property.path);
+    Value::Array      items  = componentArray(value, labels.size());
+    std::vector<WidgetDesc> children;
+    children.push_back(text(displayName(property), id + "_label"));
+    for (std::size_t index = 0; index < labels.size(); ++index) {
+        const std::string componentId = id + "_" + labels[index];
+        const std::string path        = property.path;
+        const std::size_t component   = index;
+        const bool        useSlider   = property.numeric.minimum && property.numeric.maximum;
+        if (useSlider) {
+            children.push_back(slider(
+                labels[index], static_cast<float>(numericValue(items[index])),
+                static_cast<float>(*property.numeric.minimum), static_cast<float>(*property.numeric.maximum),
+                componentId, [&model, path, component, count = labels.size()](float next) {
+                    const std::optional<Value> current = model.read(path);
+                    Value::Array              updated =
+                        componentArray(current ? *current : Value(Value::Array{}), count);
+                    updated[component] = Value(static_cast<double>(next));
+                    model.write(path, Value(std::move(updated)));
+                }));
+        } else {
+            children.push_back(inputText(
+                labels[index], valueText(items[index]), componentId,
+                [&model, path, component, count = labels.size()](const std::string &next) {
+                    Value parsed;
+                    if (!parseNumber(next, false, parsed)) return;
+                    const std::optional<Value> current = model.read(path);
+                    Value::Array              updated =
+                        componentArray(current ? *current : Value(Value::Array{}), count);
+                    updated[component] = std::move(parsed);
+                    model.write(path, Value(std::move(updated)));
+                }));
+        }
+    }
+    return row(std::move(children), id);
+}
+
+WidgetDesc makeArrayEditor(property_access::IPropertyAccess &model, const PropertyViewOptions &options,
+                           const PropertyDescriptor &property, const Value &value) {
+    const std::string id = propertyWidgetId(options, property.path);
+    Value::Array      items;
+    if (const auto *array = value.getIf<Value::Array>()) items = *array;
+    std::vector<WidgetDesc> rows;
+    for (std::size_t index = 0; index < items.size(); ++index) {
+        const std::string elementId    = id + "_" + std::to_string(index);
+        const std::string elementLabel = displayName(property) + "[" + std::to_string(index) + "]";
+        const std::string path         = property.path;
+        const std::size_t elementIndex = index;
+        WidgetDesc        cell         = scalarElementEditor(
+            elementId, elementLabel, items[index],
+            [&model, path, elementIndex](Value next) {
+                const std::optional<Value> current = model.read(path);
+                Value::Array              updated;
+                if (const auto *array = current ? current->getIf<Value::Array>() : nullptr)
+                    updated = *array;
+                if (elementIndex >= updated.size()) updated.resize(elementIndex + 1);
+                updated[elementIndex] = std::move(next);
+                model.write(path, Value(std::move(updated)));
+            });
+        const auto onStructure = options.onStructureChange;
+        rows.push_back(row(
+            {std::move(cell),
+             button("x##" + elementId + "_del", elementId + "_del",
+                    [&model, path, elementIndex, onStructure]() {
+                        const std::optional<Value> current = model.read(path);
+                        Value::Array              updated;
+                        if (const auto *array = current ? current->getIf<Value::Array>() : nullptr)
+                            updated = *array;
+                        if (elementIndex < updated.size())
+                            updated.erase(updated.begin() + static_cast<std::ptrdiff_t>(elementIndex));
+                        model.write(path, Value(std::move(updated)));
+                        if (onStructure) onStructure();
+                    })},
+            elementId + "_row"));
+    }
+    const std::string path = property.path;
+    const auto        onStructure = options.onStructureChange;
+    rows.push_back(row(
+        {button("+##" + id + "_add", id + "_add",
+                [&model, path, onStructure]() {
+                    const std::optional<Value> current = model.read(path);
+                    Value::Array              updated;
+                    if (const auto *array = current ? current->getIf<Value::Array>() : nullptr)
+                        updated = *array;
+                    updated.emplace_back(std::string{});
+                    model.write(path, Value(std::move(updated)));
+                    if (onStructure) onStructure();
+                })},
+        id + "_addrow"));
+    return collapsingHeader(displayName(property) + " (array[" + std::to_string(items.size()) + "])##" + id,
+                            std::move(rows), id, false);
+}
+
+WidgetDesc makeMapEditor(property_access::IPropertyAccess &model, const PropertyViewOptions &options,
+                         const PropertyDescriptor &property, const Value &value, bool allowMutate) {
+    const std::string id = propertyWidgetId(options, property.path);
+    Value::Object     fields;
+    if (const auto *object = value.getIf<Value::Object>()) fields = *object;
+    std::vector<WidgetDesc> rows;
+    for (const auto &[key, entry] : fields) {
+        const std::string elementId = id + "_" + sanitize(key);
+        const std::string path      = property.path;
+        const std::string fieldKey  = key;
+        WidgetDesc        cell      = scalarElementEditor(
+            elementId, key, entry, [&model, path, fieldKey](Value next) {
+                const std::optional<Value> current = model.read(path);
+                Value::Object             updated;
+                if (const auto *object = current ? current->getIf<Value::Object>() : nullptr)
+                    updated = *object;
+                updated[fieldKey] = std::move(next);
+                model.write(path, Value(std::move(updated)));
+            });
+        if (allowMutate) {
+            const auto onStructure = options.onStructureChange;
+            rows.push_back(row(
+                {std::move(cell),
+                 button("x##" + elementId + "_del", elementId + "_del",
+                        [&model, path, fieldKey, onStructure]() {
+                            const std::optional<Value> current = model.read(path);
+                            Value::Object             updated;
+                            if (const auto *object = current ? current->getIf<Value::Object>() : nullptr)
+                                updated = *object;
+                            updated.erase(fieldKey);
+                            model.write(path, Value(std::move(updated)));
+                            if (onStructure) onStructure();
+                        })},
+                elementId + "_row"));
+        } else {
+            rows.push_back(std::move(cell));
+        }
+    }
+    if (allowMutate) {
+        const std::string path = property.path;
+        const auto        onStructure = options.onStructureChange;
+        rows.push_back(row(
+            {button("+##" + id + "_add", id + "_add",
+                    [&model, path, onStructure]() {
+                        const std::optional<Value> current = model.read(path);
+                        Value::Object             updated;
+                        if (const auto *object = current ? current->getIf<Value::Object>() : nullptr)
+                            updated = *object;
+                        std::string key    = "key" + std::to_string(updated.size());
+                        std::size_t suffix = 0;
+                        while (updated.contains(key))
+                            key = "key" + std::to_string(updated.size() + (++suffix));
+                        updated.emplace(key, Value(std::string{}));
+                        model.write(path, Value(std::move(updated)));
+                        if (onStructure) onStructure();
+                    })},
+            id + "_addrow"));
+    }
+    const std::string kindLabel = property.kind == PropertyKind::Struct ? "struct" : "map";
+    return collapsingHeader(displayName(property) + " (" + kindLabel + ")##" + id, std::move(rows), id, false);
 }
 
 WidgetDesc makePropertyField(property_access::IPropertyAccess &model, const PropertyViewOptions &options,
@@ -74,7 +281,12 @@ WidgetDesc makePropertyField(property_access::IPropertyAccess &model, const Prop
     WidgetDesc result;
 
     if (readOnly) {
-        result = text(label + ": " + valueText(value), id);
+        if (property.kind == PropertyKind::Array || property.kind == PropertyKind::Map ||
+            property.kind == PropertyKind::Struct)
+            result = collapsingHeader(label + ": " + valueText(value) + "##" + id,
+                                      {text(valueText(value), id + "_summary")}, id, false);
+        else
+            result = text(label + ": " + valueText(value), id);
     } else {
         switch (property.kind) {
             case PropertyKind::Bool: {
@@ -102,21 +314,9 @@ WidgetDesc makePropertyField(property_access::IPropertyAccess &model, const Prop
                 } else {
                     result = inputText(label, valueText(value), id,
                                        [&model, path, integer](const std::string &next) {
-                                           if (integer) {
-                                               std::int64_t parsed = 0;
-                                               const auto converted = std::from_chars(
-                                                   next.data(), next.data() + next.size(), parsed);
-                                               if (converted.ec == std::errc() &&
-                                                   converted.ptr == next.data() + next.size())
-                                                   model.write(path, Value(parsed));
-                                           } else {
-                                               char *end = nullptr;
-                                               errno = 0;
-                                               const double parsed = std::strtod(next.c_str(), &end);
-                                               if (!next.empty() && errno != ERANGE &&
-                                                   end == next.c_str() + next.size())
-                                                   model.write(path, Value(parsed));
-                                           }
+                                           Value parsed;
+                                           if (parseNumber(next, integer, parsed))
+                                               model.write(path, std::move(parsed));
                                        });
                 }
                 break;
@@ -153,12 +353,26 @@ WidgetDesc makePropertyField(property_access::IPropertyAccess &model, const Prop
                 break;
             }
             case PropertyKind::Color:
+                result = makeCompositeEditor(model, options, property, value, {"r", "g", "b", "a"});
+                break;
             case PropertyKind::Vec2:
+                result = makeCompositeEditor(model, options, property, value, {"x", "y"});
+                break;
             case PropertyKind::Vec3:
+                result = makeCompositeEditor(model, options, property, value, {"x", "y", "z"});
+                break;
             case PropertyKind::Vec4:
-            case PropertyKind::Struct:
+                result = makeCompositeEditor(model, options, property, value, {"x", "y", "z", "w"});
+                break;
             case PropertyKind::Array:
+                result = makeArrayEditor(model, options, property, value);
+                break;
             case PropertyKind::Map:
+                result = makeMapEditor(model, options, property, value, true);
+                break;
+            case PropertyKind::Struct:
+                result = makeMapEditor(model, options, property, value, true);
+                break;
             case PropertyKind::ReadOnlyText:
                 result = text(label + ": " + valueText(value), id);
                 break;
@@ -182,6 +396,18 @@ bool visible(const PropertyDescriptor &property, const PropertyViewOptions &opti
                                   property.kind == PropertyKind::ReadOnlyText))
         return false;
     return true;
+}
+
+void syncComposite(UIHost &host, const std::string &id, const Value &value,
+                   const std::vector<std::string> &labels, const PropertyDescriptor &property) {
+    Value::Array items = componentArray(value, labels.size());
+    for (std::size_t index = 0; index < labels.size(); ++index) {
+        const std::string componentId = id + "_" + labels[index];
+        if (property.numeric.minimum && property.numeric.maximum)
+            host.setValueById(componentId, static_cast<float>(numericValue(items[index])));
+        else
+            host.setValueTextById(componentId, valueText(items[index]));
+    }
 }
 
 }  // namespace
@@ -229,22 +455,72 @@ void syncPropertyView(UIHost &host, const property_access::IPropertyAccess &mode
                               property.kind == PropertyKind::ReadOnlyText;
         if (readOnly) {
             host.setTextById(id, displayName(property) + ": " + valueText(*value));
-        } else if (property.kind == PropertyKind::Bool) {
-            if (const auto *boolean = value->getIf<bool>()) host.setCheckedById(id, *boolean);
-        } else if (property.kind == PropertyKind::Enum) {
-            const std::string selected = valueText(*value);
-            const auto found = std::find(property.choices.begin(), property.choices.end(), selected);
-            host.setValueById(id, found == property.choices.end()
-                                      ? 0.f
-                                      : static_cast<float>(found - property.choices.begin()));
-        } else if (property.kind == PropertyKind::Integer ||
-                   property.kind == PropertyKind::Number) {
-            if (property.numeric.minimum && property.numeric.maximum)
-                host.setValueById(id, static_cast<float>(numericValue(*value)));
-            else
-                host.setValueTextById(id, valueText(*value));
-        } else if (const auto *textValue = value->getIf<std::string>()) {
-            host.setValueTextById(id, *textValue);
+            continue;
+        }
+        switch (property.kind) {
+            case PropertyKind::Bool:
+                if (const auto *boolean = value->getIf<bool>()) host.setCheckedById(id, *boolean);
+                break;
+            case PropertyKind::Enum: {
+                const std::string selected = valueText(*value);
+                const auto found = std::find(property.choices.begin(), property.choices.end(), selected);
+                host.setValueById(id, found == property.choices.end()
+                                          ? 0.f
+                                          : static_cast<float>(found - property.choices.begin()));
+                break;
+            }
+            case PropertyKind::Integer:
+            case PropertyKind::Number:
+                if (property.numeric.minimum && property.numeric.maximum)
+                    host.setValueById(id, static_cast<float>(numericValue(*value)));
+                else
+                    host.setValueTextById(id, valueText(*value));
+                break;
+            case PropertyKind::Color:
+                syncComposite(host, id, *value, {"r", "g", "b", "a"}, property);
+                break;
+            case PropertyKind::Vec2:
+                syncComposite(host, id, *value, {"x", "y"}, property);
+                break;
+            case PropertyKind::Vec3:
+                syncComposite(host, id, *value, {"x", "y", "z"}, property);
+                break;
+            case PropertyKind::Vec4:
+                syncComposite(host, id, *value, {"x", "y", "z", "w"}, property);
+                break;
+            case PropertyKind::Array:
+                if (const auto *items = value->getIf<Value::Array>()) {
+                    for (std::size_t index = 0; index < items->size(); ++index) {
+                        const std::string elementId = id + "_" + std::to_string(index);
+                        if (const auto *boolean = (*items)[index].getIf<bool>())
+                            host.setCheckedById(elementId, *boolean);
+                        else
+                            host.setValueTextById(elementId, valueText((*items)[index]));
+                    }
+                }
+                break;
+            case PropertyKind::Map:
+            case PropertyKind::Struct:
+                if (const auto *fields = value->getIf<Value::Object>()) {
+                    for (const auto &[key, entry] : *fields) {
+                        const std::string elementId = id + "_" + sanitize(key);
+                        if (const auto *boolean = entry.getIf<bool>())
+                            host.setCheckedById(elementId, *boolean);
+                        else
+                            host.setValueTextById(elementId, valueText(entry));
+                    }
+                }
+                break;
+            case PropertyKind::String:
+            case PropertyKind::AssetRef:
+            case PropertyKind::ObjectRef:
+            case PropertyKind::Auto:
+                if (const auto *textValue = value->getIf<std::string>())
+                    host.setValueTextById(id, *textValue);
+                break;
+            case PropertyKind::Action:
+            case PropertyKind::ReadOnlyText:
+                break;
         }
     }
 }

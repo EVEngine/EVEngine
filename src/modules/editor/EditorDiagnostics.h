@@ -28,7 +28,7 @@ public:
     EditorValidationService();
 
     /** @brief Register or replace a stable rule owned by an extension. */
-    EditorResult<void> registerRule(std::string owner, RuleId id, Rule rule);
+    Result<void> registerRule(std::string owner, RuleId id, Rule rule);
     /** @brief Remove every rule owned by an unloading extension. */
     std::size_t unregisterOwner(const std::string& owner);
     /** @brief Execute all registered rules in deterministic rule-id order. */

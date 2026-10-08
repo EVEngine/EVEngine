@@ -19,9 +19,9 @@ class IUiSkinAssetResolver {
 public:
     virtual ~IUiSkinAssetResolver() = default;
     /** @brief Resolve texture dimensions, returning NotFound for missing assets. */
-    virtual EditorResult<UiTextureMetadata> texture(const std::string& asset) const = 0;
+    virtual Result<UiTextureMetadata> texture(const std::string& asset) const = 0;
     /** @brief Report whether a font asset can be resolved. */
-    virtual EditorResult<void> font(const std::string& asset) const = 0;
+    virtual Result<void> font(const std::string& asset) const = 0;
 };
 
 enum class UiSkinDrawKind { Image, Text };
@@ -60,7 +60,7 @@ class IUiSkinPlanRenderer {
 public:
     virtual ~IUiSkinPlanRenderer() = default;
     /** @brief Draw all commands in document order into the active target. */
-    virtual EditorResult<void> render(const UiSkinDrawPlan& plan) = 0;
+    virtual Result<void> render(const UiSkinDrawPlan& plan) = 0;
 };
 
 }  // namespace eve::editor

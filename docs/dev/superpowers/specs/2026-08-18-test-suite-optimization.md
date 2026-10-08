@@ -877,3 +877,59 @@ EVWorld.dll : fatal error LNK1120
 **验证口径（用户指令，2026-09-21 起）**：**本地不再跑全量用例，全量交给 CI**。本地只做"链接级"验证——Windows SHARED 全量 `ninja`（7 组库 + 30 个域 exe）+ OBJECT `eve` 目标，外加源码门禁与 `scripts/tests`。理由有两条硬的：**(a)** 本地全量 ctest 要反复启动数千个测试 exe，一旦某个组库没链出来，每个 exe 都会弹一个模态加载失败框，把使用者桌面占住（本轮就是这么踩的）；**(b)** CI 的 runner 是干净的 merge ref（branch + 当前 dev），本来就比本地树更接近评审口径。
 
 **读数（推送头 `9cace2839`，第四次合并之后）**：Windows SHARED `ninja -k 0` **exit 0**（`EVWorld.dll` 回归，8 个组 DLL 齐备）；Windows OBJECT `ninja eve` **exit 0**；`git clang-format --diff origin/dev` **0 字节**；全量用例由 CI 的 Windows / Linux / macOS / Android / iOS / WebGPU 作业给出。
+
+### 7.31 第五~第八次合并 dev：SHARED/OBJECT 差异下的三类连锁失败（2026-09-21 → 09-24）
+
+dev 从 `434ae72e4` 一路走到 `759c3bb6b`（resource handles #437、production workflows #448、settlement 统一 #449、unattended MCP #428……），期间 PR #434 的 Windows 作业**逐个 target 地失败又前进**，最终在 head `3b7f3b5af` 全绿。失败的形态只有三类，但每一类的判据与配方都不直观，逐条记录。
+
+**失败族 1：跨组导出缺口（ELF 绿、MSVC 红）。** CI 依次点名了四处：
+
+```
+unit_test_graphics.exe : LNK2019  eve::dev::isMcpDomainTool(std::string_view)
+EVPlatform.dll         : LNK2001  eve::settlement::{SettlementPipeline::*, SettlementRuleSet::*, projectEffectRules}
+unit_test_core.exe     : LNK2019  eve::Resource::{getDependencies, addDependency}
+unit_test_rpg.exe      : LNK2019  eve::rpg::{VitalsSystem::pollEvents, Crafting::*, RPGSettlementAdapter::*, makeStatusTickSettlementRequest}
+                                   eve::tactics::{makeSettlementRequest, TacticsSettlementRuntime::*}
+```
+
+判据：符号**定义在低层组的 .cpp**（devtools/settlement = EVFoundation、rpg = EVPlatform、tactics = EVDomains），**声明在被上层组或测试包含的头**，而声明没有 `EVENGINE_API_<GROUP>`。只有 MSVC 会报，因为 ELF 组库默认导出 default-visibility 符号（Android / iOS / WebGPU / Linux 一路全绿）。配方：补宏 + 做失败族 3 的两个体检；同一模块的**整族**一起补（本轮 MCP 4 个头 18 个声明、settlement 20 个声明、rpg/tactics 13 个类 + 2 个自由函数），否则 CI 一轮只会暴露一个 target。
+
+**失败族 2：加了宏却没把宏的 include 带进来。** rpg/tactics 那批标注后，**所有平台同时红**：
+
+```
+ClassSystem.h(21): error C2079: 'ClassSystem' uses undefined class 'eve::rpg::EVENGINE_API_PLATFORM'
+ClassSystem.cpp(13): error C2825: 'eve::ClassSystem': must be a class or namespace when followed by '::'
+```
+
+12 个头里有 11 个原本连一个 `#include` 都没有，于是 `EVENGINE_API_PLATFORM` 被当成类型名解析，连锁出一片 `C2059/C2143/C2447`。配方：**加宏的同一步补 `#include "common/Export.h"`**。注意不能机械要求"每个用宏的头都直接 include"——仓库里绝大多数头是靠别的头传递拿到的，复核方式是看编译，而不是看单文件。
+
+**失败族 3：dllexport 会"实体化"隐式特殊成员（C2280 / C2027 / C2338）。** 这一族最隐蔽：同一份代码在 OBJECT/静态路线完全合法，SHARED 下只要类的声明带了组宏，MSVC 就会为导出面生成它本来会跳过的特殊成员。
+
+| 子形态 | 触发 | CI 原文 | 配方 |
+| --- | --- | --- | --- |
+| (a) 隐式拷贝 | `Resource` 持有 move-only 的 `std::vector<ResourcePin>`，隐式拷贝赋值 ill-formed | `memory: C2280 'RuntimePin::operator=' : attempting to reference a deleted function`（image/sound/font/graphics 多 TU） | 显式 `= delete` 拷贝操作：语义不变（本来就删了），只是给 MSVC 一个**不必定义**的声明 |
+| (b) 类内默认化移动 | `Card(Card&&) = default;` 会实例化每个成员的移动，含 `unique_ptr<CardControl>` 的 deleter，而 `CardControl` 在本头只有前置声明 | `memory(3337): C2027 use of undefined type 'eve::card::CardControl'` + `C2338 can't delete an incomplete type` | 跟随该文件自己的模式：构造/析构/移动**声明在类外**，在能看到完整类型的 .cpp 里 `= default`（`Card.h` 里 dev 本来就为 `CardControl` 这么写过） |
+| (c) 类内默认化构造 | `Inventory() = default;` 在"后续成员构造抛异常"时要析构已构造成员 | 同上，`undefined type 'eve::inventory::InventoryControl'`，`Inventory.h(27)` 被点名为首次引用 | 同上：`Inventory()` 声明在类外，`Inventory.cpp`（已 include `InventoryControl.h`）里 `= default` |
+
+判别脚本（本轮用的判据，可复用）：**类声明带组宏** + 类体里有 `unique_ptr / optional / shared_ptr<X>` 且 `X` 在本头只有前置声明 → 检查该类的构造/析构/拷贝/移动是否都在类外或显式 `= delete`。只在"本 PR 给过宏的类"上执行，否则会误伤仓库里大量合法的 pimpl（它们的特殊成员本来就声明在类外）。反过来也要注意**不要**为了消除 (a)(b)(c) 而给带 `inline static` 数据成员的类加类级宏（那会撞 C2491，见 §7.29 缺陷 3）。
+
+**为什么最后只剩 MSVC + OBJECT 的 Dawn lane 红**：clang 的 OBJECT 路线（macOS / iOS / Android / WASM）对 (b)(c) 宽容；Windows 的 native Dawn parity lane 是 **MSVC + OBJECT + 单体 `unit_test`**，于是它成了最后一个红点。顺带查明：该 lane 在 **dev 分支自身**也曾红，但原因是 Dawn 自己的源码编不过（`_deps/dawn-build/src/tint/utils/...`），与我们无关——**判断"这条红是不是自己的"时，先看 dev 分支同名作业的状态**。
+
+**读数（推送头 `3b7f3b5af`，全部合并之后）**：CI run `35961588643` —— Windows **pass 2h27m17s**（含 Dawn parity lane）、macOS pass 1h43m58s、Linux pass 1h29m34s、Linux (ASan+UBSan) pass 2h42m10s、Android pass 54m41s、iOS pass 35m18s、WebGPU (WASM) pass 23m27s、Source quality / Classify / Standalone Python tools / zeroerr fuzz 全 pass；PR `MERGEABLE / CLEAN`，随后合并为 `0a491d055`。
+
+### 7.32 合并残渣的分类，与"本地验证的两个假阴性"（2026-09-24）
+
+**残渣分类**（共同点：能提交、能 configure，只在编译/链接/脚本执行时才报）：
+
+1. **子模块 gitlink 取到旧提交**：`external/ECS.hpp` 只有 dev 移动过指针（`f50a6138` → `47fe2979`），冲突解决却留了旧的一侧，于是取自 dev 的 `test/ECS.cpp` 用新 API 编不过（`C2665 StrictNode::create` / `C2039 ComponentRef::has`）。判据与配方见 §7.29 缺陷 1。
+2. **`cmake -P` 脚本多一个 `endif()`**：`ZeroErrDiscoverTestsImpl.cmake` 只在链接每个测试 exe 后被调用，configure 全绿、首次链接才炸 `Flow control statements are not properly nested`。
+3. **测试里的截断断言**：`scripts/tests/test_zeroerr_discovery.py` 留下 `self.assertIn(generated,)`（`TypeError: missing 'container'`）。
+4. **域表漏项**：dev 新增的 `test/rpg_script.cpp`（不含任何模块包根）让 configure 直接硬失败 `test domain partition failed`。
+5. **配方**：合并后必须跑 ① 全量 build（**链接期**才是 discovery 脚本的执行期）② `python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py"` ③ 域表/清单类门禁（`check_test_manifest.py` 等）。
+
+**本地验证的两个假阴性**（本轮都实际踩到，值得写进肌肉记忆）：
+
+- **(a) Ninja 的 unscanned 依赖追踪**：改头文件后 `ninja` 可能**一个 TU 都不重编**，本地"编译通过"是假的（`AGENTS.md` 早有记录，这次在 rpg/tactics 标注上又踩了一次，直到 CI 全平台红才发现）。配方：验证前先 touch 所有 include 了被改头文件的 `.cpp`（或删掉对应 `.obj`），再 build；判据是日志里能看到那些 TU 真的被编了。
+- **(b) `git clang-format` 不是幂等的**：对 changed lines 要**迭代到 `--diff` 为空**（实测 2~3 轮），且不能把子模块路径传给它（`external/ECS.hpp: is a directory`，会中断整批），要显式限定 `-- src test`。
+
+**本地链接级验证的两处环境差异**（否则会把环境问题误判成代码问题）：**(a)** 预编译第三方缓存里没有本 PR 才引入的双形态 twin（`Box2D-dynamic.lib` / `box3d-dynamic.lib`），`deps` 目标在这种配置下是 no-op，于是组库链接必然失败；**(b)** 本机 VS 安装的对象文件不带 `/DEFAULTLIB:ucrtd` 指令，链 imgui 这类目标时会以一堆 UCRT 符号未解析失败，而 CI 的镜像正常。两者都表现为"本地红、CI 绿"。

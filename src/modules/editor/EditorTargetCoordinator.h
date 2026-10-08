@@ -35,12 +35,12 @@ public:
         eve::editing::EditingCommandPlanner planner) override;
     [[nodiscard]] eve::editing::Result<std::size_t> unregisterOwner(
         const std::string& ownerModule) override;
-    [[nodiscard]] EditorResult<void> registerTarget(IEditableTarget& target);
-    [[nodiscard]] EditorResult<void> unregisterTarget(const TargetId& target);
-    [[nodiscard]] EditorResult<void> bind(EditorSession& session, const TargetId& target);
-    [[nodiscard]] EditorResult<EditorValue> inspect(const TargetId& target) const;
-    [[nodiscard]] EditorResult<TransactionReceipt> undo(const TargetId& target);
-    [[nodiscard]] EditorResult<TransactionReceipt> redo(const TargetId& target);
+    [[nodiscard]] Result<void> registerTarget(IEditableTarget& target);
+    [[nodiscard]] Result<void> unregisterTarget(const TargetId& target);
+    [[nodiscard]] Result<void> bind(EditorSession& session, const TargetId& target);
+    [[nodiscard]] Result<EditorValue> inspect(const TargetId& target) const;
+    [[nodiscard]] Result<TransactionReceipt> undo(const TargetId& target);
+    [[nodiscard]] Result<TransactionReceipt> redo(const TargetId& target);
 
     /** @brief Discovery metadata for one registered editable target. */
     struct TargetSummary {

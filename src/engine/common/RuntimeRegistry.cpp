@@ -23,7 +23,7 @@ namespace {
 /** @brief Registry failure carrying the shared runtime-registry diagnostic source. */
 template <class R>
 [[nodiscard]] Result<R> registryFailure(DiagnosticCode code, std::string message) {
-    return Result<R>::failure(Diagnostic::error(code, std::move(message), {}, {}, "runtime.registry"));
+    return Result<R>::failure(Diagnostic::error(code, message, {}, {}, "runtime.registry"));
 }
 
 /** @brief Stale-handle failure for the runtime registry. */

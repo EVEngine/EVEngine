@@ -12,17 +12,17 @@ namespace {
 
 eve::Result<std::string> rejected(std::string message) {
     return eve::Result<std::string>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message)));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message));
 }
 
 eve::Result<std::string> conflict(std::string message) {
     return eve::Result<std::string>::failure(
-        eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message))));
+        eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message)));
 }
 
 eve::Result<void> notFound(std::string message) {
     return eve::Result<void>::failure(
-        eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move(message))));
+        eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, message)));
 }
 
 eve::Result<EffectUpdateSummary> invalidDelta() {

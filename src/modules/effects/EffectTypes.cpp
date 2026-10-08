@@ -5,13 +5,7 @@
 #include <utility>
 
 namespace eve::effects {
-namespace {
-
-eve::Result<void> invalid(std::string message) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message)));
-}
-
-}  // namespace
+  // namespace
 
 void EffectPayload::setString(const std::string& key, const std::string& value) {
     if (!key.empty()) values_[key] = eve::Value(value);
@@ -31,7 +25,7 @@ void EffectPayload::setNull(const std::string& key) {
 }
 
 eve::Result<void> EffectPayload::setJson(const std::string& key, const std::string& json) {
-    if (key.empty()) return invalid("effect payload key must not be empty");
+    if (key.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect payload key must not be empty"));
     auto parsed = eve::Value::fromJson(json);
     if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
     values_[key] = std::move(parsed).takeValue();
@@ -41,7 +35,7 @@ eve::Result<void> EffectPayload::setJson(const std::string& key, const std::stri
 bool EffectPayload::has(const std::string& key) const { return values_.contains(key); }
 
 eve::Result<void> EffectPayload::erase(const std::string& key) {
-    if (key.empty()) return invalid("effect payload key must not be empty");
+    if (key.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect payload key must not be empty"));
     const bool removed = values_.erase(key) != 0;
     return eve::Result<void>::success(eve::Status::success(removed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
 }
@@ -65,21 +59,21 @@ const eve::Value::Object& EffectPayload::object() const noexcept { return values
 void EffectPayload::clear() { values_.clear(); }
 
 eve::Result<void> EffectDefinition::validate() const {
-    if (id.empty()) return invalid("effect definition id must not be empty");
-    if (!std::isfinite(duration)) return invalid("effect definition duration must be finite");
+    if (id.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition id must not be empty"));
+    if (!std::isfinite(duration)) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition duration must be finite"));
     if (!std::isfinite(period) || period < 0.0)
-        return invalid("effect definition period must be finite and non-negative");
-    if (!std::isfinite(magnitude)) return invalid("effect definition magnitude must be finite");
-    if (stackCount == 0) return invalid("effect definition stack count must be positive");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition period must be finite and non-negative"));
+    if (!std::isfinite(magnitude)) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition magnitude must be finite"));
+    if (stackCount == 0) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition stack count must be positive"));
     if (policy.stackCount == StackCountPolicy::Set && policy.maxStacks != 0 && stackCount > policy.maxStacks &&
         policy.overflow == OverflowPolicy::Reject) {
-        return invalid("effect definition stack count exceeds its maximum");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition stack count exceeds its maximum"));
     }
     return eve::Result<void>::success();
 }
 
 eve::Result<void> EffectInstance::addTag(const std::string& tag) {
-    if (tag.empty()) return invalid("effect tag must not be empty");
+    if (tag.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect tag must not be empty"));
     const auto it = std::lower_bound(tags.begin(), tags.end(), tag);
     if (it != tags.end() && *it == tag) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     tags.insert(it, tag);
