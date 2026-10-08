@@ -84,8 +84,9 @@ function fusionMergePair(enableBlend) {
     local left = fusionRecipe("prototype.cube", 1.2, 1.5, 1.2, 16);
     local right = fusionRecipe("prototype.cube", 1.2, 1.5, 1.2, 16);
     local plan = eve.MeshMergePlan();
-    fusionRequire(plan.appendSource(left, -0.55, 0.75, 0.0, 0.0, 1.0, 1.0, 1.0, "matA"), "append left");
-    fusionRequire(plan.appendSource(right, 0.55, 0.75, 0.0, 10.0, 1.0, 1.0, 1.0, "matB"), "append right");
+    // Width 1.2 → half-extent 0.6; centers ±0.58 leave a thin overlap (less z-fight than deep embed).
+    fusionRequire(plan.appendSource(left, -0.58, 0.75, 0.0, 0.0, 1.0, 1.0, 1.0, "matA"), "append left");
+    fusionRequire(plan.appendSource(right, 0.58, 0.75, 0.0, 10.0, 1.0, 1.0, 1.0, "matB"), "append right");
     fusionRequire(plan.setPivotMode(1), "world pivot");
     fusionRequire(plan.setEnableContactBlend(enableBlend), "set blend enable");
     if (enableBlend) {
@@ -160,7 +161,7 @@ function fusionBuildUi() {
     ui.slider("Edge radius", edgeRadius, 0.05, 1.8, "edgeRadius");
     ui.slider("Material radius", materialRadius, 0.05, 1.8, "materialRadius");
     ui.slider("Strength", strength, 0.0, 1.0, "strength");
-    ui.slider("Source lift", sourceLift, 0.4, 1.8, "sourceLift");
+    ui.slider("Source lift", sourceLift, 0.05, 1.2, "sourceLift");
     ui.beginRow("actions", 8.0);
     ui.button(softSnap ? "Soft snap: ON" : "Soft snap: OFF", "softSnap");
     ui.button("Re-evaluate", "reeval");
