@@ -14,7 +14,7 @@
 2. **视觉粘合（Merge Master 类）**  
    活动网格 A 在接触带内贴合基体 B，带 Strength / Radius / Falloff 与法线过渡；预览非破坏，满意后再 Bake。本引擎已有射线贴合 `deform.meshFit`、`mesh.boolean`、`MeshDeformationSession`，但缺少「按距离衰减的接触带粘合 + 缝线法线混合 + 可选材质过渡」的一等节点。
 
-本计划分两阶段交付：先产品化结构合并，再新增粘合算法与会话。
+本计划按两阶段组织实现顺序（先结构合并，再粘合算法与会话），但**全部在同一实现 PR 内交付**，不再拆成多个功能 PR。
 
 ## 目标
 
@@ -91,7 +91,7 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 - `MeshGraph` / 脚本：`eve.mergeStaticMeshes(plan)` 或等价；参数与 C++ 同构。
 - 现有 `mesh.merge`（二输入 append）保留；文档说明多源 + 选项走新门面。
 
-### A3. 编辑器（可与 A1 同 PR 或紧随）
+### A3. 编辑器
 
 - `procgen_editor`：选中多个网格目标 → Merge → 弹出选项 → 写出新网格资源/实例。
 - 「替换源」为可选事务：成功写入后再移除/隐藏源；失败回滚，不留半替换场景。
@@ -103,11 +103,11 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 - 组合测：合并 → 上传 graphics mesh（若现有测试夹具允许）或 `CanonicalMesh` 编码往返。
 - 文档：`docs/usr/modules/procgen.md` 增加 Merge 小节，对照 UE Merge / Simplify 的覆盖范围与非目标。
 
-### A5. 交付切片
+### A5. 实现顺序（同 PR 内）
 
-1. `MeshMergePlan` + `mergeStaticMeshes` + 单测（无 UI）。
+1. `MeshMergePlan` + `mergeStaticMeshes` + 单测。
 2. 脚本绑定 + usr 文档。
-3. Editor 工具 + 替换源事务（可选，不阻塞算法合并）。
+3. Editor 工具 + 替换源事务（与算法同 PR；若排期紧张可先做只产出网格、不替换场景的最小编辑器入口，但仍落在同一 PR）。
 
 ---
 
@@ -171,11 +171,12 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 - 架构：`ARCHITECTURE_BASE=... make check/architecture-contracts`；无新向上依赖；`procgen` 不依赖 editor。
 - 法律：实现与测试夹具均为自研；文档「参考」一节只列公开行为对照表，不附第三方源码。
 
-### B6. 交付切片
+### B6. 实现顺序（同 PR 内，接在 Phase A 之后）
 
-1. CPU 节点 `deform.meshAdhere` + BVH/最近点 + 单测（无 UI）。
+1. CPU 节点 `deform.meshAdhere` + BVH/最近点 + 单测。
 2. 会话 Activate / Bake / Remove + 图集成。
-3. Editor 面板与文档；B2 项按需另开 PR。
+3. Editor 面板与 usr 文档。
+4. B2 增强（材质混合、自定义 falloff、Bake 后自动 boolean 等）**不进本 PR**；需要时另开后续工作，不在此计划拆 PR。
 
 ---
 
@@ -206,18 +207,12 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 | 把 GPL/UE 代码带入仓库 | 仅读公开文档；代码审查禁止第三方摘录 |
 | combine 旧 API 双真相 | Phase A 标明 canonical；旧路径委托新实现 |
 
-## 建议 PR 粒度
+## 交付方式（单 PR）
 
-| PR | 内容 | 依赖 |
-|----|------|------|
-| PR1 | 本计划文档（本文件） | — |
-| PR2 | Phase A1–A2：`mergeStaticMeshes` + 测试 + usr 文档 | PR1 |
-| PR3 | Phase A3：editor 合并工具（可选） | PR2 |
-| PR4 | Phase B1：`deform.meshAdhere` + 测试 | PR1 |
-| PR5 | Phase B3–B4：会话 + editor | PR4 |
-| PR6 | Phase B2 增强（材质混合等） | PR5 |
-
-PR2 与 PR4 可并行（不同 TU / 节点），合并前各自绿测。
+- **计划文档**可先合入（本文件所在变更）。
+- **实现**将 Phase A（结构合并 API + 脚本 + 编辑器）与 Phase B v1（`deform.meshAdhere` + 会话 + 编辑器 + 测试 + usr 文档）放在**同一个实现 PR** 中一次提交完整能力面；本地可按 A→B 顺序开发与提交多个 commit，但不拆多个 PR。
+- Phase B2（材质混合等可选增强）明确排除在该实现 PR 之外，避免范围膨胀；不为此预拆 PR 号。
+- 合并前一次跑通：相关 `procgen_mesh*` 单测、组合路径、`check/architecture-contracts`、格式检查。
 
 ## 参考（公开行为，非实现来源）
 
@@ -225,12 +220,13 @@ PR2 与 PR4 可并行（不同 TU / 节点），合并前各自绿测。
 - UE5 Merge Actors：Merge / Simplify / Batch / Approximate；Replace Source Actors；枢轴与材质 section。
 - 本仓库：`docs/usr/modules/procgen.md`（`deform.meshFit`、`combinePcgStaticMeshes`、`mesh.boolean`）。
 
-## 交接检查清单（实现 PR 用）
+## 交接检查清单（唯一实现 PR）
 
+- [ ] Phase A 与 Phase B v1 同 PR 完整交付（含编辑器入口）
 - [ ] Canonical API 与诊断码已文档化
 - [ ] 新旧 combine/merge 无双真相或已标明兼容层
 - [ ] Adhere 与 meshFit 分工写清
 - [ ] 确定性与线程/重入注释齐全
-- [ ] 单测 + 至少一条组合路径
+- [ ] 单测 + 至少一条组合路径（含 Adhere → Bake → 可选 boolean）
 - [ ] `check/architecture-contracts` 与相关 `make test FILTER=procgen_mesh*` 通过
-- [ ] 无第三方源码摘录；非目标未偷加范围
+- [ ] 无第三方源码摘录；B2 未偷加进本 PR
