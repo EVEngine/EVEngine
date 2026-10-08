@@ -13,6 +13,7 @@ class EVENGINE_API_BACKENDS AlphaMask {
 public:
     /** @brief Create a mask renderer backed by the supplied graphics device. */
     explicit AlphaMask(Graphics *graphics);
+    /** @brief Alpha mask. */
     ~AlphaMask();
 
     /** @brief Set the mask cutoff in normalized alpha space. */

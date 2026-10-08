@@ -13,12 +13,16 @@ namespace eve::climbing::runtime_detail {
 constexpr float       epsilon         = 1e-5f;
 constexpr std::size_t maxDebugEntries = 64;
 
+/** @brief RuntimeTelemetryScope public API. */
 class RuntimeTelemetryScope {
 public:
+    /** @brief Constructs a RuntimeTelemetryScope. */
     RuntimeTelemetryScope(ClimbingTelemetryBuffer& buffer, ClimbingRuntimeCounters& counters,
                           eve::SimulationTick tick) noexcept
+        /** @brief Buffer. */
         : buffer_(buffer), counters_(counters), tick_(tick), start_(std::chrono::steady_clock::now()) {}
 
+    /** @brief Releases RuntimeTelemetryScope resources. */
     ~RuntimeTelemetryScope() {
         const auto elapsed = std::chrono::steady_clock::now() - start_;
         buffer_.record(
@@ -34,38 +38,50 @@ private:
 };
 
 template <class T>
+/** @brief Bounded debug push. */
 void boundedDebugPush(std::vector<T>& values, T value) {
     if (values.size() < maxDebugEntries) values.push_back(std::move(value));
 }
 
+/** @brief True when finite. */
 inline bool isFinite(float value) { return std::isfinite(value); }
 
+/** @brief True when finite. */
 inline bool isFinite(Vec3 value) { return isFinite(value.x) && isFinite(value.y) && isFinite(value.z); }
 
+/** @brief Length squared. */
 inline float lengthSquared(Vec3 value) { return value.x * value.x + value.y * value.y + value.z * value.z; }
+/** @brief Length. */
 inline float length(Vec3 value) { return std::sqrt(lengthSquared(value)); }
 
+/** @brief Operator +. */
 inline Vec3 operator+(Vec3 lhs, Vec3 rhs) { return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z}; }
+/** @brief Operator -. */
 inline Vec3 operator-(Vec3 lhs, Vec3 rhs) { return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z}; }
+/** @brief Operator *. */
 inline Vec3 operator*(Vec3 value, float scale) { return {value.x * scale, value.y * scale, value.z * scale}; }
 
+/** @brief Normalized horizontal. */
 inline Vec3 normalizedHorizontal(Vec3 value) {
     value.y            = 0.f;
     const float length = std::sqrt(lengthSquared(value));
     return length > epsilon ? value * (1.f / length) : Vec3{};
 }
 
+/** @brief Clamp magnitude. */
 inline Vec3 clampMagnitude(Vec3 value, float maximum) {
     const float magnitude = length(value);
     return magnitude > maximum && magnitude > epsilon ? value * (maximum / magnitude) : value;
 }
 
+/** @brief WarpChannels public API. */
 struct WarpChannels {
     bool horizontal = false;
     bool vertical   = false;
     bool facing     = false;
 };
 
+/** @brief Active warp channels. */
 inline WarpChannels activeWarpChannels(const ClimbingActionDefinition& action, float normalizedTime) {
     if (action.warpWindows.empty()) return {true, true, true};
     for (const ClimbingWarpWindow& window : action.warpWindows)
@@ -74,7 +90,9 @@ inline WarpChannels activeWarpChannels(const ClimbingActionDefinition& action, f
     return {};
 }
 
+/** @brief Active branch window. */
 inline bool activeBranchWindow(const ClimbingActionDefinition& action, float normalizedTime) {
+    /** @brief Any of. */
     return std::any_of(action.branchWindows.begin(), action.branchWindows.end(), [&](const auto& window) {
         return normalizedTime + epsilon >= window.start && normalizedTime <= window.end + epsilon;
     });
@@ -89,6 +107,7 @@ inline const std::string* activeBranchComboTag(const ClimbingActionDefinition& a
     return found == action.branchWindows.end() ? nullptr : &found->comboTag;
 }
 
+/** @brief Active contact weight. */
 inline float activeContactWeight(const ClimbingActionDefinition& action, ClimbingContactTarget target,
                                  float normalizedTime) {
     float weight = 0.f;
@@ -100,6 +119,7 @@ inline float activeContactWeight(const ClimbingActionDefinition& action, Climbin
     return weight;
 }
 
+/** @brief Terminal velocity for. */
 inline Vec3 terminalVelocityFor(const ClimbingActionDefinition& action, Vec3 actualDelta, float inverseDelta) {
     Vec3 velocity = actualDelta * inverseDelta;
     switch (action.landingPolicy) {
@@ -115,35 +135,42 @@ inline Vec3 terminalVelocityFor(const ClimbingActionDefinition& action, Vec3 act
     return velocity;
 }
 
+/** @brief Final warp window end. */
 inline float finalWarpWindowEnd(const ClimbingActionDefinition& action) {
     return action.warpWindows.empty() ? 1.f : action.warpWindows.back().end;
 }
 
+/** @brief Signed horizontal angle. */
 inline float signedHorizontalAngle(Vec3 from, Vec3 to) {
     from = normalizedHorizontal(from);
     to   = normalizedHorizontal(to);
     if (lengthSquared(from) <= epsilon || lengthSquared(to) <= epsilon) return 0.f;
     const float crossY = from.z * to.x - from.x * to.z;
     const float dot    = std::clamp(from.x * to.x + from.z * to.z, -1.f, 1.f);
+    /** @brief Atan 2. */
     return std::atan2(crossY, dot);
 }
 
+/** @brief True when active phase. */
 inline bool isActivePhase(ClimbingPhase phase) {
     return phase != ClimbingPhase::Idle && phase != ClimbingPhase::Completed && phase != ClimbingPhase::Cancelled &&
            phase != ClimbingPhase::Failed;
 }
 
+/** @brief True when runtime probe kind. */
 inline bool isRuntimeProbeKind(ClimbingActionKind kind) {
     return kind == ClimbingActionKind::Vault || kind == ClimbingActionKind::Mantle ||
            kind == ClimbingActionKind::LedgeGrab || kind == ClimbingActionKind::ClimbUp ||
            kind == ClimbingActionKind::WallRun || kind == ClimbingActionKind::Slide;
 }
 
+/** @brief True when obstacle probe kind. */
 inline bool isObstacleProbeKind(ClimbingActionKind kind) {
     return kind == ClimbingActionKind::Vault || kind == ClimbingActionKind::Mantle ||
            kind == ClimbingActionKind::LedgeGrab || kind == ClimbingActionKind::ClimbUp;
 }
 
+/** @brief True when anchor hang end. */
 inline bool isAnchorHangEnd(ClimbingActionKind kind) {
     return kind == ClimbingActionKind::LedgeGrab || kind == ClimbingActionKind::Shimmy ||
            kind == ClimbingActionKind::CornerInner || kind == ClimbingActionKind::CornerOuter ||
@@ -153,6 +180,7 @@ inline bool isAnchorHangEnd(ClimbingActionKind kind) {
            kind == ClimbingActionKind::BarSwing;
 }
 
+/** @brief Quantize millimeters. */
 inline std::int64_t quantizeMillimeters(float value) {
     const double scaled = std::round(static_cast<double>(value) * 1000.0);
     return static_cast<std::int64_t>(std::clamp(scaled, static_cast<double>(std::numeric_limits<std::int32_t>::min()),
@@ -167,6 +195,7 @@ inline const ClimbingActionDefinition* findAction(const ClimbingProfile& profile
     return found == profile.actions.end() ? nullptr : &*found;
 }
 
+/** @brief True when candidate less. */
 inline bool isCandidateLess(const ClimbingCandidate& lhs, const ClimbingCandidate& rhs) {
     if (lhs.score != rhs.score) return lhs.score < rhs.score;
     if (lhs.actionId != rhs.actionId) return lhs.actionId < rhs.actionId;
@@ -174,12 +203,16 @@ inline bool isCandidateLess(const ClimbingCandidate& lhs, const ClimbingCandidat
     return lhs.obstacleShapeId < rhs.obstacleShapeId;
 }
 
+/** @brief True if any tag. */
 inline bool containsAnyTag(const std::vector<std::string>& actionTags, const std::vector<std::string>& policyTags) {
+    /** @brief Any of. */
     return std::any_of(actionTags.begin(), actionTags.end(), [&](const std::string& tag) {
+        /** @brief Finds . */
         return std::find(policyTags.begin(), policyTags.end(), tag) != policyTags.end();
     });
 }
 
+/** @brief True when action enabled for pose. */
 inline bool isActionEnabledForPose(const ClimbingProfile& profile, const ClimbingActionDefinition& action,
                                    const ClimbingPose& pose) {
     if (!profile.defaultActionIds.empty() && std::find(profile.defaultActionIds.begin(), profile.defaultActionIds.end(),
@@ -191,6 +224,7 @@ inline bool isActionEnabledForPose(const ClimbingProfile& profile, const Climbin
     return (static_cast<std::uint8_t>(action.sourceModes) & static_cast<std::uint8_t>(required)) != 0;
 }
 
+/** @brief True when probe recipe matching kind. */
 inline bool isProbeRecipeMatchingKind(const ClimbingActionDefinition& action) {
     switch (action.probeRecipe) {
         case ClimbingProbeRecipe::Automatic: return true;
@@ -205,6 +239,7 @@ inline bool isProbeRecipeMatchingKind(const ClimbingActionDefinition& action) {
     return false;
 }
 
+/** @brief Parse tag selector. */
 inline std::optional<int> parseTagSelector(std::string_view selector, std::string_view prefix) {
     if (!selector.starts_with(prefix)) return std::nullopt;
     const std::string_view digits = selector.substr(prefix.size());
@@ -215,6 +250,7 @@ inline std::optional<int> parseTagSelector(std::string_view selector, std::strin
     return value;
 }
 
+/** @brief True when support selector match. */
 inline bool isSupportSelectorMatch(const ClimbingActionDefinition& action, int shapeTag, int materialId) {
     for (const std::string& selector : action.requiredSupportTags) {
         if (const auto expected = parseTagSelector(selector, "shape:")) {
@@ -228,10 +264,13 @@ inline bool isSupportSelectorMatch(const ClimbingActionDefinition& action, int s
     return true;
 }
 
+/** @brief Weighted millimeters. */
 inline std::int64_t weightedMillimeters(float value, std::int32_t weight) {
+    /** @brief Quantize millimeters. */
     return quantizeMillimeters(value) * static_cast<std::int64_t>(weight);
 }
 
+/** @brief Selection cost. */
 inline std::int64_t selectionCost(const ClimbingProfile& profile, const ClimbingActionDefinition& action,
                                   const ClimbingPose& pose, Vec3 targetDirection, Vec3 targetDelta, float heightError,
                                   float distance, std::int64_t stableTieBreak = 0) {
@@ -240,11 +279,13 @@ inline std::int64_t selectionCost(const ClimbingProfile& profile, const Climbing
     if (lengthSquared(targetDirection) <= epsilon) targetDirection = forward;
 
     Vec3 intentDirection =
+        /** @brief Normalized horizontal. */
         normalizedHorizontal(pose.inputMode == ClimbingInputMode::Precision ? pose.lookIntent : pose.moveIntent);
     if (lengthSquared(intentDirection) <= epsilon) intentDirection = forward;
 
     const float directionDot = std::clamp(forward.x * targetDirection.x + forward.z * targetDirection.z, -1.f, 1.f);
     const float intentDot =
+        /** @brief Clamp. */
         std::clamp(intentDirection.x * targetDirection.x + intentDirection.z * targetDirection.z, -1.f, 1.f);
     const bool  precision            = pose.inputMode == ClimbingInputMode::Precision;
     const float assistScale          = 1.f - profile.autoAssistStrength * (precision ? 0.15f : 0.5f);
@@ -259,14 +300,21 @@ inline std::int64_t selectionCost(const ClimbingProfile& profile, const Climbing
     const float intentMismatch       = 1.f - intentDot;
 
     return static_cast<std::int64_t>(action.selectionBias) * 1000000ll +
+           /** @brief Weighted millimeters. */
            weightedMillimeters((1.f - directionDot) * assistScale * directionModeScale,
                                profile.scoreWeights.direction) +
+           /** @brief Weighted millimeters. */
            weightedMillimeters(std::fabs(pose.speed - action.minSpeed) * speedModeScale,
                                profile.scoreWeights.approachSpeed) +
+           /** @brief Weighted millimeters. */
            weightedMillimeters(heightError, profile.scoreWeights.height) +
+           /** @brief Weighted millimeters. */
            weightedMillimeters(distance, profile.scoreWeights.distance) +
+           /** @brief Weighted millimeters. */
            weightedMillimeters(warpTranslation * translationModeScale, profile.scoreWeights.warpTranslation) +
+           /** @brief Weighted millimeters. */
            weightedMillimeters(warpRotation * rotationModeScale, profile.scoreWeights.warpRotation) +
+           /** @brief Weighted millimeters. */
            weightedMillimeters(intentMismatch * intentModeScale, profile.scoreWeights.intentMismatch) + stableTieBreak;
 }
 

@@ -28,9 +28,11 @@ class Resource;
 
 namespace eve::caps {
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION IAssetReloader {
 public:
     /** Suggested priorities; lower runs first. */
+    /** @brief Priority public API. */
     enum Priority {
         kCache = 0,    // refresh cached CPU resources (ResourceManager)
         kTexture = 10,   // refresh GPU resources before their consumers re-bind

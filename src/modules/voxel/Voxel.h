@@ -31,9 +31,12 @@ namespace eve::voxel {
 class EVENGINE_API_DOMAINS Voxel : public Module {
 public:
     Module_REG(Voxel);
+    /** @brief Voxel. */
     Voxel() = default;
+    /** @brief Voxel. */
     ~Voxel() override = default;
 
+    /** @brief Returns the chunk size. */
     int getChunkSize() const { return kChunkSize; }
 
     /** @brief 返回一个新的方块类型注册表（由调用者持有 / 脚本持有）。 */

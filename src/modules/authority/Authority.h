@@ -176,7 +176,9 @@ EVENGINE_API_FOUNDATION std::string eventKindName(EventKind kind);
 class Authority : public Module {
 public:
     Module_REG(Authority);
+    /** @brief Constructs a Authority. */
     Authority()           = default;
+    /** @brief Releases Authority resources. */
     ~Authority() override = default;
 
     /**

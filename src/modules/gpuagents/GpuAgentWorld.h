@@ -26,6 +26,7 @@ namespace eve::gpuagents {
  */
 class EVENGINE_API_DOMAINS GpuAgentWorld {
 public:
+    /** @brief Gpu agent world. */
     GpuAgentWorld() = default;
 
     /** @brief Access the shared obstacle field (mutable for baking). */

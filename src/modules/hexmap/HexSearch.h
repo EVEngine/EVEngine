@@ -67,6 +67,7 @@ enum class HexSearchPop : std::int32_t {
  */
 class EVENGINE_API_WORLD HexSearchContext {
 public:
+    /** @brief Hex search context. */
     HexSearchContext() = default;
 
     /**

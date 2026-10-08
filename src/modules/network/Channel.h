@@ -24,6 +24,7 @@ class EVENGINE_API_PLATFORM Channel {
 public:
     /** @brief Creates a channel over an existing socket (socket must be non-null). */
     explicit Channel(TcpSocket* socket);
+    /** @brief Channel. */
     ~Channel();
 
     /**

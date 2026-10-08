@@ -37,12 +37,15 @@ public:
     std::vector<float> distances;
 
     /** @return dims.x * dims.y * dims.z. */
+    /** @brief Voxel count. */
     int voxelCount() const;
 
     /** @return flat index for voxel (x,y,z); asserts bounds. */
+    /** @brief Index. */
     int index(int x, int y, int z) const;
 
     /** @return true when voxel coordinate is inside the field. */
+    /** @brief In bounds. */
     bool inBounds(const glm::ivec3& c) const;
 
     /**

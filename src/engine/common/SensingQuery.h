@@ -33,6 +33,7 @@ class EVENGINE_API ISensingQuery {
 public:
     static constexpr const char* capabilityName = "ISensingQuery";
 
+    /** @brief I sensing query. */
     virtual ~ISensingQuery() = default;
 
     /** @brief Number of live sensing worlds created by the project. */

@@ -10,14 +10,22 @@ namespace eve::graphics {
  */
 class EVENGINE_API_BACKENDS Quad {
 public:
+    /** @brief Quad. */
     Quad();
+    /** @brief Quad. */
     Quad(int x, int y, int w, int h);
+    /** @brief Quad. */
     ~Quad();
 
+    /** @brief Sets the viewport. */
     void setViewport(int x, int y, int w, int h);
+    /** @brief Returns the x. */
     int getX() const { return x; }
+    /** @brief Returns the y. */
     int getY() const { return y; }
+    /** @brief Returns the width. */
     int getWidth() const { return w; }
+    /** @brief Returns the height. */
     int getHeight() const { return h; }
 
     /** @brief Convert pixel rect to normalized UVs for a texture of size texW×texH. */

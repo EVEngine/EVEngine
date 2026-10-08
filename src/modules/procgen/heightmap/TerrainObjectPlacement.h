@@ -114,9 +114,13 @@ struct TerrainObjectTile {
 /** @brief Owning transactional multi-terrain object workspace with undo and redo snapshots. */
 class EVENGINE_API_DOMAINS TerrainMultiObjectWorkspace {
 public:
+    /** @brief Terrain multi object workspace. */
     TerrainMultiObjectWorkspace();
+    /** @brief Terrain multi object workspace. */
     ~TerrainMultiObjectWorkspace();
+    /** @brief Terrain multi object workspace. */
     TerrainMultiObjectWorkspace(TerrainMultiObjectWorkspace&&) noexcept;
+    /** @brief Operator =. */
     TerrainMultiObjectWorkspace& operator=(TerrainMultiObjectWorkspace&&) noexcept;
     TerrainMultiObjectWorkspace(const TerrainMultiObjectWorkspace&) = delete;
     TerrainMultiObjectWorkspace& operator=(const TerrainMultiObjectWorkspace&) = delete;

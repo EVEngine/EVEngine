@@ -15,7 +15,9 @@ namespace eve::card {
  * returning). Transient hover/drag interaction is dropped on restore.
  */
 EVENGINE_API_WORLD bool captureCardState(StateValue& out);
+/** @brief Restore card state. */
 EVENGINE_API_WORLD bool restoreCardState(const StateValue& in, std::string* err = nullptr);
+/** @brief Resets card state. */
 EVENGINE_API_WORLD bool resetCardState();
 
 }  // namespace eve::card

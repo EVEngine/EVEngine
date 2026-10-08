@@ -9,10 +9,14 @@ class EVENGINE_API_FOUNDATION_INLINE IAudioQuery {
 public:
     static constexpr const char* capabilityName = "IAudioQuery";
 
+    /** @brief I audio query. */
     virtual ~IAudioQuery() = default;
 
+    /** @brief Volume. */
     virtual float volume() const = 0;
+    /** @brief Sets the volume. */
     virtual void setVolume(float v) = 0;
+    /** @brief Stops all. */
     virtual void stopAll() = 0;
 };
 

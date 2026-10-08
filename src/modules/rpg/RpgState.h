@@ -15,7 +15,9 @@ namespace eve::rpg {
  * Casting targets are raw pointers and are not serialized (restored as null).
  */
 EVENGINE_API_PLATFORM bool captureRpgState(StateValue& out);
+/** @brief Restore rpg state. */
 EVENGINE_API_PLATFORM bool restoreRpgState(const StateValue& in, std::string* err = nullptr);
+/** @brief Resets rpg state. */
 EVENGINE_API_PLATFORM bool resetRpgState();
 
 }  // namespace eve::rpg

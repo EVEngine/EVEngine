@@ -70,7 +70,9 @@ public:
 
     void clear();
 
+    /** @brief Root count. */
     [[nodiscard]] size_t rootCount() const { return roots_.size(); }
+    /** @brief Root at. */
     [[nodiscard]] const RootAttach *rootAt(size_t index) const;
 
     /**

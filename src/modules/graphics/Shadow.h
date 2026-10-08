@@ -6,6 +6,7 @@
 
 namespace eve::graphics {
 
+/** @brief ShadowConfig public API. */
 struct ShadowConfig {
     static constexpr int kCascades = 3;
     static constexpr int kMapSize = 2048;
@@ -24,6 +25,7 @@ struct ShadowUBO {
     glm::vec4 cascadeTexel{0.f};            // xyz = world units per shadow texel
 };
 
+/** @brief ShadowUpload public API. */
 struct ShadowUpload {
     ShadowUBO ubo{};
     bool active = false;

@@ -17,7 +17,9 @@ public:
      * @brief Constructor just stores already-compressed data in the object.
      **/
     CompressedData(std::string format, char *cdata, size_t compressedsize, size_t rawsize, bool own = true);
+    /** @brief Compressed data. */
     CompressedData(const CompressedData &c);
+    /** @brief Compressed data. */
     virtual ~CompressedData();
 
     /**
@@ -32,8 +34,11 @@ public:
     size_t getDecompressedSize() const;
 
     // Implements Data.
+    /** @brief Deep copy. @ownership Caller deletes. */
     CompressedData *clone() const override;
+    /** @brief Returns the data. */
     void           *getData() const override;
+    /** @brief Returns the size. */
     size_t          getSize() const override;
 
 private:

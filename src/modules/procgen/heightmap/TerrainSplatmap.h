@@ -19,11 +19,17 @@ struct TerrainTextureAlignSettings;
  */
 class EVENGINE_API_DOMAINS TerrainSplatmap {
 public:
+    /** @brief Terrain splatmap. */
     TerrainSplatmap();
+    /** @brief Terrain splatmap. */
     ~TerrainSplatmap();
+    /** @brief Terrain splatmap. */
     TerrainSplatmap(TerrainSplatmap&&) noexcept;
+    /** @brief Operator =. */
     TerrainSplatmap& operator=(TerrainSplatmap&&) noexcept;
+    /** @brief Terrain splatmap. */
     TerrainSplatmap(const TerrainSplatmap&);
+    /** @brief Operator =. */
     TerrainSplatmap& operator=(const TerrainSplatmap&);
     /** @brief Initialize topology and assign all weight to defaultLayer. */
     [[nodiscard]] Result<int> initialize(int width, int height, int layerCount, int defaultLayer = 0);
@@ -81,9 +87,13 @@ struct TerrainTextureAlignSettings {
 /** @brief Owning ordered GTS layer-height rasters and their alpha-channel transforms. */
 class EVENGINE_API_DOMAINS GtsHeightBlendSet {
 public:
+    /** @brief Gts height blend set. */
     GtsHeightBlendSet();
+    /** @brief Gts height blend set. */
     ~GtsHeightBlendSet();
+    /** @brief Gts height blend set. */
     GtsHeightBlendSet(GtsHeightBlendSet&&) noexcept;
+    /** @brief Operator =. */
     GtsHeightBlendSet& operator=(GtsHeightBlendSet&&) noexcept;
     GtsHeightBlendSet(const GtsHeightBlendSet&) = delete;
     GtsHeightBlendSet& operator=(const GtsHeightBlendSet&) = delete;
@@ -141,9 +151,13 @@ struct TerrainSplatTile {
  */
 class EVENGINE_API_DOMAINS TerrainMultiSplatWorkspace {
 public:
+    /** @brief Terrain multi splat workspace. */
     TerrainMultiSplatWorkspace();
+    /** @brief Terrain multi splat workspace. */
     ~TerrainMultiSplatWorkspace();
+    /** @brief Terrain multi splat workspace. */
     TerrainMultiSplatWorkspace(TerrainMultiSplatWorkspace&&) noexcept;
+    /** @brief Operator =. */
     TerrainMultiSplatWorkspace& operator=(TerrainMultiSplatWorkspace&&) noexcept;
     TerrainMultiSplatWorkspace(const TerrainMultiSplatWorkspace&) = delete;
     TerrainMultiSplatWorkspace& operator=(const TerrainMultiSplatWorkspace&) = delete;

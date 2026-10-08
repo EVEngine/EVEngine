@@ -30,6 +30,7 @@ struct PixelChunkTransferPart {
     eve::pixelworld::PixelChunkRegion interest{};
     eve::pixelworld::PixelChunkBatch batch;
 
+    /** @brief Operator ==. */
     friend bool operator==(const PixelChunkTransferPart&, const PixelChunkTransferPart&) = default;
 };
 
@@ -109,7 +110,9 @@ public:
     // a hard C2280. Moves stay available (create() returns by value).
     ReliablePixelChunkReceiver(const ReliablePixelChunkReceiver&)            = delete;
     ReliablePixelChunkReceiver& operator=(const ReliablePixelChunkReceiver&) = delete;
+    /** @brief Reliable pixel chunk receiver. */
     ReliablePixelChunkReceiver(ReliablePixelChunkReceiver&&)                 = default;
+    /** @brief Operator =. */
     ReliablePixelChunkReceiver& operator=(ReliablePixelChunkReceiver&&)      = default;
     /** @brief Validate policy and create a receiver for one nonzero stream session. */
     [[nodiscard]] static eve::Result<ReliablePixelChunkReceiver> create(

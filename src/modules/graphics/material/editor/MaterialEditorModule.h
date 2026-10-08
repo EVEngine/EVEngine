@@ -12,7 +12,9 @@ namespace eve::material_editor {
 class EVENGINE_API_EDITORS MaterialEditorModule final : public Module {
 public:
     Module_REG(MaterialEditorModule);
+    /** @brief Material editor module. */
     MaterialEditorModule();
+    /** @brief Material editor module. */
     ~MaterialEditorModule() override;
 
 private:

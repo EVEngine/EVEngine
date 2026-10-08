@@ -18,7 +18,9 @@ enum class RopeTopologyChange { Changed, Unchanged };
 /** @brief Stable identifier for a rope-owned analytic collider. */
 struct RopeColliderId {
     std::uint64_t          value = 0;
+    /** @brief Bool. */
     [[nodiscard]] explicit operator bool() const { return value != 0; }
+    /** @brief Operator ==. */
     friend bool            operator==(RopeColliderId, RopeColliderId) = default;
 };
 

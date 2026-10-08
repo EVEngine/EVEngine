@@ -16,22 +16,35 @@ class EVENGINE_API_WORLD FlowField {
 public:
     static constexpr float kUnreachable = std::numeric_limits<float>::infinity();
 
+    /** @brief Clears . */
     void clear();
+    /** @brief Resize. */
     void resize(int width, int height);
+    /** @brief Returns the width. */
     int getWidth() const { return width_; }
+    /** @brief Returns the height. */
     int getHeight() const { return height_; }
 
+    /** @brief Returns the goal x. */
     int getGoalX() const { return goalX_; }
+    /** @brief Returns the goal y. */
     int getGoalY() const { return goalY_; }
+    /** @brief Sets the goal. */
     void setGoal(int x, int y);
 
+    /** @brief Cost at. */
     float costAt(int x, int y) const;
+    /** @brief Sets the cost. */
     void setCost(int x, int y, float cost);
 
+    /** @brief Next x. */
     int nextX(int x, int y) const;
+    /** @brief Next y. */
     int nextY(int x, int y) const;
+    /** @brief Sets the next. */
     void setNext(int x, int y, int nx, int ny);
 
+    /** @brief True when reachable. */
     bool isReachable(int x, int y) const;
 
 private:

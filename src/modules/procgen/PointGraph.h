@@ -62,22 +62,29 @@ struct PointGraphInspectReport {
     int                             sampleCount = 0;
 };
 
+/** @brief EVENGINE_API_DOMAINS public API. */
 class EVENGINE_API_DOMAINS PointGraph {
 public:
+    /** @brief Point graph. */
     PointGraph();
     /** @brief Add a node using one of the operations returned by operationAt(). */
     bool addNode(const std::string& id, const std::string& operation);
     /** @brief Remove a node and every edge that references it. */
     bool removeNode(const std::string& id);
+    /** @brief True when node. */
     bool hasNode(const std::string& id) const;
+    /** @brief Returns the node count. */
     int  getNodeCount() const;
+    /** @brief Returns the node id. */
     std::string getNodeId(int index) const;
+    /** @brief Returns the node operation. */
     std::string getNodeOperation(const std::string& id) const;
 
     /** @brief Connect an output to input slot 0 or 1. Replaces that input connection. */
     bool connect(const std::string& fromId, const std::string& toId, int inputIndex = 0);
     /** @brief Remove one input connection. */
     bool disconnect(const std::string& toId, int inputIndex = 0);
+    /** @brief Returns the input node. */
     std::string getInputNode(const std::string& nodeId, int inputIndex) const;
 
     /** @brief Assign a copied PointSet to an `input` node. */
@@ -117,8 +124,11 @@ public:
     bool setNodeBiomeRules(const std::string& id, BiomeRules* rules);
     /** @brief Assign a copied shape grammar to a `grammar.generate` node. */
     bool setNodeShapeGrammar(const std::string& id, ShapeGrammar* grammar);
+    /** @brief Sets the node float. */
     bool setNodeFloat(const std::string& id, const std::string& key, float value);
+    /** @brief Sets the node int. */
     bool setNodeInt(const std::string& id, const std::string& key, int value);
+    /** @brief Sets the node string. */
     bool setNodeString(const std::string& id, const std::string& key, const std::string& value);
     /** @brief Expose one reflected node parameter for per-instance overrides. */
     bool exposeParameter(const std::string& name, const std::string& nodeId,
@@ -171,6 +181,7 @@ public:
     PointSet* execute(const std::string& outputId);
     /** @brief Limit uncached nodes evaluated by one execute call; zero disables the limit. */
     void setExecutionNodeBudget(int nodes);
+    /** @brief Returns the execution node budget. */
     int  getExecutionNodeBudget() const;
     /** @brief Limit points produced by any node; zero disables the limit. */
     void setMaxNodeOutputPoints(int points);
@@ -186,17 +197,22 @@ public:
     int getComputeMinimumPoints() const;
     /** @brief Cancel subsequent execution until resetCancellation is called. */
     void requestCancel();
+    /** @brief Resets cancellation. */
     void resetCancellation();
+    /** @brief Was cancelled. */
     bool wasCancelled() const;
     /** @brief Compatibility-only bool projection of validateResult; diagnostics are rendered by getError(). */
     bool validate();
     /** @brief Render the last compatibility execute/validate or legacy authoring error; canonical Result calls do not
      * update it. */
     std::string getError() const;
+    /** @brief Clears cache. */
     void        clearCache();
     /** @brief Monotonic topology/parameter revision used by asset and preview caches. */
     uint64_t    getRevision() const;
+    /** @brief Returns the execution count. */
     int         getExecutionCount() const;
+    /** @brief Returns the cache hit count. */
     int         getCacheHitCount() const;
     /**
      * @brief Return logical CPU/GPU segments in the execution plan compiled for the latest output.
@@ -213,10 +229,15 @@ public:
      */
     uint64_t getExecutionPlanBuildCount() const;
 
+    /** @brief Returns the metric count. */
     int         getMetricCount() const;
+    /** @brief Returns the metric node id. */
     std::string getMetricNodeId(int index) const;
+    /** @brief Returns the metric output count. */
     int         getMetricOutputCount(int index) const;
+    /** @brief Returns the metric milliseconds. */
     float       getMetricMilliseconds(int index) const;
+    /** @brief True when metric cache hit. */
     bool        isMetricCacheHit(int index) const;
     /** @brief Return `cpu`, `vulkan`, or `webgpu` for one evaluated node. */
     std::string getMetricBackend(int index) const;
@@ -250,6 +271,7 @@ public:
     float getMetricAverageDensity(int index) const;
     /** @brief Copy the cached/debug output of a node after execution. */
     PointSet* getNodeOutput(const std::string& id) const;
+    /** @brief Debug report. */
     std::string debugReport() const;
     /**
      * @brief Serialize graph topology, parameters and nested graphs.
@@ -263,12 +285,19 @@ public:
     /** @brief Create an independent runtime instance without external inputs or overrides. */
     PointGraph* instantiate() const;
 
+    /** @brief Returns the operation count. */
     static int         getOperationCount();
+    /** @brief Returns the operation id. */
     static std::string getOperationId(int index);
+    /** @brief Returns the operation input count. */
     static int         getOperationInputCount(const std::string& operation);
+    /** @brief Returns the operation param count. */
     static int         getOperationParamCount(const std::string& operation);
+    /** @brief Returns the operation param key. */
     static std::string getOperationParamKey(const std::string& operation, int index);
+    /** @brief Returns the operation param kind. */
     static std::string getOperationParamKind(const std::string& operation, int index);
+    /** @brief Returns the operation param default. */
     static std::string getOperationParamDefault(const std::string& operation, int index);
 
 private:

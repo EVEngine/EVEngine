@@ -6,6 +6,7 @@
 
 namespace eve {
 namespace detail {
+/** @brief SchemaVersionTag public API. */
 struct SchemaVersionTag {};
 }  // namespace detail
 /** @brief Persistent data-format version; not a runtime replacement generation. */

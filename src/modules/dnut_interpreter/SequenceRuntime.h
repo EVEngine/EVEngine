@@ -42,6 +42,7 @@ struct SequenceCommandRequest {
 
 /** @brief Structured response returned by a generic command handler. */
 struct SequenceCommandResponse {
+    /** @brief Status public API. */
     enum class Status : std::uint8_t { Completed, Blocked, Failed };
 
     Status      status = Status::Completed;

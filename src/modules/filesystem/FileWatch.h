@@ -25,6 +25,7 @@ namespace eve::filesystem {
  */
 class EVENGINE_API_FOUNDATION FileWatch {
 public:
+    /** @brief Event public API. */
     struct Event {
         std::string kind;  // "added" | "removed" | "modified" | "movedFrom" | "movedTo"
         std::string path;  // report path (usually the path passed to watch())

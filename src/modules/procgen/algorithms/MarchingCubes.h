@@ -37,6 +37,7 @@ bool generateHexPlanetMesh(const Params &params, MeshBuild &out, std::string &er
 
 using MeshRecipeFn = std::function<bool(const Params &params, MeshBuild &out, std::string &error)>;
 
+/** @brief EVENGINE_API_DOMAINS public API. */
 class EVENGINE_API_DOMAINS MeshRecipeRegistry {
 public:
     /** @brief Access the process-wide mesh recipe registry. @return Registry instance. */
@@ -46,15 +47,19 @@ public:
     void registerRecipe(const std::string &id, MeshRecipeFn fn);
     /** @brief Register a recipe with reusable metadata. @param descriptor Recipe schema. @param fn Generator callback. */
     void registerRecipe(RecipeDescriptor descriptor, MeshRecipeFn fn);
+    /** @brief True when active. */
     bool has(const std::string &id) const;
+    /** @brief Generate. */
     bool generate(const std::string &id, const Params &params, MeshBuild &out,
                   std::string &error) const;
+    /** @brief List. */
     std::vector<std::string> list() const;
     /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
     const RecipeDescriptor *descriptor(const std::string &id) const;
     /** @brief Fill missing values from metadata. @param id Recipe id. @param params Values to update. @return False for an unknown recipe. */
     bool applyDefaults(const std::string &id, Params &params) const;
 
+    /** @brief Registers builtins. */
     void registerBuiltins();
 
 private:

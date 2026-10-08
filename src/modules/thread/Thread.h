@@ -25,22 +25,34 @@ class EVENGINE_API_FOUNDATION Thread : public Module {
 public:
     Module_REG(Thread);
 
+    /** @brief Thread. */
     Thread();
+    /** @brief Thread. */
     ~Thread() override;
 
     /** @brief Hardware concurrency hint (at least 1). */
     int getHardwareConcurrency() const;
 
-    /** @brief Shared default pool (created lazily with hardwareConcurrency workers). */
+    /**
+     * @brief Shared default pool (created lazily with hardwareConcurrency workers).
+     * @ownership Borrowed from this Thread module; callers must not delete it.
+     * @lifetime Valid until this Thread module is destroyed.
+     */
     ThreadPool *getPool();
 
-    /** @brief Create an independent pool. Caller owns it (delete when done). */
+    /**
+     * @brief Create an independent pool.
+     * @ownership Owned; caller must delete when done.
+     * @lifetime Valid until the caller deletes it.
+     */
     ThreadPool *newThreadPool(int workerCount = 0);
 
     /**
      * @brief Shared engine-wide JobSystem (created lazily with hardware
      * concurrency workers). Use it for dependency graphs, parallel_for and
      * frame-scoped jobs; the pool below remains for simple async work.
+     * @ownership Borrowed from this Thread module; callers must not delete it.
+     * @lifetime Valid until this Thread module is destroyed.
      */
     JobSystem *getJobSystem();
 
@@ -53,7 +65,11 @@ public:
      */
     Channel *getChannel(std::string channelName);
 
-    /** @brief Anonymous channel (not registered in the name map). Caller owns it. */
+    /**
+     * @brief Anonymous channel (not registered in the name map).
+     * @ownership Owned; caller must delete when done.
+     * @lifetime Valid until the caller deletes it.
+     */
     Channel *newChannel();
 
     /**

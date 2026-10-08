@@ -46,6 +46,7 @@ enum class CoordinateSpace : std::uint8_t {
 
 /** @brief Writes the stable coordinate-space protocol name. */
 inline std::ostream& operator<<(std::ostream& stream, CoordinateSpace space) {
+    /** @brief Coordinate space name. */
     return stream << coordinateSpaceName(space);
 }
 
@@ -205,6 +206,7 @@ using TargetLocation = std::variant<WorldPoint, GridPoint>;
  */
 class EVENGINE_API_PLATFORM WorldArea {
 public:
+    /** @brief Shape public API. */
     enum class Shape : std::uint8_t { Circle2D, Box2D, Sphere3D, Box3D, Cone2D };
 
     /** @brief Constructs an invalid default area. */
@@ -270,6 +272,7 @@ private:
  */
 class EVENGINE_API_PLATFORM GridArea {
 public:
+    /** @brief Shape public API. */
     enum class Shape : std::uint8_t { Box2D, Box3D };
 
     /** @brief Constructs an invalid default grid area. */
@@ -428,6 +431,7 @@ struct LineOfSightResult {
 class ILineOfSightQuery {
 public:
     static constexpr const char* capabilityName = "eve.sensing.ILineOfSightQuery";
+    /** @brief Releases ILineOfSightQuery resources. */
     virtual ~ILineOfSightQuery()                = default;
 
     /**
@@ -450,6 +454,7 @@ public:
 class ISensingCandidateProvider {
 public:
     static constexpr const char* capabilityName = "eve.sensing.ISensingCandidateProvider";
+    /** @brief Releases ISensingCandidateProvider resources. */
     virtual ~ISensingCandidateProvider()        = default;
 
     /**
@@ -472,6 +477,7 @@ class EVENGINE_API_PLATFORM SensingCandidateProvider final : public ISensingCand
 public:
     /** @brief Creates an empty provider; registration with capability is explicit. */
     SensingCandidateProvider()           = default;
+    /** @brief Sensing candidate provider. */
     ~SensingCandidateProvider() override = default;
 
     /** @brief Adds or replaces one candidate using its SubjectRef as the key. */
@@ -482,6 +488,7 @@ public:
     [[nodiscard]] std::size_t size() const noexcept { return candidates_.size(); }
 
     /** @copydoc ISensingCandidateProvider::query */
+    /** @brief Queries . */
     [[nodiscard]] Result<std::vector<TargetCandidate>> query(const TargetingQuery& query) const override;
 
 private:
@@ -511,12 +518,14 @@ class EVENGINE_API_PLATFORM SensingWorldCandidateProvider final : public ISensin
 public:
     /** @brief Binds a non-owning SensingWorld; capability registration remains explicit. */
     explicit SensingWorldCandidateProvider(SensingWorld& world) noexcept : world_(&world) {}
+    /** @brief Sensing world candidate provider. */
     ~SensingWorldCandidateProvider() override = default;
 
     /** @brief Installs optional faction→domain projection used when domain != Any. */
     void setFactionRelation(FactionRelationFn relation) { relation_ = std::move(relation); }
 
     /** @copydoc ISensingCandidateProvider::query */
+    /** @brief Queries . */
     [[nodiscard]] Result<std::vector<TargetCandidate>> query(const TargetingQuery& query) const override;
 
 private:

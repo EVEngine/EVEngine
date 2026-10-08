@@ -23,6 +23,7 @@ struct ActionAttackVfxCue {
     double      offsetSeconds = 0.0;
     std::string cue;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionAttackVfxCue&) const = default;
 };
 
@@ -40,6 +41,7 @@ struct EVENGINE_API_PLATFORM ActionAttackVfxBinding {
     double                          lifetimeSeconds = 0.0;
     std::vector<ActionAttackVfxCue> cues;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionAttackVfxBinding&) const = default;
 
     /**

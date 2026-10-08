@@ -18,9 +18,13 @@ enum class TerrainCollisionMaskType { RadiusTree, RadiusTag, LayerGameObject, La
  */
 class EVENGINE_API_DOMAINS TerrainCollisionMaskStack {
 public:
+    /** @brief Terrain collision mask stack. */
     TerrainCollisionMaskStack();
+    /** @brief Terrain collision mask stack. */
     ~TerrainCollisionMaskStack();
+    /** @brief Terrain collision mask stack. */
     TerrainCollisionMaskStack(TerrainCollisionMaskStack&&) noexcept;
+    /** @brief Operator =. */
     TerrainCollisionMaskStack& operator=(TerrainCollisionMaskStack&&) noexcept;
     TerrainCollisionMaskStack(const TerrainCollisionMaskStack&) = delete;
     TerrainCollisionMaskStack& operator=(const TerrainCollisionMaskStack&) = delete;

@@ -42,7 +42,9 @@ class UIHost;
  */
 class EVENGINE_API_WORLD Inspector {
 public:
+    /** @brief Inspector. */
     Inspector() = default;
+    /** @brief Inspector. */
     ~Inspector();
     Inspector(const Inspector&) = delete;
     Inspector& operator=(const Inspector&) = delete;
@@ -90,8 +92,10 @@ public:
     /** @brief Live script object of the selected instance (empty when none). */
     ssq::Object selectedInstance() const {
         return (selectedInstance_ >= 0 &&
+                /** @brief Returns the size of t. */
                 size_t(selectedInstance_) < instances_.size())
                    ? instances_[size_t(selectedInstance_)].object
+                   /** @brief Object. */
                    : ssq::Object();
     }
 

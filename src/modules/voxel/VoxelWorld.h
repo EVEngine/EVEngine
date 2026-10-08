@@ -59,17 +59,27 @@ struct DrawBatch {
  */
 class EVENGINE_API_DOMAINS VoxelWorld {
 public:
+    /** @brief Voxel world. */
     VoxelWorld();
+    /** @brief Voxel world. */
     ~VoxelWorld();
+    /** @brief Voxel world. */
     explicit VoxelWorld(const CubeTypeRegistry &types);
 
+    /** @brief Returns the or create chunk. */
     Chunk *getOrCreateChunk(int cx, int cy, int cz);
+    /** @brief Returns the chunk. */
     Chunk *getChunk(int cx, int cy, int cz);
+    /** @brief Returns the chunk. */
     const Chunk *getChunk(int cx, int cy, int cz) const;
+    /** @brief True when chunk. */
     bool hasChunk(int cx, int cy, int cz) const;
+    /** @brief Removes chunk. */
     void removeChunk(int cx, int cy, int cz);
+    /** @brief Clears . */
     void clear();
 
+    /** @brief Returns the chunk count. */
     int getChunkCount() const { return int(chunks_.size()); }
     /** @brief Monotonic content revision incremented by voxel/chunk mutations. */
     uint64_t getRevision() const { return revision_; }
@@ -88,6 +98,7 @@ public:
      * 0 (default) matches the old immediately-evict behaviour.
      */
     void setStreamCacheChunks(int extraChunks);
+    /** @brief Returns the stream cache chunks. */
     int getStreamCacheChunks() const { return streamCacheChunks_; }
 
     /**
@@ -104,6 +115,7 @@ public:
      *                   ready, so eve_update stays off the generation cost.
      */
     StreamStats streamAround(int centerX, int centerY, int centerZ, int radiusChunks,
+                             /** @brief Void. */
                              const std::function<void(Chunk &, int, int, int)> &generator = {},
                              int maxCreates = 0);
 
@@ -126,7 +138,9 @@ public:
      */
     void setTerrainParam(const std::string &key, float value);
 
+    /** @brief Disables terrain. */
     void disableTerrain();
+    /** @brief Terrain enabled. */
     bool terrainEnabled() const { return terrainEnabled_ || terrainAssetEnabled_; }
 
     /** @brief Compatibility operation that opens baked EVTR terrain data. */
@@ -137,6 +151,7 @@ public:
     /** @brief Configure biome surface ids: vegetation, sand, snow, alpine rock, river bed. */
     void setTerrainAssetMaterials(uint8_t vegetation, uint8_t sand, uint8_t snow,
                                   uint8_t alpine, uint8_t riverbed);
+    /** @brief Returns the terrain asset resident count. */
     int getTerrainAssetResidentCount() const { return terrainAsset_.getResidentCount(); }
 
     /** @brief Terrain height (world blocks) at a column for the configured seed. */
@@ -148,10 +163,12 @@ public:
      * (cx, cy, cz, 32³ voxels). Meshes are rebuilt on demand after loading.
      */
     void serializeWorld(std::vector<uint8_t> &out) const;
+    /** @brief Deserialize world. */
     bool deserializeWorld(const uint8_t *data, size_t size);
 
     /** @brief Script-facing wrappers around serialize/deserialize. */
     data::ByteData *saveWorld() const;
+    /** @brief Loads world. */
     bool loadWorld(data::ByteData *bytes);
 
     /**
@@ -179,12 +196,16 @@ public:
     void selectVisible(const float *viewProj16, float eyeX, float eyeY, float eyeZ, float viewRange,
                        bool faceCull = true);
 
+    /** @brief Returns the visible batch count. */
     int getVisibleBatchCount() const { return int(visible_.size()); }
+    /** @brief Returns the visible batch. */
     const DrawBatch &getVisibleBatch(int index) const { return visible_[size_t(index)]; }
 
     /** @brief Script accessors for the last selectVisible result. */
     int getVisibleChunkCount() const { return int(visibleChunkKeys_.size()); }
+    /** @brief Returns the visible chunk coord. */
     void getVisibleChunkCoord(int index, int &cx, int &cy, int &cz) const;
+    /** @brief Returns the visible rect count. */
     int getVisibleRectCount() const;
 
     /**
@@ -198,6 +219,7 @@ public:
     /** @brief World-space voxel get/set. Air (0) never allocates a chunk; a border
      *  edit also invalidates the adjacent chunk's mesh. */
     uint8_t getVoxel(int wx, int wy, int wz) const;
+    /** @brief Sets the voxel. */
     void setVoxel(int wx, int wy, int wz, uint8_t texId);
 
     /**
@@ -212,15 +234,25 @@ public:
 
     /** @brief Script-facing raycast: stores the last result, returns hit/miss. */
     bool raycastScript(float ox, float oy, float oz, float dx, float dy, float dz, float maxDist);
+    /** @brief Last raycast hit. */
     bool lastRaycastHit() const { return raycastHit_; }
+    /** @brief Last raycast hit x. */
     int lastRaycastHitX() const { return raycastHitX_; }
+    /** @brief Last raycast hit y. */
     int lastRaycastHitY() const { return raycastHitY_; }
+    /** @brief Last raycast hit z. */
     int lastRaycastHitZ() const { return raycastHitZ_; }
+    /** @brief Last raycast prev x. */
     int lastRaycastPrevX() const { return raycastPrevX_; }
+    /** @brief Last raycast prev y. */
     int lastRaycastPrevY() const { return raycastPrevY_; }
+    /** @brief Last raycast prev z. */
     int lastRaycastPrevZ() const { return raycastPrevZ_; }
+    /** @brief Last raycast face x. */
     int lastRaycastFaceX() const { return raycastFaceX_; }
+    /** @brief Last raycast face y. */
     int lastRaycastFaceY() const { return raycastFaceY_; }
+    /** @brief Last raycast face z. */
     int lastRaycastFaceZ() const { return raycastFaceZ_; }
 
     /**

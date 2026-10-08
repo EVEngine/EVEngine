@@ -61,9 +61,13 @@ struct TerrainWorldClearSettings {
 class EVENGINE_API_DOMAINS TerrainWorldWorkspace {
 public:
     struct Impl;
+    /** @brief Terrain world workspace. */
     TerrainWorldWorkspace();
+    /** @brief Terrain world workspace. */
     ~TerrainWorldWorkspace();
+    /** @brief Terrain world workspace. */
     TerrainWorldWorkspace(TerrainWorldWorkspace&&) noexcept;
+    /** @brief Operator =. */
     TerrainWorldWorkspace& operator=(TerrainWorldWorkspace&&) noexcept;
     TerrainWorldWorkspace(const TerrainWorldWorkspace&) = delete;
     TerrainWorldWorkspace& operator=(const TerrainWorldWorkspace&) = delete;

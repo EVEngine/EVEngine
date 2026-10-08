@@ -22,7 +22,9 @@ class AnimSkeleton;
  */
 class EVENGINE_API_WORLD AnimStateMachine : public IAnimPoseSource {
 public:
+    /** @brief Anim state machine. */
     explicit AnimStateMachine(AnimSkeleton *skeleton);
+    /** @brief Anim state machine. */
     ~AnimStateMachine() override;
 
     AnimStateMachine(const AnimStateMachine &)            = delete;
@@ -34,10 +36,15 @@ public:
      */
     AnimSkeleton *getSkeleton() const override { return skeleton_; }
 
+    /** @brief Adds state. */
     void addState(const std::string &name, AnimClip *clip);
+    /** @brief Sets the entry. */
     void setEntry(const std::string &name);
+    /** @brief True when state. */
     bool hasState(const std::string &name) const;
+    /** @brief Returns the current state. */
     std::string getCurrentState() const { return currentState_; }
+    /** @brief Returns the state count. */
     int getStateCount() const { return static_cast<int>(states_.size()); }
 
     /**
@@ -49,17 +56,26 @@ public:
     /** @brief Comparison op: ">", ">=", "<", "<=", "==", "!=". */
     void addFloatCondition(int transitionId, const std::string &param, const std::string &op,
                            float threshold);
+    /** @brief Adds bool condition. */
     void addBoolCondition(int transitionId, const std::string &param, bool value);
+    /** @brief Adds trigger condition. */
     void addTriggerCondition(int transitionId, const std::string &param);
     /** @brief Optional: require normalized local time in [0,1] >= exitTime before transition. */
     void setExitTime(int transitionId, float normalizedTime);
+    /** @brief Sets the has exit time. */
     void setHasExitTime(int transitionId, bool enabled);
 
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
+    /** @brief Sets the bool. */
     void setBool(const std::string &name, bool value);
+    /** @brief Returns the bool. */
     bool getBool(const std::string &name) const;
+    /** @brief Sets the trigger. */
     void setTrigger(const std::string &name);
+    /** @brief Resets trigger. */
     void resetTrigger(const std::string &name);
     /** @brief Query a trigger's current state. */
     bool getTrigger(const std::string& name) const {
@@ -72,7 +88,9 @@ public:
      * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
      */
     AnimPose *getPose() override;
+    /** @brief Returns the state time. */
     float getStateTime() const { return stateTime_; }
+    /** @brief True when blending. */
     bool isBlending() const { return blending_; }
 
     /** @brief Advance state and pose using one scheduler-owned deterministic step. */

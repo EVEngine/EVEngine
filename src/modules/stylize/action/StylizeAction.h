@@ -31,7 +31,9 @@ class EVENGINE_API_DOMAINS StylizeAction final : public eve::Module {
 public:
     Module_REG(StylizeAction);
 
+    /** @brief Stylize action. */
     StylizeAction();
+    /** @brief Stylize action. */
     ~StylizeAction() override;
 
     /** @brief Borrowed module-owned runtime used by Action handlers and tests. */

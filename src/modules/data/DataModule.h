@@ -19,6 +19,7 @@ namespace eve
 namespace data
 {
 
+/** @brief ContainerType public API. */
 enum ContainerType
 {
 	CONTAINER_DATA,
@@ -96,34 +97,56 @@ EVENGINE_API_FOUNDATION char *decode(std::string format, const char *src, size_t
  *         function.
  **/
 EVENGINE_API_FOUNDATION std::string hash(std::string function, Data *input);
+/** @brief Hash. */
 EVENGINE_API_FOUNDATION std::string hash(std::string function, const char *input, uint64_t size);
+/** @brief Hash. */
 EVENGINE_API_FOUNDATION void        hash(std::string function, Data *input, HashFunction::Value &output);
+/** @brief Hash. */
 EVENGINE_API_FOUNDATION void hash(std::string function, const char *input, uint64_t size, HashFunction::Value &output);
 
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION DataModule : public Module {
 public:
 	Module_REG(DataModule);
+	/** @brief Data module. */
 	DataModule();
+	/** @brief Data module. */
 	virtual ~DataModule();
 
+	/** @brief Creates a data view. @ownership Caller deletes unless documented otherwise. */
 	DataView *newDataView(Data *data, size_t offset, size_t size);
+	/** @brief Creates a byte data. @ownership Caller deletes unless documented otherwise. */
 	ByteData *newByteData(size_t size);
+	/** @brief Creates a byte data. @ownership Caller deletes unless documented otherwise. */
 	ByteData *newByteData(const void *d, size_t size);
+	/** @brief Creates a byte data. @ownership Caller deletes unless documented otherwise. */
 	ByteData *newByteData(void *d, size_t size, bool own);
 
+	/** @brief Creates a json document. @ownership Caller deletes unless documented otherwise. */
 	JsonDocument *newJsonDocument();
+	/** @brief Decode json. */
 	JsonDocument *decodeJson(const std::string &text);
+	/** @brief Decode json. */
 	JsonDocument *decodeJson(const std::string &text, std::string *error);
+	/** @brief Decode json. */
 	JsonDocument *decodeJson(Data *data, std::string *error = nullptr);
+	/** @brief Encode json. */
 	std::string   encodeJson(JsonDocument *doc, bool pretty = false);
+	/** @brief Encode json data. */
 	ByteData *    encodeJsonData(JsonDocument *doc, bool pretty = false);
 
+	/** @brief Creates a xml document. @ownership Caller deletes unless documented otherwise. */
 	XmlDocument *newXmlDocument();
+	/** @brief Decode xml. */
 	XmlDocument *decodeXml(const std::string &text);
+	/** @brief Decode xml. */
 	XmlDocument *decodeXml(const std::string &text, std::string *error);
+	/** @brief Decode xml. */
 	XmlDocument *decodeXml(Data *data, std::string *error = nullptr);
+	/** @brief Encode xml. */
 	std::string  encodeXml(XmlDocument *doc, bool pretty = false);
+	/** @brief Encode xml data. */
 	ByteData *   encodeXmlData(XmlDocument *doc, bool pretty = false);
 
 };  // DataModule

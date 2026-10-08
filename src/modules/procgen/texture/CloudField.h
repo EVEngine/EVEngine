@@ -18,6 +18,7 @@ namespace eve::procgen {
  */
 class EVENGINE_API_DOMAINS CloudField {
 public:
+    /** @brief Params public API. */
     struct Params {
         uint32_t seed        = 1337;
         float    worldScale  = 96.f;   // world units per tile (larger = larger clouds)

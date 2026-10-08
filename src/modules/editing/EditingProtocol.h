@@ -9,18 +9,27 @@
 #include "editing/EditingValue.h"
 namespace eve::editing {
 using Revision = std::uint64_t;
+/** @brief HostKind public API. */
 enum class HostKind { Developer, RuntimeBuilder, RuntimeAdmin, Automation };
+/** @brief ObjectRefValue public API. */
 struct ObjectRefValue {
     TargetId      target;
     ObjectId      object;
     std::uint64_t generation = 0;
+    /** @brief Constructs a ObjectRefValue. */
     ObjectRefValue()         = default;
+    /** @brief Constructs a ObjectRefValue. */
     ObjectRefValue(TargetId targetId, ObjectId objectId, std::uint64_t objectGeneration = 0)
+        /** @brief Target. */
         : target(std::move(targetId)), object(std::move(objectId)), generation(objectGeneration) {}
+    /** @brief Constructs a ObjectRefValue. */
     ObjectRefValue(TargetId targetId, std::string objectId, std::uint64_t objectGeneration = 0)
+        /** @brief Target. */
         : target(std::move(targetId)), object(ObjectId(std::move(objectId))), generation(objectGeneration) {}
+    /** @brief Operator <=>. */
     auto operator<=>(const ObjectRefValue&) const = default;
 };
+/** @brief ContextSnapshot public API. */
 struct ContextSnapshot {
     SessionId                session;
     HostKind                 host = HostKind::Developer;
@@ -31,6 +40,7 @@ struct ContextSnapshot {
     std::vector<ObjectId>    selection;
     std::vector<std::string> inputContexts;
 };
+/** @brief DomainOperation public API. */
 struct DomainOperation {
     std::string                 type;
     std::string                 inverseType;
@@ -42,6 +52,7 @@ struct DomainOperation {
     std::vector<std::string>    affectedProperties;
     std::string                 mergeKey;
 };
+/** @brief CommandRequest public API. */
 struct CommandRequest {
     CommandId               id;
     Value                   payload;
@@ -50,6 +61,7 @@ struct CommandRequest {
     std::optional<Revision> expectedRevision;
     bool                    dryRun = false;
 };
+/** @brief CommandPlan public API. */
 struct CommandPlan {
     PlanId                       id;
     CommandId                    command;
@@ -67,6 +79,7 @@ struct CommandPlan {
     Value                        summary;
     std::vector<Diagnostic>      diagnostics;
 };
+/** @brief TransactionState public API. */
 enum class TransactionState {
     Planning,
     Previewing,
@@ -77,7 +90,9 @@ enum class TransactionState {
     RolledBack,
     Failed
 };
+/** @brief ActionOrigin public API. */
 enum class ActionOrigin { User, Game, Script, Automation, Importer, Network };
+/** @brief TransactionSpec public API. */
 struct TransactionSpec {
     TransactionId id;
     std::string   label;
@@ -87,6 +102,7 @@ struct TransactionSpec {
     std::string   mergeKey;
     bool          restoreSelection = true;
 };
+/** @brief TransactionReceipt public API. */
 struct TransactionReceipt {
     TransactionId               id;
     TransactionState            state          = TransactionState::Failed;
@@ -96,6 +112,7 @@ struct TransactionReceipt {
     std::vector<Diagnostic>     diagnostics;
     std::string                 authorityReceipt;
 };
+/** @brief AuthorityPlan public API. */
 struct AuthorityPlan {
     TransactionSpec              transaction;
     Revision                     validatedRevision = 0;

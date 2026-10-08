@@ -17,6 +17,7 @@ public:
      * @param workerSlots 同时采集槽位上限（>0）。
      * @param regenPerTick 每 tick 再生量（0=不再生）。
      */
+    /** @brief Gather node. */
     GatherNode(std::string type, int capacity, int workerSlots = 1, int regenPerTick = 0);
 
     /** @brief 资源类型 id。 */

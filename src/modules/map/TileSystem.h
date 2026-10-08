@@ -36,6 +36,7 @@ public:
     static int lastAtlasCount();
     /** @brief Spatial-index work counters for deterministic performance regressions. */
     static int lastVisitedChunkCount();
+    /** @brief Last visited cell count. */
     static int lastVisitedCellCount();
 };
 
@@ -45,6 +46,7 @@ public:
  */
 class TileConfigSystem {
 public:
+    /** @brief Polls . */
     static int poll();
 };
 

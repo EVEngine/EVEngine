@@ -28,22 +28,29 @@ namespace eve::virtualgeometry {
  */
 class EVENGINE_API_DOMAINS VirtualGeometryRenderer {
 public:
+    /** @brief Virtual geometry renderer. */
     VirtualGeometryRenderer();
+    /** @brief Virtual geometry renderer. */
     ~VirtualGeometryRenderer();
 
     VirtualGeometryRenderer(const VirtualGeometryRenderer &) = delete;
     VirtualGeometryRenderer &operator=(const VirtualGeometryRenderer &) = delete;
 
+    /** @brief True when ready. */
     bool isReady() const { return backend_.state != nullptr; }
 
     // ---- build (preprocess + upload) ----
+    /** @brief Builds . */
     bool build(const float *positions, int vertexCount, const std::uint32_t *indices, int indexCount);
+    /** @brief Builds . */
     bool build(const VirtualGeometryBuilder::MeshInput &in);
     /** @brief Convenience: procedural unit icosphere, `subdiv` subdivision levels. */
     bool buildIcosphere(int subdiv);
 
     // ---- per-frame ----
+    /** @brief Sets the viewport. */
     void setViewport(int width, int height, float fovYDeg, float errorPx = 1.0f);
+    /** @brief Sets the camera. */
     void setCamera(const float view[16], const float proj[16], const float model[16],
                    const float camPos[3]);
     /** @brief Script-friendly: identity view (camera looking down -Z) + perspective. */
@@ -53,17 +60,25 @@ public:
     /** @brief Run cull + raster; returns the number of visible clusters. */
     int update();
     /** Resolve the visibility buffer to RGBA (w*h*4 bytes). */
+    /** @brief Resolve. */
     bool resolve(unsigned char *outRgba, int &outW, int &outH);
     /** @brief Resolve into a heap ByteData (RGBA) for scripting/display. */
     eve::data::ByteData *resolveByteData();
+    /** @brief Returns the view width. */
     int getViewWidth() const { return width_; }
+    /** @brief Returns the view height. */
     int getViewHeight() const { return height_; }
 
     // ---- stats ----
+    /** @brief Returns the cluster count. */
     int getClusterCount() const;
+    /** @brief Returns the visible count. */
     int getVisibleCount() const { return lastVisible_; }
+    /** @brief Returns the total triangle count. */
     int getTotalTriangleCount() const;
+    /** @brief Returns the lod level. */
     int getLodLevel(int clusterId) const;
+    /** @brief Returns the max lod level. */
     int getMaxLodLevel() const;
 
 private:

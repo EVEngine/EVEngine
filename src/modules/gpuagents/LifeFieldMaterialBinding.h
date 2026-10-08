@@ -36,6 +36,7 @@ struct EVENGINE_API_DOMAINS LifeFieldMaterialUniforms {
  */
 class EVENGINE_API_DOMAINS LifeFieldMaterialBinding {
 public:
+    /** @brief Life field material binding. */
     LifeFieldMaterialBinding() = default;
 
     /** @brief Rebuild CPU pixel buffers from a surface field. */

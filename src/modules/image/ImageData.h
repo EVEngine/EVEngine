@@ -41,6 +41,7 @@ public:
 	using Colorf = medialoader::Colorf;
 	using FormatHandler = medialoader::FormatHandler;
 
+	/** @brief Pixel public API. */
 	union Pixel
 	{
 		uint8_t   rgba8[4];

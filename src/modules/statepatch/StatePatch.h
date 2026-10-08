@@ -235,6 +235,7 @@ public:
      * @param batch Borrowed batch whose operations are staged and validated.
      */
     StoreTransactionParticipant(Store& store, PatchBatch& batch) : store_(store), batch_(batch) {}
+    /** @brief Store transaction participant. */
     ~StoreTransactionParticipant() override = default;
 
     /** @brief Stable participant name used in transaction diagnostics. */
@@ -271,6 +272,7 @@ private:
 class StatePatch : public Module {
 public:
     Module_REG(StatePatch);
+    /** @brief Constructs a StatePatch. */
     StatePatch() = default;
     /** @brief Withdraw world-state capability listeners before owned stores are destroyed. */
     ~StatePatch() override;

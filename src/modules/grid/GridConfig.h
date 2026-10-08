@@ -1,27 +1,36 @@
 #pragma once
 #include "common/Export.h"
 
-
-// 统一网格抽象：与具体模块（building / map）解耦的纯数据结构。
-// 布局/拓扑 + 单元尺寸/间距 + 原点 + stagger 参数 + 平面轴。
-// 坐标换算全部是纯函数（GridProjection.h），本头文件零依赖。
+/**
+ * @file GridConfig.h
+ * @brief Module-neutral grid topology and sizing (no building/map dependency).
+ *
+ * Layout, cell size/gap, origin, stagger, and plane axes live here.
+ * Coordinate conversion is in GridProjection.h as pure functions.
+ */
 
 #include <string>
 
 namespace eve::grid {
 
+/** @brief Cell topology: rectangle, hex, isometric, or staggered variants. */
 enum class GridLayout { Rectangle, Hexagon, Isometric, Staggered, IsometricZAsY };
+/** @brief Axis used for odd/even row or column offset in staggered layouts. */
 enum class StaggerAxis { X, Y };
+/** @brief Whether odd or even indices along the stagger axis are offset. */
 enum class StaggerIndex { Odd, Even };
 
 /**
- * 放置平面轴：
- *  XY —— 网格第二轴映射到世界 Y（2D tilemap / 俯视 2D 场景，默认）。
- *  XZ —— 网格第二轴映射到世界 Z，世界 Y 为垂直高度（3D 场景地面网格）。
+ * @brief Placement plane for the second grid axis.
+ * XY maps the second axis to world Y (2D tilemaps / top-down).
+ * XZ maps the second axis to world Z with world Y as height (3D ground grids).
  */
 enum class GridPlane { XY, XZ };
 
-/** 网格配置：形状拓扑 + 尺寸 + 原点 + 平面轴。 */
+/**
+ * @brief Grid shape, cell metrics, origin, and placement plane.
+ * Pure data; use GridProjection helpers for world/cell conversion.
+ */
 struct EVENGINE_API_FOUNDATION GridConfig {
     GridLayout layout = GridLayout::Rectangle;
     GridPlane plane = GridPlane::XY;
@@ -35,14 +44,19 @@ struct EVENGINE_API_FOUNDATION GridConfig {
     StaggerIndex staggerIndex = StaggerIndex::Odd;
     float hexSideLength = 0.f;
 
+    /** @brief Stable string name for a layout enum value. */
     static const char *layoutName(GridLayout l);
+    /** @brief Parse a layout name; unknown names fall back to Rectangle. */
     static GridLayout layoutFromName(const std::string &name);
+    /** @brief Stable string name for a plane enum value. */
     static const char *planeName(GridPlane p);
+    /** @brief Parse a plane name; unknown names fall back to XY. */
     static GridPlane planeFromName(const std::string &name);
 };
 
-/** 单元有效间距（含 gap）。 */
+/** @brief Effective cell pitch on X including gap. */
 inline float cellPitchX(const GridConfig &cfg) { return cfg.cellW + cfg.cellGapX; }
+/** @brief Effective cell pitch on Y including gap. */
 inline float cellPitchY(const GridConfig &cfg) { return cfg.cellH + cfg.cellGapY; }
 
 }  // namespace eve::grid

@@ -16,11 +16,15 @@ namespace eve::ui {
  */
 class EVENGINE_API_WORLD Component {
 public:
+    /** @brief Component. */
     virtual ~Component() = default;
 
+    /** @brief Builds . */
     virtual WidgetDesc build() = 0;
 
+    /** @brief Attaches . */
     void attach(UIHostHandle host);
+    /** @brief Mounts as. */
     void mountAs(const std::string &hostName);
     /** @brief Returns the attached host handle, or an empty handle before attach. */
     [[nodiscard]] UIHostHandle host() const noexcept { return host_; }
@@ -28,7 +32,9 @@ public:
     /** @brief Rebuild tree onto host (reconcile by key when possible). */
     void rebuild(bool forceFull = false);
 
+    /** @brief Mark dirty. */
     void markDirty() { dirty_ = true; }
+    /** @brief True when dirty. */
     bool isDirty() const { return dirty_; }
 
     /** @brief If dirty, rebuild and clear flag. Returns true if rebuilt. */

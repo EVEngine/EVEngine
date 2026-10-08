@@ -34,15 +34,19 @@ struct SimGrid {
     static SimGrid make(const MeshSdf& sdf, float cellSize);
 
     /** @return dims.x * dims.y * dims.z. */
+    /** @brief Cell count. */
     int cellCount() const;
 
     /** @return flat index of cell (x,y,z); caller guarantees bounds. */
+    /** @brief Cell index. */
     int cellIndex(int x, int y, int z) const;
 
     /** @return true when the cell coordinate is inside the grid. */
+    /** @brief In bounds. */
     bool inBounds(int x, int y, int z) const;
 
     /** @return clamped cell coordinate of a world position. */
+    /** @brief Cell of. */
     glm::ivec3 cellOf(const glm::vec3& p) const;
 };
 
@@ -53,12 +57,14 @@ public:
      * @param maxParticles capacity of the particle buffer.
      * @param params tuning parameters.
      */
+    /** @brief Fluid simulation. */
     explicit FluidSimulation(int maxParticles, const FluidParams& params = FluidParams{});
 
     /** @brief Replace the collision surface. Particles keep their state. */
     void setSdf(const MeshSdf& sdf);
 
     /** @return the currently bound SDF. */
+    /** @brief Sdf. */
     const MeshSdf& sdf() const { return sdf_; }
 
     /** @brief Remove all particles. */
@@ -83,27 +89,35 @@ public:
     void step(float dt, int substeps);
 
     /** @return number of live particles. */
+    /** @brief Particle count. */
     int particleCount() const { return count_; }
 
     /** @return capacity of the particle buffer. */
+    /** @brief Max particles. */
     int maxParticles() const { return maxParticles_; }
 
     /** @return live particles (positions + velocities). */
+    /** @brief Particles. */
     const std::vector<FluidParticle>& particles() const { return particles_; }
 
     /** @return live particles for mutation (GPU readback mirror). */
+    /** @brief Particles. */
     std::vector<FluidParticle>& particles() { return particles_; }
 
     /** @return per-particle SPH densities (updated each substep). */
+    /** @brief Densities. */
     const std::vector<float>& densities() const { return densities_; }
 
     /** @return per-particle densities for mutation (GPU readback mirror). */
+    /** @brief Densities. */
     std::vector<float>& densities() { return densities_; }
 
     /** @return tuning parameters (mutable). */
+    /** @brief Params. */
     FluidParams& params() { return params_; }
 
     /** @return tuning parameters (read-only). */
+    /** @brief Params. */
     const FluidParams& params() const { return params_; }
 
 private:

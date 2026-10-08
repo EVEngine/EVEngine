@@ -67,15 +67,19 @@ public:
     void commitPose();
 
     /** @return true when a valid topology and pose are available. */
+    /** @brief True when valid. */
     bool isValid() const;
 
     /** @return number of triangles in the bound topology. */
+    /** @brief Triangle count. */
     int triangleCount() const;
 
     /** @return number of vertices in the bound topology. */
+    /** @brief Vertex count. */
     int vertexCount() const { return int(currentPositions_.size()); }
 
     /** @return indexed triangle topology for wet-film fields and render integration. */
+    /** @brief Triangles. */
     std::vector<glm::uvec3> triangles() const;
 
     /**
@@ -105,6 +109,7 @@ public:
                                         int maxCrossings = 16) const;
 
     /** @return neighboring triangle across the edge opposite local vertex, or -1 at a boundary. */
+    /** @brief Adjacent triangle. */
     int adjacentTriangle(uint32_t triangle, int oppositeVertex) const;
 
 private:

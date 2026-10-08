@@ -63,6 +63,7 @@ public:
      * @param projectId Stable project identity used in draft URIs.
      */
     AutosaveService(IAtomicDocumentStore* store, std::string projectId)
+        /** @brief Store. */
         : store_(store), projectId_(std::move(projectId)) {}
 
     /** @brief Write one revisioned draft under autosave://project/document.draft. */

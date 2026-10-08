@@ -28,6 +28,7 @@ struct AttackVfxHandle {
     std::uint32_t slot       = 0;
     std::uint32_t generation = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const AttackVfxHandle&, const AttackVfxHandle&) = default;
 };
 
@@ -76,6 +77,7 @@ struct AttackVfxInstanceState {
 
 /** @brief Observable frame events emitted by advance/signal/stop. */
 struct AttackVfxFrameEvent {
+    /** @brief Kind public API. */
     enum class Kind : std::uint8_t {
         PhaseEnter,
         PhaseExit,
@@ -114,6 +116,7 @@ class EVENGINE_API_WORLD AttackVfxRuntime {
 public:
     /** @brief Construct with a default pool capacity of 32. */
     AttackVfxRuntime();
+    /** @brief Attack vfx runtime. */
     ~AttackVfxRuntime();
 
     AttackVfxRuntime(const AttackVfxRuntime&) = delete;

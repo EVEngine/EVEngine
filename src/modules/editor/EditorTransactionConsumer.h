@@ -70,6 +70,7 @@ class EVENGINE_API_ORCHESTRATION EditorTransactionConsumer {
 public:
     /** @brief Creates a consumer with an optional non-owning edit authority. */
     explicit EditorTransactionConsumer(IEditAuthority* authority = nullptr);
+    /** @brief Editor transaction consumer. */
     ~EditorTransactionConsumer();
 
     EditorTransactionConsumer(const EditorTransactionConsumer&)            = delete;

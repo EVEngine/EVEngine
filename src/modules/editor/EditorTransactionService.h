@@ -16,6 +16,7 @@ namespace eve::editor {
  */
 class IEditorTransactionBackend {
 public:
+    /** @brief Releases IEditorTransactionBackend resources. */
     virtual ~IEditorTransactionBackend() = default;
 
     /** @brief Begin an explicit transaction without mutating its target. */

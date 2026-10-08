@@ -16,9 +16,13 @@ enum class TerrainPolygonMaskType { Open, Closed };
  */
 class EVENGINE_API_DOMAINS TerrainPolygonMask {
 public:
+    /** @brief Terrain polygon mask. */
     TerrainPolygonMask();
+    /** @brief Terrain polygon mask. */
     ~TerrainPolygonMask();
+    /** @brief Terrain polygon mask. */
     TerrainPolygonMask(TerrainPolygonMask&&) noexcept;
+    /** @brief Operator =. */
     TerrainPolygonMask& operator=(TerrainPolygonMask&&) noexcept;
     TerrainPolygonMask(const TerrainPolygonMask&) = delete;
     TerrainPolygonMask& operator=(const TerrainPolygonMask&) = delete;

@@ -26,6 +26,7 @@ namespace eve::caps {
 class EVENGINE_API_FOUNDATION_INLINE IAsyncWorkExecutor {
 public:
     static constexpr const char *capabilityName = "IAsyncWorkExecutor";
+    /** @brief I async work executor. */
     virtual ~IAsyncWorkExecutor() = default;
 
     /**

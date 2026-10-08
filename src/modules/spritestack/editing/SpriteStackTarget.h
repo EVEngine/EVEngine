@@ -71,31 +71,48 @@ class EVENGINE_API_DOMAINS SpriteStackDocumentTarget final : public ::eve::editi
                                                              public IDomainOperationTargetStaging,
                                                              public IPropertyProvider {
 public:
+    /** @brief Sprite stack document target. */
     explicit SpriteStackDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads read. */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
+    /** @brief Value. */
     const SpriteStackAssetValue&  value() const { return value_; }
     /** @brief Validate source, sampling limits, output memory and presentation values. */
     std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
     EditorValue                   snapshotValue() const;
+    /** @brief Loads snapshot. */
     Result<void>            loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool                          matches(const SelectionSnapshot& selection) const;
+    /** @brief Content value. */
     EditorValue                   contentValue() const;
+    /** @brief Replacement. */
     Result<DomainOperation> replacement(EditorValue content, std::string property) const;
     std::string                   id_;
     SpriteStackAssetValue         value_;
@@ -111,6 +128,7 @@ struct SpriteStackLayerArtifact {
 /** @brief Resolves model assets without coupling the document to AssetDB ownership. */
 class ISpriteStackModelResolver {
 public:
+    /** @brief Releases ISpriteStackModelResolver resources. */
     virtual ~ISpriteStackModelResolver() = default;
     /** @brief Resolve a ready, borrowed ModelData for the duration of bake(). */
     virtual Result<model3d::ModelData*> resolveModel(const std::string& assetId) const = 0;
@@ -119,7 +137,9 @@ public:
 /** @brief Candidate-first CPU baker and optional live SpriteStack2D publisher. */
 class EVENGINE_API_DOMAINS SpriteStackBakeRuntime {
 public:
+    /** @brief Sprite stack bake runtime. */
     SpriteStackBakeRuntime();
+    /** @brief Sprite stack bake runtime. */
     ~SpriteStackBakeRuntime();
     // Class-level dllexport instantiates every member, including the implicitly
     // declared copy assignment, whose body instantiates
@@ -133,7 +153,9 @@ public:
                                                              const ISpriteStackModelResolver* resolver = nullptr);
     /** @brief Create and populate a live stack from the current baked generation. */
     Result<spritestack::SpriteStack2D*> publish(graphics::Graphics* graphics, Revision expectedRevision);
+    /** @brief Layers. */
     const std::vector<std::unique_ptr<image::ImageData>>& layers() const { return layers_; }
+    /** @brief Revision. */
     Revision                                              revision() const { return revision_; }
 
 private:

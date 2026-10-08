@@ -109,8 +109,11 @@ struct PixelTerrainContact {
  */
 class EVENGINE_API_DOMAINS PixelFragmentBody {
 public:
+    /** @brief Pixel fragment body. */
     ~PixelFragmentBody() = default;
+    /** @brief Pixel fragment body. */
     PixelFragmentBody(PixelFragmentBody&&) noexcept = default;
+    /** @brief Operator =. */
     PixelFragmentBody& operator=(PixelFragmentBody&&) noexcept = default;
     PixelFragmentBody(const PixelFragmentBody&) = delete;
     PixelFragmentBody& operator=(const PixelFragmentBody&) = delete;
@@ -169,9 +172,13 @@ private:
  */
 class EVENGINE_API_DOMAINS PixelTerrainCollisionCache {
 public:
+    /** @brief Pixel terrain collision cache. */
     PixelTerrainCollisionCache();
+    /** @brief Pixel terrain collision cache. */
     ~PixelTerrainCollisionCache();
+    /** @brief Pixel terrain collision cache. */
     PixelTerrainCollisionCache(PixelTerrainCollisionCache&&) noexcept;
+    /** @brief Operator =. */
     PixelTerrainCollisionCache& operator=(PixelTerrainCollisionCache&&) noexcept;
     PixelTerrainCollisionCache(const PixelTerrainCollisionCache&) = delete;
     PixelTerrainCollisionCache& operator=(const PixelTerrainCollisionCache&) = delete;

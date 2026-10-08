@@ -23,6 +23,7 @@ struct EVENGINE_API_FOUNDATION_INLINE ProcgenSurfaceHit {
 class EVENGINE_API_FOUNDATION_INLINE IProcgenWorldQuery {
 public:
     static constexpr const char* capabilityName = "IProcgenWorldQuery";
+    /** @brief I procgen world query. */
     virtual ~IProcgenWorldQuery() = default;
 
     /**

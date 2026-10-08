@@ -7,6 +7,7 @@
 
 namespace eve::procgen {
 
+/** @brief CaveBoundaryClosure public API. */
 struct CaveBoundaryClosure {
     int airSamplesBefore = 0;
     int airSamplesAfter  = 0;

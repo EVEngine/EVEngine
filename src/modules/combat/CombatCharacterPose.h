@@ -19,9 +19,11 @@ class EVENGINE_API_BACKENDS CombatCharacterPoseSource final : public IMeleePoseS
 public:
     /** @brief Borrow a character runtime that must outlive this adapter. */
     explicit CombatCharacterPoseSource(const CombatCharacterRuntime& characters, double chestHeight = 1.0) noexcept
+        /** @brief Characters. */
         : characters_(&characters), chestHeight_(chestHeight) {}
 
     /** @copydoc IMeleePoseSource::pose */
+    /** @brief Pose. */
     [[nodiscard]] Result<MeleePose> pose(SubjectRef subject, std::string_view hitboxId) const override;
 
 private:

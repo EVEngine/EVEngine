@@ -22,6 +22,7 @@ namespace eve::procgen {
  */
 class EVENGINE_API_DOMAINS CloudShadow {
 public:
+    /** @brief Params public API. */
     struct Params {
         CloudField field;               // the cloud field being shadowed
         float sunDirX = 0.f;            // normalized, toward the light (up)

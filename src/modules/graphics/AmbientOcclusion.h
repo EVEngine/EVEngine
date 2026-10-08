@@ -28,7 +28,9 @@ class Texture;
  */
 class EVENGINE_API_BACKENDS AmbientOcclusion {
 public:
+    /** @brief Ambient occlusion. */
     explicit AmbientOcclusion(Graphics *gfx);
+    /** @brief Ambient occlusion. */
     ~AmbientOcclusion();
 
     AmbientOcclusion(const AmbientOcclusion &) = delete;
@@ -36,10 +38,12 @@ public:
 
     /** @brief "low" | "medium" | "high" (unknown → medium). */
     void setQuality(const std::string &quality);
+    /** @brief Returns the quality. */
     std::string getQuality() const { return quality_; }
 
     /** @brief "ssao" | "hbao" | "gtao". */
     void setMode(const std::string &mode);
+    /** @brief Returns the mode. */
     std::string getMode() const { return mode_; }
 
     /**
@@ -50,25 +54,40 @@ public:
                    float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ,
                    float farZ);
 
+    /** @brief Sets the inv view proj. */
     void setInvViewProj(const glm::mat4 &invViewProj);
 
+    /** @brief Sets the radius. */
     void setRadius(float radius);
+    /** @brief Sets the bias. */
     void setBias(float bias);
+    /** @brief Sets the intensity. */
     void setIntensity(float intensity);
+    /** @brief Sets the power. */
     void setPower(float power);
+    /** @brief Sets the thickness. */
     void setThickness(float thickness);
 
+    /** @brief Returns the radius. */
     float getRadius() const;
+    /** @brief Returns the bias. */
     float getBias() const;
+    /** @brief Returns the intensity. */
     float getIntensity() const;
+    /** @brief Returns the power. */
     float getPower() const;
 
+    /** @brief True when param. */
     bool hasParam(const std::string &name) const;
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
 
     /** Effective sample count (ssao) or dirCount*stepCount (hbao/gtao). */
+    /** @brief Returns the sample count. */
     int getSampleCount() const;
+    /** @brief Returns the downscale. */
     float getDownscale() const { return downscale_; }
 
     /**
@@ -82,10 +101,12 @@ public:
      * Output RGB = AO (1=open), A = depth01.
      */
     void compute(Graphics *gfx, Texture *linearDepth);
+    /** @brief Computes to. */
     void computeTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /** @brief Bilateral blur of an AO map (RGB=AO, A=depth). */
     void blur(Graphics *gfx, Texture *aoMap);
+    /** @brief Blur to. */
     void blurTo(Graphics *gfx, Texture *aoMap, Canvas *dest);
 
     /**
@@ -93,6 +114,7 @@ public:
      * Draw over an already-rendered scene (SrcAlpha blend).
      */
     void applyOverlay(Graphics *gfx, Texture *aoMap);
+    /** @brief Applies overlay to. */
     void applyOverlayTo(Graphics *gfx, Texture *aoMap, Canvas *dest);
 
     /**
@@ -103,7 +125,9 @@ public:
      * Canvas compute() still uses 8-bit linear depth in R.
      */
     void applyFromDepth(Graphics *gfx, Texture *hwDepth);
+    /** @brief Applies from depth to. */
     void applyFromDepthTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
+    /** @brief Applies from g buffer. */
     void applyFromGBuffer(Graphics *gfx, Texture *hwDepth, Texture *worldNormal);
 
     /**
@@ -111,14 +135,22 @@ public:
      * Owned by Graphics (same convention as Volumetric).
      */
     Texture *newLinearDepthTexture(Graphics *gfx, int width, int height,
+                                   /** @brief Float. */
                                    float (*depth01)(int x, int y, void *userdata), void *userdata);
 
+    /** @brief Returns the shader. */
     Shader *getShader() const;
+    /** @brief Returns the ssao shader. */
     Shader *getSsaoShader() const { return ssaoShader_; }
+    /** @brief Returns the hbao shader. */
     Shader *getHbaoShader() const { return hbaoShader_; }
+    /** @brief Returns the gtao shader. */
     Shader *getGtaoShader() const { return gtaoShader_; }
+    /** @brief Returns the blur shader. */
     Shader *getBlurShader() const { return blurShader_; }
+    /** @brief Returns the overlay shader. */
     Shader *getOverlayShader() const { return overlayShader_; }
+    /** @brief Returns the from depth shader. */
     Shader *getFromDepthShader() const { return fromDepthShader_; }
 
 private:

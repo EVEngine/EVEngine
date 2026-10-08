@@ -37,7 +37,9 @@ class Texture;
  */
 class EVENGINE_API_BACKENDS Volumetric {
 public:
+    /** @brief Volumetric. */
     explicit Volumetric(Graphics *gfx);
+    /** @brief Volumetric. */
     ~Volumetric();
 
     Volumetric(const Volumetric &) = delete;
@@ -45,15 +47,19 @@ public:
 
     /** @brief "low" | "medium" | "high" (unknown → medium). */
     void setQuality(const std::string &quality);
+    /** @brief Returns the quality. */
     std::string getQuality() const { return quality_; }
 
     /** @brief "screenspace" | "raymarch" | "fog" | "froxel" | "cloud". */
     void setMode(const std::string &mode);
+    /** @brief Returns the mode. */
     std::string getMode() const { return mode_; }
 
     /** @brief Light position in UV (0..1), origin top-left to match 2D UVs. */
     void setLightScreenUV(float u, float v);
+    /** @brief Returns the light screen u. */
     float getLightScreenU() const;
+    /** @brief Returns the light screen v. */
     float getLightScreenV() const;
 
     /** @brief Pixel-space helper (converts with width/height). */
@@ -73,10 +79,15 @@ public:
     /** @brief Raw inverse view-projection (column-major, matching glm). */
     void setInvViewProj(const glm::mat4 &invViewProj);
 
+    /** @brief Sets the shaft color. */
     void setShaftColor(float r, float g, float b);
+    /** @brief Sets the fog color. */
     void setFogColor(float r, float g, float b);
+    /** @brief Sets the intensity. */
     void setIntensity(float intensity);
+    /** @brief Sets the time. */
     void setTime(float seconds);
+    /** @brief Sets the density. */
     void setDensity(float density);
 
     /**
@@ -89,10 +100,13 @@ public:
 
     /** @brief Height fog: denser near world Y = fogHeight; falloff is 1/meters scale. */
     void setFogHeight(float worldY);
+    /** @brief Sets the fog height falloff. */
     void setFogHeightFalloff(float falloff);
     /** @brief View-distance ramp where fog appears (world units along the ray). */
     void setFogStart(float startDistance);
+    /** @brief Sets the fog end. */
     void setFogEnd(float endDistance);
+    /** @brief Sets the fog noise. */
     void setFogNoise(float amount);
 
     /** @brief Set cloud layer world-space bottom and top heights. */
@@ -108,11 +122,16 @@ public:
     /** @brief Direct sunlight color used by cloud single scattering. */
     void setCloudLightColor(float r, float g, float b);
 
+    /** @brief True when param. */
     bool hasParam(const std::string &name) const;
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
 
+    /** @brief Returns the sample count. */
     int getSampleCount() const;
+    /** @brief Returns the downscale. */
     float getDownscale() const { return downscale_; }
 
     /**
@@ -127,6 +146,7 @@ public:
 
     /** @brief Convenience 2D black silhouette (solid or textured alpha). */
     void drawOccluderSolid(Graphics *gfx, float x, float y, float w, float h);
+    /** @brief Draws occluder texture. */
     void drawOccluderTexture(Graphics *gfx, Texture *texture, float x, float y, float w, float h);
 
     /**
@@ -143,6 +163,7 @@ public:
      * add shafts + dust/fog onto it. Writes to current canvas.
      */
     void applyFromScene(Graphics *gfx, Texture *scene);
+    /** @brief Applies from scene to. */
     void applyFromSceneTo(Graphics *gfx, Texture *scene, Canvas *dest);
 
     /**
@@ -151,6 +172,7 @@ public:
      * occlusion. Call setCamera / setLightDirection / setLightScreenUV first.
      */
     void rayMarch(Graphics *gfx, Texture *linearDepth);
+    /** @brief Ray march to. */
     void rayMarchTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /**
@@ -159,6 +181,7 @@ public:
      * Call setCamera / setFogHeight* / setFogStart/End first.
      */
     void applyFog(Graphics *gfx, Texture *linearDepth);
+    /** @brief Applies fog to. */
     void applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /**
@@ -177,6 +200,7 @@ public:
 
     /** @brief Render the bounded cloud layer using scene linear depth for occlusion. */
     void renderClouds(Graphics *gfx, Texture *linearDepth);
+    /** @brief Renders clouds to. */
     void renderCloudsTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /**
@@ -279,6 +303,7 @@ public:
      * depth01(x,y) should return values in [0,1]. Owned by Graphics.
      */
     Texture *newLinearDepthTexture(Graphics *gfx, int width, int height,
+                                   /** @brief Float. */
                                    float (*depth01)(int x, int y, void *userdata), void *userdata);
 
     /**
@@ -294,11 +319,17 @@ public:
      */
     void drawOccluders2D(Graphics *gfx);
 
+    /** @brief Returns the shader. */
     Shader *getShader() const { return shader_; }
+    /** @brief Returns the ray march shader. */
     Shader *getRayMarchShader() const { return rayShader_; }
+    /** @brief Returns the fog shader. */
     Shader *getFogShader() const { return fogShader_; }
+    /** @brief Returns the cloud shader. */
     Shader *getCloudShader() const { return cloudShader_; }
+    /** @brief Returns the froxel shader. */
     Shader *getFroxelShader() const { return froxelShader_; }
+    /** @brief Returns the froxel atlas. */
     Texture *getFroxelAtlas() const { return froxelAtlas_; }
 
 private:

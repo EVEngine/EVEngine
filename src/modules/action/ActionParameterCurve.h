@@ -33,6 +33,7 @@ struct ActionParameterKey {
     /** @brief Interpolation from this key to the following key. */
     ActionParameterInterpolation interpolation = ActionParameterInterpolation::Linear;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionParameterKey&) const = default;
 };
 
@@ -45,6 +46,7 @@ struct EVENGINE_API_PLATFORM ActionParameterCurveBinding {
     /** @brief Strictly ordered normalized keys, including endpoints 0 and 1. */
     std::vector<ActionParameterKey> keys;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionParameterCurveBinding&) const = default;
 
     /** @brief Decode and validate target, operation and normalized ordered keys. */
@@ -96,6 +98,7 @@ struct ActionParameterSample {
 class IActionParameterSink {
 public:
     static constexpr const char* capabilityName = "IActionParameterSink";
+    /** @brief Releases IActionParameterSink resources. */
     virtual ~IActionParameterSink() = default;
 
     /** @brief Whether this sink owns the supplied stable target. */

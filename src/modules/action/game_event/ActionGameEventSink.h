@@ -35,6 +35,7 @@ public:
      * @lifetime The adapter retains a raw pointer to log until destruction.
      */
     ActionGameEventSink(eve::game_event::GameEventLog& log, ActionSubjectResolver resolver);
+    /** @brief Action game event sink. */
     ~ActionGameEventSink() override;
 
     /** @brief Opt this adapter into or out of gameplay-event dispatch. */
@@ -42,6 +43,7 @@ public:
     /** @brief Return whether this exact adapter is registered. */
     [[nodiscard]] bool enabled() const;
     /** @copydoc IActionGameplayEventSink::emit */
+    /** @brief Emit. */
     [[nodiscard]] Result<void> emit(const ActionGameplayEventBinding& binding,
                                     const ActionNotifyContext& context) override;
     /** @brief Return the last successfully appended stream-local sequence. */

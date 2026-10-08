@@ -29,6 +29,7 @@ struct BuildingViewportRay {
  */
 class IBuildingViewportAdapter {
 public:
+    /** @brief Releases IBuildingViewportAdapter resources. */
     virtual ~IBuildingViewportAdapter() = default;
 
     /** @brief Build a world ray for one normalized pointer event. */
@@ -58,9 +59,11 @@ struct BuildingEdgeCurveToolSelection {
  */
 class EVENGINE_API_EDITORS BuildingEdgeCurveTool final : public IEditorTool {
 public:
+    /** @brief Building edge curve tool. */
     BuildingEdgeCurveTool(IBuildingViewportAdapter* viewport,
                           editing::IEditAuthority* authority);
 
+    /** @brief Descriptor. */
     const ToolDescriptor& descriptor() const override { return descriptor_; }
     /** @brief Replace the host viewport adapter and cancel any active gesture. @param viewport Borrowed adapter, or null to detach. */
     void setViewportAdapter(IBuildingViewportAdapter* viewport);
@@ -71,10 +74,14 @@ public:
     /** @brief Clear selection and any uncommitted gesture. */
     void clearSelection();
 
+    /** @brief Pointer event. */
     ToolResponse pointerEvent(EditorContext& context,
                               const EditorPointerEvent& event) override;
+    /** @brief Deactivate. */
     void deactivate(EditorContext& context) override;
+    /** @brief Cancel. */
     void cancel(EditorContext& context) override;
+    /** @brief Draws overlay. */
     void drawOverlay(EditorContext& context, IEditorOverlay& overlay) override;
 
     /** @brief Whether a handle currently owns pointer-drag state. @return True only between accepted down and release/cancel. */

@@ -24,22 +24,32 @@ class EditorSession;
  */
 class EVENGINE_API_ORCHESTRATION EditorTargetCoordinator final : public eve::editing::IEditingCommandRegistry {
 public:
+    /** @brief Editor target coordinator. */
     explicit EditorTargetCoordinator(EditorCommandService& commands);
+    /** @brief Editor target coordinator. */
     ~EditorTargetCoordinator();
 
     EditorTargetCoordinator(const EditorTargetCoordinator&)            = delete;
     EditorTargetCoordinator& operator=(const EditorTargetCoordinator&) = delete;
 
+    /** @brief Registers planned command. */
     [[nodiscard]] eve::editing::Result<void> registerPlannedCommand(
         eve::editing::EditingCommandDescriptor descriptor,
         eve::editing::EditingCommandPlanner planner) override;
+    /** @brief Unregisters owner. */
     [[nodiscard]] eve::editing::Result<std::size_t> unregisterOwner(
         const std::string& ownerModule) override;
+    /** @brief Registers target. */
     [[nodiscard]] Result<void> registerTarget(IEditableTarget& target);
+    /** @brief Unregisters target. */
     [[nodiscard]] Result<void> unregisterTarget(const TargetId& target);
+    /** @brief Binds . */
     [[nodiscard]] Result<void> bind(EditorSession& session, const TargetId& target);
+    /** @brief Inspect. */
     [[nodiscard]] Result<EditorValue> inspect(const TargetId& target) const;
+    /** @brief Undo. */
     [[nodiscard]] Result<TransactionReceipt> undo(const TargetId& target);
+    /** @brief Redo. */
     [[nodiscard]] Result<TransactionReceipt> redo(const TargetId& target);
 
     /** @brief Discovery metadata for one registered editable target. */

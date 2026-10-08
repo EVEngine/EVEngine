@@ -50,7 +50,9 @@ struct FlowVec {
 class EVENGINE_API_FOUNDATION Crowd : public Module {
 public:
     Module_REG(Crowd);
+    /** @brief Crowd. */
     Crowd();
+    /** @brief Crowd. */
     ~Crowd() override;
 
     // --- 流场（内部持有一个 CrowdField） ---
@@ -76,9 +78,13 @@ public:
     bool isReachable(int cx, int cy) const;
     /** @brief 网格信息访问器（调试渲染用）。 */
     int getFieldWidth() const;
+    /** @brief Returns the field height. */
     int getFieldHeight() const;
+    /** @brief Returns the cell size. */
     float getCellSize() const;
+    /** @brief Returns the field origin x. */
     float getFieldOriginX() const;
+    /** @brief Returns the field origin y. */
     float getFieldOriginY() const;
 
     /** @brief 世界坐标流场方向（双线性插值；场外返回零向量）。 */
@@ -135,6 +141,7 @@ public:
     int getAgentCount() const;
     /** @brief 单位容量上限（默认 100000）。 */
     void setMaxAgents(int maxAgents);
+    /** @brief Returns the max agents. */
     int getMaxAgents() const;
 
     /** @brief 设置行动："idle" | "flow" | "seek" | "boids"。 */
@@ -155,6 +162,7 @@ public:
     bool setAgentRadius(int id, float radius);
     /** @brief 设置游戏自定义标记。 */
     bool setAgentData(int id, int data);
+    /** @brief Returns the agent data. */
     int getAgentData(int id) const;
     /** @brief Set overlap-resolution priority; higher values yield less. @return Applied, or NotFound for an invalid
      * slot. */

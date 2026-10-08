@@ -32,36 +32,48 @@ using RuntimeStateDecoder = std::function<eve::Result<State>(const eve::Value&)>
 
 namespace detail {
 
+/** @brief Runtime snapshot uint. */
 inline eve::Result<std::uint64_t> runtimeSnapshotUint(const eve::Value& value, std::string_view path) {
     const auto text = value.getIf<std::string>();
     if (text == nullptr || text->empty())
+        /** @brief Failure. */
         return eve::Result<std::uint64_t>::failure(
+            /** @brief Error. */
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "runtime snapshot integer must be a decimal string",
+                                   /** @brief String. */
                                    std::string(path), {}, "common.definitions.snapshot"));
     std::uint64_t result    = 0;
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), result);
     if (error != std::errc{} || end != text->data() + text->size())
+        /** @brief Failure. */
         return eve::Result<std::uint64_t>::failure(
+            /** @brief Error. */
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "runtime snapshot integer is out of range",
+                                   /** @brief String. */
                                    std::string(path), {}, "common.definitions.snapshot"));
+    /** @brief Success. */
     return eve::Result<std::uint64_t>::success(result);
 }
 
+/** @brief Runtime snapshot shape. */
 inline eve::Result<void> runtimeSnapshotShape(const eve::Value::Object& object) {
     static const std::set<std::string> fields = {"active", "definition", "definitionGeneration", "instanceId", "state"};
     for (const auto& [name, unused] : object) {
         (void)unused;
         if (!fields.contains(name))
+            /** @brief Failure. */
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "runtime snapshot payload contains an unknown field", "state." + name,
                 {}, "common.definitions.snapshot"));
     }
     for (const auto& name : fields) {
         if (!object.contains(name))
+            /** @brief Failure. */
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "runtime snapshot payload is missing a required field",
                 "state." + name, {}, "common.definitions.snapshot"));
     }
+    /** @brief Success. */
     return eve::Result<void>::success();
 }
 
@@ -80,12 +92,15 @@ inline eve::Result<void> runtimeSnapshotShape(const eve::Value::Object& object) 
  * @return A sealed envelope or a structured encoding/validation failure.
  */
 template <class State>
+/** @brief Snapshot runtime instance. */
 [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshotRuntimeInstance(
     const RuntimeInstance<State>& runtime, std::string type, eve::LogicalId schema, eve::SchemaVersion schemaVersion,
     eve::Revision revision, eve::SimulationTick tick, const eve::SnapshotHashProvider& hashProvider,
     const RuntimeStateEncoder<State>& encode) {
     if (!encode)
+        /** @brief Failure. */
         return eve::Result<eve::SnapshotEnvelope>::failure(
+            /** @brief Error. */
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "runtime snapshot encoder is required",
                                    "encode", {}, "common.definitions.snapshot"));
     auto encoded = encode(runtime.state());
@@ -94,9 +109,11 @@ template <class State>
     payload.emplace("active", eve::Value(runtime.isActive()));
     payload.emplace("definition", eve::Value(runtime.identity().definition.format()));
     payload.emplace("definitionGeneration",
+                    /** @brief Value. */
                     eve::Value(std::to_string(runtime.identity().definitionGeneration.value())));
     payload.emplace("instanceId", eve::Value(runtime.identity().instanceId.format()));
     payload.emplace("state", std::move(encoded).takeValue());
+    /** @brief Make snapshot envelope. */
     return eve::makeSnapshotEnvelope(std::move(type), std::move(schema), schemaVersion, runtime.identity().instanceId,
                                      revision, tick, eve::Value(std::move(payload)), hashProvider);
 }
@@ -114,15 +131,18 @@ template <class State>
  * @return Success, or a schema/hash/identity/stale/decode failure.
  */
 template <class State>
+/** @brief Restore runtime instance. */
 [[nodiscard]] eve::Result<void> restoreRuntimeInstance(
     RuntimeInstance<State>& runtime, const eve::SnapshotEnvelope& snapshot, std::string_view expectedType,
     const eve::LogicalId& expectedSchema, eve::SchemaVersion expectedVersion,
     const eve::SnapshotHashProvider& hashProvider, const RuntimeStateDecoder<State>& decode) {
     if (snapshot.type != expectedType || snapshot.schema != expectedSchema)
+        /** @brief Failure. */
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                  "runtime snapshot type or schema does not match",
                                                                  "schema", {}, "common.definitions.snapshot"));
     if (snapshot.schemaVersion != expectedVersion)
+        /** @brief Failure. */
         return eve::Result<void>::failure(eve::Diagnostic::error(
             snapshot.schemaVersion > expectedVersion ? eve::DiagnosticCode::UnknownVersion
                                                      : eve::DiagnosticCode::Unsupported,
@@ -133,6 +153,7 @@ template <class State>
     if (!metadata) return metadata;
     const auto object = snapshot.payload.getIf<eve::Value::Object>();
     if (object == nullptr) {
+        /** @brief Failure. */
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
                                                                  "runtime snapshot payload must be an object",
                                                                  "payload", {}, "common.definitions.snapshot"));
@@ -144,12 +165,15 @@ template <class State>
     const auto definitionText = object->at("definition").getIf<std::string>();
     const auto instanceText   = object->at("instanceId").getIf<std::string>();
     if (active == nullptr || definitionText == nullptr || instanceText == nullptr)
+        /** @brief Failure. */
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
                                                                  "runtime snapshot identity fields have invalid types",
                                                                  "payload", {}, "common.definitions.snapshot"));
     const auto instanceId = eve::PersistentId::parse(*instanceText);
     if (!instanceId)
+        /** @brief Failure. */
         return eve::Result<void>::failure(
+            /** @brief Error. */
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "runtime snapshot instanceId is invalid",
                                    "payload.instanceId", {}, "common.definitions.snapshot"));
     auto definition = eve::DefinitionRef::parse(*definitionText);
@@ -157,20 +181,25 @@ template <class State>
     auto generation = detail::runtimeSnapshotUint(object->at("definitionGeneration"), "payload.definitionGeneration");
     if (!generation) return eve::Result<void>::failure(generation.status());
     const eve::definition::InstanceIdentity identity{*instanceId, std::move(definition).takeValue(),
+                                                     /** @brief Generation. */
                                                      eve::Generation(std::move(generation).takeValue())};
     if (snapshot.instanceId != identity.instanceId || identity.instanceId != runtime.identity().instanceId)
+        /** @brief Failure. */
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "runtime snapshot instanceId does not match the destination",
             "payload.instanceId", {}, "common.definitions.snapshot"));
     if (identity.definition != runtime.identity().definition)
+        /** @brief Failure. */
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "runtime snapshot definition reference does not match", "payload.definition",
             {}, "common.definitions.snapshot"));
     if (identity.definitionGeneration != runtime.identity().definitionGeneration)
+        /** @brief Failure. */
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "runtime snapshot definition generation does not match the destination",
             "payload.definitionGeneration", {}, "common.definitions.snapshot"));
     if (!decode)
+        /** @brief Failure. */
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                  "runtime snapshot decoder is required", "decode", {},
                                                                  "common.definitions.snapshot"));

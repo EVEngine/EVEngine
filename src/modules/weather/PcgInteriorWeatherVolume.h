@@ -34,9 +34,13 @@ public:
     /** @brief Return whether a finite world-space position lies inside, including the boundary. */
     bool contains(float x, float y, float z) const noexcept;
 
+    /** @brief Shape. */
     PcgInteriorWeatherShape shape() const noexcept { return shape_; }
+    /** @brief Mode. */
     PcgInteriorWeatherMode mode() const noexcept { return mode_; }
+    /** @brief Interior reverb preset. */
     int interiorReverbPreset() const noexcept { return interiorReverbPreset_; }
+    /** @brief Exterior reverb preset. */
     int exteriorReverbPreset() const noexcept { return exteriorReverbPreset_; }
 
 private:

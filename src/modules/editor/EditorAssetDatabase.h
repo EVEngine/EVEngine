@@ -59,6 +59,7 @@ struct AssetQuery {
 
 /** @brief One page of values tied to an asset index generation. */
 template <class T>
+/** @brief AssetPage public API. */
 struct AssetPage {
     std::vector<T> values;
     std::size_t    nextOffset = 0;
@@ -113,6 +114,7 @@ struct ImportTicket {
 /** @brief Small coordinator that validates importer output before atomic index publication. */
 class EVENGINE_API_ORCHESTRATION ImportCoordinator {
 public:
+    /** @brief Import coordinator. */
     explicit ImportCoordinator(MemoryAssetDatabase* database) : database_(database) {}
     /** @brief Validate and publish a completed import product. */
     Result<AssetRecord> publish(ImportProduct product);

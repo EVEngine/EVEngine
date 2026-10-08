@@ -25,7 +25,9 @@ public:
 
     Module_REG(Image);
 
+	/** @brief Image. */
 	Image();
+	/** @brief Image. */
 	virtual ~Image();
 
 	/**
@@ -77,9 +79,12 @@ public:
 	 **/
 	bool isCompressed(Data *data);
 
+        /** @brief Creates a cube faces. @ownership Caller deletes unless documented otherwise. */
         std::vector<script::Owned<ImageData>> newCubeFaces(ImageData *src);
+        /** @brief Creates a volume layers. @ownership Caller deletes unless documented otherwise. */
         std::vector<script::Owned<ImageData>> newVolumeLayers(ImageData *src);
 
+        /** @brief Returns the format handlers. */
         const std::list<FormatHandler *> &getFormatHandlers() const;
 
 private:

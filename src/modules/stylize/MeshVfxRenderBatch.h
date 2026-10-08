@@ -24,6 +24,7 @@ struct MeshVfxBatchKey {
     std::uint32_t renderPass = 0;
     MeshVfxBatchBlend blend = MeshVfxBatchBlend::Additive;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const MeshVfxBatchKey&) const = default;
 };
 

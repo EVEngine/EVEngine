@@ -31,6 +31,7 @@ namespace detail {
  */
 class ResultObservation {
 public:
+    /** @brief Constructs a ResultObservation. */
     ResultObservation() noexcept = default;
 
     ResultObservation(const ResultObservation&)            = delete;
@@ -52,19 +53,23 @@ public:
 #endif
 
 protected:
+    /** @brief Observe. */
     void observe() const noexcept {
 #if !defined(ZEROERR_NO_ASSERT)
         observed_ = true;
 #endif
     }
 
+    /** @brief Assert can be overwritten. */
     void assertCanBeOverwritten() const {
 #if !defined(ZEROERR_NO_ASSERT)
         const bool observationSatisfied = !mustObserve_ || observed_;
+        /** @brief Ev assert. */
         EV_ASSERT(observationSatisfied, "move assignment would overwrite an unchecked Result");
 #endif
     }
 
+    /** @brief Adopt observation from. */
     void adoptObservationFrom(ResultObservation& other) noexcept {
 #if !defined(ZEROERR_NO_ASSERT)
         observed_          = other.observed_;
@@ -120,6 +125,7 @@ concept ResultConstConversion =
  * optional so `Result<const T>` can still move-assign.
  */
 template <class T, class U>
+/** @brief Moves assign optional. */
 void moveAssignOptional(std::optional<T>& destination, std::optional<U>&& source) {
     destination.reset();
     if (source.has_value()) destination.emplace(std::move(*source));
@@ -145,6 +151,7 @@ void moveAssignOptional(std::optional<T>& destination, std::optional<U>&& source
  * @tparam T Owning value type. References and void use a different form.
  */
 template <class T>
+/** @brief Result public API. */
 class [[nodiscard("Result must be checked or explicitly ignored")]] Result : private detail::ResultObservation {
     static_assert(!std::is_reference_v<T>, "Result<T> cannot hold a reference; use a handle or value");
     static_assert(!std::is_void_v<T>, "Result<void> has a dedicated specialization");
@@ -158,13 +165,17 @@ public:
 
     /** @brief Construct a successful result with an explicit non-error status. */
     static Result success(T value, Status status) {
+        /** @brief Ev assert. */
         EV_ASSERT(status.isSuccess(), "Result::success requires a successful Status");
+        /** @brief Constructs a Result. */
         return Result(std::move(status), std::optional<T>(std::move(value)));
     }
 
     /** @brief Construct a failed result from a structured status. */
     static Result failure(Status status) {
+        /** @brief Ev assert. */
         EV_ASSERT(status.isFailure(), "Result::failure requires a failure Status");
+        /** @brief Constructs a Result. */
         return Result(std::move(status), std::nullopt);
     }
 
@@ -176,9 +187,13 @@ public:
 
     /** @brief Move a result and transfer its debug observation responsibility. */
     Result(Result&& other)
+        /** @brief Result observation. */
         : detail::ResultObservation(detail::ResultObservation::InactiveTag{}),
+          /** @brief Status. */
           status_(std::move(other.status_)),
+          /** @brief Value. */
           value_(std::move(other.value_)) {
+        /** @brief Adopt observation from. */
         adoptObservationFrom(other);
     }
 
@@ -189,9 +204,12 @@ public:
      */
     Result& operator=(Result&& other) {
         if (this == &other) return *this;
+        /** @brief Assert can be overwritten. */
         assertCanBeOverwritten();
         status_ = std::move(other.status_);
+        /** @brief Moves assign optional. */
         detail::moveAssignOptional(value_, std::move(other.value_));
+        /** @brief Adopt observation from. */
         adoptObservationFrom(other);
         return *this;
     }
@@ -203,10 +221,15 @@ public:
      */
     template <class U>
         requires detail::ResultConstConversion<U, T>
+    /** @brief Constructs a Result. */
     Result(Result<U>&& other)
+        /** @brief Result observation. */
         : detail::ResultObservation(detail::ResultObservation::InactiveTag{}),
+          /** @brief Status. */
           status_(std::move(other.status_)),
+          /** @brief Value. */
           value_(std::optional<T>(std::move(other.value_))) {
+        /** @brief Adopt observation from. */
         adoptObservationFrom(other);
     }
 
@@ -216,40 +239,49 @@ public:
      */
     template <class U>
         requires detail::ResultConstConversion<U, T>
+    /** @brief Operator =. */
     Result& operator=(Result<U>&& other) {
+        /** @brief Assert can be overwritten. */
         assertCanBeOverwritten();
         status_ = std::move(other.status_);
+        /** @brief Moves assign optional. */
         detail::moveAssignOptional(value_, std::move(other.value_));
+        /** @brief Adopt observation from. */
         adoptObservationFrom(other);
         return *this;
     }
 
     /** @brief Whether this result represents a non-failure outcome. */
     bool ok() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_.isSuccess() && value_.has_value();
     }
 
     /** @brief Whether the result owns a value; observing this is a check. */
     bool hasValue() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_.isSuccess() && value_.has_value();
     }
 
     /** @brief Inspect the structured operation status. */
     const Status& status() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_;
     }
 
     /** @brief Inspect the stable operation code. */
     StatusCode code() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_.code();
     }
 
     /** @brief Inspect all diagnostics; this counts as checking the Result. */
     const std::vector<Diagnostic>& diagnostics() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_.diagnostics();
     }
@@ -264,6 +296,7 @@ public:
      * @reentrancy Does not invoke callbacks.
      */
     const Diagnostic* error() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_.primaryDiagnostic();
     }
@@ -273,32 +306,41 @@ public:
 
     /** @brief Borrow the value from a const lvalue after checking success. */
     const T& value() const& {
+        /** @brief Observe. */
         observe();
         const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        /** @brief Ev assert. */
         EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         return value_.value();
     }
 
     /** @brief Borrow the value from a mutable lvalue after checking success. */
     T& value() & {
+        /** @brief Observe. */
         observe();
         const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        /** @brief Ev assert. */
         EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         return value_.value();
     }
 
     /** @brief Move the value out after checking success. */
     T&& value() && {
+        /** @brief Observe. */
         observe();
         const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        /** @brief Ev assert. */
         EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
+        /** @brief Moves . */
         return std::move(value_.value());
     }
 
     /** @brief Move the value out and remove it from this Result. */
     T takeValue() && {
+        /** @brief Observe. */
         observe();
         const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        /** @brief Ev assert. */
         EV_ASSERT(hasSuccessfulValue, "Result::takeValue requires a successful Result with a value");
         T result = std::move(value_.value());
         value_.reset();
@@ -307,6 +349,7 @@ public:
 
     /** @brief Return the value or an explicit alternate value, consuming this Result. */
     T valueOr(T fallback) && {
+        /** @brief Observe. */
         observe();
         if (status_.isSuccess() && value_.has_value()) return std::move(value_.value());
         return fallback;
@@ -318,10 +361,13 @@ public:
      * @return The function's Result, or this Result's failure status.
      */
     template <class Function>
+    /** @brief And then. */
     auto andThen(Function&& function) && -> std::invoke_result_t<Function, T&&> {
+        /** @brief Observe. */
         observe();
         using Return = std::invoke_result_t<Function, T&&>;
         if (!status_.isSuccess() || !value_.has_value()) return Return::failure(status_);
+        /** @brief Invoke. */
         return std::invoke(std::forward<Function>(function), std::move(value_.value()));
     }
 
@@ -331,9 +377,12 @@ public:
      * @return The recovery result or this successful Result.
      */
     template <class Function>
+    /** @brief Or else. */
     Result orElse(Function&& function) && {
+        /** @brief Observe. */
         observe();
         if (status_.isSuccess() && value_.has_value()) return std::move(*this);
+        /** @brief Invoke. */
         return std::invoke(std::forward<Function>(function), status_);
     }
 
@@ -343,6 +392,7 @@ public:
      */
     void ignore(std::string_view reason = {}) const noexcept {
         (void)reason;
+        /** @brief Observe. */
         observe();
     }
 
@@ -353,13 +403,18 @@ public:
      * @throws zeroerr::AssertionData in assertion-enabled builds on failure.
      */
     T expect(std::string_view message) && {
+        /** @brief Observe. */
         observe();
         if (!status_.isSuccess() || !value_.has_value()) {
+            /** @brief Context. */
             const std::string context(message);
             const std::string detail = status_.describe();
+            /** @brief Ev assert. */
             EV_ASSERT(false, "%s: %s", context.c_str(), detail.c_str());
+            /** @brief Terminate. */
             std::terminate();
         }
+        /** @brief Moves . */
         return std::move(value_.value());
     }
 
@@ -374,6 +429,7 @@ private:
  * @brief Move-only operation result for actions with no value payload.
  */
 template <>
+/** @brief Result public API. */
 class [[nodiscard("Result must be checked or explicitly ignored")]] Result<void> : private detail::ResultObservation {
 public:
     /** @brief Construct a successful void result. */
@@ -381,13 +437,17 @@ public:
 
     /** @brief Construct a successful void result with an explicit status. */
     static Result success(Status status) {
+        /** @brief Ev assert. */
         EV_ASSERT(status.isSuccess(), "Result::success requires a successful Status");
+        /** @brief Constructs a Result. */
         return Result(std::move(status));
     }
 
     /** @brief Construct a failed void result from a structured status. */
     static Result failure(Status status) {
+        /** @brief Ev assert. */
         EV_ASSERT(status.isFailure(), "Result::failure requires a failure Status");
+        /** @brief Constructs a Result. */
         return Result(std::move(status));
     }
 
@@ -399,39 +459,47 @@ public:
 
     /** @brief Move a result and transfer its debug observation responsibility. */
     Result(Result&& other)
+        /** @brief Result observation. */
         : detail::ResultObservation(detail::ResultObservation::InactiveTag{}), status_(std::move(other.status_)) {
+        /** @brief Adopt observation from. */
         adoptObservationFrom(other);
     }
 
     /** @brief Move-assign after checking the destination's old result. */
     Result& operator=(Result&& other) {
         if (this == &other) return *this;
+        /** @brief Assert can be overwritten. */
         assertCanBeOverwritten();
         status_ = std::move(other.status_);
+        /** @brief Adopt observation from. */
         adoptObservationFrom(other);
         return *this;
     }
 
     /** @brief Whether this result represents a non-failure outcome. */
     bool ok() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_.isSuccess();
     }
 
     /** @brief Inspect the structured operation status. */
     const Status& status() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_;
     }
 
     /** @brief Inspect the stable operation code. */
     StatusCode code() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_.code();
     }
 
     /** @brief Inspect all diagnostics; this counts as checking the Result. */
     const std::vector<Diagnostic>& diagnostics() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_.diagnostics();
     }
@@ -446,6 +514,7 @@ public:
      * @reentrancy Does not invoke callbacks.
      */
     const Diagnostic* error() const noexcept {
+        /** @brief Observe. */
         observe();
         return status_.primaryDiagnostic();
     }
@@ -455,7 +524,9 @@ public:
 
     /** @brief Mark a successful void operation as checked. */
     void value() const {
+        /** @brief Observe. */
         observe();
+        /** @brief Ev assert. */
         EV_ASSERT(status_.isSuccess(), "Result<void>::value requires a successful Result");
     }
 
@@ -465,6 +536,7 @@ public:
      */
     void ignore(std::string_view reason = {}) const noexcept {
         (void)reason;
+        /** @brief Observe. */
         observe();
     }
 
@@ -474,11 +546,15 @@ public:
      * @throws zeroerr::AssertionData in assertion-enabled builds on failure.
      */
     void expect(std::string_view message) const {
+        /** @brief Observe. */
         observe();
         if (!status_.isSuccess()) {
+            /** @brief Context. */
             const std::string context(message);
             const std::string detail = status_.describe();
+            /** @brief Ev assert. */
             EV_ASSERT(false, "%s: %s", context.c_str(), detail.c_str());
+            /** @brief Terminate. */
             std::terminate();
         }
     }
@@ -506,6 +582,7 @@ private:
  *          helper never throws, never allocates, and invokes no callbacks.
  */
 template <typename... Results>
+/** @brief Every result valid. */
 [[nodiscard]] bool everyResultValid(const Results&... results) noexcept {
     static_assert(sizeof...(Results) > 0, "everyResultValid requires at least one Result");
     return (results.ok() & ...);

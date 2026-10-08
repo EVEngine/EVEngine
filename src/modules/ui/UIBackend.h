@@ -19,20 +19,29 @@ namespace eve::ui {
  */
 class UIBackend {
 public:
+    /** @brief Releases UIBackend resources. */
     virtual ~UIBackend() = default;
 
+    /** @brief Initializes . */
     virtual bool init(SDL_Window *window, eve::graphics::Graphics *gfx) = 0;
+    /** @brief Shutdown. */
     virtual void shutdown() = 0;
+    /** @brief True when initialized. */
     virtual bool isInitialized() const = 0;
 
+    /** @brief Process event. */
     virtual void processEvent(const SDL_Event *event) = 0;
+    /** @brief Creates a frame. @ownership Caller deletes unless documented otherwise. */
     virtual void newFrame() = 0;
 
+    /** @brief Want capture mouse. */
     virtual bool wantCaptureMouse() const { return false; }
+    /** @brief Want capture keyboard. */
     virtual bool wantCaptureKeyboard() const { return false; }
 
     /** @brief Scale fonts + ImGui style metrics (1 = default desktop). */
     virtual void setScale(float /*scale*/) {}
+    /** @brief Returns the scale. */
     virtual float getScale() const { return 1.f; }
 
     /**
@@ -41,11 +50,14 @@ public:
      * alive while registered.
      */
     [[nodiscard("retain the UI texture registration id or explicitly handle failure")]]
+    /** @brief Registers texture. */
     virtual uint64_t registerTexture(graphics::Texture * /*tex*/) {
         return 0;
     }
+    /** @brief Unregisters texture. */
     virtual void unregisterTexture(uint64_t /*id*/) {}
     /** Texture pixel size for a registered id (used by nine-patch UV math). */
+    /** @brief Texture size. */
     virtual bool textureSize(uint64_t /*id*/, int * /*w*/, int * /*h*/) const { return false; }
     /**
      * @brief Returns an opaque backend draw handle for a registered texture.

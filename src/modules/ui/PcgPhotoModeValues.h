@@ -9,13 +9,17 @@
 #include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::ui {
+/** @brief PcgPhotoModeColor public API. */
 struct PcgPhotoModeColor { float r=0,g=0,b=0,a=1; bool operator==(const PcgPhotoModeColor&) const = default; };
+/** @brief PcgPhotoModeValueType public API. */
 enum class PcgPhotoModeValueType { Bool=0, Int=1, Float=2, String=3, Color=4 };
 using PcgPhotoModeValue=std::variant<bool,int64_t,float,std::string,PcgPhotoModeColor>;
+/** @brief PcgPhotoModeField public API. */
 struct PcgPhotoModeField { std::string name; PcgPhotoModeValueType type; PcgPhotoModeValue defaultValue; };
 /** @brief Complete typed value set from Pcg PhotoModeProfile with exact defaults. */
 class EVENGINE_API_WORLD PcgPhotoModeValues {
 public:
+ /** @brief Pcg photo mode values. */
  PcgPhotoModeValues();
  /** @brief Restore all 102 Pcg defaults atomically. */ void resetDefaults();
  /** @brief Return stable schema field count. */ uint64_t getFieldCount()const noexcept;
@@ -34,7 +38,9 @@ public:
  /** @brief Select a color field for component reads. */ [[nodiscard]] Result<void> selectColor(const std::string&name);
  /** @brief Encode schema 1 JSON containing every field. */ [[nodiscard]] Result<std::string> snapshotJson() const;
  /** @brief Atomically restore schema 1 JSON; unknown or missing fields are rejected. */ [[nodiscard]] Result<void> restoreJson(const std::string&json);
+ /** @brief Returns the color r. */
  float getColorR()const noexcept{return selectedColor_.r;} float getColorG()const noexcept{return selectedColor_.g;}
+ /** @brief Returns the color b. */
  float getColorB()const noexcept{return selectedColor_.b;} float getColorA()const noexcept{return selectedColor_.a;}
 private: std::unordered_map<std::string,PcgPhotoModeValue> values_; PcgPhotoModeColor selectedColor_{};
 };

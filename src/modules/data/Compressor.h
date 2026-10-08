@@ -26,6 +26,7 @@ public:
 	 **/
 	static Compressor *getCompressor(std::string format);
 
+	/** @brief Compressor. */
 	virtual ~Compressor() {}
 
 	/**
@@ -64,6 +65,7 @@ public:
 
 protected:
 
+	/** @brief Compressor. */
 	Compressor() {}
 
 };  // Compressor

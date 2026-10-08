@@ -20,7 +20,9 @@ class UIHost;
  */
 class EVENGINE_API_WORLD EditorShell {
 public:
+    /** @brief Editor shell. */
     EditorShell() = default;
+    /** @brief Editor shell. */
     ~EditorShell();
     EditorShell(const EditorShell&)            = delete;
     EditorShell& operator=(const EditorShell&) = delete;

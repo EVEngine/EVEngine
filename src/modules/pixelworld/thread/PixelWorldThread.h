@@ -25,8 +25,11 @@ public:
      */
     explicit JobSystemPixelScheduler(eve::thread::JobSystem& jobs) noexcept;
 
+    /** @brief Parallel for. */
     void parallelFor(std::size_t workItems,
+                     /** @brief Void. */
                      const std::function<void(std::size_t)>& body) override;
+    /** @brief Worker count. */
     [[nodiscard]] std::size_t workerCount() const noexcept override;
 
 private:

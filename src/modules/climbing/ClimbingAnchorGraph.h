@@ -96,7 +96,9 @@ struct ClimbingAnchorGraphDefinition {
     const eve::Value& value);
 
 namespace detail {
+/** @brief ClimbingAnchorReservationIdTag public API. */
 struct ClimbingAnchorReservationIdTag {};
+/** @brief ClimbingAnchorAgentIdTag public API. */
 struct ClimbingAnchorAgentIdTag {};
 }
 
@@ -109,7 +111,9 @@ using ClimbingAnchorAgentId = eve::detail::StrongUint64<detail::ClimbingAnchorAg
 struct ClimbingAnchorOccupant {
     ClimbingAnchorAgentId agentId = ClimbingAnchorAgentId::zero();
     ClimbingExecutionId   executionId = ClimbingExecutionId::zero();
+    /** @brief Operator ==. */
     friend bool operator==(const ClimbingAnchorOccupant&, const ClimbingAnchorOccupant&) noexcept = default;
+    /** @brief Operator <=>. */
     friend auto operator<=>(const ClimbingAnchorOccupant&, const ClimbingAnchorOccupant&) noexcept = default;
 };
 
