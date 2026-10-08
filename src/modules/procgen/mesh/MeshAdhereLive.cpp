@@ -107,6 +107,18 @@ const MeshBuild* MeshAdhereLive::derivedMesh() const noexcept {
     return derived_.empty() ? nullptr : &derived_;
 }
 
+Result<MeshBuild> MeshAdhereLive::derivedMeshResult() const {
+    if (!active_)
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                            "mesh adhere session is not active", "derived", {},
+                                                            "procgen.mesh.adhere"));
+    if (derived_.empty())
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                            "mesh adhere has no derived mesh; evaluate first",
+                                                            "derived", {}, "procgen.mesh.adhere"));
+    return Result<MeshBuild>::success(derived_);
+}
+
 const MeshBuild* MeshAdhereLive::sourceMesh() const noexcept {
     return source_.empty() ? nullptr : &source_;
 }

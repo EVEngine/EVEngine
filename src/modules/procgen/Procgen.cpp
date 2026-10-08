@@ -3879,6 +3879,14 @@ void Procgen::expose(ssq::Table& table) {
                                                                       "adhere", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, self->setSurfaceResult(*surface));
     });
+    meshAdhereLive.addFunc("setSource", [vm](MeshAdhereLive* self, const MeshBuild* source) {
+        if (!self || !source)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshAdhereLive and source are required",
+                                                                      "adhere", {}, "procgen.squirrel")));
+        return eve::script::projectResult(vm, self->setSourceResult(*source));
+    });
     meshAdhereLive.addFunc("evaluate", [vm](MeshAdhereLive* self, bool force) {
         if (!self)
             return eve::script::projectResult(
@@ -3893,6 +3901,19 @@ void Procgen::expose(ssq::Table& table) {
     meshAdhereLive.addFunc("isDirty", [](const MeshAdhereLive* self) { return self && self->isDirty(); });
     meshAdhereLive.addFunc("removeSetup", [](MeshAdhereLive* self) {
         if (self) self->removeSetup();
+    });
+    meshAdhereLive.addFunc("derivedMeshResult", [vm](const MeshAdhereLive* self) {
+        if (!self) {
+            auto failed = eve::Result<MeshBuild>::failure(eve::Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "MeshAdhereLive is required", "adhere", {}, "procgen.squirrel"));
+            return eve::script::projectStatusResult(vm, failed.status());
+        }
+        auto result = self->derivedMeshResult();
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
+        auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
+            vm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     meshAdhereLive.addFunc("bakeToMesh", [vm](MeshAdhereLive* self) {
         if (!self) {

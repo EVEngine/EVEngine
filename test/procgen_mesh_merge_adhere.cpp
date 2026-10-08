@@ -131,10 +131,16 @@ TEST_CASE("procgen.meshAdhereLive.paramsChangeRevisionAndRemoveRestores") {
     (void)y1;
     (void)y2;
 
+    auto snapshot = live.derivedMeshResult();
+    REQUIRE(snapshot.ok());
+    CHECK_EQ(snapshot.value().getVertexCount(), cube.getVertexCount());
+    CHECK(live.isActive());
+
     const int sourceVerts = cube.getVertexCount();
     live.removeSetup();
     CHECK(!live.isActive());
     CHECK(live.derivedMesh() == nullptr);
+    CHECK(!live.derivedMeshResult().ok());
     CHECK_EQ(cube.getVertexCount(), sourceVerts);
 }
 

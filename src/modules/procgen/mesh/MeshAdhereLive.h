@@ -48,6 +48,12 @@ public:
      */
     [[nodiscard]] const MeshBuild* derivedMesh() const noexcept;
     /**
+     * @brief Owning snapshot of the current derived mesh (session stays active).
+     * @return Copy of derived after a prior successful evaluate, or a diagnostic if inactive/empty.
+     * @note Does not evaluate; call `evaluateResult` first when `isDirty()`.
+     */
+    [[nodiscard]] Result<MeshBuild> derivedMeshResult() const;
+    /**
      * @brief Borrow immutable source A baseline; null when inactive or empty.
      * @ownership Borrowed from this session; callers must not delete the pointer.
      * @lifetime Valid until `setSourceResult`, `removeSetup`, `bakeToMeshResult`,
