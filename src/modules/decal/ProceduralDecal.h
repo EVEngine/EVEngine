@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Result.h"
 
 #include <array>
@@ -93,7 +94,8 @@ struct ProceduralDecalBake {
  * @thread Thread-safe; no global mutable state is accessed.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<ProceduralDecalRecipe> proceduralDecalPreset(std::string_view name, std::uint32_t seed = 1);
+[[nodiscard]] EVENGINE_API_WORLD Result<ProceduralDecalRecipe> proceduralDecalPreset(std::string_view name,
+                                                                                     std::uint32_t seed = 1);
 
 /**
  * @brief Import one Substance `.sbsprs` preset into the native version-two recipe.
@@ -104,7 +106,7 @@ struct ProceduralDecalBake {
  * @thread Thread-safe; no filesystem, renderer, or global state is accessed.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<ProceduralDecalRecipe> importProceduralDecalSbsprs(std::string_view xml);
+[[nodiscard]] EVENGINE_API_WORLD Result<ProceduralDecalRecipe> importProceduralDecalSbsprs(std::string_view xml);
 
 /**
  * @brief Bake a two-layer decal recipe into renderer-ready texture bytes.
@@ -114,6 +116,6 @@ struct ProceduralDecalBake {
  * @thread Thread-safe; no renderer calls or shared caches.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<ProceduralDecalBake> bakeProceduralDecal(const ProceduralDecalRecipe& recipe);
+[[nodiscard]] EVENGINE_API_WORLD Result<ProceduralDecalBake> bakeProceduralDecal(const ProceduralDecalRecipe& recipe);
 
 }  // namespace eve::decal
