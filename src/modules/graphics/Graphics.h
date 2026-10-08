@@ -932,19 +932,17 @@ public:
     /** @brief Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
     virtual void render3D();
     /**
-     * Preview-quality 3D pass into an offscreen Canvas (editor viewport):
+     * @brief Preview-quality 3D pass into an offscreen Canvas (editor viewport):
      * renders visible Renderable3D with `camera` into `canvas`, whose texture
      * can then be shown inside a UI Viewport widget. See RenderSystem3D::renderToCanvas.
      */
-    /** @brief Renders scene 3 d to canvas. */
     virtual void renderScene3DToCanvas(Canvas *canvas, Camera3D *camera);
     /** @brief Sets the directional light. */
     virtual void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f, float b = 1.f);
 
     /**
      * @brief Composite this frame's 3D scene color into a rect (screen or active Canvas).
-     /** @brief Renders 3 d. */
-     virtual * Call after render3D(); order vs drawSolidRect / drawTexturedRect is preserved.
+     * Call after render3D(); order vs drawSolidRect / drawTexturedRect is preserved.
      * If never called, present() still blits the 3D scene fullscreen under 2D.
      * RGB is blitted opaque (scene A is linear depth, not transparency).
      */
@@ -956,9 +954,8 @@ public:
     /** @brief Draw a Canvas color buffer as a textured rect (same batch order as other 2D). */
     virtual void drawCanvasRGBA(Canvas *canvas, float x, float y, float w, float h, float r = 1.f, float g = 1.f,
                                 float b = 1.f, float a = 1.f);
-    /** @brief Draws canvas. */
+    /** @brief Draws a Canvas with opaque white tint (script-friendly defaults). */
     void drawCanvas(Canvas *canvas, float x, float y, float w, float h) {
-        /** @brief Draws canvas rgba. */
         drawCanvasRGBA(canvas, x, y, w, h, 1.f, 1.f, 1.f, 1.f);
     }
 
