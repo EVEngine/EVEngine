@@ -68,8 +68,8 @@ function fusionPaintContactBand(mesh) {
     if (!mesh.hasVertexColors()) return mesh;
     for (local v = 0; v < mesh.getVertexCount(); ++v) {
         local w = mesh.getColor(v, 3);
-        // Cool body → warm weld tint (keep it subtle so lighting continuity stays readable).
-        fusionRequire(mesh.setColor(v, 0.62 + 0.30 * w, 0.64 - 0.08 * w, 0.70 - 0.28 * w, 1.0),
+        // Very light warm tint — heavy contact paint was masking continuous shading.
+        fusionRequire(mesh.setColor(v, 0.78 + 0.14 * w, 0.80 + 0.02 * w, 0.84 - 0.10 * w, 1.0),
                       "paint contact " + v);
     }
     return mesh;
@@ -105,11 +105,11 @@ function fusionRelax(mesh, strength, iterations) {
 
 function fusionMergePair(mode) {
     // Two spheres, same layout for hard vs fuse — only soft-snap differs.
-    // Diameter 1.65 → radius 0.825. Centers at ±0.96 → air gap ≈0.27 (obvious on left).
-    // Wide edgeRadius pulls a broad belt of verts → peanut neck (not a flat clap).
-    // Post-blend weld + light smooth share topology/normals across the neck.
-    local dx = 0.96;
-    local size = 1.65;
+    // Diameter 1.7 → radius 0.85. Centers at ±0.94 → air gap ≈0.18 (obvious on left).
+    // Partial soft-snap + post-blend weld + heavy Laplacian → continuous peanut neck
+    // (full mutual snap pinches a hard crease even after normal rebuild).
+    local dx = 0.94;
+    local size = 1.7;
     local enableBlend = false;
     local soft = false;
     local radius = 0.7;
@@ -118,9 +118,9 @@ function fusionMergePair(mode) {
     if (mode == "fuse") {
         enableBlend = true;
         soft = true;
-        radius = 1.55;  // wide belt; leave some soft falloff so the neck is not a hard pinch
+        radius = 1.4;
         normals = 1.0;
-        weldTol = 0.11; // after soft-snap, fuse near-coincident contact verts
+        weldTol = 0.12;
     }
 
     local left = fusionSubdivide(fusionRecipe("prototype.sphere", size, size, size, 28), 1);
@@ -131,16 +131,15 @@ function fusionMergePair(mode) {
     fusionRequire(plan.setPivotMode(1), "world pivot");
     fusionRequire(plan.setEnableContactBlend(enableBlend), "set blend enable");
     if (enableBlend) {
-        // strength 0.85 + tiny surfaceOffset avoids full mutual cave-in at the neck.
-        fusionRequire(plan.setContactBlend(radius, radius, 0.85, normals, 1.0, 0.02, soft, "smooth"),
+        // Partial snap + small offset: bridge the gap without mutual cave-in.
+        fusionRequire(plan.setContactBlend(radius, radius, 0.55, normals, 1.0, 0.03, soft, "smooth"),
                       "set contact blend");
     }
     if (weldTol > 0.0) fusionRequire(plan.setWeldTolerance(weldTol), "set post-blend weld");
     local merged = fusionRequire(eve.mergeStaticMeshes(plan), "merge " + mode);
     local mesh = merged.value;
     if (enableBlend) {
-        // Stronger Laplacian after weld so the shared neck shades as one continuous shell.
-        mesh = fusionRelax(mesh, 0.55, 5);
+        mesh = fusionRelax(mesh, 0.7, 8);
         mesh = fusionPaintContactBand(mesh);
     }
     print("mesh-contact-fusion: mode=" + mode + " dx=" + dx + " soft=" + soft +
