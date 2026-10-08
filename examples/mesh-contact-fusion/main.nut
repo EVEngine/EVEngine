@@ -68,8 +68,8 @@ function fusionPaintContactBand(mesh) {
     if (!mesh.hasVertexColors()) return mesh;
     for (local v = 0; v < mesh.getVertexCount(); ++v) {
         local w = mesh.getColor(v, 3);
-        // Cool body → saturated hot weld so the neck / melt patch reads under lighting.
-        fusionRequire(mesh.setColor(v, 0.48 + 0.52 * w, 0.58 - 0.28 * w, 0.74 - 0.62 * w, 1.0),
+        // Cool body → warm weld tint (keep it subtle so lighting continuity stays readable).
+        fusionRequire(mesh.setColor(v, 0.62 + 0.30 * w, 0.64 - 0.08 * w, 0.70 - 0.28 * w, 1.0),
                       "paint contact " + v);
     }
     return mesh;
@@ -118,9 +118,9 @@ function fusionMergePair(mode) {
     if (mode == "fuse") {
         enableBlend = true;
         soft = true;
-        radius = 1.7;   // wide belt so the neck is a silhouette change, not a hairline
+        radius = 1.55;  // wide belt; leave some soft falloff so the neck is not a hard pinch
         normals = 1.0;
-        weldTol = 0.09; // after soft-snap, fuse near-coincident contact verts
+        weldTol = 0.11; // after soft-snap, fuse near-coincident contact verts
     }
 
     local left = fusionSubdivide(fusionRecipe("prototype.sphere", size, size, size, 28), 1);
@@ -131,14 +131,16 @@ function fusionMergePair(mode) {
     fusionRequire(plan.setPivotMode(1), "world pivot");
     fusionRequire(plan.setEnableContactBlend(enableBlend), "set blend enable");
     if (enableBlend) {
-        fusionRequire(plan.setContactBlend(radius, radius, 1.0, normals, 1.0, 0.0, soft, "smooth"),
+        // strength 0.85 + tiny surfaceOffset avoids full mutual cave-in at the neck.
+        fusionRequire(plan.setContactBlend(radius, radius, 0.85, normals, 1.0, 0.02, soft, "smooth"),
                       "set contact blend");
     }
     if (weldTol > 0.0) fusionRequire(plan.setWeldTolerance(weldTol), "set post-blend weld");
     local merged = fusionRequire(eve.mergeStaticMeshes(plan), "merge " + mode);
     local mesh = merged.value;
     if (enableBlend) {
-        mesh = fusionRelax(mesh, 0.35, 2);
+        // Stronger Laplacian after weld so the shared neck shades as one continuous shell.
+        mesh = fusionRelax(mesh, 0.55, 5);
         mesh = fusionPaintContactBand(mesh);
     }
     print("mesh-contact-fusion: mode=" + mode + " dx=" + dx + " soft=" + soft +
@@ -155,8 +157,8 @@ function fusionUploadLive() {
     if (fusionLive.isDirty())
         fusionRequire(fusionLive.evaluate(false), "evaluate live adhere");
     local snapshot = fusionRequire(fusionLive.derivedMeshResult(), "live derived snapshot").value;
-    // Soft-snap already recalculates triangle normals; a light relax softens the melt rim.
-    snapshot = fusionRelax(snapshot, 0.25, 1);
+    // Soft-snap already recalculates triangle normals; relax softens the melt rim crease.
+    snapshot = fusionRelax(snapshot, 0.4, 3);
     snapshot = fusionPaintContactBand(snapshot);
     local uploaded = fusionRequire(procgen.uploadMesh(snapshot, gfx), "upload live derived").value;
     fusionLiveVisual.setMesh(uploaded);
