@@ -335,11 +335,23 @@ private:
 [[nodiscard]] eve::Result<GeneratedArtifact> generateCastleArtifact(const Params& params, ArtifactId id);
 
 /**
+ * @brief Generate a road composite containing mesh, collider, terrain footprint, navigation and placement points.
+ * @param
+ * params Deterministic mesh.roadNetwork recipe parameters.
+ * @param id Non-nil identity for the top-level artifact
+ * instance.
+ * @return An owning composite artifact, or a structured generation failure.
+ * @cost Linear in road mesh
+ * triangles plus the bounded terrain-footprint raster.
+ */
+[[nodiscard]] eve::Result<GeneratedArtifact> generateRoadNetworkArtifact(const Params& params, ArtifactId id);
+
+/**
  * @brief Generate any registered mesh recipe as a CPU artifact.
  * @param recipeId Registered mesh recipe id.
  * @param params Deterministic recipe parameters.
  * @param id Non-nil artifact instance identity.
- * @return Hex terrain and castle become composites; other recipes become MeshData artifacts.
+ * @return Hex terrain, castle and road network become composites; other recipes become MeshData artifacts.
  */
 [[nodiscard]] eve::Result<GeneratedArtifact> generateMeshArtifact(std::string_view recipeId, const Params& params,
                                                                   ArtifactId id);

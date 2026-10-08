@@ -10,6 +10,7 @@
 namespace eve::procgen {
 
 class Heightmap;
+class Grid2D;
 
 /** @brief One deterministic sample used by script-first procedural pipelines. */
 struct ProcgenPoint {
@@ -236,6 +237,22 @@ PointSet filterPointsByPolygon(const PointSet& input, const PointSet& polygon, b
 PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& controlPoints, float minDistance,
                                       float maxDistance);
 PointSet excludePointRadius(const PointSet& input, float x, float z, float radius);
+/**
+ * @brief Remove points covered by a semantic grid mask plus optional world-space clearance.
+ * @param input Immutable attributed input points.
+ * @param mask Immutable semantic grid.
+ * @param originX World X coordinate of mask cell (0,0).
+ * @param originZ World Z coordinate of mask cell (0,0).
+ * @param cellSize Positive square-cell size in world units.
+ * @param semantic Non-negative cell value treated as occupied.
+ * @param clearance Non-negative world-space expansion around occupied cells.
+ * @param maximumChecks Hard upper bound on examined mask cells.
+ * @return Filtered owning set, or a structured validation/budget diagnostic.
+ * @cost Linear in point count times the clearance-radius cell area, bounded by maximumChecks.
+ */
+[[nodiscard]] Result<PointSet> excludePointsByGridMask(const PointSet& input, const Grid2D& mask, float originX,
+                                                       float originZ, float cellSize, int semantic, float clearance,
+                                                       std::size_t maximumChecks);
 PointSet jitterPointPositions(const PointSet& input, uint32_t seed, float amountX, float amountZ);
 PointSet selfPrunePoints(const PointSet& input, float radius);
 PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& heightmap, float originX, float originZ,

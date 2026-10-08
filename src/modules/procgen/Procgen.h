@@ -249,6 +249,10 @@ public:
                                                                                     const std::string&       name,
                                                                                     const std::string&       value,
                                                                                     bool                     invert);
+    /** @brief Filter owned points against an owned semantic grid mask with a bounded clearance search. */
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> excludeGridMaskHandle(
+        ProcgenPointSetHandleRef input, ProcgenGridHandleRef mask, float originX, float originZ, float cellSize,
+        int semantic, float clearance, int maximumChecks);
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> densityCullHandle(ProcgenPointSetHandleRef input, uint32_t seed,
                                                                           float multiplier);
     /** @brief Project points through the optional world-query capability. */

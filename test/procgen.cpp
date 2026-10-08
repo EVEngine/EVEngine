@@ -3464,7 +3464,7 @@ TEST_CASE("procgen.texture.builtinRecipes.expanded") {
     TextureRecipeRegistry::instance().registerBuiltins();
     const char *ids[] = {"tex.soil",    "tex.stone",   "tex.rock",   "tex.marble", "tex.water",
                          "tex.ripple",  "tex.sky_cloud", "tex.wood", "tex.cloth",  "tex.ornament",
-                         "tex.spot",    "tex.zebra",   "tex.wall",   "tex.cement", "tex.mud",
+                         "tex.spot",    "tex.zebra",   "tex.wall",   "tex.cement", "tex.asphalt", "tex.mud",
                          "tex.bark",    "tex.foliage", "tex.moss",   "tex.tree_atlas", "tex.flower"};
     for (const char *id : ids) {
         Params p;
@@ -3541,7 +3541,7 @@ TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     const char *ids[] = {"pbr.soil",   "pbr.rock",   "pbr.marble", "pbr.water", "pbr.wood",
                          "pbr.cloth",  "pbr.ornament", "pbr.spot", "pbr.zebra", "pbr.wall",
-                         "pbr.cement", "pbr.mud",    "pbr.ripple"};
+                         "pbr.cement", "pbr.asphalt", "pbr.mud",    "pbr.ripple"};
     for (const char *id : ids) {
         REQUIRE(PbrRecipeRegistry::instance().has(id));
         Params p;
