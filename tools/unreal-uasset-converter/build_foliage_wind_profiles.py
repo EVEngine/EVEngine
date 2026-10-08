@@ -78,7 +78,7 @@ def build_profiles(asset_audit: dict, material_audit: dict, manifest: dict) -> l
 def write_nut(profiles: list[dict], output: Path) -> None:
     lines = [
         "// Generated from ue-asset-audit.json + ue-material-audit.json.",
-        "// Conversion policy: UE bounds cm -> EV metres; wind magnitudes use the", 
+        "// Conversion policy: UE bounds cm -> EV metres; wind magnitudes use the",
         "// documented metre-space adapters in build_foliage_wind_profiles.py.",
         "persist medievalFoliageWindProfiles = {",
     ]
