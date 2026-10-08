@@ -8,4 +8,7 @@ using editing::GraphPinId; using editing::GraphPinRecord; using editing::IGraphD
 using editing::Revision; using editing::RuleId; using editing::StableId; using editing::Status; using editing::Value;
 using editing::Result;
 using EditorStatus = editing::Status; using EditorValue = editing::Value; using EditorDiagnostic = editing::Diagnostic;
+/** @brief Procgen authoring result alias backed by the canonical editing result contract. */
+template <class T>
+using EditorResult = editing::Result<T>;
 }  // namespace eve::procgen_editing

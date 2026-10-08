@@ -70,7 +70,10 @@ namespace eve::procgen {
 namespace {
 
 template <class T>
-eve::Result<T> procgenBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {});
+eve::Result<T> procgenBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
+    return eve::Result<T>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.squirrel"));
+}
 
 template <class T>
 struct NativeProxyReleases {
