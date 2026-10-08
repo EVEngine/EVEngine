@@ -1589,8 +1589,9 @@ Result 诊断、计划统计和缓存约定，但 mesh pin 只传递 owning `Mes
 硬焊，便于 soft-snap 后把贴合顶点并成连续壳）、`setSimplifyQuality`（(0,1) 启用 GTS 简化）、
 `setPivotMode`（0 = 首源枢轴，1 = 世界原点）。流水线顺序：拼接 →（可选）接触融合 →
 （可选）weld →（可选）simplify → 枢轴。融合权重写入顶点色 alpha（`contactBlend`），不改 UV。
-`softSnapPositions=true` 时按变形后的三角几何重算法线（不再向命中面法线混），避免接触带
-光照断层。纯拼接仍可用 `combinePcgStaticMeshes`；canonical 作者路径是 `mergeStaticMeshes`。
+`softSnapPositions=true` 时按变形后的三角几何重算法线（不再向命中面法线混），再做一轮
+1-ring 法线平均，减轻 soft-snap 颈处的光照折痕。纯拼接仍可用
+`combinePcgStaticMeshes`；canonical 作者路径是 `mergeStaticMeshes`。
 
 共享 CPU 原语为 `meshContactBlendResult`（多 sourceId）与
 `meshContactBlendAgainstSurfaceResult`（A 贴 B）。`deform.meshAdhere` 图节点与

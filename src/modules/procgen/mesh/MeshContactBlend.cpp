@@ -2,9 +2,11 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace eve::procgen {
 namespace {
@@ -297,6 +299,61 @@ void recalculateNormalsFromGeometry(MeshBuild& mesh) {
     }
 }
 
+void smoothNormalsNeighborhood(MeshBuild& mesh, int iterations) {
+    // Soft-snap necks keep a geometric pinch; average 1-ring normals so lighting
+    // reads continuous without requiring a remesh/fillet.
+    const int count = mesh.getVertexCount();
+    if (count <= 0 || iterations <= 0) return;
+    std::vector<std::vector<std::uint32_t>> neighbors(static_cast<std::size_t>(count));
+    const auto& indices = mesh.indices();
+    for (std::size_t i = 0; i + 2 < indices.size(); i += 3) {
+        const std::uint32_t a = indices[i], b = indices[i + 1u], c = indices[i + 2u];
+        neighbors[a].push_back(b);
+        neighbors[a].push_back(c);
+        neighbors[b].push_back(a);
+        neighbors[b].push_back(c);
+        neighbors[c].push_back(a);
+        neighbors[c].push_back(b);
+    }
+    auto&              normals = mesh.normals();
+    std::vector<float> next    = normals;
+    for (int iteration = 0; iteration < iterations; ++iteration) {
+        const auto current = normals;
+        for (int vertex = 0; vertex < count; ++vertex) {
+            const auto& adjacent = neighbors[static_cast<std::size_t>(vertex)];
+            Vec3        sum{current[static_cast<std::size_t>(vertex) * 3u],
+                            current[static_cast<std::size_t>(vertex) * 3u + 1u],
+                            current[static_cast<std::size_t>(vertex) * 3u + 2u]};
+            for (const auto neighbor : adjacent) {
+                sum.x += current[static_cast<std::size_t>(neighbor) * 3u];
+                sum.y += current[static_cast<std::size_t>(neighbor) * 3u + 1u];
+                sum.z += current[static_cast<std::size_t>(neighbor) * 3u + 2u];
+            }
+            const Vec3 n = normalized(sum);
+            const std::size_t base = static_cast<std::size_t>(vertex) * 3u;
+            next[base]             = n.x;
+            next[base + 1u]        = n.y;
+            next[base + 2u]        = n.z;
+        }
+        normals.swap(next);
+    }
+}
+
+void finalizeSoftSnapNormals(MeshBuild& mesh) {
+    recalculateNormalsFromGeometry(mesh);
+    smoothNormalsNeighborhood(mesh, 5);
+    mesh.setMeta("contactBlend.normals", "recalculated+smoothed");
+}
+
+}  // namespace
+
+void rebuildSoftSnapContactNormals(MeshBuild& mesh) {
+    if (mesh.getVertexCount() <= 0) return;
+    finalizeSoftSnapNormals(mesh);
+}
+
+namespace {
+
 Result<MeshBuild> blendMultiImpl(const MeshBuild& mesh, const std::vector<std::int32_t>& vertexSourceIds,
                                   const MeshContactBlendParams& params) {
     const int vertexCount = mesh.getVertexCount();
@@ -347,10 +404,9 @@ Result<MeshBuild> blendMultiImpl(const MeshBuild& mesh, const std::vector<std::i
 
     auto setColors = output.setVertexColors(std::move(colors));
     if (!setColors.ok()) return Result<MeshBuild>::failure(setColors.status());
-    if (params.softSnapPositions) recalculateNormalsFromGeometry(output);
+    if (params.softSnapPositions) finalizeSoftSnapNormals(output);
     output.setMeta("contactBlend", "applied");
     output.setMeta("contactBlend.falloff", std::string(params.falloff));
-    if (params.softSnapPositions) output.setMeta("contactBlend.normals", "recalculated");
     return Result<MeshBuild>::success(std::move(output));
 }
 
@@ -397,10 +453,9 @@ Result<MeshBuild> blendAgainstImpl(const MeshBuild& movable, const MeshBuild& su
     }
     auto setColors = output.setVertexColors(std::move(colors));
     if (!setColors.ok()) return Result<MeshBuild>::failure(setColors.status());
-    if (params.softSnapPositions) recalculateNormalsFromGeometry(output);
+    if (params.softSnapPositions) finalizeSoftSnapNormals(output);
     output.setMeta("contactBlend", "againstSurface");
     output.setMeta("contactBlend.falloff", std::string(params.falloff));
-    if (params.softSnapPositions) output.setMeta("contactBlend.normals", "recalculated");
     return Result<MeshBuild>::success(std::move(output));
 }
 

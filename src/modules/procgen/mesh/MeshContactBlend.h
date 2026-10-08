@@ -41,8 +41,9 @@ struct EVENGINE_API_DOMAINS MeshContactBlendParams {
  *
  * Material fusion writes vertex-color alpha as `contactBlend` in \[0,1\] (RGB preserved or filled
  * with 1). Topology and UVs are unchanged unless a later merge weld runs. When
- * `softSnapPositions` is true, triangle normals are recalculated from the deformed
- * positions (hit-normal lerp is skipped) so lighting stays continuous on the new shape.
+ * `softSnapPositions` is true, hit-normal lerp is skipped; triangle normals are
+ * recalculated from the deformed positions and then 1-ring-averaged so contact necks
+ * shade continuously even when the soft-snap silhouette still pinches.
  * Deterministic for equal inputs; main-thread or worker safe when inputs are immutable for the
  * call duration. No callbacks.
  */
@@ -59,5 +60,12 @@ struct EVENGINE_API_DOMAINS MeshContactBlendParams {
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<MeshBuild> meshContactBlendAgainstSurfaceResult(
     const MeshBuild& movable, const MeshBuild& surface, const MeshContactBlendParams& params);
+
+/**
+ * @brief Rebuild triangle normals then 1-ring-average them (soft-snap / post-weld lighting).
+ * @param mesh Mesh to mutate; no-op when empty.
+ * @thread Caller serializes mutation; no retained pointers.
+ */
+EVENGINE_API_DOMAINS void rebuildSoftSnapContactNormals(MeshBuild& mesh);
 
 }  // namespace eve::procgen

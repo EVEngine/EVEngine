@@ -479,7 +479,8 @@ Result<MeshBuild> smoothMesh(const MeshBuild& input, float strength, int iterati
         }
         output.positions() = next;
     }
-    recalculateNormals(output);
+    // Geometry normals + 1-ring average so post-fusion relax does not reintroduce neck creases.
+    rebuildSoftSnapContactNormals(output);
     return Result<MeshBuild>::success(std::move(output));
 }
 
@@ -1399,7 +1400,7 @@ Result<MeshBuild> weldMesh(const MeshBuild& input, float tolerance) {
         if (!set.ok()) return Result<MeshBuild>::failure(set.status());
     }
     for (const auto& [key, value] : input.metadata()) output.setMeta(key, value);
-    recalculateNormals(output);
+    rebuildSoftSnapContactNormals(output);
     return Result<MeshBuild>::success(std::move(output));
 }
 

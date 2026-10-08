@@ -1,5 +1,7 @@
 #include "procgen/mesh/MeshMerge.h"
 
+#include "procgen/mesh/MeshContactBlend.h"
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -258,6 +260,9 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan& plan) {
         auto welded = weldMeshLocal(combined, plan.weldTolerance_, vertexSourceIds);
         if (!welded.ok()) return welded;
         combined = std::move(welded).takeValue();
+        // Weld rebuilds geometry normals; re-apply soft-snap neighborhood smooth for continuous lighting.
+        if (plan.enableContactBlend_ && plan.blendParams_.softSnapPositions)
+            rebuildSoftSnapContactNormals(combined);
     }
 
     if (plan.simplifyQuality_ > 0.f && plan.simplifyQuality_ < 1.f) {

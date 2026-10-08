@@ -104,7 +104,7 @@ TEST_CASE("procgen.meshContactBlend.againstSurfaceSoftSnap") {
         minY = std::min(minY, adhered.value().getPositionY(v));
     CHECK(minY < 0.2f);
     REQUIRE(adhered.value().hasVertexColors());
-    CHECK_EQ(adhered.value().getMeta("contactBlend.normals", ""), std::string("recalculated"));
+    CHECK_EQ(adhered.value().getMeta("contactBlend.normals", ""), std::string("recalculated+smoothed"));
 }
 
 TEST_CASE("procgen.meshMerge.softSnapThenWeldSharesContactVerts") {
@@ -125,7 +125,7 @@ TEST_CASE("procgen.meshMerge.softSnapThenWeldSharesContactVerts") {
     REQUIRE(plan.setPivotMode(eve::procgen::MeshMergePlan::PivotMode::WorldOrigin).ok());
     auto merged = eve::procgen::mergeStaticMeshes(plan);
     REQUIRE(merged.ok());
-    CHECK_EQ(merged.value().getMeta("contactBlend.normals", ""), std::string("recalculated"));
+    CHECK_EQ(merged.value().getMeta("contactBlend.normals", ""), std::string("recalculated+smoothed"));
     // Two unit cubes start with 16 verts; post-blend weld must collapse some contact verts.
     CHECK(merged.value().getVertexCount() < 16);
 }
