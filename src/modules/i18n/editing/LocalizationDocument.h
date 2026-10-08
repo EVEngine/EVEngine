@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 
@@ -16,7 +18,7 @@ class DialogueVoice;
 
 namespace eve::localization_editing {
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorDiagnostic=editing::Diagnostic;
-template<class T>using EditorResult=editing::Result<T>; using EditorStatus=editing::Status;
+using editing::Result; using EditorStatus=editing::Status;
 using EditorValue=editing::Value; using Revision=editing::Revision; using RuleId=editing::RuleId;
 
 /** @brief One locale's editable translation and voice-production metadata. */
@@ -52,14 +54,14 @@ struct LocalizationAnalysis {
 };
 
 /** @brief UI-neutral localization table with deterministic persistence and QA. */
-class LocalizationDocument {
+class EVENGINE_API_ORCHESTRATION LocalizationDocument {
 public:
     /** @brief Insert a unique source key. */
-    EditorResult<void> addRow(std::string key, std::string sourceText, std::string context = {});
+    Result<void> addRow(std::string key, std::string sourceText, std::string context = {});
     /** @brief Remove a source key and all translated variants. */
-    EditorResult<void> removeRow(const std::string& key);
+    Result<void> removeRow(const std::string& key);
     /** @brief Replace one locale variant, validating production metadata. */
-    EditorResult<void> setVariant(const std::string& key, std::string locale,
+    Result<void> setVariant(const std::string& key, std::string locale,
                                   LocalizationVariant variant);
     /** @brief Return rows in deterministic key order. */
     std::vector<LocalizationRow> rows() const;
@@ -69,7 +71,7 @@ public:
     /** @brief Capture deterministic data for conflict-safe document persistence. */
     EditorValue snapshotValue() const;
     /** @brief Atomically replace data from a validated persisted snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
     /** @brief Return the current edit revision. */
     Revision revision() const { return revision_; }
 
@@ -83,7 +85,7 @@ class LocalizationVoiceAudition {
 public:
     using SourceResolver = std::function<audio::Source*(const std::string& asset)>;
     /** @brief Resolve, register and start a locale voice clip without changing the document. */
-    EditorResult<void> play(const LocalizationDocument& document, const std::string& key,
+    Result<void> play(const LocalizationDocument& document, const std::string& key,
                             const std::string& locale, dialogue::DialogueVoice* voice,
                             const SourceResolver& sources) const;
 };

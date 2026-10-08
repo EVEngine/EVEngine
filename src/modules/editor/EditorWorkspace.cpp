@@ -45,7 +45,7 @@ bool EditorWorkspace::registerPanel(const std::string& id, const std::string& ti
     return registerPanel(std::move(descriptor)).ok();
 }
 
-EditorResult<WorkspacePanelDescriptor> EditorWorkspace::registerPanel(WorkspacePanelDescriptor descriptor) {
+Result<WorkspacePanelDescriptor> EditorWorkspace::registerPanel(WorkspacePanelDescriptor descriptor) {
     if (descriptor.id.empty())
         return eve::editing::failed<WorkspacePanelDescriptor>(
             EditorStatus::Rejected, RuleId("editor.workspace.empty-panel-id"), "Workspace panel id must not be empty");
@@ -74,7 +74,7 @@ bool EditorWorkspace::removePanel(const std::string& id) {
     return result.code() == EditorStatus::Applied;
 }
 
-EditorResult<WorkspacePanelDescriptor> EditorWorkspace::removePanel(const StableId& id) {
+Result<WorkspacePanelDescriptor> EditorWorkspace::removePanel(const StableId& id) {
     const auto found = std::find_if(panels_.begin(), panels_.end(), [&](const auto& panel) { return panel.id == id.value(); });
     if (found == panels_.end())
         return eve::editing::failed<WorkspacePanelDescriptor>(EditorStatus::NotFound,
@@ -99,7 +99,7 @@ bool EditorWorkspace::movePanel(const std::string& id, const std::string& region
     return parsed && movePanel(StableId(id), *parsed, order).ok();
 }
 
-EditorResult<WorkspacePanelDescriptor> EditorWorkspace::movePanel(const StableId& id, WorkspaceRegion region,
+Result<WorkspacePanelDescriptor> EditorWorkspace::movePanel(const StableId& id, WorkspaceRegion region,
                                                                    int order) {
     WorkspacePanelDescriptor* panel = findPanel(id.value());
     if (!panel)
@@ -108,7 +108,7 @@ EditorResult<WorkspacePanelDescriptor> EditorWorkspace::movePanel(const StableId
                                                               "Workspace panel is not registered: " + id.value());
     const std::string regionName(workspaceRegionName(region));
     if (panel->region == regionName && panel->order == order) {
-        return EditorResult<WorkspacePanelDescriptor>::success(
+        return Result<WorkspacePanelDescriptor>::success(
             *panel, eve::Status::success(EditorStatus::NoOp));
     }
     panel->region = regionName;
@@ -118,7 +118,7 @@ EditorResult<WorkspacePanelDescriptor> EditorWorkspace::movePanel(const StableId
     return eve::editing::applied<WorkspacePanelDescriptor>(*findPanel(id.value()));
 }
 
-EditorResult<WorkspacePanelDescriptor> EditorWorkspace::panelAt(std::size_t index) const {
+Result<WorkspacePanelDescriptor> EditorWorkspace::panelAt(std::size_t index) const {
     if (index >= panels_.size())
         return eve::editing::failed<WorkspacePanelDescriptor>(
             EditorStatus::NotFound, RuleId("editor.workspace.panel-index"), "Workspace panel index is out of range");
@@ -166,7 +166,7 @@ bool EditorWorkspace::activatePanel(const std::string& id) {
     return activatePanel(StableId(id)).ok();
 }
 
-EditorResult<WorkspacePanelDescriptor> EditorWorkspace::activatePanel(const StableId& id) {
+Result<WorkspacePanelDescriptor> EditorWorkspace::activatePanel(const StableId& id) {
     const WorkspacePanelDescriptor* panel = findPanel(id.value());
     if (!panel)
         return eve::editing::failed<WorkspacePanelDescriptor>(EditorStatus::NotFound,
@@ -177,7 +177,7 @@ EditorResult<WorkspacePanelDescriptor> EditorWorkspace::activatePanel(const Stab
                                                               RuleId("editor.workspace.panel-hidden"),
                                                               "Hidden workspace panels cannot be activated");
     if (activePanel_ == id.value()) {
-        return EditorResult<WorkspacePanelDescriptor>::success(
+        return Result<WorkspacePanelDescriptor>::success(
             *panel, eve::Status::success(EditorStatus::NoOp));
     }
     activePanel_ = id.value();
@@ -241,12 +241,12 @@ bool EditorWorkspace::setMode(const std::string& mode) {
     return setModeId(StableId(mode)).ok();
 }
 
-EditorResult<StableId> EditorWorkspace::setModeId(StableId mode) {
+Result<StableId> EditorWorkspace::setModeId(StableId mode) {
     if (mode.empty())
         return eve::editing::failed<StableId>(EditorStatus::Rejected, RuleId("editor.workspace.empty-mode"),
                                               "Workspace mode must not be empty");
     if (mode_ == mode.value()) {
-        return EditorResult<StableId>::success(std::move(mode), eve::Status::success(EditorStatus::NoOp));
+        return Result<StableId>::success(std::move(mode), eve::Status::success(EditorStatus::NoOp));
     }
     mode_ = mode.value();
     changed();
@@ -260,7 +260,7 @@ bool EditorWorkspace::select(const std::string& channel, const std::string& doma
     return selectItem(channel, SelectionItem{parsed, TargetId(target), StableId(item), type}, additive).ok();
 }
 
-EditorResult<SelectionSnapshot> EditorWorkspace::selectItem(std::string channel, SelectionItem selected,
+Result<SelectionSnapshot> EditorWorkspace::selectItem(std::string channel, SelectionItem selected,
                                                              bool additive) {
     if (channel.empty() || selected.target.empty() || selected.item.empty())
         return eve::editing::failed<SelectionSnapshot>(EditorStatus::Rejected,
@@ -278,7 +278,7 @@ bool EditorWorkspace::clearSelection(const std::string& channel) {
     return clearSelectionChecked(channel).ok();
 }
 
-EditorResult<SelectionSnapshot> EditorWorkspace::clearSelectionChecked(const std::string& channel) {
+Result<SelectionSnapshot> EditorWorkspace::clearSelectionChecked(const std::string& channel) {
     auto result = selection_.clear(channel);
     if (result.ok() && result.code() != EditorStatus::NoOp) changed();
     return result;
@@ -315,7 +315,7 @@ bool EditorWorkspace::focus(const std::string& channel, const std::string& surfa
     return focusItem(channel, StableId(surface), StableId(item)).ok();
 }
 
-EditorResult<EditorFocusSnapshot> EditorWorkspace::focusItem(const std::string& channel, StableId surface,
+Result<EditorFocusSnapshot> EditorWorkspace::focusItem(const std::string& channel, StableId surface,
                                                               StableId item) {
     auto result = focus_.focus(channel, std::move(surface), std::move(item));
     if (result.ok() && result.code() != EditorStatus::NoOp) changed();

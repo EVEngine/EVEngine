@@ -23,7 +23,7 @@ struct TerrainMeshSettings {
  * Weight channels are sand, vegetation, rock, and snow. The base grid comes
  * first; optional crack-hiding skirt vertices follow it.
  */
-class TerrainMeshChunk {
+class EVENGINE_API_DOMAINS TerrainMeshChunk {
 public:
     const MeshBuild &mesh() const { return mesh_; }
     MeshBuild &mesh() { return mesh_; }
@@ -51,7 +51,7 @@ private:
 };
 
 /** @brief Builds LOD heightfield chunks with stable normals, skirts, and biome splat weights. */
-class TerrainMeshBuilder {
+class EVENGINE_API_DOMAINS TerrainMeshBuilder {
 public:
     /** @brief Compatibility operation that builds a terrain mesh chunk. */
     static bool build(const Heightmap &heightmap, const TerrainLayers *layers,
@@ -63,7 +63,7 @@ public:
 };
 
 /** @brief Screen-space-error LOD choice based on measured heightfield deviation. */
-class TerrainLodSelector {
+class EVENGINE_API_DOMAINS TerrainLodSelector {
 public:
     /**
      * @brief Select the coarsest LOD whose projected geometric error is within budget.
@@ -89,7 +89,7 @@ struct TerrainRiverMeshSettings {
 };
 
 /** @brief Builds overlapping flow-aligned water ribbons from a terrain river network. */
-class TerrainRiverMeshBuilder {
+class EVENGINE_API_DOMAINS TerrainRiverMeshBuilder {
 public:
     /** @brief Compatibility operation that builds river surface geometry. */
     static bool build(const Heightmap &heightmap, const TerrainLayers &layers,
@@ -107,7 +107,7 @@ struct TerrainLakeMeshSettings {
 };
 
 /** @brief Builds flat water-surface cells for Priority-Flood depressions. */
-class TerrainLakeMeshBuilder {
+class EVENGINE_API_DOMAINS TerrainLakeMeshBuilder {
 public:
     /** @brief Compatibility operation that builds lake surface geometry. */
     static bool build(const Heightmap &heightmap, const TerrainLayers &layers,

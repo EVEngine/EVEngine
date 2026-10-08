@@ -144,7 +144,7 @@ flowchart TB
 | `Control` 的可见/启用、focus mode、focus neighbor、mouse filter | `UINode` / `WidgetDesc` 的平台中立 Control 语义 | 已实现并序列化 |
 | `Container` 自动布局与 size flags | Flex、Row/Column、Toolbar、Sidebar、Toolbox、SplitPane、box model | 已实现核心组合与响应式布局 |
 | Theme 继承与局部 override | 全局 preset + `ThemePreset` 子树作用域 + `setThemeScope` | 已实现 dark/light 作用域与嵌套恢复 |
-| Inspector 按属性元数据生成 editor | `IPropertyModel` + `PropertyView` + 反射/Editor adapter | 已实现标量生成、校验、双向同步与结构值只读展示 |
+| Inspector 按属性元数据生成 editor | `IPropertyAccess` + `PropertyView` + 反射/Editor adapter | 已实现标量、枚举、Color/Vec 分量、Array/Map 展开编辑、校验与双向同步；嵌套 instance 仍由 Inspector 导航 |
 | `_gui_input` / mouse filter 传播 | UIEvent target + retained-tree `pass/ignore/stop` 冒泡 | 已实现 click 路由与自动化同路径 |
 | 键盘/手柄焦点导航 | 显式邻居 + 稳定 tabIndex fallback + `moveFocus` | 已实现后端中立 API 与 ImGui 键盘桥 |
 
@@ -469,13 +469,13 @@ sequenceDiagram
 - [x] MVVM 属性面板 `ui.inspect()` / `ui.inspectObject(obj)`：控件变更直接写回
       脚本实例，`sync()` 每帧把模型值拉回视图（双向绑定）；类/实例下拉 + 新增实例
 - [x] Squirrel 属性元数据选择控件：`</ editor = "slider", min, max />`、
-      `</ editor = "combo", options = "a,b,c" />`、checkbox/input 默认；
-      继承成员按所属基类分组（“父类属性面版”）
+      `</ editor = "combo", options = "a,b,c" />`、`editor="color"|"vec2"|"vec3"|"vec4"`、
+      checkbox/input 默认；继承成员按所属基类分组（“父类属性面版”）；
+      `ui.propertySchema(obj)` 投影反射派生的 PropertySchema
 - [x] 数据库管理面板 `ui.dbOpen()` / `dbRegister(obj)`：按脚本类名动态菜单 +
       实例网格（单元格编辑、+ 新增、删除），数据底座 `ui/ObjectRegistry`
-- [x] 嵌套引用编辑：`Runtime` 数组/表读写 API（`arraySize/Get/Set/Append/Remove`、
-      `tableKeys/Get/Set/Remove`、`readObjectProperty`）+ Inspector 数组/表展开编辑
-      与嵌套实例导航（open / back）
+- [x] 嵌套引用编辑：`Runtime` 数组/表读写 API + `ReflectedPropertyModel` 整容器
+      `write()` + `PropertyView` Array/Map 展开编辑与嵌套实例导航（open / back）
 - [x] 场景层级面板 `ui.sceneOpen()`：经 `ISceneQuery` 能力接口渲染节点树，
       选中节点可编辑 transform / visible，Pick 按钮把节点 id 交给脚本回调 →
       `ui.inspectObject()` 联动对象检查器

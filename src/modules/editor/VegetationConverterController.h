@@ -48,7 +48,7 @@ public:
      * @param expectedGeneration Host generation observed before publication.
      * @return New generation, or Conflict/failure without partial publication.
      */
-    [[nodiscard]] virtual EditorResult<std::uint64_t> publish(const asset_import::PreparedAssetImport& candidate,
+    [[nodiscard]] virtual Result<std::uint64_t> publish(const asset_import::PreparedAssetImport& candidate,
                                                               std::uint64_t expectedGeneration) = 0;
 };
 
@@ -57,20 +57,20 @@ public:
  * @thread Owner thread only. Calls are synchronous and no controller lock is held across either boundary.
  * @reentrancy Preparer and publisher implementations must not call this controller recursively.
  */
-class VegetationConverterController {
+class EVENGINE_API_ORCHESTRATION VegetationConverterController {
 public:
     VegetationConverterController(const IVegetationConversionPreparer& preparer,
                                   IVegetationConversionPublisher&      publisher);
 
     /** @brief Replace the complete owning request and invalidate any older candidate. */
-    [[nodiscard]] EditorResult<void> setRequest(asset_import::UnityVegetationBatchImportRequest request,
+    [[nodiscard]] Result<void> setRequest(asset_import::UnityVegetationBatchImportRequest request,
                                                 std::uint64_t expectedPublicationGeneration);
     /** @brief Prepare the current request as one detached EVA candidate. */
-    [[nodiscard]] EditorResult<void> prepare();
+    [[nodiscard]] Result<void> prepare();
     /** @brief Publish the candidate only when it still matches the current request revision. */
-    [[nodiscard]] EditorResult<std::uint64_t> publish();
+    [[nodiscard]] Result<std::uint64_t> publish();
     /** @brief Discard request, candidate and diagnostics. */
-    [[nodiscard]] EditorResult<void> clear();
+    [[nodiscard]] Result<void> clear();
     /** @brief Return an owning state snapshot for desktop or in-game UI hosts. */
     [[nodiscard]] VegetationConverterState state() const;
 

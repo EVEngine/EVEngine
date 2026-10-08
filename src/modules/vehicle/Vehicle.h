@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 载具模块入口（eve.Vehicle）：定义注册 / 实体工厂 / RTS 命令 / 帧调度。
@@ -28,7 +30,7 @@ class World3D;
 namespace eve::vehicle {
 
 /** @brief 载具模块（eve.Vehicle）。 */
-class Vehicle : public Module {
+class EVENGINE_API_DOMAINS Vehicle : public Module {
 public:
     Module_REG(Vehicle);
     Vehicle();

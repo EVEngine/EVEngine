@@ -5,17 +5,13 @@
 #include "common/SquirrelBinding.h"
 
 namespace eve::ui {
-namespace {
-Result<void> fail(const char* message) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, message, {}, {}, "ui.pcgPhotoModeSession"));
-}
-}  // namespace
+  // namespace
 
 Result<void> PcgPhotoModeSession::begin(const std::string& capturedJson, const std::string& savedJson,
                                         bool loadSaved, bool savedEver, int currentPipeline, int savedPipeline,
                                         const std::string& sceneName, int lightingProfile) {
-    if (active_) return fail("photo-mode session is already active");
+    if (active_) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "photo-mode session is already active", {}, {}, "ui.pcgPhotoModeSession"));
     PcgPhotoModeValues captured;
     auto capturedResult = captured.restoreJson(capturedJson);
     if (!capturedResult.ok()) return Result<void>::failure(capturedResult.status());
@@ -55,7 +51,8 @@ Result<void> PcgPhotoModeSession::begin(const std::string& capturedJson, const s
 }
 
 Result<void> PcgPhotoModeSession::replaceWorkingJson(const std::string& json) {
-    if (!active_) return fail("photo-mode session is not active");
+    if (!active_) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "photo-mode session is not active", {}, {}, "ui.pcgPhotoModeSession"));
     PcgPhotoModeValues candidate;
     auto result = candidate.restoreJson(json);
     if (!result.ok()) return Result<void>::failure(result.status());
@@ -66,7 +63,8 @@ Result<void> PcgPhotoModeSession::replaceWorkingJson(const std::string& json) {
 }
 
 Result<void> PcgPhotoModeSession::end(bool resetOnDisable, bool applicationPlaying) {
-    if (!active_) return fail("photo-mode session is not active");
+    if (!active_) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "photo-mode session is not active", {}, {}, "ui.pcgPhotoModeSession"));
     removePhotoCameraRequested_ = true;
     unfreezePlayerRequested_    = true;
     restoreRequested_           = resetOnDisable && applicationPlaying;

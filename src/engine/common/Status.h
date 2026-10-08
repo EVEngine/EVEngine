@@ -65,7 +65,7 @@ inline std::ostream& operator<<(std::ostream& stream, StatusCode code) { return 
  * @brief Structured status and zero or more diagnostics for an operation.
  * @note A Status returned by value is itself a nodiscard value.
  */
-class [[nodiscard("Status must be inspected or explicitly passed onward")]] EVENGINE_API Status {
+class [[nodiscard("Status must be inspected or explicitly passed onward")]] EVENGINE_API_FOUNDATION Status {
 public:
     /** @brief Construct a successful `Ok` status with no diagnostics. */
     Status() = default;

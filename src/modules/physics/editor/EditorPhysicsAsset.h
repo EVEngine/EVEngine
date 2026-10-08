@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAssetDatabase.h"
 #include "physics/editing/PhysicsColliderAsset.h"
@@ -9,11 +11,11 @@ using PhysicsColliderAssetGeometry  = eve::physics_editing::PhysicsColliderAsset
 using IPhysicsColliderAssetResolver = eve::physics_editing::IPhysicsColliderAssetResolver;
 
 /** @brief High-level AssetDB adapter for the storage-neutral physics resolver. */
-class AssetDatabasePhysicsColliderResolver final : public IPhysicsColliderAssetResolver {
+class EVENGINE_API_EDITORS AssetDatabasePhysicsColliderResolver final : public IPhysicsColliderAssetResolver {
 public:
     explicit AssetDatabasePhysicsColliderResolver(const MemoryAssetDatabase* database) : database_(database) {}
 
-    [[nodiscard]] EditorResult<PhysicsColliderAssetGeometry> resolve(const std::string& reference,
+    [[nodiscard]] Result<PhysicsColliderAssetGeometry> resolve(const std::string& reference,
                                                                      const std::string& expectedKind) const override;
 
 private:

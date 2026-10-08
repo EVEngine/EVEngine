@@ -32,17 +32,14 @@ bool valid(const VolumeFluidEmission& e) {
            e.shape >= VolumeFluidEmissionShape::Edge && e.shape <= VolumeFluidEmissionShape::Distribution;
 }
 
-Result<void> invalidCheckpoint(const char* message) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, message, "fluids.volume.emitterCheckpoint"));
-}
-
 template <class Controller>
 Result<void> restoreCheckpoint(VolumeFluid& solver, Controller& controller,
                                const VolumeFluidEmitterCheckpoint& checkpoint) {
     if (checkpoint.schema != "eve.volume-fluid-emitter-checkpoint" || checkpoint.version != 1)
-        return invalidCheckpoint("Unsupported emitter checkpoint schema/version");
-    if (!valid(checkpoint.emission)) return invalidCheckpoint("Invalid checkpoint emission description");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Unsupported emitter checkpoint schema/version", "fluids.volume.emitterCheckpoint"));
+    if (!valid(checkpoint.emission)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid checkpoint emission description", "fluids.volume.emitterCheckpoint"));
     auto candidateResult = VolumeFluid::create(checkpoint.solver.settings);
     if (!candidateResult) return Result<void>::failure(candidateResult.status());
     auto candidate   = std::move(candidateResult).takeValue();

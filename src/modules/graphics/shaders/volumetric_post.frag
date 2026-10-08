@@ -13,6 +13,8 @@
 // 15 time
 // 16 compositeMode          — 0 = shafts-only (alpha=luma), 1 = add onto scene
 // 17 intensity
+// 18 spotDx, 19 spotDy      — beam dir in UV/screen space (unit)
+// 20 spotCosOuter, 21 spotCosInner — cos half-angles; outer <= -1.5 => no cone
 
 layout(location = 0) in vec4 fragColor;
 layout(location = 1) in vec2 fragUV;
@@ -28,6 +30,17 @@ float hash12(vec2 p) {
 
 float luma(vec3 c) { return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
 
+// Match lit2d: attenuate by angle from beam axis (outer/inner cosines).
+float spotConeAtten(vec2 uv, vec2 lightPos, vec2 beam, float cosOuter, float cosInner) {
+  if (cosOuter <= -1.5) return 1.0;
+  vec2 fromL = uv - lightPos;
+  float fl = length(fromL);
+  if (fl <= 1e-4) return 1.0;
+  float beamLen = length(beam);
+  if (beamLen <= 1e-6) return 0.0;
+  return smoothstep(cosOuter, cosInner, dot(fromL / fl, beam / beamLen));
+}
+
 void main() {
   vec2 lightPos = vec2(u.data[0], u.data[1]);
   float exposure = u.data[2];
@@ -42,10 +55,15 @@ void main() {
   float time = u.data[15];
   float compositeMode = u.data[16];
   float intensity = u.data[17];
+  vec2 spotBeam = vec2(u.data[18], u.data[19]);
+  float spotCosOuter = u.data[20];
+  float spotCosInner = u.data[21];
 
   vec2 uv = fragUV;
+  // Temporal/spatial dither on the first sample breaks radial banding.
+  float dither = hash12(uv * vec2(811.0, 433.0) + vec2(time * 0.37, density));
   vec2 delta = (uv - lightPos) * density / float(samples);
-  vec2 coord = uv;
+  vec2 coord = uv - delta * dither;
   float illumDecay = 1.0;
   vec3 scatter = vec3(0.0);
 
@@ -53,7 +71,9 @@ void main() {
     if (i >= samples) break;
     coord -= delta;
     vec3 s = texture(MainTex, clamp(coord, vec2(0.0), vec2(1.0))).rgb;
-    s *= illumDecay * weight;
+    // Soft-knee: suppress dim occlusion noise, keep bright light cores.
+    float bright = smoothstep(0.04, 0.35, luma(s));
+    s *= illumDecay * weight * bright;
     scatter += s;
     illumDecay *= decay;
   }
@@ -71,7 +91,12 @@ void main() {
 
   // Soft fog / haze falloff toward the light (participating media feel).
   float fog = fogAmount * exp(-dist * 2.2) * intensity;
+  // Slight temporal shimmer so haze is not a static disc.
+  fog *= 0.92 + 0.08 * n2;
   scatter += fogColor * fog;
+
+  // Spot cone: zero shafts outside the flashlight beam (point lights leave this off).
+  scatter *= spotConeAtten(uv, lightPos, spotBeam, spotCosOuter, spotCosInner);
 
   vec3 scene = texture(MainTex, uv).rgb * fragColor.rgb;
 
@@ -79,9 +104,8 @@ void main() {
     // Source is the scene: add shafts onto it.
     outColor = vec4(scene + scatter, 1.0);
   } else {
-    // Shafts-only: alpha from luminance so alpha-blend over a prior scene draw
-    // approximates additive light shafts.
-    float a = clamp(luma(scatter) * 1.35, 0.0, 1.0);
+    // Shafts-only: soft alpha from luminance for SrcAlpha over a prior scene.
+    float a = clamp(1.0 - exp(-luma(scatter) * 1.55), 0.0, 1.0);
     outColor = vec4(scatter, a);
   }
 }

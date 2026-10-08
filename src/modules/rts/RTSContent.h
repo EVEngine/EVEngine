@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSContent.h
@@ -27,7 +29,7 @@ struct ContentImportReceipt {
  * DefinitionRegistry. Failed imports restore the registry snapshot captured
  * before the first mutation.
  */
-class RTSContentLoader {
+class EVENGINE_API_DOMAINS RTSContentLoader {
 public:
     /** @brief Parse, cross-validate, normalize weapons, and atomically import one JSON pack. */
     [[nodiscard]] static Result<ContentImportReceipt> load(definitions::DefinitionRegistry& registry,

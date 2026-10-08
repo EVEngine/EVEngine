@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -57,10 +59,11 @@ struct ParsedAttributeOperation {
  * @brief Parse a built-in operation spelling used by existing data and APIs.
  * @return A normalized operation, or a rejected Result for an unknown spelling.
  */
-[[nodiscard]] eve::Result<ParsedAttributeOperation> parseAttributeOperation(std::string_view operation, double value);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<ParsedAttributeOperation> parseAttributeOperation(
+    std::string_view operation, double value);
 
 /** @brief Registry for explicitly named custom attribute policies. */
-class AttributeOperationRegistry {
+class EVENGINE_API_FOUNDATION AttributeOperationRegistry {
 public:
     using Function = std::function<double(double current, double value)>;
 
@@ -89,7 +92,7 @@ private:
  * assigned by AttributeSet and breaks equal-priority ties. For Custom,
  * `policyId` names a registered AttributeOperationRegistry policy.
  */
-struct AttributeModifier {
+struct EVENGINE_API_FOUNDATION AttributeModifier {
     ModifierId         id;
     AttributeId        attribute;
     SourceId           source;
@@ -138,11 +141,11 @@ struct AttributeValue {
  * MultiplicativePercent factors, then priority/sequence ordered Override and
  * Clamp operations. Custom policies participate in the final ordered phase.
  */
-[[nodiscard]] double computeAttributeValue(const AttributeValue&             attribute,
-                                           const AttributeOperationRegistry* customOperations = nullptr);
+[[nodiscard]] EVENGINE_API_FOUNDATION double computeAttributeValue(
+    const AttributeValue& attribute, const AttributeOperationRegistry* customOperations = nullptr);
 
 /** @brief Generic owning collection of canonical attributes and modifiers. */
-class AttributeSet {
+class EVENGINE_API_FOUNDATION AttributeSet {
 public:
     /** @brief Construct a set associated with an optional stable subject id. */
     explicit AttributeSet(std::string subject = {});

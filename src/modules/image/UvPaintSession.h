@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -17,7 +19,7 @@ struct UvPaintReceipt;
  * The session owns original/current pixels and bounded undo snapshots. It is synchronous and
  * thread-affine, retains no model, renderer, physics hit, or caller-owned image pointer.
  */
-class UvPaintSession {
+class EVENGINE_API_PLATFORM UvPaintSession {
 public:
     UvPaintSession();
     ~UvPaintSession();

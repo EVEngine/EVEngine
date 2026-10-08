@@ -1,6 +1,7 @@
 """Exercise the real CMake discovery script with portable runner fixtures."""
 
 from pathlib import Path
+import re
 import shlex
 import shutil
 import subprocess
@@ -65,6 +66,25 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
             generated = registry.read_text(encoding="utf-8") if registry.exists() else None
             return result, generated
 
+    @staticmethod
+    def labels_of(generated, test_name):
+        """Return the LABELS property of one generated CTest entry as a set.
+
+        Every entry carries its link unit's label in addition to the opt-in
+        ``bundle`` / ``benchmark`` markers (see ZeroErrDiscoverTests.cmake), so
+        the assertions below check membership instead of an exact property
+        string: a domain label must never hide the opt-in marker.
+        """
+
+        match = re.search(
+            r'set_tests_properties\("%s" PROPERTIES LABELS "([^"]*)"'
+            % re.escape(test_name),
+            generated,
+        )
+        if match is None:
+            return set()
+        return set(match.group(1).split(";"))
+
     def test_unique_names_keep_exact_filters_and_opt_in_bundles(self):
         entries = [("fluid.first", "fluid.cpp", 10), ("fluid.second", "fluid.cpp", 30),
                    ("fixture.lifecycle", "lifecycle.cpp", 7)]
@@ -76,7 +96,7 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                 for name, _, _ in entries:
                     self.assertEqual(generated.count(f'add_test("{name}"'), 1)
                     self.assertIn(f'"--testcase=^{name}$"', generated)
-                self.assertIn('LABELS "bundle"', generated)
+                self.assertIn("bundle", self.labels_of(generated, "bundle/fluid.cpp"))
 
     def test_classic_assets_report_skips_and_full_fps_sweep_is_labeled(self):
         entries = [("ClassicScenes.perf.maxFps", "ClassicScenes.cpp", 20),
@@ -85,10 +105,9 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                    ("resourceFormats.image.png", "resource_format_image.cpp", 12)]
         result, generated = self.discover(entries, "plain")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn(
-            '"ClassicScenes.perf.maxFps" PROPERTIES LABELS "source:ClassicScenes.cpp;benchmark"',
-            generated,
-        )
+        labels = self.labels_of(generated, "ClassicScenes.perf.maxFps")
+        self.assertIn("benchmark", labels)
+        self.assertIn("source:ClassicScenes.cpp", labels)
         self.assertNotIn('set_property(TEST', generated)
         self.assertEqual(generated.count('SKIP_REGULAR_EXPRESSION'), 2)
         self.assertEqual(generated.count('SKIP_REGULAR_EXPRESSION "ClassicScenes.*: missing"'), 2)

@@ -20,7 +20,7 @@ class AudioEditorModule::TargetFactory final : public editor::IEditorAutomationT
 public:
     std::vector<std::string_view> types() const override { return {"audio-source", "audio-mixer", "audio-effects"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type,
         const editor::EditorValue::Object&) override {
         editor::AutomationOwnedTarget owned;

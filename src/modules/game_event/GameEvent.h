@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/EventSequence.h"
 #include "common/Identity.h"
@@ -216,7 +218,7 @@ struct TypedEventEnvelope {
 class GameEventLog;
 
 /** @brief Independent sequence cursor used to consume an GameEventLog in batches. */
-class EventConsumer {
+class EVENGINE_API_FOUNDATION EventConsumer {
 public:
     /** @brief Reads at most maxCount events and advances past the returned batch. */
     int read(int maxCount);
@@ -253,8 +255,17 @@ private:
  * clear, clear-before, reset, or restore operation. Query results remain
  * available until the next query on the same stream.
  */
-class GameEventLog {
+class EVENGINE_API_FOUNDATION GameEventLog {
 public:
+    // The stream owns move-only members (std::vector<std::unique_ptr<EventConsumer>>),
+    // so it is not copyable; dllexport must not instantiate the implicitly declared
+    // copy operations, whose bodies cannot compile. Deleting the copies is a no-op and
+    // the defaulted moves keep the previous implicit behaviour.
+    GameEventLog(const GameEventLog&)            = delete;
+    GameEventLog& operator=(const GameEventLog&) = delete;
+    GameEventLog(GameEventLog&&)                 = default;
+    GameEventLog& operator=(GameEventLog&&)      = default;
+
     /** @brief Creates a stream without an implicit entropy source. */
     GameEventLog() = default;
 

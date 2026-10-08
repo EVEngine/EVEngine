@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/AtmosphereVolume.h"
 
@@ -13,7 +15,7 @@ namespace eve::graphics {
 class VolumeDensityGraph;
 
 /** @brief Brick-sparse, pre-bakeable participating-media texture. */
-class SparseVolumeTexture {
+class EVENGINE_API_BACKENDS SparseVolumeTexture {
 public:
     /** @brief Allocate a logical volume; bricks are created only for non-empty voxels. */
     void resize(int width, int height, int depth, int brickSize = 8);

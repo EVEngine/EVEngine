@@ -1,5 +1,6 @@
 #include "common/Capability.h"
 #include "common/DecalQuery.h"
+#include "decal/Decal.h"
 #include "decal/DecalManager.h"
 
 #include "graphics/Texture.h"
@@ -35,6 +36,7 @@ public:
 void registerDecalCapabilities() {
     static DecalQueryImpl impl;
     eve::cap::provide<eve::IDecalQuery>(&impl);
+    registerDecalAttackVfxExecutor();
 }
 
 }  // namespace eve::decal

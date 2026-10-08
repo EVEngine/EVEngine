@@ -8,9 +8,6 @@
 
 namespace eve::asset_procgen {
 namespace {
-template<class T> Result<T> fail(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {}, "asset.procgen.gts-lod"));
-}
 Value::Array vec3(float x, float y, float z) { return {Value(double(x)), Value(double(y)), Value(double(z))}; }
 }
 
@@ -22,16 +19,16 @@ Result<asset_import::PreparedAssetImport> prepareGtsTerrainLodPackage(
     if (!manifest) return Result<PreparedAssetImport>::failure(manifest.status());
     auto plan = procgen::planGtsTerrainLodAssets(lods, terrainName, "Meshes");
     if (!plan) return Result<PreparedAssetImport>::failure(plan.status());
-    if (plan.value().empty()) return fail<PreparedAssetImport>(DiagnosticCode::InvalidArgument, "GTS LOD set has no meshes");
+    if (plan.value().empty()) return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "GTS LOD set has no meshes", {}, {}, "asset.procgen.gts-lod"));
     if (plan.value().size() > limits.maximumAssets)
-        return fail<PreparedAssetImport>(DiagnosticCode::InvalidArgument, "GTS LOD asset count exceeds limit");
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "GTS LOD asset count exceeds limit", {}, {}, "asset.procgen.gts-lod"));
     PreparedAssetImport result;
     result.manifest = std::move(manifest).takeValue();
     std::uint64_t totalBytes = 0;
     for (const auto& entry : plan.value()) {
         const auto* tile = lods.tileAt(entry.tileIndex);
         if (!tile || entry.levelIndex < 0 || entry.levelIndex >= static_cast<int>(tile->levels.size()))
-            return fail<PreparedAssetImport>(DiagnosticCode::InvalidArgument, "GTS LOD plan references a missing mesh");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "GTS LOD plan references a missing mesh", {}, {}, "asset.procgen.gts-lod"));
         const auto& mesh = tile->levels[static_cast<std::size_t>(entry.levelIndex)];
         asset::CanonicalMeshData canonical;
         canonical.positions = mesh.positions(); canonical.normals = mesh.normals(); canonical.indices = mesh.indices();
@@ -44,7 +41,7 @@ Result<asset_import::PreparedAssetImport> prepareGtsTerrainLodPackage(
         auto blob = asset::encodeCanonicalMesh(canonical, meshLimits);
         if (!blob) return Result<PreparedAssetImport>::failure(blob.status());
         if (blob.value().size() > limits.maximumDecodedBytes || totalBytes > limits.maximumDecodedBytes - blob.value().size())
-            return fail<PreparedAssetImport>(DiagnosticCode::InvalidArgument, "GTS LOD package exceeds decoded byte limit");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "GTS LOD package exceeds decoded byte limit", {}, {}, "asset.procgen.gts-lod"));
         totalBytes += blob.value().size();
         const auto id = package.packageId.child("gts-terrain:" + std::to_string(entry.tileIndex) + ":lod:" +
                                                 std::to_string(entry.levelIndex));

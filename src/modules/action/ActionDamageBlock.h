@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionDamageBlock.h @brief Typed instantaneous combat-damage action contract. */
 
@@ -19,7 +21,7 @@ struct ActionDamageImpulse {
 };
 
 /** @brief Owning validated damage request authored on an action timeline. */
-struct ActionDamageBinding {
+struct EVENGINE_API_PLATFORM ActionDamageBinding {
     /** @brief Gameplay-tag damage classification. */
     std::string damageType;
     /** @brief Non-negative health damage. */

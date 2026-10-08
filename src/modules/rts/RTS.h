@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTS.h
@@ -58,7 +60,7 @@ struct RTSFrameLifecycleEvent {
  * authoritative state owners, while action lifecycle state remains owned by
  * the caller-provided action::ActionRuntime through IRTSActionExecutor.
  */
-class RTS : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
+class EVENGINE_API_DOMAINS RTS : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     Module_REG(RTS);
 
@@ -253,13 +255,15 @@ public:
      * @param productionKind Production queue kind, defaulting to `unit`.
      * @param priority Production queue priority.
      * @param transactionId Optional transaction correlation id.
+     * @param definition Optional pinned definition generation used during settlement.
      * @return Committed build receipt or a checked failure with no partial state.
      */
     [[nodiscard]] Result<RTSBuildReceipt> build(Building& building, action::ActionRuntime& action,
                                                 resource::IResourceAccount& account, resource::CostSpec cost,
                                                 std::string product, Duration duration,
                                                 std::string productionKind = "unit", int priority = 0,
-                                                std::string transactionId = {});
+                                                std::string transactionId = {},
+                                                definition::DefinitionHandle definition = {});
 
     /** @brief Configure or clear a faction-wide production resource floor shared by all factories. */
     [[nodiscard]] Result<void> setProductionResourceReserve(
@@ -293,6 +297,13 @@ public:
     void setFogProvider(FogProvider provider) noexcept;
     /** @brief Attach canonical sensing and damage coordinators used by automatic combat. */
     void setCombatProviders(sensing::SensingWorld* sensing, combat::DamageRuntime* damage) noexcept;
+    /**
+     * @brief Replace declarative settlement rules on the active canonical damage provider.
+     * @return Applied, or NotFound when no combat provider is attached; failure retains previous rules.
+     * @thread Call on the RTS owning simulation thread outside update.
+     * @reentrancy Does not invoke gameplay callbacks.
+     */
+    [[nodiscard]] Result<void> configureSettlementRules(const settlement::SettlementRuleSet& rules);
     /** @brief Install the map/game-owned line-of-fire query used by direct weapons. */
     void setFireLineQuery(FireLineQuery query) { fireLineQuery_ = std::move(query); }
     /** @brief Install the map/game-owned absolute projectile launch-height query. */

@@ -32,7 +32,7 @@ EditorValue assetValue(const UiThemeAsset& asset) {
                                {"tokens", themeTokensValue(asset.tokens)}};
 }
 
-EditorResult<UiThemeAsset> parseAsset(const EditorValue& value) {
+Result<UiThemeAsset> parseAsset(const EditorValue& value) {
     const EditorValue* idField     = field(value, "id");
     const EditorValue* nameField   = field(value, "name");
     const EditorValue* presetField = field(value, "basePreset");
@@ -44,9 +44,9 @@ EditorResult<UiThemeAsset> parseAsset(const EditorValue& value) {
         return eve::editing::failed<UiThemeAsset>(EditorStatus::Rejected, RuleId("editor.ui-theme.asset"),
                                                   "Theme asset id, name, basePreset and tokens are required");
     auto base = parsePreset(*preset);
-    if (!base.ok()) return EditorResult<UiThemeAsset>::failure(base.status());
+    if (!base.ok()) return Result<UiThemeAsset>::failure(base.status());
     auto tokens = parseThemeTokens(*tokensField);
-    if (!tokens.ok()) return EditorResult<UiThemeAsset>::failure(tokens.status());
+    if (!tokens.ok()) return Result<UiThemeAsset>::failure(tokens.status());
     UiThemeAsset asset;
     asset.id         = ObjectId(*id);
     asset.name       = *name;
@@ -55,7 +55,7 @@ EditorResult<UiThemeAsset> parseAsset(const EditorValue& value) {
     return eve::editing::applied<UiThemeAsset>(std::move(asset));
 }
 
-EditorResult<void> parseCatalog(const EditorValue& content, std::vector<UiThemeAsset>& themes, ObjectId& activeId) {
+Result<void> parseCatalog(const EditorValue& content, std::vector<UiThemeAsset>& themes, ObjectId& activeId) {
     const EditorValue* activeField = field(content, "activeId");
     const EditorValue* themesField = field(content, "themes");
     const auto*        active      = activeField ? activeField->getIf<std::string>() : nullptr;
@@ -67,7 +67,7 @@ EditorResult<void> parseCatalog(const EditorValue& content, std::vector<UiThemeA
     parsed.reserve(list->size());
     for (const EditorValue& entry : *list) {
         auto asset = parseAsset(entry);
-        if (!asset.ok()) return EditorResult<void>::failure(asset.status());
+        if (!asset.ok()) return Result<void>::failure(asset.status());
         parsed.push_back(std::move(asset).value());
     }
     themes   = std::move(parsed);
@@ -115,7 +115,7 @@ EditorValue UiThemeCatalogTarget::contentValue() const {
     return EditorValue::Object{{"activeId", activeId_.value()}, {"themes", std::move(themes)}};
 }
 
-EditorResult<DomainOperation> UiThemeCatalogTarget::replacement(EditorValue content, std::string property) const {
+Result<DomainOperation> UiThemeCatalogTarget::replacement(EditorValue content, std::string property) const {
     DomainOperation operation;
     operation.type        = "ui.theme.catalog.replace.v1";
     operation.inverseType = operation.type;
@@ -140,7 +140,7 @@ UiThemeAsset* UiThemeCatalogTarget::mutableTheme(const ObjectId& id) {
     return nullptr;
 }
 
-EditorResult<UiThemeAsset> UiThemeCatalogTarget::theme(const ObjectId& id) const {
+Result<UiThemeAsset> UiThemeCatalogTarget::theme(const ObjectId& id) const {
     const UiThemeAsset* asset = findTheme(id);
     if (!asset)
         return eve::editing::failed<UiThemeAsset>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
@@ -176,7 +176,7 @@ std::vector<EditorDiagnostic> UiThemeCatalogTarget::validate() const {
     return diagnostics;
 }
 
-EditorResult<void> UiThemeCatalogTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> UiThemeCatalogTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.target"),
                                           "Theme operation targets another catalog");
@@ -200,7 +200,7 @@ std::unique_ptr<IDomainOperationTarget> UiThemeCatalogTarget::cloneDomainState()
     return std::make_unique<UiThemeCatalogTarget>(*this);
 }
 
-EditorResult<void> UiThemeCatalogTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> UiThemeCatalogTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* catalog = dynamic_cast<UiThemeCatalogTarget*>(candidate.get());
     if (!catalog || catalog->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.ui-theme.candidate"),
@@ -209,7 +209,7 @@ EditorResult<void> UiThemeCatalogTarget::commitDomainState(std::unique_ptr<IDoma
     return eve::editing::applied<void>();
 }
 
-EditorResult<DomainOperation> UiThemeCatalogTarget::makeCreateFromPreset(const ObjectId& id, std::string name,
+Result<DomainOperation> UiThemeCatalogTarget::makeCreateFromPreset(const ObjectId& id, std::string name,
                                                                          UiThemeBasePreset preset) const {
     if (id.empty() || name.empty())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.create"),
@@ -234,7 +234,7 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeCreateFromPreset(const O
     return replacement(candidate.contentValue());
 }
 
-EditorResult<DomainOperation> UiThemeCatalogTarget::makeDuplicate(const ObjectId& source, const ObjectId& id,
+Result<DomainOperation> UiThemeCatalogTarget::makeDuplicate(const ObjectId& source, const ObjectId& id,
                                                                   std::string name) const {
     const UiThemeAsset* original = findTheme(source);
     if (!original)
@@ -256,7 +256,7 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeDuplicate(const ObjectId
     return replacement(candidate.contentValue());
 }
 
-EditorResult<DomainOperation> UiThemeCatalogTarget::makeRename(const ObjectId& id, std::string name) const {
+Result<DomainOperation> UiThemeCatalogTarget::makeRename(const ObjectId& id, std::string name) const {
     const UiThemeAsset* current = findTheme(id);
     if (!current)
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
@@ -273,7 +273,7 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeRename(const ObjectId& i
     return replacement(candidate.contentValue(), "theme.name");
 }
 
-EditorResult<DomainOperation> UiThemeCatalogTarget::makeDelete(const ObjectId& id) const {
+Result<DomainOperation> UiThemeCatalogTarget::makeDelete(const ObjectId& id) const {
     if (!findTheme(id))
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
                                                      "Theme asset does not exist");
@@ -289,7 +289,7 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeDelete(const ObjectId& i
     return replacement(candidate.contentValue());
 }
 
-EditorResult<DomainOperation> UiThemeCatalogTarget::makeSetActive(const ObjectId& id) const {
+Result<DomainOperation> UiThemeCatalogTarget::makeSetActive(const ObjectId& id) const {
     if (!findTheme(id))
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
                                                      "Theme asset does not exist");
@@ -298,7 +298,7 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeSetActive(const ObjectId
     return replacement(candidate.contentValue(), "catalog.active");
 }
 
-EditorResult<DomainOperation> UiThemeCatalogTarget::makeResetToBase(const ObjectId& id) const {
+Result<DomainOperation> UiThemeCatalogTarget::makeResetToBase(const ObjectId& id) const {
     const UiThemeAsset* current = findTheme(id);
     if (!current)
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
@@ -315,7 +315,7 @@ EditorValue UiThemeCatalogTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
 
-EditorResult<void> UiThemeCatalogTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> UiThemeCatalogTarget::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionValue = field(snapshot, "schemaVersion");
     const EditorValue* content      = field(snapshot, "content");
     const auto*        version      = versionValue ? versionValue->getIf<int64_t>() : nullptr;

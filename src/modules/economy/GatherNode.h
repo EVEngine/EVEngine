@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -7,7 +9,7 @@ namespace eve::economy {
 /**
  * @brief 地图上的资源节点：储量、再生、采集槽位。
  */
-class GatherNode {
+class EVENGINE_API_FOUNDATION GatherNode {
 public:
     /**
      * @param type 资源类型 id（须已在注册表中）。

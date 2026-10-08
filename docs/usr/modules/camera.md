@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.CameraController()`
 
-在 `Camera3D` 之上提供可复用的视角行为：跟随、环绕、俯视、第一人称与过场。
+在 `Camera3D` 之上提供可复用的视角行为：跟随、环绕、俯视、第一人称、过场与锁定。
 模块还提供优先级 Camera Rig、遮挡修正、构图、Impulse Modifier，以及可发送
 `Event` 的 Camera Timeline。`Camera3D` 本身只描述“看哪里”；本模块负责“怎么移动”。
 
@@ -70,6 +70,24 @@ Rig。`setRigPriority` / `setRigEnabled` 可在游戏状态变化时驱动 Direc
   `clearCollisionBoxes` 清空；`isObstructed()` 查询当前状态。
 
 碰撞缩进会立即发生，恢复采用阻尼，避免相机穿墙或解除遮挡时弹跳。
+
+## 锁定（lockon）
+
+`setMode("lockon")` 把镜头放到玩家身后、看向 `setTarget` 与 `setSecondaryTarget`
+的中点。Combat 模块的 `CombatCameraFraming` 拥有同一套数学；本控制器只存储世界坐标，
+不引用 combat 类型。没有 secondary target 时回退为按 offset/yaw 跟在玩家身后。
+
+```squirrel
+ctrl.setMode("lockon");
+ctrl.setTarget(playerX, playerY, playerZ);
+ctrl.setOffset(0.0, 2.0, 6.0);
+ctrl.setLookAhead(0.0, 1.2, 0.0);
+ctrl.setSecondaryTarget(lockX, lockY, lockZ);
+ctrl.snap();
+```
+
+`clearSecondaryTarget()` 清除锁定点。`hasSecondaryTarget()`、`getSecondaryTargetX()`、
+`getSecondaryTargetY()`、`getSecondaryTargetZ()` 读取当前存储的坐标。
 
 ## Modifier / Impulse
 

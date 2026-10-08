@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "map/TileLayer.h"
@@ -67,7 +69,7 @@ struct DualGridMaskConfig {
  * bake a sprite atlas, or derive
  * coast bands without changing logical terrain state.
  */
-struct DualGridMaskAtlas {
+struct EVENGINE_API_WORLD DualGridMaskAtlas {
     int                width  = 0;
     int                height = 0;
     std::vector<float> coverage;
@@ -98,7 +100,8 @@ struct DualGridRgbaImage {
  * @determinism Bit-stable for the same
  * config on IEEE-754 implementations.
  */
-[[nodiscard]] eve::Result<DualGridMaskAtlas> generateDualGridMaskAtlas(const DualGridMaskConfig& config);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<DualGridMaskAtlas> generateDualGridMaskAtlas(
+    const DualGridMaskConfig &config);
 
 /**
  * @brief Bake two ordinary same-size RGBA8 tiles into a row-major 4x4 transition atlas.
@@ -118,9 +121,8 @@ struct DualGridRgbaImage {
  * @cost O(16 * width * height), intended
  * for import/load time and cacheable by content hash.
  */
-[[nodiscard]] eve::Result<DualGridRgbaImage> bakeDualGridTransitionAtlas(const DualGridRgbaImage&  terrainA,
-                                                                         const DualGridRgbaImage&  terrainB,
-                                                                         const DualGridMaskConfig& config);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<DualGridRgbaImage> bakeDualGridTransitionAtlas(
+    const DualGridRgbaImage &terrainA, const DualGridRgbaImage &terrainB, const DualGridMaskConfig &config);
 
 /** @brief Pack four corner occupancy bits: TL=1, TR=2, BL=4, BR=8. */
 inline int dualGridMaskFromCorners(bool tl, bool tr, bool bl, bool br) {
@@ -131,10 +133,10 @@ inline int dualGridMaskFromCorners(bool tl, bool tr, bool bl, bool br) {
  * @brief Default 4x4 atlas frame index for mask 0..15.
  * -1 means draw nothing. Matches the SpriteCook / common dual-grid sheet layout.
  */
-int dualGridDefaultFrame(int mask);
+EVENGINE_API_WORLD int dualGridDefaultFrame(int mask);
 
 /** @brief Copy of the default frame table (16 entries). */
-const std::array<int, 16> &dualGridDefaultFrameTable();
+EVENGINE_API_WORLD const std::array<int, 16> &dualGridDefaultFrameTable();
 
 /**
  * @brief Half-step origin delta for the display layer (added to logic origin).
@@ -143,7 +145,7 @@ const std::array<int, 16> &dualGridDefaultFrameTable();
  * Staggered/Hex Y: (-tileW/2, -pitchY/2)
  * Staggered/Hex X: (-pitchX/2, -tileH/2)
  */
-void dualGridHalfOffset(const TileLayer::Config &cfg, float &offX, float &offY);
+EVENGINE_API_WORLD void dualGridHalfOffset(const TileLayer::Config &cfg, float &offX, float &offY);
 
 /** @brief Whether logic cell (tx,ty) is filled under options. Out of bounds → false. */
 bool dualGridLogicFilled(TileLayer &logic, int tx, int ty, int filledGid);
@@ -153,7 +155,7 @@ bool dualGridLogicFilled(TileLayer &logic, int tx, int ty, int filledGid);
  * Samples logic (dx-1,dy-1), (dx,dy-1), (dx-1,dy), (dx,dy) in index space
  * (orientation-independent topology).
  */
-int dualGridMaskAt(TileLayer &logic, int dx, int dy, int filledGid = 0);
+EVENGINE_API_WORLD int dualGridMaskAt(TileLayer &logic, int dx, int dy, int filledGid = 0);
 
 /**
  * @brief Resolve logic → display dual-grid tiles.
@@ -162,10 +164,10 @@ int dualGridMaskAt(TileLayer &logic, int dx, int dy, int filledGid = 0);
  * origin offset, writes GIDs.
  * Returns false and sets error on invalid args.
  */
-bool resolveDualGrid(TileLayer *logic, TileLayer *display, const DualGridOptions &opts,
-                     std::string *error = nullptr);
+EVENGINE_API_WORLD bool resolveDualGrid(TileLayer *logic, TileLayer *display, const DualGridOptions &opts,
+                                        std::string *error = nullptr);
 
 /** @brief Convenience: any non-zero filled, default frame table, half offset, hide logic. */
-bool resolveDualGrid(TileLayer *logic, TileLayer *display, std::string *error = nullptr);
+EVENGINE_API_WORLD bool resolveDualGrid(TileLayer *logic, TileLayer *display, std::string *error = nullptr);
 
 }  // namespace eve::map

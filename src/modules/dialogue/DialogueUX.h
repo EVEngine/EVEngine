@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -9,7 +11,7 @@
 namespace eve::dialogue {
 
 /** @brief Presentation state shared by default and custom dialogue UIs. */
-class DialogueUX : public Module {
+class EVENGINE_API_ORCHESTRATION DialogueUX : public Module {
 public:
     Module_REG(DialogueUX);
 

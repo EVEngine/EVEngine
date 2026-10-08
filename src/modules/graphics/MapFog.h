@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::graphics {
 
@@ -13,7 +15,7 @@ class Texture;
  * Presentation only: gameplay unlock state should live in map::Fov / game data;
  * upload that state into the mask R channel and call draw() after the map.
  */
-class MapFog {
+class EVENGINE_API_BACKENDS MapFog {
 public:
     /** @brief Create a fog overlay renderer backed by the supplied graphics device. */
     explicit MapFog(Graphics *graphics);

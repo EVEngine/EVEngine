@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <vector>
@@ -13,7 +15,7 @@ namespace eve::editor {
  * Owns TRS + optional local bounds; interaction via world-space rays.
  * Host renders using getPart* descriptors — no GPU dependency.
  */
-class TransformGizmo {
+class EVENGINE_API_ORCHESTRATION TransformGizmo {
 public:
     TransformGizmo();
 

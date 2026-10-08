@@ -26,7 +26,7 @@ class UIHost;
  * Grid cells reuse the declarative widget set (InputText / Checkbox / Combo /
  * read-only text), so no separate table node type is needed.
  */
-class EVENGINE_API DatabasePanel {
+class EVENGINE_API_WORLD DatabasePanel {
 public:
     DatabasePanel() = default;
     ~DatabasePanel();

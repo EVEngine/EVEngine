@@ -88,9 +88,9 @@ ImageData* Image::newPastedImageData(ImageData* src, int sx, int sy, int w, int 
     return res;
 }
 
-std::vector<eve::ref<ImageData>> Image::newCubeFaces(ImageData* src) {
+std::vector<eve::script::Owned<ImageData>> Image::newCubeFaces(ImageData* src) {
     // The faces array is always ordered +x, -x, +y, -y, +z, -z.
-    std::vector<eve::ref<ImageData>> faces;
+    std::vector<eve::script::Owned<ImageData>> faces;
 
     int totalW = src->getWidth();
     int totalH = src->getHeight();
@@ -149,8 +149,8 @@ std::vector<eve::ref<ImageData>> Image::newCubeFaces(ImageData* src) {
     return faces;
 }
 
-std::vector<eve::ref<ImageData>> Image::newVolumeLayers(ImageData* src) {
-    std::vector<eve::ref<ImageData>> layers;
+std::vector<eve::script::Owned<ImageData>> Image::newVolumeLayers(ImageData* src) {
+    std::vector<eve::script::Owned<ImageData>> layers;
 
     int totalW = src->getWidth();
     int totalH = src->getHeight();

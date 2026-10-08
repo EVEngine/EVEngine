@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "physics/backend/SimulationBackend.h"
 
@@ -24,7 +25,7 @@ class World;
  * limit that prevents sharp creases, and particle-vs-rigid-body collision
  * when attached to a 2D World via setCollideWorld.
  */
-class Cloth : public ISimulationBackend {
+class EVENGINE_API_DOMAINS Cloth : public ISimulationBackend {
 public:
     /**
      * @param cols grid columns (>= 2)

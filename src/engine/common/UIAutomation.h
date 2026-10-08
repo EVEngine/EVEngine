@@ -10,7 +10,7 @@
 namespace eve {
 
 /** @brief Semantic retained-UI automation provided by the ui module. */
-class EVENGINE_API IUIAutomation {
+class EVENGINE_API_FOUNDATION_INLINE IUIAutomation {
 public:
     static constexpr const char* capabilityName = "IUIAutomation";
 

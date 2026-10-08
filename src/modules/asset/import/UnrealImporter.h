@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file UnrealImporter.h
@@ -24,7 +26,7 @@ struct UnrealProjectImportRequest {
  * R16/texture files and data-only M⁴ parameters. Native Blueprint/RVT/VHFM/Nanite
  * behavior is never executed and must be listed as unsupported or baked.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnrealM4Import(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnrealM4Import(
     const UnrealProjectImportRequest& request);
 
 }  // namespace eve::asset_import

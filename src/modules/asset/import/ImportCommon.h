@@ -2,6 +2,7 @@
 
 #include "asset/import/AssetImporter.h"
 
+#include "common/Export.h"
 #include "data/HashFunction.h"
 
 #include <algorithm>
@@ -57,10 +58,10 @@ inline std::string extension(std::string_view name) {
 }
 
 /** @brief Append the deterministic mandatory import report and bind it from provenance. */
-[[nodiscard]] Result<void> finalizeImportReport(PreparedAssetImport& prepared,
-                                                const ImportPackageIdentity& package,
-                                                std::string_view sourceEngine,
-                                                std::string_view sourceVersion,
-                                                Value::Object options = {});
+[[nodiscard]] EVENGINE_API_PLATFORM Result<void> finalizeImportReport(PreparedAssetImport&         prepared,
+                                                                      const ImportPackageIdentity& package,
+                                                                      std::string_view             sourceEngine,
+                                                                      std::string_view             sourceVersion,
+                                                                      Value::Object                options = {});
 
 }  // namespace eve::asset_import::detail

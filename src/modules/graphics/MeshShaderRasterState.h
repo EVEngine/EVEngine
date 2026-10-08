@@ -17,5 +17,5 @@ struct MeshShaderRasterState {
     std::uint8_t     colorWriteMask    = 15;
 };
 /** @brief Validate a borrowed value without touching graphics state; safe on any thread. */
-[[nodiscard]] Result<void> validateMeshShaderRasterState(const MeshShaderRasterState& state);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> validateMeshShaderRasterState(const MeshShaderRasterState& state);
 }  // namespace eve::graphics

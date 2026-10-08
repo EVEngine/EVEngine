@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::procgen {
@@ -8,7 +10,7 @@ struct PcgTerrainQualityPreset {
  float detailObjectDistance=40,detailObjectDensity=.1f,heightmapPixelError=20; int heightmapMaximumLod=1; float basemapDistance=100;
 };
 /** @brief Caller-owned deterministic Pcg frame-rate sampling and quality policy. */
-class PcgFrameRateManager {
+class EVENGINE_API_DOMAINS PcgFrameRateManager {
 public:
  /** @brief Configure target, check interval, inclusive quality range, and initial level atomically. */
  [[nodiscard]] Result<void> configure(int target,float interval,int minimum,int maximum,int current);
@@ -24,5 +26,6 @@ public:
 private:
  int target_=60,min_=0,max_=5,quality_=0,frames_=0; float interval_=10,left_=10,fpsLeft_=.5f,accum_=0,fps_=0; bool automatic_=true,changed_=false;
 };
-/** @brief Register Pcg frame-rate manager bindings. */ void exposePcgFrameRateManagerBindings(ssq::Table& table);
+/** @brief Register Pcg frame-rate manager bindings. */ EVENGINE_API_DOMAINS void exposePcgFrameRateManagerBindings(
+    ssq::Table& table);
 }  // namespace eve::procgen

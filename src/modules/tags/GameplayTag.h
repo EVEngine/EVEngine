@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file GameplayTag.h @brief Stable hierarchical gameplay-tag definitions and registry. */
 
@@ -30,12 +32,12 @@ struct GameplayTagDefinition {
 };
 
 /** @brief Returns whether a name is a canonical dot-separated gameplay tag. */
-[[nodiscard]] bool isValidGameplayTagName(std::string_view name) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION bool isValidGameplayTagName(std::string_view name) noexcept;
 /** @brief Computes the stable 64-bit FNV-1a identifier of a canonical name. */
 [[nodiscard]] GameplayTagId gameplayTagId(std::string_view name) noexcept;
 /** @brief Tests exact or dot-boundary descendant membership. */
-[[nodiscard]] bool gameplayTagMatches(std::string_view candidate, std::string_view query,
-                                      GameplayTagMatch match) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION bool gameplayTagMatches(std::string_view candidate, std::string_view query,
+                                                              GameplayTagMatch match) noexcept;
 
 /**
  * @brief Canonical owner of versioned gameplay-tag definitions.
@@ -43,7 +45,7 @@ struct GameplayTagDefinition {
  * The registry is owner-thread-only. Returned definitions and collections are
  * owning copies, so callers never retain pointers across mutations or reloads.
  */
-class GameplayTagRegistry {
+class EVENGINE_API_FOUNDATION GameplayTagRegistry {
 public:
     /** @brief Register a definition, returning NoOp for an identical definition. */
     [[nodiscard]] Result<GameplayTagId> registerTag(std::string name, std::string description = {});

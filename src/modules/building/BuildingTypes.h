@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 建筑放置模块的核心数据结构：定义、实例、变更事件、鬼影状态。
@@ -88,7 +90,7 @@ struct EdgeCurveGroup {
 };
 
 /** @brief 建筑模板（进程级注册表中的定义）。 */
-struct BuildingDefinition {
+struct EVENGINE_API_WORLD BuildingDefinition {
     std::string id;
     std::string displayName;
     std::string category;
@@ -168,7 +170,7 @@ struct GarrisonMember {
 };
 
 /** @brief 已放置的建筑实例。 */
-struct PlacedBuilding {
+struct EVENGINE_API_WORLD PlacedBuilding {
     int instanceId = 0;
     std::string buildingId;
     /** @brief Placement domain snapshot: `cell`, `edge`, `corner`, or `free`. */

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 统一网格抽象：与具体模块（building / map）解耦的纯数据结构。
 // 布局/拓扑 + 单元尺寸/间距 + 原点 + stagger 参数 + 平面轴。
@@ -20,7 +22,7 @@ enum class StaggerIndex { Odd, Even };
 enum class GridPlane { XY, XZ };
 
 /** 网格配置：形状拓扑 + 尺寸 + 原点 + 平面轴。 */
-struct GridConfig {
+struct EVENGINE_API_FOUNDATION GridConfig {
     GridLayout layout = GridLayout::Rectangle;
     GridPlane plane = GridPlane::XY;
     float cellW = 32.f;

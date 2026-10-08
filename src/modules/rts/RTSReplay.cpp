@@ -12,11 +12,6 @@
 namespace eve::rts {
 namespace {
 
-Result<void> replayFailure(std::string message, std::string path) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message),
-                                                    std::move(path)));
-}
-
 SubjectRef parseSubject(const std::string& text) {
     auto parsed = PersistentId::parse(text);
     return parsed ? SubjectRef::fromPersistentId(*parsed) : SubjectRef{};
@@ -35,54 +30,64 @@ bool normalizedLess(SubjectRef left, SubjectRef right) { return left.format() < 
 
 Result<void> RTSCommandLog::queue(RTSReplayCommand command, SimulationTick currentTick) {
     if (command.tick.value() < currentTick.value())
-        return replayFailure("RTS replay command cannot target a past tick", "command.tick");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS replay command cannot target a past tick",
+                                                    "command.tick"));
     if (static_cast<unsigned>(command.operation) > static_cast<unsigned>(RTSReplayOperation::Escort))
-        return replayFailure("RTS replay operation is invalid", "command.operation");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS replay operation is invalid",
+                                                    "command.operation"));
     if (!std::isfinite(command.point.x) || !std::isfinite(command.point.y))
-        return replayFailure("RTS replay point must be finite", "command.point");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS replay point must be finite",
+                                                    "command.point"));
     if (command.operation == RTSReplayOperation::UnitCommand) {
         auto validCommand = command.command.validate();
         if (!validCommand) return validCommand;
         auto validFormation = command.formation.validate();
         if (!validFormation) return validFormation;
-        if (command.units.empty()) return replayFailure("RTS replay command requires units", "command.units");
+        if (command.units.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS replay command requires units",
+                                                    "command.units"));
         if (ecs::try_get(command.command.targetEntity) != nullptr && !command.targetEntity.isValid())
-            return replayFailure("RTS replay entity targets require a stable SubjectRef", "command.targetEntity");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS replay entity targets require a stable SubjectRef",
+                                                    "command.targetEntity"));
         command.command.targetEntity = {};
         std::sort(command.units.begin(), command.units.end(), normalizedLess);
         command.units.erase(std::unique(command.units.begin(), command.units.end()), command.units.end());
     } else if (command.operation == RTSReplayOperation::Construction) {
         if (command.units.size() != 1 || !command.faction.isValid() || !command.resultSubject.isValid() ||
             !command.definition.isValid())
-            return replayFailure("RTS construction replay requires builder, faction, result, and definition",
-                                 "command.construction");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS construction replay requires builder, faction, result, and definition",
+                                                    "command.construction"));
     } else if (command.operation == RTSReplayOperation::Production ||
                command.operation == RTSReplayOperation::ReinforcementProduction) {
         if (!command.producer.isValid() || !command.resultSubject.isValid() || !command.definition.isValid())
-            return replayFailure("RTS production replay requires producer, result, and definition",
-                                 "command.production");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS production replay requires producer, result, and definition",
+                                                    "command.production"));
     } else if (command.operation == RTSReplayOperation::Research) {
         if (!command.producer.isValid() || command.value.empty())
-            return replayFailure("RTS research replay requires producer and upgrade", "command.research");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS research replay requires producer and upgrade",
+                                                    "command.research"));
     } else if (command.operation == RTSReplayOperation::Ability &&
                (command.units.size() != 1 || command.value.empty())) {
-        return replayFailure("RTS ability replay requires caster and ability", "command.ability");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS ability replay requires caster and ability",
+                                                    "command.ability"));
     } else if (command.operation == RTSReplayOperation::CancelProduction &&
                (!command.producer.isValid() || command.priority < -1)) {
-        return replayFailure("RTS production cancellation requires producer and queue index",
-                             "command.cancelProduction");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS production cancellation requires producer and queue index",
+                                                    "command.cancelProduction"));
     } else if (command.operation == RTSReplayOperation::CancelAbility && command.units.empty()) {
-        return replayFailure("RTS ability cancellation requires units", "command.cancelAbility");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS ability cancellation requires units",
+                                                    "command.cancelAbility"));
     } else if ((command.operation == RTSReplayOperation::CancelConstruction ||
                 command.operation == RTSReplayOperation::SellBuilding) && !command.producer.isValid()) {
-        return replayFailure("RTS building lifecycle command requires a building", "command.producer");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS building lifecycle command requires a building",
+                                                    "command.producer"));
     } else if (command.operation == RTSReplayOperation::RequestFireSupport &&
                (!command.producer.isValid() || !std::isfinite(command.command.radius) ||
                 command.command.radius <= 0.0f || command.priority <= 0)) {
-        return replayFailure("RTS fire-support request requires requester, radius, and shot budget",
-                             "command.fireSupport");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS fire-support request requires requester, radius, and shot budget",
+                                                    "command.fireSupport"));
     } else if (command.operation == RTSReplayOperation::CancelFireSupport && !command.producer.isValid()) {
-        return replayFailure("RTS fire-support cancellation requires a requester", "command.fireSupport");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS fire-support cancellation requires a requester",
+                                                    "command.fireSupport"));
     } else if (command.operation == RTSReplayOperation::SuppressArea &&
                (command.units.empty() || command.priority < 0 ||
                 !std::isfinite(command.command.target.x) || !std::isfinite(command.command.target.y) ||
@@ -91,13 +96,14 @@ Result<void> RTSCommandLog::queue(RTSReplayCommand command, SimulationTick curre
                 !std::isfinite(command.command.radius) || command.command.radius <= 0.0f ||
                 std::hypot(command.command.secondaryTarget.x - command.command.target.x,
                            command.command.secondaryTarget.y - command.command.target.y) <= 1e-3f)) {
-        return replayFailure("RTS suppression requires units, corridor, width, and non-negative shots",
-                             "command.suppression");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS suppression requires units, corridor, width, and non-negative shots",
+                                                    "command.suppression"));
     } else if (command.operation == RTSReplayOperation::Escort &&
                (command.units.empty() || !command.targetEntity.isValid() ||
                 !std::isfinite(command.command.radius) || command.command.radius <= 0.0f ||
                 !std::isfinite(command.formation.spacing) || command.formation.spacing <= 0.0f)) {
-        return replayFailure("RTS escort requires units, target, guard radius, and spacing", "command.escort");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS escort requires units, target, guard radius, and spacing",
+                                                    "command.escort"));
     }
     if (command.operation == RTSReplayOperation::CancelAbility ||
         command.operation == RTSReplayOperation::SuppressArea ||
@@ -106,7 +112,8 @@ Result<void> RTSCommandLog::queue(RTSReplayCommand command, SimulationTick curre
         command.units.erase(std::unique(command.units.begin(), command.units.end()), command.units.end());
     }
     if (std::any_of(command.units.begin(), command.units.end(), [](SubjectRef value) { return !value.isValid(); }))
-        return replayFailure("RTS replay unit subjects must be valid", "command.units");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS replay unit subjects must be valid",
+                                                    "command.units"));
     queued_[command.tick.value()].push_back(command);
     history_.push_back(std::move(command));
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -297,7 +304,8 @@ Result<void> RTSCommandLog::importText(std::string_view text, SimulationTick cur
     unsigned version = 0;
     if (!(in >> magic >> version) || magic != "EVERTS_COMMANDS" ||
         (version != 1 && version != 2 && version != 3))
-        return replayFailure("invalid RTS command log header", "commandLog.header");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid RTS command log header",
+                                                    "commandLog.header"));
     std::vector<RTSReplayCommand> parsed;
     while (in >> std::ws && !in.eof()) {
         RTSReplayCommand value;
@@ -308,11 +316,14 @@ Result<void> RTSCommandLog::importText(std::string_view text, SimulationTick cur
             if (!(in >> tick >> operation >> std::quoted(producer) >> std::quoted(faction) >> std::quoted(result) >>
                   std::quoted(definition) >> std::quoted(value.value) >> value.priority) ||
                 operation > static_cast<unsigned>(RTSReplayOperation::Escort))
-                return replayFailure("malformed extended RTS command log entry", "commandLog.entry");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "malformed extended RTS command log entry",
+                                                    "commandLog.entry"));
             if (version >= 3 && !(in >> value.limit))
-                return replayFailure("malformed RTS command limit", "commandLog.entry");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "malformed RTS command limit",
+                                                    "commandLog.entry"));
             if (!(in >> value.point.x >> value.point.y))
-                return replayFailure("malformed RTS command point", "commandLog.entry");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "malformed RTS command point",
+                                                    "commandLog.entry"));
             value.operation = static_cast<RTSReplayOperation>(operation);
             const auto decode = [](const std::string& text) { return text.empty() ? SubjectRef{} : parseSubject(text); };
             value.producer = decode(producer);
@@ -320,10 +331,12 @@ Result<void> RTSCommandLog::importText(std::string_view text, SimulationTick cur
             value.resultSubject = decode(result);
             if ((!producer.empty() && !value.producer.isValid()) || (!faction.empty() && !value.faction.isValid()) ||
                 (!result.empty() && !value.resultSubject.isValid()))
-                return replayFailure("invalid extended RTS command subject", "commandLog.entry");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid extended RTS command subject",
+                                                    "commandLog.entry"));
             if (!definition.empty()) {
                 auto parsedDefinition = LogicalId::parse(definition);
-                if (!parsedDefinition) return replayFailure("invalid RTS command definition", "commandLog.definition");
+                if (!parsedDefinition) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid RTS command definition",
+                                                    "commandLog.definition"));
                 value.definition = *parsedDefinition;
             }
         }
@@ -337,23 +350,28 @@ Result<void> RTSCommandLog::importText(std::string_view text, SimulationTick cur
               value.command.append >> formation >> value.formation.spacing >> value.formation.columns >>
               std::quoted(target) >> unitCount) || kind > static_cast<unsigned>(OrderKind::SupplyRelay) ||
             formation > static_cast<unsigned>(FormationKind::Wedge) || unitCount > 100000)
-            return replayFailure("malformed RTS command log entry", "commandLog.entry");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "malformed RTS command log entry",
+                                                    "commandLog.entry"));
         if (version >= 2 && commandTick != tick)
-            return replayFailure("extended RTS command tick mismatch", "commandLog.tick");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "extended RTS command tick mismatch",
+                                                    "commandLog.tick"));
         tick = commandTick;
         value.tick = SimulationTick{tick};
         value.command.kind = static_cast<OrderKind>(kind);
         value.formation.kind = static_cast<FormationKind>(formation);
         if (!target.empty()) {
             value.targetEntity = parseSubject(target);
-            if (!value.targetEntity.isValid()) return replayFailure("invalid target subject", "commandLog.target");
+            if (!value.targetEntity.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid target subject",
+                                                    "commandLog.target"));
         }
         value.units.reserve(unitCount);
         for (std::size_t index = 0; index < unitCount; ++index) {
             std::string unit;
-            if (!(in >> std::quoted(unit))) return replayFailure("missing unit subject", "commandLog.units");
+            if (!(in >> std::quoted(unit))) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "missing unit subject",
+                                                    "commandLog.units"));
             auto subject = parseSubject(unit);
-            if (!subject.isValid()) return replayFailure("invalid unit subject", "commandLog.units");
+            if (!subject.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid unit subject",
+                                                    "commandLog.units"));
             value.units.push_back(subject);
         }
         RTSCommandLog validator;
@@ -381,7 +399,8 @@ RTSLockstep::RTSLockstep() {
 
 Result<void> RTSLockstep::setFixedStep(Duration value) {
     if (value.nanoseconds() <= 0)
-        return replayFailure("RTS lockstep interval must be strictly positive", "fixedStep");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS lockstep interval must be strictly positive",
+                                                    "fixedStep"));
     fixedStep_ = value;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }

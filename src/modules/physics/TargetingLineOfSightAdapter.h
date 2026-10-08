@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file TargetingLineOfSightAdapter.h
@@ -25,7 +27,7 @@ class World3D;
  * LOS. The adapter supports World3D locations only and never converts grid
  * coordinates. Calls are synchronous on the simulation thread.
  */
-class TargetingLineOfSightAdapter final : public sensing::ILineOfSightQuery {
+class EVENGINE_API_WORLD TargetingLineOfSightAdapter final : public sensing::ILineOfSightQuery {
 public:
     /**
      * @brief Registers a borrowed live World3D as the sole active LOS world.

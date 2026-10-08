@@ -1,0 +1,5 @@
+story forest.arrival {
+    dialogue id=story.forest.arrival
+    wait 0.35
+    message text=gameplayLog.story.recorded
+}

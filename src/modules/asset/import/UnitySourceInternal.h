@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "asset/import/UnitySource.h"
 #include "common/Utf8Validation.h"
@@ -13,8 +15,9 @@ struct UnityExpandedPrefab {
     std::vector<ImportFinding> findings;
 };
 /** @brief Resolve bounded nested prefab references into an unpublished owning text candidate. */
-[[nodiscard]] Result<UnityExpandedPrefab> expandUnityPrefab(const UnityProjectImportRequest&, const UnitySourceIndex&,
-                                                            const UnitySourceAsset&);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<UnityExpandedPrefab> expandUnityPrefab(const UnityProjectImportRequest&,
+                                                                                  const UnitySourceIndex&,
+                                                                                  const UnitySourceAsset&);
 /** @brief Convert an explicit SpriteRenderer timeline and referenced metadata into an owning canonical candidate. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnitySpriteAnimation(const UnityProjectImportRequest& request,
                                                                       const UnitySourceAsset&          source);
@@ -25,11 +28,11 @@ struct UnityExpandedPrefab {
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityPrefab(const UnityProjectImportRequest& request,
                                                              const std::string&               path);
 /** @brief Convert a static FBX with explicit Unity importer settings and hashed subasset identities. */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& request,
-                                                          const UnitySourceAsset&          source);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityFbx(
+    const UnityProjectImportRequest& request, const UnitySourceAsset& source);
 /** @brief Decode a bounded static Unity text Mesh into owning canonical submesh candidates. */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportRequest&,
-                                                                 const UnitySourceAsset&);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportRequest&,
+                                                                                       const UnitySourceAsset&);
 /** @brief Convert embedded BC3 text Texture2D to an owning image candidate.
  * @remarks Synchronous and reentrant; no
  * external mutation, callbacks or retained source pointers.
@@ -49,8 +52,8 @@ struct UnityExpandedPrefab {
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationMaterial(const UnityProjectImportRequest& request,
                                                                          const UnitySourceAsset&          source);
 /** @brief Parse one TVE conversion preset into a bounded versioned command tree. */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationPreset(const UnityProjectImportRequest& request,
-                                                                       const UnitySourceAsset&          source);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityVegetationPreset(
+    const UnityProjectImportRequest& request, const UnitySourceAsset& source);
 /** @brief Convert a complete TVE manager component set from one Unity scene. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationScene(const UnityProjectImportRequest& request,
                                                                       const UnitySourceAsset&          source);

@@ -33,11 +33,6 @@ eve::Result<bool> decisionTriggered(bool triggered) {
         triggered, eve::Status::success(triggered ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
 }
 
-eve::Result<void> snapshotFailure(std::string path, std::string message) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             std::move(message), std::move(path), {}, "decision"));
-}
-
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
     if (!reference) {
@@ -346,72 +341,82 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
                                                                  e.empty() ? "invalid decision snapshot JSON" : e,
                                                                  "snapshot", {}, "decision"));
-    if (!d.root().isObject()) return snapshotFailure("snapshot", "decision snapshot must be a JSON object");
+    if (!d.root().isObject()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "decision snapshot must be a JSON object", "snapshot", {}, "decision"));
     const auto version = d.root().get("version");
     if (!version.isIntegerLiteral() || version.asInt() != 1)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::UnknownVersion, "unsupported decision snapshot version", "version", {}, "decision"));
     DecisionContext n;
     auto            b = d.root().get("boards");
-    if (!b.isObject()) return snapshotFailure("boards", "decision snapshot boards must be an object");
+    if (!b.isObject()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "decision snapshot boards must be an object", "boards", {}, "decision"));
     for (auto& bn : b.keys()) {
         auto v = b.get(bn.c_str());
-        if (!v.isObject()) return snapshotFailure("boards." + bn, "blackboard must be an object");
+        if (!v.isObject()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "blackboard must be an object", "boards." + bn, {}, "decision"));
         for (auto& k : v.keys()) {
             const auto value = v.get(k.c_str());
             if (!isScalar(value))
-                return snapshotFailure("boards." + bn + "." + k, "blackboard value must be a JSON scalar");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "blackboard value must be a JSON scalar", "boards." + bn + "." + k, {}, "decision"));
             auto result = n.set(bn, k, canonicalize(value));
             if (!result.ok()) return eve::Result<void>::failure(result.status());
         }
     }
     auto st = d.root().get("states");
-    if (!st.isObject()) return snapshotFailure("states", "decision snapshot states must be an object");
+    if (!st.isObject()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "decision snapshot states must be an object", "states", {}, "decision"));
     for (auto& m : st.keys()) {
         const auto state = st.get(m.c_str());
-        if (!state.isString()) return snapshotFailure("states." + m, "FSM state must be a string");
+        if (!state.isString()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "FSM state must be a string", "states." + m, {}, "decision"));
         auto result = n.setState(m, state.asString());
         if (!result.ok()) return eve::Result<void>::failure(result.status());
     }
     auto tr = d.root().get("transitions");
-    if (!tr.isArray()) return snapshotFailure("transitions", "decision snapshot transitions must be an array");
+    if (!tr.isArray()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "decision snapshot transitions must be an array", "transitions", {}, "decision"));
     for (size_t i = 0; i < tr.size(); ++i) {
         auto v = tr.at(i);
         if (!v.isArray() || v.size() != 4)
-            return snapshotFailure("transitions[" + std::to_string(i) + "]",
-                                   "FSM transition must contain four strings");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "FSM transition must contain four strings", "transitions[" + std::to_string(i) + "]", {}, "decision"));
         for (size_t field = 0; field < 4; ++field)
             if (!v.at(field).isString())
-                return snapshotFailure("transitions[" + std::to_string(i) + "]",
-                                       "FSM transition must contain four strings");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "FSM transition must contain four strings", "transitions[" + std::to_string(i) + "]", {}, "decision"));
         auto result = n.addTransition(v.at(0).asString(), v.at(1).asString(), v.at(2).asString(), v.at(3).asString());
         if (!result.ok()) return eve::Result<void>::failure(result.status());
     }
     auto gs = d.root().get("grids");
-    if (!gs.isArray()) return snapshotFailure("grids", "decision snapshot grids must be an array");
+    if (!gs.isArray()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "decision snapshot grids must be an array", "grids", {}, "decision"));
     for (size_t i = 0; i < gs.size(); ++i) {
         auto v = gs.at(i);
         if (!v.isObject())
-            return snapshotFailure("grids[" + std::to_string(i) + "]", "influence grid must be an object");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "influence grid must be an object", "grids[" + std::to_string(i) + "]", {}, "decision"));
         int        w = v.getInt("w"), h = v.getInt("h");
         const auto name = v.get("name");
         const auto cell = v.get("cell");
         const auto ox   = v.get("ox");
         const auto oy   = v.get("oy");
         if (!name.isString() || !cell.isNumber() || !ox.isNumber() || !oy.isNumber())
-            return snapshotFailure("grids[" + std::to_string(i) + "]", "influence grid fields are malformed");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "influence grid fields are malformed", "grids[" + std::to_string(i) + "]", {}, "decision"));
         auto grid =
             n.newGrid(name.asString(), w, h, float(cell.asDouble()), float(ox.asDouble()), float(oy.asDouble()));
         if (!grid.ok()) return eve::Result<void>::failure(grid.status());
         auto vals = v.get("values");
         if (!vals.isArray() || vals.size() != size_t(w) * h)
-            return snapshotFailure("grids[" + std::to_string(i) + "].values",
-                                   "influence grid values have the wrong size");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "influence grid values have the wrong size", "grids[" + std::to_string(i) + "].values", {}, "decision"));
         for (size_t z = 0; z < vals.size(); ++z) {
             const auto value = vals.at(z);
             if (!value.isNumber() || !std::isfinite(value.asDouble()))
-                return snapshotFailure("grids[" + std::to_string(i) + "].values[" + std::to_string(z) + "]",
-                                       "influence grid cell must be a finite number");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                             "influence grid cell must be a finite number", "grids[" + std::to_string(i) + "].values[" + std::to_string(z) + "]", {}, "decision"));
             auto result = n.setCell(name.asString(), int(z % size_t(w)), int(z / size_t(w)), float(value.asDouble()));
             if (!result.ok()) return eve::Result<void>::failure(result.status());
         }

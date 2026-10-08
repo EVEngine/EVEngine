@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "physics/cloth/ClothModel.h"
 #include "physics/backend/SimulationBackend.h"
@@ -27,7 +29,7 @@ class World3D;
  * particle-vs-rigid-body collision when attached to a World3D.
  * Script-owned, independent of the Box3D world.
  */
-class Cloth3D : public ISimulationBackend {
+class EVENGINE_API_DOMAINS Cloth3D : public ISimulationBackend {
 public:
     /**
      * @param cols grid columns (>= 2), along +X

@@ -7,7 +7,7 @@
 namespace eve {
 
 /** @brief Module-neutral JSON bridge from DevTools/MCP to PixelWorld tooling. */
-class EVENGINE_API IPixelWorldAutomation {
+class EVENGINE_API_FOUNDATION_INLINE IPixelWorldAutomation {
 public:
     static constexpr const char* capabilityName = "IPixelWorldAutomation";
     virtual ~IPixelWorldAutomation() = default;

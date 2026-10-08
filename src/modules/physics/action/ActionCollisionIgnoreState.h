@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionCollisionIgnoreState.h @brief Action adapter for temporary 3D body-pair collision ignores. */
 
@@ -42,7 +44,7 @@ using ActionCollisionPairResolver =
  * all pending projections. Methods are owner-thread-only and callbacks are never
  * invoked while mutating World3D.
  */
-class ActionCollisionIgnoreState final : public eve::action::IActionStateWindowSink {
+class EVENGINE_API_DOMAINS ActionCollisionIgnoreState final : public eve::action::IActionStateWindowSink {
 public:
     /**
      * @brief Construct an adapter for one borrowed 3D world.

@@ -5,6 +5,8 @@
 // interface. The scene traversal for the entity-id mask and visible-entity
 // snapshot lives here too (graphics -> scene is a legal downward edge).
 
+#include "graphics/GraphicsCapabilities.h"
+
 #include "common/Capability.h"
 #include "common/RenderCapture.h"
 #include "common/ProcgenProbeSink.h"

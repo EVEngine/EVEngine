@@ -41,8 +41,10 @@ TEST_CASE("camera.modeRoundTrip") {
     CHECK_EQ(cc.getMode(), std::string("firstperson"));
     cc.setMode("cinematic");
     CHECK_EQ(cc.getMode(), std::string("cinematic"));
+    cc.setMode("lockon");
+    CHECK_EQ(cc.getMode(), std::string("lockon"));
     cc.setMode("not-a-mode");
-    CHECK_EQ(cc.getMode(), std::string("cinematic"));
+    CHECK_EQ(cc.getMode(), std::string("lockon"));
 }
 
 TEST_CASE("graphics.camera3d.layerCullDistancesRoundTrip") {
@@ -102,6 +104,27 @@ TEST_CASE("camera.followSnapPlacesEye") {
     CHECK(near(cam->data()->targetX, 0.f));
     CHECK(near(cam->data()->targetY, 0.f));
     CHECK(near(cam->data()->targetZ, 0.f));
+}
+
+TEST_CASE("camera.lockonSnapLooksAtMidpointBehindPlayer") {
+    CameraController cc;
+    Camera3D*        cam = Camera3D::createCamera();
+    cc.setCamera(cam);
+    cc.setTarget(0.f, 0.f, 0.f);
+    cc.setOffset(0.f, 2.f, 6.f);
+    cc.setLookAhead(0.f, 1.2f, 0.f);
+    cc.setSecondaryTarget(4.f, 0.f, 0.f);
+    cc.setMode("lockon");
+    cc.snap();
+    CHECK(cc.hasSecondaryTarget());
+    CHECK(near(cam->data()->eyeX, -6.f));
+    CHECK(near(cam->data()->eyeY, 2.f));
+    CHECK(near(cam->data()->eyeZ, 0.f));
+    CHECK(near(cam->data()->targetX, 2.f));
+    CHECK(near(cam->data()->targetY, 1.2f));
+    CHECK(near(cam->data()->targetZ, 0.f));
+    cc.clearSecondaryTarget();
+    CHECK(!cc.hasSecondaryTarget());
 }
 
 TEST_CASE("camera.orbitAndTopdownSnap") {

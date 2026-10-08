@@ -1,4 +1,5 @@
 #include "dialogue/ConversationImporter.h"
+#include "dialogue/DialogueSequence.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -20,8 +21,8 @@ Guide: Let us begin.
     auto assets = std::move(imported).takeValue();
     CHECK(assets.size() == 1);
     CHECK(assets[0].id == "intro");
-    CHECK(assets[0].findNode("Start")->speaker == "Guide");
-    CHECK(assets[0].findNode("Start.1")->routes[0].second == "Next");
+    CHECK(sequencePayloadString(*assets[0].findNode("Start"), "speaker") == "Guide");
+    CHECK(assets[0].findNode("Start.1")->routes[0].target == "Next");
 }
 
 TEST_CASE("dialogueImporter.twineTwee3") {
@@ -41,7 +42,7 @@ Sailor: Fair winds.)";
     auto assets = std::move(imported).takeValue();
     CHECK(assets.size() == 1);
     CHECK(assets[0].findNode("Start.1")->routes.size() == 2);
-    CHECK(assets[0].findNode("Market")->text == "Fresh fruit!");
+    CHECK(sequencePayloadString(*assets[0].findNode("Market"), "text") == "Fresh fruit!");
 }
 
 TEST_CASE("dialogueImporter.yarnCommandsTagsAndShortcutOptions") {
@@ -61,10 +62,10 @@ title: Next
     auto imported = importYarnConversation(source, "intro.yarn", diagnostics);
     REQUIRE(imported.ok());
     auto assets = std::move(imported).takeValue();
-    CHECK(assets[0].findNode("Start")->i18nKey == "intro.welcome");
-    CHECK(assets[0].findNode("Start")->voice == "intro_001");
-    CHECK(assets[0].findNode("Start.1")->target == "set");
-    CHECK(assets[0].findNode("Start.2")->expression == "0.25");
-    CHECK(assets[0].findNode("Start.3")->routes[0].second == "Next");
-    CHECK(static_cast<int>(assets[0].findNode("Next")->kind) == static_cast<int>(ConversationAsset::Node::Kind::End));
+    CHECK(sequencePayloadString(*assets[0].findNode("Start"), "i18n") == "intro.welcome");
+    CHECK(sequencePayloadString(*assets[0].findNode("Start"), "voice") == "intro_001");
+    CHECK(sequencePayloadString(*assets[0].findNode("Start.1"), "name") == "set");
+    CHECK(sequencePayloadString(*assets[0].findNode("Start.2"), "duration") == "0.25");
+    CHECK(assets[0].findNode("Start.3")->routes[0].target == "Next");
+    CHECK(assets[0].findNode("Next")->type == "end");
 }

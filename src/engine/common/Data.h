@@ -1,11 +1,10 @@
 #pragma once
 
-#include "common/Object.h"
 #include <cstddef>
 
 namespace eve {
 
-class Data : public Object {
+class Data {
 public:
     /**
      * @brief Destructor.
@@ -27,7 +26,6 @@ public:
      * @brief Gets the size of the Data in bytes.
      **/
     virtual size_t getSize() const = 0;
-
 };
 
 }  // namespace eve

@@ -25,7 +25,7 @@ EditorValue entryValue(const VoxelPaletteEntryValue& v) {
                                {"composeGroup", v.type.composeGroup},
                                {"connects", v.type.connects}};
 }
-EditorResult<VoxelPaletteEntryValue> parse(const EditorValue& v) {
+Result<VoxelPaletteEntryValue> parse(const EditorValue& v) {
     VoxelPaletteEntryValue out;
     const auto *           id = field(v, "id"), *name = field(v, "name"), *directional = field(v, "directional"),
                *group = field(v, "composeGroup"), *connects = field(v, "connects"), *faceValue = field(v, "faces");
@@ -132,7 +132,7 @@ EditorValue VoxelPaletteTarget::contentValue() const {
     for (const auto& v : entries_) a.push_back(entryValue(v));
     return EditorValue::Object{{"entries", std::move(a)}};
 }
-EditorResult<DomainOperation> VoxelPaletteTarget::replacement(EditorValue content,
+Result<DomainOperation> VoxelPaletteTarget::replacement(EditorValue content,
                                                                std::string property) const {
     DomainOperation op;
     op.type        = "voxel.palette.replace.v1";
@@ -145,7 +145,7 @@ EditorResult<DomainOperation> VoxelPaletteTarget::replacement(EditorValue conten
     op.mergeKey = "voxel-palette:" + id_ + ":" + (property.empty() ? "structure" : property);
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> VoxelPaletteTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> VoxelPaletteTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                           const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     if (!matches(s) || !schema(s).find(p) || mode != PropertySetMode::Absolute)
@@ -181,14 +181,14 @@ EditorResult<DomainOperation> VoxelPaletteTarget::makeSet(const SelectionSnapsho
                                                      "Voxel palette edit exceeds the 255 variant capacity");
     return replacement(c.contentValue(), p.value());
 }
-EditorResult<DomainOperation> VoxelPaletteTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> VoxelPaletteTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
         return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.voxel-palette.property"),
                                                      "Unknown Voxel palette property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
-EditorResult<DomainOperation> VoxelPaletteTarget::makeCreate(const VoxelPaletteEntryValue& v) const {
+Result<DomainOperation> VoxelPaletteTarget::makeCreate(const VoxelPaletteEntryValue& v) const {
     if (v.id.empty() || v.type.name.empty() || std::any_of(entries_.begin(), entries_.end(), [&](const auto& x) {
             return x.id == v.id || x.type.name == v.type.name;
         }))
@@ -201,7 +201,7 @@ EditorResult<DomainOperation> VoxelPaletteTarget::makeCreate(const VoxelPaletteE
                                                      "Voxel palette exceeds the 255 variant capacity");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> VoxelPaletteTarget::makeDelete(const ObjectId& id) const {
+Result<DomainOperation> VoxelPaletteTarget::makeDelete(const ObjectId& id) const {
     if (std::none_of(entries_.begin(), entries_.end(), [&](const auto& v) { return v.id == id; }))
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.voxel-palette.entry"),
                                                      "Voxel palette entry does not exist");
@@ -234,7 +234,7 @@ std::vector<EditorDiagnostic> VoxelPaletteTarget::validate() const {
             RuleId("editor.voxel-palette.empty"), DiagnosticSeverity::Warning, "Voxel palette has no cube types"));
     return d;
 }
-EditorResult<void> VoxelPaletteTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> VoxelPaletteTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "voxel.palette.replace.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.voxel-palette.operation"),
                                           "Voxel palette operation mismatch");
@@ -262,7 +262,7 @@ EditorResult<void> VoxelPaletteTarget::applyDomainOperation(const DomainOperatio
 std::unique_ptr<IDomainOperationTarget> VoxelPaletteTarget::cloneDomainState() const {
     return std::make_unique<VoxelPaletteTarget>(*this);
 }
-EditorResult<void> VoxelPaletteTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
+Result<void> VoxelPaletteTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<VoxelPaletteTarget*>(c.get());
     if (!t || t->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.voxel-palette.candidate"),
@@ -273,7 +273,7 @@ EditorResult<void> VoxelPaletteTarget::commitDomainState(std::unique_ptr<IDomain
 EditorValue VoxelPaletteTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> VoxelPaletteTarget::loadSnapshot(const EditorValue& s) {
+Result<void> VoxelPaletteTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)

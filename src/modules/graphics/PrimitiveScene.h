@@ -140,7 +140,7 @@ struct PrimitiveBatchUpdate {
  * @lifetime Cached data lives until successful replacement, removal, clear, or scene destruction.
  * Rendering synchronously copies commands into a caller-owned Canvas without retaining it.
  */
-class PrimitiveScene {
+class EVENGINE_API_BACKENDS PrimitiveScene {
 public:
     PrimitiveScene();
     PrimitiveScene(const PrimitiveScene&)                                        = delete;

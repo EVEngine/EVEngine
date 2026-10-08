@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 武器行为静态系统：逻辑注册表 + 每帧推进 + 开火/装填。
@@ -19,7 +21,7 @@ class IWeaponLogic;
 using WeaponEventSink = std::function<void(const WeaponEvent&)>;
 
 /** @brief 武器系统：逻辑注册 + 更新 + 开火 + 装填。 */
-class WeaponSystem {
+class EVENGINE_API_WORLD WeaponSystem {
 public:
     /** @brief 注册武器逻辑实现；同名替换。 */
     static void registerLogic(IWeaponLogic* logic);

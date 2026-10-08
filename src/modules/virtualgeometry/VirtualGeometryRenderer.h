@@ -26,7 +26,7 @@ namespace eve::virtualgeometry {
  *   visible <- r.update()
  *   ok <- r.resolve(rgbaArray, w, h)   // CPU readback of the visibility buffer
  */
-class VirtualGeometryRenderer {
+class EVENGINE_API_DOMAINS VirtualGeometryRenderer {
 public:
     VirtualGeometryRenderer();
     ~VirtualGeometryRenderer();

@@ -10,20 +10,14 @@
 namespace eve::procgen {
 namespace {
 
-Result<void> invalidChannel(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 Result<float> invalidChannelFloat(std::string message, std::string path) {
     return Result<float>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
 }
 
 bool isMetadataName(std::string_view name) noexcept {
     return !name.empty() && name.front() != '$' && name.front() != '@';
 }
-
 
 std::string_view stripDomainPrefix(std::string_view name, std::string_view* domain) {
     if (name.size() >= 6 && name.substr(0, 6) == "@Data.") {
@@ -58,8 +52,6 @@ void rotationBasis(float pitchDeg, float yawDeg, float rollDeg, float* forward, 
     up[1] = cp * cr;
     up[2] = sy * sr + cy * sp * cr;
 }
-
-
 
 void appendRow(PointSet& output, const PointSet& input, std::size_t index) {
     output.appendPointFrom(input, index).expect("PointSet attribute op requires compatible schemas");
@@ -154,12 +146,15 @@ Result<float> readPointFloatChannel(const PointSet& points, int index, std::stri
 }
 
 Result<void> writePointFloatChannel(PointSet& points, int index, std::string_view name, float value) {
-    if (index < 0 || index >= points.getCount()) return invalidChannel("point index is out of range", "index");
-    if (name.empty()) return invalidChannel("attribute channel must not be empty", "name");
+    if (index < 0 || index >= points.getCount()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "point index is out of range", "index"));
+    if (name.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute channel must not be empty", "name"));
     if (name.front() != '$') {
         std::string_view domain = "elements";
         const std::string_view leaf = stripDomainPrefix(name, &domain);
-        if (leaf.empty()) return invalidChannel("attribute channel must not be empty", "name");
+        if (leaf.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute channel must not be empty", "name"));
         if (domain == "data") {
             ensurePointSetDataRow(points);
             return points.mutableDataAttributes().setFloat(0, leaf, value);
@@ -167,7 +162,8 @@ Result<void> writePointFloatChannel(PointSet& points, int index, std::string_vie
         return points.trySetFloatAttribute(index, std::string(leaf), value);
     }
     if (!isPointFloatSelector(name))
-        return invalidChannel("unknown float selector '" + std::string(name) + "'", "name");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown float selector '" + std::string(name) + "'", "name"));
 
     ProcgenPoint& point = points.mutablePoint(std::size_t(index));
     if (name == "$Density") {
@@ -270,7 +266,8 @@ Result<void> writePointFloatChannel(PointSet& points, int index, std::string_vie
         point.boundsMaxZ = value;
         return Result<void>::success();
     }
-    return invalidChannel("unknown float selector '" + std::string(name) + "'", "name");
+    return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown float selector '" + std::string(name) + "'", "name"));
 }
 
 PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
@@ -595,7 +592,6 @@ Result<PointSet> selectPointFloatAttribute(const PointSet& input, const std::str
     }
     return Result<PointSet>::success(std::move(result));
 }
-
 
 void ensurePointSetDataRow(PointSet& points) {
     AttributeTable& data = points.mutableDataAttributes();

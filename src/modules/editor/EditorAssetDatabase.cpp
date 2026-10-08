@@ -16,7 +16,7 @@ bool containsInsensitive(std::string value, std::string text) {
 
 }  // namespace
 
-EditorResult<AssetRecord> MemoryAssetDatabase::publish(AssetRecord record, std::vector<AssetDependency> dependencies) {
+Result<AssetRecord> MemoryAssetDatabase::publish(AssetRecord record, std::vector<AssetDependency> dependencies) {
     if (record.guid.empty() || record.logicalUri.empty() || record.typeId.empty())
         return eve::editing::failed<AssetRecord>(EditorStatus::Rejected, RuleId("editor.asset.invalid-record"),
                                                  "Asset GUID, logical URI and type are required");
@@ -41,7 +41,7 @@ EditorResult<AssetRecord> MemoryAssetDatabase::publish(AssetRecord record, std::
     return eve::editing::applied<AssetRecord>(std::move(record));
 }
 
-EditorResult<std::vector<AssetRecord>> MemoryAssetDatabase::publishBatch(
+Result<std::vector<AssetRecord>> MemoryAssetDatabase::publishBatch(
     std::vector<AssetPublication> publications) {
     if (publications.empty())
         return eve::editing::failed<std::vector<AssetRecord>>(EditorStatus::Rejected,
@@ -93,7 +93,7 @@ EditorResult<std::vector<AssetRecord>> MemoryAssetDatabase::publishBatch(
     return eve::editing::applied<std::vector<AssetRecord>>(std::move(published));
 }
 
-EditorResult<AssetRecord> MemoryAssetDatabase::find(const AssetGuid& guid) const {
+Result<AssetRecord> MemoryAssetDatabase::find(const AssetGuid& guid) const {
     auto found = records_.find(guid);
     if (found == records_.end())
         return eve::editing::failed<AssetRecord>(EditorStatus::NotFound, RuleId("editor.asset.not-found"),
@@ -101,14 +101,14 @@ EditorResult<AssetRecord> MemoryAssetDatabase::find(const AssetGuid& guid) const
     return eve::editing::applied<AssetRecord>(found->second);
 }
 
-EditorResult<AssetRecord> MemoryAssetDatabase::findByUri(const std::string& logicalUri) const {
+Result<AssetRecord> MemoryAssetDatabase::findByUri(const std::string& logicalUri) const {
     const auto guid = uriToGuid_.find(logicalUri);
     if (guid != uriToGuid_.end()) return find(guid->second);
     return eve::editing::failed<AssetRecord>(EditorStatus::NotFound, RuleId("editor.asset.not-found"),
                                              "Asset URI is not indexed: " + logicalUri);
 }
 
-EditorResult<AssetPage<AssetRecord>> MemoryAssetDatabase::query(const AssetQuery& query, std::size_t offset,
+Result<AssetPage<AssetRecord>> MemoryAssetDatabase::query(const AssetQuery& query, std::size_t offset,
                                                                 std::size_t                  limit,
                                                                 std::optional<std::uint64_t> generation) const {
     if (generation && *generation != generation_)
@@ -157,7 +157,7 @@ std::vector<AssetDependency> MemoryAssetDatabase::dependencies(const AssetGuid& 
     return result;
 }
 
-EditorResult<AssetRecord> ImportCoordinator::publish(ImportProduct product) {
+Result<AssetRecord> ImportCoordinator::publish(ImportProduct product) {
     if (!database_)
         return eve::editing::failed<AssetRecord>(EditorStatus::Failed, RuleId("editor.import.missing-database"),
                                                  "Import coordinator has no asset database");
@@ -167,7 +167,7 @@ EditorResult<AssetRecord> ImportCoordinator::publish(ImportProduct product) {
     return database_->publish(std::move(product.record), std::move(product.dependencies));
 }
 
-EditorResult<ImportTicket> ImportCoordinator::begin(const AssetGuid& asset, std::string sourceHash,
+Result<ImportTicket> ImportCoordinator::begin(const AssetGuid& asset, std::string sourceHash,
                                                     std::string importerId,
                                                     std::uint32_t importerVersion) {
     if (asset.empty() || sourceHash.empty() || importerId.empty() || importerVersion == 0)
@@ -178,7 +178,7 @@ EditorResult<ImportTicket> ImportCoordinator::begin(const AssetGuid& asset, std:
         {asset, generation, std::move(sourceHash), std::move(importerId), importerVersion});
 }
 
-EditorResult<AssetRecord> ImportCoordinator::publish(const ImportTicket& ticket,
+Result<AssetRecord> ImportCoordinator::publish(const ImportTicket& ticket,
                                                      ImportProduct product) {
     if (!database_)
         return eve::editing::failed<AssetRecord>(EditorStatus::Failed, RuleId("editor.import.missing-database"),

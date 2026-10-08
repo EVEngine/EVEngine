@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Module.h"
 
 #include <string>
@@ -11,7 +12,7 @@ namespace eve::keyboard {
  * @brief Keyboard input. Key / scancode names follow SDL naming
  * (SDL_GetKeyName / SDL_GetScancodeName), e.g. "A", "Return", "Left Ctrl".
  */
-class Keyboard : public Module {
+class EVENGINE_API_BACKENDS Keyboard : public Module {
 public:
     Module_REG(Keyboard);
 

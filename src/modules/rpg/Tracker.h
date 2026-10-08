@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Tracker.h
@@ -21,7 +23,7 @@ namespace eve::rpg {
 class QuestSystem;
 
 /** @brief 一份任务进度 + 本实例事件队列。 */
-class Tracker {
+class EVENGINE_API_PLATFORM Tracker {
 public:
     Tracker();
     ~Tracker() = default;

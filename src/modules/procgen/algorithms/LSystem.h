@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -50,7 +52,7 @@ struct LSystemResult {
  * mesh.lsystem recipe for tree/plant meshes. A fixed seed reproduces the exact
  * same result.
  */
-class LSystem {
+class EVENGINE_API_DOMAINS LSystem {
 public:
     LSystem();
 

@@ -10,7 +10,7 @@ namespace {
 SceneComponentPropertyBindings::SceneComponentPropertyBindings(std::string componentType)
     : componentType_(std::move(componentType)) {}
 
-EditorResult<void> SceneComponentPropertyBindings::bind(
+Result<void> SceneComponentPropertyBindings::bind(
     SceneComponentPayloadRef component, SelectionItem moduleSelection,
     IPropertyProvider* properties, IDomainOperationTarget* operations, Validator validator) {
     if (componentType_.empty() || component.target.empty() || component.object.empty() ||
@@ -56,7 +56,7 @@ std::vector<SceneComponentPayloadRef> SceneComponentPropertyBindings::components
     return result;
 }
 
-EditorResult<std::pair<const SceneComponentPropertyBindings::Binding*, SelectionSnapshot>>
+Result<std::pair<const SceneComponentPropertyBindings::Binding*, SelectionSnapshot>>
 SceneComponentPropertyBindings::translate(const SelectionSnapshot& selection) const {
     if (selection.items.empty())
         return eve::editing::failed<std::pair<const Binding*, SelectionSnapshot>>(
@@ -84,10 +84,10 @@ SceneComponentPropertyBindings::translate(const SelectionSnapshot& selection) co
         {first, std::move(translated)});
 }
 
-EditorResult<IDomainOperationTarget*> SceneComponentPropertyBindings::payloadOperationTarget(
+Result<IDomainOperationTarget*> SceneComponentPropertyBindings::payloadOperationTarget(
     const SelectionSnapshot& selection) const {
     auto translated = translate(selection);
-    if (!translated.ok()) return EditorResult<IDomainOperationTarget*>::failure(translated.status());
+    if (!translated.ok()) return Result<IDomainOperationTarget*>::failure(translated.status());
     return eve::editing::applied<IDomainOperationTarget*>(translated.value().first->operations);
 }
 
@@ -124,22 +124,22 @@ PropertyReadResult SceneComponentPropertyBindings::read(const SelectionSnapshot&
     return translated.value().first->properties->read(translated.value().second, path);
 }
 
-EditorResult<DomainOperation> SceneComponentPropertyBindings::makeSet(
+Result<DomainOperation> SceneComponentPropertyBindings::makeSet(
     const SelectionSnapshot& selection, const PropertyPath& path, const EditorValue& value,
     PropertySetMode mode) const {
     auto translated = translate(selection);
-    if (!translated.ok()) return EditorResult<DomainOperation>::failure(translated.status());
+    if (!translated.ok()) return Result<DomainOperation>::failure(translated.status());
     return translated.value().first->properties->makeSet(translated.value().second, path, value, mode);
 }
 
-EditorResult<DomainOperation> SceneComponentPropertyBindings::makeReset(
+Result<DomainOperation> SceneComponentPropertyBindings::makeReset(
     const SelectionSnapshot& selection, const PropertyPath& path) const {
     auto translated = translate(selection);
-    if (!translated.ok()) return EditorResult<DomainOperation>::failure(translated.status());
+    if (!translated.ok()) return Result<DomainOperation>::failure(translated.status());
     return translated.value().first->properties->makeReset(translated.value().second, path);
 }
 
-EditorResult<void> SceneComponentPayloadRegistry::registerProvider(
+Result<void> SceneComponentPayloadRegistry::registerProvider(
     ISceneComponentPayloadProvider* provider) {
     if (!provider || provider->componentType().empty())
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.scene.component-provider-invalid"),
@@ -160,7 +160,7 @@ SceneComponentChange SceneComponentPayloadRegistry::unregisterProvider(ISceneCom
     return SceneComponentChange::Changed;
 }
 
-EditorResult<std::vector<SceneComponentPayloadRef>> SceneComponentPayloadRegistry::componentPayloads(
+Result<std::vector<SceneComponentPayloadRef>> SceneComponentPayloadRegistry::componentPayloads(
     const TargetId& scene, const ObjectId& object) const {
     if (scene.empty() || object.empty())
         return eve::editing::failed<std::vector<SceneComponentPayloadRef>>(
@@ -185,7 +185,7 @@ EditorResult<std::vector<SceneComponentPayloadRef>> SceneComponentPayloadRegistr
     return eve::editing::applied<std::vector<SceneComponentPayloadRef>>(std::move(result));
 }
 
-EditorResult<ISceneComponentPayloadProvider*> SceneComponentPayloadRegistry::resolve(
+Result<ISceneComponentPayloadProvider*> SceneComponentPayloadRegistry::resolve(
     const SelectionSnapshot& selection) const {
     if (selection.items.empty())
         return eve::editing::failed<ISceneComponentPayloadProvider*>(EditorStatus::Rejected,
@@ -210,21 +210,21 @@ EditorResult<ISceneComponentPayloadProvider*> SceneComponentPayloadRegistry::res
     return eve::editing::applied<ISceneComponentPayloadProvider*>(found->second);
 }
 
-EditorResult<IPropertyProvider*> SceneComponentPayloadRegistry::propertyProvider(
+Result<IPropertyProvider*> SceneComponentPayloadRegistry::propertyProvider(
     const SelectionSnapshot& selection) const {
     auto provider = resolve(selection);
-    if (!provider.ok()) return EditorResult<IPropertyProvider*>::failure(provider.status());
+    if (!provider.ok()) return Result<IPropertyProvider*>::failure(provider.status());
     return eve::editing::applied<IPropertyProvider*>(static_cast<IPropertyProvider*>(provider.value()));
 }
 
-EditorResult<IDomainOperationTarget*> SceneComponentPayloadRegistry::operationTarget(
+Result<IDomainOperationTarget*> SceneComponentPayloadRegistry::operationTarget(
     const SelectionSnapshot& selection) const {
     auto provider = resolve(selection);
-    if (!provider.ok()) return EditorResult<IDomainOperationTarget*>::failure(provider.status());
+    if (!provider.ok()) return Result<IDomainOperationTarget*>::failure(provider.status());
     return provider.value()->payloadOperationTarget(selection);
 }
 
-EditorResult<std::vector<EditorDiagnostic>> SceneComponentPayloadRegistry::validatePayload(
+Result<std::vector<EditorDiagnostic>> SceneComponentPayloadRegistry::validatePayload(
     const SceneComponentPayloadRef& component) const {
     const auto found = providers_.find(component.type);
     if (found == providers_.end())
@@ -247,7 +247,7 @@ EditorResult<std::vector<EditorDiagnostic>> SceneComponentPayloadRegistry::valid
         found->second->validateComponent(component));
 }
 
-EditorResult<SelectionSnapshot> makeSceneComponentSelection(
+Result<SelectionSnapshot> makeSceneComponentSelection(
     std::string channel, const std::vector<SceneComponentPayloadRef>& components,
     std::uint64_t sequence) {
     if (components.empty())

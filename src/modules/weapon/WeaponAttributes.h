@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file WeaponAttributes.h
@@ -21,7 +23,7 @@ class WeaponEntity;
  * remain weapon-owned state. The legacy Resource fields are refreshed only as
  * a one-way projection after canonical reads/writes.
  */
-class WeaponAttributeAdapter final {
+class EVENGINE_API_WORLD WeaponAttributeAdapter final {
 public:
     static constexpr std::string_view manaAttribute       = "mana";
     static constexpr std::string_view maxManaAttribute    = "max_mana";

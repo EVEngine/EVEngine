@@ -17,13 +17,13 @@ namespace eve::script {
 enum class ScriptModuleStatus { NotHandled, Found, Error };
 
 /** @brief Logical module request emitted by an EveScript import declaration. */
-struct EVENGINE_API ScriptModuleRequest {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptModuleRequest {
     std::string importerUri;
     std::string specifier;
 };
 
 /** @brief UTF-8 source and stable identity returned by a module provider. */
-struct EVENGINE_API ScriptModuleSource {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptModuleSource {
     std::string canonicalUri;
     std::string utf8Source;
     std::string contentHash;
@@ -31,7 +31,7 @@ struct EVENGINE_API ScriptModuleSource {
 };
 
 /** @brief Pluggable script source backend for directories, archives, plugins, or memory. */
-class EVENGINE_API IScriptModuleProvider {
+class EVENGINE_API_FOUNDATION_INLINE IScriptModuleProvider {
 public:
     virtual ~IScriptModuleProvider() = default;
 
@@ -48,7 +48,7 @@ public:
  * Providers never execute Squirrel. Dependencies are compiled before their importer executes;
  * the VM import opcode therefore performs a cache-only lookup.
  */
-class EVENGINE_API ScriptModuleResolver {
+class EVENGINE_API_FOUNDATION ScriptModuleResolver {
 public:
     using ProviderId = uint64_t;
 

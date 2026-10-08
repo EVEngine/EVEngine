@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionAudioBlock.h @brief Typed audio action-block payload contract. */
 
@@ -14,7 +16,7 @@ namespace eve::action {
 enum class ActionAudioShape : std::uint8_t { Instant, State };
 
 /** @brief Owning validated settings shared by Audio runtime and editor preview. */
-struct ActionAudioBinding {
+struct EVENGINE_API_PLATFORM ActionAudioBinding {
     std::string          uri;
     std::vector<std::string> randomUris;
     ActionSpatialBinding spatial;

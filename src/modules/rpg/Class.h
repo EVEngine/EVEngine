@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Class.h
@@ -21,7 +23,7 @@ struct ClassLearnSkill {
 };
 
 /** @brief 数据驱动的职业模板。 */
-struct ClassDefinition {
+struct EVENGINE_API_PLATFORM ClassDefinition {
     std::string id;
     std::string displayName;
     std::vector<ClassLearnSkill> learnSkills;
@@ -34,7 +36,7 @@ struct ClassDefinition {
 };
 
 /** @brief 进程级职业定义注册表。 */
-class ClassRegistry {
+class EVENGINE_API_PLATFORM ClassRegistry {
 public:
     static void registerClass(const ClassDefinition &def);
     /**

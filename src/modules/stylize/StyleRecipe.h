@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <memory>
 #include <string>
@@ -21,7 +23,7 @@ class StylePass;
  * Instances are not owned. Compiled passes and transient ping-pong targets are
  * managed by the recipe/Graphics, so callers do not supply temporary canvases.
  */
-class StyleRecipe {
+class EVENGINE_API_WORLD StyleRecipe {
 public:
     StyleRecipe() = default;
     ~StyleRecipe();

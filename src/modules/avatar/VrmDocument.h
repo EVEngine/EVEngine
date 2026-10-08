@@ -100,6 +100,6 @@ struct VrmDocument {
  * @return Owning document or ParseError/UnknownVersion/Unsupported diagnostics.
  * @note Thread independent; no callbacks, filesystem access, or observable mutation.
  */
-[[nodiscard]] eve::Result<VrmDocument> parseVrm(std::span<const std::byte> bytes);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<VrmDocument> parseVrm(std::span<const std::byte> bytes);
 
 }  // namespace eve::avatar

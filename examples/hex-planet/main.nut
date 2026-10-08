@@ -203,6 +203,22 @@ function reportDistribution(st) {
           (hexmap.sphereWaterMesh() != null) + "\n");
 }
 
+function fillSphereTerrain(st) {
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return paramsResult;
+    local params = paramsResult.value;
+    params.setSeed(st.seed);
+    local defaults = procgen.applyAlgorithmDefaults("hex.sphere", params);
+    if (!defaults.ok) return defaults;
+    params.setInt("subdivision", st.subdivision);
+    params.setFloat("radius", st.radius);
+    params.setInt("landPercentage", st.landPercent);
+    params.setInt("waterLevel", st.waterLevel);
+    local baked = procgen.generateHexSphere(params);
+    if (!baked.ok) return baked;
+    return hexmap.applySphereTerrain(gfx, baked.value);
+}
+
 function buildPlanet(st) {
     local created = hexmap.newSphere(gfx, st.subdivision, st.radius, st.seed);
     if (!created.ok) {
@@ -211,7 +227,7 @@ function buildPlanet(st) {
         return false;
     }
 
-    local generated = hexmap.generateSphere(gfx, st.seed, st.landPercent, st.waterLevel);
+    local generated = fillSphereTerrain(st);
     if (!generated.ok) {
         st.statusText = "generate failed: " + generated.status.summary;
         print("hex planet: " + st.statusText + "\n");
@@ -230,7 +246,7 @@ function buildPlanet(st) {
 }
 
 function regenerate(st) {
-    local generated = hexmap.generateSphere(gfx, st.seed, st.landPercent, st.waterLevel);
+    local generated = fillSphereTerrain(st);
     if (!generated.ok) {
         st.statusText = "generate failed: " + generated.status.summary;
         return;

@@ -16,10 +16,10 @@ namespace {
 
 class NullMaterialAssets final : public IMaterialRuntimeAssetResolver {
 public:
-    EditorResult<eve::graphics::Texture*> resolveTexture(const std::string&) const override {
+    Result<eve::graphics::Texture*> resolveTexture(const std::string&) const override {
         return eve::editing::applied<eve::graphics::Texture*>(&texture);
     }
-    EditorResult<eve::graphics::Shader*> resolveShader(const std::string&) const override {
+    Result<eve::graphics::Shader*> resolveShader(const std::string&) const override {
         return eve::editing::applied<eve::graphics::Shader*>(nullptr);
     }
 
@@ -28,7 +28,7 @@ public:
 
 class SelectiveMaterialAssets final : public IMaterialRuntimeAssetResolver {
 public:
-    EditorResult<eve::graphics::Texture*> resolveTexture(const std::string& asset) const override {
+    Result<eve::graphics::Texture*> resolveTexture(const std::string& asset) const override {
         if ((rejectDetail && asset == "asset://tve/detail-albedo") ||
             (rejectColors && asset == "asset://tve/colors-field") ||
             (rejectVertex && asset == "asset://tve/vertex-field") ||
@@ -38,7 +38,7 @@ public:
                 "Requested test texture is unavailable");
         return eve::editing::applied<eve::graphics::Texture*>(&texture);
     }
-    EditorResult<eve::graphics::Shader*> resolveShader(const std::string&) const override {
+    Result<eve::graphics::Shader*> resolveShader(const std::string&) const override {
         return eve::editing::applied<eve::graphics::Shader*>(nullptr);
     }
 
@@ -62,7 +62,7 @@ SelectionSnapshot materialSelection(const MaterialDocumentTarget& target) {
     return selection;
 }
 
-EditorResult<TransactionReceipt> commitMaterial(MaterialDocumentTarget& target,
+Result<TransactionReceipt> commitMaterial(MaterialDocumentTarget& target,
                                                 LocalTransactionBackend& transactions,
                                                 const DomainOperation& operation,
                                                 const char* transactionId) {

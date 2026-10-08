@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorTarget.h"
 #include "editor/EditorResult.h"
@@ -61,7 +63,7 @@ struct ToolResponse {
  * Later editor capabilities (targets, transactions, overlays, selection) attach
  * to this stable context instead of adding concrete tool cases to the session.
  */
-class EditorContext {
+class EVENGINE_API_ORCHESTRATION EditorContext {
 public:
     explicit EditorContext(EditorSession* session = nullptr) : session_(session) {}
 
@@ -73,7 +75,7 @@ public:
     /** @brief Send a command through constraints into the active transaction. */
     bool execute(std::unique_ptr<IEditCommand> command) const;
     /** @brief Send a command without discarding validation or transaction diagnostics. */
-    [[nodiscard]] EditorResult<void> executeChecked(std::unique_ptr<IEditCommand> command) const;
+    [[nodiscard]] Result<void> executeChecked(std::unique_ptr<IEditCommand> command) const;
 
     /** @brief Query a capability from the current target. @return Borrowed capability pointer, or null. @lifetime Valid only for the current dispatch callback. */
     template <typename Capability>

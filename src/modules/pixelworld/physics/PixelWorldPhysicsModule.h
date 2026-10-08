@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -14,7 +16,7 @@ namespace eve::pixelworld_physics {
 class PixelTerrainCollisionCache;
 
 /** @brief Script-facing owner for PixelWorld-to-Box2D terrain projection. */
-class PixelWorldPhysics final : public eve::Module {
+class EVENGINE_API_DOMAINS PixelWorldPhysics final : public eve::Module {
 public:
     Module_REG(PixelWorldPhysics);
 

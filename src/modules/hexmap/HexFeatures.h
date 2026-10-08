@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexFeatures.h @brief Deterministic feature placement for hex decorations and walls. */
 
@@ -30,7 +32,7 @@ struct HexHash {
  *
  * @note Immutable after construction; safe to share between chunk builds.
  */
-class HexHashGrid {
+class EVENGINE_API_WORLD HexHashGrid {
 public:
     /** @brief Spacing of the hash cells, matching the reference `hashGridScale`. */
     static constexpr float kScale = 0.25f;
@@ -56,7 +58,7 @@ private:
  * A feature level (1-3) picks a collection by comparing the cell's hash against
  * these thresholds; the last entry of each row is the catch-all.
  */
-[[nodiscard]] float featureThreshold(std::int32_t level, std::int32_t index) noexcept;
+[[nodiscard]] EVENGINE_API_WORLD float featureThreshold(std::int32_t level, std::int32_t index) noexcept;
 
 /** @brief Number of threshold entries per feature level. */
 inline constexpr std::int32_t kFeatureThresholdCount = 3;
@@ -82,7 +84,7 @@ inline constexpr float kBridgeDesignLength = 7.f;
  * @param chunkIndex Chunk to build.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-void buildWallMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out);
+EVENGINE_API_WORLD void buildWallMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out);
 
 /**
  * @brief Builds the urban, farm, plant and special decorations of one chunk.
@@ -100,6 +102,6 @@ void buildWallMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out)
  * @param chunkIndex Chunk to build.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-void buildFeatureMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out);
+EVENGINE_API_WORLD void buildFeatureMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out);
 
 }  // namespace eve::hexmap

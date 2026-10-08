@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EncounterCatalogue.h @brief Strict RPG encounter definitions and settlement projection. */
 
@@ -41,7 +43,7 @@ struct EncounterDefinition {
 };
 
 /** @brief Process-local strict encounter content catalogue. */
-class EncounterCatalogue {
+class EVENGINE_API_PLATFORM EncounterCatalogue {
 public:
     /**
      * @brief Validate and atomically replace every encounter definition.

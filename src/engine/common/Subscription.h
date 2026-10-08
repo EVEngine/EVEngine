@@ -24,7 +24,7 @@ namespace eve {
  * disposed or destroyed on that observer's owner thread unless the observer
  * explicitly documents a stronger cross-thread guarantee.
  */
-class EVENGINE_API Subscription {
+class EVENGINE_API_FOUNDATION Subscription {
 public:
     using Cancel = std::function<void()>;
 

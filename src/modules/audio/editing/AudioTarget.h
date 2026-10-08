@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioEditingTypes.h"
 
@@ -9,12 +11,12 @@
 namespace eve::audio_editing {
 
 /** @brief Serializable audio-source authoring target independent of OpenAL handles. */
-class AudioSourceTarget final : public ::eve::editing::EditableTargetState,
-                                public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IDomainOperationTargetStaging,
-                                public IPropertyProvider,
-                                public IEditingSnapshotProvider {
+class EVENGINE_API_BACKENDS AudioSourceTarget final : public ::eve::editing::EditableTargetState,
+                                                      public virtual IEditableTarget,
+                                                      public IDomainOperationTarget,
+                                                      public IDomainOperationTargetStaging,
+                                                      public IPropertyProvider,
+                                                      public IEditingSnapshotProvider {
 public:
     /** @brief Stable capability identity for audio-source property editing. */
     static CapabilityId editingCapabilityId() { return CapabilityId("eve.editor.target.audio-source"); }
@@ -25,22 +27,22 @@ public:
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(
+    [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
 
     /** @brief Capture deterministic source settings for scene/prefab persistence. */
     EditorValue snapshotValue() const override;
     /** @brief Atomically load a versioned source snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
     /** @brief Report missing assets and inconsistent attenuation/loop settings. */
     std::vector<EditorDiagnostic> validate() const;
 
@@ -61,7 +63,7 @@ public:
      * @brief Publish one fully validated authoring candidate.
      * @return Applied on success; failures must leave the live source unchanged.
      */
-    virtual EditorResult<void> publish(const AudioSourceTarget& candidate) = 0;
+    virtual Result<void> publish(const AudioSourceTarget& candidate) = 0;
 };
 
 /**
@@ -71,8 +73,8 @@ public:
  * complete candidate before replacing its authoring state, so standard
  * transaction undo/redo follows the same live path.
  */
-class AudioSourcePublishingTarget final : public IDomainOperationTarget,
-                                          public IDomainOperationTargetStaging {
+class EVENGINE_API_BACKENDS AudioSourcePublishingTarget final : public IDomainOperationTarget,
+                                                                public IDomainOperationTargetStaging {
 public:
     /** @brief Create an authoring target bound to a non-owning runtime sink. */
     AudioSourcePublishingTarget(std::string id, IAudioSourceRuntimeSink* sink);
@@ -88,9 +90,9 @@ public:
      * @lifetime Valid until this target is destroyed or its document is replaced.
      */
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(
+    [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Access the owned authoring document for property inspection/planning. */
@@ -116,38 +118,38 @@ struct AudioBusSnapshot {
 };
 
 /** @brief Serializable mixer-bus hierarchy, including master bus. */
-class AudioMixerTarget final : public ::eve::editing::EditableTargetState,
-                               public virtual IEditableTarget,
-                               public IDomainOperationTarget,
-                               public IDomainOperationTargetStaging {
+class EVENGINE_API_BACKENDS AudioMixerTarget final : public ::eve::editing::EditableTargetState,
+                                                     public virtual IEditableTarget,
+                                                     public IDomainOperationTarget,
+                                                     public IDomainOperationTargetStaging {
 public:
     explicit AudioMixerTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(
+    [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Read one bus snapshot. */
-    EditorResult<AudioBusSnapshot> bus(const ObjectId& id) const;
+    Result<AudioBusSnapshot> bus(const ObjectId& id) const;
     /** @brief Enumerate direct child buses in stable order. */
     std::vector<ObjectId> children(const ObjectId& parent) const;
     /** @brief Plan a reversible bus creation. */
-    EditorResult<DomainOperation> makeCreate(AudioBusSnapshot bus) const;
+    Result<DomainOperation> makeCreate(AudioBusSnapshot bus) const;
     /** @brief Plan a reversible leaf-bus deletion; master cannot be deleted. */
-    EditorResult<DomainOperation> makeDelete(const ObjectId& id) const;
+    Result<DomainOperation> makeDelete(const ObjectId& id) const;
     /** @brief Plan a reversible bus settings/reparent change. */
-    EditorResult<DomainOperation> makeReplace(AudioBusSnapshot bus) const;
+    Result<DomainOperation> makeReplace(AudioBusSnapshot bus) const;
     /** @brief Capture deterministic mixer hierarchy content. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load and validate a versioned mixer hierarchy. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     static EditorValue busValue(const AudioBusSnapshot& bus);
-    static EditorResult<AudioBusSnapshot> parseBus(const EditorValue& value);
+    static Result<AudioBusSnapshot> parseBus(const EditorValue& value);
     bool wouldCycle(const ObjectId& id, const ObjectId& parent) const;
 
     std::string                          id_;
@@ -163,9 +165,9 @@ class Source;
 namespace eve::audio_editing {
 
 /** @brief Optional bridge applying authoring settings to an existing live Source. */
-class AudioSourceRuntimeApplier {
+class EVENGINE_API_BACKENDS AudioSourceRuntimeApplier {
 public:
-    EditorResult<void> apply(const AudioSourceTarget& target, audio::Source* source) const;
+    Result<void> apply(const AudioSourceTarget& target, audio::Source* source) const;
 };
 
 /** @brief Real Source backend for AudioSourcePublishingTarget. */
@@ -173,7 +175,7 @@ class AudioSourceRuntimeSink final : public IAudioSourceRuntimeSink {
 public:
     /** @brief Bind a borrowed live Source that must outlive this sink. */
     explicit AudioSourceRuntimeSink(audio::Source* source) : source_(source) {}
-    EditorResult<void> publish(const AudioSourceTarget& candidate) override;
+    Result<void> publish(const AudioSourceTarget& candidate) override;
 
 private:
     audio::Source* source_ = nullptr;

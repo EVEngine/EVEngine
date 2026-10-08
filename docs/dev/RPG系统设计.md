@@ -52,8 +52,8 @@
 | 状态/Buff | 周期效果只产生 tick 事件，不直接改属性 | 调用方（脚本/C++） | 让 DOT/HOT 可以完整走结算流水线而非被硬编码为直接扣血 |
 | 技能 | `SkillSystem::registerCastCondition(name, fn)` | C++ | 引擎不内置"沉默/眩晕"等互斥概念，由游戏自定义判断逻辑 |
 | 技能 | `SkillDefinition::extra`（string→string） | C++ 或 JSON | 任意自定义附加数据（动画名、特效……）无需扩结构体 |
-| 结算 | `SettlementPipeline::registerStage(pipeline, stage, priority, fn)` | C++ | 伤害/治疗/命中率等公式完全可换、可插入新阶段 |
-| 结算 | `setStageEnabled` / `setStagePriority` | C++ 或脚本 | 不写新原生代码也能开关/重排已注册的内建阶段 |
+| 结算 | `Battle::configureSettlementRules` + `eve::settlement::SettlementPipeline` | C++ 或 JSON | 正式伤害、治疗、Status tick、Buff 投影和触发链使用统一协议 |
+| 兼容结算 | `rpg::SettlementPipeline::registerStage` / `runSettlement` | C++ 或脚本 | 仅保留旧项目的开放数值袋；执行已委托统一 Settlement，不用于新玩法状态提交 |
 
 ## 数据模型
 
@@ -174,8 +174,9 @@ enable/disable、调整已注册阶段的优先级，但不能新增原生阶段
   `getTickEventCount/Actor/InstanceId/EffectId/Source/Stacks`、
   `getStatusChangeEventCount/Actor/InstanceId/EffectId/Source/Action/Stacks/Reason`、
   `getCastEventCount/Caster/Target/SkillId`
-- 结算：`newSettlementContext()` → `SettlementContext`，`runSettlement(pipeline, ctx)`，
-  以及 stage 的 enable/priority/remove 内省接口
+- 正式结算：`Battle` 的行动与 Status tick 自动进入统一 Settlement；规则通过严格版本化 JSON 配置
+- 兼容结算：`newSettlementContext()` → `runSettlement()` 及 stage 内省接口仅服务旧脚本数值袋，
+  新代码不应通过它提交生命、护盾或其他权威状态
 
 `RPGActor` 自身暴露一层薄的便捷方法（转发到各 `*System`），与 `TileLayer`/
 `ParticleEmitter` 的绑定风格一致：`actor.setBaseAttribute(...)`、

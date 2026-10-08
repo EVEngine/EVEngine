@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <vector>
 
@@ -9,7 +10,7 @@ class AnimPose;
 class AnimSkeleton;
 
 /** @brief Parallel batch evaluator for independent character clip poses. Script type: `AnimBatch`. */
-class AnimBatch {
+class EVENGINE_API_WORLD AnimBatch {
 public:
     AnimBatch() = default;
 

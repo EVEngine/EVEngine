@@ -1,0 +1,33 @@
+diff --git a/SDL2/CMakeLists.txt b/SDL2/CMakeLists.txt
+index 48f6499..c7e2f4d 100644
+--- a/SDL2/CMakeLists.txt
++++ b/SDL2/CMakeLists.txt
+@@ -2738,6 +2738,28 @@ if(NOT (WINDOWS OR CYGWIN OR MINGW))
+   install(FILES "${SDL2_SOURCE_DIR}/sdl2.m4" DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/aclocal")
+ endif()
+ 
++# EVEngine: this pinned SDL 2.0.16 loads Wayland dynamically (WAYLAND_SHARED is
++# ON by default), so it never links libwayland-client. Wayland headers from 1.20
++# on route wl_proxy_marshal() through wl_proxy_marshal_flags(), which leaves
++# direct references in the objects SDL compiles, and building SDL *shared* then
++# fails with "undefined reference to wl_proxy_marshal_flags". The static archive
++# never hits it, because the engine links the Wayland libraries itself (see
++# cmake/system_libraries.cmake). Linking the library here is harmless while the
++# dynamic loading path stays in use.
++#
++# Both the platform guard and the find_library() check are load-bearing: SDL also
++# builds a shared libSDL2.so for Android, where VIDEO_WAYLAND/WAYLAND_SHARED are
++# ON (Android is UNIX) but no wayland-client exists, so a flag-only guard breaks
++# that build with "ld.lld: error: unable to find library -lwayland-client".
++if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN AND NOT ANDROID
++   AND NOT CMAKE_SYSTEM_NAME STREQUAL "Android"
++   AND VIDEO_WAYLAND AND WAYLAND_SHARED)
++  find_library(EVE_WAYLAND_CLIENT_LIBRARY wayland-client)
++  if(EVE_WAYLAND_CLIENT_LIBRARY)
++    target_link_libraries(SDL2 PRIVATE ${EVE_WAYLAND_CLIENT_LIBRARY})
++  endif()
++endif()
++
+ ##### Uninstall target #####
+ 
+ if(NOT TARGET uninstall)

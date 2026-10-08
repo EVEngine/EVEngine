@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <map>
 #include <optional>
@@ -20,7 +22,7 @@ class StylePass;
  * Instances hold only user overrides. Shader programs remain owned and shared by
  * Graphics; creating a pass or mesh shader applies this instance's overrides.
  */
-class StyleInstance {
+class EVENGINE_API_WORLD StyleInstance {
 public:
     explicit StyleInstance(std::string style);
     /** @brief Build an external mesh style from owning resolved scalar defaults; GPU programs are supplied by the

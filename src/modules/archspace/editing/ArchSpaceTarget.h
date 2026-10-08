@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "archspace/ArchSpaceDocument.h"
 #include "editing/EditableTarget.h"
@@ -17,8 +19,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -51,12 +52,12 @@ using editing::validatePropertyValue;
  * operations. High-level helpers (bootstrap/room/opening/item) plan those
  * replacements without bypassing validation.
  */
-class ArchSpaceDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                      public virtual IEditableTarget,
-                                      public IDomainOperationTarget,
-                                      public IDomainOperationTargetStaging,
-                                      public IPropertyProvider,
-                                      public IEditingSnapshotProvider {
+class EVENGINE_API_DOMAINS ArchSpaceDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging,
+                                                           public IPropertyProvider,
+                                                           public IEditingSnapshotProvider {
 public:
     explicit ArchSpaceDocumentTarget(std::string id);
 
@@ -71,54 +72,54 @@ public:
      * @lifetime Valid until this target is destroyed.
      */
     void*                                   queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
 
     /** @brief Plan site→building→level creation on an empty document. */
-    EditorResult<DomainOperation> makeBootstrap(const std::string& siteId, const std::string& buildingId,
+    Result<DomainOperation> makeBootstrap(const std::string& siteId, const std::string& buildingId,
                                                 const std::string& levelId, double levelHeight = 3.0) const;
     /** @brief Plan a rectangular room (four walls + slab + zone) under a level. */
-    EditorResult<DomainOperation> makeCreateRectRoom(const std::string& levelId, const std::string& roomId,
+    Result<DomainOperation> makeCreateRectRoom(const std::string& levelId, const std::string& roomId,
                                                      std::string roomName, double originX, double originZ, double sizeX,
                                                      double sizeZ, double wallHeight = 3.0, double wallThickness = 0.2,
                                                      double slabThickness = 0.2) const;
     /** @brief Plan a single wall under a level. */
-    EditorResult<DomainOperation> makeCreateWall(const std::string& levelId, const std::string& wallId,
+    Result<DomainOperation> makeCreateWall(const std::string& levelId, const std::string& wallId,
                                                  std::string wallName, archspace::Vec2 start, archspace::Vec2 end,
                                                  double height = 3.0, double thickness = 0.2) const;
     /** @brief Plan a door/window opening on an existing wall. */
-    EditorResult<DomainOperation> makeCreateOpening(const std::string& wallId, const std::string& openingId,
+    Result<DomainOperation> makeCreateOpening(const std::string& wallId, const std::string& openingId,
                                                     archspace::OpeningKind kind, double t, double width, double height,
                                                     double sill = 0.0) const;
     /** @brief Plan a catalog item placement on a level. */
-    EditorResult<DomainOperation> makePlaceItem(const std::string& levelId, const std::string& itemId,
+    Result<DomainOperation> makePlaceItem(const std::string& levelId, const std::string& itemId,
                                                 std::string catalogId, archspace::Vec3 position,
                                                 double yawDegrees = 0.0) const;
     /** @brief Plan cascading deletion of one node. */
-    EditorResult<DomainOperation> makeDeleteNode(const ObjectId& id) const;
+    Result<DomainOperation> makeDeleteNode(const ObjectId& id) const;
 
     [[nodiscard]] const archspace::Document&    document() const { return document_; }
     [[nodiscard]] std::vector<EditorDiagnostic> validate() const;
     [[nodiscard]] EditorValue                   snapshotValue() const override;
-    EditorResult<void>                          loadSnapshot(const EditorValue& snapshot);
+    Result<void>                          loadSnapshot(const EditorValue& snapshot);
     /** @brief Build a revision-bound overlay for walls, zones, items and openings. */
-    [[nodiscard]] EditorResult<EditorGizmoSnapshot> gizmo() const;
+    [[nodiscard]] Result<EditorGizmoSnapshot> gizmo() const;
     /** @brief Bake renderer-neutral triangle mesh for the current revision. */
     [[nodiscard]] archspace::MeshBake bakeMesh() const { return document_.bakeMesh(); }
 
 private:
     bool                          matches(const SelectionSnapshot& selection) const;
     EditorValue                   contentValue() const;
-    EditorResult<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
-    EditorResult<void>            installContent(const EditorValue& content);
+    Result<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
+    Result<void>            installContent(const EditorValue& content);
     /**
      * @brief Resolve the single selected ArchSpace node for property edits.
      * @ownership Non-owning pointer into document_; do not free.

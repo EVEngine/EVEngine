@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionComboWindowState.h @brief Semantic input matching for active Montage combo windows. */
 
@@ -34,7 +36,7 @@ struct ActionComboMatch {
  * script input adapters map their source into the same semantic input string and
  * query this owner before choosing the next action. All methods are owner-thread-only.
  */
-class ActionComboWindowState final : public IActionStateWindowSink {
+class EVENGINE_API_BACKENDS ActionComboWindowState final : public IActionStateWindowSink {
 public:
     /** @brief Construct with a synchronous stable-subject resolver. */
     explicit ActionComboWindowState(ComboSubjectResolver resolver);

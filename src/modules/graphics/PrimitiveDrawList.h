@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "graphics/PrimitivePath.h"
@@ -47,7 +49,7 @@ struct TriangleCommand3D {
 };
 
 /** @brief Frame-local Skia-style recorder for 2D line primitives. */
-class PrimitiveCanvas2D {
+class EVENGINE_API_BACKENDS PrimitiveCanvas2D {
 public:
     explicit PrimitiveCanvas2D(std::size_t hardCommandLimit = 65536);
 
@@ -105,7 +107,7 @@ private:
 };
 
 /** @brief Frame-local scene recorder for 3D line primitives. */
-class PrimitiveSceneCanvas3D {
+class EVENGINE_API_BACKENDS PrimitiveSceneCanvas3D {
 public:
     explicit PrimitiveSceneCanvas3D(SceneDrawContext context, std::size_t hardCommandLimit = 65536);
 

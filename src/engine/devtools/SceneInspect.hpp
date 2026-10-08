@@ -25,7 +25,7 @@ namespace eve::dev {
  *
  * 桌面端专用（EVDevTools 的一部分）。
  */
-struct EVENGINE_API InspectView {
+struct EVENGINE_API_FOUNDATION_INLINE InspectView {
     std::string name;   // "along_road" | "bird_eye" | "corner_close" | "vista"
     std::string kind;   // 中文说明：沿路平视 / 高空俯拍 / 拐角特写 / 远景视角
     glm::vec3   eye{0.f};
@@ -34,7 +34,7 @@ struct EVENGINE_API InspectView {
 };
 
 /** @brief 一次原子快照的结果：PNG 渲染帧 + 配套几何 JSON。 */
-struct EVENGINE_API InspectCapture {
+struct EVENGINE_API_FOUNDATION_INLINE InspectCapture {
     bool        ok = false;
     std::string error;
     std::string pngPath;   // 渲染帧 PNG 的磁盘路径（color buffer）
@@ -50,7 +50,7 @@ struct EVENGINE_API InspectCapture {
     std::vector<std::string> unsupported;  // 请求但当前后端不支持的缓冲区
 };
 
-class EVENGINE_API SceneInspect {
+class EVENGINE_API_FOUNDATION SceneInspect {
 public:
     static SceneInspect& instance();
 

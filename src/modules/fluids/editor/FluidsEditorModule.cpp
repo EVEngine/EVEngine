@@ -15,14 +15,14 @@ namespace eve::fluids_editor {
 namespace {
 
 template <class Target>
-editor::EditorResult<editor::AutomationOwnedTarget> makeTarget(const editor::TargetId&            id,
+editor::Result<editor::AutomationOwnedTarget> makeTarget(const editor::TargetId&            id,
                                                                const editor::EditorValue::Object& request) {
     auto       target   = std::make_unique<Target>(id.value());
     const auto snapshot = request.find("snapshot");
     if (snapshot != request.end()) {
         auto loaded = target->loadSnapshot(snapshot->second);
         if (!loaded.ok()) {
-            return editor::EditorResult<editor::AutomationOwnedTarget>::failure(loaded.status());
+            return editor::Result<editor::AutomationOwnedTarget>::failure(loaded.status());
         }
     }
     editor::AutomationOwnedTarget owned;
@@ -36,7 +36,7 @@ std::vector<std::string_view> FluidsAutomationTargetFactory::types() const {
     return {"fluid-simulation", "surface-fluid", "volume-fluid"};
 }
 
-editor::EditorResult<editor::AutomationOwnedTarget> FluidsAutomationTargetFactory::create(
+editor::Result<editor::AutomationOwnedTarget> FluidsAutomationTargetFactory::create(
     const editor::TargetId& target, std::string_view type, const editor::EditorValue::Object& request) {
     if (type == "fluid-simulation") {
         return makeTarget<fluids_editing::FluidSimulationTarget>(target, request);

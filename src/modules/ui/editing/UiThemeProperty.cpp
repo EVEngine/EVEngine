@@ -42,7 +42,7 @@ PropertyReadResult UiThemeCatalogTarget::read(const SelectionSnapshot& selection
     return {PropertyReadState::Value, *common, {}};
 }
 
-EditorResult<DomainOperation> UiThemeCatalogTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> UiThemeCatalogTarget::makeSet(const SelectionSnapshot& selection,
                                                             const PropertyPath& path, const EditorValue& value,
                                                             PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
@@ -72,7 +72,7 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeSet(const SelectionSnaps
     return replacement(candidate.contentValue(), path.value());
 }
 
-EditorResult<DomainOperation> UiThemeCatalogTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> UiThemeCatalogTarget::makeReset(const SelectionSnapshot& selection,
                                                               const PropertyPath&      path) const {
     auto descriptor = schema(selection).find(path);
     if (!descriptor)

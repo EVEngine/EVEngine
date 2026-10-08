@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
@@ -16,7 +18,7 @@ namespace eve::weather {
  * Pure CPU data (no graphics / procgen includes): render and heightmap
  * bridging live in the weather module (Snow.h).
  */
-class SnowField {
+class EVENGINE_API_ORCHESTRATION SnowField {
 public:
     SnowField() = default;
     SnowField(int width, int height);

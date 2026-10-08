@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "action/ActionCameraBlock.h"
 #include "common/Module.h"
@@ -57,11 +59,12 @@ struct PcgPhotoModePostFxState {
  *   - topdown     俯视（从 target 正上方往下拍）
  *   - firstperson 第一人称（eye 位于 target，用 yaw/pitch 控制朝向）
  *   - cinematic   过场/自动切换视角（在一组命名 View 之间平滑插值）
+ *   - lockon      锁定：看向 target 与 secondaryTarget 中点，站在玩家身后
  *
  * 所有行为都经过统一的指数阻尼平滑（setSmooth，对应"平滑移动"），
  * 也支持 maxSpeed 限速避免抖动，snap() 可立即到位不做平滑。
  */
-class CameraController : public action::IActionCameraCueSink, public IPhotoModeFieldSink {
+class EVENGINE_API_WORLD CameraController : public action::IActionCameraCueSink, public IPhotoModeFieldSink {
 public:
     CameraController();
     ~CameraController() override;
@@ -91,6 +94,18 @@ public:
     void setOffset(float x, float y, float z);
     /** @brief follow：额外的视线前移点（可让镜头看向玩家前方）。 */
     void setLookAhead(float x, float y, float z);
+    /**
+     * @brief Store a world-space lock-on look target for mode "lockon".
+     * @remarks Combat uniquely owns lock identity; this controller only retains coordinates for one apply.
+     */
+    void setSecondaryTarget(float x, float y, float z);
+    /** @brief Forget the lock-on look target; lockon then falls back to offset/yaw follow. */
+    void clearSecondaryTarget();
+    /** @brief Return whether a lock-on look target is currently stored. */
+    [[nodiscard]] bool hasSecondaryTarget() const noexcept { return hasSecondaryTarget_; }
+    float              getSecondaryTargetX() const;
+    float              getSecondaryTargetY() const;
+    float              getSecondaryTargetZ() const;
 
     // --- 视角模式 ---
     void        setMode(const std::string& mode);
@@ -291,6 +306,8 @@ private:
     std::string targetNodeId_;
     glm::vec3   offset_{0.f, 2.f, 6.f};
     glm::vec3   lookAhead_{0.f, 0.f, 0.f};
+    glm::vec3   secondaryTarget_{0.f};
+    bool        hasSecondaryTarget_ = false;
 
     float radius_        = 10.f;
     float minimumRadius_ = 0.01f;

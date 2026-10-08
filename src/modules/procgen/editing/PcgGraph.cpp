@@ -65,7 +65,7 @@ GraphConnectionDecision PcgPointGraphDomain::canConnect(const GraphPinRecord& fr
     return decision;
 }
 
-EditorResult<GraphNodeRecord> PcgPointGraphDomain::makeNode(const GraphNodeId& id,
+Result<GraphNodeRecord> PcgPointGraphDomain::makeNode(const GraphNodeId& id,
                                                             const std::string& operation) const {
     if (id.empty() || procgen::PointGraph::getOperationInputCount(operation) < 0)
         return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.pcg.unknown-operation"),

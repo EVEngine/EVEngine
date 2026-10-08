@@ -13,7 +13,7 @@
 
 namespace eve::caps {
 
-class EVENGINE_API IMainThreadPost {
+class EVENGINE_API_FOUNDATION_INLINE IMainThreadPost {
 public:
     static constexpr const char* capabilityName = "IMainThreadPost";
     virtual ~IMainThreadPost() = default;

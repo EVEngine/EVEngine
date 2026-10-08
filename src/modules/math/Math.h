@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -18,7 +20,7 @@ class Mat4;
  *
  * No overloads: distinct names (length2/length3, noise1/noise2/…).
  */
-class Math : public Module {
+class EVENGINE_API_FOUNDATION Math : public Module {
 public:
     Module_REG(Math);
     Math();

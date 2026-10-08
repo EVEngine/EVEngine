@@ -4,7 +4,7 @@
 
 namespace eve::editor {
 
-EditorResult<OffscreenPreviewArtifact> StylizeOffscreenPreviewService::render(
+Result<OffscreenPreviewArtifact> StylizeOffscreenPreviewService::render(
     const StylizeRecipeTarget& document, graphics::Texture* source,
     const StableId& previewId, int width, int height) const {
     if (!previews_ || !graphics_ || !source || previewId.empty())
@@ -14,7 +14,7 @@ EditorResult<OffscreenPreviewArtifact> StylizeOffscreenPreviewService::render(
     StylizeRecipeRuntime candidate;
     auto published = candidate.publish(document, graphics_);
     if (!published.ok())
-        return EditorResult<OffscreenPreviewArtifact>::failure(published.status());
+        return Result<OffscreenPreviewArtifact>::failure(published.status());
     OffscreenPreviewRequest request;
     request.previewId = previewId;
     request.sourceRevision = document.revision();

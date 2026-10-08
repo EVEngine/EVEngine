@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief EVEngine ECS 集成层：底层实现使用 sunxfancy/ECS.hpp
@@ -35,7 +37,7 @@ void exposeECSToVM(ssq::VM& vm);
  * 脚本 eve.view(cls) 沿类链找到登记的 C++ 类型后调用 fn 填充输出数组。
  */
 using CppEntityViewFn = std::function<void(ssq::Array& out)>;
-void registerCppEntityView(const ssq::Class& cls, CppEntityViewFn fn);
+EVENGINE_API_FOUNDATION void registerCppEntityView(const ssq::Class& cls, CppEntityViewFn fn);
 
 /**
  * @brief 在脚本 ECS 基类（eve.Component / eve.Entity / eve.System）注入之后执行的回调。
@@ -43,7 +45,7 @@ void registerCppEntityView(const ssq::Class& cls, CppEntityViewFn fn);
  * 在 exposeECS / exposeECSToVM 末尾运行，早于任何游戏脚本。
  */
 using PostEcsHook = std::function<void(ssq::Table& table)>;
-void registerPostEcsHook(PostEcsHook fn);
+EVENGINE_API_FOUNDATION void registerPostEcsHook(PostEcsHook fn);
 
 /**
  * @brief Run post-ECS hooks that were registered after `exposeECS` already ran.

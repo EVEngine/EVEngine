@@ -69,10 +69,9 @@ struct TerrainMultiTileReport {
  * @return Deterministically ordered mappings and the shared operation rectangle, or InvalidArgument.
  * @ownership Retains no descriptor or name. Caller owns inputs for the synchronous call. No callbacks, RNG or hidden time.
  */
-[[nodiscard]] Result<TerrainMultiTileReport> mapTerrainOperationMultiTile(
-    const std::vector<TerrainOperationTile>& tiles, const TerrainStampSettings& settings,
-    TerrainOperationDomain domain, bool worldMapOperation = false,
-    const std::vector<std::string>& validTerrainNames = {});
+[[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> mapTerrainOperationMultiTile(
+    const std::vector<TerrainOperationTile>& tiles, const TerrainStampSettings& settings, TerrainOperationDomain domain,
+    bool worldMapOperation = false, const std::vector<std::string>& validTerrainNames = {});
 
 /**
  * @brief Apply one shared Pcg detail-distribution raster to every selected tile atomically.
@@ -86,7 +85,7 @@ struct TerrainMultiTileReport {
  * @return Affected mappings and changed-cell total, or InvalidArgument; all layers publish together.
  * @ownership Retains no pointer or raster. Caller exclusively owns every layer on one thread for the call.
  */
-[[nodiscard]] Result<TerrainMultiTileReport> applyTerrainDetailMultiTile(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> applyTerrainDetailMultiTile(
     const std::vector<TerrainDetailTile>& tiles, const Heightmap& operationFitness,
     const TerrainDetailSettings& settings, const TerrainStampSettings& operationSettings, std::int32_t seed,
     bool worldMapOperation = false, const std::vector<std::string>& validTerrainNames = {});
@@ -105,7 +104,7 @@ struct TerrainMultiTileReport {
  * @ownership Retains no descriptor, pointer, raster, callback or scene link. Caller exclusively owns every
  * target on one thread for the entire call. All candidates finish before any tile publishes. No RNG/time.
  */
-[[nodiscard]] Result<TerrainMultiTileReport> applyTerrainStampMultiTile(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> applyTerrainStampMultiTile(
     const std::vector<TerrainHeightTile>& tiles, const Heightmap& stamp, const TerrainStampSettings& settings,
     const Heightmap& localMask, const Heightmap& globalMask, bool worldMapOperation = false,
     const std::vector<std::string>& validTerrainNames = {});
@@ -118,15 +117,15 @@ struct TerrainMultiTileReport {
  * @return Unique changed sample count across both tiles; neither publishes when validation fails.
  * @ownership No pointer or reference survives this synchronous caller-thread operation.
  */
-[[nodiscard]] Result<int> stitchTerrainHeightmaps(const TerrainHeightTile& terrainA,
-                                                  const TerrainHeightTile& terrainB,
-                                                  const TerrainHeightStitchSettings& settings = {});
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> stitchTerrainHeightmaps(
+    const TerrainHeightTile& terrainA, const TerrainHeightTile& terrainB,
+    const TerrainHeightStitchSettings& settings = {});
 
 /** @brief Owning script-safe collection of height tiles with atomic multi-tile operations.
  * Tiles are copied on insertion and never retain caller rasters. The workspace is one mutable owner,
  * move-only, and caller-thread affine. It invokes no callbacks and exposes only copied outputs.
  */
-class TerrainMultiTileWorkspace {
+class EVENGINE_API_DOMAINS TerrainMultiTileWorkspace {
 public:
     TerrainMultiTileWorkspace();
     ~TerrainMultiTileWorkspace();
@@ -172,7 +171,7 @@ private:
  * Input layers are copied on insertion. Operations, reports and all-layer undo snapshots publish by one owner-thread
  * swap; no borrowed raster or callback survives a call. The explicit seed creates one deterministic stream per apply.
  */
-class TerrainMultiDetailWorkspace {
+class EVENGINE_API_DOMAINS TerrainMultiDetailWorkspace {
 public:
     TerrainMultiDetailWorkspace();
     ~TerrainMultiDetailWorkspace();

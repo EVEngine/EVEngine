@@ -11,7 +11,7 @@ public:
     void play() override { isPlaying = true; ++plays; }
     void pause() override { isPlaying = false; }
     void stop() override { isPlaying = false; position = 0.0; ++stops; }
-    EditorResult<void> seek(double seconds) override { if (!seekable) return eve::editing::failed<void>(EditorStatus::Failed, RuleId("test.audio.seek"), "seek rejected"); position = seconds; return eve::editing::applied<void>(); }
+    Result<void> seek(double seconds) override { if (!seekable) return eve::editing::failed<void>(EditorStatus::Failed, RuleId("test.audio.seek"), "seek rejected"); position = seconds; return eve::editing::applied<void>(); }
     double tell() const override { return position; }
     double duration() const override { return length; }
     bool playing() const override { return isPlaying; }

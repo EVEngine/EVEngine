@@ -85,6 +85,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [sprite-animation-vfx](sprite-animation-vfx/README.md) | 2D 精灵动画与 VFX API 的端到端脚本验证 |
 | [vehicle](vehicle/README.md) | 通用载具系统：`eve.Vehicle()` + `eve.Weapon()` 的 2D 顶视完整链路 |
 | [crowd](crowd/README.md) | 群体行为：2000 个单位在带障碍流场中行军与平滑转向（Boids） |
+| [gpu-agents](gpu-agents/README.md) | GPU Agents：鱼群 / 生命网格 / 花瓣共享 World、SDF 与固定步长 |
 | [composable-rebellion](composable-rebellion/README.md) | 可组合玩法：引擎只存事实、叛乱语义全在脚本（15 个 `eve.*` 模块协作） |
 
 ## 3D 玩法与镜头
@@ -103,6 +104,8 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [snow](snow/README.md) | 可交互积雪：与高度图同尺寸的 `SnowField` 深度场驱动形变与着色 |
 | [softbody](softbody/README.md) | 布料与 2D 流体解算器（拖拽 / 排斥 / 吸引） |
 | [softbody3d](softbody3d/README.md) | 3D 软体：Verlet 布料 + 体积体与静态 Box3D 碰撞 |
+| [destruction-basic](destruction-basic/README.md) | Chaos 风格破碎 P0：两块焊接盒子 + Strain 场断边 |
+| [destruction-clusters](destruction-clusters/README.md) | Chaos 破碎 P3：双岛锚定柱、步进预算、cluster 断边与快照 |
 | [lattice-deform](lattice-deform/README.md) | 3D 晶格缩放变形：squash & stretch、局部鼓起、波浪 |
 | [sprite-stack](sprite-stack/README.md) | 伪 3D：把 3D 模型切成多层 RGBA 叠片渲染 |
 | [armored-command-3d](armored-command-3d/README.md) | 3D RTS 展示：骨骼坦克、编队命令、齐射与指挥所坍塌；Tank/Shell ECS |
@@ -120,6 +123,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | 示例 | 演示能力 |
 |---|---|
 | [procgen](procgen/README.md) | 六种地图算法（BSP / Cellular / Drunkard / Maze / 地形 / WFC）+ 纹理配方 |
+| [procedural-textures](procedural-textures/README.md) | 程序化地板纹理：木地板 / 花纹地砖 / 瓷砖，参数排列组合实时预览 |
 | [procgen-script-pipeline](procgen-script-pipeline/README.md) | 纯脚本 PointSet 组合、确定性 seed、事务式 hot reload |
 | [tileworld-graph-dungeon](tileworld-graph-dungeon/README.md) | TileWorldCreator 风格 GridGraph + PointGraph + MeshGraph 混合地牢、分层构建、增量簇更新与可选物理碰撞 |
 | [pcg-biome](pcg-biome/README.md) | UE PCG 风格空间数据、多层运行时 Cell、时间预算与 Scene 实例批次 |
@@ -145,6 +149,8 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [urban-generator](urban-generator/README.md) | 城市配方 `mesh.urban` / `urban.parcels`：街区与地块 |
 | [housegen](housegen/README.md) | 房屋布局生成 + GLB kit 实例化 |
 | [linear-structures](linear-structures/README.md) | 线性可拼接结构：栅栏 / 石墙 / 桥 / 长城 / 树篱 / 拒马 |
+| [cable-chain-rope](cable-chain-rope/README.md) | 钢缆 / 铁链 / 麻绳：螺旋多股网格 + 配套 PBR 纹理 |
+| [iron-chain-bridge](iron-chain-bridge/README.md) | 铁锁桥：用 `mesh.chain` / `mesh.rope` / `mesh.bridge` 拼出简易吊桥 |
 | [hex-terrain](hex-terrain/README.md) | 无源美术的 3D 六边形世界：`mesh.hexterrain` 配方 |
 | [topdown-procmap](topdown-procmap/README.md) | 俯视角程序化地图：噪声大陆 + 生物群系 splat + 河湖 + 植被点缀与平移浏览 |
 | [procgen-nature-quality](procgen-nature-quality/README.md) | 近景程序化树/灌木/崖石材质画廊：`tex.tree_atlas` / `tex.moss` / cliff 造型 |
@@ -168,8 +174,11 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [silpom-ssdm-compare](silpom-ssdm-compare/README.md) | 平面 SilPOM vs SSDM：硬砖 heightfield、轮廓挤出与 FragDepth 取舍对比 |
 | [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（Vulkan/WebGPU） |
 | [atmospheric-fog](atmospheric-fog/README.md) | 大气 froxel 体积雾：最小的完整渲染路径与参数调试 |
+| [realtime-fog](realtime-fog/README.md) | MAC 流体雾 + SceneWind + 球体交互器，同步到 froxel 合成 |
 | [particle-playback-lab](particle-playback-lab/README.md) | 粒子回放实验室：确定性播放、版本化多发射器与视觉验证 |
+| [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
+| [lighting-showcase](lighting-showcase/README.md) | 光照展示：环境光、有向光阴影、彩色发光体，以及可选硬件光追 / 便携反射链 |
 | [shader-live-preview](shader-live-preview/README.md) | 实时 GLSL 预览：编辑 `shaders/preview.frag` 保存即热重载 |
 | [virtual-texture-blending](virtual-texture-blending/README.md) | 虚拟纹理材质混合：常驻虚拟页 + fallback 槽与无缝 gutter |
 | [ink-arena](ink-arena/README.md) | GPU 表面喷墨：片元着色器向持久 RGBA8 画布绘制 |
@@ -193,6 +202,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [audio-source-editor](audio-source-editor/README.md) | 音频源编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [biome-rules-editor](biome-rules-editor/README.md) | 生物群系规则编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-action-editor](combat-action-editor/README.md) | 战斗动作编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
+| [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |
 | [material-editor](material-editor/README.md) | 材质编辑器：中央 UE5 材质球预览 + 右侧 Shading/Surface/Lighting 参数面板 |
@@ -213,6 +223,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [agent](agent/README.md) | Squirrel 强化学习：定义环境、训练策略、选择动作与回放（C++ 侧 `eve.Agent`） |
 | [economy](economy/README.md) | `eve.Economy` 无窗口脚本演示：采集循环与满仓浪费（`eve run -r`） |
 | [shader_effect_package](shader_effect_package/README.md) | 打包式 shader effect 资产包（`effect.vert` / `effect.frag` + `parameters.json`） |
+| [particle-effects](particle-effects/README.md) | 粒子特效 JSON 资产包：fire / smoke / impact / trail / weather，供 `newEffectFromFile` 加载 |
 | [surface-fluid-dynamic](surface-fluid-dynamic/README.md) | C++ 侧表面流体参考实现（确定性 CPU 解算） |
 
 ## 与设计目标对照

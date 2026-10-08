@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "editing/EditingIds.h"
 #include "editing/EditingResult.h"
 
@@ -64,7 +65,7 @@ private:
 };
 
 /** @brief Thread-safe generation-qualified registry for editing extension providers. */
-class ExtensionProviderRegistry {
+class EVENGINE_API_PLATFORM ExtensionProviderRegistry {
 public:
     ExtensionProviderRegistry();
     ~ExtensionProviderRegistry();
@@ -95,8 +96,9 @@ private:
  * @param implementation Type-erased owning capability implementation.
  * @return Generation-qualified provider handle.
  */
-[[nodiscard]] Result<ProviderHandle> registerStaticProvider(
-    ExtensionProviderRegistry& registry, ExtensionDescriptor descriptor,
-    CapabilityId capability, std::shared_ptr<void> implementation);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<ProviderHandle> registerStaticProvider(ExtensionProviderRegistry& registry,
+                                                                                  ExtensionDescriptor        descriptor,
+                                                                                  CapabilityId               capability,
+                                                                                  std::shared_ptr<void> implementation);
 
 }  // namespace eve::editing

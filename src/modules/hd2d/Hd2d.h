@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // HD-2D module: renders 2D tilemaps and 2D sprite characters inside the 3D
 // scene. Both techniques layer on top of the existing graphics 3D pipeline
@@ -53,7 +55,7 @@ namespace eve::hd2d {
  * face. Tiled
  * diagonal/horizontal/vertical flags transform the top UVs.
  */
-class TileMap3D {
+class EVENGINE_API_DOMAINS TileMap3D {
 public:
     TileMap3D() = default;
     TileMap3D(const TileMap3D &) = delete;
@@ -111,7 +113,7 @@ private:
  * sprite-sheet animation: setFrameGrid(cols, rows) + setFrameIndex / play advance a frame index; update(dt) steps the
  * clock. This lets existing 2D character animations run in 3D.
  */
-class Sprite3D {
+class EVENGINE_API_DOMAINS Sprite3D {
 public:
     Sprite3D();
     ~Sprite3D();
@@ -267,7 +269,7 @@ private:
  * filtering on sprite/terrain atlases. Depth-of-field needs Sprite3D masked
  * cutout / DopFix depth writes so the focus plane can resolve.
  */
-class Hd2dLook {
+class EVENGINE_API_DOMAINS Hd2dLook {
 public:
     Hd2dLook() = default;
 
@@ -320,7 +322,7 @@ private:
 /**
  * @brief HD-2D module: tilemap-to-3D extrusion + 2D sprites as 3D billboards.
  */
-class Hd2D : public Module {
+class EVENGINE_API_DOMAINS Hd2D : public Module {
 public:
     Module_REG(Hd2D);
     Hd2D();

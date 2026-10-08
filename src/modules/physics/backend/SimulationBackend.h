@@ -9,6 +9,7 @@
  * enter through the capability interface declared here and may be absent.
  */
 
+#include "common/Export.h"
 #include "common/Result.h"
 #include "common/Time.h"
 
@@ -243,7 +244,7 @@ public:
  * The legacy single-provider `eve::cap::provide<IAcceleratorBackendProvider>()` entry remains
  * supported and is considered after independently registered providers.
  */
-class AcceleratorBackendProviderRegistration {
+class EVENGINE_API_BACKENDS AcceleratorBackendProviderRegistration {
 public:
     /**
      * @brief Registers an externally owned provider for multi-provider selection.
@@ -306,8 +307,9 @@ namespace detail {
  * @return Applied when all shared backend invariants hold.
  */
 [[nodiscard("check simulation-step validation")]]
-eve::Result<void> validateSimulationStep(const eve::SimulationStep& step, const SimulationSettings& settings,
-                                         const SimulationObservation& observation);
+EVENGINE_API_BACKENDS eve::Result<void> validateSimulationStep(const eve::SimulationStep&   step,
+                                                               const SimulationSettings&    settings,
+                                                               const SimulationObservation& observation);
 
 /**
  * @brief Produces the next observation without mutating the current one.
@@ -316,8 +318,8 @@ eve::Result<void> validateSimulationStep(const eve::SimulationStep& step, const 
  * @return The next observation, or an overflow/invalid-input failure.
  */
 [[nodiscard("check observation advancement")]]
-eve::Result<SimulationObservation> advanceSimulationObservation(const SimulationObservation& current,
-                                                                const eve::SimulationStep&   step);
+EVENGINE_API_BACKENDS eve::Result<SimulationObservation> advanceSimulationObservation(
+    const SimulationObservation& current, const eve::SimulationStep& step);
 
 /**
  * @brief Validates restored backend progress metadata.
@@ -326,7 +328,8 @@ eve::Result<SimulationObservation> advanceSimulationObservation(const Simulation
  * @return Applied when all fields are finite, non-negative and coherent.
  */
 [[nodiscard("check observation validation")]]
-eve::Result<void> validateSimulationObservation(const SimulationObservation& observation, const char* path);
+EVENGINE_API_BACKENDS eve::Result<void> validateSimulationObservation(const SimulationObservation& observation,
+                                                                      const char*                  path);
 
 /**
  * @brief Creates the built-in Box2D CPU backend adapter.
@@ -337,7 +340,7 @@ eve::Result<void> validateSimulationObservation(const SimulationObservation& obs
  * This composition hook is intentionally independent of Graphics and Gpgpu.
  */
 [[nodiscard("retain the backend until its borrowed world is destroyed")]]
-std::unique_ptr<ISimulationBackend> makeBox2DSimulationBackend(b2World* world);
+EVENGINE_API_BACKENDS std::unique_ptr<ISimulationBackend> makeBox2DSimulationBackend(b2World* world);
 
 /**
  * @brief Creates a callback-backed backend for a domain-owned CPU or test solver.
@@ -348,16 +351,15 @@ std::unique_ptr<ISimulationBackend> makeBox2DSimulationBackend(b2World* world);
  * @return An owning backend adapter.
  */
 [[nodiscard("retain the backend while its callback state is live")]]
-std::unique_ptr<ISimulationBackend> makeCallbackSimulationBackend(void* context, SimulationStepCallback callback,
-                                                                  SimulationBackendKind kind,
-                                                                  SimulationDeterminism determinism);
+EVENGINE_API_BACKENDS std::unique_ptr<ISimulationBackend> makeCallbackSimulationBackend(
+    void* context, SimulationStepCallback callback, SimulationBackendKind kind, SimulationDeterminism determinism);
 
 /**
  * @brief Creates a no-op mock accelerator used for headless contract tests.
  * @return A backend with observable tick/progress but no solver dependency.
  */
 [[nodiscard("retain the mock backend for contract execution")]]
-std::unique_ptr<ISimulationBackend> makeMockAcceleratorBackend();
+EVENGINE_API_BACKENDS std::unique_ptr<ISimulationBackend> makeMockAcceleratorBackend();
 
 /**
  * @brief Selects an optional accelerator and reports a structured CPU alternate path.
@@ -369,9 +371,9 @@ std::unique_ptr<ISimulationBackend> makeMockAcceleratorBackend();
  *         Warning diagnostic and `usedFallback=true`.
  */
 [[nodiscard("inspect the selected backend and fallback diagnostics")]]
-eve::Result<SimulationBackendSelection> selectSimulationBackend(SimulationBackendDomain             domain,
-                                                                std::unique_ptr<ISimulationBackend> cpuBackend,
-                                                                void* state, bool preferAccelerator = true);
+EVENGINE_API_BACKENDS eve::Result<SimulationBackendSelection> selectSimulationBackend(
+    SimulationBackendDomain domain, std::unique_ptr<ISimulationBackend> cpuBackend, void* state,
+    bool preferAccelerator = true);
 
 }  // namespace detail
 }  // namespace eve::physics

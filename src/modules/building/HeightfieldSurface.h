@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "building/PlacementSystem.h"
 #include "common/Result.h"
@@ -11,7 +13,7 @@
 namespace eve::building {
 
 /** @brief Immutable regularly sampled heightfield usable as an XY or XZ placement surface. */
-class HeightfieldSurface final {
+class EVENGINE_API_WORLD HeightfieldSurface final {
 public:
     /** @brief Owning construction data. Samples are row-major plane-axis heights. */
     struct Config {

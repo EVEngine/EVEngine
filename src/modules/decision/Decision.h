@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -18,7 +20,7 @@ struct DecisionContextHandleTag {};
 using DecisionContextHandleRef = eve::script::RuntimeHandleRef<DecisionContextHandleTag>;
 
 /** @brief Data-oriented blackboard, FSM, utility and influence-map workspace. */
-class DecisionContext {
+class EVENGINE_API_FOUNDATION DecisionContext {
 public:
     /**
      * @brief Sets a scalar JSON value on a named blackboard.

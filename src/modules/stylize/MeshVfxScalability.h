@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstddef>
 #include <cstdint>
@@ -56,7 +58,7 @@ struct MeshVfxLodDecision {
  * priority candidates are ordered by distance and then stableInstanceId, making
  * replay and backend decisions independent of input iteration order.
  */
-class MeshVfxScalabilityPlanner {
+class EVENGINE_API_WORLD MeshVfxScalabilityPlanner {
 public:
     /**
      * @brief Creates a planner with the supplied immutable policy.

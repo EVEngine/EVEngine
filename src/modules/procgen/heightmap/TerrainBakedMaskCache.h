@@ -11,7 +11,7 @@ class Heightmap;
  * @brief Own Pcg-style per-terrain baked scalar masks keyed by stable terrain and mask identities.
  * Entries contain copied CPU rasters. Scene objects, providers, GPU resources, callbacks, clocks and RNG are not retained.
  */
-class TerrainBakedMaskCache {
+class EVENGINE_API_DOMAINS TerrainBakedMaskCache {
 public:
     TerrainBakedMaskCache();
     ~TerrainBakedMaskCache();

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AttributeResourceAccount.h
@@ -27,7 +29,7 @@ enum class AttributeResourceKind : unsigned char {
  * The wrapped account must outlive the view; calls are synchronous on the
  * wrapped account's owner thread.
  */
-class AttributeResourceAccountAdapter final : public eve::resource::IResourceAccount {
+class EVENGINE_API_FOUNDATION AttributeResourceAccountAdapter final : public eve::resource::IResourceAccount {
 public:
     /** @brief Bind a named view to an existing AttributeSet resource account. */
     AttributeResourceAccountAdapter(AttributeSetResourceAccount& account, AttributeResourceKind kind) noexcept;

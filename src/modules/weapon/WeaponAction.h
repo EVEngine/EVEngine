@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -24,7 +26,7 @@ namespace eve::weapon {
  * WeaponEntity/WeaponDefinition and are interpreted by an injected Active
  * executor. ActionRuntime remains the only phase/timer owner.
  */
-class WeaponActionAdapter {
+class EVENGINE_API_WORLD WeaponActionAdapter {
 public:
     /**
      * @brief Convert the weapon trigger resource into a canonical cost.

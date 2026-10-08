@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 #include "editor/EditorIds.h"
@@ -43,7 +45,7 @@ constexpr HostFeature& operator|=(HostFeature& left, HostFeature right) {
  * This profile gates discovery, execution and build exposure. It does not
  * replace target constraints, gameplay policy or server-side authority.
  */
-class HostProfile {
+class EVENGINE_API_ORCHESTRATION HostProfile {
 public:
     HostProfile() = default;
     explicit HostProfile(HostKind kind) : kind_(kind) {}

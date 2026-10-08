@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "physics/OwnedQuery3D.h"
@@ -19,7 +21,7 @@ class Shape3D;
  * @brief 3D rigid body (Box3D) in meter-space coordinates (+Y up by convention).
  * Owned by a World3D; create primitive or convex-hull shapes with the new*Shape APIs.
  */
-class Body3D {
+class EVENGINE_API_WORLD Body3D {
 public:
     /** @brief Internal: wraps a Box3D body (use World3D::newBody). */
     Body3D(World3D *world, b3BodyId bodyId, int id, PhysicsBodyHandle runtimeHandle);

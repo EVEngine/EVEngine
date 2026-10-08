@@ -24,11 +24,22 @@ class CharacterData extends WeaponData {
     alive = true
     </ editor = "combo", options = "warrior,mage,rogue" />
     job = "warrior"
-    skills = []
+    </ editor = "color" />
+    tint = [1.0, 0.8, 0.2, 1.0]
+    </ editor = "vec2" />
+    scale = [1.0, 1.0]
+    skills = ["slash", "bash"]
+    buffs = { haste = 1.0 }
 
     constructor(name = "Hero", hpValue = 100.0) {
         characterName = name
         hp = hpValue
+        // Rebuild mutable defaults per instance (Squirrel shares class-field
+        // table/array defaults between instances).
+        skills = ["slash", "bash"]
+        buffs = { haste = 1.0 }
+        tint = [1.0, 0.8, 0.2, 1.0]
+        scale = [1.0, 1.0]
     }
 }
 

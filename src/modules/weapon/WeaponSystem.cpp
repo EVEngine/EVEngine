@@ -54,13 +54,20 @@ public:
     void update(WeaponEntity&, float) override {}
 };
 
-/** @brief 近战逻辑：命中数据由事件承载（arc/aoe），逻辑本身无需额外副作用。 */
+const WeaponDefinition* defOf(WeaponEntity& w);
+void                    pushFireEvent(WeaponEntity& w, const WeaponDefinition* def, const AttackRequest& req, int ammo);
+
+/** @brief 近战逻辑：开火事件携带 arc/aoe，几何命中由 combat::MeleeHitRuntime 消费。 */
 class MeleeLogic : public IWeaponLogic {
 public:
     const char* name() const override { return "melee"; }
     bool        canFire(const WeaponEntity&) const override { return true; }
-    void        fire(WeaponEntity&, const AttackRequest&) override {}
-    void        update(WeaponEntity&, float) override {}
+    void        fire(WeaponEntity& w, const AttackRequest& req) override {
+        const WeaponDefinition* def = defOf(w);
+        if (!def) return;
+        pushFireEvent(w, def, req, static_cast<int>(w.state()->resource.value));
+    }
+    void update(WeaponEntity&, float) override {}
 };
 
 HitscanLogic    gHitscan;

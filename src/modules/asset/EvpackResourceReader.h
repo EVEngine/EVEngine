@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EvpackResourceReader.h @brief Typed capability-aware runtime access to admitted packs. */
 
@@ -24,7 +26,7 @@ struct RuntimeAssetPayload {
 };
 
 /** @brief Immutable reader retaining an admitted pack by shared ownership. */
-class EvpackResourceReader {
+class EVENGINE_API_FOUNDATION EvpackResourceReader {
 public:
     /** @brief Bind an admitted package; null is rejected by `read`. */
     explicit EvpackResourceReader(std::shared_ptr<const Evpack> pack) : pack_(std::move(pack)) {}

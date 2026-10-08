@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EvpackClothModel.h @brief Runtime package adapter for cloth models. */
 
@@ -15,7 +17,7 @@ struct LoadedClothModel {
 };
 
 /** @brief Capability-aware adapter from admitted `.evpack` data to ClothModel. */
-class EvpackClothModelLoader {
+class EVENGINE_API_DOMAINS EvpackClothModelLoader {
 public:
     /**
      * @brief Bind a borrowed immutable reader.

@@ -10,7 +10,7 @@ class Heightmap;
  * @return Sample value or InvalidArgument for an empty/nonfinite raster.
  * @thread Synchronous immutable access; no retained reference or callback.
  */
-[[nodiscard]] Result<float> sampleTerrainHeightmapSafe(const Heightmap& source, int x, int z);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<float> sampleTerrainHeightmapSafe(const Heightmap& source, int x, int z);
 
 /**
  * @brief Read Pcg HeightMap's normalized bilinear sample using x*width and z*depth coordinates.
@@ -20,12 +20,13 @@ class Heightmap;
  * @return Interpolated value or InvalidArgument; x/z equal to one select the last sample.
  * @thread Synchronous immutable access; no retained reference or callback.
  */
-[[nodiscard]] Result<float> sampleTerrainHeightmapNormalized(const Heightmap& source, float x, float z);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<float> sampleTerrainHeightmapNormalized(const Heightmap& source, float x,
+                                                                                  float z);
 
 /** @brief Return whether a heightmap contains a valid positive-size sample array. */
-[[nodiscard]] Result<bool> terrainHeightmapHasData(const Heightmap& source);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<bool> terrainHeightmapHasData(const Heightmap& source);
 /** @brief Return whether both positive heightmap dimensions are powers of two; malformed storage fails. */
-[[nodiscard]] Result<bool> terrainHeightmapIsPowerOfTwo(const Heightmap& source);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<bool> terrainHeightmapIsPowerOfTwo(const Heightmap& source);
 
 /** @brief Pcg HeightMap.CurvatureMap modes in source enum order. */
 enum class TerrainHeightmapCurvature { Average = 0, Horizontal = 1, Vertical = 2 };
@@ -53,8 +54,9 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Synchronous caller-owned access; no callbacks or retained references.
  */
-[[nodiscard]] Result<int> generateTerrainHeightmapCurvature(Heightmap& target, const Heightmap& source,
-                                                             TerrainHeightmapCurvature mode);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainHeightmapCurvature(Heightmap&                target,
+                                                                                 const Heightmap&          source,
+                                                                                 TerrainHeightmapCurvature mode);
 
 /**
  * @brief Derive Pcg HeightMap.Aspect's aspect, northerness, or easterness raster.
@@ -65,8 +67,9 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Synchronous caller-owned access; no callbacks or retained references.
  */
-[[nodiscard]] Result<int> generateTerrainHeightmapAspect(Heightmap& target, const Heightmap& source,
-                                                          TerrainHeightmapAspect mode);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainHeightmapAspect(Heightmap&             target,
+                                                                              const Heightmap&       source,
+                                                                              TerrainHeightmapAspect mode);
 
 /**
  * @brief Apply Pcg HeightMap.DeNoise, GrowEdges, or ShrinkEdges in source traversal order.
@@ -79,8 +82,9 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @thread Synchronous caller-owned access; no callbacks or retained references.
  * The candidate is intentionally updated in X-major/Y-minor order, so later samples observe earlier writes.
  */
-[[nodiscard]] Result<int> filterTerrainHeightmapNeighborhood(Heightmap& target, const Heightmap& source, int radius,
-                                                              TerrainHeightmapNeighborhood mode);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> filterTerrainHeightmapNeighborhood(Heightmap&       target,
+                                                                                  const Heightmap& source, int radius,
+                                                                                  TerrainHeightmapNeighborhood mode);
 
 /**
  * @brief Apply Pcg HeightMap.Smooth's in-place four-neighbor passes.
@@ -90,7 +94,8 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @return Changed samples or InvalidArgument; failure preserves target.
  * @thread Synchronous caller-owned access; no retained references.
  */
-[[nodiscard]] Result<int> smoothTerrainHeightmap(Heightmap& target, const Heightmap& source, int iterations);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> smoothTerrainHeightmap(Heightmap& target, const Heightmap& source,
+                                                                      int iterations);
 
 /**
  * @brief Apply Pcg HeightMap.SmoothRadius's scaled sliding-window filter, including its first-row omission.
@@ -100,7 +105,8 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @return Changed samples or InvalidArgument; failure preserves target.
  * @thread Synchronous caller-owned access; no retained references.
  */
-[[nodiscard]] Result<int> smoothTerrainHeightmapRadius(Heightmap& target, const Heightmap& source, int radius);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> smoothTerrainHeightmapRadius(Heightmap& target, const Heightmap& source,
+                                                                            int radius);
 
 /**
  * @brief Apply Pcg HeightMap.Convolve with an odd square kernel and source-order in-place feedback.
@@ -110,7 +116,8 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @return Changed samples or InvalidArgument; failure preserves target.
  * @thread Synchronous caller-owned access; no retained references.
  */
-[[nodiscard]] Result<int> convolveTerrainHeightmap(Heightmap& target, const Heightmap& source, const Heightmap& kernel);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> convolveTerrainHeightmap(Heightmap& target, const Heightmap& source,
+                                                                        const Heightmap& kernel);
 
 /**
  * @brief Generate Pcg HeightMap.SlopeMap's normalized gradient magnitude.
@@ -119,7 +126,8 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @return Changed samples or InvalidArgument; failure preserves target.
  * @thread Synchronous caller-owned access; no retained references.
  */
-[[nodiscard]] Result<int> generateTerrainHeightmapSlope(Heightmap& target, const Heightmap& source);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainHeightmapSlope(Heightmap&       target,
+                                                                             const Heightmap& source);
 
 /**
  * @brief Quantize every sample using Pcg HeightMap.Quantize's Mathf.Round rule.
@@ -129,7 +137,8 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @return Changed samples or InvalidArgument; failure preserves target.
  * @thread Synchronous caller-owned access; no retained references.
  */
-[[nodiscard]] Result<int> quantizeTerrainHeightmap(Heightmap& target, const Heightmap& source, float divisor);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> quantizeTerrainHeightmap(Heightmap& target, const Heightmap& source,
+                                                                        float divisor);
 
 /**
  * @brief Apply a scalar Pcg HeightMap arithmetic operation with optional clamping.
@@ -142,9 +151,9 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param maxValue Finite upper clamp bound, not less than minValue.
  * @return Changed samples or InvalidArgument; failure preserves target.
  */
-[[nodiscard]] Result<int> applyTerrainHeightmapScalarArithmetic(Heightmap& target, const Heightmap& source,
-                                                                 float operand, TerrainHeightmapArithmetic operation,
-                                                                 bool clampResult, float minValue, float maxValue);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainHeightmapScalarArithmetic(
+    Heightmap& target, const Heightmap& source, float operand, TerrainHeightmapArithmetic operation, bool clampResult,
+    float minValue, float maxValue);
 
 /**
  * @brief Apply a raster Pcg HeightMap arithmetic operation, resampling a differently sized operand.
@@ -157,10 +166,9 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param maxValue Finite upper clamp bound, not less than minValue.
  * @return Changed samples or InvalidArgument; failure preserves target.
  */
-[[nodiscard]] Result<int> applyTerrainHeightmapRasterArithmetic(Heightmap& target, const Heightmap& source,
-                                                                 const Heightmap& operand,
-                                                                 TerrainHeightmapArithmetic operation,
-                                                                 bool clampResult, float minValue, float maxValue);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainHeightmapRasterArithmetic(
+    Heightmap& target, const Heightmap& source, const Heightmap& operand, TerrainHeightmapArithmetic operation,
+    bool clampResult, float minValue, float maxValue);
 
 /**
  * @brief Lerp source toward values under a mask using Pcg's clamped Mathf.Lerp semantics.
@@ -170,8 +178,8 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param mask Borrowed finite interpolation mask, resampled when dimensions differ.
  * @return Changed samples or InvalidArgument; failure preserves target.
  */
-[[nodiscard]] Result<int> lerpTerrainHeightmap(Heightmap& target, const Heightmap& source, const Heightmap& values,
-                                               const Heightmap& mask);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> lerpTerrainHeightmap(Heightmap& target, const Heightmap& source,
+                                                                    const Heightmap& values, const Heightmap& mask);
 
 /**
  * @brief Apply Pcg Invert, Normalise, Power, or Contrast to a finite heightmap.
@@ -181,8 +189,9 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param parameter Exponent for Power or factor for Contrast; ignored by Invert and Normalise.
  * @return Changed samples or InvalidArgument; failure preserves target.
  */
-[[nodiscard]] Result<int> transformTerrainHeightmap(Heightmap& target, const Heightmap& source,
-                                                     TerrainHeightmapTransform transform, float parameter);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> transformTerrainHeightmap(Heightmap& target, const Heightmap& source,
+                                                                         TerrainHeightmapTransform transform,
+                                                                         float                     parameter);
 
 /**
  * @brief Copy or conditionally merge a Pcg heightmap, resampling when dimensions differ.
@@ -191,8 +200,8 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param mode Always copy, copy if source is less, or copy if source is greater.
  * @return Changed samples or InvalidArgument; failure preserves target.
  */
-[[nodiscard]] Result<int> copyTerrainHeightmap(Heightmap& target, const Heightmap& source,
-                                                TerrainHeightmapCopy mode);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> copyTerrainHeightmap(Heightmap& target, const Heightmap& source,
+                                                                    TerrainHeightmapCopy mode);
 
 /**
  * @brief Copy a Pcg heightmap with inclusive output clamping and normalized resampling.
@@ -202,8 +211,8 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param maxValue Finite upper bound, not less than minValue.
  * @return Changed samples or InvalidArgument; failure preserves target.
  */
-[[nodiscard]] Result<int> copyTerrainHeightmapClamped(Heightmap& target, const Heightmap& source, float minValue,
-                                                       float maxValue);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> copyTerrainHeightmapClamped(Heightmap& target, const Heightmap& source,
+                                                                           float minValue, float maxValue);
 
 /**
  * @brief Transpose a Pcg HeightMap exactly as HeightMap.Flip does.
@@ -211,7 +220,7 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param source Borrowed finite source.
  * @return Changed samples, counting every sample when dimensions change, or InvalidArgument.
  */
-[[nodiscard]] Result<int> flipTerrainHeightmap(Heightmap& target, const Heightmap& source);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> flipTerrainHeightmap(Heightmap& target, const Heightmap& source);
 
 /**
  * @brief Measure Pcg height range, sum, average, or scanner base level from current samples.
@@ -219,7 +228,8 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param measure Requested measurement.
  * @return Scalar measurement or InvalidArgument.
  */
-[[nodiscard]] Result<double> measureTerrainHeightmap(const Heightmap& source, TerrainHeightmapMeasure measure);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<double> measureTerrainHeightmap(const Heightmap&        source,
+                                                                          TerrainHeightmapMeasure measure);
 
 /**
  * @brief Apply Pcg's curve-driven Quantize overload using one sampled curve per raster row.
@@ -229,8 +239,10 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param curves Borrowed curveWidth-by-N sampled curve rows evaluated linearly over [0,1].
  * @return Changed samples or InvalidArgument; failure preserves target.
  */
-[[nodiscard]] Result<int> quantizeTerrainHeightmapTerraces(Heightmap& target, const Heightmap& source,
-                                                            const Heightmap& startHeights, const Heightmap& curves);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> quantizeTerrainHeightmapTerraces(Heightmap&       target,
+                                                                                const Heightmap& source,
+                                                                                const Heightmap& startHeights,
+                                                                                const Heightmap& curves);
 
 /**
  * @brief Evaluate one of Pcg HeightMap's three point-slope formulas.
@@ -240,17 +252,20 @@ enum class TerrainHeightmapSlopeQuery { GridForward = 0, NormalizedCentral = 1, 
  * @param mode Point-slope formula.
  * @return Source-formula slope or InvalidArgument.
  */
-[[nodiscard]] Result<double> measureTerrainHeightmapSlope(const Heightmap& source, float x, float y,
-                                                           TerrainHeightmapSlopeQuery mode);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<double> measureTerrainHeightmapSlope(const Heightmap& source, float x,
+                                                                               float                      y,
+                                                                               TerrainHeightmapSlopeQuery mode);
 
 /** @brief Fill a finite Pcg heightmap with one value clamped to [0,1]. @param target Destination. @param value Fill value. @return Changed samples or InvalidArgument. */
-[[nodiscard]] Result<int> fillTerrainHeightmap(Heightmap& target, float value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> fillTerrainHeightmap(Heightmap& target, float value);
 /** @brief Set one sample after clamping its coordinates to the nearest border. @param target Destination. @param x X coordinate. @param y Z coordinate. @param value Finite value. @return Changed samples or InvalidArgument. */
-[[nodiscard]] Result<int> setTerrainHeightmapSafe(Heightmap& target, int x, int y, float value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> setTerrainHeightmapSafe(Heightmap& target, int x, int y, float value);
 /** @brief Set Pcg's fixed-X row from a one-dimensional strip. @param target Destination. @param rowX Fixed X. @param values Target-height strip. @return Changed samples or InvalidArgument. */
-[[nodiscard]] Result<int> setTerrainHeightmapRow(Heightmap& target, int rowX, const Heightmap& values);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> setTerrainHeightmapRow(Heightmap& target, int rowX,
+                                                                      const Heightmap& values);
 /** @brief Set Pcg's fixed-Z column from a one-dimensional strip. @param target Destination. @param columnZ Fixed Z. @param values Target-width strip. @return Changed samples or InvalidArgument. */
-[[nodiscard]] Result<int> setTerrainHeightmapColumn(Heightmap& target, int columnZ, const Heightmap& values);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> setTerrainHeightmapColumn(Heightmap& target, int columnZ,
+                                                                         const Heightmap& values);
 /** @brief Reset a heightmap to Pcg's empty zero-by-zero state. @param target Destination. @return Removed sample count. */
 [[nodiscard]] Result<int> resetTerrainHeightmap(Heightmap& target);
 }

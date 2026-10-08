@@ -23,7 +23,7 @@ enum class WaterReflectionMaskTransition { Unchanged = 0, Enabled = 1, Disabled 
  *          state when the sampled boolean changes; no image or terrain pointer is retained.
  * @thread Game thread only.
  */
-class WaterReflectionMasker {
+class EVENGINE_API_BACKENDS WaterReflectionMasker {
 public:
     /** @brief Configure inclusive thresholds, channel selection and initial scene-profile state. */
     [[nodiscard]] Result<void> configure(WaterReflectionMaskChannel channel, float minimum, float maximum,
@@ -60,6 +60,6 @@ private:
 };
 
 /** @brief Register Pcg reflection-mask bindings. */
-void exposeWaterReflectionMaskerBindings(ssq::Table& table);
+EVENGINE_API_BACKENDS void exposeWaterReflectionMaskerBindings(ssq::Table& table);
 
 }  // namespace eve::graphics

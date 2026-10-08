@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "npc_ai/editing/NpcAiEditingTypes.h"
 
@@ -26,7 +28,7 @@ struct BehaviorCompileResult {
 };
 
 /** @brief Typed behavior-tree/decision-graph connection and compilation policy. */
-class BehaviorGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_BACKENDS BehaviorGraphDomain final : public IGraphDomainProvider {
 public:
     std::string domain() const override { return "behavior"; }
     GraphConnectionDecision canConnect(const GraphPinRecord& from,

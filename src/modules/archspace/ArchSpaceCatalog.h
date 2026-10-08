@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "archspace/ArchSpaceTypes.h"
 
@@ -27,10 +29,10 @@ struct CatalogEntry {
  * @brief Resolve a built-in furniture catalog entry.
  * @return Entry when known; empty optional for unknown ids (bake falls back to a marker).
  */
-[[nodiscard]] std::optional<CatalogEntry> lookupCatalog(std::string_view catalogId);
+[[nodiscard]] EVENGINE_API_WORLD std::optional<CatalogEntry> lookupCatalog(std::string_view catalogId);
 
 /** @brief Stable list of built-in catalog ids for tools and inspector UIs. */
-[[nodiscard]] std::vector<std::string> listCatalogIds();
+[[nodiscard]] EVENGINE_API_WORLD std::vector<std::string> listCatalogIds();
 
 /**
  * @brief Append yaw-oriented catalog geometry into a mesh bake.
