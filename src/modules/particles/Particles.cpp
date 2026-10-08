@@ -1,25 +1,21 @@
 #include "particles/Particles.h"
-#include "particles/UnderwaterParticles.h"
-#include "particles/GroundParticleCulling.h"
-#include "particles/FloatingPointFixParticles.h"
-#include "particles/PcgMaterialSelector.h"
+#include "common/Json.h"
 #include "common/Module.h"
 #include "common/Profile.h"
 #include "common/SquirrelBinding.h"
-#include "data/DataModule.h"
-#include "data/JsonDocument.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
+#include "particles/FloatingPointFixParticles.h"
+#include "particles/GroundParticleCulling.h"
 #include "particles/ParticleConfig.h"
 #include "particles/ParticleEffect.h"
 #include "particles/ParticleEmitterPool.h"
 #include "particles/ParticleRuntime.h"
 #include "particles/ParticleSystem.h"
 #include "particles/ParticlesCapabilities.h"
-
-#include <Poco/Dynamic/Var.h>
-#include <Poco/JSON/Object.h>
+#include "particles/PcgMaterialSelector.h"
+#include "particles/UnderwaterParticles.h"
 
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -32,31 +28,24 @@ Particles::~Particles() { unregisterParticlesAttackVfxExecutor(); }
 
 namespace {
 
-int bufferFromJson(const std::string &json, int fallback) {
-    auto *dm = eve::data::DataModule::create();
+int bufferFromJson(const std::string& json, int fallback) {
     std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
-    if (!doc || !doc->isObject()) return fallback;
-    auto obj = doc->object();
-    if (!obj || !obj->has("buffer")) return fallback;
-    try {
-        int n = obj->getValue<int>("buffer");
-        return n > 0 ? n : fallback;
-    } catch (...) {
-        return fallback;
-    }
+    auto        doc = eve::json::Document::parse(json, &err);
+    if (!doc.valid() || !doc.root().isObject()) return fallback;
+    const eve::json::Value obj = doc.root();
+    if (!obj.has("buffer")) return fallback;
+    const int n = obj.getInt("buffer", fallback);
+    return n > 0 ? n : fallback;
 }
 
 }  // namespace
 
 Module_IMPL(Particles, new Particles());
 
-ParticleEmitter *Particles::newEmitter(int bufferSize) {
-    return ParticleEmitter::createEmitter(bufferSize);
-}
+ParticleEmitter* Particles::newEmitter(int bufferSize) { return ParticleEmitter::createEmitter(bufferSize); }
 
-ParticleEmitter *Particles::newEmitterFromFile(const std::string &path) {
-    auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
+ParticleEmitter* Particles::newEmitterFromFile(const std::string& path) {
+    auto* fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
     if (!fs) fs = eve::filesystem::Filesystem::create();
 
     std::unique_ptr<eve::filesystem::FileData> data;
@@ -67,9 +56,9 @@ ParticleEmitter *Particles::newEmitterFromFile(const std::string &path) {
     }
     if (!data || data->getSize() == 0) return nullptr;
 
-    std::string text(static_cast<const char *>(data->getData()), data->getSize());
-    int buffer = bufferFromJson(text, 1000);
-    ParticleEmitter *e = ParticleEmitter::createEmitter(buffer);
+    std::string      text(static_cast<const char*>(data->getData()), data->getSize());
+    int              buffer = bufferFromJson(text, 1000);
+    ParticleEmitter* e      = ParticleEmitter::createEmitter(buffer);
     if (!loadConfigFile(e, path, nullptr)) {
         // Entity stays in ECS registry; still return for inspection, or null?
         // Prefer null on failed apply after create — leave entity (ECS has no destroy).
@@ -96,7 +85,7 @@ void Particles::update(float dt) {
     ParticleLightSystem::update();
 }
 
-eve::Result<void> Particles::advance(const eve::SimulationStep &step) {
+eve::Result<void> Particles::advance(const eve::SimulationStep& step) {
     // Config polling is an asset-side concern. Simulation itself is driven
     // exclusively by the injected scheduler step below.
     ParticleConfigSystem::poll();
@@ -117,29 +106,27 @@ eve::Result<void> Particles::advance(const eve::SimulationStep &step) {
     return simulation;
 }
 
-void Particles::render(graphics::Graphics *gfx) { ParticleRenderSystem::render(gfx); }
+void Particles::render(graphics::Graphics* gfx) { ParticleRenderSystem::render(gfx); }
 
 int Particles::pollConfigs() { return ParticleConfigSystem::poll(); }
 
 int Particles::getEmitterCount() const {
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return 0;
-    int n = 0;
+    int  n    = 0;
     auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config>();
     for (auto it = view.begin(); it != view.end(); ++it) ++n;
     return n;
 }
 
 void Particles::setBudget(int maxParticles, int maxSimulatedEmitters) {
-    auto &budget = particleBudgetConfig();
-    budget.maxParticles = maxParticles > 0 ? maxParticles : 0;
+    auto& budget                = particleBudgetConfig();
+    budget.maxParticles         = maxParticles > 0 ? maxParticles : 0;
     budget.maxSimulatedEmitters = maxSimulatedEmitters > 0 ? maxSimulatedEmitters : 0;
 }
 
 int Particles::getMaxParticles() const { return particleBudgetConfig().maxParticles; }
 
-int Particles::getMaxSimulatedEmitters() const {
-    return particleBudgetConfig().maxSimulatedEmitters;
-}
+int Particles::getMaxSimulatedEmitters() const { return particleBudgetConfig().maxSimulatedEmitters; }
 
 void Particles::setQualityLevel(int quality) {
     particleBudgetConfig().qualityLevel = quality < 0 ? 0 : (quality > 3 ? 3 : quality);
@@ -147,28 +134,22 @@ void Particles::setQualityLevel(int quality) {
 
 int Particles::getQualityLevel() const { return particleBudgetConfig().qualityLevel; }
 
-int Particles::getLastSimulatedEmitters() const {
-    return particleFrameStats().emittersSimulated;
-}
+int Particles::getLastSimulatedEmitters() const { return particleFrameStats().emittersSimulated; }
 int Particles::getLastCulledEmitters() const { return particleFrameStats().emittersCulled; }
 int Particles::getLastBudgetSkippedEmitters() const {
-    const auto &stats = particleFrameStats();
+    const auto& stats = particleFrameStats();
     return stats.emittersBudgetSkipped + stats.emittersQualitySkipped;
 }
-int Particles::getLastParticleCount() const { return particleFrameStats().particlesAfter; }
-int Particles::getLastSpawnedParticles() const { return particleFrameStats().particlesSpawned; }
-int Particles::getLastDroppedSpawns() const { return particleFrameStats().droppedSpawns; }
+int   Particles::getLastParticleCount() const { return particleFrameStats().particlesAfter; }
+int   Particles::getLastSpawnedParticles() const { return particleFrameStats().particlesSpawned; }
+int   Particles::getLastDroppedSpawns() const { return particleFrameStats().droppedSpawns; }
 int   Particles::getLastGpuResidentEmitters() const { return particleFrameStats().gpuResidentEmitters; }
 int   Particles::getLastGpuResidentParticles() const { return particleFrameStats().gpuResidentParticles; }
-int Particles::getLastRenderedParticles() const { return particleFrameStats().renderedParticles; }
-float Particles::getLastSimulationMs() const {
-    return static_cast<float>(particleFrameStats().simulationMs);
-}
-float Particles::getLastRenderMs() const {
-    return static_cast<float>(particleFrameStats().renderMs);
-}
+int   Particles::getLastRenderedParticles() const { return particleFrameStats().renderedParticles; }
+float Particles::getLastSimulationMs() const { return static_cast<float>(particleFrameStats().simulationMs); }
+float Particles::getLastRenderMs() const { return static_cast<float>(particleFrameStats().renderMs); }
 
-void Particles::expose(ssq::Table &table) {
+void Particles::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Particles::create, false);
     expose(cls);
     cls.addFunc("setBudget", &Particles::setBudget);
@@ -192,43 +173,38 @@ void Particles::expose(ssq::Table &table) {
     cls.addFunc("getLastEffectError", &Particles::getLastEffectError);
 
     auto em = table.addClass<ParticleEmitter>(
-        "Emitter", std::function<ParticleEmitter *()>([]() -> ParticleEmitter * { return nullptr; }),
-        true);
-    auto selector=table.addClass<PcgMaterialSelector>(
-        "PcgMaterialSelector",std::function<PcgMaterialSelector*()>([](){return new PcgMaterialSelector();}),true);
-    selector.addFunc("add",[vm=table.getHandle()](PcgMaterialSelector* self,graphics::Texture* texture){
-        return eve::script::projectResult(vm,self->add(texture));
+        "Emitter", std::function<ParticleEmitter*()>([]() -> ParticleEmitter* { return nullptr; }), true);
+    auto selector = table.addClass<PcgMaterialSelector>(
+        "PcgMaterialSelector", std::function<PcgMaterialSelector*()>([]() { return new PcgMaterialSelector(); }), true);
+    selector.addFunc("add", [vm = table.getHandle()](PcgMaterialSelector* self, graphics::Texture* texture) {
+        return eve::script::projectResult(vm, self->add(texture));
     });
-    selector.addFunc("clear",&PcgMaterialSelector::clear);
-    selector.addFunc("count",&PcgMaterialSelector::count);
-    selector.addFunc("selectAndApply",[vm=table.getHandle()](PcgMaterialSelector* self,
-        ParticleEmitter* emitter,int seed){
-        return eve::script::projectResult(vm,self->selectAndApply(emitter,static_cast<std::uint32_t>(seed)),
-            [](int index){return eve::Value(index);});
-    });
+    selector.addFunc("clear", &PcgMaterialSelector::clear);
+    selector.addFunc("count", &PcgMaterialSelector::count);
+    selector.addFunc(
+        "selectAndApply", [vm = table.getHandle()](PcgMaterialSelector* self, ParticleEmitter* emitter, int seed) {
+            return eve::script::projectResult(vm, self->selectAndApply(emitter, static_cast<std::uint32_t>(seed)),
+                                              [](int index) { return eve::Value(index); });
+        });
     table.addFunc("applyUnderwaterParticles",
-                  [vm = table.getHandle()](ParticleEmitter* ambience,
-                                           ParticleEmitter* transition, bool active,
+                  [vm = table.getHandle()](ParticleEmitter* ambience, ParticleEmitter* transition, bool active,
                                            bool transitionFx, bool entered, bool exited) {
-        return eve::script::projectResult(
-            vm, applyUnderwaterParticles(ambience, transition, active, transitionFx, entered,
-                                         exited));
-    });
-    table.addFunc("applyUnderwaterSurfaceVfx",
-                  [vm = table.getHandle()](ParticleEmitter* surfaceVfx, bool active) {
+                      return eve::script::projectResult(
+                          vm, applyUnderwaterParticles(ambience, transition, active, transitionFx, entered, exited));
+                  });
+    table.addFunc("applyUnderwaterSurfaceVfx", [vm = table.getHandle()](ParticleEmitter* surfaceVfx, bool active) {
         return eve::script::projectResult(vm, applyUnderwaterSurfaceVfx(surfaceVfx, active));
     });
-    table.addFunc("applyGroundParticleCulling",
-                  [vm = table.getHandle()](ParticleEmitter* emitter, int playerTag,
-                                           int visitorTag, bool entered, bool exited) {
-        return eve::script::projectResult(
-            vm, applyGroundParticleCulling(emitter, playerTag, visitorTag, entered, exited));
+    table.addFunc("applyGroundParticleCulling", [vm = table.getHandle()](ParticleEmitter* emitter, int playerTag,
+                                                                         int visitorTag, bool entered, bool exited) {
+        return eve::script::projectResult(vm,
+                                          applyGroundParticleCulling(emitter, playerTag, visitorTag, entered, exited));
     });
     table.addFunc("shiftWorldSpaceParticles",
                   [vm = table.getHandle()](ParticleEmitter* emitter, float shiftX, float shiftY) {
-        return eve::script::projectResult(vm, shiftWorldSpaceParticles(emitter, shiftX, shiftY),
-                                          [](int count) { return eve::Value(count); });
-    });
+                      return eve::script::projectResult(vm, shiftWorldSpaceParticles(emitter, shiftX, shiftY),
+                                                        [](int count) { return eve::Value(count); });
+                  });
 
     auto effect = table.addClass<ParticleEffect>(
         "ParticleEffect", std::function<ParticleEffect*()>([]() -> ParticleEffect* { return nullptr; }), true);
@@ -262,14 +238,13 @@ void Particles::expose(ssq::Table &table) {
     effect.addFunc("updateTimeline", &ParticleEffect::updateTimeline);
     effect.addFunc("reloadFromFile", [](ParticleEffect* self) {
         if (!self) return false;
-        auto reloaded = self->reloadFromFile();
-        const bool ok = static_cast<bool>(reloaded);
+        auto       reloaded = self->reloadFromFile();
+        const bool ok       = static_cast<bool>(reloaded);
         reloaded.ignore();
         return ok;
     });
     auto pool = table.addClass<ParticleEmitterPool>(
-        "ParticleEmitterPool",
-        std::function<ParticleEmitterPool*()>([]() { return new ParticleEmitterPool(); }), true);
+        "ParticleEmitterPool", std::function<ParticleEmitterPool*()>([]() { return new ParticleEmitterPool(); }), true);
     pool.addFunc("acquire", [](ParticleEmitterPool* self, int minBuffer) -> ParticleEmitter* {
         if (!self) return nullptr;
         auto acquired = self->acquire(minBuffer);
@@ -281,15 +256,13 @@ void Particles::expose(ssq::Table &table) {
     });
     pool.addFunc("recycle", [](ParticleEmitterPool* self, ParticleEmitter* emitter) {
         if (!self) return false;
-        auto recycled = self->recycle(emitter);
-        const bool ok = static_cast<bool>(recycled);
+        auto       recycled = self->recycle(emitter);
+        const bool ok       = static_cast<bool>(recycled);
         recycled.ignore();
         return ok;
     });
     pool.addFunc("clear", &ParticleEmitterPool::clear);
-    pool.addFunc("idleCount", [](ParticleEmitterPool* self) {
-        return self ? static_cast<int>(self->idleCount()) : 0;
-    });
+    pool.addFunc("idleCount", [](ParticleEmitterPool* self) { return self ? static_cast<int>(self->idleCount()) : 0; });
     em.addFunc("setPosition", &ParticleEmitter::setPosition);
     em.addFunc("moveTo", &ParticleEmitter::moveTo);
     em.addFunc("getX", &ParticleEmitter::getX);
@@ -463,7 +436,7 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("emitFromSkin", &ParticleEmitter::emitFromSkin);
 }
 
-void Particles::expose(ssq::Class &cls) {
+void Particles::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Particles::getName);
     cls.addFunc("newEmitter", &Particles::newEmitter);
     cls.addFunc("newEmitterFromFile", &Particles::newEmitterFromFile);

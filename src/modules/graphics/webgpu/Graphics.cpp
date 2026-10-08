@@ -29,7 +29,12 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 
-#include <assimp/scene.h>
+// Header-only Assimp mesh types for newMeshFromAssimp. The Assimp library is
+// not linked on Emscripten; only these POD headers are required here.
+#include <assimp/matrix3x3.h>
+#include <assimp/matrix4x4.h>
+#include <assimp/mesh.h>
+#include <assimp/vector3.h>
 
 #include <algorithm>
 #include <bit>
