@@ -11,11 +11,13 @@ persist fusionFrame = 0
 persist fusionScreenshotSaved = false
 persist fusionPassPrinted = false
 
-persist edgeRadius = 0.7
-persist materialRadius = 0.7
+persist edgeRadius = 1.1
+persist materialRadius = 1.1
 persist strength = 1.0
 persist softSnap = true
-persist sourceLift = 1.05
+// prototype.sphere is bottom-aligned (y=0..height). Keep the gap inside edgeRadius
+// or soft-snap is a no-op (closest hit distance > maxQuery).
+persist sourceLift = 0.42
 
 function fusionRequire(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
