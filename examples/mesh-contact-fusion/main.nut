@@ -11,11 +11,11 @@ persist fusionFrame = 0
 persist fusionScreenshotSaved = false
 persist fusionPassPrinted = false
 
-persist edgeRadius = 0.55
-persist materialRadius = 0.55
+persist edgeRadius = 0.7
+persist materialRadius = 0.7
 persist strength = 1.0
 persist softSnap = true
-persist sourceLift = 0.78
+persist sourceLift = 1.05
 
 function fusionRequire(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
@@ -46,13 +46,28 @@ function fusionTransform(mesh, x, y, z) {
     return fusionRequire(graph.executeResult("out"), "execute transform").value;
 }
 
+function fusionPaintContactBand(mesh) {
+    // Contact blend stores weight in alpha; bake into RGB so PBR tint shows the band.
+    // Keep normals unchanged — aggressive normalsBlend reads as a fake "dent" under lighting.
+    if (!mesh.hasVertexColors()) return mesh;
+    for (local v = 0; v < mesh.getVertexCount(); ++v) {
+        local w = mesh.getColor(v, 3);
+        // Cool rest → hot contact.
+        local r = 0.45 + 0.55 * w;
+        local g = 0.55 - 0.15 * w;
+        local b = 0.75 - 0.55 * w;
+        fusionRequire(mesh.setColor(v, r, g, b, 1.0), "paint contact " + v);
+    }
+    return mesh;
+}
+
 function fusionAdd(mesh, x, y, tintR, tintG, tintB) {
     local uploaded = fusionRequire(procgen.uploadMesh(mesh, gfx), "upload mesh").value;
     local object = eve.Renderable3D();
     object.setMesh(uploaded);
     object.setPosition(x, y, 0.0);
     object.setTint(tintR, tintG, tintB, 1.0);
-    object.setRoughness(0.62);
+    object.setRoughness(0.58);
     object.setMetallic(0.04);
     object.setCastShadow(true);
     object.setReceiveShadow(true);
@@ -61,23 +76,24 @@ function fusionAdd(mesh, x, y, tintR, tintG, tintB) {
 }
 
 function fusionMergePair(enableBlend) {
-    // Two blocks meet on a face with a tiny overlap. Soft-snap stays OFF for static
-    // multi-source blend — mutual closest-point snap on overlapping solids caves the joint.
-    local left = fusionRecipe("prototype.cube", 1.1, 1.4, 1.1, 12);
-    local right = fusionRecipe("prototype.cube", 1.1, 1.4, 1.1, 12);
+    // Two blocks meet with a tiny face overlap. Soft-snap stays OFF for static multi-source
+    // blend — mutual closest-point snap caves the joint. NormalsBlend stays 0 so lighting
+    // does not fake a dent; the contact band is shown via painted vertex colors.
+    local left = fusionRecipe("prototype.cube", 1.2, 1.5, 1.2, 16);
+    local right = fusionRecipe("prototype.cube", 1.2, 1.5, 1.2, 16);
     local plan = eve.MeshMergePlan();
-    fusionRequire(plan.appendSource(left, -0.52, 0.7, 0.0, 0.0, 1.0, 1.0, 1.0, "matA"), "append left");
-    fusionRequire(plan.appendSource(right, 0.52, 0.7, 0.0, 12.0, 1.0, 1.0, 1.0, "matB"), "append right");
+    fusionRequire(plan.appendSource(left, -0.55, 0.75, 0.0, 0.0, 1.0, 1.0, 1.0, "matA"), "append left");
+    fusionRequire(plan.appendSource(right, 0.55, 0.75, 0.0, 10.0, 1.0, 1.0, 1.0, "matB"), "append right");
     fusionRequire(plan.setPivotMode(1), "world pivot");
     fusionRequire(plan.setEnableContactBlend(enableBlend), "set blend enable");
     if (enableBlend) {
-        // Normals + material weights only (softSnap=false). Readable as smoother seam lighting.
-        fusionRequire(plan.setContactBlend(0.55, 0.55, 1.0, 1.0, 1.0, 0.0, false, "smooth"),
+        fusionRequire(plan.setContactBlend(0.65, 0.65, 1.0, 0.0, 1.0, 0.0, false, "smooth"),
                       "set contact blend");
     }
     local merged = fusionRequire(eve.mergeStaticMeshes(plan),
                                  enableBlend ? "merge with blend" : "merge without blend");
     local mesh = merged.value;
+    if (enableBlend) mesh = fusionPaintContactBand(mesh);
     print("mesh-contact-fusion: static sources=" + plan.getSourceCount() +
           " blend=" + plan.getEnableContactBlend() +
           " verts=" + mesh.getVertexCount() +
@@ -96,20 +112,20 @@ function fusionUploadLive() {
 }
 
 function fusionRebuildLiveSource() {
-    // Movable cube floats above a wide ground slab; soft-snap pulls A onto B.
-    local cube = fusionRecipe("prototype.cube", 1.15, 1.15, 1.15, 14);
-    local lifted = fusionTransform(cube, 0.0, sourceLift, 0.0);
+    // Sphere floats above ground; soft-snap flattens the contact patch onto B.
+    local ball = fusionRecipe("prototype.sphere", 1.2, 1.2, 1.2, 20);
+    local lifted = fusionTransform(ball, 0.0, sourceLift, 0.0);
     if (fusionLive == null || !fusionLive.isActive()) {
-        local ground = fusionRecipe("prototype.ground", 3.6, 0.14, 3.6, 6);
+        local ground = fusionRecipe("prototype.ground", 3.8, 0.16, 3.8, 8);
         fusionLive = eve.MeshAdhereLive();
         fusionRequire(fusionLive.activate(lifted, ground), "activate live adhere");
         if (fusionSurfaceVisual == null)
-            fusionSurfaceVisual = fusionAdd(ground, 5.5, 0.0, 0.42, 0.48, 0.55);
+            fusionSurfaceVisual = fusionAdd(ground, 5.8, 0.0, 0.40, 0.46, 0.52);
         if (fusionLiveVisual == null) {
             fusionLiveVisual = eve.Renderable3D();
-            fusionLiveVisual.setPosition(5.5, 0.0, 0.0);
+            fusionLiveVisual.setPosition(5.8, 0.0, 0.0);
             fusionLiveVisual.setTint(0.95, 0.58, 0.28, 1.0);
-            fusionLiveVisual.setRoughness(0.55);
+            fusionLiveVisual.setRoughness(0.5);
             fusionLiveVisual.setMetallic(0.06);
             fusionLiveVisual.setCastShadow(true);
             fusionLiveVisual.setReceiveShadow(true);
@@ -118,18 +134,17 @@ function fusionRebuildLiveSource() {
     } else {
         fusionRequire(fusionLive.setSource(lifted), "replace live source");
     }
-    fusionRequire(fusionLive.setParams(edgeRadius, materialRadius, strength, 1.0, 1.0, 0.02, softSnap, "smooth"),
+    fusionRequire(fusionLive.setParams(edgeRadius, materialRadius, strength, 1.0, 1.0, 0.0, softSnap, "smooth"),
                   "set live params");
     fusionUploadLive();
 }
 
 function fusionBuildStaticShowcase() {
     local plain = fusionMergePair(false);
-    // Cool tint: hard intersection, no contact band.
-    fusionAdd(plain, -5.5, 0.0, 0.55, 0.62, 0.72);
+    fusionAdd(plain, -5.8, 0.0, 0.72, 0.76, 0.82);
     local blended = fusionMergePair(true);
-    // Warm tint: normals blended across the seam (softSnap intentionally off).
-    fusionAdd(blended, 0.0, 0.0, 0.92, 0.62, 0.32);
+    // White tint so painted contact RGB reads clearly.
+    fusionAdd(blended, 0.0, 0.0, 1.0, 1.0, 1.0);
 }
 
 function fusionBuildUi() {
@@ -137,13 +152,13 @@ function fusionBuildUi() {
     ui.setNavKeyboard(true);
     ui.beginBuild();
     ui.beginWindow("CONTACT FUSION", "root");
-    ui.text("LEFT  static merge  blend OFF", "staticOff");
-    ui.text("CENTER  static merge  blend ON (normals, no soft-snap)", "staticOn");
-    ui.text("RIGHT  MeshAdhereLive  A soft-snaps onto B", "liveLabel");
-    ui.slider("Edge radius", edgeRadius, 0.05, 1.5, "edgeRadius");
-    ui.slider("Material radius", materialRadius, 0.05, 1.5, "materialRadius");
+    ui.text("LEFT  static merge  blend OFF (hard seam)", "staticOff");
+    ui.text("CENTER  static merge  blend ON (contact band color)", "staticOn");
+    ui.text("RIGHT  MeshAdhereLive  sphere soft-snaps to ground", "liveLabel");
+    ui.slider("Edge radius", edgeRadius, 0.05, 1.8, "edgeRadius");
+    ui.slider("Material radius", materialRadius, 0.05, 1.8, "materialRadius");
     ui.slider("Strength", strength, 0.0, 1.0, "strength");
-    ui.slider("Source lift", sourceLift, 0.15, 1.4, "sourceLift");
+    ui.slider("Source lift", sourceLift, 0.4, 1.8, "sourceLift");
     ui.beginRow("actions", 8.0);
     ui.button(softSnap ? "Soft snap: ON" : "Soft snap: OFF", "softSnap");
     ui.button("Re-evaluate", "reeval");
@@ -183,7 +198,7 @@ function fusionBuildAll() {
     if (!fusionUiReady) fusionBuildUi();
     fusionSetStatus("rev=" + fusionLive.getRevision() + "  softSnap=" + softSnap);
     if (!fusionPassPrinted) {
-        print("MESH_CONTACT_FUSION_PASS static=blend-off+on(noSoftSnap) live=MeshAdhereLive " +
+        print("MESH_CONTACT_FUSION_PASS static=blend-off+on(contactColor) live=MeshAdhereLive " +
               "derivedMeshResult=upload setParams=realtime bake=optional\n");
         fusionPassPrinted = true;
     }
@@ -192,13 +207,13 @@ function fusionBuildAll() {
 if (fusionCamera == null) {
     // Look down -Z so world -X is screen-left (matches LEFT/CENTER/RIGHT labels).
     fusionCamera = eve.Camera3D();
-    fusionCamera.setEye(0.0, 5.4, 14.5);
-    fusionCamera.setTarget(0.0, 0.55, 0.0);
+    fusionCamera.setEye(0.0, 5.6, 15.0);
+    fusionCamera.setTarget(0.0, 0.6, 0.0);
     fusionCamera.setUp(0.0, 1.0, 0.0);
-    fusionCamera.setFov(42.0);
-    fusionCamera.setAmbient(0.28, 0.30, 0.34);
+    fusionCamera.setFov(40.0);
+    fusionCamera.setAmbient(0.30, 0.32, 0.36);
     fusionCamera.setActive(true);
-    gfx.setDirectionalLight(-0.35, -1.0, 0.45, 1.45, 1.28, 1.12);
+    gfx.setDirectionalLight(-0.3, -1.0, 0.5, 1.5, 1.32, 1.15);
     gfx.setBackgroundColor(0.05, 0.065, 0.09, 1.0);
 }
 

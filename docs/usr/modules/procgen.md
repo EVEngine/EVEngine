@@ -3087,7 +3087,8 @@ threshold=0.2。maskmap 可以使用与 terrain 不同的尺寸，采样采用�
 执行 Pcg `ProcessEdgesAndColorBaking`。Smooth 保留共享顶点并按世界 X/Z 采样；Sharp 为每个三角形角展开顶点、
 重算法线，并把三角形三个纹理样本的平均色写给整面。平滑迭代使用原版四邻域、边缘 clamp 算法；linearize
 显式对应 SRP OrthographicBake 的 `.linear` 分支。颜色是 `ProcgenMeshBuild` 的可选 RGBA 顶点流，可通过
-`hasVertexColors()` 和 `getColor(vertex,component)` 查询。裁剪、QEM、group copy、变换及 LOD version 2
+`hasVertexColors()`、`getColor(vertex,component)` 查询，以及 `setColor(vertex,r,g,b,a)`
+写入（无颜色流时按白色分配）。裁剪、QEM、group copy、变换及 LOD version 2
 快照都会保留颜色；旧 version 1 LOD 快照仍可迁移读取。
 
 ### Pcg Mask Map Export

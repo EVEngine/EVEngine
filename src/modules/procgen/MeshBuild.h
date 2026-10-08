@@ -95,6 +95,11 @@ public:
     [[nodiscard]] float getColor(int vertexIndex, int component) const noexcept;
     /** @brief Atomically replace the optional packed RGBA stream; empty removes it. */
     [[nodiscard]] eve::Result<void> setVertexColors(std::vector<float> colors);
+    /**
+     * @brief Set one vertex RGBA (allocates a default-white stream if absent).
+     * @param vertexIndex Vertex index in \[0, getVertexCount()).
+     */
+    [[nodiscard]] eve::Result<void> setColor(int vertexIndex, float r, float g, float b, float a);
     int   getIndex(int i) const;
 
     void        setMeta(const std::string &key, const std::string &value);

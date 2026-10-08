@@ -5,8 +5,8 @@
 | 位置（相机朝 −Z） | API | 行为 |
 |---|---|---|
 | 左 | `eve.MeshMergePlan` + `eve.mergeStaticMeshes` | 默认 **关闭** 接触带融合（两块立方体硬相交） |
-| 中 | 同上，`setEnableContactBlend(true)` | **可选开启** 法线/材质融合；静态路径 **关闭 soft-snap**（多源互相最近点会把缝“凹”进去） |
-| 右 | `eve.MeshAdhereLive` | 立方体 A soft-snap 到地面 B；滑条改半径/强度/抬升后立即 `evaluate` + `derivedMeshResult` 上传 |
+| 中 | 同上，`setEnableContactBlend(true)` | 材质权重写入顶点色；示例把 alpha 烘成 RGB 热带。静态路径 **关闭 soft-snap / normalsBlend**（多源互相最近点会凹缝，法线混合在光照下也像凹缝） |
+| 右 | `eve.MeshAdhereLive` | 球体 A soft-snap 到地面 B；滑条改半径/强度/抬升后立即 `evaluate` + `derivedMeshResult` 上传 |
 
 共享 CPU 原语是 `MeshContactBlend`；图节点路径 `deform.meshAdhere` 与 live 会话走同一套 A←B
 最近点融合。设计说明见

@@ -3689,6 +3689,14 @@ void Procgen::expose(ssq::Table& table) {
     mesh.addFunc("getColor", [](const MeshBuild* self,int vertex,int component) {
         return self ? self->getColor(vertex,component) : 1.f;
     });
+    mesh.addFunc("setColor", [vm](MeshBuild* self, int vertex, float r, float g, float b, float a) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshBuild is required", "color", {},
+                                                                      "procgen.squirrel")));
+        return eve::script::projectResult(vm, self->setColor(vertex, r, g, b, a));
+    });
     mesh.addFunc("getIndex", &MeshBuild::getIndex);
     mesh.addFunc("setMeta", &MeshBuild::setMeta);
     mesh.addFunc("getMeta", &MeshBuild::getMeta);
