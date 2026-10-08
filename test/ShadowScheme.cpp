@@ -3,6 +3,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <string>
 #include <vector>
 
 using namespace eve::graphics;
@@ -49,7 +50,8 @@ TEST_CASE("graphics.shadow_scheme.parse_and_resolve_methods") {
              static_cast<int>(ShadowMethod::CubePoint));
     CHECK(!resolveShadowMethod("dir", ShadowMethod::PerspectiveSpot).ok());
     CHECK(!resolveShadowMethod("spot", ShadowMethod::CascadedDirectional).ok());
-    CHECK_EQ(shadowMethodName(ShadowMethod::PerspectiveSpot), "perspective");
+    CHECK_EQ(std::string(shadowMethodName(ShadowMethod::PerspectiveSpot)),
+             std::string("perspective"));
 }
 
 TEST_CASE("graphics.shadow_scheme.selects_spot_slots_and_builds_vp") {

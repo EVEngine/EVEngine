@@ -4,7 +4,7 @@ layout(location=0) in vec3 inPos;
 layout(location=1) in vec3 inNormal;
 layout(location=2) in vec2 inUV;
 
-struct Light3D{vec4 posRadius;vec4 color;};
+struct Light3D{vec4 posRadius;vec4 color;vec4 spot;};
 layout(set=0,binding=0,std140) uniform Frame{mat4 mvp;mat4 model;vec4 lightDirIntensity;vec4 lightColor;vec4 tint;vec4 cameraPos;vec4 ambient;Light3D lights[8];vec4 texBomb;vec4 parallax;mat4 view;vec4 clipInfo;vec4 cloud;vec4 cloudWind;vec4 bindlessEnv;vec4 envProbeCenter;vec4 envProbeExtent;vec4 skinInfo;vec4 reflectionProbeCenter[2];vec4 reflectionProbeExtent[2];}ubo;
 layout(push_constant)uniform Externals{float data[32];}u;
 

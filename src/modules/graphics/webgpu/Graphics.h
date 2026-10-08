@@ -76,7 +76,7 @@ struct Mesh3DUBO {
     glm::vec4 diffuseVolumeInfo{0.f};  // x = probe count
     glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f}; // coverage, complementary pattern, enabled
 };
-static_assert(sizeof(Mesh3DUBO) == 2368, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 2496, "Mesh3DUBO layout must match the WGSL Frame block");
 
 struct MeshVertex {
     glm::vec3 pos;
