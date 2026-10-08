@@ -14,11 +14,11 @@ persist fusionFrame = 0
 persist fusionScreenshotSaved = false
 persist fusionPassPrinted = false
 
-persist edgeRadius = 1.25
-persist materialRadius = 1.25
+persist edgeRadius = 1.55
+persist materialRadius = 1.55
 persist strength = 1.0
 persist softSnap = true
-persist sourceLift = 0.42
+persist sourceLift = 0.28
 
 function fusionRequire(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
@@ -68,8 +68,8 @@ function fusionPaintContactBand(mesh) {
     if (!mesh.hasVertexColors()) return mesh;
     for (local v = 0; v < mesh.getVertexCount(); ++v) {
         local w = mesh.getColor(v, 3);
-        // Cool body → hot weld so the fused neck / melt patch reads under lighting.
-        fusionRequire(mesh.setColor(v, 0.52 + 0.48 * w, 0.60 - 0.18 * w, 0.76 - 0.52 * w, 1.0),
+        // Cool body → saturated hot weld so the neck / melt patch reads under lighting.
+        fusionRequire(mesh.setColor(v, 0.48 + 0.52 * w, 0.58 - 0.28 * w, 0.74 - 0.62 * w, 1.0),
                       "paint contact " + v);
     }
     return mesh;
@@ -91,10 +91,10 @@ function fusionAdd(mesh, x, y, tintR, tintG, tintB, roughness) {
 
 function fusionMergePair(mode) {
     // Two spheres, same layout for hard vs fuse — only soft-snap differs.
-    // Diameter 1.55 → radius ≈0.775. Centers at ±0.98 → air gap ≈0.41 between skins.
-    // soft-snap pulls facing verts onto the other surface → peanut / welded neck.
-    local dx = 0.98;
-    local size = 1.55;
+    // Diameter 1.65 → radius 0.825. Centers at ±0.96 → air gap ≈0.27 (obvious on left).
+    // Wide edgeRadius pulls a broad belt of verts → peanut neck (not a flat clap).
+    local dx = 0.96;
+    local size = 1.65;
     local enableBlend = false;
     local soft = false;
     local radius = 0.7;
@@ -102,7 +102,7 @@ function fusionMergePair(mode) {
     if (mode == "fuse") {
         enableBlend = true;
         soft = true;
-        radius = 1.35;   // must cover the gap or soft-snap is a no-op
+        radius = 1.7;   // wide belt so the neck is a silhouette change, not a hairline
         normals = 1.0;
     }
 
@@ -139,22 +139,22 @@ function fusionUploadLive() {
 
 function fusionRebuildLiveSource() {
     // Subdivided sphere floats above ground; soft-snap flattens a wide contact pancake.
-    local ball = fusionSubdivide(fusionRecipe("prototype.sphere", 1.7, 1.7, 1.7, 28), 1);
+    local ball = fusionSubdivide(fusionRecipe("prototype.sphere", 1.85, 1.85, 1.85, 28), 1);
     local lifted = fusionTransform(ball, 0.0, sourceLift, 0.0);
     if (fusionLive == null || !fusionLive.isActive()) {
-        local ground = fusionRecipe("prototype.ground", 4.6, 0.16, 4.6, 10);
+        local ground = fusionRecipe("prototype.ground", 4.8, 0.14, 4.8, 10);
         fusionLive = eve.MeshAdhereLive();
         fusionRequire(fusionLive.activate(lifted, ground), "activate live adhere");
         if (fusionSurfaceVisual == null)
-            fusionSurfaceVisual = fusionAdd(ground, 6.2, 0.0, 0.34, 0.40, 0.46, 0.88);
+            fusionSurfaceVisual = fusionAdd(ground, 4.8, 0.0, 0.34, 0.40, 0.46, 0.88);
         if (fusionGhostVisual == null) {
             // Ghost = pre-adhere pose, parked beside the melt (not composited over it).
-            fusionGhostVisual = fusionAdd(lifted, 9.0, 0.0, 0.40, 0.46, 0.52, 0.95);
+            fusionGhostVisual = fusionAdd(lifted, 7.4, 0.0, 0.40, 0.46, 0.52, 0.95);
             fusionGhostVisual.setCastShadow(false);
         }
         if (fusionLiveVisual == null) {
             fusionLiveVisual = eve.Renderable3D();
-            fusionLiveVisual.setPosition(6.2, 0.0, 0.0);
+            fusionLiveVisual.setPosition(4.8, 0.0, 0.0);
             // Near-white so painted contact RGB (hot weld patch) reads clearly.
             fusionLiveVisual.setTint(1.0, 1.0, 1.0, 1.0);
             fusionLiveVisual.setRoughness(0.45);
@@ -177,7 +177,7 @@ function fusionRebuildLiveSource() {
 
 function fusionBuildStaticShowcase() {
     local plain = fusionMergePair("hard");
-    fusionAdd(plain, -6.2, 0.0, 0.72, 0.76, 0.82, 0.55);
+    fusionAdd(plain, -4.6, 0.0, 0.72, 0.76, 0.82, 0.55);
     local fused = fusionMergePair("fuse");
     // Near-white tint so painted weld neck + deformed silhouette read clearly.
     fusionAdd(fused, 0.0, 0.0, 1.0, 1.0, 1.0, 0.42);
@@ -206,7 +206,7 @@ function fusionBuildUi() {
     ui.mountBuildAs("lab");
     ui.select("lab");
     ui.setHostOverlay(true);
-    ui.setHostPos(900.0, 24.0, 360.0, 480.0);
+    ui.setHostPos(920.0, 20.0, 340.0, 460.0);
     fusionUiReady = true;
 }
 
@@ -242,11 +242,11 @@ function fusionBuildAll() {
 
 if (fusionCamera == null) {
     fusionCamera = eve.Camera3D();
-    // Slightly elevated 3/4 view so the welded neck and melt pancake read in silhouette.
-    fusionCamera.setEye(0.8, 6.4, 17.0);
-    fusionCamera.setTarget(0.6, 0.55, 0.0);
+    // Elevated 3/4 view; FOV/eye sized so left gap pair + center neck + melt all fit.
+    fusionCamera.setEye(0.4, 5.6, 15.5);
+    fusionCamera.setTarget(0.4, 0.5, 0.0);
     fusionCamera.setUp(0.0, 1.0, 0.0);
-    fusionCamera.setFov(38.0);
+    fusionCamera.setFov(42.0);
     fusionCamera.setAmbient(0.34, 0.36, 0.40);
     fusionCamera.setActive(true);
     gfx.setDirectionalLight(-0.35, -1.0, 0.45, 1.6, 1.4, 1.2);
