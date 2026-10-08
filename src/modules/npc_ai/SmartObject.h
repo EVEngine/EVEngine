@@ -17,13 +17,17 @@
 
 namespace eve::npc_ai {
 
+/** @brief SmartObjectHandleTag public API. */
 struct SmartObjectHandleTag {};
+/** @brief SmartObjectClaimHandleTag public API. */
 struct SmartObjectClaimHandleTag {};
 using SmartObjectHandle      = RuntimeHandle<SmartObjectHandleTag>;
 using SmartObjectClaimHandle = RuntimeHandle<SmartObjectClaimHandleTag>;
 
+/** @brief SmartObjectRemoval public API. */
 enum class SmartObjectRemoval : std::uint8_t { RejectClaimed, CancelClaims };
 
+/** @brief SmartObjectSlotDefinition public API. */
 struct SmartObjectSlotDefinition {
     std::string              id;
     std::string              activity;
@@ -31,11 +35,13 @@ struct SmartObjectSlotDefinition {
     std::array<double, 3>    position{};
 };
 
+/** @brief SmartObjectDefinition public API. */
 struct SmartObjectDefinition {
     std::string                            logicalId;
     std::vector<SmartObjectSlotDefinition> slots;
 };
 
+/** @brief SmartObjectQuery public API. */
 struct SmartObjectQuery {
     std::string              activity;
     std::vector<std::string> requiredTags;
@@ -43,6 +49,7 @@ struct SmartObjectQuery {
     double                   maxDistance = 0.0;
 };
 
+/** @brief SmartObjectCandidate public API. */
 struct SmartObjectCandidate {
     SmartObjectHandle     object;
     std::string           logicalId;
@@ -51,6 +58,7 @@ struct SmartObjectCandidate {
     double                distance = 0.0;
 };
 
+/** @brief SmartObjectClaimSnapshot public API. */
 struct SmartObjectClaimSnapshot {
     SmartObjectClaimHandle claim;
     SmartObjectHandle      object;
@@ -59,6 +67,7 @@ struct SmartObjectClaimSnapshot {
     std::uint64_t          expiresAtTick = 0;
 };
 
+/** @brief SmartObjectExpirationReport public API. */
 struct SmartObjectExpirationReport {
     std::uint32_t claimsExpired = 0;
 };

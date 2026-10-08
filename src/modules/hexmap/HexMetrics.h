@@ -21,14 +21,19 @@ struct HexVec3 {
     float z = 0.f;
 };
 
+/** @brief Operator +. */
 [[nodiscard]] constexpr HexVec3 operator+(HexVec3 a, HexVec3 b) noexcept {
     return HexVec3{a.x + b.x, a.y + b.y, a.z + b.z};
 }
+/** @brief Operator -. */
 [[nodiscard]] constexpr HexVec3 operator-(HexVec3 a, HexVec3 b) noexcept {
     return HexVec3{a.x - b.x, a.y - b.y, a.z - b.z};
 }
+/** @brief Operator *. */
 [[nodiscard]] constexpr HexVec3  operator*(HexVec3 a, float s) noexcept { return HexVec3{a.x * s, a.y * s, a.z * s}; }
+/** @brief Operator *. */
 [[nodiscard]] constexpr HexVec3  operator*(float s, HexVec3 a) noexcept { return a * s; }
+/** @brief Operator +=. */
 [[nodiscard]] constexpr HexVec3& operator+=(HexVec3& a, HexVec3 b) noexcept {
     a = a + b;
     return a;
@@ -233,6 +238,7 @@ public:
     /** @brief Interpolates terrain weights along a terraced slope. */
     [[nodiscard]] static HexVec3 terraceLerpWeights(HexVec3 a, HexVec3 b, int step) noexcept {
         const float h = static_cast<float>(step) * kHorizontalTerraceStepSize;
+        /** @brief Lerp. */
         return lerp(a, b, h);
     }
 
@@ -280,6 +286,7 @@ struct EdgeVertices {
     HexVec3 v4;
     HexVec3 v5;
 
+    /** @brief Constructs a EdgeVertices. */
     EdgeVertices() = default;
 
     /** @brief Evenly samples the segment `c1 -> c2` at 0, 0.25, 0.5, 0.75 and 1. */

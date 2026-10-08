@@ -199,6 +199,7 @@ struct ActionAdvance {
  */
 class IActionConditionEvaluator {
 public:
+    /** @brief Releases IActionConditionEvaluator resources. */
     virtual ~IActionConditionEvaluator() = default;
 
     /**
@@ -217,6 +218,7 @@ public:
  */
 class IActionTargetResolver {
 public:
+    /** @brief Releases IActionTargetResolver resources. */
     virtual ~IActionTargetResolver() = default;
 
     /**
@@ -236,6 +238,7 @@ public:
  */
 class IActionResourceProvider {
 public:
+    /** @brief Releases IActionResourceProvider resources. */
     virtual ~IActionResourceProvider() = default;
 
     /**
@@ -297,6 +300,7 @@ public:
  */
 class IActionEffectOperation {
 public:
+    /** @brief Releases IActionEffectOperation resources. */
     virtual ~IActionEffectOperation() = default;
 
     IActionEffectOperation(const IActionEffectOperation&)            = delete;
@@ -310,6 +314,7 @@ public:
     virtual void rollback() noexcept = 0;
 
 protected:
+    /** @brief Constructs a IActionEffectOperation. */
     IActionEffectOperation() = default;
 };
 
@@ -325,6 +330,7 @@ protected:
  */
 class IActionEffectExecutor {
 public:
+    /** @brief Releases IActionEffectExecutor resources. */
     virtual ~IActionEffectExecutor() = default;
 
     /**
@@ -462,6 +468,7 @@ public:
     SensingTargetingAdapter() = default;
 
     /** @copydoc IActionTargetResolver::resolve */
+    /** @brief Resolve. */
     [[nodiscard]] Result<sensing::TargetSet> resolve(const sensing::TargetingQuery& query) const override;
 
 private:
@@ -489,6 +496,7 @@ public:
     ActionRuntime& operator=(const ActionRuntime&) = delete;
     ActionRuntime(ActionRuntime&&)                 = delete;
     ActionRuntime& operator=(ActionRuntime&&)      = delete;
+    /** @brief Action runtime. */
     ~ActionRuntime()                               = default;
 
     /**

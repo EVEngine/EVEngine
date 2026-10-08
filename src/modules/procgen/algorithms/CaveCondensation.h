@@ -7,6 +7,7 @@
 
 namespace eve::procgen {
 
+/** @brief CaveCondensationResult public API. */
 struct CaveCondensationResult {
     int   affectedVoxels = 0;
     float maximumRetreat = 0.f;

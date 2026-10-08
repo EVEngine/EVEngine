@@ -28,6 +28,7 @@ enum class EffectKind : std::uint32_t {
 
 /** @brief Converts a quaternion to a 3x3 rotation matrix (column-major). */
 inline glm::mat3 rotationMatrix(const glm::quat& q) {
+    /** @brief Mat 3 cast. */
     return glm::mat3_cast(q);
 }
 
@@ -40,6 +41,7 @@ inline glm::quat lookRotation(const glm::vec3& forward, const glm::vec3& upHint 
     }
     const glm::vec3 r = glm::normalize(glm::cross(u, f));
     u                 = glm::cross(f, r);
+    /** @brief Normalize. */
     return glm::normalize(glm::quat_cast(glm::mat3(r, u, f)));
 }
 

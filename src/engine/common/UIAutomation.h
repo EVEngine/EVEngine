@@ -14,6 +14,7 @@ class EVENGINE_API_FOUNDATION_INLINE IUIAutomation {
 public:
     static constexpr const char* capabilityName = "IUIAutomation";
 
+    /** @brief Iui automation. */
     virtual ~IUIAutomation() = default;
 
     /**

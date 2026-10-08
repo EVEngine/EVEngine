@@ -53,6 +53,7 @@ enum class MeshEffectSubmitStatus { Drawn, SkippedInactive, SkippedEmpty };
 
 /** @brief Concrete draw payload resolved for one batched stable instance ID. */
 struct MeshVfxRendererCommand {
+    /** @brief Kind public API. */
     enum class Kind : std::uint8_t { Overlay, Trail, Particle };
 
     std::uint64_t stableInstanceId = 0;

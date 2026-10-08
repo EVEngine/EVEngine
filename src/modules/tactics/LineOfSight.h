@@ -63,6 +63,7 @@ public:
     /** @brief Capability name a provider registers under. */
     static constexpr const char* capabilityName = "eve.tactics.ILineOfSightPolicy";
 
+    /** @brief Releases ILineOfSightPolicy resources. */
     virtual ~ILineOfSightPolicy() = default;
 
     /** @brief Stable id of this implementation, for diagnostics and configuration. */
@@ -90,6 +91,7 @@ public:
     /** @brief Capability name a provider registers under. */
     static constexpr const char* capabilityName = "eve.tactics.ICoverPolicy";
 
+    /** @brief Releases ICoverPolicy resources. */
     virtual ~ICoverPolicy() = default;
 
     /** @brief Stable id of this implementation. */
@@ -120,8 +122,10 @@ public:
  */
 class EVENGINE_API_DOMAINS GridLineOfSightPolicy final : public ILineOfSightPolicy {
 public:
+    /** @brief Id. */
     [[nodiscard]] std::string_view id() const noexcept override { return "grid_line_of_sight"; }
 
+    /** @brief Visible. */
     [[nodiscard]] Result<bool> visible(const BoardState& board, Cell from, Cell to) const override;
 };
 
@@ -135,8 +139,10 @@ public:
  */
 class EVENGINE_API_DOMAINS GridCoverPolicy final : public ICoverPolicy {
 public:
+    /** @brief Id. */
     [[nodiscard]] std::string_view id() const noexcept override { return "grid_cover"; }
 
+    /** @brief Cover. */
     [[nodiscard]] Result<CoverLevel> cover(const BoardState& board, Cell attacker, Cell target) const override;
 };
 

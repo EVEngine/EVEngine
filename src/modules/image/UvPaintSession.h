@@ -21,7 +21,9 @@ struct UvPaintReceipt;
  */
 class EVENGINE_API_PLATFORM UvPaintSession {
 public:
+    /** @brief Uv paint session. */
     UvPaintSession();
+    /** @brief Uv paint session. */
     ~UvPaintSession();
     UvPaintSession(const UvPaintSession&)            = delete;
     UvPaintSession& operator=(const UvPaintSession&) = delete;

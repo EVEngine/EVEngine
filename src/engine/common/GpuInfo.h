@@ -14,17 +14,24 @@
 
 namespace eve::caps {
 
+/** @brief EVENGINE_API_FOUNDATION_INLINE public API. */
 class EVENGINE_API_FOUNDATION_INLINE IGpuInfo {
 public:
     static constexpr const char* capabilityName = "IGpuInfo";
+    /** @brief I gpu info. */
     virtual ~IGpuInfo() = default;
 
     /** False until the backend has selected a physical device. */
+    /** @brief Gpu ready. */
     virtual bool gpuReady() const = 0;
+    /** @brief Gpu name. */
     virtual std::string gpuName() const = 0;
+    /** @brief Gpu vendor. */
     virtual std::string gpuVendor() const = 0;
     /** "discrete" | "integrated" | "virtual" | "cpu" | "webgpu" | "other". */
+    /** @brief Gpu device type. */
     virtual std::string gpuDeviceType() const = 0;
+    /** @brief Gpu memory total mb. */
     virtual int gpuMemoryTotalMB() const = 0;
 };
 

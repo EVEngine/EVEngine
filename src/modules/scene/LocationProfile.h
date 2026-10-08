@@ -62,6 +62,7 @@ public:
     [[nodiscard]] Result<int> nextBookmark(int selectedIndex) const;
     /** @brief Remove every bookmark. */
     void clearBookmarks() noexcept { bookmarks_.clear(); }
+    /** @brief Returns the bookmark count. */
     int getBookmarkCount() const noexcept { return static_cast<int>(bookmarks_.size()); }
     /** @brief Copy a bookmark name, or return InvalidArgument for an invalid index. */
     [[nodiscard]] Result<std::string> getBookmarkName(int index) const;

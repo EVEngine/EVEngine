@@ -43,12 +43,17 @@ struct StrandCurve {
  */
 class EVENGINE_API_BACKENDS StrandsDatas {
 public:
+    /** @brief Sets the points. */
     void setPoints(std::vector<StrandPoint> points);
+    /** @brief Sets the curves. */
     void setCurves(std::vector<StrandCurve> curves);
 
+    /** @brief Adds point. */
     [[nodiscard]] uint32_t addPoint(const StrandPoint &point);
+    /** @brief Adds curve. */
     [[nodiscard]] uint32_t addCurve(const StrandCurve &curve);
 
+    /** @brief Clears . */
     void clear();
 
     /**

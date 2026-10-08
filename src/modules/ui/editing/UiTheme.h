@@ -68,7 +68,9 @@ public:
     /** @brief Inspector capability published by describe(). */
     static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.ui-theme-properties"); }
 
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /**
      * @brief Query Inspector and snapshot capabilities.
@@ -78,8 +80,11 @@ public:
      */
     void* queryCapability(const CapabilityId& capability) override;
 
+    /** @brief Applies domain operation. */
     Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Borrow authored themes in catalog order. */
@@ -92,30 +97,47 @@ public:
     /** @brief Runtime name written to ui::globalThemeName(): dark, light, or custom. */
     std::string runtimeName(const ObjectId& id) const;
 
+    /** @brief Make create from preset. */
     [[nodiscard]] Result<DomainOperation> makeCreateFromPreset(const ObjectId& id, std::string name,
                                                                      UiThemeBasePreset preset) const;
+    /** @brief Make duplicate. */
     [[nodiscard]] Result<DomainOperation> makeDuplicate(const ObjectId& source, const ObjectId& id,
                                                               std::string name) const;
+    /** @brief Make rename. */
     [[nodiscard]] Result<DomainOperation> makeRename(const ObjectId& id, std::string name) const;
+    /** @brief Make delete. */
     [[nodiscard]] Result<DomainOperation> makeDelete(const ObjectId& id) const;
+    /** @brief Make set active. */
     [[nodiscard]] Result<DomainOperation> makeSetActive(const ObjectId& id) const;
+    /** @brief Make reset to base. */
     [[nodiscard]] Result<DomainOperation> makeResetToBase(const ObjectId& id) const;
 
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
 
+    /** @brief Snapshot value. */
     EditorValue            snapshotValue() const override;
+    /** @brief Loads snapshot. */
     Result<void>     loadSnapshot(const EditorValue& snapshot);
+    /** @brief Validate. */
     std::vector<EditorDiagnostic> validate() const;
 
 private:
+    /** @brief Replacement. */
     Result<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
+    /** @brief Content value. */
     EditorValue                   contentValue() const;
+    /** @brief Matches. */
     bool                          matches(const SelectionSnapshot& selection) const;
     /**
      * @brief Locate a mutable theme asset by id.

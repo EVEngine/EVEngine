@@ -24,10 +24,13 @@ namespace eve::scene {
  */
 class EVENGINE_API_PLATFORM SceneObject : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(SceneObject, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
+    /** @brief Meta public API. */
     struct Meta {
         SceneObject *entity = nullptr;
         std::string hostName;

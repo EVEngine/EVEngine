@@ -44,7 +44,9 @@ public:
                 k.inputs.push_back(*input.host);
             else {
                 if (!input.device)
+                    /** @brief Failure. */
                     return Result<OnnxBuffer>::failure(
+                        /** @brief Error. */
                         Diagnostic::error(DiagnosticCode::InvalidArgument, "Missing GPU input"));
                 auto r = input.device->readback();
                 if (!r.ok()) return Result<OnnxBuffer>::failure(r.status());
@@ -55,6 +57,7 @@ public:
         auto r = dispatch(k);
         if (!r.ok()) return Result<OnnxBuffer>::failure(r.status());
         auto bytes = std::make_shared<const std::vector<uint8_t>>(std::move(r.value()));
+        /** @brief Success. */
         return Result<OnnxBuffer>::success({bytes, {}, bytes->size()});
     }
     /** @brief Observable transfer counters for the current or most recent run. */

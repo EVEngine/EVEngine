@@ -33,7 +33,9 @@ class AnimPose;
  */
 class EVENGINE_API_WORLD AnimTrail {
 public:
+    /** @brief Anim trail. */
     explicit AnimTrail(int capacity = 64);
+    /** @brief Anim trail. */
     ~AnimTrail() = default;
 
     AnimTrail(const AnimTrail &)            = delete;
@@ -41,31 +43,43 @@ public:
 
     /** @brief Max retained samples (ring). Clamped to >= 2. */
     void setCapacity(int capacity);
+    /** @brief Returns the capacity. */
     int  getCapacity() const { return capacity_; }
 
     /** @brief How long each sample lives (seconds). <= 0 keeps until capacity eviction. */
     void  setDuration(float seconds);
+    /** @brief Returns the duration. */
     float getDuration() const { return duration_; }
 
     /** @brief Skip new samples closer than this distance to the newest point (0 = always add). */
     void  setMinDistance(float distance);
+    /** @brief Returns the min distance. */
     float getMinDistance() const { return minDistance_; }
 
+    /** @brief Sets the width. */
     void  setWidth(float pixels);
+    /** @brief Returns the width. */
     float getWidth() const { return width_; }
 
     /** @brief Head (newest) color; alpha fades toward 0 along the trail when fade is on. */
     void  setColor(float r, float g, float b, float a = 1.f);
+    /** @brief Returns the color r. */
     float getColorR() const { return colorR_; }
+    /** @brief Returns the color g. */
     float getColorG() const { return colorG_; }
+    /** @brief Returns the color b. */
     float getColorB() const { return colorB_; }
+    /** @brief Returns the color a. */
     float getColorA() const { return colorA_; }
 
+    /** @brief Sets the fade. */
     void setFade(bool enable);
+    /** @brief Returns the fade. */
     bool getFade() const { return fade_; }
 
     /** @brief "line" | "points". Invalid → exception. */
     void        setStyle(const std::string &style);
+    /** @brief Returns the style. */
     std::string getStyle() const;
 
     /**
@@ -73,10 +87,15 @@ public:
      * Useful when sampling bone world units into pixel space.
      */
     void  setDrawScale(float sx, float sy);
+    /** @brief Returns the draw scale x. */
     float getDrawScaleX() const { return drawScaleX_; }
+    /** @brief Returns the draw scale y. */
     float getDrawScaleY() const { return drawScaleY_; }
+    /** @brief Sets the draw offset. */
     void  setDrawOffset(float ox, float oy);
+    /** @brief Returns the draw offset x. */
     float getDrawOffsetX() const { return drawOffsetX_; }
+    /** @brief Returns the draw offset y. */
     float getDrawOffsetY() const { return drawOffsetY_; }
 
     /** @brief Append a 2D sample (z stored as 0). */
@@ -90,9 +109,11 @@ public:
      * Optional local offset is applied in bone world space (translation only).
      */
     void sampleBone(const AnimPose *pose, int boneIndex, const std::string &plane = "xy");
+    /** @brief Sample bone offset. */
     void sampleBoneOffset(const AnimPose *pose, int boneIndex, float ox, float oy, float oz,
                           const std::string &plane = "xy");
 
+    /** @brief Clears . */
     void clear();
 
     /** @brief Age samples by one scheduler-owned deterministic step. */
@@ -100,11 +121,15 @@ public:
     /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
 
+    /** @brief Returns the point count. */
     int   getPointCount() const { return static_cast<int>(points_.size()); }
     /** @brief Index 0 = oldest retained sample; count-1 = newest. */
     float getPointX(int index) const;
+    /** @brief Returns the point y. */
     float getPointY(int index) const;
+    /** @brief Returns the point z. */
     float getPointZ(int index) const;
+    /** @brief Returns the point age. */
     float getPointAge(int index) const;
     /** @brief Effective draw alpha in [0, colorA] after fade. */
     float getPointAlpha(int index) const;

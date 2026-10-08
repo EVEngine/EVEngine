@@ -24,7 +24,9 @@ namespace eve::weapon {
 class EVENGINE_API_WORLD Weapon : public Module {
 public:
     Module_REG(Weapon);
+    /** @brief Weapon. */
     Weapon();
+    /** @brief Weapon. */
     ~Weapon() override;
 
     /** @brief 从 JSON 注册武器模板；返回成功注册数量。 */
@@ -35,8 +37,11 @@ public:
     int getWeaponDefinitionCount();
     /** @brief 武器模板查询。 */
     bool        hasWeaponDefinition(const std::string& id);
+    /** @brief Returns the weapon definition logic. */
     std::string getWeaponDefinitionLogic(const std::string& id);
+    /** @brief Returns the weapon definition damage. */
     float       getWeaponDefinitionDamage(const std::string& id);
+    /** @brief Returns the weapon definition range. */
     float       getWeaponDefinitionRange(const std::string& id);
 
     /**
@@ -83,7 +88,9 @@ public:
 
     /** @brief 手持位操作：挂武器 / 取武器 / 设置持有位姿。 */
     bool          rigAttachWeapon(WeaponRigEntity* rig, WeaponEntity* w);
+    /** @brief Rig get weapon. */
     WeaponEntity* rigGetWeapon(WeaponRigEntity* rig);
+    /** @brief Rig set pose. */
     void          rigSetPose(WeaponRigEntity* rig, float px, float py, float pz, float rx, float ry, float rz);
 
     /** @brief 共享弹药池操作：创建 / 补弹 / 查询 / 绑定武器 / 解绑 / 取绑定池。 */
@@ -96,9 +103,13 @@ public:
      * @reentrancy Creation invokes no external callbacks; do not re-enter structural ECS mutation.
      */
     AmmoPoolEntity* newAmmoPool(const std::string& id, const std::string& ammoType, int max = -1);
+    /** @brief Ammo pool add. */
     void            ammoPoolAdd(AmmoPoolEntity* pool, int n);
+    /** @brief Ammo pool get count. */
     int             ammoPoolGetCount(AmmoPoolEntity* pool);
+    /** @brief Binds ammo pool. */
     bool            bindAmmoPool(WeaponEntity* w, AmmoPoolEntity* pool);
+    /** @brief Unbinds ammo pool. */
     void            unbindAmmoPool(WeaponEntity* w);
     /**
      * @brief Returns the weapon's shared ammunition pool, or null when unbound.
@@ -121,6 +132,7 @@ public:
      * @reentrancy The query invokes no callbacks and is invalid across ECS mutation.
      */
     WeaponEntity* mountGetWeapon(WeaponMountEntity* m);
+    /** @brief Mounts set limits. */
     void          mountSetLimits(WeaponMountEntity* m, float yawMin, float yawMax, float pitchMin, float pitchMax,
                                  float rotSpeed, float firingArc);
     /** @brief 按限位夹取目标角并写入挂载武器的瞄准目标（角度，度）。 */
@@ -134,9 +146,13 @@ public:
     bool fireAt(WeaponEntity* w, float x, float y, float z, int shooterId = 0);
     /** @brief 触发展开攻击（近战/法杖/导弹走阶段机；热武器等价 fire）。 */
     bool attack(WeaponEntity* w, float yaw, float pitch, int shooterId = 0);
+    /** @brief Can fire. */
     bool canFire(WeaponEntity* w);
+    /** @brief Starts reload. */
     void startReload(WeaponEntity* w);
+    /** @brief Cancel reload. */
     void cancelReload(WeaponEntity* w);
+    /** @brief Sets the aim. */
     void setAim(WeaponEntity* w, float yaw, float pitch);
 
     /** @brief 运行时射击模式切换（safe/semi/auto）。 */
@@ -145,16 +161,20 @@ public:
     std::string getFireMode(WeaponEntity* w);
     /** @brief 可选射击模式数量 / 第 index 个模式名。 */
     int  getSelectableModeCount(WeaponEntity* w);
+    /** @brief Returns the selectable mode. */
     std::string getSelectableMode(WeaponEntity* w, int index);
 
     /** @brief 开镜（ADS）：切换 aiming 状态并推 aim_in/aim_out 事件。 */
     bool setAiming(WeaponEntity* w, bool aiming);
+    /** @brief True when aiming. */
     bool isAiming(WeaponEntity* w);
     /** @brief 开镜缩放 FOV（模板 zoomFov）。 */
     float getZoomFov(WeaponEntity* w);
     /** @brief 手感查询：当前散布 / 未回正后坐。 */
     float getSpread(WeaponEntity* w);
+    /** @brief Returns the recoil pitch. */
     float getRecoilPitch(WeaponEntity* w);
+    /** @brief Returns the recoil yaw. */
     float getRecoilYaw(WeaponEntity* w);
 
     /** @brief 每帧推进全部武器与挂点。 */
@@ -162,11 +182,17 @@ public:
 
     /** @brief 事件队列（fire/reload/empty，上一次 update 产生）。 */
     void        clearEvents();
+    /** @brief Returns the event count. */
     int         getEventCount() const;
+    /** @brief Returns the event type. */
     std::string getEventType(int index) const;
+    /** @brief Returns the event weapon id. */
     std::string getEventWeaponId(int index) const;
+    /** @brief Returns the event def id. */
     std::string getEventDefId(int index) const;
+    /** @brief Returns the event mount id. */
     std::string getEventMountId(int index) const;
+    /** @brief Returns the event ammo left. */
     int         getEventAmmoLeft(int index) const;
     /** @brief 近战命中弧（仅 fire 事件）。 */
     float getEventArc(int index) const;
@@ -174,10 +200,15 @@ public:
     float getEventAoe(int index) const;
     /** @brief P0 手感/伤害事件载荷（仅 fire 事件）。 */
     float getEventSpread(int index) const;
+    /** @brief Returns the event pellets. */
     int   getEventPellets(int index) const;
+    /** @brief Returns the event recoil pitch. */
     float getEventRecoilPitch(int index) const;
+    /** @brief Returns the event recoil yaw. */
     float getEventRecoilYaw(int index) const;
+    /** @brief Returns the event damage type. */
     std::string getEventDamageType(int index) const;
+    /** @brief Returns the event element. */
     std::string getEventElement(int index) const;
     /** @brief 武器当前阶段（"idle"|"windup"|"active"|"recover"）。 */
     std::string getStage(WeaponEntity* w) const;

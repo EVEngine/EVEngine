@@ -39,6 +39,7 @@ public:
      */
     [[nodiscard]] static eve::Result<int> replaceFromJsonStrict(const std::string &json);
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
     /**
      * @brief Select the first matching rule and queue it through Battle's canonical checked API.

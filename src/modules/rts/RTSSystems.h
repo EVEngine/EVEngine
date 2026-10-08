@@ -291,6 +291,7 @@ class EVENGINE_API_DOMAINS FogOfWarSystem {
 public:
     /** @brief Runtime-only revealer bindings; authoritative explored cells remain owned by map::Fov. */
     struct State {
+        /** @brief Binding public API. */
         struct Binding {
             ecs::EntityHandle source{};
             ecs::EntityHandle faction{};
@@ -400,6 +401,7 @@ public:
 using AmmoProductionPurchase = std::function<Result<std::size_t>(
     Building&, std::string_view, std::int64_t, std::size_t)>;
 
+/** @brief EVENGINE_API_DOMAINS public API. */
 class EVENGINE_API_DOMAINS SupplySystem {
 public:
     /**
@@ -563,6 +565,7 @@ struct CombatHeightProfile { float source = 0.0f; float target = 0.0f; };
 using CombatHeightQuery = std::function<CombatHeightProfile(
     WorldPosition origin, WorldPosition target, ecs::EntityHandle source, ecs::EntityHandle targetEntity)>;
 
+/** @brief EVENGINE_API_DOMAINS public API. */
 class EVENGINE_API_DOMAINS CombatFireSystem {
 public:
     /** @brief Adapter-owned keys previously mirrored into a shared sensing world. */
@@ -688,6 +691,7 @@ using ProductionSpawn = std::function<Result<Unit*>(Building&, const production:
 using ProductionSpawnPosition =
     std::function<Result<std::optional<WorldPosition>>(Building&, const production::ProductionTask&)>;
 
+/** @brief EVENGINE_API_DOMAINS public API. */
 class EVENGINE_API_DOMAINS BuildingProductionSystem {
 public:
     /** @brief Advance all buildings and settle newly completed unit tasks through the game-owned factory. */
@@ -708,6 +712,7 @@ struct ReinforcementRequestReceipt {
     std::string taskId;
 };
 
+/** @brief EVENGINE_API_DOMAINS public API. */
 class EVENGINE_API_DOMAINS ReinforcementProductionPolicySystem {
 public:
     /** @brief Reconcile total/type caps and cross-factory type priorities before production advances. */

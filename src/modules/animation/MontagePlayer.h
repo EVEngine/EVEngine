@@ -39,6 +39,7 @@ struct MontageClipAsset {
  */
 class IMontageClipProvider {
 public:
+    /** @brief Releases IMontageClipProvider resources. */
     virtual ~IMontageClipProvider() = default;
     /** @brief Resolve one URI into a clip compatible with the borrowed skeleton. */
     [[nodiscard]] virtual Result<std::unique_ptr<AnimClip>> load(std::string_view    uri,
@@ -74,6 +75,7 @@ enum class MontageGapPolicy : std::uint8_t {
  */
 class IMontageRootMotionReceiver {
 public:
+    /** @brief Releases IMontageRootMotionReceiver resources. */
     virtual ~IMontageRootMotionReceiver() = default;
     /** @brief Consume one borrowed filtered root-motion delta. */
     virtual void applyMontageRootMotion(const TransformTRS& delta) noexcept = 0;
@@ -106,6 +108,7 @@ class EVENGINE_API_WORLD MontagePlayer {
 public:
     /** @brief Borrow a skeleton that must outlive this player. */
     explicit MontagePlayer(AnimSkeleton& skeleton);
+    /** @brief Montage player. */
     ~MontagePlayer();
 
     MontagePlayer(const MontagePlayer&)            = delete;

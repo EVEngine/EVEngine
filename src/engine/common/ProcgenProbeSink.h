@@ -34,6 +34,7 @@ struct EVENGINE_API_FOUNDATION_INLINE ProcgenProbeDesc {
 class EVENGINE_API_FOUNDATION_INLINE IProcgenProbeSink {
 public:
     static constexpr const char* capabilityName = "IProcgenProbeSink";
+    /** @brief I procgen probe sink. */
     virtual ~IProcgenProbeSink() = default;
     /** @brief Atomically create or reconcile a complete stable-identity probe batch. */
     [[nodiscard]] virtual Result<int> replaceProbeBatch(const std::string& batchId,

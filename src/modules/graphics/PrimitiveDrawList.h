@@ -51,6 +51,7 @@ struct TriangleCommand3D {
 /** @brief Frame-local Skia-style recorder for 2D line primitives. */
 class EVENGINE_API_BACKENDS PrimitiveCanvas2D {
 public:
+    /** @brief Primitive canvas 2 d. */
     explicit PrimitiveCanvas2D(std::size_t hardCommandLimit = 65536);
 
     /** @brief Pushes the complete current transform state. */
@@ -88,8 +89,11 @@ public:
     /** @brief Clears commands and state while retaining allocated capacity. */
     void reset();
 
+    /** @brief Commands. */
     [[nodiscard]] const std::vector<PolylineCommand2D>& commands() const noexcept { return commands_; }
+    /** @brief Triangles. */
     [[nodiscard]] const std::vector<TriangleCommand2D>& triangles() const noexcept { return triangles_; }
+    /** @brief Statistics. */
     [[nodiscard]] const PrimitiveDrawStatistics&        statistics() const noexcept { return statistics_; }
 
 private:
@@ -109,26 +113,39 @@ private:
 /** @brief Frame-local scene recorder for 3D line primitives. */
 class EVENGINE_API_BACKENDS PrimitiveSceneCanvas3D {
 public:
+    /** @brief Primitive scene canvas 3 d. */
     explicit PrimitiveSceneCanvas3D(SceneDrawContext context, std::size_t hardCommandLimit = 65536);
 
+    /** @brief Saves . */
     void save();
+    /** @brief Restore. */
     void restore();
+    /** @brief Concat. */
     void concat(const glm::mat4& transform);
+    /** @brief Draws line. */
     void drawLine(glm::vec3 a, glm::vec3 b, const ScenePrimitivePaint& paint);
+    /** @brief Draws point. */
     void drawPoint(glm::vec3 point, const ScenePrimitivePaint& paint);
+    /** @brief Draws polyline. */
     void drawPolyline(std::span<const glm::vec3> points, bool closed, const ScenePrimitivePaint& paint);
     /** @brief Atomically records an owning 3D polyline or returns a structured budget failure. */
     [[nodiscard]] eve::Result<PrimitiveRecordStatus> tryDrawPolyline(std::span<const glm::vec3> points, bool closed,
                                                                      const ScenePrimitivePaint& paint);
+    /** @brief Draws ray. */
     void drawRay(glm::vec3 origin, glm::vec3 direction, float length, const ScenePrimitivePaint& paint);
+    /** @brief Draws triangle. */
     void drawTriangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, const ScenePrimitivePaint& paint);
+    /** @brief Draws quad. */
     void drawQuad(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3 d, const ScenePrimitivePaint& paint);
+    /** @brief Draws disk. */
     void drawDisk(glm::vec3 center, glm::vec3 normal, float radius, const ScenePrimitivePaint& paint,
                   std::uint32_t segments = 32);
+    /** @brief Draws arc. */
     void drawArc(glm::vec3 center, glm::vec3 normal, glm::vec3 zeroDirection, float radius, float startRadians,
                  float sweepRadians, const ScenePrimitivePaint& paint, std::uint32_t segments = 32);
     /** @brief Records the twelve edges of an axis-aligned box. */
     void drawAabb(glm::vec3 minimum, glm::vec3 maximum, const ScenePrimitivePaint& paint);
+    /** @brief Draws obb. */
     void drawObb(glm::vec3 center, const std::array<glm::vec3, 3>& halfAxes, const ScenePrimitivePaint& paint);
     /** @brief Records a planar grid spanned by two caller-provided axes. */
     void drawGrid(glm::vec3 origin, glm::vec3 axisU, glm::vec3 axisV, std::uint32_t cellsU, std::uint32_t cellsV,
@@ -138,6 +155,7 @@ public:
     /** @brief Draws a sphere using a fixed quality or adaptive projected error policy. */
     void drawSphere(glm::vec3 center, float radius, const ScenePrimitivePaint& paint,
                     const RadialTessellation& tessellation);
+    /** @brief Draws capsule. */
     void drawCapsule(glm::vec3 a, glm::vec3 b, float radius, const ScenePrimitivePaint& paint,
                      std::uint32_t segments = 32);
     /** @brief Records endpoint circles and four side lines of a cylinder. */
@@ -148,12 +166,18 @@ public:
                   std::uint32_t segments = 32);
     /** @brief Records a shaft and four-sided arrow head. */
     void drawArrow(glm::vec3 from, glm::vec3 to, float headLength, float headRadius, const ScenePrimitivePaint& paint);
+    /** @brief Draws frustum. */
     void drawFrustum(const std::array<glm::vec3, 8>& corners, const ScenePrimitivePaint& paint);
+    /** @brief Resets . */
     void reset();
 
+    /** @brief Context. */
     [[nodiscard]] const SceneDrawContext&               context() const noexcept { return context_; }
+    /** @brief Commands. */
     [[nodiscard]] const std::vector<PolylineCommand3D>& commands() const noexcept { return commands_; }
+    /** @brief Triangles. */
     [[nodiscard]] const std::vector<TriangleCommand3D>& triangles() const noexcept { return triangles_; }
+    /** @brief Statistics. */
     [[nodiscard]] const PrimitiveDrawStatistics&        statistics() const noexcept { return statistics_; }
 
 private:

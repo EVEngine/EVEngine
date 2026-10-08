@@ -102,6 +102,7 @@ enum class TurnOrder : std::uint8_t {
  */
 class EVENGINE_API_DOMAINS ITurnPolicy {
 public:
+    /** @brief I turn policy. */
     virtual ~ITurnPolicy() = default;
 
     /** @brief Return the stable protocol id this policy is registered under. */

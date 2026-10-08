@@ -29,6 +29,7 @@ class Body3D;
 class Shape3D;
 class Joint3D;
 class Mechanism3D;
+/** @brief CameraSphereHit3D public API. */
 struct CameraSphereHit3D {
     bool  hit = false;
     int   bodyId = -1;

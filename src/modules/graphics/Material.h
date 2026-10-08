@@ -36,7 +36,9 @@ class EVENGINE_API_BACKENDS Material {
 public:
     static constexpr int kMaxPartsHint = 8;
 
+    /** @brief Material. */
     Material()  = default;
+    /** @brief Material. */
     ~Material() = default;
 
     Material(const Material&)            = delete;
@@ -44,6 +46,7 @@ public:
 
     /** @brief "pbr" | "unlit" | "hair" | "custom" (unknown → pbr). */
     void        setShadingModel(const std::string& model);
+    /** @brief Returns the shading model. */
     std::string getShadingModel() const { return shadingModel_; }
 
     /** @brief Atomically replace validated PBR bindings and enable the extended forward path.
@@ -81,7 +84,9 @@ public:
      * @thread Render-thread affine; no callbacks or retained temporary data. */
     Texture* getNormalTexture() const { return pbr_.textures[2].texture; }
 
+    /** @brief Sets the height texture. */
     void     setHeightTexture(Texture* texture) { height_ = texture; }
+    /** @brief Returns the height texture. */
     Texture* getHeightTexture() const { return height_; }
 
     /**
@@ -117,46 +122,75 @@ public:
      * @lifetime The pointer remains valid only while its creating Graphics instance owns the shader. */
     Shader* getShader() const { return shader_; }
 
+    /** @brief Sets the tint. */
     void  setTint(float r, float g, float b, float a = 1.f);
+    /** @brief Returns the tint r. */
     float getTintR() const { return r_; }
+    /** @brief Returns the tint g. */
     float getTintG() const { return g_; }
+    /** @brief Returns the tint b. */
     float getTintB() const { return b_; }
+    /** @brief Returns the tint a. */
     float getTintA() const { return a_; }
 
+    /** @brief Sets the metallic. */
     void  setMetallic(float metallic);
+    /** @brief Returns the metallic. */
     float getMetallic() const { return metallic_; }
 
+    /** @brief Sets the roughness. */
     void  setRoughness(float roughness);
+    /** @brief Returns the roughness. */
     float getRoughness() const { return roughness_; }
 
+    /** @brief Sets the tex cell bomb. */
     void  setTexCellBomb(float cellScale, float strength, float rotAmount = 1.f);
+    /** @brief Returns the tex cell bomb scale. */
     float getTexCellBombScale() const { return texBombScale_; }
+    /** @brief Returns the tex cell bomb strength. */
     float getTexCellBombStrength() const { return texBombStrength_; }
+    /** @brief Returns the tex cell bomb rotation. */
     float getTexCellBombRotation() const { return texBombRot_; }
 
+    /** @brief Sets the parallax. */
     void  setParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f);
+    /** @brief Returns the parallax scale. */
     float getParallaxScale() const { return parallaxScale_; }
+    /** @brief Returns the parallax min layers. */
     float getParallaxMinLayers() const { return parallaxMinLayers_; }
+    /** @brief Returns the parallax max layers. */
     float getParallaxMaxLayers() const { return parallaxMaxLayers_; }
 
+    /** @brief Sets the receive light. */
     void setReceiveLight(bool receive) { receiveLight_ = receive; }
+    /** @brief Returns the receive light. */
     bool getReceiveLight() const { return receiveLight_ && shadingModel_ != "unlit"; }
 
+    /** @brief Sets the cast shadow. */
     void setCastShadow(bool cast) { castShadow_ = cast; }
+    /** @brief Returns the cast shadow. */
     bool getCastShadow() const { return castShadow_; }
 
+    /** @brief Sets the receive shadow. */
     void setReceiveShadow(bool receive) { receiveShadow_ = receive; }
+    /** @brief Returns the receive shadow. */
     bool getReceiveShadow() const { return receiveShadow_; }
 
+    /** @brief Sets the cast occlusion. */
     void setCastOcclusion(bool cast) { castOcclusion_ = cast; }
+    /** @brief Returns the cast occlusion. */
     bool getCastOcclusion() const { return castOcclusion_; }
 
+    /** @brief Sets the hair. */
     void setHair(bool hair);
+    /** @brief Returns the hair. */
     bool getHair() const { return isHair_; }
 
     /** @brief Optional named float knobs (style / custom shader params). */
     bool  hasParam(const std::string& name) const;
+    /** @brief Sets the float. */
     void  setFloat(const std::string& name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string& name) const;
 
     /**
@@ -174,26 +208,39 @@ public:
 
     /** @brief Set "opaque", "masked", or "transparent" surface classification. */
     void        setSurfaceMode(const std::string& mode);
+    /** @brief Returns the surface mode. */
     std::string getSurfaceMode() const;
+    /** @brief Surface mode. */
     SurfaceMode surfaceMode() const { return surfaceMode_; }
+    /** @brief Sets the alpha cutoff. */
     void        setAlphaCutoff(float cutoff);
+    /** @brief Returns the alpha cutoff. */
     float       getAlphaCutoff() const { return alphaCutoff_; }
     /** @brief Set "alpha", "premultiplied", "additive", or "multiply". */
     void        setBlendMode(const std::string& mode);
+    /** @brief Returns the blend mode. */
     std::string getBlendMode() const;
+    /** @brief Blend mode. */
     BlendMode   blendMode() const { return blendMode_; }
+    /** @brief Sets the depth write. */
     void        setDepthWrite(bool enabled) { depthWrite_ = enabled; }
+    /** @brief Returns the depth write. */
     bool        getDepthWrite() const { return depthWrite_; }
+    /** @brief Sets the double sided. */
     void        setDoubleSided(bool enabled) { doubleSided_ = enabled; }
+    /** @brief Returns the double sided. */
     bool        getDoubleSided() const { return doubleSided_; }
     /** @brief Keep a bottom-anchored card facing the active camera around world Y during GPU-driven draws. */
     void setCameraFacing(bool enabled) { cameraFacing_ = enabled; }
     /** @brief Return whether GPU-driven card vertices use cylindrical camera-facing orientation. */
     bool getCameraFacing() const { return cameraFacing_; }
+    /** @brief Sets the sort priority. */
     void setSortPriority(int priority) { sortPriority_ = priority; }
+    /** @brief Returns the sort priority. */
     int  getSortPriority() const { return sortPriority_; }
     /** @brief Optional masked transparency quality: "cutoff", "dither", "coverage". */
     void        setAlphaTechnique(const std::string& technique);
+    /** @brief Returns the alpha technique. */
     std::string getAlphaTechnique() const { return alphaTechnique_; }
 
 private:

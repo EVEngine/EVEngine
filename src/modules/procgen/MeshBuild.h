@@ -18,10 +18,14 @@ namespace eve::procgen {
  */
 class EVENGINE_API_DOMAINS MeshBuild {
 public:
+    /** @brief Clears . */
     void clear();
+    /** @brief Reserve. */
     void reserve(int vertexCount, int indexCount);
 
+    /** @brief Adds vertex. */
     void addVertex(float px, float py, float pz, float nx, float ny, float nz, float u, float v);
+    /** @brief Adds triangle. */
     void addTriangle(uint32_t i0, uint32_t i1, uint32_t i2);
 
     /**
@@ -78,16 +82,26 @@ public:
     [[nodiscard]] std::unique_ptr<MeshBuild> copyGroup(int groupIndex) const;
 
     int getVertexCount() const;
+    /** @brief Returns the index count. */
     int getIndexCount() const;
+    /** @brief Empty. */
     bool empty() const;
 
+    /** @brief Returns the position x. */
     float getPositionX(int i) const;
+    /** @brief Returns the position y. */
     float getPositionY(int i) const;
+    /** @brief Returns the position z. */
     float getPositionZ(int i) const;
+    /** @brief Returns the normal x. */
     float getNormalX(int i) const;
+    /** @brief Returns the normal y. */
     float getNormalY(int i) const;
+    /** @brief Returns the normal z. */
     float getNormalZ(int i) const;
+    /** @brief Returns the uv u. */
     float getUvU(int i) const;
+    /** @brief Returns the uv v. */
     float getUvV(int i) const;
     /** @brief Return whether this mesh owns one packed RGBA color per vertex. */
     [[nodiscard]] bool hasVertexColors() const noexcept;
@@ -97,20 +111,31 @@ public:
     [[nodiscard]] eve::Result<void> setVertexColors(std::vector<float> colors);
     int   getIndex(int i) const;
 
+    /** @brief Sets the meta. */
     void        setMeta(const std::string &key, const std::string &value);
+    /** @brief Returns the meta. */
     std::string getMeta(const std::string &key, const std::string &defaultValue) const;
 
+    /** @brief Positions. */
     const std::vector<float>    &positions() const { return positions_; }
+    /** @brief Normals. */
     const std::vector<float>    &normals() const { return normals_; }
+    /** @brief Uvs. */
     const std::vector<float>    &uvs() const { return uvs_; }
+    /** @brief Colors. */
     const std::vector<float>    &colors() const { return colors_; }
+    /** @brief Indices. */
     const std::vector<uint32_t> &indices() const { return indices_; }
     /** @brief Return all metadata key/value pairs in deterministic map order. */
     const std::unordered_map<std::string, std::string> &metadata() const { return meta_; }
 
+    /** @brief Positions. */
     std::vector<float>    &positions() { return positions_; }
+    /** @brief Normals. */
     std::vector<float>    &normals() { return normals_; }
+    /** @brief Uvs. */
     std::vector<float>    &uvs() { return uvs_; }
+    /** @brief Indices. */
     std::vector<uint32_t> &indices() { return indices_; }
 
 private:

@@ -27,7 +27,9 @@
 
 namespace eve::detail {
 
+/** @brief ResourceReservationIdTag public API. */
 struct ResourceReservationIdTag {};
+/** @brief ResourceReceiptIdTag public API. */
 struct ResourceReceiptIdTag {};
 
 }  // namespace eve::detail
@@ -54,6 +56,7 @@ public:
     [[nodiscard]] const std::string& value() const noexcept { return value_; }
 
     friend bool operator==(const ResourceId&, const ResourceId&) noexcept  = default;
+    /** @brief Operator <=>. */
     friend auto operator<=>(const ResourceId&, const ResourceId&) noexcept = default;
 
 private:
@@ -104,6 +107,7 @@ public:
     [[nodiscard]] eve::Result<Amount> checkedAdd(Amount other) const;
 
     friend constexpr bool operator==(const Amount&, const Amount&) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(const Amount&, const Amount&) noexcept = default;
 
 private:
@@ -115,6 +119,7 @@ struct EVENGINE_API_FOUNDATION ResourceCost {
     ResourceId resource;
     Amount     amount;
 
+    /** @brief Operator ==. */
     friend bool operator==(const ResourceCost&, const ResourceCost&) noexcept = default;
 
     /**
@@ -241,6 +246,7 @@ public:
     [[nodiscard]] constexpr bool isZero() const noexcept { return value_ == 0; }
 
     friend constexpr bool operator==(const AccountNonce&, const AccountNonce&) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(const AccountNonce&, const AccountNonce&) noexcept = default;
 
 private:
@@ -309,6 +315,7 @@ struct Receipt {
  */
 class IResourceAccount {
 public:
+    /** @brief Releases IResourceAccount resources. */
     virtual ~IResourceAccount() = default;
 
     /**
@@ -359,6 +366,7 @@ public:
 namespace std {
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::resource::ResourceId> {
     /** @brief Hash a canonical resource id for account reservation maps. */
     std::size_t operator()(const eve::resource::ResourceId& value) const noexcept {

@@ -54,6 +54,7 @@ struct LSystemResult {
  */
 class EVENGINE_API_DOMAINS LSystem {
 public:
+    /** @brief L system. */
     LSystem();
 
     /** @brief Set the starting string. @param axiom Axiom. */

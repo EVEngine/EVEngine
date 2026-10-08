@@ -28,12 +28,15 @@ enum class HostFeature : uint64_t {
     DebugOverride     = 1ull << 8
 };
 
+/** @brief Operator |. */
 constexpr HostFeature operator|(HostFeature left, HostFeature right) {
     return static_cast<HostFeature>(static_cast<uint64_t>(left) | static_cast<uint64_t>(right));
 }
+/** @brief Operator &. */
 constexpr HostFeature operator&(HostFeature left, HostFeature right) {
     return static_cast<HostFeature>(static_cast<uint64_t>(left) & static_cast<uint64_t>(right));
 }
+/** @brief Operator |=. */
 constexpr HostFeature& operator|=(HostFeature& left, HostFeature right) {
     left = left | right;
     return left;
@@ -47,7 +50,9 @@ constexpr HostFeature& operator|=(HostFeature& left, HostFeature right) {
  */
 class EVENGINE_API_ORCHESTRATION HostProfile {
 public:
+    /** @brief Host profile. */
     HostProfile() = default;
+    /** @brief Host profile. */
     explicit HostProfile(HostKind kind) : kind_(kind) {}
 
     /** @brief Unrestricted developer profile used by legacy sessions. */
@@ -57,20 +62,33 @@ public:
     /** @brief Headless profile that denies commands unless allow-listed. */
     static HostProfile automation();
 
+    /** @brief Kind. */
     HostKind    kind() const { return kind_; }
+    /** @brief Features. */
     HostFeature features() const { return features_; }
+    /** @brief Sets the features. */
     void        setFeatures(HostFeature features) { features_ = features; }
+    /** @brief Adds features. */
     void        addFeatures(HostFeature features) { features_ |= features; }
+    /** @brief True when features. */
     bool        hasFeatures(HostFeature required) const;
 
+    /** @brief Sets the allow all commands. */
     void setAllowAllCommands(bool allow) { allowAllCommands_ = allow; }
+    /** @brief Allows all commands. */
     bool allowsAllCommands() const { return allowAllCommands_; }
+    /** @brief Allow command. */
     void allowCommand(CommandId id);
+    /** @brief Allow commands. */
     void allowCommands(std::initializer_list<CommandId> ids);
+    /** @brief Deny command. */
     void denyCommand(const CommandId& id);
+    /** @brief Allows command. */
     bool allowsCommand(const CommandId& id) const;
 
+    /** @brief Max payload bytes. */
     size_t maxPayloadBytes() const { return maxPayloadBytes_; }
+    /** @brief Sets the max payload bytes. */
     void   setMaxPayloadBytes(size_t bytes) { maxPayloadBytes_ = bytes; }
 
 private:

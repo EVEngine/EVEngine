@@ -16,16 +16,22 @@ class SpriteSheet;
  */
 class EVENGINE_API_WORLD SpriteClip {
 public:
+    /** @brief Sprite clip. */
     explicit SpriteClip(const std::string &name = "");
+    /** @brief Sprite clip. */
     ~SpriteClip() = default;
 
     SpriteClip(const SpriteClip &)            = delete;
     SpriteClip &operator=(const SpriteClip &) = delete;
 
+    /** @brief Sets the name. */
     void        setName(const std::string &name);
+    /** @brief Returns the name. */
     std::string getName() const { return name_; }
 
+    /** @brief Sets the loop. */
     void setLoop(bool loop) { loop_ = loop; }
+    /** @brief Returns the loop. */
     bool getLoop() const { return loop_; }
 
     /** @brief Append one cell: sheetFrameIndex + display duration (seconds). */
@@ -45,11 +51,16 @@ public:
     /** @brief Return event name for a frame, or empty when none. */
     std::string getEvent(int clipFrame) const;
 
+    /** @brief Clears . */
     void clear();
 
+    /** @brief Returns the frame count. */
     int   getFrameCount() const { return static_cast<int>(frames_.size()); }
+    /** @brief Returns the sheet frame. */
     int   getSheetFrame(int index) const;
+    /** @brief Returns the frame duration. */
     float getFrameDuration(int index) const;
+    /** @brief Returns the duration. */
     float getDuration() const;
 
     /**

@@ -45,24 +45,42 @@ namespace eve::graphics::fog {
  */
 class EVENGINE_API_WORLD FogSystem {
 public:
+    /** @brief Quality. */
     [[nodiscard]] FogQuality quality() const noexcept { return quality_; }
+    /** @brief Budget. */
     [[nodiscard]] FogQualityBudget budget() const noexcept { return budgetFor(quality_); }
+    /** @brief Simulation time. */
     [[nodiscard]] float simulationTime() const noexcept { return simTime_; }
+    /** @brief Frame index. */
     [[nodiscard]] std::uint64_t frameIndex() const noexcept { return frameIndex_; }
 
+    /** @brief Density field. */
     FogDensityField& densityField() noexcept { return density_; }
+    /** @brief Density field. */
     const FogDensityField& densityField() const noexcept { return density_; }
+    /** @brief Profile. */
     FogProfile& profile() noexcept { return profile_; }
+    /** @brief Profile. */
     const FogProfile& profile() const noexcept { return profile_; }
+    /** @brief Wind. */
     SceneWind& wind() noexcept { return wind_; }
+    /** @brief Wind. */
     const SceneWind& wind() const noexcept { return wind_; }
+    /** @brief Fluid. */
     MacFluidGrid& fluid() noexcept { return fluid_; }
+    /** @brief Fluid. */
     const MacFluidGrid& fluid() const noexcept { return fluid_; }
+    /** @brief Interactor. */
     FogInteractor& interactor() noexcept { return interactor_; }
+    /** @brief Interactor. */
     const FogInteractor& interactor() const noexcept { return interactor_; }
+    /** @brief Beer cache. */
     BeerLightCache& beerCache() noexcept { return beerCache_; }
+    /** @brief Beer cache. */
     const BeerLightCache& beerCache() const noexcept { return beerCache_; }
+    /** @brief Art. */
     ContinuousArt& art() noexcept { return art_; }
+    /** @brief Art. */
     const ContinuousArt& art() const noexcept { return art_; }
 
     /** @brief Select Fast / Enhanced / PhysicalReference and invalidate caches. */

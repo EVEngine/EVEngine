@@ -14,6 +14,7 @@ namespace eve::graphics::fog {
  */
 class EVENGINE_API_WORLD ContinuousArt {
 public:
+    /** @brief Params. */
     [[nodiscard]] const ContinuousArtParams& params() const noexcept { return params_; }
 
     /** @brief Replace art parameters after validation. */

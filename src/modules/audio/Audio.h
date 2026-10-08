@@ -30,7 +30,9 @@ class EVENGINE_API_BACKENDS Audio : public Module {
 public:
     Module_REG(Audio);
 
+    /** @brief Audio. */
     Audio();
+    /** @brief Audio. */
     ~Audio() override;
 
     /**
@@ -56,6 +58,7 @@ public:
 
     /** @brief Sets master volume (clamped to >= 0) applied to the OpenAL listener. */
     void setVolume(float v);
+    /** @brief Returns the volume. */
     float getVolume() const;
 
     /** @brief Sets the listener position in world units. */

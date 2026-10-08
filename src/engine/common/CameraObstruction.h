@@ -19,8 +19,10 @@ struct EVENGINE_API_FOUNDATION_INLINE CameraObstructionHit {
 class EVENGINE_API_FOUNDATION_INLINE ICameraObstructionQuery {
 public:
     static constexpr const char* capabilityName = "eve.camera.ICameraObstructionQuery";
+    /** @brief I camera obstruction query. */
     virtual ~ICameraObstructionQuery() = default;
 
+    /** @brief Sphere cast. */
     virtual bool sphereCast(float fromX, float fromY, float fromZ, float toX, float toY,
                             float toZ, float radius, uint64_t maskBits, int ignoredBodyId,
                             CameraObstructionHit* out) = 0;

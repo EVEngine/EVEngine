@@ -93,8 +93,10 @@ struct CardDefinition {
 /** @brief 单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。 */
 class EVENGINE_API_WORLD CardData : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(CardData, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 稳定实例 id、显示名、种类。 */
@@ -185,8 +187,10 @@ public:
 /** @brief 牌库（栈顶在末尾）。 */
 class EVENGINE_API_WORLD Deck : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Deck, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 有序牌堆；栈顶在 vector 末尾。 */
@@ -218,8 +222,10 @@ public:
 /** @brief 落牌区（手牌区 / 出牌区 / 弃牌区），用于拖放命中判定。 */
 class EVENGINE_API_WORLD Zone : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Zone, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 区域矩形与绘制参数。 */
@@ -266,8 +272,10 @@ struct CardEvent {
 /** @brief 手牌：扇形布局 + 悬浮 + 拖拽 + 落区判定 + 渲染。 */
 class EVENGINE_API_WORLD Hand : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Hand, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 所有者与布局/交互开关。 */

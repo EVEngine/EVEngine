@@ -19,6 +19,7 @@ enum class ShadowMethod : std::uint8_t {
     CubePoint,
 };
 
+/** @brief ShadowConfig public API. */
 struct ShadowConfig {
     static constexpr int kCascades = 3;
     /** @brief Extra depth-array layers for spot (perspective) local shadows. */
@@ -49,6 +50,7 @@ struct ShadowUBO {
     glm::vec4 localMeta{0.f, 1.f, 0.f, 0.f};
 };
 
+/** @brief ShadowUpload public API. */
 struct ShadowUpload {
     ShadowUBO ubo{};
     bool active = false;

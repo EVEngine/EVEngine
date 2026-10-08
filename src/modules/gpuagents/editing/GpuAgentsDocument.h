@@ -69,6 +69,7 @@ struct EVENGINE_API_ORCHESTRATION GpuAgentsSettings {
     std::string lifeFieldSampler   = "LifeFieldTexture";
     std::string surfaceDataSampler = "SurfaceDataTexture";
 
+    /** @brief Operator <=>. */
     auto operator<=>(const GpuAgentsSettings&) const = default;
 };
 
@@ -84,8 +85,11 @@ class EVENGINE_API_ORCHESTRATION GpuAgentsDocumentTarget final : public ::eve::e
                                                                  public IDomainOperationTarget,
                                                                  public IPropertyProvider {
 public:
+    /** @brief Gpu agents document target. */
     explicit GpuAgentsDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /**
      * @brief Query an optional target capability.
@@ -94,12 +98,18 @@ public:
      * @nullable Yes when the capability is unsupported.
      */
     void*                         queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void>            applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
 
@@ -113,6 +123,7 @@ public:
     Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool              matches(const SelectionSnapshot& selection) const;
     std::string       id_;
     GpuAgentsSettings settings_;

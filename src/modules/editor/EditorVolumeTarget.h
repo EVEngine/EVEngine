@@ -18,11 +18,17 @@ public:
     IntVolumeEditCommand(std::string name, IEditableTarget* target);
     /** @brief Record a desired value without applying it. */
     bool record(int x, int y, int z, int after);
+    /** @brief Name. */
     const std::string& name() const override { return name_; }
+    /** @brief Dirty region. */
     EditRegion dirtyRegion() const override { return dirty_.xzRegion(); }
+    /** @brief Applies . */
     bool apply() override;
+    /** @brief Revert. */
     void revert() override;
+    /** @brief Deep copy. @ownership Caller deletes. */
     [[nodiscard]] std::unique_ptr<IEditCommand> clone() const override;
+    /** @brief Merge with. */
     bool mergeWith(const IEditCommand& later) override;
 
 private:

@@ -12,6 +12,7 @@ namespace eve::editor {
 /** @brief Replaceable operation that converts brush samples into a command. */
 class IFieldBrushOperation {
 public:
+    /** @brief Releases IFieldBrushOperation resources. */
     virtual ~IFieldBrushOperation() = default;
 
     /** @brief Create one reversible command, or nullptr for an incompatible target. */
@@ -23,11 +24,13 @@ public:
 /** @brief Paints a fixed integer into targets exposing IIntFieldTarget. */
 class EVENGINE_API_ORCHESTRATION PaintIntFieldOperation final : public IFieldBrushOperation {
 public:
+    /** @brief Paint int field operation. */
     explicit PaintIntFieldOperation(int value = 1) : value_(value) {}
     /** @brief Change the integer written by subsequent stamps. */
     void setValue(int value) { value_ = value; }
     /** @brief Return the integer written by this operation. */
     int value() const { return value_; }
+    /** @brief Creates command. */
     std::unique_ptr<IEditCommand> createCommand(IEditableTarget *target,
                                                 const BrushSampleBuffer &samples,
                                                 float strength) const override;
@@ -38,6 +41,7 @@ private:
 /** @brief Adds weighted strength to targets exposing IScalarFieldTarget. */
 class EVENGINE_API_ORCHESTRATION AddScalarFieldOperation final : public IFieldBrushOperation {
 public:
+    /** @brief Creates command. */
     std::unique_ptr<IEditCommand> createCommand(IEditableTarget *target,
                                                 const BrushSampleBuffer &samples,
                                                 float strength) const override;
@@ -50,8 +54,10 @@ public:
  */
 class EVENGINE_API_ORCHESTRATION FieldBrushTool final : public IEditorTool {
 public:
+    /** @brief Field brush tool. */
     FieldBrushTool(std::string id, std::string label, const IBrushKernel *kernel,
                    const IFieldBrushOperation *operation);
+    /** @brief Descriptor. */
     const ToolDescriptor &descriptor() const override { return descriptor_; }
     /** @brief Replace the shape/falloff implementation used by later stamps. */
     void setKernel(const IBrushKernel *kernel) { kernel_ = kernel; }
@@ -61,12 +67,18 @@ public:
     void setRadius(float radius);
     /** @brief Set the operation strength; negative values are permitted. */
     void setStrength(float strength) { strength_ = strength; }
+    /** @brief Radius. */
     float radius() const { return radius_; }
+    /** @brief Strength. */
     float strength() const { return strength_; }
 
+    /** @brief Pointer event. */
     ToolResponse pointerEvent(EditorContext &context, const EditorPointerEvent &event) override;
+    /** @brief Cancel. */
     void cancel(EditorContext &context) override;
+    /** @brief Draws overlay. */
     void drawOverlay(EditorContext &context, IEditorOverlay &overlay) override;
+    /** @brief Inspect. */
     void inspect(EditorContext &context, IEditorInspector &inspector) override;
 
 private:

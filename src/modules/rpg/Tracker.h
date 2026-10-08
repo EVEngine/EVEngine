@@ -25,7 +25,9 @@ class QuestSystem;
 /** @brief 一份任务进度 + 本实例事件队列。 */
 class EVENGINE_API_PLATFORM Tracker {
 public:
+    /** @brief Tracker. */
     Tracker();
+    /** @brief Tracker. */
     ~Tracker() = default;
 
     /** @brief 补建 Registry 里尚未出现的条目并按前置解锁。 */
@@ -33,8 +35,11 @@ public:
 
     /** @brief 激活任务（compatibility facade (脚本兼容门面)）。 */
     bool activate(const std::string &id);
+    /** @brief Can activate. */
     bool canActivate(const std::string &id);
+    /** @brief Can activate reason. */
     std::string canActivateReason(const std::string &id);
+    /** @brief Notify. */
     void notify(const std::string &topic, const std::string &target, int amount);
     /** @brief 完成任务（compatibility facade (脚本兼容门面)）。 */
     bool claim(const std::string &id);
@@ -71,26 +76,47 @@ public:
     [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view json);
 
     int getCount() const;
+    /** @brief Returns the id. */
     std::string getId(int index) const;
+    /** @brief Returns the state. */
     std::string getState(const std::string &id) const;
+    /** @brief True when tag. */
     bool hasTag(const std::string &id, const std::string &tag) const;
+    /** @brief Returns the extra. */
     std::string getExtra(const std::string &id, const std::string &key) const;
+    /** @brief Returns the objective count. */
     int getObjectiveCount(const std::string &id) const;
+    /** @brief Returns the objective id. */
     std::string getObjectiveId(const std::string &id, int index) const;
+    /** @brief Returns the objective current. */
     int getObjectiveCurrent(const std::string &id, int index) const;
+    /** @brief Returns the objective count required. */
     int getObjectiveCountRequired(const std::string &id, int index) const;
+    /** @brief True when objective done. */
     bool isObjectiveDone(const std::string &id, int index) const;
+    /** @brief Returns the reward count. */
     int getRewardCount(const std::string &id) const;
+    /** @brief Returns the reward type. */
     std::string getRewardType(const std::string &id, int i) const;
+    /** @brief Returns the reward id. */
     std::string getRewardId(const std::string &id, int i) const;
+    /** @brief Returns the reward amount. */
     double getRewardAmount(const std::string &id, int i) const;
+    /** @brief Returns the event count. */
     int getEventCount() const;
+    /** @brief Returns the event entry id. */
     std::string getEventEntryId(int i) const;
+    /** @brief Returns the event objective id. */
     std::string getEventObjectiveId(int i) const;
+    /** @brief Returns the event action. */
     std::string getEventAction(int i) const;
+    /** @brief Returns the event topic. */
     std::string getEventTopic(int i) const;
+    /** @brief Returns the event target. */
     std::string getEventTarget(int i) const;
+    /** @brief Returns the event amount. */
     int getEventAmount(int i) const;
+    /** @brief Returns the event reason. */
     std::string getEventReason(int i) const;
 
     /** @brief 运行时条目（QuestSystem 读写；公开以便测试与脚本查询）。 */

@@ -39,6 +39,7 @@ struct MaterialPreviewRenderResult {
 /** @brief Host boundary that owns creation and teardown of an isolated preview scene. */
 class IMaterialPreviewRenderer {
 public:
+    /** @brief Releases IMaterialPreviewRenderer resources. */
     virtual ~IMaterialPreviewRenderer() = default;
     /** @brief Render one immutable request without reading or mutating the live game scene. */
     virtual MaterialPreviewRenderResult render(const MaterialPreviewRenderRequest& request) = 0;

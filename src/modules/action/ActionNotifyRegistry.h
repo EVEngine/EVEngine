@@ -67,6 +67,7 @@ struct ActionNotifyContext {
  */
 class IActionNotifyHandler {
 public:
+    /** @brief Releases IActionNotifyHandler resources. */
     virtual ~IActionNotifyHandler() = default;
     /**
      * @brief Consume one already validated event.
@@ -116,6 +117,7 @@ public:
 class IActionNotifyProvider {
 public:
     static constexpr const char* capabilityName = "eve.action.notify-provider";
+    /** @brief Releases IActionNotifyProvider resources. */
     virtual ~IActionNotifyProvider() = default;
 
     /**

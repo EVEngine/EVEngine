@@ -39,6 +39,7 @@ public:
      * @param originY top-left particle Y (meters)
      * @param originZ top-left particle Z (meters)
      */
+    /** @brief Cloth 3 d. */
     Cloth3D(int cols, int rows, float spacing, float originX, float originY, float originZ);
     /**
      * @brief Create runtime cloth state by copying a reusable ClothModel.
@@ -52,11 +53,13 @@ public:
      * @reentrancy Invokes no callbacks.
      */
     explicit Cloth3D(const ClothModel& model);
+    /** @brief Cloth 3 d. */
     ~Cloth3D();
 
     Cloth3D(const Cloth3D&)            = delete;
     Cloth3D& operator=(const Cloth3D&) = delete;
 
+    /** @brief Updates . */
     void update(float dt);
 
     /** @brief Advances cloth with the shared ticked backend contract. */
@@ -78,13 +81,18 @@ public:
     [[nodiscard("check cloth observation restore")]]
     eve::Result<void> restoreObservation(const SimulationObservation& observation) override;
 
+    /** @brief Sets the gravity. */
     void  setGravity(float gx, float gy, float gz);
+    /** @brief Returns the gravity x. */
     float getGravityX() const { return gravityX_; }
+    /** @brief Returns the gravity y. */
     float getGravityY() const { return gravityY_; }
+    /** @brief Returns the gravity z. */
     float getGravityZ() const { return gravityZ_; }
 
     /** @brief Constraint relaxation strength in [0,1] (default 0.85). */
     void  setStiffness(float stiffness);
+    /** @brief Returns the stiffness. */
     float getStiffness() const { return stiffness_; }
 
     /** @brief Set XPBD stretch compliance in m/N; zero preserves legacy PBD. */
@@ -122,10 +130,12 @@ public:
 
     /** @brief Constraint solver iterations per substep (default 4). */
     void setIterations(int iterations);
+    /** @brief Returns the iterations. */
     int  getIterations() const { return iterations_; }
 
     /** @brief Damping applied to Verlet velocity [0,1] (default 0.01). */
     void  setDamping(float damping);
+    /** @brief Returns the damping. */
     float getDamping() const { return damping_; }
 
     /**
@@ -133,6 +143,7 @@ public:
      * draw scale and rigid-body collision thickness.
      */
     void  setParticleSize(float size);
+    /** @brief Returns the particle size. */
     float getParticleSize() const { return particleSize_; }
 
     /**
@@ -142,6 +153,7 @@ public:
      * between particles.
      */
     void setSelfCollision(bool on);
+    /** @brief Returns the self collision. */
     bool getSelfCollision() const { return selfCollision_; }
 
     /**
@@ -149,10 +161,12 @@ public:
      * momentum exchange when colliding with dynamic rigid bodies.
      */
     void  setParticleMass(float mass);
+    /** @brief Returns the particle mass. */
     float getParticleMass() const { return particleMass_; }
 
     /** @brief Strength of the dihedral fold clamp [0,1] (default 0.5). */
     void  setFoldStiffness(float k);
+    /** @brief Returns the fold stiffness. */
     float getFoldStiffness() const { return foldStiffness_; }
 
     /**
@@ -162,10 +176,12 @@ public:
      * larger values allow stronger draping without creasing.
      */
     void  setMaxFoldAngle(float degrees);
+    /** @brief Returns the max fold angle. */
     float getMaxFoldAngle() const { return maxFoldAngle_ * 180.f / 3.14159265f; }
 
     /** @brief Axis-aligned box (origin + extents, meters); particles bounce inside. */
     void setBounds(float x, float y, float z, float w, float h, float d);
+    /** @brief Clears bounds. */
     void clearBounds();
 
     /** @brief Configure cloth contact friction and restitution in [0,1]. */
@@ -195,8 +211,11 @@ public:
     [[nodiscard]] int getTornConstraintCount() const;
 
     void pin(int index);
+    /** @brief Unpin. */
     void unpin(int index);
+    /** @brief Pin top row. */
     void pinTopRow();
+    /** @brief True when pinned. */
     bool isPinned(int index) const;
     /** @brief Set per-particle inverse mass; zero makes the particle kinematic/pinned. */
     void setParticleInverseMass(int index, float inverseMass);
@@ -227,12 +246,17 @@ public:
      * Returns particle index, or -1 if none.
      */
     int  grabAt(float x, float y, float z, float radius = 0.3f);
+    /** @brief Moves grab. */
     void moveGrab(float x, float y, float z);
+    /** @brief Release grab. */
     void releaseGrab();
+    /** @brief True when grabbing. */
     bool isGrabbing() const { return grabIndex_ >= 0; }
+    /** @brief Returns the grab index. */
     int  getGrabIndex() const { return grabIndex_; }
 
     /** Uniform wind / force impulse applied this frame (m/s²). */
+    /** @brief Applies force. */
     void applyForce(float fx, float fy, float fz);
 
     /**
@@ -311,17 +335,25 @@ public:
     /** @brief Restore the flat grid pose (top row pinned) and clear transient state. */
     void reset();
 
+    /** @brief Sets the color. */
     void  setColor(float r, float g, float b, float a = 1.f);
+    /** @brief Returns the color r. */
     float getColorR() const { return colorR_; }
+    /** @brief Returns the color g. */
     float getColorG() const { return colorG_; }
+    /** @brief Returns the color b. */
     float getColorB() const { return colorB_; }
+    /** @brief Returns the color a. */
     float getColorA() const { return colorA_; }
 
     /** @brief Draw the cloth as a triangle mesh (requires an open 3D frame). */
     void draw(graphics::Graphics* gfx);
 
+    /** @brief Returns the cols. */
     int   getCols() const { return cols_; }
+    /** @brief Returns the rows. */
     int   getRows() const { return rows_; }
+    /** @brief Returns the particle count. */
     int   getParticleCount() const { return static_cast<int>(particles_.size()); }
     /** @brief Return the current render/collision triangle count, reduced by tearing. */
     [[nodiscard]] int getTriangleCount() const;
@@ -334,15 +366,23 @@ public:
     /** @brief Return active attachment count. */
     [[nodiscard]] int getAttachmentCount() const { return static_cast<int>(attachments_.size()); }
     float getParticleX(int index) const;
+    /** @brief Returns the particle y. */
     float getParticleY(int index) const;
+    /** @brief Returns the particle z. */
     float getParticleZ(int index) const;
+    /** @brief Sets the particle position. */
     void  setParticlePosition(int index, float x, float y, float z);
 
+    /** @brief Returns the spacing. */
     float getSpacing() const { return spacing_; }
+    /** @brief Returns the origin x. */
     float getOriginX() const { return originX_; }
+    /** @brief Returns the origin y. */
     float getOriginY() const { return originY_; }
+    /** @brief Returns the origin z. */
     float getOriginZ() const { return originZ_; }
 
+    /** @brief Destroys . */
     void destroy();
 
 private:

@@ -12,6 +12,7 @@ enum class FootIKGroundQueryStatus { Unavailable, NoHit, Hit };
 /** @brief Physics-neutral downward ground-query provider for Foot IK. */
 class FootIKGroundProvider {
 public:
+    /** @brief Releases FootIKGroundProvider resources. */
     virtual ~FootIKGroundProvider() = default;
     /** @brief Query ground below an origin and return model-space contact data. */
     virtual FootIKGroundQueryStatus queryGround(float originX, float originY, float originZ, float maxDistance,
@@ -32,8 +33,11 @@ class EVENGINE_API_WORLD FootIKSolver {
 public:
     /** @brief Construct for a non-null borrowed skeleton. */
     explicit FootIKSolver(AnimSkeleton* skeleton);
+    /** @brief Foot ik solver. */
     ~FootIKSolver();
+    /** @brief Foot ik solver. */
     FootIKSolver(const FootIKSolver&) = default;
+    /** @brief Operator =. */
     FootIKSolver& operator=(const FootIKSolver&) = default;
     /** @brief Rebind; changing skeleton clears all bone-index configuration. */
     void setSkeleton(AnimSkeleton* skeleton);

@@ -30,6 +30,7 @@ struct EnvironmentAssetPage {
 /** @brief Queries and validates cubemap/equirectangular assets from the shared AssetDB. */
 class EVENGINE_API_ORCHESTRATION EnvironmentAssetBrowser {
 public:
+    /** @brief Environment asset browser. */
     explicit EnvironmentAssetBrowser(const MemoryAssetDatabase* database) : database_(database) {}
     /** @brief Query deterministic cards; stale index generations return Conflict. */
     Result<EnvironmentAssetPage> query(std::string text, std::size_t offset,

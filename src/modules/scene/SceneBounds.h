@@ -24,11 +24,16 @@ struct AABB3f {
 
 /** @brief World-space AABB of a node's local bounds (8 corners through world matrix). */
 inline AABB3f worldBoundsOf(const SceneNode &n) {
+    /** @brief Lo. */
     glm::vec3 lo(n.bminX, n.bminY, n.bminZ);
+    /** @brief Hi. */
     glm::vec3 hi(n.bmaxX, n.bmaxY, n.bmaxZ);
+    /** @brief Mn. */
     glm::vec3 mn(std::numeric_limits<float>::max());
+    /** @brief Mx. */
     glm::vec3 mx(std::numeric_limits<float>::lowest());
     for (int i = 0; i < 8; ++i) {
+        /** @brief P. */
         glm::vec3 p((i & 1) ? hi.x : lo.x, (i & 2) ? hi.y : lo.y,
                     (i & 4) ? hi.z : lo.z);
         glm::vec4 w = n.world * glm::vec4(p, 1.f);
@@ -65,6 +70,7 @@ inline bool rayAABB(const glm::vec3 &o, const glm::vec3 &d, const AABB3f &b, flo
     return true;
 }
 
+/** @brief Corner inside clip. */
 inline bool cornerInsideClip(const glm::mat4 &m, const glm::vec3 &p) {
     const glm::vec4 c = m * glm::vec4(p, 1.f);
     return c.w > 1e-8f && std::fabs(c.x) <= c.w && std::fabs(c.y) <= c.w &&
@@ -75,11 +81,13 @@ inline bool cornerInsideClip(const glm::mat4 &m, const glm::vec3 &p) {
 inline bool aabbIntersectsFrustum(const glm::mat4 &clip, const glm::mat4 &invClip,
                                   const AABB3f &b) {
     for (int i = 0; i < 8; ++i) {
+        /** @brief P. */
         const glm::vec3 p((i & 1) ? b.max.x : b.min.x, (i & 2) ? b.max.y : b.min.y,
                           (i & 4) ? b.max.z : b.min.z);
         if (cornerInsideClip(clip, p)) return true;
     }
     for (int i = 0; i < 8; ++i) {
+        /** @brief Ndc. */
         const glm::vec3 ndc((i & 1) ? 1.f : -1.f, (i & 2) ? 1.f : -1.f,
                             (i & 4) ? 1.f : 0.f);
         const glm::vec4 w = invClip * glm::vec4(ndc, 1.f);

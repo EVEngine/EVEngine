@@ -49,6 +49,7 @@ struct Light2DGpu {
     glm::vec4 spot{0.f, 0.f, -2.f, -2.f};
 };
 
+/** @brief Lighting2DUBO public API. */
 struct Lighting2DUBO {
     static constexpr int kMaxLights = 8;
     glm::vec4 ambient{0.15f, 0.15f, 0.18f, 0.f};
@@ -62,10 +63,13 @@ struct Lighting2DUBO {
  */
 class EVENGINE_API_BACKENDS Light2D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Light2D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Data public API. */
     struct Data {
         std::string type = "point";
         float x = 0.f;
@@ -164,6 +168,7 @@ struct Light3DGpu {
     glm::vec4 spot{0.f, 0.f, 0.f, -1.f};
 };
 
+/** @brief Lighting3DPack public API. */
 struct Lighting3DPack {
     static constexpr int kMaxLights = 8;
     glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f};
@@ -185,10 +190,13 @@ struct Lighting3DPack {
  */
 class EVENGINE_API_BACKENDS Light3D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Light3D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Data public API. */
     struct Data {
         std::string type = "point";
         float x = 0.f, y = 0.f, z = 0.f;

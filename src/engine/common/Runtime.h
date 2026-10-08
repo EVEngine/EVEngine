@@ -32,11 +32,13 @@ struct ScriptErrorContext;
  */
 inline std::string reflectedFloatString(double value) {
     char buf[64];
+    /** @brief Snprintf. */
     std::snprintf(buf, sizeof(buf), "%.*g",
                   std::numeric_limits<double>::max_digits10, value);
     return buf;
 }
 
+/** @brief ScriptState public API. */
 enum class ScriptState {
     Compiled,
     Running,
@@ -46,6 +48,7 @@ enum class ScriptState {
     Failed,
 };
 
+/** @brief ScriptStage public API. */
 enum class ScriptStage {
     Compile,
     Execute,
@@ -57,6 +60,7 @@ enum class ScriptStage {
 /** @brief Exception raised at the public Runtime boundary. */
 class EVENGINE_API_FOUNDATION ScriptException : public std::runtime_error {
 public:
+    /** @brief Script exception. */
     ScriptException(ScriptStage stage, std::string source, uint64_t scriptId,
                     const std::string& message);
     /**
@@ -69,8 +73,11 @@ public:
     ScriptException(ScriptStage stage, std::string source, uint64_t scriptId,
                     const script::ScriptErrorContext& context);
 
+    /** @brief Stage. */
     ScriptStage stage() const noexcept { return stage_; }
+    /** @brief Source. */
     const std::string& source() const noexcept { return source_; }
+    /** @brief Script id. */
     uint64_t scriptId() const noexcept { return script_id_; }
     /** @brief True when the exception carries a script source line. */
     bool hasLocation() const noexcept { return line_ > 0; }
@@ -96,6 +103,7 @@ private:
     bool reported_ = false;
 };
 
+/** @brief EVENGINE_API_FOUNDATION_INLINE public API. */
 struct EVENGINE_API_FOUNDATION_INLINE ReflectedAttribute {
     std::string name;
     ssq::Type type = ssq::Type::NULLPTR;
@@ -130,12 +138,17 @@ struct EVENGINE_API_FOUNDATION_INLINE ReflectedValue {
 
     /** @brief True when the slot exists and is non-null. */
     bool empty() const noexcept { return kind == ReflectedValueKind::None; }
+    /** @brief As bool. */
     bool asBool() const noexcept { return boolean; }
+    /** @brief As int. */
     int64_t asInt() const noexcept { return integer; }
+    /** @brief As float. */
     double asFloat() const noexcept { return floating; }
+    /** @brief As string. */
     const std::string& asString() const noexcept { return text; }
 };
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 struct EVENGINE_API_FOUNDATION ReflectedMember {
     std::string name;
     ssq::Type type = ssq::Type::NULLPTR;
@@ -155,6 +168,7 @@ struct EVENGINE_API_FOUNDATION ReflectedMember {
     std::vector<std::string> attrOptions(const std::string& name) const;
 };
 
+/** @brief EVENGINE_API_FOUNDATION_INLINE public API. */
 struct EVENGINE_API_FOUNDATION_INLINE ReflectedClass {
     std::string name;
     std::string source;
@@ -162,6 +176,7 @@ struct EVENGINE_API_FOUNDATION_INLINE ReflectedClass {
     std::vector<ReflectedMember> members;
 };
 
+/** @brief EVENGINE_API_FOUNDATION_INLINE public API. */
 struct EVENGINE_API_FOUNDATION_INLINE ScriptInfo {
     uint64_t id = 0;
     std::string source;
@@ -170,6 +185,7 @@ struct EVENGINE_API_FOUNDATION_INLINE ScriptInfo {
     std::string error;
 };
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION Runtime {
 public:
     using ScriptId = uint64_t;
@@ -179,14 +195,20 @@ public:
     /** @brief Restores the native Squirrel stack when a binding operation leaves scope. */
     class EVENGINE_API_FOUNDATION StackGuard {
     public:
+        /** @brief Stack guard. */
         explicit StackGuard(Runtime& runtime) noexcept;
+        /** @brief Stack guard. */
         ~StackGuard();
+        /** @brief Stack guard. */
         StackGuard(StackGuard&& other) noexcept;
+        /** @brief Operator =. */
         StackGuard& operator=(StackGuard&& other) noexcept;
         StackGuard(const StackGuard&) = delete;
         StackGuard& operator=(const StackGuard&) = delete;
 
+        /** @brief Top. */
         int top() const noexcept { return static_cast<int>(top_); }
+        /** @brief Dismiss. */
         void dismiss() noexcept { vm_ = nullptr; }
 
     private:
@@ -197,8 +219,11 @@ public:
     /** @brief Pushes this Runtime on the current thread's runtime stack. */
     class EVENGINE_API_FOUNDATION Scope {
     public:
+        /** @brief Scope. */
         explicit Scope(Runtime& runtime);
+        /** @brief Scope. */
         ~Scope();
+        /** @brief Scope. */
         Scope(Scope&& other) noexcept;
         Scope& operator=(Scope&& other) = delete;
         Scope(const Scope&) = delete;

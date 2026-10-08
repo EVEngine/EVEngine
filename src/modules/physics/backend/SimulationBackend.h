@@ -92,11 +92,13 @@ enum class SimulationDeterminism {
 
 /** @brief Writes a backend kind for diagnostics. */
 inline std::ostream& operator<<(std::ostream& stream, SimulationBackendKind kind) {
+    /** @brief Simulation backend kind name. */
     return stream << simulationBackendKindName(kind);
 }
 
 /** @brief Writes a determinism contract for diagnostics. */
 inline std::ostream& operator<<(std::ostream& stream, SimulationDeterminism determinism) {
+    /** @brief Simulation determinism name. */
     return stream << simulationDeterminismName(determinism);
 }
 
@@ -196,6 +198,7 @@ public:
      */
     [[nodiscard("check backend observation restore")]]
     virtual eve::Result<void> restoreObservation(const SimulationObservation& /*observation*/) {
+        /** @brief Failure. */
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Unsupported, "This simulation backend does not support observation restore",
             "physics.simulationBackend.restoreObservation"));

@@ -52,7 +52,9 @@ EVENGINE_API_WORLD void syncPropertyView(UIHost &host, const property_access::IP
 /** @brief Component wrapper that becomes dirty when its bound model changes. */
 class EVENGINE_API_WORLD PropertyComponent final : public Component {
 public:
+    /** @brief Property component. */
     explicit PropertyComponent(property_access::IPropertyAccess *model = nullptr, PropertyViewOptions options = {});
+    /** @brief Property component. */
     ~PropertyComponent() override = default;
 
     /** @brief Replace the model and reconnect change observation. */

@@ -158,6 +158,7 @@ private:
 namespace std {
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::Uri> {
     /** @brief Hash a canonical URI for standard hash containers. */
     std::size_t operator()(const eve::Uri& value) const noexcept {
@@ -166,6 +167,7 @@ struct hash<eve::Uri> {
 };
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::ResourceUri> {
     /** @brief Hash a canonical resource URI for standard hash containers. */
     std::size_t operator()(const eve::ResourceUri& value) const noexcept {

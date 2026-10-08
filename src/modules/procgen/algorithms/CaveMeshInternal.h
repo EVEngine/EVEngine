@@ -4,6 +4,7 @@
 
 namespace eve::procgen {
 
+/** @brief Cave mesh generator. */
 MeshRecipeFn caveMeshGenerator();
 
 }  // namespace eve::procgen

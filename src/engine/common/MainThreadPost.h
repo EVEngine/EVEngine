@@ -13,9 +13,11 @@
 
 namespace eve::caps {
 
+/** @brief EVENGINE_API_FOUNDATION_INLINE public API. */
 class EVENGINE_API_FOUNDATION_INLINE IMainThreadPost {
 public:
     static constexpr const char* capabilityName = "IMainThreadPost";
+    /** @brief I main thread post. */
     virtual ~IMainThreadPost() = default;
 
     /**
@@ -23,9 +25,11 @@ public:
      * submitting thread before a worker uses this poster: the provider may need
      * the module registry, which is not thread-safe.
      */
+    /** @brief Prepare. */
     virtual void prepare() = 0;
 
     /** Queue a named message for the main thread. Safe from any thread once prepare() has run. */
+    /** @brief Post to main thread. */
     virtual void postToMainThread(std::string name, std::string data) = 0;
 };
 

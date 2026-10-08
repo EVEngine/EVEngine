@@ -36,12 +36,14 @@ public:
      * @return Number of particles submitted, or zero when hidden/empty/unsupported.
      */
     static int renderEmitter(graphics::Graphics* gfx, ParticleEmitter* emitter);
+    /** @brief Renders . */
     static void render(graphics::Graphics *gfx);
 };
 
 /** @brief Syncs pooled Light2D entities with alive particles (emitters with lights.enabled). */
 class EVENGINE_API_DOMAINS ParticleLightSystem {
 public:
+    /** @brief Updates . */
     static void update();
 };
 
@@ -51,6 +53,7 @@ public:
  */
 class EVENGINE_API_DOMAINS ParticleConfigSystem {
 public:
+    /** @brief Polls . */
     static int poll();
 };
 

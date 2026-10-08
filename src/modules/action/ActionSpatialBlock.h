@@ -33,6 +33,7 @@ struct ActionSpatialVector3 {
     double y = 0.0;
     double z = 0.0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionSpatialVector3&) const = default;
 };
 
@@ -52,6 +53,7 @@ struct EVENGINE_API_PLATFORM ActionSpatialBinding {
     ActionSpatialVector3        rotationOffsetDegrees;
     ActionSpatialVector3        scale{1.0, 1.0, 1.0};
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionSpatialBinding&) const = default;
 
     /**

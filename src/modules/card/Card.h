@@ -93,6 +93,7 @@ public:
     Module_REG(Card);
     /** @brief Declared out of line so the incomplete `CardControl` member needs no deleter here. */
     Card();
+    /** @brief Card. */
     ~Card() override;
 
     // The two `vector<unique_ptr<...>>` members make the implicit copy operations
@@ -104,7 +105,9 @@ public:
     // Out of line for the same reason as the constructor and destructor above: a
     // defaulted move in the class body instantiates the move of every member,
     // including the deleter of the incomplete `CardControl`.
+    /** @brief Card. */
     Card(Card &&) noexcept;
+    /** @brief Operator =. */
     Card &operator=(Card &&) noexcept;
 
     /** @brief 从 JSON 注册卡牌类型；返回成功注册数量。 */
@@ -147,17 +150,26 @@ public:
      */
     [[nodiscard]] eve::Result<void> setCardPlayCondition(const std::string &id, decision::Condition condition);
     std::string getCardDefinitionName(const std::string &id);
+    /** @brief Returns the card definition kind. */
     std::string getCardDefinitionKind(const std::string &id);
+    /** @brief Returns the card definition cost. */
     int getCardDefinitionCost(const std::string &id);
+    /** @brief Returns the card definition attack. */
     int getCardDefinitionAttack(const std::string &id);
+    /** @brief Returns the card definition health. */
     int getCardDefinitionHealth(const std::string &id);
+    /** @brief Returns the card definition tint r. */
     float getCardDefinitionTintR(const std::string &id);
+    /** @brief Returns the card definition tint g. */
     float getCardDefinitionTintG(const std::string &id);
+    /** @brief Returns the card definition tint b. */
     float getCardDefinitionTintB(const std::string &id);
 
     /** @brief 工厂：对象由 ECS 表持有，脚本持有的是非拥有句柄。 */
     LayoutConfig *newConfig();
+    /** @brief Creates a card. @ownership Caller deletes unless documented otherwise. */
     CardData *newCard(const std::string &defId);
+    /** @brief Creates a deck. @ownership Caller deletes unless documented otherwise. */
     Deck *newDeck();
     /** @brief 创建一个落牌区。 */
     Zone *newZone(const std::string &id, const std::string &label, float x, float y, float w, float h);
@@ -168,12 +180,19 @@ public:
 
     /** @brief 游戏状态：当前布局、手牌、落牌区、牌库。 */
     void setConfig(LayoutConfig *cfg);
+    /** @brief Returns the config. */
     LayoutConfig *getConfig() const;
+    /** @brief Hand count. */
     int handCount() const;
+    /** @brief Returns the hand. */
     Hand *getHand(int index) const;
+    /** @brief Finds hand. */
     Hand *findHand(const std::string &owner) const;
+    /** @brief Zone count. */
     int zoneCount() const;
+    /** @brief Returns the zone. */
     Zone *getZone(int index) const;
+    /** @brief Returns the deck. */
     Deck *getDeck() const;
     /** @brief 从牌库抽一张牌加入指定手牌；无牌时返回 nullptr。 */
     CardData *drawCard(const std::string &handOwner);
@@ -245,6 +264,7 @@ public:
     void update(float dt, float mx, float my, bool down);
     /** @brief 绘制手牌/落牌区（与牌库）。 */
     void render(graphics::Graphics *gfx);
+    /** @brief Renders deck. */
     void renderDeck(graphics::Graphics *gfx);
 
     /** @brief Enable or disable the built-in card visuals while retaining layout and interaction. */

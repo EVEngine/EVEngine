@@ -8,7 +8,9 @@ namespace eve::ui_editor {
 class UiEditorModule final : public Module {
 public:
     Module_REG(UiEditorModule);
+    /** @brief Constructs a UiEditorModule. */
     UiEditorModule();
+    /** @brief Releases UiEditorModule resources. */
     ~UiEditorModule() override = default;
 };
 

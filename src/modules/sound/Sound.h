@@ -19,7 +19,9 @@ class EVENGINE_API_PLATFORM Sound : public Module {
 public:
     Module_REG(Sound);
 
+    /** @brief Sound. */
     Sound();
+    /** @brief Sound. */
     ~Sound() override;
 
     /** @brief Creates a streaming decoder over raw encoded data. */

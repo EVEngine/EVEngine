@@ -18,7 +18,9 @@ namespace eve::action {
 class EVENGINE_API_PLATFORM Action final : public Module {
 public:
     Module_REG(Action);
+    /** @brief Action. */
     Action()           = default;
+    /** @brief Action. */
     ~Action() override = default;
 };
 

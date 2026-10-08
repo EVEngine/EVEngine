@@ -100,32 +100,42 @@ struct WidgetDesc {
     OverflowMode overflow = OverflowMode::Visible;
     int gridColumns = 1;
     int gridColumnSpan = 1;
+    /** @brief Void. */
     std::function<void()> onClick;
+    /** @brief Void. */
     std::function<void(bool)> onToggle;
+    /** @brief Void. */
     std::function<void(float)> onValue;
+    /** @brief Void. */
     std::function<void(const std::string &)> onTextChange;
     std::vector<WidgetDesc> children;
 
+    /** @brief With id. */
     WidgetDesc &withId(std::string v) {
         id = std::move(v);
         return *this;
     }
+    /** @brief With key. */
     WidgetDesc &withKey(std::string v) {
         key = std::move(v);
         return *this;
     }
+    /** @brief With text. */
     WidgetDesc &withText(std::string v) {
         text = std::move(v);
         return *this;
     }
+    /** @brief With value text. */
     WidgetDesc &withValueText(std::string v) {
         valueText = std::move(v);
         return *this;
     }
+    /** @brief With tooltip. */
     WidgetDesc &withTooltip(std::string v) {
         tooltip = std::move(v);
         return *this;
     }
+    /** @brief With visible. */
     WidgetDesc &withVisible(bool v) {
         visible = v;
         return *this;
@@ -191,28 +201,34 @@ struct WidgetDesc {
         acceptedDropType = std::move(acceptedType);
         return *this;
     }
+    /** @brief With checked. */
     WidgetDesc &withChecked(bool v) {
         checked = v;
         return *this;
     }
+    /** @brief With open. */
     WidgetDesc &withOpen(bool v) {
         open = v;
         return *this;
     }
+    /** @brief With value. */
     WidgetDesc &withValue(float v) {
         value = v;
         return *this;
     }
+    /** @brief With range. */
     WidgetDesc &withRange(float lo, float hi) {
         minValue = lo;
         maxValue = hi;
         return *this;
     }
+    /** @brief With size. */
     WidgetDesc &withSize(float w, float h) {
         sizeX = w;
         sizeY = h;
         return *this;
     }
+    /** @brief With margin. */
     WidgetDesc &withMargin(float l, float t, float r, float b) {
         marginL = l;
         marginT = t;
@@ -220,6 +236,7 @@ struct WidgetDesc {
         marginB = b;
         return *this;
     }
+    /** @brief With padding. */
     WidgetDesc &withPadding(float l, float t, float r, float b) {
         paddingL = l;
         paddingT = t;
@@ -227,16 +244,19 @@ struct WidgetDesc {
         paddingB = b;
         return *this;
     }
+    /** @brief With min size. */
     WidgetDesc &withMinSize(float w, float h) {
         minSizeX = w;
         minSizeY = h;
         return *this;
     }
+    /** @brief With max size. */
     WidgetDesc &withMaxSize(float w, float h) {
         maxSizeX = w;
         maxSizeY = h;
         return *this;
     }
+    /** @brief With percent. */
     WidgetDesc &withPercent(float w, float h) {
         percentW = w;
         percentH = h;
@@ -247,11 +267,13 @@ struct WidgetDesc {
         styleClass = std::move(v);
         return *this;
     }
+    /** @brief With aspect ratio. */
     WidgetDesc &withAspectRatio(float ratio) {
         aspectRatio = ratio;
         return *this;
     }
     /** Place absolutely inside a Flex parent: (ax,ay) anchor in parent, (x,y) offset. */
+    /** @brief With absolute. */
     WidgetDesc &withAbsolute(float ax, float ay, float x = 0.f, float y = 0.f) {
         absolute = true;
         anchorX = ax;
@@ -260,6 +282,7 @@ struct WidgetDesc {
         posY = y;
         return *this;
     }
+    /** @brief With tint. */
     WidgetDesc &withTint(float r, float g, float b, float a = 1.f) {
         tintR = r;
         tintG = g;
@@ -267,6 +290,7 @@ struct WidgetDesc {
         tintA = a;
         return *this;
     }
+    /** @brief With uv. */
     WidgetDesc &withUv(float u0, float v0, float u1, float v1) {
         uv0x = u0;
         uv0y = v0;
@@ -275,6 +299,7 @@ struct WidgetDesc {
         return *this;
     }
     /** Nine-patch borders in px; keeps the middle stretchable. */
+    /** @brief With nine patch. */
     WidgetDesc &withNinePatch(float l, float t, float r, float b) {
         borderL = l;
         borderT = t;
@@ -282,88 +307,109 @@ struct WidgetDesc {
         borderB = b;
         return *this;
     }
+    /** @brief With corner radius. */
     WidgetDesc &withCornerRadius(float radius) {
         cornerRadius = radius;
         return *this;
     }
+    /** @brief With wrap. */
     WidgetDesc &withWrap(float width) {
         wrapWidth = width;
         return *this;
     }
+    /** @brief With item height. */
     WidgetDesc &withItemHeight(float height) {
         itemHeight = height;
         return *this;
     }
+    /** @brief With gap. */
     WidgetDesc &withGap(float g) {
         gap = g;
         return *this;
     }
+    /** @brief With gaps. */
     WidgetDesc &withGaps(float columns, float rows) {
         columnGap = columns;
         rowGap = rows;
         return *this;
     }
+    /** @brief With flex wrap. */
     WidgetDesc &withFlexWrap(FlexWrap wrap) {
         flexWrap = wrap;
         return *this;
     }
+    /** @brief With overflow. */
     WidgetDesc &withOverflow(OverflowMode mode) {
         overflow = mode;
         return *this;
     }
+    /** @brief With grid column span. */
     WidgetDesc &withGridColumnSpan(int span) {
         gridColumnSpan = span;
         return *this;
     }
+    /** @brief With flex direction. */
     WidgetDesc &withFlexDirection(FlexDirection d) {
         flexDirection = d;
         return *this;
     }
+    /** @brief With align. */
     WidgetDesc &withAlign(FlexAlign a) {
         alignItems = a;
         return *this;
     }
+    /** @brief With justify. */
     WidgetDesc &withJustify(FlexJustify j) {
         justifyContent = j;
         return *this;
     }
+    /** @brief With flex grow. */
     WidgetDesc &withFlexGrow(float g) {
         flexGrow = g;
         return *this;
     }
+    /** @brief With flex shrink. */
     WidgetDesc &withFlexShrink(float shrink) {
         flexShrink = shrink;
         return *this;
     }
+    /** @brief With flex basis. */
     WidgetDesc &withFlexBasis(float basis) {
         flexBasis = basis;
         return *this;
     }
+    /** @brief With align self. */
     WidgetDesc &withAlignSelf(FlexAlign align) {
         alignSelf = int(align);
         return *this;
     }
+    /** @brief With click. */
     WidgetDesc &withClick(std::function<void()> fn) {
         onClick = std::move(fn);
         return *this;
     }
+    /** @brief With toggle. */
     WidgetDesc &withToggle(std::function<void(bool)> fn) {
         onToggle = std::move(fn);
         return *this;
     }
+    /** @brief With value fn. */
     WidgetDesc &withValueFn(std::function<void(float)> fn) {
         onValue = std::move(fn);
         return *this;
     }
+    /** @brief With text change. */
     WidgetDesc &withTextChange(std::function<void(const std::string &)> fn) {
         onTextChange = std::move(fn);
         return *this;
     }
+    /** @brief Child. */
     WidgetDesc &child(WidgetDesc c) {
         children.push_back(std::move(c));
         return *this;
     }
 
+    /** @brief Reconcile key. */
     const std::string &reconcileKey() const { return key.empty() ? id : key; }
 };
 
@@ -377,6 +423,7 @@ EVENGINE_API_WORLD WidgetDesc button(std::string label, std::string id = "", std
 EVENGINE_API_WORLD WidgetDesc icon(Icon value, std::string id = "");
 /** @brief Button containing a semantic icon and optional visible label. */
 EVENGINE_API_WORLD WidgetDesc iconButton(Icon value, std::string label = "", std::string id = "",
+                                         /** @brief Void. */
                                          std::function<void()> onClick = {});
 /** @brief Plain group container. */
 EVENGINE_API_WORLD WidgetDesc group(std::vector<WidgetDesc> children = {}, std::string id = "");
@@ -386,34 +433,45 @@ EVENGINE_API_WORLD WidgetDesc sameLine(std::string id = "");
 EVENGINE_API_WORLD WidgetDesc separator(std::string id = "");
 /** @brief Checkbox with a label; fires onToggle. */
 EVENGINE_API_WORLD WidgetDesc checkbox(std::string label, bool checked = false, std::string id = "",
+                                       /** @brief Void. */
                                        std::function<void(bool)> onToggle = {});
 /** @brief Horizontal slider; fires onValue. */
 EVENGINE_API_WORLD WidgetDesc slider(std::string label, float value, float minV, float maxV, std::string id = "",
+                                     /** @brief Void. */
                                      std::function<void(float)> onValue = {});
 /** @brief Progress bar; fraction is clamped to [0,1]. */
 EVENGINE_API_WORLD WidgetDesc progress(float fraction, std::string id = "", std::string overlay = "");
 /** Dropdown; options joined by '\n', selected index in `selected`. */
+/** @brief Combo. */
 EVENGINE_API_WORLD WidgetDesc combo(std::string label, std::vector<std::string> options, int selected,
                                     std::string id = "", std::function<void(float)> onValue = {});
 /** Colored / textured image. Size defaults to texture size via layout. */
+/** @brief Image. */
 EVENGINE_API_WORLD WidgetDesc image(std::string id = "", float width = 0.f, float height = 0.f,
+                                    /** @brief Void. */
                                     std::function<void()> onClick = {});
 /** @brief Stretchable textured container with asset-defined content padding. */
 WidgetDesc ninePatchPanel(std::vector<WidgetDesc> children = {}, std::string id = "",
                           uint64_t textureId = 0);
 /** Clickable image (renders via ImGui ImageButton). */
+/** @brief Image button. */
 EVENGINE_API_WORLD WidgetDesc imageButton(std::string id, float width, float height,
+                                          /** @brief Void. */
                                           std::function<void()> onClick = {});
 /** Embedded render target widget: shows an offscreen Canvas, routes input. */
+/** @brief Viewport. */
 EVENGINE_API_WORLD WidgetDesc viewport(std::string id = "", float width = 0.f, float height = 0.f);
 /** @brief Editable text field; fires onTextChange. */
 EVENGINE_API_WORLD WidgetDesc inputText(std::string label, std::string value, std::string id = "",
+                                        /** @brief Void. */
                                         std::function<void(const std::string &)> onChange = {});
 /** @brief Compact search field with placeholder text and a bundled search icon. */
 EVENGINE_API_WORLD WidgetDesc searchField(std::string hint, std::string value = {}, std::string id = "",
+                                          /** @brief Void. */
                                           std::function<void(const std::string &)> onChange = {});
 /** @brief Modern boolean toggle; fires onToggle when changed. */
 EVENGINE_API_WORLD WidgetDesc toggleSwitch(std::string label, bool checked = false, std::string id = "",
+                                           /** @brief Void. */
                                            std::function<void(bool)> onToggle = {});
 /** @brief Compact status/category pill. Tint controls its background color. */
 EVENGINE_API_WORLD WidgetDesc badge(std::string label, std::string id = "");
@@ -435,6 +493,7 @@ EVENGINE_API_WORLD WidgetDesc menuBar(std::vector<WidgetDesc> children = {}, std
 EVENGINE_API_WORLD WidgetDesc menu(std::string label, std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Selectable menu command with an optional shortcut hint. */
 EVENGINE_API_WORLD WidgetDesc menuItem(std::string label, std::string shortcut = {}, std::string id = "",
+                                       /** @brief Void. */
                                        std::function<void()> onClick = {}, bool selected = false);
 /** @brief Horizontal editor command strip; Spacer children absorb free width. */
 EVENGINE_API_WORLD WidgetDesc toolbar(std::vector<WidgetDesc> children = {}, std::string id = "");
@@ -452,6 +511,7 @@ EVENGINE_API_WORLD WidgetDesc statusBar(std::vector<WidgetDesc> children = {}, s
  */
 EVENGINE_API_WORLD WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc second,
                                         float ratio = 0.25f, std::string id = "",
+                                        /** @brief Void. */
                                         std::function<void(float)> onResize = {});
 /** @brief Collapsible header containing child widgets. */
 EVENGINE_API_WORLD WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children = {},
@@ -464,9 +524,11 @@ EVENGINE_API_WORLD WidgetDesc child(std::string id, std::vector<WidgetDesc> chil
  * the full item set (rows laid out top-to-bottom at `itemHeight` px). Set a
  * `height` for the viewport; 0 = fill available space.
  */
+/** @brief Scroll list. */
 EVENGINE_API_WORLD WidgetDesc scrollList(std::string id, std::vector<WidgetDesc> children = {}, float height = 0.f,
                                          float itemHeight = 0.f);
 /** One-line convenience: virtualized list of buttons from string items. */
+/** @brief Virtual list. */
 EVENGINE_API_WORLD WidgetDesc virtualList(std::string listId, const std::vector<std::string> &items,
                                           float height = 200.f, float itemHeight = 0.f);
 
@@ -483,6 +545,7 @@ EVENGINE_API_WORLD WidgetDesc spacer(std::string id = "", float grow = 1.f);
 
 /** @brief Conditional: include `child` only when `cond` is true (empty group otherwise). */
 EVENGINE_API_WORLD WidgetDesc when(bool cond, WidgetDesc child);
+/** @brief When else. */
 WidgetDesc whenElse(bool cond, WidgetDesc ifTrue, WidgetDesc ifFalse);
 
 /**
@@ -490,6 +553,7 @@ WidgetDesc whenElse(bool cond, WidgetDesc ifTrue, WidgetDesc ifFalse);
  * `itemFn(label, index)` builds each row; keys default to id.
  */
 WidgetDesc list(std::string listId, const std::vector<std::string> &items,
+                /** @brief Widget desc. */
                 const std::function<WidgetDesc(const std::string &, int)> &itemFn);
 
 /** @brief Default list: one Button per item, id = listId + "/" + index. */

@@ -9,15 +9,18 @@ namespace eve::graphics::webgpu {
 
 // ---- 2D solid (color) -----------------------------------------------------
 inline const char *kColorVertWgsl = R"wgsl(
+/** @brief VSIn public API. */
 struct VSIn {
     @location(0) pos: vec2f,
     @location(1) color: vec4f,
 };
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) color: vec4f,
 };
 @vertex
+/** @brief Vs main. */
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     out.pos = vec4f(in.pos, 0.0, 1.0);
@@ -27,10 +30,12 @@ fn vs_main(in: VSIn) -> VSOut {
 )wgsl";
 
 inline const char *kColorFragWgsl = R"wgsl(
+/** @brief FSIn public API. */
 struct FSIn {
     @location(0) color: vec4f,
 };
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     return in.color;
 }
@@ -38,17 +43,20 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 
 // ---- 2D textured ----------------------------------------------------------
 inline const char *kTexturedVertWgsl = R"wgsl(
+/** @brief VSIn public API. */
 struct VSIn {
     @location(0) pos: vec2f,
     @location(1) color: vec4f,
     @location(2) uv: vec2f,
 };
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) color: vec4f,
     @location(1) uv: vec2f,
 };
 @vertex
+/** @brief Vs main. */
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     out.pos = vec4f(in.pos, 0.0, 1.0);
@@ -59,6 +67,7 @@ fn vs_main(in: VSIn) -> VSOut {
 )wgsl";
 
 inline const char *kTexturedFragWgsl = R"wgsl(
+/** @brief FSIn public API. */
 struct FSIn {
     @location(0) color: vec4f,
     @location(1) uv: vec2f,
@@ -66,17 +75,21 @@ struct FSIn {
 @group(0) @binding(0) var mainTex: texture_2d<f32>;
 @group(0) @binding(2) var mainSamp: sampler;
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> @location(0) vec4f {
+    /** @brief Texture sample. */
     return textureSample(mainTex, mainSamp, in.uv) * in.color;
 }
 )wgsl";
 
 // ---- 2D custom / post (Externals UBO: float data[32] == Shader push block) -
 inline const char *kCustom2DFragWgsl = R"wgsl(
+/** @brief FSIn public API. */
 struct FSIn {
     @location(0) color: vec4f,
     @location(1) uv: vec2f,
 };
+/** @brief Externals public API. */
 struct Externals {
     data: array<f32, 32>,
 };
@@ -84,18 +97,22 @@ struct Externals {
 @group(0) @binding(2) var mainSamp: sampler;
 @group(0) @binding(4) var<uniform> u: Externals;
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> @location(0) vec4f {
+    /** @brief Texture sample. */
     return textureSample(mainTex, mainSamp, in.uv) * in.color;
 }
 )wgsl";
 
 // ---- 2D lit ---------------------------------------------------------------
 inline const char *kLit2DVertWgsl = R"wgsl(
+/** @brief VSIn public API. */
 struct VSIn {
     @location(0) pos: vec2f,
     @location(1) color: vec4f,
     @location(2) uv: vec2f,
 };
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) color: vec4f,
@@ -103,6 +120,7 @@ struct VSOut {
     @location(2) ndc: vec2f,
 };
 @vertex
+/** @brief Vs main. */
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     out.pos = vec4f(in.pos, 0.0, 1.0);
@@ -114,16 +132,19 @@ fn vs_main(in: VSIn) -> VSOut {
 )wgsl";
 
 inline const char *kLit2DFragWgsl = R"wgsl(
+/** @brief FSIn public API. */
 struct FSIn {
     @location(0) color: vec4f,
     @location(1) uv: vec2f,
     @location(2) ndc: vec2f,
 };
+/** @brief Light2D public API. */
 struct Light2D {
     posRadius: vec4f,
     color: vec4f,
     spot: vec4f, // xy = beam dir; z/w = cos(outer/inner); z <= -1.5 => no cone
 };
+/** @brief Lighting2D public API. */
 struct Lighting2D {
     ambient: vec4f,   // rgb ambient
     lightInfo: vec4f, // x = count, y = viewW, z = viewH
@@ -134,6 +155,7 @@ struct Lighting2D {
 @group(0) @binding(2) var mainSamp: sampler;
 @group(0) @binding(4) var<uniform> u: Lighting2D;
 
+/** @brief Applies normal map 2 d. */
 fn applyNormalMap2D(mapSample: vec3f, logical: vec2f, uv: vec2f) -> vec3f {
     var mapN = mapSample * 2.0 - vec3f(1.0);
     mapN.z = max(mapN.z, 0.05);
@@ -147,6 +169,7 @@ fn applyNormalMap2D(mapSample: vec3f, logical: vec2f, uv: vec2f) -> vec3f {
     // Absolute 1e-6 rejects ordinary atlas regions (e.g. 32px in a 1024 atlas).
     let uvScale = length(duv1) * length(duv2);
     if (uvScale < 1e-20 || abs(det) < uvScale * 1e-3) {
+        /** @brief Normalize. */
         return normalize(vec3f(mapN.xy, mapN.z));
     }
     let invDet = 1.0 / det;
@@ -156,17 +179,21 @@ fn applyNormalMap2D(mapSample: vec3f, logical: vec2f, uv: vec2f) -> vec3f {
     let tLen = length(T);
     let bLen = length(B);
     if (tLen < 1e-4 || bLen < 1e-4) {
+        /** @brief Normalize. */
         return normalize(vec3f(mapN.xy, mapN.z));
     }
     T = T / tLen;
     B = normalize(B - N * dot(N, B) - T * dot(T, B));
     if (abs(dot(T, B)) > 0.35) {
+        /** @brief Normalize. */
         return normalize(vec3f(mapN.xy, mapN.z));
     }
+    /** @brief Normalize. */
     return normalize(mat3x3f(T, B, N) * mapN);
 }
 
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     let base = textureSample(albedoTex, mainSamp, in.uv) * in.color;
     // WebGPU upload flips clip-space Y; undo it for the engine's Y-down logical coordinates.
@@ -213,6 +240,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         }
         lit += l.color.rgb * contribution;
     }
+    /** @brief Vec 4 f. */
     return vec4f(base.rgb * lit, base.a);
 }
 )wgsl";
@@ -222,6 +250,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 inline const char* kMesh3DVertWgsl = R"wgsl(
 @group(0) @binding(21) var<storage, read> skinBones: array<mat4x4f>;
 
+/** @brief VSIn public API. */
 struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
@@ -230,11 +259,13 @@ struct VSIn {
     @location(4) weights: vec4f,
     @location(5) color: vec4f,
 };
+/** @brief Light3D public API. */
 struct Light3D {
     posRadius: vec4f,
     color: vec4f,
     spot: vec4f,
 };
+/** @brief Frame public API. */
 struct Frame {
     mvp: mat4x4f,
     model: mat4x4f,
@@ -267,6 +298,7 @@ struct Frame {
     lodFade: vec4f,
 };
 
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) vNormal: vec3f,
@@ -278,18 +310,24 @@ struct VSOut {
 };
 @group(0) @binding(0) var<uniform> ubo: Frame;
 // WGSL has no stdlib inverse(); implement 3x3 inverse for the normal matrix.
+/** @brief Inverse 3 x 3. */
 fn inverse3x3(m: mat3x3f) -> mat3x3f {
     let a = m[0].x; let b = m[1].x; let c = m[2].x;
     let d = m[0].y; let e = m[1].y; let f = m[2].y;
     let g = m[0].z; let h = m[1].z; let i = m[2].z;
     let det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+    /** @brief Mat 3 x 3 f. */
     return mat3x3f(
+        /** @brief Vec 3 f. */
         vec3f((e * i - f * h) / det, (f * g - d * i) / det, (d * h - e * g) / det),
+        /** @brief Vec 3 f. */
         vec3f((c * h - b * i) / det, (a * i - c * g) / det, (b * g - a * h) / det),
+        /** @brief Vec 3 f. */
         vec3f((b * f - c * e) / det, (c * d - a * f) / det, (a * e - b * d) / det),
     );
 }
 @vertex
+/** @brief Vs main. */
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     var localPos = vec4f(in.pos, 1.0);
@@ -323,11 +361,13 @@ fn vs_main(in: VSIn) -> VSOut {
 )wgsl";
 
 inline const char *kMesh3DFragWgsl = R"wgsl(
+/** @brief Light3D public API. */
 struct Light3D {
     posRadius: vec4f,
     color: vec4f,
     spot: vec4f,
 };
+/** @brief Frame public API. */
 struct Frame {
     mvp: mat4x4f,
     model: mat4x4f,
@@ -359,6 +399,7 @@ struct Frame {
     diffuseVolumeInfo: vec4f,
     lodFade: vec4f,
 };
+/** @brief ShadowFrame public API. */
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
     splits: vec4f,
@@ -371,6 +412,7 @@ struct ShadowFrame {
     localBias: vec4f,
     localMeta: vec4f,
 };
+/** @brief FSIn public API. */
 struct FSIn {
     @location(0) vNormal: vec3f,
     @location(1) vUV: vec2f,
@@ -395,6 +437,7 @@ struct FSIn {
 @group(0) @binding(13) var decalNormalLayer: texture_2d<f32>;
 @group(0) @binding(14) var decalParamsLayer: texture_2d<f32>;
 
+/** @brief Sample virtual texture. */
 fn sampleVirtualTexture(atlas: texture_2d<f32>, sourceUv: vec2f,
                         uvDx: vec2f, uvDy: vec2f) -> vec4f {
     let uv = fract(sourceUv);
@@ -414,12 +457,14 @@ fn sampleVirtualTexture(atlas: texture_2d<f32>, sourceUv: vec2f,
     let gutter = clamp(ubo.virtualTexture.w, 0.0, 0.499);
     let physicalUv = (slot + mix(vec2f(gutter), vec2f(1.0 - gutter), payloadUv)) / slots;
     let derivativeScale = derivativePages * (1.0 - 2.0 * gutter) / slots;
+    /** @brief Texture sample grad. */
     return textureSampleGrad(atlas, mainSamp, physicalUv,
                              uvDx * derivativeScale, uvDy * derivativeScale);
 }
 
 const PI: f32 = 3.14159265359;
 
+/** @brief Dist ggx. */
 fn distGGX(n: vec3f, h: vec3f, rough: f32) -> f32 {
     let a = max(rough * rough, 0.002);
     let a2 = a * a;
@@ -427,27 +472,36 @@ fn distGGX(n: vec3f, h: vec3f, rough: f32) -> f32 {
     let denom = (ndh * ndh * (a2 - 1.0) + 1.0);
     return a2 / max(PI * denom * denom, 1e-4);
 }
+/** @brief Geom schlick. */
 fn geomSchlick(ndv: f32, rough: f32) -> f32 {
     let r = rough + 1.0;
     let k = (r * r) / 8.0;
     return ndv / max(ndv * (1.0 - k) + k, 1e-4);
 }
+/** @brief Geom smith. */
 fn geomSmith(n: vec3f, v: vec3f, l: vec3f, rough: f32) -> f32 {
+    /** @brief Geom schlick. */
     return geomSchlick(max(dot(n, v), 0.0), rough) * geomSchlick(max(dot(n, l), 0.0), rough);
 }
+/** @brief Fresnel schlick. */
 fn fresnelSchlick(cosT: f32, f0: vec3f) -> vec3f {
     return f0 + (1.0 - f0) * pow(clamp(1.0 - cosT, 0.0, 1.0), 5.0);
 }
+/** @brief Tex bomb hash 22. */
 fn texBombHash22(p: vec2f) -> vec2f {
     var p3 = fract(vec3f(p.x, p.y, p.x) * vec3f(0.1031, 0.1030, 0.0973));
     p3 += dot(p3, p3.yzx + 33.33);
+    /** @brief Fract. */
     return fract((p3.xx + p3.yz) * p3.zy);
 }
+/** @brief Tex bomb rotate. */
 fn texBombRotate(v: vec2f, angle: f32) -> vec2f {
     let s = sin(angle);
     let c = cos(angle);
+    /** @brief Vec 2 f. */
     return vec2f(c * v.x - s * v.y, s * v.x + c * v.y);
 }
+/** @brief Texture cell bomb. */
 fn textureCellBomb(tex: texture_2d<f32>, uv: vec2f, cellScale: f32, strength: f32,
                    rotAmount: f32, dx: vec2f, dy: vec2f) -> vec4f {
     if (strength < 1e-4) { return textureSample(tex, mainSamp, uv); }
@@ -473,6 +527,7 @@ fn textureCellBomb(tex: texture_2d<f32>, uv: vec2f, cellScale: f32, strength: f3
     }
     return accumulated;
 }
+/** @brief Surface tbn. */
 fn surfaceTBN(nInput: vec3f, dp1: vec3f, dp2: vec3f, duv1: vec2f,
               duv2: vec2f) -> mat3x3f {
     let n = normalize(nInput);
@@ -481,10 +536,13 @@ fn surfaceTBN(nInput: vec3f, dp1: vec3f, dp2: vec3f, duv1: vec2f,
     let tangent = normalize(cross(dp2, n) * duv1.x + cross(n, dp1) * duv2.x);
     let bitangent = normalize(cross(dp2, n) * duv1.y + cross(n, dp1) * duv2.y);
     if (length(tangent) < 1e-4 || length(bitangent) < 1e-4) {
+        /** @brief Mat 3 x 3 f. */
         return mat3x3f(vec3f(0.0), vec3f(0.0), n);
     }
+    /** @brief Mat 3 x 3 f. */
     return mat3x3f(tangent, bitangent, n);
 }
+/** @brief Applies normal map. */
 fn applyNormalMap(nInput: vec3f, mapSample: vec3f, dp1: vec3f, dp2: vec3f,
                   duv1: vec2f, duv2: vec2f) -> vec3f {
     let mapN = mapSample * 2.0 - 1.0;
@@ -502,8 +560,10 @@ fn applyNormalMap(nInput: vec3f, mapSample: vec3f, dp1: vec3f, dp2: vec3f,
     tangent /= tangentLength;
     bitangent = normalize(bitangent - n * dot(n, bitangent) - tangent * dot(tangent, bitangent));
     if (abs(dot(tangent, bitangent)) > 0.35) { return n; }
+    /** @brief Normalize. */
     return normalize(mat3x3f(tangent, bitangent, n) * mapN);
 }
+/** @brief Parallax mapped uv. */
 fn parallaxMappedUV(uv: vec2f, n: vec3f, v: vec3f, scale: f32,
                     minLayers: f32, maxLayers: f32, worldDx: vec3f, worldDy: vec3f,
                     uvDx: vec2f, uvDy: vec2f) -> vec2f {
@@ -512,6 +572,7 @@ fn parallaxMappedUV(uv: vec2f, n: vec3f, v: vec3f, scale: f32,
     if (length(tbn[0]) < 1e-4) { return uv; }
     let viewTS = normalize(transpose(tbn) * v);
     let layers = clamp(mix(max(maxLayers, 1.0), max(minLayers, 1.0),
+                           /** @brief Clamp. */
                            clamp(abs(viewTS.z), 0.0, 1.0)), 1.0, 64.0);
     let layerDepth = 1.0 / layers;
     let deltaUV = ((viewTS.xy / max(abs(viewTS.z), 0.08)) * scale) / layers;
@@ -531,8 +592,10 @@ fn parallaxMappedUV(uv: vec2f, n: vec3f, v: vec3f, scale: f32,
     let denominator = after - before;
     var weight = 0.5;
     if (abs(denominator) >= 1e-5) { weight = clamp(after / denominator, 0.0, 1.0); }
+    /** @brief Mix. */
     return mix(currentUV, previousUV, weight);
 }
+/** @brief Shade light. */
 fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: vec3f, rad: vec3f) -> vec3f {
     let ndl = max(dot(n, l), 0.0);
     let diffuse = mix(ndl, ndl * 0.5 + 0.5, 0.25);
@@ -545,13 +608,16 @@ fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: v
     let kd = (vec3f(1.0) - f) * (1.0 - metallic);
     return (kd * albedo * diffuse + spec * ndl) * rad;
 }
+/** @brief Cloud hash. */
 fn cloudHash(p: vec2f) -> f32 {
     let ip = vec2i(floor(p % 64.0));
     var h = (u32(ip.x) * 374761393u) ^ (u32(ip.y) * 668265263u);
     h = (h ^ (h >> 13)) * 1274126177u;
     h = h ^ (h >> 16);
+    /** @brief F 32. */
     return f32(h & 0x00FFFFFFu) / f32(0x00FFFFFFu);
 }
+/** @brief Cloud noise. */
 fn cloudNoise(p: vec2f) -> f32 {
     let i = floor(p);
     var f = fract(p);
@@ -560,8 +626,10 @@ fn cloudNoise(p: vec2f) -> f32 {
     let b = cloudHash(i + vec2f(1.0, 0.0));
     let c = cloudHash(i + vec2f(0.0, 1.0));
     let d = cloudHash(i + vec2f(1.0, 1.0));
+    /** @brief Mix. */
     return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
+/** @brief Cloud fbm. */
 fn cloudFbm(p: vec2f) -> f32 {
     var sum = 0.0;
     var amp = 0.5;
@@ -573,6 +641,7 @@ fn cloudFbm(p: vec2f) -> f32 {
     }
     return sum * 2.0;
 }
+/** @brief Cloud shadow factor. */
 fn cloudShadowFactor(worldPos: vec3f) -> f32 {
     if (ubo.cloud.x < 1e-4) { return 1.0; }
     let cell = 1.0 / max(ubo.cloud.y, 1e-4);
@@ -584,6 +653,7 @@ fn cloudShadowFactor(worldPos: vec3f) -> f32 {
     let covered = mix(c, c * d, ubo.cloudWind.w);
     return 1.0 - clamp(covered, 0.0, 1.0) * clamp(ubo.cloud.x, 0.0, 1.0);
 }
+/** @brief Sample shadow cascade. */
 fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
     // Shadow-map vertices mirror clip Y for WebGPU. Undo that mirror when
@@ -613,16 +683,21 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {    let
     }
     return sum / 9.0;
 }
+/** @brief Cascade ndc bias. */
 fn cascadeNdcBias(cascade: i32) -> f32 {
     var bias: f32;
     if (cascade == 0) { bias = shadow.cascadeBias.x; }
     else if (cascade == 1) { bias = shadow.cascadeBias.y; }
     else { bias = shadow.cascadeBias.z; }
+    /** @brief Select. */
     return select(bias, shadow.bias.x, bias < 1e-8);
 }
+/** @brief Slope scaled bias. */
 fn slopeScaledBias(cascade: i32, ndl: f32) -> f32 {
+    /** @brief Cascade ndc bias. */
     return cascadeNdcBias(cascade) * mix(0.75, 1.0, clamp(ndl, 0.0, 1.0));
 }
+/** @brief Sample shadow pcf. */
 fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
     if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4) {
         return 1.0;
@@ -661,9 +736,11 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
         vis = mix(vis, next, toNext);
     }
     vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
+    /** @brief Mix. */
     return mix(0.04, 1.0, vis);
 }
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     // Evaluate derivatives before any per-fragment branch; WGSL requires uniform control flow.
     let uvDx = dpdx(in.vUV);
@@ -697,6 +774,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     // Screen-space primary; UV secondary so coverage still varies if fragment
     // position is degenerate (Dawn Metal CI once kept every pixel with fragCoord-only).
     let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)) +
+                          /** @brief Dot. */
                           dot(uv * 64.0, vec2f(0.7548777, 0.5698403)));
     if (ubo.surface.x > 2.5 && base.a < alphaHash) { discard; }
     var albedo = base.rgb;
@@ -748,6 +826,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let shadowVis = sampleShadowPCF(in.vWorldPos, n, viewDepth, max(dot(n, primaryL), 0.0));
     if (length(ubo.lightColor.rgb) > 1e-6) {
         lo += shadeLight(n, v, albedo, metallic, rough, primaryL, ubo.lightColor.rgb) * shadowVis *
+              /** @brief Cloud shadow factor. */
               cloudShadowFactor(in.vWorldPos);
     }
     for (var i = 0; i < 8; i = i + 1) {
@@ -813,6 +892,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
             }
         }
         let cellT = clamp((in.vWorldPos - cellMin) / max(cellMax - cellMin, vec3f(0.0001)),
+                          /** @brief Vec 3 f. */
                           vec3f(0.0), vec3f(1.0));
         for (var probe = 0; probe < 8; probe += 1) {
             if (probe >= i32(ubo.diffuseVolumeInfo.x + 0.5)) { break; }
@@ -870,18 +950,21 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     color *= mix(1.0, ao, clamp(ubo.surface.z, 0.0, 1.0));
     color += emissive;
     let outputAlpha = select(1.0, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
+    /** @brief Vec 4 f. */
     return vec4f(color, outputAlpha);
 }
 )wgsl";
 
 // ---- Mesh3D clustered forward (matches Mesh3DClusteredUBO) -----------------
 inline const char *kMesh3DClusteredVertWgsl = R"wgsl(
+/** @brief VSIn public API. */
 struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
     @location(2) uv: vec2f,
     @location(5) color: vec4f,
 };
+/** @brief Frame public API. */
 struct Frame {
     mvp: mat4x4f,
     model: mat4x4f,
@@ -903,6 +986,7 @@ struct Frame {
     reflectionProbeCenter: array<vec4f, 2>,
     reflectionProbeExtent: array<vec4f, 2>,
 };
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) vNormal: vec3f,
@@ -913,18 +997,24 @@ struct VSOut {
     @location(5) vViewPos: vec3f,
 };
 @group(0) @binding(0) var<uniform> ubo: Frame;
+/** @brief Inverse 3 x 3. */
 fn inverse3x3(m: mat3x3f) -> mat3x3f {
     let a = m[0].x; let b = m[1].x; let c = m[2].x;
     let d = m[0].y; let e = m[1].y; let f = m[2].y;
     let g = m[0].z; let h = m[1].z; let i = m[2].z;
     let det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+    /** @brief Mat 3 x 3 f. */
     return mat3x3f(
+        /** @brief Vec 3 f. */
         vec3f((e * i - f * h) / det, (f * g - d * i) / det, (d * h - e * g) / det),
+        /** @brief Vec 3 f. */
         vec3f((c * h - b * i) / det, (a * i - c * g) / det, (b * g - a * h) / det),
+        /** @brief Vec 3 f. */
         vec3f((b * f - c * e) / det, (c * d - a * f) / det, (a * e - b * d) / det),
     );
 }
 @vertex
+/** @brief Vs main. */
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     out.pos = ubo.mvp * vec4f(in.pos, 1.0);
@@ -943,11 +1033,13 @@ fn vs_main(in: VSIn) -> VSOut {
 )wgsl";
 
 inline const char *kMesh3DClusteredFragWgsl = R"wgsl(
+/** @brief Light3D public API. */
 struct Light3D {
     posRadius: vec4f,
     color: vec4f,
     spot: vec4f,
 };
+/** @brief Frame public API. */
 struct Frame {
     mvp: mat4x4f,
     model: mat4x4f,
@@ -965,6 +1057,7 @@ struct Frame {
     virtualTexture: vec4f,
     virtualAtlas: vec4f,
 };
+/** @brief ShadowFrame public API. */
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
     splits: vec4f,
@@ -977,6 +1070,7 @@ struct ShadowFrame {
     localBias: vec4f,
     localMeta: vec4f,
 };
+/** @brief FSIn public API. */
 struct FSIn {
     @location(0) vNormal: vec3f,
     @location(1) vUV: vec2f,
@@ -1005,6 +1099,7 @@ struct FSIn {
 @group(0) @binding(16) var decalNormalLayer: texture_2d<f32>;
 @group(0) @binding(17) var decalParamsLayer: texture_2d<f32>;
 
+/** @brief Sample clustered virtual texture. */
 fn sampleClusteredVirtualTexture(atlas: texture_2d<f32>, sourceUv: vec2f,
                                  uvDx: vec2f, uvDy: vec2f) -> vec4f {
     let uv = fract(sourceUv);
@@ -1024,12 +1119,14 @@ fn sampleClusteredVirtualTexture(atlas: texture_2d<f32>, sourceUv: vec2f,
     let gutter = clamp(ubo.virtualTexture.w, 0.0, 0.499);
     let physicalUv = (slot + mix(vec2f(gutter), vec2f(1.0 - gutter), payloadUv)) / slots;
     let derivativeScale = derivativePages * (1.0 - 2.0 * gutter) / slots;
+    /** @brief Texture sample grad. */
     return textureSampleGrad(atlas, mainSamp, physicalUv,
                              uvDx * derivativeScale, uvDy * derivativeScale);
 }
 
 const PI: f32 = 3.14159265359;
 
+/** @brief Dist ggx. */
 fn distGGX(n: vec3f, h: vec3f, rough: f32) -> f32 {
     let a = max(rough * rough, 0.002);
     let a2 = a * a;
@@ -1037,17 +1134,22 @@ fn distGGX(n: vec3f, h: vec3f, rough: f32) -> f32 {
     let denom = (ndh * ndh * (a2 - 1.0) + 1.0);
     return a2 / max(PI * denom * denom, 1e-4);
 }
+/** @brief Geom schlick. */
 fn geomSchlick(ndv: f32, rough: f32) -> f32 {
     let r = rough + 1.0;
     let k = (r * r) / 8.0;
     return ndv / max(ndv * (1.0 - k) + k, 1e-4);
 }
+/** @brief Geom smith. */
 fn geomSmith(n: vec3f, v: vec3f, l: vec3f, rough: f32) -> f32 {
+    /** @brief Geom schlick. */
     return geomSchlick(max(dot(n, v), 0.0), rough) * geomSchlick(max(dot(n, l), 0.0), rough);
 }
+/** @brief Fresnel schlick. */
 fn fresnelSchlick(cosT: f32, f0: vec3f) -> vec3f {
     return f0 + (1.0 - f0) * pow(clamp(1.0 - cosT, 0.0, 1.0), 5.0);
 }
+/** @brief Shade light. */
 fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: vec3f, rad: vec3f) -> vec3f {
     let ndl = max(dot(n, l), 0.0);
     let diffuse = mix(ndl, ndl * 0.5 + 0.5, 0.25);
@@ -1060,6 +1162,7 @@ fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: v
     let kd = (vec3f(1.0) - f) * (1.0 - metallic);
     return (kd * albedo * diffuse + spec * ndl) * rad;
 }
+/** @brief Sample shadow cascade. */
 fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
@@ -1090,16 +1193,21 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     }
     return sum / 9.0;
 }
+/** @brief Cascade ndc bias. */
 fn cascadeNdcBias(cascade: i32) -> f32 {
     var bias: f32;
     if (cascade == 0) { bias = shadow.cascadeBias.x; }
     else if (cascade == 1) { bias = shadow.cascadeBias.y; }
     else { bias = shadow.cascadeBias.z; }
+    /** @brief Select. */
     return select(bias, shadow.bias.x, bias < 1e-8);
 }
+/** @brief Slope scaled bias. */
 fn slopeScaledBias(cascade: i32, ndl: f32) -> f32 {
+    /** @brief Cascade ndc bias. */
     return cascadeNdcBias(cascade) * mix(0.75, 1.0, clamp(ndl, 0.0, 1.0));
 }
+/** @brief Sample shadow pcf. */
 fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
     if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4) {
         return 1.0;
@@ -1138,8 +1246,10 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
         vis = mix(vis, next, toNext);
     }
     vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
+    /** @brief Mix. */
     return mix(0.04, 1.0, vis);
 }
+/** @brief Cluster index. */
 fn clusterIndex(frag: vec2f, viewDepth: f32) -> u32 {
     let tilesX = i32(ubo.gridInfo.x + 0.5);
     let tilesY = i32(ubo.gridInfo.y + 0.5);
@@ -1152,8 +1262,10 @@ fn clusterIndex(frag: vec2f, viewDepth: f32) -> u32 {
     let ty = clamp(i32(floor(frag.y / screenH * f32(tilesY))), 0, tilesY - 1);
     let depth = max(viewDepth, nearZ);
     let sz = clamp(i32(floor((depth - nearZ) / (farZ - nearZ) * f32(slices))), 0, slices - 1);
+    /** @brief U 32. */
     return u32((sz * tilesY + ty) * tilesX + tx);
 }
+/** @brief Applies clustered normal map. */
 fn applyClusteredNormalMap(nInput: vec3f, mapSample: vec3f, dp1: vec3f, dp2: vec3f,
                            duv1: vec2f, duv2: vec2f) -> vec3f {
     let mapN = mapSample * 2.0 - 1.0;
@@ -1167,9 +1279,11 @@ fn applyClusteredNormalMap(nInput: vec3f, mapSample: vec3f, dp1: vec3f, dp2: vec
     if (length(tangent) < 1e-4 || length(bitangent) < 1e-4) { return n; }
     tangent = normalize(tangent);
     bitangent = normalize(bitangent - n * dot(n, bitangent) - tangent * dot(tangent, bitangent));
+    /** @brief Normalize. */
     return normalize(mat3x3f(tangent, bitangent, n) * mapN);
 }
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     let uvDx = dpdx(in.vUV);
     let uvDy = dpdy(in.vUV);
@@ -1186,6 +1300,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     // Screen-space primary; UV secondary so coverage still varies if fragment
     // position is degenerate (Dawn Metal CI once kept every pixel with fragCoord-only).
     let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)) +
+                          /** @brief Dot. */
                           dot(in.vUV * 64.0, vec2f(0.7548777, 0.5698403)));
     if (ubo.surface.x > 2.5 && base.a < alphaHash) { discard; }
     var albedo = base.rgb;
@@ -1295,6 +1410,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
     let viewZ = max(-in.vViewPos.z, 0.0);
     let linearDepth = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
+    /** @brief Vec 4 f. */
     return vec4f(color, linearDepth);
 }
 )wgsl";
@@ -1304,6 +1420,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 inline const char* kMesh3DShadowVertWgsl = R"wgsl(
 @group(0) @binding(3) var<storage, read> skinBones: array<mat4x4f>;
 
+/** @brief VSIn public API. */
 struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
@@ -1311,6 +1428,7 @@ struct VSIn {
     @location(3) joints: vec4u,
     @location(4) weights: vec4f,
 };
+/** @brief Push public API. */
 struct Push {
     mvp: mat4x4f,
     model: mat4x4f,
@@ -1319,6 +1437,7 @@ struct Push {
 };
 @group(0) @binding(0) var<uniform> pc: Push;
 @vertex
+/** @brief Vs main. */
 fn vs_main(in: VSIn) -> @builtin(position) vec4f {
     var localPos = vec4f(in.pos, 1.0);
     if (pc.skinInfo.x > 0.5) {
@@ -1335,6 +1454,7 @@ fn vs_main(in: VSIn) -> @builtin(position) vec4f {
     }
     let clipPos = pc.mvp * localPos;
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
+    /** @brief Vec 4 f. */
     return vec4f(clipPos.x, -clipPos.y, clipPos.z, clipPos.w);
 }
 )wgsl";
@@ -1343,6 +1463,7 @@ fn vs_main(in: VSIn) -> @builtin(position) vec4f {
 inline const char* kMesh3DShadowAlphaVertWgsl = R"wgsl(
 @group(0) @binding(3) var<storage, read> skinBones: array<mat4x4f>;
 
+/** @brief VSIn public API. */
 struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
@@ -1350,18 +1471,21 @@ struct VSIn {
     @location(3) joints: vec4u,
     @location(4) weights: vec4f,
 };
+/** @brief Push public API. */
 struct Push {
     mvp: mat4x4f,
     model: mat4x4f,
     clip: vec4f,
     skinInfo: vec4f,
 };
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) uv: vec2f,
 };
 @group(0) @binding(0) var<uniform> pc: Push;
 @vertex
+/** @brief Vs main. */
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     var localPos = vec4f(in.pos, 1.0);
@@ -1385,6 +1509,7 @@ fn vs_main(in: VSIn) -> VSOut {
 )wgsl";
 
 inline const char *kMesh3DShadowAlphaFragWgsl = R"wgsl(
+/** @brief Push public API. */
 struct Push {
     mvp: mat4x4f,
     model: mat4x4f,
@@ -1395,6 +1520,7 @@ struct Push {
 @group(0) @binding(1) var albedoTexture: texture_2d<f32>;
 @group(0) @binding(2) var albedoSampler: sampler;
 @fragment
+/** @brief Fs main. */
 fn fs_main(@location(0) uv: vec2f, @builtin(position) fragCoord: vec4f) {
     if (textureSample(albedoTexture, albedoSampler, uv).a < 0.05) { discard; }
     if (pc.lodFade.z > 0.5) {
@@ -1411,6 +1537,7 @@ fn fs_main(@location(0) uv: vec2f, @builtin(position) fragCoord: vec4f) {
 inline const char* kMesh3DGbufferVertWgsl = R"wgsl(
 @group(0) @binding(3) var<storage, read> skinBones: array<mat4x4f>;
 
+/** @brief VSIn public API. */
 struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
@@ -1418,12 +1545,14 @@ struct VSIn {
     @location(3) joints: vec4u,
     @location(4) weights: vec4f,
 };
+/** @brief Push public API. */
 struct Push {
     mvp: mat4x4f,
     model: mat4x4f,
     clip: vec4f,
     skinInfo: vec4f,
 };
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) vNormal: vec3f,
@@ -1431,17 +1560,23 @@ struct VSOut {
     @location(2) vUV: vec2f,
 };
 @group(0) @binding(0) var<uniform> pc: Push;
+/** @brief Inverse gbuffer model. */
 fn inverseGbufferModel(m: mat3x3f) -> mat3x3f {
     let a = m[0].x; let b = m[1].x; let c = m[2].x;
     let d = m[0].y; let e = m[1].y; let f = m[2].y;
     let g = m[0].z; let h = m[1].z; let i = m[2].z;
     let det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+    /** @brief Mat 3 x 3 f. */
     return mat3x3f(
+        /** @brief Vec 3 f. */
         vec3f((e * i - f * h) / det, (f * g - d * i) / det, (d * h - e * g) / det),
+        /** @brief Vec 3 f. */
         vec3f((c * h - b * i) / det, (a * i - c * g) / det, (b * g - a * h) / det),
+        /** @brief Vec 3 f. */
         vec3f((b * f - c * e) / det, (c * d - a * f) / det, (a * e - b * d) / det));
 }
 @vertex
+/** @brief Vs main. */
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     var localPos = vec4f(in.pos, 1.0);
@@ -1472,18 +1607,21 @@ fn vs_main(in: VSIn) -> VSOut {
 
 /** @brief Immutable GBuffer fill WGSL. @borrowed Static storage; valid for the process lifetime. */
 inline const char* kMesh3DGbufferFragWgsl = R"wgsl(
+/** @brief FSIn public API. */
 struct FSIn {
     @builtin(position) position: vec4f,
     @location(0) vNormal: vec3f,
     @location(1) vNdcZ: f32,
     @location(2) vUV: vec2f,
 };
+/** @brief Push public API. */
 struct Push {
     mvp: mat4x4f,
     model: mat4x4f,
     clip: vec4f,
     skinInfo: vec4f,
 };
+/** @brief GBufOut public API. */
 struct GBufOut {
     @location(0) normal: vec4f,
     @location(1) depthColor: vec4f,
@@ -1495,6 +1633,7 @@ struct GBufOut {
 @group(0) @binding(1) var albedoSampler: texture_2d<f32>;
 @group(0) @binding(2) var mainSamp: sampler;
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> GBufOut {
     var out: GBufOut;
     let nearZ = max(pc.clip.x, 1e-4);
@@ -1513,6 +1652,7 @@ fn fs_main(in: FSIn) -> GBufOut {
     out.normal = vec4f(in.vNormal * 0.5 + 0.5, f32(pbrLegacy) / 255.0);
     out.depthColor = vec4f(linear, clamp(motion * 0.5 + 0.5, vec2f(0.0), vec2f(1.0)), 1.0);
     let tint = vec3f(f32(packedTint & 63u), f32((packedTint >> 6u) & 63u),
+                     /** @brief F 32. */
                      f32((packedTint >> 12u) & 63u)) / 63.0;
     out.albedo = vec4f(textureSample(albedoSampler, mainSamp, in.vUV).rgb * tint, linear);
     out.pbrParams = vec4f(metallic, roughness, 1.0, 1.0);
@@ -1523,18 +1663,21 @@ fn fs_main(in: FSIn) -> GBufOut {
 
 /** @brief Immutable GBuffer alpha-cutout WGSL. @borrowed Static storage; valid for the process lifetime. */
 inline const char* kMesh3DGbufferAlphaFragWgsl = R"wgsl(
+/** @brief FSIn public API. */
 struct FSIn {
     @builtin(position) position: vec4f,
     @location(0) vNormal: vec3f,
     @location(1) vNdcZ: f32,
     @location(2) vUV: vec2f,
 };
+/** @brief Push public API. */
 struct Push {
     mvp: mat4x4f,
     model: mat4x4f,
     clip: vec4f,
     skinInfo: vec4f,
 };
+/** @brief GBufOut public API. */
 struct GBufOut {
     @location(0) normal: vec4f,
     @location(1) depthColor: vec4f,
@@ -1546,6 +1689,7 @@ struct GBufOut {
 @group(0) @binding(1) var albedoTexture: texture_2d<f32>;
 @group(0) @binding(2) var albedoSampler: sampler;
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> GBufOut {
     let sampled = textureSample(albedoTexture, albedoSampler, in.vUV);
     if (sampled.a < 0.05) { discard; }
@@ -1564,6 +1708,7 @@ fn fs_main(in: FSIn) -> GBufOut {
     out.normal = vec4f(in.vNormal * 0.5 + 0.5, f32(pbrLegacy) / 255.0);
     out.depthColor = vec4f(linear, clamp(motion * 0.5 + 0.5, vec2f(0.0), vec2f(1.0)), 1.0);
     let tint = vec3f(f32(packedTint & 63u), f32((packedTint >> 6u) & 63u),
+                     /** @brief F 32. */
                      f32((packedTint >> 12u) & 63u)) / 63.0;
     out.albedo = vec4f(sampled.rgb * tint, linear);
     out.pbrParams = vec4f(metallic, roughness, 1.0, 1.0);
@@ -1575,14 +1720,18 @@ fn fs_main(in: FSIn) -> GBufOut {
 // ---- Screen-space decal layer ---------------------------------------------
 inline const char *kDecalVertWgsl = R"wgsl(
 @vertex
+/** @brief Vs main. */
 fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> @builtin(position) vec4f {
     let positions = array<vec2f, 3>(
+        /** @brief Vec 2 f. */
         vec2f(-1.0, -1.0), vec2f(3.0, -1.0), vec2f(-1.0, 3.0));
+    /** @brief Vec 4 f. */
     return vec4f(positions[vertexIndex], 0.0, 1.0);
 }
 )wgsl";
 
 inline const char *kDecalFragWgsl = R"wgsl(
+/** @brief DecalUniforms public API. */
 struct DecalUniforms {
     invViewProj: mat4x4f,
     invModel: mat4x4f,
@@ -1594,6 +1743,7 @@ struct DecalUniforms {
     extraParams: vec4f,
     texel: vec4f,
 };
+/** @brief DecalOut public API. */
 struct DecalOut {
     @location(0) albedo: vec4f,
     @location(1) normal: vec4f,
@@ -1607,12 +1757,15 @@ struct DecalOut {
 @group(0) @binding(5) var gbNormal: texture_2d<f32>;
 @group(0) @binding(6) var mainSamp: sampler;
 
+/** @brief Sample atlas. */
 fn sampleAtlas(tex: texture_2d<f32>, localUV: vec2f) -> vec4f {
     let atl = u.uvRect.xy + clamp(localUV, vec2f(0.0), vec2f(1.0)) * u.uvRect.zw;
+    /** @brief Texture sample. */
     return textureSample(tex, mainSamp, atl);
 }
 
 @fragment
+/** @brief Fs main. */
 fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
     let uv = pos.xy * u.texel.xy;
     let texelPos = vec2<i32>(pos.xy);
@@ -1628,6 +1781,7 @@ fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
 
     let surfaceN = textureLoad(gbNormal, texelPos, 0).xyz * 2.0 - 1.0;
     let decalFwd = normalize(mat3x3f(u.modelR0.xyz, u.modelR1.xyz, u.modelR2.xyz) *
+                             /** @brief Vec 3 f. */
                              vec3f(0.0, 0.0, 1.0));
     let useTriplanar = u.extraParams.z > 0.5;
     let facing = dot(surfaceN, decalFwd);
@@ -1648,6 +1802,7 @@ fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
         nrm = sampleAtlas(decalNormal, decalUV);
         prm = sampleAtlas(decalParams, decalUV);
         let edge = smoothstep(vec2f(0.0), vec2f(0.06), decalUV) *
+                   /** @brief Smoothstep. */
                    smoothstep(vec2f(1.0), vec2f(0.94), decalUV);
         edgeFade = edge.x * edge.y;
     } else {
@@ -1661,17 +1816,24 @@ fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
         let uvXZ = local.xz + 0.5;
         let uvXY = local.xy + 0.5;
         alb = sampleAtlas(decalAlbedo, uvYZ) * w.x +
+              /** @brief Sample atlas. */
               sampleAtlas(decalAlbedo, uvXZ) * w.y +
+              /** @brief Sample atlas. */
               sampleAtlas(decalAlbedo, uvXY) * w.z;
         nrm = sampleAtlas(decalNormal, uvYZ) * w.x +
+              /** @brief Sample atlas. */
               sampleAtlas(decalNormal, uvXZ) * w.y +
+              /** @brief Sample atlas. */
               sampleAtlas(decalNormal, uvXY) * w.z;
         prm = sampleAtlas(decalParams, uvYZ) * w.x +
+              /** @brief Sample atlas. */
               sampleAtlas(decalParams, uvXZ) * w.y +
+              /** @brief Sample atlas. */
               sampleAtlas(decalParams, uvXY) * w.z;
 
         let t = local + 0.5;
         let edge = smoothstep(vec3f(0.0), vec3f(0.06), t) *
+                   /** @brief Smoothstep. */
                    smoothstep(vec3f(1.0), vec3f(0.94), t);
         edgeFade = edge.x * edge.y * edge.z;
     }
@@ -1682,6 +1844,7 @@ fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
     var out: DecalOut;
     out.albedo = vec4f(alb.rgb, coverage);
     out.normal = vec4f(nrm.rgb * step(0.001, u.fadeParams.y),
+                       /** @brief Clamp. */
                        coverage * clamp(u.fadeParams.y, 0.0, 1.0));
     out.params = vec4f(prm.r * clamp(u.fadeParams.z, 0.0, 1.0),
                        prm.g * clamp(u.fadeParams.w, 0.0, 1.0),
@@ -1692,10 +1855,12 @@ fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
 
 // ---- SSAO (G-buffer depth based, cheap screen-space) -----------------------
 inline const char *kSSAOFragWgsl = R"wgsl(
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(1) uv: vec2f,
 };
+/** @brief AOUniforms public API. */
 struct AOUniforms {
     params: vec4f,    // x = radius (UV offset scale), y = power, z = nearZ (hw), w = farZ (hw)
     intensity: f32,   // 0 = off
@@ -1706,10 +1871,13 @@ struct AOUniforms {
 @group(0) @binding(1) var depthTex: texture_depth_2d;
 @group(0) @binding(2) var samp: sampler;
 
+/** @brief Hash 12. */
 fn hash12(p: vec2f) -> f32 {
+    /** @brief Fract. */
     return fract(sin(dot(p, vec2f(127.1, 311.7))) * 43758.5453);
 }
 
+/** @brief Linearize depth. */
 fn linearizeDepth(z: f32) -> f32 {
     let nearZ = ubo.params.z;
     let farZ = ubo.params.w;
@@ -1717,6 +1885,7 @@ fn linearizeDepth(z: f32) -> f32 {
 }
 
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: VSOut) -> @location(0) vec4f {
     let dims = vec2f(textureDimensions(depthTex));
     // AO runs at half resolution; the upsampled bilinear fetch in the mesh
@@ -1730,6 +1899,7 @@ fn fs_main(in: VSOut) -> @location(0) vec4f {
     let nearZ = ubo.params.z;
     let farZ = ubo.params.w;
     if (centerDepth >= farZ * 0.99 || centerDepth <= nearZ * 1.02) {
+        /** @brief Vec 4 f. */
         return vec4f(1.0, 1.0, 1.0, 1.0);
     }
     // Screen radius scales with the compressed depth: near surfaces span more
@@ -1751,23 +1921,27 @@ fn fs_main(in: VSOut) -> @location(0) vec4f {
         occ += smoothstep(0.0, 0.4, delta * 35.0);
     }
     let ao = pow(clamp(1.0 - occ / 12.0, 0.0, 1.0), ubo.params.y);
+    /** @brief Vec 4 f. */
     return vec4f(vec3f(mix(1.0, ao, ubo.intensity)), 1.0);
 }
 )wgsl";
 
 // ---- Voxel rect --------------------------------------------------------------
 inline const char *kVoxelRectVertWgsl = R"wgsl(
+/** @brief VSIn public API. */
 struct VSIn {
     @location(0) corner: vec2f,
     @location(1) packed: u32,
     @location(2) aoWord: u32,
 };
+/** @brief PC public API. */
 struct PC {
     viewProj: mat4x4f,
     chunkOrigin: vec4f,
     atlasInfo: vec4f,
     tint: vec4f,
 };
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) uv: vec2f,
@@ -1778,6 +1952,7 @@ struct VSOut {
 };
 @group(0) @binding(0) var<uniform> pc: PC;
 @vertex
+/** @brief Vs main. */
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     // packed: x(5) y(5) z(5) w(5) h(5) tex(7)
@@ -1822,6 +1997,7 @@ fn vs_main(in: VSIn) -> VSOut {
 )wgsl";
 
 inline const char *kVoxelRectFragWgsl = R"wgsl(
+/** @brief FSIn public API. */
 struct FSIn {
     @location(0) uv: vec2f,
     @location(1) tint: vec4f,
@@ -1832,12 +2008,14 @@ struct FSIn {
 @group(0) @binding(1) var atlas: texture_2d<f32>;
 @group(0) @binding(2) var atlasSamp: sampler;
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     // Vertex ambient occlusion (0..1): darkens corners near other voxels.
     let aoShade = 0.35 + 0.65 * in.vAO;
     let atlasUV = (in.atlasBase + fract(in.uv)) * in.tileScale;
     let dx = dpdx(in.uv) * in.tileScale;
     let dy = dpdy(in.uv) * in.tileScale;
+    /** @brief Texture sample grad. */
     return textureSampleGrad(atlas, atlasSamp, atlasUV, dx, dy) * in.tint * aoShade;
 }
 )wgsl";
@@ -1845,10 +2023,12 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 // ---- Hybrid clustered deferred lighting (Phase D WebGPU parity) ------------
 /** @brief Immutable deferred-lighting vertex WGSL. @borrowed Static storage; valid for the process lifetime. */
 inline const char* kDeferredLightingVertWgsl = R"wgsl(
+/** @brief VSOut public API. */
 struct VSOut {
     @builtin(position) pos: vec4f,
 };
 @vertex
+/** @brief Vs main. */
 fn vs_main(@builtin(vertex_index) vid: u32) -> VSOut {
     // Fullscreen triangle in WebGPU NDC (Y-up).
     var p = vec2f(f32((vid << 1u) & 2u), f32(vid & 2u));
@@ -1864,11 +2044,13 @@ fn vs_main(@builtin(vertex_index) vid: u32) -> VSOut {
  * @borrowed Static storage; valid for the process lifetime.
  */
 inline const char* kDeferredLightingFragWgsl = R"wgsl(
+/** @brief Light3D public API. */
 struct Light3D {
     posRadius: vec4f,
     color: vec4f,
     spot: vec4f,
 };
+/** @brief DeferredFrame public API. */
 struct DeferredFrame {
     invViewProj: mat4x4f,
     view: mat4x4f,
@@ -1879,6 +2061,7 @@ struct DeferredFrame {
     gridInfo: vec4f,
     clipInfo: vec4f,
 };
+/** @brief ShadowFrame public API. */
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
     splits: vec4f,
@@ -1891,9 +2074,11 @@ struct ShadowFrame {
     localBias: vec4f,
     localMeta: vec4f,
 };
+/** @brief FSIn public API. */
 struct FSIn {
     @builtin(position) fragCoord: vec4f,
 };
+/** @brief FSOut public API. */
 struct FSOut {
     @location(0) color: vec4f,
     @builtin(frag_depth) depth: f32,
@@ -1916,6 +2101,7 @@ struct FSOut {
 
 const PI: f32 = 3.14159265359;
 
+/** @brief Dist ggx. */
 fn distGGX(n: vec3f, h: vec3f, rough: f32) -> f32 {
     let a = max(rough * rough, 0.002);
     let a2 = a * a;
@@ -1923,17 +2109,22 @@ fn distGGX(n: vec3f, h: vec3f, rough: f32) -> f32 {
     let denom = (ndh * ndh * (a2 - 1.0) + 1.0);
     return a2 / max(PI * denom * denom, 1e-4);
 }
+/** @brief Geom schlick. */
 fn geomSchlick(ndv: f32, rough: f32) -> f32 {
     let r = rough + 1.0;
     let k = (r * r) / 8.0;
     return ndv / max(ndv * (1.0 - k) + k, 1e-4);
 }
+/** @brief Geom smith. */
 fn geomSmith(n: vec3f, v: vec3f, l: vec3f, rough: f32) -> f32 {
+    /** @brief Geom schlick. */
     return geomSchlick(max(dot(n, v), 0.0), rough) * geomSchlick(max(dot(n, l), 0.0), rough);
 }
+/** @brief Fresnel schlick. */
 fn fresnelSchlick(cosT: f32, f0: vec3f) -> vec3f {
     return f0 + (1.0 - f0) * pow(clamp(1.0 - cosT, 0.0, 1.0), 5.0);
 }
+/** @brief Shade light. */
 fn shadeLight(n: vec3f, v: vec3f, l: vec3f, rad: vec3f, albedo: vec3f, metallic: f32,
               rough: f32, specularFactor: f32) -> vec3f {
     let ndl = max(dot(n, l), 0.0);
@@ -1947,6 +2138,7 @@ fn shadeLight(n: vec3f, v: vec3f, l: vec3f, rad: vec3f, albedo: vec3f, metallic:
     let kd = (vec3f(1.0) - f) * (1.0 - metallic);
     return (kd * albedo / PI + spec) * rad * ndl;
 }
+/** @brief Sample shadow cascade. */
 fn sampleShadowCascade(worldPos: vec3f, cascade: i32, biasAmt: f32) -> f32 {
     let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
@@ -1955,8 +2147,10 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, biasAmt: f32) -> f32 {
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0) {
         return 1.0;
     }
+    /** @brief Texture sample compare. */
     return textureSampleCompare(shadowMap, shadowSamp, uv, cascade, depth - biasAmt);
 }
+/** @brief Sample shadow pcf. */
 fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, nDotL: f32) -> f32 {
     if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4) {
         return 1.0;
@@ -1965,17 +2159,21 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, nDotL: f32) -> f32
     if (viewDepth < shadow.splits.x) { cascade = 0; }
     else if (viewDepth < shadow.splits.y) { cascade = 1; }
     var b = select(shadow.cascadeBias.z,
+                   /** @brief Select. */
                    select(shadow.cascadeBias.y, shadow.cascadeBias.x, cascade == 0),
                    cascade == 1);
     if (b < 1e-8) { b = shadow.bias.x; }
     b = b * mix(0.75, 1.0, clamp(nDotL, 0.0, 1.0));
     let tw = select(shadow.cascadeTexel.z,
+                    /** @brief Select. */
                     select(shadow.cascadeTexel.y, shadow.cascadeTexel.x, cascade == 0),
                     cascade == 1);
     let p = worldPos + n * ((2.0 * max(tw, 1e-6)) / max(nDotL, 0.2));
     let vis = sampleShadowCascade(p, cascade, b);
+    /** @brief Mix. */
     return mix(0.04, 1.0, mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0)));
 }
+/** @brief Cluster index. */
 fn clusterIndex(viewDepth: f32, fragCoord: vec4f) -> u32 {
     let tilesX = i32(ubo.gridInfo.x + 0.5);
     let tilesY = i32(ubo.gridInfo.y + 0.5);
@@ -1988,10 +2186,12 @@ fn clusterIndex(viewDepth: f32, fragCoord: vec4f) -> u32 {
     let ty = clamp(i32(floor(fragCoord.y / screenH * f32(tilesY))), 0, tilesY - 1);
     let depth = max(viewDepth, nearZ);
     let sz = clamp(i32(floor((depth - nearZ) / (farZ - nearZ) * f32(slices))), 0, slices - 1);
+    /** @brief U 32. */
     return u32((sz * tilesY + ty) * tilesX + tx);
 }
 
 @fragment
+/** @brief Fs main. */
 fn fs_main(in: FSIn) -> FSOut {
     var out: FSOut;
     let screenW = max(ubo.clipInfo.z, 1.0);

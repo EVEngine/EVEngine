@@ -48,6 +48,7 @@ struct EvpackSignature {
 /** @brief Tool-side provider that signs the authenticated 32-byte package metadata digest. */
 class EvpackSigner {
 public:
+    /** @brief Releases EvpackSigner resources. */
     virtual ~EvpackSigner() = default;
     /** @brief Produce a publisher signature without retaining the borrowed digest. */
     [[nodiscard]] virtual Result<EvpackSignature> sign(
@@ -57,6 +58,7 @@ public:
 /** @brief Runtime trust provider supplied by the application/project policy. */
 class EvpackSignatureVerifier {
 public:
+    /** @brief Releases EvpackSignatureVerifier resources. */
     virtual ~EvpackSignatureVerifier() = default;
     /** @brief Verify a detached signature against a trusted key identity. */
     [[nodiscard]] virtual Result<void> verify(

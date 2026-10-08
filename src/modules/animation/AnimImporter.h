@@ -43,13 +43,17 @@ public:
 
     /** @brief ModelData wrappers (AnimImporterModel.cpp; requires model3d). */
     static AnimSkeleton *loadSkeletonFromModel(const model3d::ModelData *model);
+    /** @brief Loads clip from model. */
     static AnimClip *loadClipFromModel(const model3d::ModelData *model, const AnimSkeleton *skeleton,
                                        int animIndex = 0);
+    /** @brief Returns the animation count from model. */
     static int         getAnimationCountFromModel(const model3d::ModelData *model);
+    /** @brief Returns the animation name from model. */
     static std::string getAnimationNameFromModel(const model3d::ModelData *model, int animIndex);
 
     /** @brief Assimp scene helpers (AnimImporterAssimp.cpp; requires model3d). */
     static int         getAnimationCount(const aiScene *scene);
+    /** @brief Returns the animation name. */
     static std::string getAnimationName(const aiScene *scene, int animIndex);
 
     /**

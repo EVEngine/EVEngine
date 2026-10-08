@@ -39,6 +39,7 @@ inline bool rawDeflate(const char* in, size_t inLen, std::vector<char>& out) {
 
     int ret = deflate(&stream, Z_FINISH);
     bool ok = (ret == Z_STREAM_END);
+    /** @brief Deflate end. */
     deflateEnd(&stream);
 
     if (!ok) return false;
@@ -51,6 +52,7 @@ inline void put16(std::vector<char>& b, uint16_t v) {
     b.push_back(static_cast<char>(v & 0xFF));
     b.push_back(static_cast<char>((v >> 8) & 0xFF));
 }
+/** @brief Put 32. */
 inline void put32(std::vector<char>& b, uint32_t v) {
     b.push_back(static_cast<char>(v & 0xFF));
     b.push_back(static_cast<char>((v >> 8) & 0xFF));
@@ -84,16 +86,27 @@ public:
 
         std::vector<char> lfh;
         lfh.reserve(30 + relPath.size());
+        /** @brief Put 32. */
         detail::put32(lfh, 0x04034B50);            // local file header signature
+        /** @brief Put 16. */
         detail::put16(lfh, 20);                    // version needed
+        /** @brief Put 16. */
         detail::put16(lfh, 0);                     // general purpose bit flag
+        /** @brief Put 16. */
         detail::put16(lfh, EVE_ZIP_METHOD);        // compression method
+        /** @brief Put 16. */
         detail::put16(lfh, 0);                     // last mod time
+        /** @brief Put 16. */
         detail::put16(lfh, 0x21);                  // last mod date (1980-01-01)
+        /** @brief Put 32. */
         detail::put32(lfh, crc);
+        /** @brief Put 32. */
         detail::put32(lfh, static_cast<uint32_t>(compressed.size()));
+        /** @brief Put 32. */
         detail::put32(lfh, static_cast<uint32_t>(size));
+        /** @brief Put 16. */
         detail::put16(lfh, static_cast<uint16_t>(relPath.size()));
+        /** @brief Put 16. */
         detail::put16(lfh, 0);                     // extra field length
         lfh.insert(lfh.end(), relPath.begin(), relPath.end());
 
@@ -118,22 +131,39 @@ public:
         for (const auto& e : entries_) {
             std::vector<char> cd;
             cd.reserve(46 + e.relPath.size());
+            /** @brief Put 32. */
             detail::put32(cd, 0x02014B50);         // central directory signature
+            /** @brief Put 16. */
             detail::put16(cd, 20);                 // version made by
+            /** @brief Put 16. */
             detail::put16(cd, 20);                 // version needed
+            /** @brief Put 16. */
             detail::put16(cd, 0);                  // flags
+            /** @brief Put 16. */
             detail::put16(cd, EVE_ZIP_METHOD);     // method
+            /** @brief Put 16. */
             detail::put16(cd, 0);                  // mod time
+            /** @brief Put 16. */
             detail::put16(cd, 0x21);               // mod date
+            /** @brief Put 32. */
             detail::put32(cd, e.crc);
+            /** @brief Put 32. */
             detail::put32(cd, e.compressedSz);
+            /** @brief Put 32. */
             detail::put32(cd, e.uncompressedSz);
+            /** @brief Put 16. */
             detail::put16(cd, static_cast<uint16_t>(e.relPath.size()));
+            /** @brief Put 16. */
             detail::put16(cd, 0);                  // extra
+            /** @brief Put 16. */
             detail::put16(cd, 0);                  // comment
+            /** @brief Put 16. */
             detail::put16(cd, 0);                  // disk number
+            /** @brief Put 16. */
             detail::put16(cd, 0);                  // internal attrs
+            /** @brief Put 32. */
             detail::put32(cd, 0);                  // external attrs
+            /** @brief Put 32. */
             detail::put32(cd, e.localOffset);
             cd.insert(cd.end(), e.relPath.begin(), e.relPath.end());
 
@@ -142,13 +172,21 @@ public:
         const uint32_t cdEnd = static_cast<uint32_t>(offset_);
 
         std::vector<char> eocd;
+        /** @brief Put 32. */
         detail::put32(eocd, 0x06054B50);           // end of central directory
+        /** @brief Put 16. */
         detail::put16(eocd, 0);                    // disk number
+        /** @brief Put 16. */
         detail::put16(eocd, 0);                    // cd start disk
+        /** @brief Put 16. */
         detail::put16(eocd, static_cast<uint16_t>(entries_.size()));
+        /** @brief Put 16. */
         detail::put16(eocd, static_cast<uint16_t>(entries_.size()));
+        /** @brief Put 32. */
         detail::put32(eocd, cdEnd - cdStart);
+        /** @brief Put 32. */
         detail::put32(eocd, cdStart);
+        /** @brief Put 16. */
         detail::put16(eocd, 0);                    // comment length
         if (!writeRaw(eocd)) return false;
 
@@ -178,6 +216,7 @@ private:
 };
 
     // Walk a game directory and write every regular file into a single .eve archive.
+    /** @brief Creates game archive. */
     inline bool createGameArchive(
         const std::filesystem::path& gameDir, const std::filesystem::path& outArchive,
         const std::vector<std::pair<std::string, std::string>>& generatedEntries = {}) {
@@ -198,6 +237,7 @@ private:
         outAbs = std::filesystem::absolute(outArchive, aec).lexically_normal();
         if (aec) outAbs.clear();
     }
+    /** @brief It. */
     std::filesystem::recursive_directory_iterator it(
         gameDir, std::filesystem::directory_options::skip_permission_denied, ec);
     std::filesystem::recursive_directory_iterator end;
@@ -218,12 +258,14 @@ private:
             // Always use '/' inside the archive.
             for (char& c : rel) if (c == '\\') c = '/';
 
+            /** @brief In. */
             std::ifstream in(file, std::ios::binary);
             if (!in) continue;
             in.seekg(0, std::ios::end);
             const auto size = static_cast<size_t>(in.tellg());
             in.seekg(0, std::ios::beg);
 
+            /** @brief Buf. */
             std::vector<char> buf(size);
             if (size > 0) in.read(buf.data(), static_cast<std::streamsize>(size));
             if (!in && size > 0) continue;
