@@ -1582,16 +1582,19 @@ Result 诊断、计划统计和缓存约定，但 mesh pin 只传递 owning `Mes
 
 ### 静态合并与动态融合（接触带）
 
-`MeshMergePlan` / `eve.mergeStaticMeshes(plan)` 是提交式静态合并入口：按源变换拼接，可选
-`weldTolerance` 与 `simplifyQuality`。**接触带边缘/材质融合默认关闭**
-（`setEnableContactBlend(false)`）；需要缝线过渡时再 `setEnableContactBlend(true)` 并
-`setContactBlend(...)`。融合权重写入顶点色 alpha（`contactBlend`），不改 UV。纯拼接仍可用
+`MeshMergePlan` / `eve.mergeStaticMeshes(plan)` 是提交式静态合并入口：用 `appendSource` /
+`clear` / `getSourceCount` 组织源网格后一次合并。**接触带边缘/材质融合默认关闭**；
+`setEnableContactBlend(false|true)` 开关，`getEnableContactBlend` 查询。开启后用
+`setContactBlend(...)` 设置半径与强度。可选 `setWeldTolerance`（正值启用硬焊）、
+`setSimplifyQuality`（(0,1) 启用 GTS 简化）、`setPivotMode`（0 = 首源枢轴，1 = 世界原点）。
+融合权重写入顶点色 alpha（`contactBlend`），不改 UV。纯拼接仍可用
 `combinePcgStaticMeshes`；canonical 作者路径是 `mergeStaticMeshes`。
 
 共享 CPU 原语为 `meshContactBlendResult`（多 sourceId）与
 `meshContactBlendAgainstSurfaceResult`（A 贴 B）。`deform.meshAdhere` 图节点与
-`MeshAdhereLive` 会话走后者：引擎实时求值，参数/表面可随时修改后 `evaluate`，源网格保持权威，
-`bakeToMesh` 可选冻结，`removeSetup` 结束会话。设计说明见
+`MeshAdhereLive` 会话走后者：`activate` 后用 `setParams` / `setSurface` 随时改参数或表面，
+`isDirty` / `evaluate` / `getRevision` 驱动实时重算；源网格保持权威，`bakeToMesh` 可选冻结，
+`removeSetup` 结束会话，`isActive` 查询状态。设计说明见
 `docs/dev/superpowers/specs/2026-10-08-mesh-merge-adhere-plan.md`。
 
 连续、单消费者的逐顶点 deform 会编译成一个 CPU segment，一次遍历完成；smooth、append、
