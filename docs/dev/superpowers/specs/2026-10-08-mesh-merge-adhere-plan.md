@@ -9,29 +9,35 @@
 创作侧常见两类「合并」需求，语义不同，不能混成一个工具：
 
 1. **静态合并（UE Merge Actors 类 + 缝线融合）**  
-   多个已变换的 Static Mesh 拼成一份 `MeshBuild` / 资产：拼接与可选 weld/simplify 之外，**还必须在源网格接触带做边缘融合（几何/法线）与材质融合**，避免「只拼拓扑、接缝硬切」的可见裂缝。本引擎已有 `appendTransformed` / `combinePcgStaticMeshes` / `mesh.weld`，但**没有**接触带融合内核。
+   作者向、**提交式**：多个已变换 Static Mesh 一次算成一份 owning `MeshBuild` / 资产（拼接 + 边缘/材质融合 + 可选 weld/simplify）。结果落盘或替换实例后，源关系结束；再调参数需重新跑合并。本引擎已有拼接/weld，**没有**接触带融合内核。
 
-2. **曲面粘合（Merge Master 类）**  
-   活动网格 A 在接触带内贴合基体 B（Strength / Radius / Falloff + 法线/材质过渡）；预览非破坏，再 Bake。与静态合并共享同一套「接触带融合」原语，差别是粘合还要做位置贴合，且默认非破坏会话。
+2. **动态融合（Merge Master 类粘合，引擎实时）**  
+   运行时/编辑器内**持续求值**：A 相对 B 的接触带位置贴合 + 边缘/材质融合由引擎每帧或参数变更时完成；Strength / Radius / Falloff / 法线与材质混合等**可随时调整**，不必 Bake 才能看到效果。源网格拓扑保持权威；显示网格为派生缓存。可选 Bake 只是「冻结为静态资产」的出口，不是动态路径的前提。
 
-本计划按两阶段组织实现顺序（先静态合并含融合，再粘合会话），但**全部在同一实现 PR 内交付**，不再拆成多个功能 PR。
+二者共享 `MeshContactBlend` 原语；差别是生命周期：静态 = 一次提交，动态 = 实时可调会话/组件。
+
+本计划按两阶段组织实现顺序（先静态合并，再动态融合），但**全部在同一实现 PR 内交付**，不再拆成多个功能 PR。
 
 ## 目标
 
-1. 提供作者/脚本可调用的 **静态合并** 入口：拼接 + 可选 weld/simplify，且 **v1 即含边缘融合与材质融合**（可关，但默认开启合理半径），稳定 `Result` 诊断。
-2. 抽取共享 CPU 原语（建议 `MeshContactBlend`）：按源归属做最近点/接触带权重 → 边缘（位置软焊或法线混合）+ 材质混合权重；供 `mergeStaticMeshes` 与 `deform.meshAdhere` 共用。
-3. 新增 **曲面粘合** 节点 `deform.meshAdhere`（Strength / Radius / Falloff / Normals / 材质混合），实现自研；非破坏会话 + Bake；可选再接 `mesh.boolean`。
-4. 编辑器入口挂在 `procgen_editing` / `procgen_editor`，不新建顶层模块。
+1. **静态合并**入口：拼接 + 边缘/材质融合 + 可选 weld/simplify；`Result` 诊断稳定。
+2. 共享 CPU 原语 `MeshContactBlend`（接触带权重 → 边缘/法线 + 材质权重），供静态合并与动态融合共用。
+3. **动态融合**一等能力（节点/会话/运行时组件，建议名 `deform.meshAdhere` + live session）：
+   - 引擎内实时完成求值（主线程或声明为可并行的纯 CPU 段，再回传显示网格）；
+   - 参数与变换**随时可调**，调参即重算派生网格，无需先 Bake；
+   - 关闭/移除 setup 恢复源外观；可选 `BakeToMesh` 冻结为静态资产。
+4. 编辑器与运行时脚本均可驱动动态融合；UI 挂 `procgen_editing` / `procgen_editor`，不新建顶层模块。
 5. 全部公共路径遵守 Result / `[[nodiscard]]`、确定性契约、裁剪构建与架构门禁。
 
 ## 非目标
 
 - 不整段移植 Merge Master（GPL 插件）或 UE 源码；只参考公开交互与能力分层，算法自研。
 - 不做完整 Modeling Mode / GeometryScript 命名空间 / BREP / NURBS。
-- 不做各向同性 Remesh、PolyGroup Remesh、Nanite Approximate Proxy 的完整复刻（结构合并阶段仅接现有 simplify）。
-- 不做玻璃/折射材质下的粘合着色特判（Merge Master 亦声明不适合）。
-- 不把粘合逻辑放进 `scene` loader 或 `graphics` GPU 网格；loader/GPU 仅消费 Bake 结果。
-- 第一期不做 Cycles 式「Bake for renderer + Bevel 节点」渲染补偿；Eevee/本引擎前向路径以 CPU 混合法线为准。
+- 不做各向同性 Remesh、PolyGroup Remesh、Nanite Approximate Proxy 的完整复刻（静态合并仅接现有 simplify）。
+- 不做玻璃/折射材质下的粘合着色特判。
+- 不把融合**权威状态**放进 `scene` loader 或 graphics 资源；GPU 网格只消费每次求值产出的派生缓冲（动态路径是持续上传/更新，不是「只能消费 Bake」）。
+- v1 动态融合以 CPU `MeshContactBlend` + 现有网格顶点更新路径为准；不强制首版 GPU compute 粘合。
+- 第一期不做 Cycles 式「Bake for renderer + Bevel 节点」渲染补偿。
 
 ## 模块归属
 
@@ -56,9 +62,10 @@ L7  procgen_editor          MeshModifierEditor 工具条与面板
 | **材质融合**（接触带权重/混合） | 无 | **Phase A 必做**（同内核；Adhere 复用） |
 | 简化 LOD | `buildPcgCombinedMeshLods` / GTS simplify | Phase A 可选；建议在融合之后 |
 | 射线贴合 | `deform.meshFit` | 保留 |
-| 接触带位置粘合 | 无 | Phase B `deform.meshAdhere` |
-| 布尔去内面 | `mesh.boolean` | Bake/合并后可选图节点 |
-| 非破坏会话 | `MeshDeformationSession` | Phase B |
+| 接触带位置粘合 | 无 | Phase B 动态融合 |
+| **实时可调动态融合** | 无（仅有离线 modifier 求值） | **Phase B 必做**：参数/位姿变更即重算 |
+| 布尔去内面 | `mesh.boolean` | 静态 Bake 后可选；动态路径默认不做破坏性布尔 |
+| 非破坏实时会话 | `MeshDeformationSession` 雏形 | Phase B 扩展为 live（含运行时） |
 | 替换场景实例 | 无 | Phase A editing 事务（可选） |
 
 ---
@@ -149,12 +156,12 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 
 ---
 
-## Phase B — 曲面粘合（Merge Master 类）
+## Phase B — 动态融合（引擎实时、随时可调）
 
 ### B1. 算法节点 `deform.meshAdhere`
 
 **输入**：源网格 A、表面网格 B（与 `deform.meshFit` 相同的双输入约定）。  
-**输出**：owning 变形后的 A（拓扑与索引不变；位置/法线 + 材质融合权重，与静态合并同一属性约定）。
+**输出**：每次求值产出 owning/派生变形网格（拓扑与索引相对源 A 不变；位置/法线 + 材质融合权重，属性名与静态合并一致）。
 
 **参数（v1）**：与 `MeshContactBlend` 对齐，并增加粘合专用项：
 
@@ -162,50 +169,62 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 |------|------|
 | `strength` / `edgeRadius` / `materialRadius` | 同共享原语；Global 可联动 |
 | `falloff` | `smooth` / `linear` / `sharp` / `sphere`（自定义曲线可延期） |
-| `normalsBlend` / `materialBlend` | 边缘法线与材质融合（**v1 必做**，非延期项） |
+| `normalsBlend` / `materialBlend` | 边缘法线与材质融合（**v1 必做**） |
 | `softSnapPositions` | 默认 `true`：位置贴向 B |
 | `surfaceOffset` | 沿命中法线间隙 |
 | `maxQueryDistance` | 最近点搜索上限 |
 
-**实现**：双源调用 `MeshContactBlend`（A←B；粘合阶段通常只变形 A）；位置项 \(p'=\mathrm{lerp}(p,q+n\cdot\texttt{surfaceOffset},w_{\mathrm{edge}})\)。
+**实现**：双源调用 `MeshContactBlend`（A←B；通常只变形 A）；\(p'=\mathrm{lerp}(p,q+n\cdot\texttt{surfaceOffset},w_{\mathrm{edge}})\)。
 
-**与 `deform.meshFit` 的分工**：
+**与 `deform.meshFit` 的分工**：`meshFit` = 定向射线贴合；`meshAdhere` = 各向最近点 + 实时边缘/材质融合。并存。
 
-- `meshFit`：沿指定方向的有界射线贴合（已有）。
-- `meshAdhere`：各向最近点 + 半径衰减粘合 + 与静态合并相同的边缘/材质融合。二者并存。
+### B2. 实时生命周期（相对静态合并的关键差异）
 
-### B2. 可选增强（不进本实现 PR）
+| | 静态合并 | 动态融合 |
+|--|----------|----------|
+| 时机 | 作者提交一次 | 引擎持续/按需求值 |
+| 参数 | 写入 plan 后算完即固定 | **随时改** strength/radius/… 与 A/B 位姿 |
+| 源网格 | 可替换为合并结果 | 源保持权威；显示为派生 |
+| Bake | 合并本身即提交 | **可选**冻结；不 Bake 也可用于运行时 |
+
+权威状态建议：
+
+- `MeshAdhereLive`（或扩展 `MeshDeformationSession`）：持有对 A/B 源的借用或 generation-safe handle、融合参数、revision。
+- `setParam*` / 源变换脏标记 → 递增 revision → `evaluateResult()` 重算派生 `MeshBuild`（失败不发布半帧）。
+- 编辑器与运行时脚本共用同一 evaluate 路径；tick 策略：`evaluateOnDirty`（默认）与可选 `evaluateEveryFrame`（B 或 A 持续运动时）。
+- 将派生顶点更新到显示 mesh 走现有 graphics 更新 API；**禁止**把 live 参数藏进 GPU mesh 元数据当第二真相。
+- `RemoveSetup`：丢掉派生、恢复源显示；`BakeToMesh`：写出 owning 静态网格并可选择结束 live。
+
+线程：求值函数纯输入→输出；默认主线程调用；若丢到 worker，完成回调回主线程再发布，且不持锁调脚本。
+
+### B3. 可选增强（不进本实现 PR）
 
 - 自定义 falloff 曲线编辑器。
 - Bake 后自动 `mesh.boolean` 去内面。
-- 多 A 共享同一 B 的独立参数存储 UX。
-- 运行时双材质采样着色器（若 v1 仅 CPU 权重 + 顶点色近似，完整 shading 可后续）。
-- 链式粘合 UX 包装（图组合本身已支持）。
-
-### B3. 非破坏会话与 Bake
-
-- 复用或扩展 `MeshDeformationSession`：Activate 保存 A 快照；参数修改只重算预览；`RemoveSetup` 恢复快照；`BakeToMesh` 提交 owning 网格并结束会话。
-- Activate 时若需 apply 已有 modifier，遵循「先求值图再粘合」；不在粘合节点内隐式破坏调用方持有的源指针。
-- 失败：返回 `Result`，预览缓冲不部分发布。
+- GPU compute 加速最近点/融合。
+- 完整运行时双材质采样着色器（v1 可用权重属性 + 顶点色近似）。
+- 多 A 共享 B 的批量 live 管理器 UX。
 
 ### B4. 编辑器
 
-- `MeshModifierEditor`：选 A（active）+ B → Adhere 工具 → 面板暴露 Global（联动 strength/radius/normals）与分项滑条。
-- 快捷键与 Blender 插件无需一致；文档写清本引擎绑定。
-- 可视化：可选接触带 overlay（editing 层），运行时裁剪配置可关。
+- 选 A（active）+ B → Dynamic Adhere：面板滑条**拖动即重算**（脏标记 evaluate），不必点 Apply/Bake。
+- Bake / Remove 为显式按钮；文档写清「动态默认实时，Bake 仅冻结」。
+- 可选接触带 overlay；运行时裁剪配置可关 overlay。
 
 ### B5. 验收
 
-- 单测：平面上立方体贴合；radius/strength=0 恒等；远离不变；**法线与材质权重**与静态合并夹具共用断言助手；失败注入（空 B、非法 radius）。
-- 组合：Adhere → Bake → 可选 `mesh.boolean`；与 `mergeStaticMeshes` 共用 blend 属性名回归。
+- 算法夹具：同 Phase A 共享的法线/材质断言；radius/strength=0 恒等。
+- **实时可调**：同一会话内连续改 `strength`/`edgeRadius` 至少两档，派生网格随 revision 变化且源网格缓冲未改；`RemoveSetup` 后显示回到源。
+- **位姿可调**：只移动 A 或 B 后 evaluate，接触带跟随（确定性夹具）。
+- 可选 Bake 路径一条；与静态合并 blend 属性名一致。
 - 架构 / 法律：同总清单。
 
 ### B6. 实现顺序（同 PR 内，接在共享内核与 Phase A 之后）
 
-1. `deform.meshAdhere` 接 `MeshContactBlend`（`softSnapPositions=true`）+ 单测。
-2. 会话 Activate / Bake / Remove + 图集成。
-3. Editor 面板与 usr 文档。
-4. B2 项不进本 PR。
+1. `deform.meshAdhere` + `MeshContactBlend` 单测。
+2. Live 会话：脏参数/位姿 → evaluate → 更新显示；Remove / 可选 Bake。
+3. 脚本 tick/调参 API + Editor 实时滑条 + usr 文档（静态 vs 动态对照表）。
+4. B3 项不进本 PR。
 
 ---
 
@@ -240,9 +259,9 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 ## 交付方式（单 PR）
 
 - **计划文档**可先合入（本文件所在变更）。
-- **实现**同一 PR 交付：共享 `MeshContactBlend` + Phase A（含边缘/材质融合的静态合并 + 脚本 + 编辑器）+ Phase B v1（`deform.meshAdhere` + 会话 + 编辑器 + 测试 + usr 文档）。本地顺序建议：共享内核 → A → B；不拆功能 PR。
-- B2（自定义曲线、自动 boolean、完整双材质 shading 等）不进该实现 PR。
-- 合并前跑通：`procgen_mesh*`、融合夹具、`check/architecture-contracts`、格式检查。
+- **实现**同一 PR 交付：共享 `MeshContactBlend` + Phase A（静态合并含边缘/材质融合）+ Phase B（**引擎实时动态融合**：随时调参/位姿重算 + 可选 Bake + 编辑器/脚本）。本地顺序：共享内核 → A → B；不拆功能 PR。
+- B3 增强（GPU compute、完整双材质 shading 等）不进该实现 PR。
+- 合并前跑通：`procgen_mesh*`、融合夹具、动态调参 revision 测、`check/architecture-contracts`、格式检查。
 
 ## 参考（公开行为，非实现来源）
 
