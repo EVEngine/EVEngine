@@ -52,55 +52,75 @@ namespace eve::cap {
 
 namespace detail {
 
+/** @brief Provides raw. */
 EVENGINE_API_FOUNDATION void  provideRaw(const char* name, void* impl);
+/** @brief Queries raw. */
 EVENGINE_API_FOUNDATION void* queryRaw(const char* name);
+/** @brief Revoke raw. */
 EVENGINE_API_FOUNDATION void  revokeRaw(const char* name, void* impl);
 
+/** @brief Adds listener raw. */
 EVENGINE_API_FOUNDATION void   addListenerRaw(const char* name, void* impl, int priority);
+/** @brief Removes listener raw. */
 EVENGINE_API_FOUNDATION void   removeListenerRaw(const char* name, void* impl);
+/** @brief Listener count raw. */
 EVENGINE_API_FOUNDATION size_t listenerCountRaw(const char* name);
+/** @brief Listener at raw. */
 EVENGINE_API_FOUNDATION void*  listenerAtRaw(const char* name, size_t index);
 
 /** Drops every registration. Test-only; resets state between cases. */
+/** @brief Clears all raw. */
 EVENGINE_API_FOUNDATION void clearAllRaw();
 
 }  // namespace detail
 
 /** Register the single implementation of I, replacing any previous one. */
 template <class I>
+/** @brief Provides . */
 void provide(I* impl) {
+    /** @brief Provides raw. */
     detail::provideRaw(I::capabilityName, impl);
 }
 
 /** The implementation of I, or nullptr when no module provides it. */
 template <class I>
+/** @brief Queries . */
 I* query() {
     return static_cast<I*>(detail::queryRaw(I::capabilityName));
 }
 
 /** Withdraw `impl`; a no-op when something else has since taken the slot. */
 template <class I>
+/** @brief Revoke. */
 void revoke(I* impl) {
+    /** @brief Revoke raw. */
     detail::revokeRaw(I::capabilityName, impl);
 }
 
 /** Add one of possibly many implementations. Lower priority runs first. */
 template <class I>
+/** @brief Adds listener. */
 void addListener(I* impl, int priority = 0) {
+    /** @brief Adds listener raw. */
     detail::addListenerRaw(I::capabilityName, impl, priority);
 }
 
 template <class I>
+/** @brief Removes listener. */
 void removeListener(I* impl) {
+    /** @brief Removes listener raw. */
     detail::removeListenerRaw(I::capabilityName, impl);
 }
 
 template <class I>
+/** @brief Listener count. */
 size_t listenerCount() {
+    /** @brief Listener count raw. */
     return detail::listenerCountRaw(I::capabilityName);
 }
 
 template <class I>
+/** @brief Listener at. */
 I* listenerAt(size_t index) {
     return static_cast<I*>(detail::listenerAtRaw(I::capabilityName, index));
 }
@@ -114,6 +134,7 @@ I* listenerAt(size_t index) {
  * must therefore remain alive until the current dispatch returns.
  */
 template <class I, class F>
+/** @brief For each. */
 void forEach(F&& fn) {
     const size_t n = detail::listenerCountRaw(I::capabilityName);
     std::vector<I*> snapshot;
@@ -132,6 +153,7 @@ void forEach(F&& fn) {
  * @return Whether any implementation returned true.
  */
 template <class I, class F>
+/** @brief For each until. */
 bool forEachUntil(F&& fn) {
     const size_t n = detail::listenerCountRaw(I::capabilityName);
     std::vector<I*> snapshot;

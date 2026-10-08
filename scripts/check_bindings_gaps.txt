@@ -9,13 +9,6 @@ animation:findSkin
 animation:getAnimationCount
 animation:getAnimationName
 animation:getAtlas
-animation:getBindPositionX
-animation:getBindPositionY
-animation:getBindPositionZ
-animation:getBindRotationW
-animation:getBindRotationX
-animation:getBindRotationY
-animation:getBindRotationZ
 animation:getBindScaleX
 animation:getBindScaleY
 animation:getBindScaleZ
@@ -71,7 +64,6 @@ animation:getFrameY
 animation:getIgnoreRadius
 animation:getInfluenceCount
 animation:getLastSearchCost
-animation:getLayer
 animation:getLocalPositionX
 animation:getLocalPositionY
 animation:getLocalPositionZ
@@ -126,7 +118,6 @@ animation:getSkinName
 animation:getSkinnedPositionY
 animation:getSkinnedPositionZ
 animation:getSlotBone
-animation:getSlotCount
 animation:getSlotName
 animation:getSpeed
 animation:getSpineVersion
@@ -135,14 +126,6 @@ animation:getStateTime
 animation:getTime
 animation:getTrajectoryWeight
 animation:getVelocityWeight
-animation:getWorldPositionX
-animation:getWorldPositionY
-animation:getWorldPositionZ
-animation:getWorldRotationW
-animation:getWorldRotationX
-animation:getWorldRotationY
-animation:getWorldRotationZ
-animation:getX
 animation:hasDeformedNormals
 animation:hasDeformedPositions
 animation:hasState
@@ -156,14 +139,12 @@ animation:setClamp
 animation:setDivisions
 animation:setHasExitTime
 animation:setIgnoreRadius
-animation:setLayer
 animation:setLocalRotation
 animation:setLocalScale
 animation:setOrigin
 animation:setPointOffset
 animation:setPointScale
 animation:setPoseWeight
-animation:setSize
 animation:setSlotAttachmentName
 animation:setTrajectoryWeight
 animation:setVelocityWeight
@@ -178,7 +159,6 @@ building:cellToWorldX
 building:cellToWorldY
 building:clearTerrainGidMap
 building:clearTileLayer
-building:destroy
 building:getAnyOccupant
 building:getBuildingCategory
 building:getBuildingCellX
@@ -218,8 +198,6 @@ building:getExtra
 building:getGhost
 building:getGridLayoutName
 building:getGridPlaneName
-building:getHeight
-building:getId
 building:getMode
 building:getOriginX
 building:getOriginY
@@ -230,13 +208,11 @@ building:getSurfaceCount
 building:getSurfaceName
 building:getTileLayer
 building:getValidateRule
-building:getWidth
 building:getWorldX
 building:getWorldY
 building:hasGridFromLayer
 building:hasSurface
 building:inBounds
-building:isActive
 building:setBuildingProp
 building:setElevation
 building:setExtra
@@ -286,7 +262,6 @@ editor:addBool
 editor:addString
 editor:canRedo
 editor:canUndo
-editor:clear
 editor:clearAllDirty
 editor:clearDirty
 editor:clearStamp
@@ -396,7 +371,6 @@ editor:previewAt
 editor:previewLine
 editor:previewRect
 editor:resize
-editor:setActive
 editor:setBool
 editor:setBoundEnabled
 editor:setChoice
@@ -516,12 +490,10 @@ graphics:isCompiled
 graphics:newCanvas
 graphics:newGrassField
 graphics:newGrassShader
-graphics:newMeshCube
 graphics:newMeshFromArrays
 graphics:newOutline
 graphics:newScreenSpaceReflection
 graphics:newShaderFromWgsl
-graphics:newTextureFromFile
 graphics:newTextureFromFileRepeated
 graphics:newWater
 graphics:newWaterfall
@@ -626,7 +598,6 @@ physics:setTag
 procgen:cloudCoverageAt
 procgen:cloudShadowFactor
 procgen:coverageAt
-procgen:destroy
 procgen:empty
 procgen:generateHeightmap
 procgen:generatePbrMaterial
@@ -699,7 +670,6 @@ procgen:setIsland
 procgen:setLacunarity
 procgen:setOctaves
 procgen:setRidge
-procgen:setScale
 procgen:setSeamless
 procgen:setSoftness
 procgen:setStrength
@@ -760,9 +730,6 @@ scene:getRotationYaw
 scene:getScaleX
 scene:getScaleY
 scene:getScaleZ
-scene:getWorldPositionX
-scene:getWorldPositionY
-scene:getWorldPositionZ
 scene:hasNodeBoundsAt
 scene:hasNodeTagAt
 scene:linkAudio3DAt
@@ -798,7 +765,6 @@ spatial:getMinY
 spatial:getMinZ
 spritestack:getCastShadow
 spritestack:getGbufferEnabled
-spritestack:getHeight
 spritestack:getLayerCount
 spritestack:getLayerTexture
 spritestack:getMode
@@ -808,8 +774,6 @@ spritestack:getShadowEnabled
 spritestack:getStackCount
 spritestack:getThickness
 spritestack:getVisible
-spritestack:getWidth
-spritestack:remove
 spritestack:setOutlineColor
 tensor:getName
 ui:applyEditor

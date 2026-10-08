@@ -21,14 +21,22 @@ public:
     using index_type = LocalHandle::index_type;
     using generation_type = LocalHandle::generation_type;
 
+    /** @brief Constructs a VegetationSceneElementHandle. */
     constexpr VegetationSceneElementHandle() noexcept = default;
+    /** @brief Constructs a VegetationSceneElementHandle. */
     constexpr VegetationSceneElementHandle(std::uint64_t owner, index_type index,
                                            generation_type generation) noexcept
+        /** @brief Owner. */
         : owner_(owner), local_(index, generation) {}
+    /** @brief True when valid. */
     [[nodiscard]] constexpr bool isValid() const noexcept { return owner_ != 0 && local_.isValid(); }
+    /** @brief Owner. */
     [[nodiscard]] constexpr std::uint64_t owner() const noexcept { return owner_; }
+    /** @brief Index. */
     [[nodiscard]] constexpr index_type index() const noexcept { return local_.index(); }
+    /** @brief Generation. */
     [[nodiscard]] constexpr generation_type generation() const noexcept { return local_.generation(); }
+    /** @brief Operator ==. */
     friend constexpr bool operator==(const VegetationSceneElementHandle&,
                                      const VegetationSceneElementHandle&) noexcept = default;
 

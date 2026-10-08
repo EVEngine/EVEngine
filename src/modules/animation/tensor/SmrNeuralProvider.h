@@ -17,8 +17,10 @@ namespace eve::animation {
  */
 class SmrNeuralProvider final : public ISmrNeuralRetarget {
 public:
+    /** @brief Constructs a SmrNeuralProvider. */
     SmrNeuralProvider() = default;
 
+    /** @brief Name. */
     [[nodiscard]] std::string name() const override;
 
     /**

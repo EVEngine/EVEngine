@@ -43,12 +43,15 @@ struct ContainerObject;
 /** @brief Strong identity of one runtime or persistent container. */
 class ContainerId {
 public:
+    /** @brief Constructs a ContainerId. */
     ContainerId() = default;
+    /** @brief Constructs a ContainerId. */
     explicit ContainerId(std::string value) : value_(std::move(value)) {}
 
     /** @brief Construct a valid ID, rejecting an empty value. */
     [[nodiscard]] static std::optional<ContainerId> from(std::string_view value) {
         if (value.empty()) return std::nullopt;
+        /** @brief Constructs a ContainerId. */
         return ContainerId(std::string(value));
     }
     /** @brief Return whether this ID is usable by a transfer request. */
@@ -64,12 +67,15 @@ private:
 /** @brief Strong identity of an object which can have one container membership. */
 class MembershipId {
 public:
+    /** @brief Constructs a MembershipId. */
     MembershipId() = default;
+    /** @brief Constructs a MembershipId. */
     explicit MembershipId(std::string value) : value_(std::move(value)) {}
 
     /** @brief Construct a valid membership ID, rejecting an empty value. */
     [[nodiscard]] static std::optional<MembershipId> from(std::string_view value) {
         if (value.empty()) return std::nullopt;
+        /** @brief Constructs a MembershipId. */
         return MembershipId(std::string(value));
     }
     /** @brief Return whether this identity is usable. */
@@ -110,12 +116,19 @@ enum class Ordering : std::uint8_t {
 /** @brief Explicit slot number; it never implicitly converts to an integer. */
 class SlotIndex {
 public:
+    /** @brief Constructs a SlotIndex. */
     constexpr SlotIndex() noexcept = default;
+    /** @brief Constructs a SlotIndex. */
     explicit constexpr SlotIndex(std::int32_t value) noexcept : value_(value) {}
+    /** @brief Invalid. */
     [[nodiscard]] static constexpr SlotIndex invalid() noexcept { return SlotIndex(-1); }
+    /** @brief True when valid. */
     [[nodiscard]] constexpr bool             isValid() const noexcept { return value_ >= 0; }
+    /** @brief Value. */
     [[nodiscard]] constexpr std::int32_t     value() const noexcept { return value_; }
+    /** @brief Operator ==. */
     friend constexpr bool                    operator==(const SlotIndex&, const SlotIndex&) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto                    operator<=>(const SlotIndex&, const SlotIndex&) noexcept = default;
 
 private:
@@ -127,14 +140,18 @@ class Filter {
 public:
     using Predicate = std::function<Result<void>(const ContainerObject&)>;
 
+    /** @brief Constructs a Filter. */
     Filter() = default;
+    /** @brief Constructs a Filter. */
     explicit Filter(Predicate predicate) : predicate_(std::move(predicate)) {}
 
     /** @brief Evaluate the filter; an empty filter accepts every object. */
     [[nodiscard]] Result<void> evaluate(const struct ContainerObject& object) const {
         if (!predicate_) return Result<void>::success();
+        /** @brief Predicate. */
         return predicate_(object);
     }
+    /** @brief Empty. */
     [[nodiscard]] bool empty() const noexcept { return !predicate_; }
 
 private:
@@ -143,6 +160,7 @@ private:
 
 /** @brief Opaque, owning payload supplied by a domain adapter during transfer. */
 struct ContainerObjectPayload {
+    /** @brief Releases ContainerObjectPayload resources. */
     virtual ~ContainerObjectPayload() = default;
 };
 
@@ -261,6 +279,7 @@ using GameEventSink = std::function<void(const game_event::GameEvent&)>;
     // retaining deterministic bytes.
     bytes[6] = static_cast<std::uint8_t>((bytes[6] & 0x0fu) | 0x50u);
     bytes[8] = static_cast<std::uint8_t>((bytes[8] & 0x3fu) | 0x80u);
+    /** @brief Event id. */
     return EventId(bytes);
 }
 
@@ -276,6 +295,7 @@ public:
      */
     class PreparedState {
     public:
+        /** @brief Releases PreparedState resources. */
         virtual ~PreparedState() = default;
 
         /** @brief Publish the staged state; the operation is non-throwing. */
@@ -374,11 +394,15 @@ public:
 
 /** @brief Coordinate-space tags; distinct types prevent accidental mixing. */
 struct ScreenSpace {};
+/** @brief World2DSpace public API. */
 struct World2DSpace {};
+/** @brief World3DSpace public API. */
 struct World3DSpace {};
+/** @brief GridSpace public API. */
 struct GridSpace {};
 
 template <class Space>
+/** @brief Coordinate public API. */
 struct Coordinate {
     float x = 0.f;
     float y = 0.f;
@@ -386,6 +410,7 @@ struct Coordinate {
 
 /** @brief Three-dimensional coordinate; z is intentionally mandatory. */
 template <>
+/** @brief Coordinate public API. */
 struct Coordinate<World3DSpace> {
     float x = 0.f;
     float y = 0.f;
@@ -393,6 +418,7 @@ struct Coordinate<World3DSpace> {
 };
 
 template <class Space>
+/** @brief Rectangle public API. */
 struct Rectangle {
     Coordinate<Space> origin;
     float             width  = 0.f;
@@ -400,6 +426,7 @@ struct Rectangle {
 };
 
 template <class Space>
+/** @brief Circle public API. */
 struct Circle {
     Coordinate<Space> center;
     float             radius = 0.f;
@@ -420,11 +447,13 @@ struct Sphere3D {
 };
 
 template <class Space>
+/** @brief ZoneShapeTraits public API. */
 struct ZoneShapeTraits {
     using type = std::variant<Rectangle<Space>, Circle<Space>>;
 };
 
 template <>
+/** @brief ZoneShapeTraits public API. */
 struct ZoneShapeTraits<World3DSpace> {
     using type = std::variant<Box3D, Sphere3D>;
 };
@@ -440,6 +469,7 @@ using AcceptedCondition = Filter;
  * @tparam Space ScreenSpace, World2DSpace, World3DSpace or GridSpace.
  */
 template <class Space>
+/** @brief Zone public API. */
 class Zone {
 public:
     /**
@@ -454,13 +484,18 @@ public:
                                              Capacity          capacity = Capacity::unlimited(),
                                              AcceptedCondition accepted = {}) {
         if (!id.isValid()) {
+            /** @brief Failure. */
             return Result<Zone>::failure(
+                /** @brief Error. */
                 Diagnostic::error(DiagnosticCode::InvalidArgument, "zone id must not be empty"));
         }
         if (!validShape(shape)) {
+            /** @brief Failure. */
             return Result<Zone>::failure(
+                /** @brief Error. */
                 Diagnostic::error(DiagnosticCode::InvalidArgument, "zone shape must have positive dimensions"));
         }
+        /** @brief Success. */
         return Result<Zone>::success(Zone(std::move(id), std::move(shape), capacity, std::move(accepted)));
     }
 
@@ -472,6 +507,7 @@ public:
      */
     [[nodiscard]] static Result<Zone> create(ZoneShape<Space> shape, Capacity capacity = Capacity::unlimited(),
                                              AcceptedCondition accepted = {}) {
+        /** @brief Creates . */
         return create(ContainerId("zone:anonymous"), std::move(shape), capacity, std::move(accepted));
     }
 
@@ -489,7 +525,9 @@ public:
         return std::visit(
             [point](const auto& shape) {
                 using Shape = std::decay_t<decltype(shape)>;
+                /** @brief Constexpr. */
                 if constexpr (std::is_same_v<Space, World3DSpace>) {
+                    /** @brief Constexpr. */
                     if constexpr (std::is_same_v<Shape, Box3D>) {
                         return point.x >= shape.origin.x && point.y >= shape.origin.y && point.z >= shape.origin.z &&
                                point.x <= shape.origin.x + shape.width && point.y <= shape.origin.y + shape.height &&
@@ -563,11 +601,15 @@ private:
 
 namespace std {
 template <>
+/** @brief hash public API. */
 struct hash<eve::container::ContainerId> {
+    /** @brief Operator . */
     size_t operator()(const eve::container::ContainerId& value) const noexcept { return hash<string>{}(value.value()); }
 };
 template <>
+/** @brief hash public API. */
 struct hash<eve::container::MembershipId> {
+    /** @brief Operator . */
     size_t operator()(const eve::container::MembershipId& value) const noexcept {
         return hash<string>{}(value.value());
     }

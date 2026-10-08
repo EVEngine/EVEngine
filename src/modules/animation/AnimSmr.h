@@ -68,8 +68,11 @@ public:
      */
     static AnimSmrSensorCloud fromSkeletonDense(const AnimSkeleton* skeleton, int ringsPerBone, int pointsPerRing);
 
+    /** @brief Returns the sensor count. */
     int                  getSensorCount() const { return static_cast<int>(sensors_.size()); }
+    /** @brief Returns the sensor. */
     const AnimSmrSensor& getSensor(int index) const;
+    /** @brief Returns the sensor part. */
     AnimSmrBodyPart      getSensorPart(int index) const;
 
     /**

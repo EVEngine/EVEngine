@@ -7,7 +7,9 @@ namespace eve::graphics {
 /** @brief Explicit, caller-owned authority for Pcg photo-mode water reflection and underwater fog values. */
 class EVENGINE_API_BACKENDS PcgWaterPhotoModeAuthority final : public IPhotoModeFieldSink {
 public:
+ /** @brief Pcg water photo mode authority. */
  PcgWaterPhotoModeAuthority()=default;
+ /** @brief Pcg water photo mode authority. */
  ~PcgWaterPhotoModeAuthority()override;
  /** @brief Register or revoke this object as the unique water-field provider. */
  void setAuthority(bool enabled);
@@ -21,13 +23,21 @@ public:
  /** @brief Copy fog values into the real underwater-effects settings. */
  [[nodiscard]] Result<void> applyToUnderwaterSettings(WaterUnderwaterSettings& settings)const;
  bool getReflectionEnabled()const noexcept{return reflectionEnabled_;}
+ /** @brief Returns the reflection distance. */
  float getReflectionDistance()const noexcept{return reflectionDistance_;}
+ /** @brief Returns the reflection resolution. */
  int getReflectionResolution()const noexcept{return reflectionResolution_;}
+ /** @brief Returns the reflection lod bias. */
  float getReflectionLodBias()const noexcept{return reflectionLodBias_;}
+ /** @brief Returns the fog density. */
  float getFogDensity()const noexcept{return fogDensity_;}
+ /** @brief Returns the fog distance. */
  float getFogDistance()const noexcept{return fogDistance_;}
+ /** @brief Returns the fog red. */
  float getFogRed()const noexcept{return fogColor_.r;}
+ /** @brief Returns the fog green. */
  float getFogGreen()const noexcept{return fogColor_.g;}
+ /** @brief Returns the fog blue. */
  float getFogBlue()const noexcept{return fogColor_.b;}
 private:
  bool authority_=false,reflectionEnabled_=true;float reflectionDistance_=0,reflectionLodBias_=1;

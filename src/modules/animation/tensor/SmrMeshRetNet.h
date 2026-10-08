@@ -22,8 +22,10 @@ struct SmrMeshRetConfig {
  */
 class SmrMeshRetNet {
 public:
+    /** @brief Constructs a SmrMeshRetNet. */
     explicit SmrMeshRetNet(SmrMeshRetConfig config = {});
 
+    /** @brief Config. */
     [[nodiscard]] const SmrMeshRetConfig& config() const { return config_; }
 
     /** @brief Owning target rot6d [T*J*6], or structured failure. */

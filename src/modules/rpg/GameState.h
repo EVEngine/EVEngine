@@ -24,23 +24,30 @@ class RPGSaveSession;
 /** @brief 一份游戏状态（开关/变量/独立变量）。 */
 class EVENGINE_API_PLATFORM GameState {
 public:
+    /** @brief Game state. */
     GameState() = default;
 
     /** @brief 设置开关。 */
     void setSwitch(const std::string &name, bool on);
+    /** @brief Switch on. */
     void switchOn(const std::string &name);
+    /** @brief Switch off. */
     void switchOff(const std::string &name);
     /** @brief 开关是否打开。 */
     bool isSwitchOn(const std::string &name) const;
 
     /** @brief 设置/读取/增减变量。 */
     void setVariable(const std::string &name, double value);
+    /** @brief Returns the variable. */
     double getVariable(const std::string &name) const;
+    /** @brief Adds variable. */
     void addVariable(const std::string &name, double delta);
 
     /** @brief 独立变量：scope（如 "map:1:event:3"）下按名字存数字。 */
     void setSelfVariable(const std::string &scope, const std::string &name, double value);
+    /** @brief Returns the self variable. */
     double getSelfVariable(const std::string &scope, const std::string &name) const;
+    /** @brief True when self variable. */
     bool hasSelfVariable(const std::string &scope, const std::string &name) const;
 
     /**

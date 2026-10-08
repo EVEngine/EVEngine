@@ -5,9 +5,13 @@
 namespace eve::mouse
 {
 
+/**
+ * @brief Opaque mouse cursor (system-defined or custom image).
+ */
 class Cursor 
 {
 public:
+	/** @brief Releases the native cursor handle. */
 	virtual ~Cursor();
 
 	/**
@@ -28,5 +32,3 @@ public:
 };
 
 } // eve::mouse
-
-

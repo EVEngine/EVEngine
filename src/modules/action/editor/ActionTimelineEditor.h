@@ -58,6 +58,7 @@ private:
     friend class ActionTimelineEditor;
 
     struct Item {
+        /** @brief Kind public API. */
         enum class Kind : std::uint8_t { AnimationSection, Notify, NotifyState };
         Kind                           kind = Kind::Notify;
         LogicalId                      trackId;
@@ -122,9 +123,12 @@ public:
 
     [[nodiscard]] eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                           schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     [[nodiscard]] Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                                         const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     [[nodiscard]] Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                                           const PropertyPath&      path) const override;
 
@@ -134,9 +138,12 @@ public:
     [[nodiscard]] Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool                                        matches(const SelectionSnapshot& selection) const;
+    /** @brief Replacement. */
     [[nodiscard]] Result<DomainOperation> replacement(const action::ActionTimeline& candidate,
                                                             std::string                   property) const;
+    /** @brief Assign. */
     [[nodiscard]] Result<void>            assign(action::ActionTimeline candidate);
 
     std::string            targetId_;
@@ -353,7 +360,9 @@ public:
     /** @brief Tab editors are uniquely owned; the workspace is move-only. */
     ActionTimelineDocumentWorkspace(const ActionTimelineDocumentWorkspace&)            = delete;
     ActionTimelineDocumentWorkspace& operator=(const ActionTimelineDocumentWorkspace&) = delete;
+    /** @brief Action timeline document workspace. */
     ActionTimelineDocumentWorkspace(ActionTimelineDocumentWorkspace&&)                 = default;
+    /** @brief Operator =. */
     ActionTimelineDocumentWorkspace& operator=(ActionTimelineDocumentWorkspace&&)      = default;
 
     /**

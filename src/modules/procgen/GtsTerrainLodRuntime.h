@@ -13,9 +13,13 @@ class Procgen;
 /** @brief Transactional runtime owner for one row-major batch of GTS terrain tile renderables. */
 class EVENGINE_API_DOMAINS GtsTerrainLodRuntime {
 public:
+    /** @brief Gts terrain lod runtime. */
     GtsTerrainLodRuntime();
+    /** @brief Gts terrain lod runtime. */
     ~GtsTerrainLodRuntime();
+    /** @brief Gts terrain lod runtime. */
     GtsTerrainLodRuntime(const GtsTerrainLodRuntime&)=delete;
+    /** @brief Operator =. */
     GtsTerrainLodRuntime& operator=(const GtsTerrainLodRuntime&)=delete;
     /**
      * @brief Replace the complete tile batch after configuring every non-empty candidate.

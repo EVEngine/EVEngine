@@ -19,10 +19,13 @@ class Canvas;
 /** @brief Declarative 2D camera (viewport center + zoom). */
 class EVENGINE_API_BACKENDS Camera2D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Camera2D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Data public API. */
     struct Data {
         float x = 0.f;
         float y = 0.f;
@@ -67,10 +70,13 @@ public:
 /** @brief Default renderable entity for declarative 2D sprites / solid quads. */
 class EVENGINE_API_BACKENDS Renderable2D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Renderable2D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override;
 
+    /** @brief Transform2D public API. */
     struct Transform2D {
         float x = 0;
         float y = 0;

@@ -25,6 +25,7 @@ namespace eve::asset_stylize {
  */
 class EvpackMeshVfx final {
 public:
+    /** @brief Releases EvpackMeshVfx resources. */
     ~EvpackMeshVfx();
     EvpackMeshVfx(const EvpackMeshVfx&)            = delete;
     EvpackMeshVfx& operator=(const EvpackMeshVfx&) = delete;

@@ -37,6 +37,7 @@ void exposeECSToVM(ssq::VM& vm);
  * 脚本 eve.view(cls) 沿类链找到登记的 C++ 类型后调用 fn 填充输出数组。
  */
 using CppEntityViewFn = std::function<void(ssq::Array& out)>;
+/** @brief Registers cpp entity view. */
 EVENGINE_API_FOUNDATION void registerCppEntityView(const ssq::Class& cls, CppEntityViewFn fn);
 
 /**
@@ -45,6 +46,7 @@ EVENGINE_API_FOUNDATION void registerCppEntityView(const ssq::Class& cls, CppEnt
  * 在 exposeECS / exposeECSToVM 末尾运行，早于任何游戏脚本。
  */
 using PostEcsHook = std::function<void(ssq::Table& table)>;
+/** @brief Registers post ecs hook. */
 EVENGINE_API_FOUNDATION void registerPostEcsHook(PostEcsHook fn);
 
 /**

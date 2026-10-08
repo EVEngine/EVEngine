@@ -31,6 +31,7 @@ struct EdgeAddress {
     int y = 0;
     EdgeAxis axis = EdgeAxis::Horizontal;
 
+    /** @brief Operator ==. */
     bool operator==(const EdgeAddress &) const = default;
 };
 
@@ -39,6 +40,7 @@ struct CornerAddress {
     int x = 0;
     int y = 0;
 
+    /** @brief Operator ==. */
     bool operator==(const CornerAddress &) const = default;
 };
 
@@ -46,7 +48,9 @@ struct CornerAddress {
 struct EdgeCurveGroupId {
     uint64_t value = 0;
 
+    /** @brief Bool. */
     explicit operator bool() const { return value != 0; }
+    /** @brief Operator ==. */
     bool operator==(const EdgeCurveGroupId &) const = default;
 };
 
@@ -55,6 +59,7 @@ struct EdgeCurveControlPoint {
     float x = 0.f;
     float y = 0.f;
 
+    /** @brief Operator ==. */
     bool operator==(const EdgeCurveControlPoint &) const = default;
 };
 
@@ -67,6 +72,7 @@ struct EdgeCurveSurfaceSample {
     float normalY = 1.f;
     float normalZ = 0.f;
 
+    /** @brief Operator ==. */
     bool operator==(const EdgeCurveSurfaceSample &) const = default;
 };
 
@@ -86,6 +92,7 @@ struct EdgeCurveGroup {
     /** @brief Owning subdivisions+1 centerline frames for deterministic surface conformance. */
     std::vector<EdgeCurveSurfaceSample> surfaceSamples;
 
+    /** @brief Operator ==. */
     bool operator==(const EdgeCurveGroup &) const = default;
 };
 
@@ -148,9 +155,13 @@ struct EVENGINE_API_WORLD BuildingDefinition {
 
     /** @brief 查询辅助。 */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the extra. */
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
+    /** @brief Returns the visual 2 d. */
     std::string getVisual2d(const std::string &key, const std::string &fallback = {}) const;
+    /** @brief Returns the visual 3 d. */
     std::string getVisual3d(const std::string &key, const std::string &fallback = {}) const;
+    /** @brief Returns the cost. */
     int getCost(const std::string &resource, int fallback = 0) const;
     /** @brief 占地掩码在局部坐标 (localX, localY) 处是否占用。 */
     bool maskAt(int localX, int localY) const;
@@ -223,8 +234,11 @@ struct EVENGINE_API_WORLD PlacedBuilding {
     /** @brief Revision used by the garrison container adapter for stale checks. */
     eve::Revision garrisonRevision = eve::Revision::zero();
 
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the prop. */
     std::string getProp(const std::string &key, const std::string &fallback = {}) const;
+    /** @brief Sets the prop. */
     void setProp(const std::string &key, const std::string &value);
 };
 

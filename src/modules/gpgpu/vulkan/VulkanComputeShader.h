@@ -11,13 +11,16 @@ namespace eve::gpgpu {
 /** @brief Vulkan 计算着色器（SPIR-V pipeline + descriptor 管理）。 */
 class VulkanComputeShader final : public ComputeShader {
 public:
+    /** @brief Releases VulkanComputeShader resources. */
     ~VulkanComputeShader() override;
 
     /** @brief 绑定/解绑 GpuBuffer 到指定 binding。 */
     void bindBuffer(int binding, GpuBuffer *buffer) override;
+    /** @brief Returns the bound buffer. */
     GpuBuffer *getBoundBuffer(int binding) const override;
     /** @brief 标量 uniform 读写。 */
     void setFloat(int index, float value) override;
+    /** @brief Returns the float. */
     float getFloat(int index) const override;
     /** @brief 清空全部绑定。 */
     void clearBindings() override;
@@ -26,7 +29,9 @@ public:
     void flushDescriptors(vkb::Device &device);
 
     /** While a Sequence is recording, superseded sets are deferred (see flushDescriptors). */
+    /** @brief Begins sequence. */
     void beginSequence();
+    /** @brief Ends sequence. */
     void endSequence();
 
     /**
@@ -34,6 +39,7 @@ public:
      * submitted) command buffers still referenced them. Safe to call only
      * after every submission that used this shader has completed.
      */
+    /** @brief Release pending descriptors. */
     void releasePendingDescriptors(vkb::Device &device);
 
     vkb::Device *device_ = nullptr;

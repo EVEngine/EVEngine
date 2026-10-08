@@ -205,7 +205,9 @@ public:
     // the defaulted moves keep the previous implicit behaviour.
     WorkQueue(const WorkQueue&)            = delete;
     WorkQueue& operator=(const WorkQueue&) = delete;
+    /** @brief Work queue. */
     WorkQueue(WorkQueue&&)                 = default;
+    /** @brief Operator =. */
     WorkQueue& operator=(WorkQueue&&)      = default;
 
     /** @brief Creates an empty queue with an optional persistent identity. */
@@ -385,7 +387,9 @@ EVENGINE_API_FOUNDATION std::string_view eventKindName(ProductionEventKind kind)
 class Production : public Module {
 public:
     Module_REG(Production);
+    /** @brief Constructs a Production. */
     Production()           = default;
+    /** @brief Releases Production resources. */
     ~Production() override = default;
 
     /**

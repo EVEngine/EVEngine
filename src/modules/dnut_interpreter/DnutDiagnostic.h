@@ -30,6 +30,7 @@ struct DnutDiagnostic {
     /** @brief Human-readable explanation; never used for program decisions. */
     std::string message;
 
+    /** @brief Operator ==. */
     bool operator==(const DnutDiagnostic&) const = default;
 };
 

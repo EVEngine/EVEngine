@@ -23,6 +23,7 @@ struct SceneComponentPayloadRef {
     std::uint64_t generation = 0;
     Revision revision = 0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const SceneComponentPayloadRef&) const = default;
 };
 
@@ -35,6 +36,7 @@ struct SceneComponentPayloadRef {
  */
 class ISceneComponentPayloadProvider : public IPropertyProvider {
 public:
+    /** @brief Releases ISceneComponentPayloadProvider resources. */
     ~ISceneComponentPayloadProvider() override = default;
 
     /** @brief Stable component type handled by this provider. */
@@ -61,6 +63,7 @@ public:
 
     /** @brief Create bindings for one stable component type. */
     explicit SceneComponentPropertyBindings(std::string componentType);
+    /** @brief Component type. */
     const std::string& componentType() const override { return componentType_; }
 
     /** @brief Bind one stable scene component to an existing module editor target. */
@@ -72,18 +75,26 @@ public:
     /** @brief Remove one exact scene component binding. */
     SceneComponentChange unbind(const TargetId& scene, const StableId& component);
 
+    /** @brief Components. */
     std::vector<SceneComponentPayloadRef> components(const TargetId& scene,
                                                       const ObjectId& object) const override;
+    /** @brief Payload operation target. */
     Result<IDomainOperationTarget*> payloadOperationTarget(
         const SelectionSnapshot& selection) const override;
+    /** @brief Validate component. */
     std::vector<EditorDiagnostic> validateComponent(
         const SceneComponentPayloadRef& component) const override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection,
                                           const PropertyPath& path, const EditorValue& value,
                                           PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
 
@@ -109,9 +120,11 @@ private:
 /** @brief Scene capability that discovers and routes module-owned component payload editors. */
 class ISceneComponentPayloadTarget {
 public:
+    /** @brief Releases ISceneComponentPayloadTarget resources. */
     virtual ~ISceneComponentPayloadTarget() = default;
     /** @brief Stable capability id for editable scene component payloads. */
     static CapabilityId editorCapabilityId() {
+        /** @brief Capability id. */
         return CapabilityId("eve.editor.target.scene-component-payloads");
     }
     /** @brief Enumerate all registered component payloads on one scene object. */
@@ -134,10 +147,14 @@ public:
     /** @brief Remove a provider only when the exact registered instance matches. */
     SceneComponentChange unregisterProvider(ISceneComponentPayloadProvider* provider);
 
+    /** @brief Component payloads. */
     Result<std::vector<SceneComponentPayloadRef>> componentPayloads(
         const TargetId& scene, const ObjectId& object) const override;
+    /** @brief Property provider. */
     Result<IPropertyProvider*> propertyProvider(const SelectionSnapshot& selection) const override;
+    /** @brief Operation target. */
     Result<IDomainOperationTarget*> operationTarget(const SelectionSnapshot& selection) const override;
+    /** @brief Validate payload. */
     Result<std::vector<EditorDiagnostic>> validatePayload(
         const SceneComponentPayloadRef& component) const override;
 

@@ -31,6 +31,7 @@ class IEditingCommandRegistry {
 public:
     static constexpr const char* capabilityName = "IEditingCommandRegistry";
 
+    /** @brief Releases IEditingCommandRegistry resources. */
     virtual ~IEditingCommandRegistry() = default;
     /** @brief Register or replace one domain-owned planned command. */
     [[nodiscard]] virtual Result<void> registerPlannedCommand(

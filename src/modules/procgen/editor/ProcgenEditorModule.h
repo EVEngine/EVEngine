@@ -16,7 +16,9 @@ namespace eve::procgen_editor {
 class ProcgenEditorModule final : public Module {
 public:
     Module_REG(ProcgenEditorModule);
+    /** @brief Constructs a ProcgenEditorModule. */
     ProcgenEditorModule();
+    /** @brief Releases ProcgenEditorModule resources. */
     ~ProcgenEditorModule() override;
 
 private:

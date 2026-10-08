@@ -23,11 +23,13 @@ namespace eve::procgen::urban {
  */
 class EVENGINE_API_DOMAINS UrbanGenerator {
 public:
+    /** @brief Urban generator. */
     explicit UrbanGenerator(UrbanOptions opts);
 
     /** @brief Run the pipeline. On failure `error` receives a human-readable reason. */
     bool generate(std::string* error = nullptr);
 
+    /** @brief Layout. */
     const UrbanLayout& layout() const { return layout_; }
 
     struct GenState;

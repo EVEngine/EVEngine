@@ -265,6 +265,7 @@ public:
         const graphics::VegetationMotion& baseMotion, const LoadedVegetationScene& scene,
         const std::map<std::string, graphics::VegetationMask>& masks, const VegetationSceneGpuBuild& build);
 
+    /** @brief Vegetation scene gpu runtime. */
     ~VegetationSceneGpuRuntime();
     VegetationSceneGpuRuntime(const VegetationSceneGpuRuntime&) = delete;
     VegetationSceneGpuRuntime& operator=(const VegetationSceneGpuRuntime&) = delete;

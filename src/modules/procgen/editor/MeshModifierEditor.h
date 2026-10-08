@@ -26,10 +26,15 @@ public:
     /** @brief Observe an externally owned document revision without copying its state. */
     [[nodiscard]] procgen_editing::Result<void> observeRevision(std::string document, std::uint64_t revision);
     const std::string& targetId() const noexcept { return targetId_; }
+    /** @brief Active tool. */
     const std::string& activeTool() const noexcept { return activeTool_; }
+    /** @brief Graph revision. */
     std::uint64_t graphRevision() const noexcept { return graphRevision_; }
+    /** @brief Spline revision. */
     std::uint64_t splineRevision() const noexcept { return splineRevision_; }
+    /** @brief Mesh revision. */
     std::uint64_t meshRevision() const noexcept { return meshRevision_; }
+    /** @brief Paint revision. */
     std::uint64_t paintRevision() const noexcept { return paintRevision_; }
 private:
     std::string targetId_;

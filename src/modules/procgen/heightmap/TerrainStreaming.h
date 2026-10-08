@@ -14,6 +14,7 @@
 
 namespace eve::procgen {
 
+/** @brief TerrainStreamStats public API. */
 struct TerrainStreamStats {
     int loaded = 0;
     int evicted = 0;
@@ -22,6 +23,7 @@ struct TerrainStreamStats {
     int resident = 0;
 };
 
+/** @brief TerrainSample public API. */
 struct TerrainSample {
     float height = 0.f, flowAccumulation = 0.f, lakeDepth = 0.f;
     float flowVectorX = 0.f, flowVectorY = 0.f;
@@ -93,7 +95,9 @@ public:
     bool buildWindow(int originX, int originY, int width, int height,
                      TerrainStreamingWindow &out) const;
 
+    /** @brief Returns the resident count. */
     int getResidentCount() const { return int(resident_.size()); }
+    /** @brief Asset. */
     const TerrainAsset &asset() const { return asset_; }
 
 private:

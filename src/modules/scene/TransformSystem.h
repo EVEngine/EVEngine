@@ -12,7 +12,9 @@ class SceneHost;
  */
 class EVENGINE_API_PLATFORM TransformSystem {
 public:
+    /** @brief Updates all. */
     static void updateAll();
+    /** @brief Updates host. */
     static void updateHost(SceneHost *host);
 };
 

@@ -44,7 +44,9 @@ class EVENGINE_API_WORLD Model3D : public Module {
 public:
     Module_REG(Model3D);
 
+    /** @brief Model 3 d. */
     Model3D();
+    /** @brief Model 3 d. */
     ~Model3D() override;
 
     /**
@@ -102,6 +104,7 @@ public:
      * and albedo / normal / height textures loaded (embedded or through the
      * VFS). Script-friendly counterpart of the C++ buildRenderable helpers.
      */
+    /** @brief Creates renderable. */
     graphics::Renderable3D *createRenderable(graphics::Graphics *gfx, ModelData *model,
                                              int meshIndex);
 

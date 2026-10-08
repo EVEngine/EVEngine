@@ -7,11 +7,13 @@
 
 namespace eve::procgen {
 
+/** @brief CaveSedimentPathPoint public API. */
 struct CaveSedimentPathPoint {
     float x = 0.f, y = 0.f, z = 0.f;
     float radius = 0.16f;
 };
 
+/** @brief CaveSedimentClast public API. */
 struct CaveSedimentClast {
     float x = 0.f, y = 0.f, z = 0.f;
     float flowX = 1.f, flowZ = 0.f;
@@ -19,6 +21,7 @@ struct CaveSedimentClast {
     float pitch = 0.f;
 };
 
+/** @brief CaveSedimentBar public API. */
 struct CaveSedimentBar {
     float                          x = 0.f, y = 0.f, z = 0.f;
     float                          ceilingY = 0.f;
@@ -31,6 +34,7 @@ struct CaveSedimentBar {
     std::vector<CaveSedimentClast> clasts;
 };
 
+/** @brief CaveSedimentSet public API. */
 struct CaveSedimentSet {
     std::vector<CaveSedimentBar> bars;
     int                          clastCount             = 0;

@@ -38,8 +38,10 @@ namespace eve::editor {
  * @remarks `hasValue` follows the attached payload, so a failed result cannot claim one.
  */
 template <class T>
+/** @brief Project. */
 [[nodiscard]] inline ssq::Table project(HSQUIRRELVM vm, const eve::Result<T>& result, Value value) {
     if (!result.ok()) return script::projectStatusResult(vm, result.status());
+    /** @brief Project status result. */
     return script::projectStatusResult(vm, result.status(), std::move(value));
 }
 
@@ -54,6 +56,7 @@ template <class T>
  */
 [[nodiscard]] inline ssq::Table bindingFailure(HSQUIRRELVM vm, const char* source, DiagnosticCode code,
                                                std::string message, std::string path = {}) {
+    /** @brief Project status result. */
     return script::projectStatusResult(
         vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, source ? source : "")));
 }
@@ -65,7 +68,9 @@ template <class T>
  * @return Script result table; on success `value` is the revision after the mutation.
  */
 template <class T>
+/** @brief Project history revision. */
 [[nodiscard]] inline ssq::Table projectHistoryRevision(HSQUIRRELVM vm, const eve::Result<T>& result) {
+    /** @brief Project. */
     return project(vm, result, Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
 }
 
@@ -77,6 +82,7 @@ template <class T>
  * @return Success table with owned `value`, or a projected failure status.
  */
 template <class T>
+/** @brief Project owned instance. */
 [[nodiscard]] inline ssq::Table projectOwnedInstance(HSQUIRRELVM vm, std::unique_ptr<T> instance) {
     auto object = script::makeOwnedSquirrelInstance<T>(vm, std::move(instance));
     if (!object) return script::projectStatusResult(vm, object.status());
@@ -97,9 +103,11 @@ template <class T>
  * @return Owned create result, or a binding failure when `targetId` is empty.
  */
 template <class T>
+/** @brief Project owned create. */
 [[nodiscard]] inline ssq::Table projectOwnedCreate(HSQUIRRELVM vm, const char* source, std::string emptyIdMessage,
                                                    const std::string& targetId) {
     if (targetId.empty())
+        /** @brief Binding failure. */
         return bindingFailure(vm, source, DiagnosticCode::InvalidArgument, std::move(emptyIdMessage), "targetId");
     return projectOwnedInstance<T>(vm, std::make_unique<T>(targetId));
 }
@@ -112,6 +120,7 @@ template <class T>
  * @return The registered SimpleSquirrel class handle.
  */
 template <class T>
+/** @brief Adds script class. */
 [[nodiscard]] inline auto addScriptClass(ssq::Table& table, const char* name) {
     return table.addClass<T>(name, std::function<T*()>([]() -> T* { return nullptr; }), true);
 }
@@ -184,8 +193,10 @@ public:
      * @return Projected success/failure table.
      */
     template <class Fn>
+    /** @brief Checked. */
     [[nodiscard]] ssq::Table checked(bool ready, std::string nullMessage, Fn&& fn, std::string path = {}) const {
         if (!ready) return fail(DiagnosticCode::InvalidArgument, std::move(nullMessage), std::move(path));
+        /** @brief Project. */
         return project(vm(), std::forward<Fn>(fn)());
     }
 
@@ -199,7 +210,9 @@ public:
      * @return Projected success/failure table.
      */
     template <class T, class Fn>
+    /** @brief Checked. */
     [[nodiscard]] ssq::Table checked(T* self, std::string nullMessage, Fn&& fn, std::string path = {}) const {
+        /** @brief Checked. */
         return checked(self != nullptr, std::move(nullMessage), std::forward<Fn>(fn), std::move(path));
     }
 
@@ -212,8 +225,10 @@ public:
      * @return Projected result with revision payload on success.
      */
     template <class T, class Fn>
+    /** @brief History. */
     [[nodiscard]] ssq::Table history(T* self, std::string nullMessage, Fn&& fn) const {
         if (!self) return fail(DiagnosticCode::InvalidArgument, std::move(nullMessage));
+        /** @brief Project history revision. */
         return projectHistoryRevision(vm(), std::forward<Fn>(fn)());
     }
 
@@ -225,6 +240,7 @@ public:
      * @return Owned create result table.
      */
     template <class T>
+    /** @brief Owned create. */
     [[nodiscard]] ssq::Table ownedCreate(std::string emptyIdMessage, const std::string& targetId) const {
         return projectOwnedCreate<T>(vm(), source(), std::move(emptyIdMessage), targetId);
     }
@@ -236,6 +252,7 @@ public:
      * @return Owned create result table.
      */
     template <class T>
+    /** @brief Owned instance. */
     [[nodiscard]] ssq::Table ownedInstance(std::unique_ptr<T> instance) const {
         return projectOwnedInstance<T>(vm(), std::move(instance));
     }
@@ -253,6 +270,7 @@ private:
  * @remarks Keeps the public `addFunc("configureWorkspace", ...)` name/arity unchanged.
  */
 template <class ScriptT>
+/** @brief Registers editor workspace. */
 inline void registerEditorWorkspace(ssq::Class& cls, const ScriptBind& bind, const char* nullMessage) {
     cls.addFunc("configureWorkspace", [bind, nullMessage](ScriptT* self, EditorWorkspace* workspace) {
         return bind.checked(
@@ -268,6 +286,7 @@ inline void registerEditorWorkspace(ssq::Class& cls, const ScriptBind& bind, con
  * @param nullMessage Failure text when self or workspace is null.
  */
 template <class EditorT>
+/** @brief Registers direct editor workspace. */
 inline void registerDirectEditorWorkspace(ssq::Class& cls, const ScriptBind& bind, const char* nullMessage) {
     cls.addFunc("configureWorkspace", [bind, nullMessage](EditorT* self, EditorWorkspace* workspace) {
         return bind.checked(self && workspace, nullMessage, [&] { return self->configureWorkspace(*workspace); });
@@ -283,6 +302,7 @@ inline void registerDirectEditorWorkspace(ssq::Class& cls, const ScriptBind& bin
  * @remarks Domain-only extras such as `getPreviewRevision` stay in the domain TU.
  */
 template <class ScriptT>
+/** @brief Registers editor history. */
 inline void registerEditorHistory(ssq::Class& cls, const ScriptBind& bind, const char* nullMessage) {
     cls.addFunc("undo", [bind, nullMessage](ScriptT* self) {
         return bind.history(self, nullMessage, [&] { return self->editor().undo(); });
@@ -304,6 +324,7 @@ inline void registerEditorHistory(ssq::Class& cls, const ScriptBind& bind, const
  * @param emptyIdMessage Failure text for an empty target id.
  */
 template <class ScriptT, class ModuleT>
+/** @brief Registers editor owned create. */
 inline void registerEditorOwnedCreate(ssq::Class& moduleClass, const ScriptBind& bind, const char* emptyIdMessage) {
     moduleClass.addFunc("create", [bind, emptyIdMessage](ModuleT*, const std::string& targetId) {
         return bind.ownedCreate<ScriptT>(emptyIdMessage, targetId);

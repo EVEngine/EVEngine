@@ -22,6 +22,7 @@ namespace eve::gpuagents {
  */
 class EVENGINE_API_DOMAINS GpuAgentSimulation {
 public:
+    /** @brief Gpu agent simulation. */
     GpuAgentSimulation() = default;
 
     /**

@@ -56,6 +56,7 @@ private:
 namespace std {
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::SubjectRef> {
     /** @brief Hash a subject reference using its stable identity. */
     size_t operator()(const eve::SubjectRef& value) const noexcept {

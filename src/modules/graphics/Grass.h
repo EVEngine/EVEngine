@@ -70,6 +70,7 @@ EVENGINE_API_BACKENDS TerrainDetailQuality terrainDetailQuality(int resolutionPe
 [[nodiscard]] EVENGINE_API_BACKENDS Result<int> applyTerrainDetailOverwrite(
     GrassFoliageSettings &foliage, const TerrainDetailOverwriteSettings &settings);
 
+/** @brief Point public API. */
 struct Point {
     glm::vec3 position{0.f};
     glm::vec3 normal{0.f, 1.f, 0.f};
@@ -81,6 +82,7 @@ struct Point {
     glm::vec3 tint{-1.f};
 };
 
+/** @brief SampleParams public API. */
 struct SampleParams {
     float    radius    = 0.14f;
     int      maxPoints = 8192;
@@ -89,6 +91,7 @@ struct SampleParams {
     float minSlopeDot = 0.25f;
 };
 
+/** @brief BillboardMesh public API. */
 struct BillboardMesh {
     std::vector<float>    posXYZ;
     std::vector<float>    nrmXYZ;
@@ -129,9 +132,12 @@ EVENGINE_API_BACKENDS int swayFrame(float time, float frameDuration, uint32_t in
  * authored 2x2 PNG masks via packSwayAtlasRGBA / createSwayAtlasFromFiles.
  */
 EVENGINE_API_BACKENDS void makeSwayAtlasRGBA(int frameW, int frameH, int frames, std::vector<uint8_t> &rgbaOut);
+/** @brief Sway atlas width. */
 EVENGINE_API_BACKENDS int  swayAtlasWidth(int frameW, int frames);
+/** @brief Sway atlas height. */
 EVENGINE_API_BACKENDS int  swayAtlasHeight(int frameH);
 
+/** @brief Creates sway atlas. */
 Texture *createSwayAtlas(Graphics *gfx, int frameW = 64, int frameH = 64, int frames = 4);
 
 /** @brief Layout of a packed 2x2-per-variant sway atlas (4 grass + 2 leaf typical). */
@@ -150,19 +156,28 @@ struct PackedAtlasInfo {
 EVENGINE_API_BACKENDS void packSwayAtlasRGBA(const std::vector<std::string> &grassFiles,
                                              const std::vector<std::string> &leafFiles, std::vector<uint8_t> &rgbaOut,
                                              PackedAtlasInfo &info);
+/** @brief Creates sway atlas from files. */
 Texture *createSwayAtlasFromFiles(Graphics *gfx, const std::vector<std::string> &grassFiles,
                                   const std::vector<std::string> &leafFiles, PackedAtlasInfo *infoOut = nullptr);
 
+/** @brief Creates shader. */
 Shader *createShader(Graphics *gfx);
+/** @brief Binds defaults. */
 EVENGINE_API_BACKENDS void bindDefaults(Shader *shader);
+/** @brief Binds layer. */
 EVENGINE_API_BACKENDS void bindLayer(Shader *shader, bool alwaysDark);
+/** @brief Binds atlas layout. */
 void    bindAtlasLayout(Shader *shader, const PackedAtlasInfo &info);
 /** @brief Select the static foliage profile and copy its validated surface parameters. */
 EVENGINE_API_BACKENDS void bindFoliage(Shader *shader, const GrassFoliageSettings &settings);
+/** @brief Sets the time. */
 void    setTime(Shader *shader, float seconds);
+/** @brief Sets the frame duration. */
 void    setFrameDuration(Shader *shader, float seconds);
 
+/** @brief Param count. */
 EVENGINE_API_BACKENDS int paramCount();
+/** @brief Param name. */
 EVENGINE_API_BACKENDS std::string paramName(int index);
 
 /** @brief Unit XZ plane (Y-up) for tests / demos. */
@@ -177,6 +192,7 @@ EVENGINE_API_BACKENDS void makePlane(float sizeX, float sizeZ, int segX, int seg
  */
 class EVENGINE_API_BACKENDS GrassField : public IPhotoModeFieldSink {
 public:
+    /** @brief BakeParams public API. */
     struct BakeParams {
         /** @brief Poisson spacing. Keep this well below `width` so tufts overlap. */
         float    denseRadius  = 0.14f;

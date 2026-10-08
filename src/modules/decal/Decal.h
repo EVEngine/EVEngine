@@ -25,7 +25,9 @@ namespace eve::decal {
 class EVENGINE_API_WORLD Decal : public Module {
 public:
     Module_REG(Decal);
+    /** @brief Decal. */
     Decal();
+    /** @brief Decal. */
     ~Decal() override;
 
     /** @brief Spawn a decal at (x,y,z) facing along (nx,ny,nz); returns id. */
@@ -49,9 +51,13 @@ public:
      */
     [[nodiscard]] DecalProjectionStatus setProjection(int id, const std::string &mode,
                                                       float blendSharpness);
+    /** @brief Removes . */
     bool remove(int id);
+    /** @brief Clears all. */
     void clearAll();
+    /** @brief Returns the number of . */
     int count();
+    /** @brief Sets the limit. */
     void setLimit(const std::string &kind, int limit);
     /** @brief Advance ages / evict expired; call once per frame. */
     void update(float dt);

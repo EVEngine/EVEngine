@@ -6,6 +6,7 @@
 
 namespace eve::procgen {
 
+/** @brief CaveFacetInput public API. */
 struct CaveFacetInput {
     float    along    = 0.f;
     float    angle    = 0.f;
@@ -15,6 +16,7 @@ struct CaveFacetInput {
     uint32_t seed     = 0;
 };
 
+/** @brief CaveFacetSample public API. */
 struct CaveFacetSample {
     float retreat      = 0.f;
     float planarWeight = 0.f;

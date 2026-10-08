@@ -20,7 +20,9 @@ class EVENGINE_API_BACKENDS Font : public Module {
 public:
     Module_REG(Font);
 
+    /** @brief Font. */
     Font();
+    /** @brief Font. */
     ~Font() override;
 
     /**

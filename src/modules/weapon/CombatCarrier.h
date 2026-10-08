@@ -121,6 +121,7 @@ struct CarrierHandle {
     std::uint32_t slot       = 0;
     std::uint32_t generation = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const CarrierHandle&, const CarrierHandle&) = default;
 };
 
@@ -220,6 +221,7 @@ struct CarrierRuntimeSnapshot {
  */
 class ICarrierHitProbe {
 public:
+    /** @brief Releases ICarrierHitProbe resources. */
     virtual ~ICarrierHitProbe() = default;
 
     /** @brief Owning contact reported between previous and current motion. */
@@ -260,6 +262,7 @@ struct CarrierBodyDefenseSample {
  */
 class ICarrierBodyDefenseProvider {
 public:
+    /** @brief Releases ICarrierBodyDefenseProvider resources. */
     virtual ~ICarrierBodyDefenseProvider() = default;
 
     /**
@@ -289,6 +292,7 @@ public:
  */
 class EVENGINE_API_WORLD CombatCarrierRuntime {
 public:
+    /** @brief Combat carrier runtime. */
     CombatCarrierRuntime();
 
     /** @brief Resize the pool while empty; capacity must be in 1..1048576. */
@@ -319,6 +323,7 @@ public:
     [[nodiscard]] Result<std::vector<CarrierHandle>> spawnVolley(const LogicalId&           recipeId,
                                                                  const CarrierSpawnRequest& request,
                                                                  const CarrierVolleySpec&   volley);
+    /** @brief Spawn volley. */
     [[nodiscard]] Result<std::vector<CarrierHandle>> spawnVolley(const CarrierRecipe&       recipe,
                                                                  const CarrierSpawnRequest& request,
                                                                  const CarrierVolleySpec&   volley);

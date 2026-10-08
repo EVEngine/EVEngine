@@ -22,26 +22,38 @@ class AnimSkeleton;
  */
 class EVENGINE_API_WORLD ControlPose {
 public:
+    /** @brief Control pose. */
     explicit ControlPose(AnimSkeleton *skeleton);
+    /** @brief Control pose. */
     ~ControlPose() = default;
 
     ControlPose(const ControlPose &)            = delete;
     ControlPose &operator=(const ControlPose &) = delete;
 
+    /** @brief Returns the skeleton. */
     AnimSkeleton *getSkeleton() const { return skeleton_; }
 
+    /** @brief Sets the frequency. */
     void  setFrequency(float frequencyHz);
+    /** @brief Returns the frequency. */
     float getFrequency() const { return frequencyHz_; }
+    /** @brief Sets the damping. */
     void  setDamping(float dampingZeta);
+    /** @brief Returns the damping. */
     float getDamping() const { return dampingZeta_; }
+    /** @brief Sets the response. */
     void  setResponse(float response);
+    /** @brief Returns the response. */
     float getResponse() const { return response_; }
 
+    /** @brief Sets the integrator. */
     void        setIntegrator(const std::string &kind);
+    /** @brief Returns the integrator. */
     std::string getIntegrator() const;
 
     /** @brief Per-bone blend weight in [0,1]; 1 = full dynamics, 0 = hard snap to target. */
     void  setBoneWeight(int boneIndex, float weight);
+    /** @brief Returns the bone weight. */
     float getBoneWeight(int boneIndex) const;
 
     /** @brief Copy target pose. Channels without prior state snap; existing state keeps momentum. */
@@ -49,7 +61,9 @@ public:
     /** @brief Snap current state to the last target without changing the target. */
     void snapToTarget();
 
+    /** @brief Returns the pose. */
     AnimPose *getPose();
+    /** @brief Returns the target pose. */
     AnimPose *getTargetPose();
 
     /** @brief Advance pose dynamics by one scheduler-owned deterministic step. */

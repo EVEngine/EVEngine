@@ -35,6 +35,7 @@ public:
      * @throws eve::Exception when skeleton is null.
      */
     explicit PhysicalBalancePose(AnimSkeleton* skeleton);
+    /** @brief Physical balance pose. */
     ~PhysicalBalancePose() = default;
 
     PhysicalBalancePose(const PhysicalBalancePose&)            = delete;

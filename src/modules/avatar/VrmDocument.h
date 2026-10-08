@@ -32,15 +32,18 @@ struct VrmMaterial {
 };
 /** @brief One expression's indexed morph/material/UV operations. */
 struct VrmExpression {
+    /** @brief Morph public API. */
     struct Morph {
         int   node = -1, index = -1;
         float weight = 0;
     };
+    /** @brief Color public API. */
     struct Color {
         int                  material = -1;
         std::string          type;
         std::array<float, 4> target{};
     };
+    /** @brief Uv public API. */
     struct Uv {
         int                  material = -1;
         std::array<float, 2> scale{1, 1}, offset{};
@@ -53,6 +56,7 @@ struct VrmExpression {
 };
 /** @brief VRM gaze maps; angles are degrees, expression outputs are weights. */
 struct VrmLookAt {
+    /** @brief Range public API. */
     struct Range {
         float input = 90, output = 10;
     };
@@ -69,6 +73,7 @@ struct VrmCollider {
 };
 /** @brief Ordered joints and explicit collision membership of one VRM spring. */
 struct VrmSpring {
+    /** @brief Joint public API. */
     struct Joint {
         int                  node   = -1;
         float                radius = 0, stiffness = 1, gravityPower = 0, drag = .5f;

@@ -20,9 +20,11 @@ public:
     int getLength() const;
     /** @brief Waypoint tile coordinates. */
     int getX(int index) const;
+    /** @brief Returns the y. */
     int getY(int index) const;
     /** @brief Total path cost (A* heuristic + movement cost). */
     float getTotalCost() const;
+    /** @brief Sets the total cost. */
     void setTotalCost(float cost);
 
     /** @brief True when there are no waypoints. */

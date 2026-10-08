@@ -137,6 +137,7 @@ struct PhysicsPlacementFrame {
  */
 class EVENGINE_API_EDITORS ScenePhysicsPlacementBackend final : public editor::IEditorSimulationBackend {
 public:
+    /** @brief Scene physics placement backend. */
     ~ScenePhysicsPlacementBackend() override;
     ScenePhysicsPlacementBackend(const ScenePhysicsPlacementBackend&)            = delete;
     ScenePhysicsPlacementBackend& operator=(const ScenePhysicsPlacementBackend&) = delete;

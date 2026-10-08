@@ -71,6 +71,7 @@ struct HexSurfaceId {
  */
 class EVENGINE_API_WORLD HexMap {
 public:
+    /** @brief Hex map. */
     HexMap() = default;
 
     /**

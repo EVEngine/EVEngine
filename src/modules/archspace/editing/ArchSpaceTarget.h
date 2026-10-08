@@ -59,12 +59,15 @@ class EVENGINE_API_DOMAINS ArchSpaceDocumentTarget final : public ::eve::editing
                                                            public IPropertyProvider,
                                                            public IEditingSnapshotProvider {
 public:
+    /** @brief Arch space document target. */
     explicit ArchSpaceDocumentTarget(std::string id);
 
     /** @brief Capability identity published by describe() for Inspector property editing. */
     static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.archspace-properties"); }
 
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /**
      * @brief Query Inspector property capability.
@@ -72,14 +75,22 @@ public:
      * @lifetime Valid until this target is destroyed.
      */
     void*                                   queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
 
@@ -106,9 +117,13 @@ public:
     /** @brief Plan cascading deletion of one node. */
     Result<DomainOperation> makeDeleteNode(const ObjectId& id) const;
 
+    /** @brief Document. */
     [[nodiscard]] const archspace::Document&    document() const { return document_; }
+    /** @brief Validate. */
     [[nodiscard]] std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
     [[nodiscard]] EditorValue                   snapshotValue() const override;
+    /** @brief Loads snapshot. */
     Result<void>                          loadSnapshot(const EditorValue& snapshot);
     /** @brief Build a revision-bound overlay for walls, zones, items and openings. */
     [[nodiscard]] Result<EditorGizmoSnapshot> gizmo() const;
@@ -116,9 +131,13 @@ public:
     [[nodiscard]] archspace::MeshBake bakeMesh() const { return document_.bakeMesh(); }
 
 private:
+    /** @brief Matches. */
     bool                          matches(const SelectionSnapshot& selection) const;
+    /** @brief Content value. */
     EditorValue                   contentValue() const;
+    /** @brief Replacement. */
     Result<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
+    /** @brief Install content. */
     Result<void>            installContent(const EditorValue& content);
     /**
      * @brief Resolve the single selected ArchSpace node for property edits.

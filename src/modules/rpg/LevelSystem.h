@@ -24,6 +24,7 @@ class RPGActor;
 /** @brief Move-only progression gain prepared against one actor revision. */
 class PreparedProgressionGain {
 public:
+    /** @brief Constructs a PreparedProgressionGain. */
     PreparedProgressionGain() = default;
     /** @brief Number of level transitions contained in this prepared candidate. */
     [[nodiscard]] int levelsGained() const noexcept { return nextLevel_ - previousLevel_; }

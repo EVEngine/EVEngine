@@ -8,6 +8,7 @@
 
 namespace eve::procgen {
 
+/** @brief TerrainMeshSettings public API. */
 struct TerrainMeshSettings {
     int originX = 0, originY = 0;
     int cellsX = 0, cellsY = 0;
@@ -25,19 +26,31 @@ struct TerrainMeshSettings {
  */
 class EVENGINE_API_DOMAINS TerrainMeshChunk {
 public:
+    /** @brief Mesh. */
     const MeshBuild &mesh() const { return mesh_; }
+    /** @brief Mesh. */
     MeshBuild &mesh() { return mesh_; }
+    /** @brief Returns the vertex count. */
     int getVertexCount() const { return mesh_.getVertexCount(); }
+    /** @brief Returns the index count. */
     int getIndexCount() const { return mesh_.getIndexCount(); }
+    /** @brief Returns the base vertex count. */
     int getBaseVertexCount() const { return baseVertexCount_; }
+    /** @brief Returns the lod step. */
     int getLodStep() const { return lodStep_; }
+    /** @brief Returns the origin x. */
     int getOriginX() const { return originX_; }
+    /** @brief Returns the origin y. */
     int getOriginY() const { return originY_; }
+    /** @brief Returns the splat width. */
     int getSplatWidth() const { return splatWidth_; }
+    /** @brief Returns the splat height. */
     int getSplatHeight() const { return splatHeight_; }
+    /** @brief Returns the geometric error. */
     float getGeometricError() const { return geometricError_; }
     /** @brief Return the biome id stored for one mesh vertex, or -1 when out of range. */
     int getBiome(int vertex) const;
+    /** @brief Returns the material weight. */
     float getMaterialWeight(int vertex, int channel) const;
 
 private:
@@ -74,6 +87,7 @@ public:
                       float targetPixelError);
 };
 
+/** @brief TerrainRiverMeshSettings public API. */
 struct TerrainRiverMeshSettings {
     int originX = 0, originY = 0;
     int cellsX = 0, cellsY = 0;
@@ -97,6 +111,7 @@ public:
                       std::string *error = nullptr);
 };
 
+/** @brief TerrainLakeMeshSettings public API. */
 struct TerrainLakeMeshSettings {
     int originX = 0, originY = 0;
     int cellsX = 0, cellsY = 0;

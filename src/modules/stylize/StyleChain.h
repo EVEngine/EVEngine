@@ -28,15 +28,21 @@ class StylePass;
  */
 class EVENGINE_API_WORLD StyleChain {
 public:
+    /** @brief Style chain. */
     StyleChain() = default;
+    /** @brief Style chain. */
     ~StyleChain() = default;
 
     StyleChain(const StyleChain &) = delete;
     StyleChain &operator=(const StyleChain &) = delete;
 
+    /** @brief Clears . */
     void clear();
+    /** @brief Adds . */
     void add(StylePass *pass);
+    /** @brief Returns the pass count. */
     int getPassCount() const { return int(passes_.size()); }
+    /** @brief Returns the pass. */
     StylePass *getPass(int index) const;
 
     /**
@@ -47,6 +53,7 @@ public:
     void apply(graphics::Graphics *gfx, graphics::Texture *source, graphics::Canvas *dest,
                graphics::Canvas *temp = nullptr);
 
+    /** @brief Applies canvas. */
     void applyCanvas(graphics::Graphics *gfx, graphics::Canvas *source, graphics::Canvas *dest,
                      graphics::Canvas *temp = nullptr);
 

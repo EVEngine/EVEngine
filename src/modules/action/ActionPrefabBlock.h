@@ -35,6 +35,7 @@ struct EVENGINE_API_PLATFORM ActionPrefabSpawnBinding {
     Duration              customDuration = Duration::zero();
     ActionSpatialBinding  spatial;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionPrefabSpawnBinding&) const = default;
 
     /**

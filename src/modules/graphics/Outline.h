@@ -32,42 +32,56 @@ class Texture;
  */
 class EVENGINE_API_BACKENDS Outline {
 public:
+    /** @brief Outline. */
     explicit Outline(Graphics *gfx);
+    /** @brief Outline. */
     ~Outline();
 
     Outline(const Outline &) = delete;
     Outline &operator=(const Outline &) = delete;
 
+    /** @brief Sets the color. */
     void setColor(float r, float g, float b);
+    /** @brief Returns the color r. */
     float getColorR() const;
+    /** @brief Returns the color g. */
     float getColorG() const;
+    /** @brief Returns the color b. */
     float getColorB() const;
 
     /** @brief Outline thickness in screen pixels (>= 0.5). */
     void setWidth(float width);
+    /** @brief Returns the width. */
     float getWidth() const;
 
     /** @brief View-space depth discontinuity that starts a depth edge. */
     void setDepthThreshold(float threshold);
+    /** @brief Returns the depth threshold. */
     float getDepthThreshold() const;
 
     /** @brief Extra per-unit-distance depth tolerance (keeps outlines distance-consistent). */
     void setDepthSensitivity(float sensitivity);
+    /** @brief Returns the depth sensitivity. */
     float getDepthSensitivity() const;
 
     /** @brief Normal discontinuity (1 - dot(n, nN)) that starts a crease edge. */
     void setNormalThreshold(float threshold);
+    /** @brief Returns the normal threshold. */
     float getNormalThreshold() const;
 
     /** @brief Smoothstep band used to fade edges (0 = hard, 1 = soft). */
     void setSoftness(float softness);
+    /** @brief Returns the softness. */
     float getSoftness() const;
 
     /** @brief Near/far used to linearize the hardware depth. */
     void setClip(float nearZ, float farZ);
 
+    /** @brief True when param. */
     bool hasParam(const std::string &name) const;
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
 
     /**
@@ -77,8 +91,10 @@ public:
      * and clip uniforms. Returns false if either input is missing.
      */
     bool apply(Graphics *gfx, Texture *hwDepth, Texture *worldNormal);
+    /** @brief Applies to. */
     bool applyTo(Graphics *gfx, Texture *hwDepth, Texture *worldNormal, Canvas *dest);
 
+    /** @brief Returns the shader. */
     Shader *getShader() const { return shader_; }
 
 private:

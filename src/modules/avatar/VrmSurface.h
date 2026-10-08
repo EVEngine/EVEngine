@@ -10,11 +10,15 @@ class Shader;
 class Material;
 }  // namespace eve::graphics
 namespace eve::avatar {
+/** @brief VrmAtlasRect public API. */
 struct VrmAtlasRect {
     int x = 0, y = 0, w = 1, h = 1;
 };
+/** @brief VrmSurface public API. */
 struct VrmSurface {
+    /** @brief Constructs a VrmSurface. */
     VrmSurface();
+    /** @brief Releases VrmSurface resources. */
     ~VrmSurface();
     std::weak_ptr<const void>           providerLifetime;
     VrmMaterial                         base, current;
@@ -23,6 +27,7 @@ struct VrmSurface {
     graphics::Shader*                   shader   = nullptr;
     graphics::Texture*                  metadata = nullptr;
     std::array<float, 2>                uvScale{1, 1}, uvOffset{};
+    /** @brief Updates . */
     void                                update(float time);
 };
 /**
@@ -33,6 +38,7 @@ struct VrmSurface {
  */
 graphics::Texture&          buildVrmAtlas(graphics::Graphics& graphics, const VrmDocument& document,
                                           std::vector<VrmAtlasRect>& rectangles);
+/** @brief Builds vrm surface. */
 std::unique_ptr<VrmSurface> buildVrmSurface(graphics::Graphics& graphics, const VrmMaterial& data,
                                             graphics::Texture& atlas, const std::vector<VrmAtlasRect>& rectangles);
 }  // namespace eve::avatar

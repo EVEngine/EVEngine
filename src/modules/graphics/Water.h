@@ -67,7 +67,9 @@ struct EVENGINE_API_BACKENDS WaterDepthGradient {
  */
 class EVENGINE_API_BACKENDS Water {
 public:
+    /** @brief Water. */
     explicit Water(Graphics *gfx);
+    /** @brief Water. */
     ~Water();
 
     Water(const Water &) = delete;
@@ -86,34 +88,45 @@ public:
 
     /** @brief Advance the animation clock by dt seconds. */
     void update(float dt);
+    /** @brief Sets the time. */
     void setTime(float seconds);
+    /** @brief Returns the time. */
     float getTime() const { return time_; }
 
     // --- Animation / material knobs ---
+    /** @brief Sets the wave speed. */
     void setWaveSpeed(float speed);
+    /** @brief Returns the wave speed. */
     float getWaveSpeed() const { return config_.waveSpeed; }
 
     /** @brief Amplitude of the shore-edge waves. */
     void setWaveAmplitude(float amp);
+    /** @brief Returns the wave amplitude. */
     float getWaveAmplitude() const { return config_.waveAmplitude; }
 
     /** @brief Amplitude of the occasional middle drop ripples. */
     void setRippleAmplitude(float amp);
+    /** @brief Returns the ripple amplitude. */
     float getRippleAmplitude() const { return config_.rippleAmplitude; }
 
     /** @brief Compatibility setter for the world-space shoreline foam width. */
     void setEdgeFalloff(float edge);
+    /** @brief Returns the edge falloff. */
     float getEdgeFalloff() const { return config_.foamWidth; }
 
     /** @brief How many expanding drop ripples exist. */
     void setRippleCount(int count);
+    /** @brief Returns the ripple count. */
     int getRippleCount() const { return config_.rippleCount; }
 
     /** @brief Seconds between drop ripples. */
     void setRippleInterval(float seconds);
+    /** @brief Returns the ripple interval. */
     float getRippleInterval() const { return config_.rippleInterval; }
 
+    /** @brief Sets the wave scale. */
     void setWaveScale(float scale);
+    /** @brief Returns the wave scale. */
     float getWaveScale() const { return config_.waveScale; }
 
     /** @brief Set Pcg PWS_WaterSystem wave direction in finite degrees around world Y. */
@@ -134,12 +147,18 @@ public:
     /** @brief Disable depth-ramp sampling without destroying the Graphics-owned texture. */
     void clearDepthGradient() { depthGradientTexture_ = nullptr; }
 
+    /** @brief Sets the water color. */
     void setWaterColor(float r, float g, float b);
+    /** @brief Sets the reflection tint. */
     void setReflectionTint(float r, float g, float b);
+    /** @brief Sets the reflection intensity. */
     void setReflectionIntensity(float intensity);
+    /** @brief Returns the reflection intensity. */
     float getReflectionIntensity() const { return config_.reflectionIntensity; }
 
+    /** @brief Sets the sun intensity. */
     void setSunIntensity(float intensity);
+    /** @brief Returns the sun intensity. */
     float getSunIntensity() const { return config_.sunIntensity; }
 
     /**
@@ -150,7 +169,9 @@ public:
      * not called. SSR must also be enabled on RenderControl.
      */
     void setScreenSpaceReflection(bool enabled, float strength = 0.85f);
+    /** @brief Returns the screen space reflection. */
     bool getScreenSpaceReflection() const { return config_.screenSpaceReflection; }
+    /** @brief Returns the screen space reflection strength. */
     float getScreenSpaceReflectionStrength() const { return config_.screenSpaceReflectionStrength; }
 
     /**
@@ -167,7 +188,9 @@ public:
 
     /** @brief Window / target size in pixels, used to compute screen-space UVs. */
     void setViewport(float width, float height);
+    /** @brief Returns the viewport width. */
     float getViewportWidth() const { return viewportW_; }
+    /** @brief Returns the viewport height. */
     float getViewportHeight() const { return viewportH_; }
 
     /** @brief Upload current params to the shader push constants. */
@@ -195,11 +218,14 @@ public:
     /** @brief Return the reflection-capture visibility layer mask. */
     uint32_t getReflectionCaptureMask() const { return reflectionCaptureMask_; }
 
+    /** @brief Returns the shader. */
     Shader *getShader() const { return shader_; }
+    /** @brief Returns the mesh. */
     Mesh *getMesh() const { return mesh_; }
 
     /** @brief Names of the push-constant parameters (for UI / inspection). */
     static int paramCount();
+    /** @brief Param name. */
     static std::string paramName(int index);
 
 private:

@@ -11,7 +11,9 @@ namespace eve::social {
 class Social : public Module {
 public:
     Module_REG(Social);
+    /** @brief Constructs a Social. */
     Social()           = default;
+    /** @brief Releases Social resources. */
     ~Social() override = default;
 
     /** @brief Returns the canonical graph key for an integer entity ID. */

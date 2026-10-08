@@ -17,7 +17,9 @@ namespace eve::npc_ai {
 class EVENGINE_API_PLATFORM NpcAi final : public Module {
 public:
     Module_REG(NpcAi);
+    /** @brief Npc ai. */
     NpcAi()           = default;
+    /** @brief Npc ai. */
     ~NpcAi() override = default;
 };
 

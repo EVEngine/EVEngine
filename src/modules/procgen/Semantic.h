@@ -23,7 +23,9 @@ constexpr uint32_t Door     = 10;
 constexpr uint32_t Road     = 11;
 }  // namespace Semantic
 
+/** @brief Semantic name. */
 EVENGINE_API_DOMAINS const char *semanticName(uint32_t id);
+/** @brief Semantic id. */
 EVENGINE_API_DOMAINS uint32_t    semanticId(const std::string &name);
 
 }  // namespace eve::procgen

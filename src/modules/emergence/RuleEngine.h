@@ -42,12 +42,16 @@ using RuleEngineHandleRef = eve::script::RuntimeHandleRef<RuleEngineHandleTag>;
  */
 class EVENGINE_API_FOUNDATION RuleEngine {
 public:
+    /** @brief Rule engine. */
     RuleEngine()  = default;
+    /** @brief Rule engine. */
     ~RuleEngine() = default;
 
     RuleEngine(const RuleEngine&)            = delete;
     RuleEngine& operator=(const RuleEngine&) = delete;
+    /** @brief Rule engine. */
     RuleEngine(RuleEngine&&)                 = default;
+    /** @brief Operator =. */
     RuleEngine& operator=(RuleEngine&&)      = default;
 
     /**

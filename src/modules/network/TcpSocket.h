@@ -31,12 +31,15 @@ class EVENGINE_API_PLATFORM TcpSocket {
 public:
     /** @brief Creates an unconnected socket owned by the given module. */
     explicit TcpSocket(Network* net);
+    /** @brief Tcp socket. */
     ~TcpSocket();
     // Class-level dllexport instantiates every member; `accepted_` is a container
     // of unique_ptr, so the implicit copy assignment would be a hard C2280.
     TcpSocket(const TcpSocket&)            = delete;
     TcpSocket& operator=(const TcpSocket&) = delete;
+    /** @brief Tcp socket. */
     TcpSocket(TcpSocket&&)                 = default;
+    /** @brief Operator =. */
     TcpSocket& operator=(TcpSocket&&)      = default;
 
     /** @brief Connects to host:port; true on success. */
@@ -60,12 +63,17 @@ public:
 
     /** @brief Internal: owning module (used by Network::pump / NetWorker). */
     Network* network() const { return net_; }
+    /** @brief Sets the connected socket. */
     void setConnectedSocket(std::unique_ptr<Poco::Net::StreamSocket> sock);
+    /** @brief Stream. */
     Poco::Net::StreamSocket* stream();
+    /** @brief Server. */
     Poco::Net::ServerSocket* server();
     /** @brief True after listen(). */
     bool isListening() const { return listening_; }
+    /** @brief Take accepted. */
     bool takeAccepted(std::unique_ptr<TcpSocket>& out);
+    /** @brief Pushes accepted. */
     void pushAccepted(std::unique_ptr<TcpSocket> sock);
     /** @brief Internal: queued-outgoing byte counter for back-pressure. */
     size_t pendingSendBytes() const;
@@ -74,6 +82,7 @@ public:
     bool queueSend(const void* d, size_t n);
     /** @brief Push pending bytes onto the socket; called from Network::pollSockets. */
     void flushSend();
+    /** @brief Clears pending send. */
     void clearPendingSend();
 
 private:

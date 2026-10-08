@@ -32,20 +32,28 @@ struct DeviceAddressBuffer {
     vk::DeviceAddress address = 0;
     vkb::Device*      device  = nullptr;
 
+    /** @brief Constructs a DeviceAddressBuffer. */
     DeviceAddressBuffer() = default;
+    /** @brief Releases DeviceAddressBuffer resources. */
     ~DeviceAddressBuffer() { release(); }
     DeviceAddressBuffer(const DeviceAddressBuffer&)            = delete;
     DeviceAddressBuffer& operator=(const DeviceAddressBuffer&) = delete;
+    /** @brief Constructs a DeviceAddressBuffer. */
     DeviceAddressBuffer(DeviceAddressBuffer&& o) noexcept { steal(o); }
+    /** @brief Operator =. */
     DeviceAddressBuffer& operator=(DeviceAddressBuffer&& o) noexcept {
         if (this != &o) {
+            /** @brief Release. */
             release();
+            /** @brief Steal. */
             steal(o);
         }
         return *this;
     }
 
+    /** @brief Release. */
     void release();
+    /** @brief Steal. */
     void steal(DeviceAddressBuffer& o) noexcept;
 
     /** @brief Allocate a buffer usage that includes SHADER_DEVICE_ADDRESS. */
@@ -64,23 +72,32 @@ struct AccelerationStructure {
     vk::DeviceAddress            deviceAddress = 0;
     vkb::Device*                 device        = nullptr;
 
+    /** @brief Constructs a AccelerationStructure. */
     AccelerationStructure() = default;
+    /** @brief Releases AccelerationStructure resources. */
     ~AccelerationStructure() { release(); }
     AccelerationStructure(const AccelerationStructure&)            = delete;
     AccelerationStructure& operator=(const AccelerationStructure&) = delete;
+    /** @brief Constructs a AccelerationStructure. */
     AccelerationStructure(AccelerationStructure&& o) noexcept { steal(o); }
+    /** @brief Operator =. */
     AccelerationStructure& operator=(AccelerationStructure&& o) noexcept {
         if (this != &o) {
+            /** @brief Release. */
             release();
+            /** @brief Steal. */
             steal(o);
         }
         return *this;
     }
 
+    /** @brief Release. */
     void release();
+    /** @brief Steal. */
     void steal(AccelerationStructure& o) noexcept;
 };
 
+/** @brief TriangleMeshRecord public API. */
 struct TriangleMeshRecord {
     DeviceAddressBuffer   vertexBuffer;
     DeviceAddressBuffer   indexBuffer;
@@ -95,28 +112,38 @@ struct TriangleMeshRecord {
  */
 class VulkanRayTracing final : public IRayTracing {
 public:
+    /** @brief Constructs a VulkanRayTracing. */
     VulkanRayTracing() = default;
+    /** @brief Releases VulkanRayTracing resources. */
     ~VulkanRayTracing() override;
 
     VulkanRayTracing(const VulkanRayTracing&)            = delete;
     VulkanRayTracing& operator=(const VulkanRayTracing&) = delete;
 
+    /** @brief True when available. */
     bool           isAvailable() const override;
+    /** @brief Caps. */
     RayTracingCaps caps() const override;
 
+    /** @brief Applies reflections. */
     [[nodiscard]] Result<void> applyReflections(Graphics* gfx, Texture* sceneColor, Texture* hwDepth,
                                                 Texture* worldNormal, Canvas* dest, const glm::mat4& invViewProj,
                                                 const glm::mat4& viewProj, const glm::vec3& eyeWorld) override;
 
+    /** @brief Rebuild scene. */
     [[nodiscard]] Result<void> rebuildScene() override;
 
+    /** @brief Adds triangle mesh. */
     [[nodiscard]] Result<uint32_t> addTriangleMesh(const float* positionsXYZ, int vertexCount, const uint32_t* indices,
                                                    int indexCount, const glm::mat4& transform) override;
 
+    /** @brief Adds mesh. */
     [[nodiscard]] Result<uint32_t> addMesh(Mesh* mesh, const glm::mat4& transform) override;
 
+    /** @brief Clears scene. */
     void clearScene() override;
 
+    /** @brief Detaches from graphics. */
     void detachFromGraphics() override { detachDevice(); }
 
     /**
@@ -150,6 +177,7 @@ private:
 
     /** @brief Device-local RGBA16F storage target for traceRays (HDR canvases lack STORAGE usage). */
     struct StorageColorImage : vkb::GenericImage {
+        /** @brief Allocate. */
         void allocate(vkb::Device& device, uint32_t width, uint32_t height) {
             vk::ImageCreateInfo info{};
             info.imageType     = vk::ImageType::e2D;
@@ -163,6 +191,7 @@ private:
                                  vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled;
             info.sharingMode   = vk::SharingMode::eExclusive;
             info.initialLayout = vk::ImageLayout::eUndefined;
+            /** @brief Creates . */
             create(device, info, vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor, false);
         }
     };

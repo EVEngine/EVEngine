@@ -39,16 +39,23 @@ class EVENGINE_API_ORCHESTRATION EditorPropertyModel final : public property_acc
 public:
     using EditSink = std::function<Result<void>(const PropertyEditIntent &)>;
 
+    /** @brief Editor property model. */
     EditorPropertyModel(PropertySchema schema, SelectionSnapshot selection, const IPropertyProvider *provider,
                         PropertyModelSurface       surface            = PropertyModelSurface::Developer,
                         HostProfile                profile            = HostProfile::developer(),
                         IEditorTransactionBackend *transactionBackend = nullptr);
+    /** @brief Editor property model. */
     ~EditorPropertyModel() override;
 
+    /** @brief Schema. */
     const property_access::PropertySchema     &schema() const override { return presentationSchema_; }
+    /** @brief Reads . */
     std::optional<eve::Value>                  read(const std::string &path) const override;
+    /** @brief Writes . */
     [[nodiscard]] property_access::WriteResult write(const std::string &path, const eve::Value &value) override;
+    /** @brief Revision. */
     std::uint64_t revision() const override { return revision_; }
+    /** @brief Subscribe. */
     property_access::Subscription              subscribe(ChangeCallback callback) override;
 
     /** @brief Return the authoritative provider revision captured by this model. */
@@ -103,6 +110,7 @@ private:
         property_access::PropertyChangeState state = property_access::PropertyChangeState::Missing;
         std::optional<eve::Value>             value;
 
+        /** @brief Operator ==. */
         bool operator==(const CachedProperty &) const = default;
     };
 

@@ -18,7 +18,9 @@ namespace eve::combat {
 class EVENGINE_API_BACKENDS Combat final : public Module {
 public:
     Module_REG(Combat);
+    /** @brief Combat. */
     Combat()           = default;
+    /** @brief Combat. */
     ~Combat() override = default;
 };
 

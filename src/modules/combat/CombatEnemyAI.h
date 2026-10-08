@@ -62,6 +62,7 @@ public:
     [[nodiscard]] Result<void> unregisterEnemy(SubjectRef subject);
     /** @brief Borrow lock-on state so the enemy attacks its current target. */
     void setTargetRuntime(CombatTargetRuntime& targets) noexcept { targets_ = &targets; }
+    /** @brief Clears target runtime. */
     void clearTargetRuntime() noexcept { targets_ = nullptr; }
     /** @brief Provide world positions for band checks (enemies and their targets). */
     [[nodiscard]] Result<void> setPosition(SubjectRef subject, double x, double y, double z);

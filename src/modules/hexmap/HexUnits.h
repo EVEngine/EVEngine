@@ -68,6 +68,7 @@ struct HexUnitSample {
  */
 class EVENGINE_API_WORLD HexUnitRegistry {
 public:
+    /** @brief Hex unit registry. */
     HexUnitRegistry() = default;
 
     /** @brief Current tuning. */

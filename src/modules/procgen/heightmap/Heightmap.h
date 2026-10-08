@@ -20,15 +20,23 @@ namespace eve::procgen {
  */
 class EVENGINE_API_DOMAINS Heightmap {
 public:
+    /** @brief Heightmap. */
     Heightmap() = default;
+    /** @brief Heightmap. */
     Heightmap(int width, int height);
 
+    /** @brief Resize. */
     void resize(int width, int height);
+    /** @brief Returns the width. */
     int  getWidth() const;
+    /** @brief Returns the height. */
     int  getHeight() const;
+    /** @brief In bounds. */
     bool inBounds(int x, int y) const;
 
+    /** @brief Sets the height. */
     void  setHeight(int x, int y, float h);
+    /** @brief Height. */
     float height(int x, int y) const;
 
     /** @brief Bilinear height at continuous coordinate within [0, w) x [0, h). */
@@ -36,6 +44,7 @@ public:
     /** @brief Bilinear height with wrap-around (seamless tiling). */
     float sampleBilinearSeamless(float x, float y) const;
 
+    /** @brief Data. */
     const std::vector<float> &data() const { return data_; }
     /** @brief Mutable row-major samples for terrain processing and asset import. */
     std::vector<float> &data() { return data_; }

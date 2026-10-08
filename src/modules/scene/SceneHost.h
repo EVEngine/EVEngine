@@ -88,10 +88,13 @@ using GameObject = SceneNode;
  */
 class EVENGINE_API_PLATFORM SceneHost : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(SceneHost, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Meta public API. */
     struct Meta {
         bool visible = true;
         int layer = 0;

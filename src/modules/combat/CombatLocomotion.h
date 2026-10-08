@@ -72,6 +72,7 @@ struct CombatNavigationSteering {
  */
 class ICombatNavigationProvider {
 public:
+    /** @brief Releases ICombatNavigationProvider resources. */
     virtual ~ICombatNavigationProvider() = default;
 
     /**
@@ -90,6 +91,7 @@ public:
 class EVENGINE_API_BACKENDS DirectCombatNavigationProvider final : public ICombatNavigationProvider {
 public:
     /** @copydoc ICombatNavigationProvider::steer */
+    /** @brief Steer. */
     [[nodiscard]] Result<CombatNavigationSteering> steer(const CombatLocomotionState& state,
                                                           const CombatNavigationGoal& goal,
                                                           SimulationTick tick) override;

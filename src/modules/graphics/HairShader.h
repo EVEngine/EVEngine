@@ -20,6 +20,7 @@ EVENGINE_API_BACKENDS void bindDefaults(Shader *shader);
 
 /** @brief Push-constant parameter names (same order as mesh3d_hair.frag). */
 EVENGINE_API_BACKENDS int paramCount();
+/** @brief Param name. */
 EVENGINE_API_BACKENDS std::string paramName(int index);
 
 }  // namespace hair

@@ -37,21 +37,31 @@ inline constexpr std::int32_t kHexTerrainTypeCount = 5;
  */
 class HexValues {
 public:
+    /** @brief Constructs a HexValues. */
     constexpr HexValues() noexcept = default;
+    /** @brief Constructs a HexValues. */
     explicit constexpr HexValues(std::uint32_t packed) noexcept : packed_(packed) {}
 
+    /** @brief Raw. */
     [[nodiscard]] constexpr std::uint32_t raw() const noexcept { return packed_; }
 
+    /** @brief Elevation. */
     [[nodiscard]] constexpr std::int32_t elevation() const noexcept {
         return static_cast<std::int32_t>(get(31u, 0u)) - 15;
     }
+    /** @brief Water level. */
     [[nodiscard]] constexpr std::int32_t waterLevel() const noexcept { return static_cast<std::int32_t>(get(31u, 5u)); }
+    /** @brief Urban level. */
     [[nodiscard]] constexpr std::int32_t urbanLevel() const noexcept { return static_cast<std::int32_t>(get(3u, 10u)); }
+    /** @brief Farm level. */
     [[nodiscard]] constexpr std::int32_t farmLevel() const noexcept { return static_cast<std::int32_t>(get(3u, 12u)); }
+    /** @brief Plant level. */
     [[nodiscard]] constexpr std::int32_t plantLevel() const noexcept { return static_cast<std::int32_t>(get(3u, 14u)); }
+    /** @brief Special index. */
     [[nodiscard]] constexpr std::int32_t specialIndex() const noexcept {
         return static_cast<std::int32_t>(get(255u, 16u));
     }
+    /** @brief Terrain type. */
     [[nodiscard]] constexpr std::int32_t terrainType() const noexcept {
         return static_cast<std::int32_t>(get(255u, 24u));
     }
@@ -66,21 +76,27 @@ public:
     [[nodiscard]] constexpr HexValues withElevation(std::int32_t value) const noexcept {
         return HexValues{with(static_cast<std::uint32_t>(value + 15) & 31u, 31u, 0u)};
     }
+    /** @brief With water level. */
     [[nodiscard]] constexpr HexValues withWaterLevel(std::int32_t value) const noexcept {
         return HexValues{with(static_cast<std::uint32_t>(value) & 31u, 31u, 5u)};
     }
+    /** @brief With urban level. */
     [[nodiscard]] constexpr HexValues withUrbanLevel(std::int32_t value) const noexcept {
         return HexValues{with(static_cast<std::uint32_t>(value) & 3u, 3u, 10u)};
     }
+    /** @brief With farm level. */
     [[nodiscard]] constexpr HexValues withFarmLevel(std::int32_t value) const noexcept {
         return HexValues{with(static_cast<std::uint32_t>(value) & 3u, 3u, 12u)};
     }
+    /** @brief With plant level. */
     [[nodiscard]] constexpr HexValues withPlantLevel(std::int32_t value) const noexcept {
         return HexValues{with(static_cast<std::uint32_t>(value) & 3u, 3u, 14u)};
     }
+    /** @brief With special index. */
     [[nodiscard]] constexpr HexValues withSpecialIndex(std::int32_t value) const noexcept {
         return HexValues{with(static_cast<std::uint32_t>(value) & 255u, 255u, 16u)};
     }
+    /** @brief With terrain type. */
     [[nodiscard]] constexpr HexValues withTerrainType(std::int32_t value) const noexcept {
         return HexValues{with(static_cast<std::uint32_t>(value) & 255u, 255u, 24u)};
     }
@@ -106,29 +122,42 @@ private:
  */
 class HexFlags {
 public:
+    /** @brief Constructs a HexFlags. */
     constexpr HexFlags() noexcept = default;
+    /** @brief Constructs a HexFlags. */
     explicit constexpr HexFlags(std::uint32_t packed) noexcept : packed_(packed) {}
 
+    /** @brief Raw. */
     [[nodiscard]] constexpr std::uint32_t raw() const noexcept { return packed_; }
 
+    /** @brief Direction. */
     [[nodiscard]] static constexpr HexFlags direction(HexDirection d) noexcept {
         return HexFlags{1u << static_cast<std::uint32_t>(d)};
     }
 
+    /** @brief True when active. */
     [[nodiscard]] constexpr bool has(HexFlags other) const noexcept {
         return (packed_ & other.packed_) == other.packed_ && other.packed_ != 0u;
     }
+    /** @brief True when none. */
     [[nodiscard]] constexpr bool     hasNone(HexFlags other) const noexcept { return (packed_ & other.packed_) == 0u; }
+    /** @brief With. */
     [[nodiscard]] constexpr HexFlags with(HexFlags other) const noexcept { return HexFlags{packed_ | other.packed_}; }
+    /** @brief Without. */
     [[nodiscard]] constexpr HexFlags without(HexFlags other) const noexcept {
         return HexFlags{packed_ & ~other.packed_};
     }
 
+    /** @brief True when road. */
     [[nodiscard]] constexpr bool hasRoad(HexDirection d) const noexcept { return has(direction(d)); }
+    /** @brief True when river in. */
     [[nodiscard]] constexpr bool hasRiverIn(HexDirection d) const noexcept {
+        /** @brief True when active. */
         return has(HexFlags{direction(d).packed_ << 6});
     }
+    /** @brief True when river out. */
     [[nodiscard]] constexpr bool hasRiverOut(HexDirection d) const noexcept {
+        /** @brief True when active. */
         return has(HexFlags{direction(d).packed_ << 12});
     }
     /** @brief Whether any river flows into this cell. */
@@ -158,30 +187,46 @@ public:
         return (bits(in) + bits(out)) == 1u;
     }
 
+    /** @brief True when walled. */
     [[nodiscard]] constexpr bool isWalled() const noexcept { return (packed_ & (1u << 18)) != 0u; }
+    /** @brief True when explored. */
     [[nodiscard]] constexpr bool isExplored() const noexcept { return (packed_ & (1u << 20)) != 0u; }
+    /** @brief True when explorable. */
     [[nodiscard]] constexpr bool isExplorable() const noexcept { return (packed_ & (1u << 21)) != 0u; }
 
+    /** @brief With road. */
     [[nodiscard]] constexpr HexFlags withRoad(HexDirection d) const noexcept { return with(direction(d)); }
+    /** @brief Without road. */
     [[nodiscard]] constexpr HexFlags withoutRoad(HexDirection d) const noexcept { return without(direction(d)); }
+    /** @brief With river in. */
     [[nodiscard]] constexpr HexFlags withRiverIn(HexDirection d) const noexcept {
+        /** @brief With. */
         return with(HexFlags{direction(d).packed_ << 6});
     }
+    /** @brief Without river in. */
     [[nodiscard]] constexpr HexFlags withoutRiverIn(HexDirection d) const noexcept {
+        /** @brief Without. */
         return without(HexFlags{direction(d).packed_ << 6});
     }
+    /** @brief With river out. */
     [[nodiscard]] constexpr HexFlags withRiverOut(HexDirection d) const noexcept {
+        /** @brief With. */
         return with(HexFlags{direction(d).packed_ << 12});
     }
+    /** @brief Without river out. */
     [[nodiscard]] constexpr HexFlags withoutRiverOut(HexDirection d) const noexcept {
+        /** @brief Without. */
         return without(HexFlags{direction(d).packed_ << 12});
     }
+    /** @brief With walled. */
     [[nodiscard]] constexpr HexFlags withWalled(bool value) const noexcept {
         return value ? with(HexFlags{1u << 18}) : without(HexFlags{1u << 18});
     }
+    /** @brief With explored. */
     [[nodiscard]] constexpr HexFlags withExplored(bool value) const noexcept {
         return value ? with(HexFlags{1u << 20}) : without(HexFlags{1u << 20});
     }
+    /** @brief With explorable. */
     [[nodiscard]] constexpr HexFlags withExplorable(bool value) const noexcept {
         return value ? with(HexFlags{1u << 21}) : without(HexFlags{1u << 21});
     }

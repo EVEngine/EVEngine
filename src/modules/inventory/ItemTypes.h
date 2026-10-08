@@ -24,7 +24,9 @@ struct EVENGINE_API_FOUNDATION ItemDefinition {
     std::string equipSlot;
     std::unordered_map<std::string, std::string> extra;
 
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the extra. */
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
@@ -37,10 +39,15 @@ struct EVENGINE_API_FOUNDATION ItemStack {
     std::unordered_map<std::string, std::string> props;
     std::vector<std::string> tags;
 
+    /** @brief Empty. */
     bool empty() const { return itemId.empty() || quantity <= 0; }
+    /** @brief Clears clear. */
     void clear();
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the prop. */
     std::string getProp(const std::string &key, const std::string &fallback = {}) const;
+    /** @brief Sets the prop. */
     void setProp(const std::string &key, const std::string &value);
 };
 

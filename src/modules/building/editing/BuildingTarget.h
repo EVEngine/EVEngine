@@ -176,16 +176,23 @@ public:
      * keeps the semantics identical and gives the other TUs something to call.
      */
     BuildingPlacementTarget(BuildingPlacementTarget&&) noexcept;
+    /** @brief Operator =. */
     BuildingPlacementTarget& operator=(BuildingPlacementTarget&&) noexcept;
     BuildingPlacementTarget(const BuildingPlacementTarget&)            = delete;
     BuildingPlacementTarget& operator=(const BuildingPlacementTarget&) = delete;
+    /** @brief Building placement target. */
     ~BuildingPlacementTarget();
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Return a complete immutable instance snapshot. */
@@ -254,6 +261,7 @@ public:
     EditorValue snapshotValue() const;
 
 private:
+    /** @brief Building placement target. */
     BuildingPlacementTarget(std::string id, std::unique_ptr<building::PlacementWorld> world,
                             unsigned long long revision);
     std::string id_;
@@ -294,7 +302,9 @@ public:
     Result<DomainOperation> finishDrag();
     /** @brief Discard transient drag state without producing an operation. */
     void cancelDrag();
+    /** @brief True when dragging. */
     bool isDragging() const { return dragging_; }
+    /** @brief Active control point index. */
     int activeControlPointIndex() const { return activeControlPointIndex_; }
 
 private:

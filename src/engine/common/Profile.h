@@ -112,9 +112,12 @@ private:
  */
 class EVENGINE_API_FOUNDATION_INLINE ZoneScope {
 public:
+    /** @brief Zone scope. */
     ZoneScope(const char* name, const char* module = nullptr) {
+        /** @brief Zone begin. */
         Profiler::zoneBegin(name, module);
     }
+    /** @brief Zone scope. */
     ~ZoneScope() { Profiler::zoneEnd(); }
     ZoneScope(const ZoneScope&)            = delete;
     ZoneScope& operator=(const ZoneScope&) = delete;

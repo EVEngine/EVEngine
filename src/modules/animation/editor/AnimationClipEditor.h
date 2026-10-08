@@ -112,63 +112,114 @@ public:
     [[nodiscard]] animation_editing::Result<editor::TransactionReceipt> redo();
 
     void play() noexcept;
+    /** @brief Pause. */
     void pause() noexcept;
+    /** @brief Stops . */
     void stop() noexcept;
     /** @brief Advance playhead by injected dt and refresh pose/overlay. */
     [[nodiscard]] animation_editing::Result<void> update(double deltaSeconds);
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
+    /** @brief Can redo. */
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
+    /** @brief True when playing. */
     bool          isPlaying() const noexcept { return playing_; }
+    /** @brief Revision. */
     std::uint64_t revision() const noexcept { return target_.revision(); }
+    /** @brief Duration. */
     double        duration() const noexcept { return target_.duration(); }
+    /** @brief Sample rate. */
     double        sampleRate() const noexcept { return target_.sampleRate(); }
+    /** @brief True when looping. */
     bool          isLooping() const noexcept { return target_.isLooping(); }
+    /** @brief Playhead. */
     double        playhead() const noexcept { return playhead_; }
+    /** @brief Layout width. */
     float         layoutWidth() const noexcept { return viewportWidth_; }
+    /** @brief Layout height. */
     float         layoutHeight() const noexcept;
+    /** @brief Playhead x. */
     float         playheadX() const noexcept;
+    /** @brief Selected bone. */
     std::string   selectedBone() const { return selectedBone_; }
+    /** @brief Selected mask weight. */
     double        selectedMaskWeight() const;
+    /** @brief True when selected key. */
     bool          hasSelectedKey() const noexcept { return !selectedKeyId_.empty(); }
+    /** @brief Selected key time. */
     double        selectedKeyTime() const;
+    /** @brief Selected position x. */
     double        selectedPositionX() const;
+    /** @brief Selected position y. */
     double        selectedPositionY() const;
+    /** @brief Selected position z. */
     double        selectedPositionZ() const;
+    /** @brief Selected rotation x. */
     double        selectedRotationX() const;
+    /** @brief Selected rotation y. */
     double        selectedRotationY() const;
+    /** @brief Selected rotation z. */
     double        selectedRotationZ() const;
+    /** @brief Selected scale x. */
     double        selectedScaleX() const;
+    /** @brief Selected scale y. */
     double        selectedScaleY() const;
+    /** @brief Selected scale z. */
     double        selectedScaleZ() const;
+    /** @brief Bone count. */
     int           boneCount() const noexcept;
+    /** @brief Bone name. */
     std::string   boneName(int index) const;
+    /** @brief Bone parent. */
     std::string   boneParent(int index) const;
 
+    /** @brief Track count. */
     int         trackCount() const;
+    /** @brief Track bone. */
     std::string trackBone(int index) const;
+    /** @brief Track id. */
     std::string trackId(int index) const;
+    /** @brief True when track selected. */
     bool        isTrackSelected(int index) const;
+    /** @brief Key count. */
     int         keyCount() const;
+    /** @brief Key x. */
     float       keyX(int index) const;
+    /** @brief Key y. */
     float       keyY(int index) const;
+    /** @brief True when key selected. */
     bool        isKeySelected(int index) const;
+    /** @brief Event count. */
     int         eventCount() const;
+    /** @brief Event x. */
     float       eventX(int index) const;
+    /** @brief Event name. */
     std::string eventName(int index) const;
 
+    /** @brief Primitive count. */
     int         primitiveCount() const;
+    /** @brief Primitive kind. */
     std::string primitiveKind(int index) const;
+    /** @brief Primitive x. */
     float       primitiveX(int index) const;
+    /** @brief Primitive y. */
     float       primitiveY(int index) const;
+    /** @brief Primitive dir x. */
     float       primitiveDirX(int index) const;
+    /** @brief Primitive dir y. */
     float       primitiveDirY(int index) const;
+    /** @brief Primitive length. */
     float       primitiveLength(int index) const;
+    /** @brief Primitive radius. */
     float       primitiveRadius(int index) const;
+    /** @brief Primitive r. */
     float       primitiveR(int index) const;
+    /** @brief Primitive g. */
     float       primitiveG(int index) const;
+    /** @brief Primitive b. */
     float       primitiveB(int index) const;
 
+    /** @brief Preview. */
     const animation_editing::AnimationClipPreview& preview() const noexcept { return preview_; }
 
 private:

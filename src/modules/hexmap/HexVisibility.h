@@ -31,6 +31,7 @@ namespace eve::hexmap {
  */
 class EVENGINE_API_WORLD HexVisibility {
 public:
+    /** @brief Hex visibility. */
     HexVisibility() = default;
 
     /**

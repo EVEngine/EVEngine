@@ -27,6 +27,7 @@ class EVENGINE_API_PLATFORM HttpRequest {
 public:
     /** @brief Creates a request; method is e.g. "GET"/"POST", url is absolute. */
     HttpRequest(Network* net, std::string method, std::string url);
+    /** @brief Http request. */
     ~HttpRequest() = default;
 
     /** @brief Sets one request header. */

@@ -44,6 +44,7 @@ class EVENGINE_API_BACKENDS GuardWindowState final : public action::IActionState
 public:
     /** @brief Construct with a synchronous subject resolver. */
     explicit GuardWindowState(GuardSubjectResolver resolver);
+    /** @brief Guard window state. */
     ~GuardWindowState() override;
 
     /** @brief Opt this owner into or out of Action state-window dispatch. */
@@ -51,12 +52,15 @@ public:
     /** @brief Return whether this exact owner is registered. */
     [[nodiscard]] bool enabled() const;
     /** @copydoc action::IActionStateWindowSink::supports */
+    /** @brief Supports. */
     [[nodiscard]] bool supports(action::ActionStateWindowKind kind) const noexcept override;
     /** @copydoc action::IActionStateWindowSink::enter */
+    /** @brief Enter. */
     [[nodiscard]] Result<void> enter(const action::ActionStateWindowBinding& binding,
                                      const action::ActionTimelineEvent& event,
                                      const action::ActionNotifyContext& context) override;
     /** @copydoc action::IActionStateWindowSink::exit */
+    /** @brief Exit. */
     [[nodiscard]] Result<void> exit(const action::ActionStateWindowBinding& binding,
                                     const action::ActionTimelineEvent& event,
                                     const action::ActionNotifyContext& context) override;
