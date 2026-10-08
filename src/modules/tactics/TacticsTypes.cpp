@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <utility>
 
 namespace eve::tactics {
@@ -130,6 +131,12 @@ std::vector<Cell> BoardState::neighbours(Cell origin) const {
         case BoardTopology::Square4: append(square4); break;
         case BoardTopology::Square8: append(square8); break;
         case BoardTopology::HexAxial: append(hex); break;
+        case BoardTopology::ExplicitGraph: {
+            constexpr int minimum = std::numeric_limits<int>::min();
+            auto          it      = edges_.lower_bound({origin, Cell{minimum, minimum, minimum}});
+            for (; it != edges_.end() && it->first.first == origin; ++it) result.push_back(it->first.second);
+            break;
+        }
     }
     return result;
 }
@@ -139,8 +146,9 @@ Result<void> BoardState::addEdge(Cell from, Cell to, EdgeState state) {
         return failure(DiagnosticCode::NotFound, "tactics edge source cell does not exist", "board.edge.from");
     if (!cells_.contains(to))
         return failure(DiagnosticCode::NotFound, "tactics edge destination cell does not exist", "board.edge.to");
-    const std::vector<Cell> adjacent = neighbours(from);
-    if (std::find(adjacent.begin(), adjacent.end(), to) == adjacent.end())
+    const std::vector<Cell> adjacent =
+        topology_ == BoardTopology::ExplicitGraph ? std::vector<Cell>{to} : neighbours(from);
+    if (from == to || std::find(adjacent.begin(), adjacent.end(), to) == adjacent.end())
         return failure(DiagnosticCode::InvalidArgument, "tactics edge endpoints are not adjacent", "board.edge");
     if (state.extraCost < 0)
         return failure(DiagnosticCode::InvalidArgument, "tactics edge extra cost must be non-negative",

@@ -5,6 +5,7 @@
 #include "common/GameplayControlJson.h"
 #include "common/RenderCapture.h"
 #include "common/ScriptError.h"
+#include "common/SquirrelBinding.h"
 #include "devtools/AgentDevelopmentSession.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/McpServer.hpp"
@@ -96,37 +97,6 @@ std::vector<std::string> splitPath(std::string_view dotted) {
     return parts;
 }
 
-Result<Value> walkPath(const Value& root, std::string_view dotted, std::string path) {
-    const Value* current = &root;
-    auto         parts   = splitPath(dotted);
-    if (parts.empty())
-        return Result<Value>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "observation field path must not be empty", std::move(path)));
-    for (std::size_t index = 0; index < parts.size(); ++index) {
-        const auto* object = current->getIf<Value::Object>();
-        if (!object)
-            return Result<Value>::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "observation path is not an object", path + "." + std::string(dotted)));
-        const auto found = object->find(parts[index]);
-        if (found == object->end())
-            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound, "observation field was not found",
-                                                            path + "." + std::string(dotted)));
-        current = &found->second;
-    }
-    return Result<Value>::success(*current);
-}
-
-Result<Value> projectFields(const Value& root, const std::vector<std::string>& fields) {
-    if (fields.empty()) return Result<Value>::success(root);
-    Value::Object projected;
-    for (const auto& field : fields) {
-        auto walked = walkPath(root, field, "observation.fields");
-        if (!walked) return Result<Value>::failure(walked.status());
-        projected.emplace(field, std::move(walked).takeValue());
-    }
-    return Result<Value>::success(Value(std::move(projected)));
-}
-
 Value playResponse(std::string op, Value::Object extra) {
     extra.emplace("op", Value(std::move(op)));
     extra.emplace("schemaId", Value(std::string(kPlayResponseId)));
@@ -182,12 +152,12 @@ Result<ParsedContract> parseContract(const Value& contract) {
                     "contract");
     if (!known) return Result<ParsedContract>::failure(known.status());
     auto schemaId = stringMember(*root.value(), "schemaId", "contract");
-    auto version  = intMember(*root.value(), "schemaVersion", "contract");
-    auto id       = stringMember(*root.value(), "id", "contract");
-    auto entry    = stringMember(*root.value(), "entry", "contract");
     if (!schemaId) return Result<ParsedContract>::failure(schemaId.status());
+    auto version = intMember(*root.value(), "schemaVersion", "contract");
     if (!version) return Result<ParsedContract>::failure(version.status());
+    auto id = stringMember(*root.value(), "id", "contract");
     if (!id) return Result<ParsedContract>::failure(id.status());
+    auto entry = stringMember(*root.value(), "entry", "contract");
     if (!entry) return Result<ParsedContract>::failure(entry.status());
     if (schemaId.value() != kContractSchemaId || version.value() != kSchemaVersion)
         return Result<ParsedContract>::failure(Diagnostic::error(
@@ -228,10 +198,10 @@ Result<ParsedContract> parseContract(const Value& contract) {
         if (!itemKnown) return Result<ParsedContract>::failure(itemKnown.status());
         ObservationSpec spec;
         auto            specId = stringMember(*object.value(), "id", itemPath);
-        auto            kind   = stringMember(*object.value(), "kind", itemPath);
-        auto            path   = stringMember(*object.value(), "path", itemPath);
         if (!specId) return Result<ParsedContract>::failure(specId.status());
+        auto kind = stringMember(*object.value(), "kind", itemPath);
         if (!kind) return Result<ParsedContract>::failure(kind.status());
+        auto path = stringMember(*object.value(), "path", itemPath);
         if (!path) return Result<ParsedContract>::failure(path.status());
         spec.id   = specId.value();
         spec.kind = kind.value();
@@ -672,8 +642,8 @@ Result<Value> dispatchOne(const Value& request, IPlayHostRuntime& runtime, bool 
     auto known = knownFields(*root.value(), allowed, "request");
     if (!known) return Result<Value>::failure(known.status());
     auto schemaId = stringMember(*root.value(), "schemaId", "request");
-    auto version  = intMember(*root.value(), "schemaVersion", "request");
     if (!schemaId) return Result<Value>::failure(schemaId.status());
+    auto version = intMember(*root.value(), "schemaVersion", "request");
     if (!version) return Result<Value>::failure(version.status());
     if (schemaId.value() != kPlaySchemaId || version.value() != kSchemaVersion)
         return Result<Value>::failure(
@@ -710,31 +680,53 @@ Result<Value> dispatchOne(const Value& request, IPlayHostRuntime& runtime, bool 
     return executed;
 }
 
-Result<Value> snapshotRoot(HSQUIRRELVM vm, std::string_view rootName) {
+Result<Value> snapshotRoot(HSQUIRRELVM vm, std::string_view rootName, const std::vector<std::string>& fields) {
     if (!vm)
         return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
                                                         "play observe requires an attached script VM", "observation"));
-    std::string error;
-    std::string json = Snapshot::instance().capture(vm, &error);
-    if (json.empty())
-        return Result<Value>::failure(
-            Diagnostic::error(DiagnosticCode::Failed,
-                              error.empty() ? "script snapshot capture failed" : std::move(error), "observation"));
-    auto parsed = Value::fromJson(json);
-    if (!parsed) return Result<Value>::failure(parsed.status());
-    auto object = asObject(parsed.value(), "snapshot");
-    if (!object) return Result<Value>::failure(object.status());
-    const auto roots = object.value()->find("roots");
-    if (roots == object.value()->end())
-        return Result<Value>::failure(
-            Diagnostic::error(DiagnosticCode::NotFound, "snapshot does not contain roots", "observation"));
-    auto rootsObject = asObject(roots->second, "snapshot.roots");
-    if (!rootsObject) return Result<Value>::failure(rootsObject.status());
-    const auto found = rootsObject.value()->find(std::string(rootName));
-    if (found == rootsObject.value()->end())
+    const auto roots = Snapshot::instance().rootsFor(vm);
+    if (std::find(roots.begin(), roots.end(), rootName) == roots.end())
         return Result<Value>::failure(Diagnostic::error(
-            DiagnosticCode::NotFound, "marked script root was not in the snapshot", "observation.path"));
-    return Result<Value>::success(found->second);
+            DiagnosticCode::NotFound, "script root is excluded by snapshot policy", "observation.path"));
+    struct StackGuard {
+        HSQUIRRELVM vm;
+        SQInteger   top;
+        ~StackGuard() { sq_settop(vm, top); }
+    } guard{vm, sq_gettop(vm)};
+    sq_pushroottable(vm);
+    const std::string name(rootName);
+    sq_pushstring(vm, name.c_str(), -1);
+    if (SQ_FAILED(sq_rawget(vm, -2)))
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "script root was not found", "observation.path"));
+    const SQInteger              rootIndex = sq_gettop(vm);
+    script::SquirrelValueOptions options;
+    options.source = "observation." + name;
+    if (fields.empty()) return script::valueFromSquirrel(vm, rootIndex, options);
+    Value::Object projected;
+    for (const auto& field : fields) {
+        sq_settop(vm, rootIndex);
+        sq_push(vm, rootIndex);
+        const auto parts = splitPath(field);
+        if (parts.empty() || field.front() == '.' || field.back() == '.' || field.find("..") != std::string::npos)
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid observation field path", "observation.fields"));
+        for (const auto& part : parts) {
+            // Raw table access never invokes a script delegate or getter.
+            if (sq_gettype(vm, -1) != OT_TABLE)
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::NotFound, "observation path is not a table", "observation.fields." + field));
+            sq_pushstring(vm, part.c_str(), -1);
+            if (SQ_FAILED(sq_rawget(vm, -2)))
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::NotFound, "observation field was not found", "observation.fields." + field));
+            sq_remove(vm, -2);
+        }
+        auto value = script::valueFromSquirrel(vm, -1, options);
+        if (!value) return Result<Value>::failure(value.status());
+        projected.emplace(field, std::move(value).takeValue());
+    }
+    return Result<Value>::success(Value(std::move(projected)));
 }
 
 class EnginePlayHostRuntime final : public IPlayHostRuntime {
@@ -775,9 +767,7 @@ public:
 
     Result<Value> observeScriptRoot(std::string_view root,
                                     const std::vector<std::string>& fields) const override {
-        auto value = snapshotRoot(Debugger::instance().vm(), root);
-        if (!value) return Result<Value>::failure(value.status());
-        return projectFields(value.value(), fields);
+        return snapshotRoot(Debugger::instance().vm(), root, fields);
     }
 
     Result<Value> capturePng(std::string path) override {

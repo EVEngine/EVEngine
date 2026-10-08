@@ -37,7 +37,7 @@ struct Cell {
 };
 
 /** @brief Supported deterministic board-neighbour topologies. */
-enum class BoardTopology : std::uint8_t { Square4, Square8, HexAxial };
+enum class BoardTopology : std::uint8_t { Square4, Square8, HexAxial, ExplicitGraph };
 
 /** @brief Tactical battle lifecycle. */
 enum class BattleStatus : std::uint8_t { Setup, Running, Ended };
@@ -191,18 +191,19 @@ public:
     [[nodiscard]] std::vector<Cell> cells() const;
     /** @brief Return all cell facts and occupants in deterministic coordinate order. */
     [[nodiscard]] std::vector<BoardCellRecord> records() const;
-    /** @brief Return deterministic neighbouring cells that exist on this board. */
+    /** @brief Return deterministic neighbouring cells; ExplicitGraph uses declared outgoing edges only. */
     [[nodiscard]] std::vector<Cell> neighbours(Cell origin) const;
 
     /**
-     * @brief Declare a directed edge between two existing adjacent cells.
-     * @param from Source cell; it must already exist on this board.
-     * @param to Destination cell; it must already exist and be a neighbour of `from`.
-     * @param state Directed traversal facts for this one direction.
-     * @return Applied, InvalidArgument when either endpoint is missing or they are
-     *         not adjacent, or Conflict when this direction is already declared.
-     * @remarks The reverse direction is independent and stays whatever it was; a
-     *          one-way edge is `addEdge(a,b,...)` without `addEdge(b,a,...)`.
+     * @brief Declare a directed edge between existing cells.
+     * @param from Existing source cell.
+     * @param to Existing destination distinct from source; grids require adjacency.
+     * @param state Directed traversal facts copied into this board.
+     * @return Applied, NotFound for missing cells, InvalidArgument for invalid
+     *         adjacency or costs, or Conflict for an already declared direction.
+     * @remarks ExplicitGraph creates adjacency; the reverse edge is independent.
+     *          Grid edges refine existing adjacency and do not remove reverse travel.
+     *          Simulation-thread-only; retains no borrowed data and calls no callbacks.
      */
     [[nodiscard]] Result<void> addEdge(Cell from, Cell to, EdgeState state = {});
     /** @brief Return a declared directed edge, or NotFound when none is declared. */

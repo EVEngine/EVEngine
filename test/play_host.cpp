@@ -1,10 +1,16 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <simplesquirrel/simplesquirrel.hpp>
 #include "common/Diagnostic.h"
 #include "common/Value.h"
 #include "devtools/Debugger.hpp"
+#include "devtools/McpServer.hpp"
 #include "devtools/PlayHost.h"
+#include "devtools/Snapshot.hpp"
 
 #include <string>
 #include <vector>
@@ -278,4 +284,81 @@ TEST_CASE("devtools.debugger.stepFramesReArmsUntilCountConsumed") {
     debugger.notifyFrameDone();
     CHECK(debugger.isPaused());
     debugger.resume();
+}
+
+TEST_CASE("devtools.playHost.malformedRequestsAndContractsReturnDiagnostics") {
+    FakePlayHostRuntime runtime;
+    for (const auto* request : {R"({"op":"observe"})", R"({"schemaId":"evengine.play-request","op":"status"})"}) {
+        auto result = executePlayRequest(parse(request), runtime);
+        REQUIRE(!result.ok());
+        CHECK_EQ(result.status().diagnostics().front().code(), DiagnosticCode::ParseError);
+    }
+    for (
+        const auto* contract :
+        {R"({})", R"({"schemaId":"evengine.game-agent-contract"})",
+         R"({"schemaId":"evengine.game-agent-contract","schemaVersion":1})",
+         R"({"schemaId":"evengine.game-agent-contract","schemaVersion":1,"id":"test"})",
+         R"({"schemaId":"evengine.game-agent-contract","schemaVersion":1,"id":"test","entry":"main.nut","observations":[{}]})",
+         R"({"schemaId":"evengine.game-agent-contract","schemaVersion":1,"id":"test","entry":"main.nut","observations":[{"id":"test"}]})"}) {
+        runtime.contract = parse(contract);
+        auto result      = executePlayRequest(
+            parse(R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"observe","observation":"test"})"),
+            runtime);
+        REQUIRE(!result.ok());
+    }
+}
+
+TEST_CASE("devtools.playHost.liveObservationProjectsBeforeSerializing") {
+    ssq::VM    vm(1024, ssq::Libs::ALL);
+    const auto directory =
+        std::filesystem::temp_directory_path() /
+        ("eve-play-observe-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(directory);
+    struct Cleanup {
+        std::filesystem::path    directory;
+        std::string              root       = McpServer::instance().gameRoot();
+        std::vector<std::string> persistent = Snapshot::instance().roots();
+        std::vector<std::string> transient  = Snapshot::instance().transientRoots();
+        ~Cleanup() {
+            Debugger::instance().detach();
+            McpServer::instance().setGameRoot(root);
+            Snapshot::instance().setRootPolicies(persistent, transient);
+            std::error_code error;
+            std::filesystem::remove_all(directory, error);
+        }
+    } cleanup{directory};
+    {
+        std::ofstream file(directory / "game.agent.json");
+        file << kContract;
+    }
+    McpServer::instance().setGameRoot(directory.string());
+    Snapshot::instance().setRootPolicies({"gameState", "unrelated"}, {});
+    vm.run(vm.compileSource(R"(
+        class Handle {}
+        gameState <- {tick=7, enemy={hp=20}, handle=Handle()};
+        unrelated <- {handle=Handle()};
+    )"));
+    Debugger::instance().attach(vm.getHandle());
+    const auto top     = sq_gettop(vm.getHandle());
+    const auto request = parse(
+        R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"observe","observation":"combat-alive","trace":"off"})");
+    auto observed = executePlayRequest(request);
+    REQUIRE(observed.ok());
+    auto json = observed.value().toJson();
+    REQUIRE(json.ok());
+    CHECK(json.value().find("\"tick\":7") != std::string::npos);
+    CHECK_EQ(sq_gettop(vm.getHandle()), top);
+    vm.run(vm.compileSource("delete gameState.enemy.hp;"));
+    auto missing = executePlayRequest(request);
+    REQUIRE(!missing.ok());
+    CHECK_EQ(missing.status().diagnostics().front().code(), DiagnosticCode::NotFound);
+    CHECK_EQ(sq_gettop(vm.getHandle()), top);
+    vm.run(vm.compileSource("gameState.enemy.hp <- Handle();"));
+    auto unsupported = executePlayRequest(request);
+    REQUIRE(!unsupported.ok());
+    CHECK_EQ(sq_gettop(vm.getHandle()), top);
+    Snapshot::instance().setRootPolicies({}, {"gameState"});
+    auto excluded = executePlayRequest(request);
+    REQUIRE(!excluded.ok());
+    CHECK_EQ(excluded.status().diagnostics().front().code(), DiagnosticCode::NotFound);
 }

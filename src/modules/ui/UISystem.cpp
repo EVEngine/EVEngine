@@ -987,7 +987,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::Progress: {
         const char *overlay = n.text.empty() ? nullptr : n.text.c_str();
-        ImGui::ProgressBar(n.value, ImVec2(-1.f, 0.f), overlay);
+        ImGui::ProgressBar(n.value, ImVec2(n.sizeX > 0.f ? n.sizeX : -1.f, n.sizeY > 0.f ? n.sizeY : 0.f), overlay);
         break;
     }
     case NodeType::Image: {

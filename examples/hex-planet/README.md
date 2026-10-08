@@ -1,6 +1,21 @@
 # hex-planet
 
-The `hexmap` module's hex terrain, wrapped onto a sphere and viewed from orbit.
+A playable civilisation race on the `hexmap` sphere: explore, found cities,
+manage gold/food/science, build improvements and complete a Beacon before the rival.
+
+Uses **economy + tactics + production + ECS** with real sphere adjacency.
+See [integration and API findings](../../docs/dev/hex-planet-civilization.md).
+
+Right click to move/select; **F** founds a city, **1–4** queue buildings,
+**Enter** ends the turn and **C** focuses the expedition. The side panel has
+matching buttons. The top bar shows stocks and gross per-round income; the city
+panel shows growth costs, building effects and rounds to completion. Disabled
+projects explain their requirements. Select **Expedition [C]** to inspect movement
+and founding, or **Cities** to cycle your settlements. Hover land for a route and
+movement-cost preview. Dispatches report completion, research and rival expansion.
+**World / debug** reveals the optional terrain controls. Build three cities, discover Writing and finish the Beacon.
+Terrain regeneration starts a new campaign. Hot reload is disabled for this
+session-only campaign.
 
 This is the spherical counterpart of [`examples/hex-terrain-3d`](../hex-terrain-3d):
 the same module, the same `HexCellData` / `HexValues` / `HexFlags` cell records, the
@@ -14,18 +29,26 @@ make run/win32-debug GAME=examples/hex-planet        # Windows
 make run/linux-debug  GAME=examples/hex-planet       # Linux (headless: see AGENTS.md)
 ```
 
+For the opt-in full gameplay acceptance journey, set `EVE_HEX_CIV_TEST=1` before
+running. It uses the normal game commands, reaches a terminal race result and
+checks clean restart; successful output contains `HEX_CIV_JOURNEY PASS` and
+`HEX_CIV_RESET PASS`. `game.agent.json` also exposes formal play observations and
+mapped actions for tools without using `eve_eval`.
+
 ## What it looks like
 
 Orbit camera around a generated planet, with a hexagonal tessellation you can read at
 the limb and in the faceted coastlines. `hex-planet.png` in this directory is captured
-by the example itself after 90 frames. The default pose is static, so two runs agree to
-within the ImGui overlay: measured across two runs, **25 of 1,024,000 pixels differ**
-(the HUD), and the globe itself is identical.
+by the example itself after 90 frames through the engine readback. Cyan markers
+show your cities, white the expedition, green reachable cells and yellow selection.
 
 ## Controls
 
 | Input | Action |
 |---|---|
+| RMB | select your city, or move the expedition |
+| `F` / `Enter` / `C` | found city / end turn / focus expedition |
+| `1`–`4` | granary / mine / library / Beacon |
 | LMB drag | orbit / pitch |
 | wheel | zoom |
 | `space` | toggle auto-spin |
@@ -37,8 +60,8 @@ within the ImGui overlay: measured across two runs, **25 of 1,024,000 pixels dif
 
 ## How it is put together
 
-Everything geometric is C++; the script owns only the camera, the input mapping, the
-two renderables and the HUD.
+Geometry is C++; civilization.nut composes the authoritative engine modules,
+and civilization_view.nut presents the cities, reachable tiles and controls.
 
 | Piece | Where | Role |
 |---|---|---|
@@ -100,6 +123,6 @@ glslc -o shaders/hex_planet_water.frag.spv   shaders/hex_planet_water.frag
 - Cliffs are radial walls with no overhang or erosion detail.
 - The generator has no rivers, erosion or plate tectonics; the planar
   `HexMapGenerator` did not carry over.
-- The sphere has no rivers, roads, walls, features, fog-of-war or units, and no save
-  format. The cell *flags* can be set, but there is no spherical geometry, search or
-  serialization behind them.
+- No rivers, roads, walls or geometric fog. City/expedition markers are projected
+  overlays; tactics now provides graph movement/search and versioned battle
+  snapshots, but the complete campaign does not yet have a save format.

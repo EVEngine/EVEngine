@@ -15,9 +15,18 @@ import check_architecture_contracts as contracts  # noqa: E402
 
 
 class ArchitectureContractTests(unittest.TestCase):
-    def test_repository_catalogue_covers_all_ten_rules(self):
+    def test_repository_catalogue_covers_all_rules(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
         self.assertEqual([], contracts.validate_catalogue(metadata, today=date(2026, 8, 26)))
+
+    def test_module_interface_requires_six_faces_and_cost_contract(self):
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        entry = next(item for item in metadata["entries"] if item["rule"] == "module-interface")
+        del entry["binds"]
+        del entry["cost_notes"]
+        errors = contracts.validate_catalogue(metadata, today=date(2026, 9, 22))
+        self.assertTrue(any("missing binds" in error for error in errors))
+        self.assertTrue(any("missing cost_notes" in error for error in errors))
 
     def test_missing_required_contract_field_is_rejected(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
@@ -93,7 +102,7 @@ class ArchitectureContractTests(unittest.TestCase):
                 }
             ]
         }
-        lines = [contracts.SourceLine("src/modules/test/Link.h", 3, "struct TestLink {};" )]
+        lines = [contracts.SourceLine("src/modules/test/Link.h", 3, "struct TestLink {};")]
         self.assertEqual([], contracts.lint_contract_coverage(lines, metadata))
 
 
