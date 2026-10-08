@@ -8,8 +8,8 @@
 
 创作侧常见两类「合并」需求，语义不同，不能混成一个工具：
 
-1. **静态合并（UE Merge Actors 类 + 缝线融合）**  
-   作者向、**提交式**：多个已变换 Static Mesh 一次算成一份 owning `MeshBuild` / 资产（拼接 + 边缘/材质融合 + 可选 weld/simplify）。结果落盘或替换实例后，源关系结束；再调参数需重新跑合并。本引擎已有拼接/weld，**没有**接触带融合内核。
+1. **静态合并（UE Merge Actors 类）**  
+   作者向、**提交式**：多个已变换 Static Mesh 一次算成一份 owning `MeshBuild` / 资产（默认：拼接 + 可选 weld/simplify）。**边缘/材质融合为可选能力，默认关闭**；需要缝线过渡时再显式打开。结果落盘或替换实例后，源关系结束；再调参数需重新跑合并。本引擎已有拼接/weld，**没有**接触带融合内核。
 
 2. **动态融合（Merge Master 类粘合，引擎实时）**  
    运行时/编辑器内**持续求值**：A 相对 B 的接触带位置贴合 + 边缘/材质融合由引擎每帧或参数变更时完成；Strength / Radius / Falloff / 法线与材质混合等**可随时调整**，不必 Bake 才能看到效果。源网格拓扑保持权威；显示网格为派生缓存。可选 Bake 只是「冻结为静态资产」的出口，不是动态路径的前提。
@@ -20,8 +20,8 @@
 
 ## 目标
 
-1. **静态合并**入口：拼接 + 边缘/材质融合 + 可选 weld/simplify；`Result` 诊断稳定。
-2. 共享 CPU 原语 `MeshContactBlend`（接触带权重 → 边缘/法线 + 材质权重），供静态合并与动态融合共用。
+1. **静态合并**入口：默认拼接 + 可选 weld/simplify；**可选**边缘/材质融合（**默认关闭**）；`Result` 诊断稳定。
+2. 共享 CPU 原语 `MeshContactBlend`（接触带权重 → 边缘/法线 + 材质权重），供静态合并（显式开启时）与动态融合共用。
 3. **动态融合**一等能力（节点/会话/运行时组件，建议名 `deform.meshAdhere` + live session）：
    - 引擎内实时完成求值（主线程或声明为可并行的纯 CPU 段，再回传显示网格）；
    - 参数与变换**随时可调**，调参即重算派生网格，无需先 Bake；
@@ -58,9 +58,9 @@ L7  procgen_editor          MeshModifierEditor 工具条与面板
 | 多网格变换拼接 | `appendTransformed` / `mesh.merge` / `combinePcgStaticMeshes` | Phase A 门面第一步 |
 | 按材质 section | triangle group / material id | 保留；融合带可写 blend，不强制打成单一材质 |
 | Weld | `mesh.weld` | Phase A 可选硬焊 |
-| **边缘融合**（接触带法线/软几何） | 无 | **Phase A 必做**（共享 `MeshContactBlend`） |
-| **材质融合**（接触带权重/混合） | 无 | **Phase A 必做**（同内核；Adhere 复用） |
-| 简化 LOD | `buildPcgCombinedMeshLods` / GTS simplify | Phase A 可选；建议在融合之后 |
+| **边缘融合**（接触带法线/软几何） | 无 | Phase A **可选、默认关**；内核与动态融合共用 |
+| **材质融合**（接触带权重/混合） | 无 | Phase A **可选、默认关**；Adhere 复用同内核 |
+| 简化 LOD | `buildPcgCombinedMeshLods` / GTS simplify | Phase A 可选；若开启融合则建议在融合之后 |
 | 射线贴合 | `deform.meshFit` | 保留 |
 | 接触带位置粘合 | 无 | Phase B 动态融合 |
 | **实时可调动态融合** | 无（仅有离线 modifier 求值） | **Phase B 必做**：参数/位姿变更即重算 |
@@ -84,7 +84,7 @@ L7  procgen_editor          MeshModifierEditor 工具条与面板
 1. 在**其他源片**表面上求最近点 \(q\)、法线 \(n\)、对方 `sourceId` / material group（BVH；构建顺序确定性）。
 2. \(d=\|p-q\|\)；超出查询上限则跳过。
 3. \(w_{\mathrm{edge}}=\mathrm{falloff}(1-\mathrm{saturate}(d/\texttt{edgeRadius}))\cdot\texttt{strength}\)。
-4. **边缘融合**：法线与 \(n\) 按 \(w_{\mathrm{edge}}\cdot\texttt{normalsBlend}\) 混合；可选位置软拉向 \(q\)（静态合并默认偏保守：以法线为主、位置软拉可关；粘合默认位置贴合开）。
+4. **边缘融合**：法线与 \(n\) 按 \(w_{\mathrm{edge}}\cdot\texttt{normalsBlend}\) 混合；可选位置软拉向 \(q\)（静态合并若开启融合：默认 `softSnapPositions=false`；动态融合默认位置贴合开）。
 5. \(w_{\mathrm{mat}}=\mathrm{falloff}(1-\mathrm{saturate}(d/\texttt{materialRadius}))\cdot\texttt{materialBlend}\)。
 6. **材质融合**：写入 per-vertex blend 权重（顶点色 alpha 或命名 float 属性，如 `contactBlend`）及对方 material group id（或双权重）；**不改写 UV**。渲染侧用现有/后续材质图做 lerp；CPU 侧保证权重确定性。若引擎暂无运行时双材质采样，v1 至少产出可烘焙的权重属性 + 文档约定，并提供「Bake 到单一 atlas/顶点色近似」的可选路径之一（实现时选一种写死并测通）。
 
@@ -92,7 +92,7 @@ L7  procgen_editor          MeshModifierEditor 工具条与面板
 
 ---
 
-## Phase A — 静态合并（拼接 + 边缘/材质融合）
+## Phase A — 静态合并（默认拼接；融合可选且默认关）
 
 ### A1. 领域 API
 
@@ -100,59 +100,66 @@ L7  procgen_editor          MeshModifierEditor 工具条与面板
 MeshMergePlan
   - appendSource(const MeshBuild&, transform, defaultMaterialId)
   - options:
-      weldTolerance (optional)          // 硬距离焊，与软边缘融合可并存
-      simplifyProfile (optional)        // 建议 fuse 之后
+      weldTolerance (optional)
+      simplifyProfile (optional)
       mergeVertexColors
       pivotMode (firstSource | worldOrigin)
-      // 接触带融合（v1 一等公民；radius=0 可关闭）
-      edgeRadius, materialRadius
+      // 接触带融合：可选；默认全部关闭
+      enableContactBlend (bool, default false)
+      edgeRadius, materialRadius          // 仅 enableContactBlend 时生效
       strength, falloff
       normalsBlend, materialBlend
-      softSnapPositions (bool, default false for static merge)
+      softSnapPositions (bool, default false)
 
 Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 ```
 
 流水线（成功才替换输出）：
 
-1. 变换并拼接各源（保留 per-vertex `sourceId` / material group）。
+1. 变换并拼接各源（保留 per-vertex `sourceId` / material group，便于后续可选融合）。
 2. 可选 `weld`（硬拓扑合并）。
-3. **`MeshContactBlend`**：跨 source 边缘融合 + 材质融合。
+3. **仅当 `enableContactBlend==true`**：跑 `MeshContactBlend`（边缘 + 材质融合）。默认跳过本步，行为对齐纯拼接。
 4. 可选 simplify LOD。
 5. 按 pivotMode 重定位。
+
+默认值契约：
+
+- 新建 `MeshMergePlan` / 编辑器「Merge」对话框：`enableContactBlend=false`，融合半径与 blend 强度为 0 或不生效。
+- 用户勾选「接触带融合」后才应用 `edgeRadius` / `materialBlend` 等；文档与 UI 不得暗示默认已融合。
 
 约束：
 
 - 输入仅借用；失败不发布部分网格。
 - 诊断：`procgen.mesh.merge.*` / `procgen.mesh.blend.*`。
-- `combinePcgStaticMeshes` 可继续作「纯拼接、无融合」底层；canonical 作者入口是 `mergeStaticMeshes`（含融合）。文档标明二者差异，避免双真相。
+- `combinePcgStaticMeshes` 可作底层拼接；`mergeStaticMeshes` 为 canonical 作者入口（默认无融合，可选开融合）。避免「默认会融合」的双真相。
 - Pivot：`firstSource` / `worldOrigin` 对齐 UE 常见选项。
 - 物理碰撞合并仍非本 PR 承诺。
 
 ### A2. 图 / 脚本
 
-- `eve.mergeStaticMeshes(plan)`；融合参数与 C++ 同构。
-- 现有 `mesh.merge`（二输入 append）保留为无融合快路径；文档引导需要缝线融合时走新门面。
+- `eve.mergeStaticMeshes(plan)`；融合参数与 C++ 同构；脚本侧默认亦为关闭融合。
+- 现有 `mesh.merge`（二输入 append）保留；需要缝线融合时设 `enableContactBlend=true`。
 
 ### A3. 编辑器
 
-- 选中多网格 → Merge → 选项含 **Edge Radius / Material Blend / Normals Blend**（及 weld/simplify）。
+- 选中多网格 → Merge → **默认不勾选融合**；选项区含可选 Edge / Material / Normals Blend（及 weld/simplify）。
 - 「替换源」可选事务；失败回滚。
 - 主线程亲和；不在持锁时调脚本。
 
 ### A4. 验收
 
-- 拼接：两/三网格变换、材质 group、weld 开/关、空计划失败、确定性。
-- **融合**：两相交或贴合的盒子/平面——`edgeRadius>0` 时接缝法线连续（夹具度量）；`materialBlend>0` 时边界顶点权重落入 (0,1)；`edgeRadius=0` 且 `materialBlend=0` 时与纯拼接（容差内）一致。
-- 组合：合并 → `CanonicalMesh` 往返（含 blend 属性）。
-- usr 文档：写清融合属性名、与「仅 combine」的差异。
+- 默认路径：两/三网格变换合并与纯拼接（容差内）一致；不写 blend 属性（或权重全 0）。
+- 显式开启融合：`enableContactBlend=true` 且半径/强度 >0 时接缝法线连续、材质权重落入 (0,1)。
+- weld 开/关、空计划失败、确定性。
+- 组合：默认合并与开启融合各一条 → `CanonicalMesh` 往返。
+- usr 文档：写清默认关闭、如何开启、融合属性名。
 
 ### A5. 实现顺序（同 PR 内）
 
 1. `MeshContactBlend` + 单测（法线/材质权重夹具）。
-2. `MeshMergePlan` + `mergeStaticMeshes`（拼接 → blend → 可选 weld/simplify）+ 单测。
+2. `MeshMergePlan` + `mergeStaticMeshes`（默认跳过 blend；可选开启）+ 单测。
 3. 脚本绑定 + usr 文档。
-4. Editor 合并工具（含融合滑条）。
+4. Editor 合并工具（融合开关默认关）。
 
 ---
 
@@ -183,6 +190,7 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 | | 静态合并 | 动态融合 |
 |--|----------|----------|
 | 时机 | 作者提交一次 | 引擎持续/按需求值 |
+| 融合 | **可选，默认关** | 路径核心，实时求值 |
 | 参数 | 写入 plan 后算完即固定 | **随时改** strength/radius/… 与 A/B 位姿 |
 | 源网格 | 可替换为合并结果 | 源保持权威；显示为派生 |
 | Bake | 合并本身即提交 | **可选**冻结；不 Bake 也可用于运行时 |
@@ -252,14 +260,14 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 | 最近点查询在大网格上过慢 | v1 加 BVH；测大网格上限；允许后续 worker 线程（纯函数、无回调） |
 | 融合/粘合产生自交或材质闪烁 | 夹具 + 参数钳制；静态合并默认 `softSnapPositions=false`；文档警告过大半径 |
 | 材质融合无运行时双采样 | v1 固定一种可测路径（权重属性 ± 顶点色近似）；完整双材质 shading 放 B2 |
-| 与 meshFit / 纯 combine 混淆 | usr 对照表；编辑器默认打开融合滑条 |
+| 与 meshFit / 纯 combine 混淆 | usr 对照表；静态合并 UI **默认关融合**，避免误开 |
 | 把 GPL/UE 代码带入仓库 | 仅读公开文档；审查禁止第三方摘录 |
-| combine 旧 API 双真相 | canonical = 含融合的 `mergeStaticMeshes`；纯拼接保留并文档化 |
+| combine 旧 API 双真相 | canonical = `mergeStaticMeshes`（默认无融合）；融合为显式选项 |
 
 ## 交付方式（单 PR）
 
 - **计划文档**可先合入（本文件所在变更）。
-- **实现**同一 PR 交付：共享 `MeshContactBlend` + Phase A（静态合并含边缘/材质融合）+ Phase B（**引擎实时动态融合**：随时调参/位姿重算 + 可选 Bake + 编辑器/脚本）。本地顺序：共享内核 → A → B；不拆功能 PR。
+- **实现**同一 PR 交付：共享 `MeshContactBlend` + Phase A（静态合并默认拼接，**融合可选默认关**）+ Phase B（**引擎实时动态融合**：随时调参/位姿重算 + 可选 Bake + 编辑器/脚本）。本地顺序：共享内核 → A → B；不拆功能 PR。
 - B3 增强（GPU compute、完整双材质 shading 等）不进该实现 PR。
 - 合并前跑通：`procgen_mesh*`、融合夹具、动态调参 revision 测、`check/architecture-contracts`、格式检查。
 
@@ -272,11 +280,11 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 ## 交接检查清单（唯一实现 PR）
 
 - [ ] `MeshContactBlend` 落地；静态合并与 Adhere 共用
-- [ ] Phase A：拼接 + **边缘融合 + 材质融合** + 脚本 + 编辑器
-- [ ] Phase B v1：`deform.meshAdhere` + 会话 + 编辑器（含材质/法线融合）
-- [ ] Canonical API 与诊断码已文档化；纯 combine vs 融合 merge 无双真相
+- [ ] Phase A：默认无融合拼接 + **可选**边缘/材质融合（默认关）+ 脚本 + 编辑器
+- [ ] Phase B：动态融合 live（调参/位姿随时重算、源权威、可选 Bake）+ 编辑器实时滑条
+- [ ] Canonical API 与诊断码已文档化；纯 combine vs 静态融合 merge vs 动态 live 无双真相
 - [ ] Adhere 与 meshFit 分工写清；blend 属性名两端一致
 - [ ] 确定性与线程/重入注释齐全
-- [ ] 单测含边缘/材质融合夹具 + 至少一条组合路径
+- [ ] 单测含边缘/材质融合夹具 + 动态 revision 调参/RemoveSetup + 至少一条组合路径
 - [ ] `check/architecture-contracts` 与相关 `make test FILTER=procgen_mesh*` 通过
-- [ ] 无第三方源码摘录；B2 未偷加进本 PR
+- [ ] 无第三方源码摘录；B3 未偷加进本 PR
