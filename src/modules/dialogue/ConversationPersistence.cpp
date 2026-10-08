@@ -66,12 +66,6 @@ std::string trim(std::string text) {
     return first >= last.base() ? std::string{} : std::string(first, last.base());
 }
 
-template <class T = void>
-eve::Result<T> persistenceFailure(eve::DiagnosticCode code, const std::string& message, const std::string& path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, message, path, {}, "dialogue.persistence"));
-}
-
 }  // namespace
 
 eve::Result<std::string> conversationStateToJson(const StateValue& state) {
@@ -80,9 +74,11 @@ eve::Result<std::string> conversationStateToJson(const StateValue& state) {
         Poco::JSON::Stringifier::stringify(stateToVar(state), output);
         return eve::Result<std::string>::success(output.str());
     } catch (const Poco::Exception& e) {
-        return persistenceFailure<std::string>(eve::DiagnosticCode::SerializationError, e.displayText(), "save");
+        return eve::Result<std::string>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, e.displayText(), "save", {}, "dialogue.persistence"));
     } catch (const std::exception& e) {
-        return persistenceFailure<std::string>(eve::DiagnosticCode::SerializationError, e.what(), "save");
+        return eve::Result<std::string>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, e.what(), "save", {}, "dialogue.persistence"));
     }
 }
 
@@ -90,13 +86,15 @@ eve::Result<StateValue> conversationStateFromJson(const std::string& json) {
     try {
         StateValue state = varToState(Poco::JSON::Parser().parse(json));
         if (!state.isObject())
-            return persistenceFailure<StateValue>(eve::DiagnosticCode::ParseError,
-                                                  "conversation: save JSON root must be an object", "save");
+            return eve::Result<StateValue>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "conversation: save JSON root must be an object", "save", {}, "dialogue.persistence"));
         return eve::Result<StateValue>::success(std::move(state));
     } catch (const Poco::Exception& e) {
-        return persistenceFailure<StateValue>(eve::DiagnosticCode::ParseError, e.displayText(), "save");
+        return eve::Result<StateValue>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, e.displayText(), "save", {}, "dialogue.persistence"));
     } catch (const std::exception& e) {
-        return persistenceFailure<StateValue>(eve::DiagnosticCode::ParseError, e.what(), "save");
+        return eve::Result<StateValue>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, e.what(), "save", {}, "dialogue.persistence"));
     }
 }
 
@@ -104,9 +102,8 @@ eve::Result<void> ConversationSaveMigrations::registerMigration(const std::strin
                                                                 const std::string& currentAssetId,
                                                                 const std::string& nodeMap) {
     if (assetId.empty() || currentAssetId.empty() || fromVersion < 0)
-        return persistenceFailure(eve::DiagnosticCode::InvalidArgument,
-                                  "conversation: migration requires asset IDs and a non-negative version",
-                                  "migration");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "conversation: migration requires asset IDs and a non-negative version", "migration", {}, "dialogue.persistence"));
     Rule               rule{assetId, fromVersion, currentAssetId, {}};
     std::istringstream mappings(nodeMap);
     for (std::string item; std::getline(mappings, item, ',');) {
@@ -114,8 +111,8 @@ eve::Result<void> ConversationSaveMigrations::registerMigration(const std::strin
         const size_t pos = item.find(':');
         if (item.empty()) continue;
         if (pos == std::string::npos || trim(item.substr(0, pos)).empty() || trim(item.substr(pos + 1)).empty())
-            return persistenceFailure(eve::DiagnosticCode::InvalidArgument,
-                                      "conversation: node migration must use old:new pairs", "migration.nodeMap");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "conversation: node migration must use old:new pairs", "migration.nodeMap", {}, "dialogue.persistence"));
         rule.nodes[trim(item.substr(0, pos))] = trim(item.substr(pos + 1));
     }
     auto existing = std::find_if(rules_.begin(), rules_.end(), [&](const Rule& candidate) {
@@ -167,19 +164,21 @@ eve::Result<StateValue> ConversationSaveMigrations::migrate(const StateValue& st
 
     StateValue* active = candidate.find("active");
     if (!active || !active->isBool())
-        return persistenceFailure<StateValue>(eve::DiagnosticCode::SerializationError,
-                                              "conversation: state is missing active", "save.active");
+        return eve::Result<StateValue>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "conversation: state is missing active", "save.active", {}, "dialogue.persistence"));
     if (active->asBool()) {
         StateValue* current = candidate.find("current");
         StateValue* stack   = candidate.find("stack");
         if (!current || !current->isObject() || !stack || !stack->isArray())
-            return persistenceFailure<StateValue>(eve::DiagnosticCode::SerializationError,
-                                                  "conversation: state frames are malformed", "save.frames");
+            return eve::Result<StateValue>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "conversation: state frames are malformed", "save.frames", {}, "dialogue.persistence"));
         if (!migrateFrame(*current))
-            return persistenceFailure<StateValue>(eve::DiagnosticCode::UnknownVersion, error, "save.current");
+            return eve::Result<StateValue>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, error, "save.current", {}, "dialogue.persistence"));
         for (size_t i = 0; i < stack->arraySize(); ++i)
             if (!migrateFrame(stack->at(i)))
-                return persistenceFailure<StateValue>(eve::DiagnosticCode::UnknownVersion, error, "save.stack");
+                return eve::Result<StateValue>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, error, "save.stack", {}, "dialogue.persistence"));
     }
     return eve::Result<StateValue>::success(std::move(candidate));
 }

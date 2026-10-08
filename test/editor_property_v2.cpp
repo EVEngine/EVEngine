@@ -31,7 +31,7 @@ public:
         return std::make_unique<TransformPropertyTarget>(*this);
     }
 
-    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override {
+    [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override {
         auto* typed = dynamic_cast<TransformPropertyTarget*>(candidate.get());
         if (!typed)
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("scene.property.candidate"),
@@ -41,7 +41,7 @@ public:
         return eve::editing::applied<void>();
     }
 
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override {
+    Result<void> applyDomainOperation(const DomainOperation& operation) override {
         if (operation.type != "scene.transform.position.set.v1")
             return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
                                              "Unsupported property operation");
@@ -104,7 +104,7 @@ public:
         return {};
     }
 
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot&, const PropertyPath& path, const EditorValue& value,
+    Result<DomainOperation> makeSet(const SelectionSnapshot&, const PropertyPath& path, const EditorValue& value,
                                           PropertySetMode mode) const override {
         if (path != PropertyPath("transform.position") || mode != PropertySetMode::Absolute)
             return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
@@ -119,7 +119,7 @@ public:
         return eve::editing::applied<DomainOperation>(std::move(operation));
     }
 
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override {
         return makeSet(selection, path, EditorValue::Array{0.0, 0.0, 0.0}, PropertySetMode::Absolute);
     }
@@ -136,11 +136,11 @@ public:
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override {
         return provider_.read(selection, path);
     }
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override {
         return provider_.makeSet(selection, path, value, mode);
     }
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override {
         return provider_.makeReset(selection, path);
     }
@@ -224,7 +224,7 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
                               EditorStatus::Rejected, RuleId("editor.property.path"), "Property path must be a string");
                       auto operation = provider.makeSet(selection, PropertyPath(*path), payload->at("value"),
                                                         PropertySetMode::Absolute);
-                      if (!operation.ok()) return EditorResult<CommandPlan>::failure(operation.status());
+                      if (!operation.ok()) return Result<CommandPlan>::failure(operation.status());
                       CommandPlan plan;
                       plan.operations.push_back(std::move(operation).takeValue());
                       return eve::editing::applied<CommandPlan>(std::move(plan));

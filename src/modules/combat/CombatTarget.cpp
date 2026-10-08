@@ -7,11 +7,6 @@
 namespace eve::combat {
 namespace {
 
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 std::vector<CombatTargetCandidate> sortedUnique(std::vector<CombatTargetCandidate> candidates, SubjectRef owner) {
     candidates.erase(std::remove_if(candidates.begin(), candidates.end(),
                                     [&](const CombatTargetCandidate& candidate) {
@@ -30,7 +25,8 @@ std::vector<CombatTargetCandidate> sortedUnique(std::vector<CombatTargetCandidat
 }  // namespace
 
 Result<void> CombatTargetRuntime::registerOwner(SubjectRef owner) {
-    if (!owner.isValid()) return invalid("owner is nil", "owner");
+    if (!owner.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "owner is nil", "owner"));
     locks_.emplace(owner.format(), CombatLockState{owner, std::nullopt, false});
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -107,7 +103,8 @@ Result<CombatLockState> CombatTargetRuntime::clear(SubjectRef owner) {
 }
 
 Result<void> CombatTargetRuntime::forgetTarget(SubjectRef target) {
-    if (!target.isValid()) return invalid("target is nil", "target");
+    if (!target.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "target is nil", "target"));
     for (auto& [key, lock] : locks_) {
         (void)key;
         if (lock.target && *lock.target == target) {

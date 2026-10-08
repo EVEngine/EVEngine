@@ -44,16 +44,19 @@ eve_declare_module(NAME archspace_editing LAYER 5
 eve_declare_module(NAME camera_editing LAYER 5
                    DEPS camera editing
                    GROUP 3d web)
+# BuildingTarget.cpp is the only TU; without building the module would be empty.
+# building itself is off on web (Poco), so this satellite is not in GROUP web.
 eve_declare_module(NAME building_editing LAYER 5
-                   DEPS editing
-                   OPTIONAL_DEPS building
-                   GROUP 2d 3d web)
+                   DEPS building editing
+                   GROUP 2d 3d)
 eve_declare_module(NAME level_editing LAYER 5
                    DEPS editing
                    GROUP 2d 3d web)
+# Bone/skin attach uses animation runtime (Assimp-free). Animation's Assimp
+# import is OPTIONAL_DEPS model3d. Web membership still waits on animation's
+# Spine JSON (Poco) path. Config/effect JSON already uses common/Json.
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS action animation data filesystem graphics ik stylize
-                   THIRDPARTY poco
                    GROUP 2d 3d)
 # Optional Action adapter for layered AttackVfx recipes (presentation:attack-vfx*).
 # audio/sound are optional: WASM/web profiles do not ship Wuff/OpenAL; the Audio
@@ -101,9 +104,11 @@ eve_declare_module(NAME climbing LAYER 5 SCRIPT Climbing SLOT climbing
 eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    DEPS gpgpu
                    GROUP 3d web)
+# WGSL compute path is shared by native Dawn and the browser profile. No Assimp
+# / Poco / OpenAL in the closure (only data + gpgpu + graphics).
 eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT VirtualGeometry
                    DEPS data gpgpu graphics
-                   GROUP 3d)
+                   GROUP 3d web)
 # HD-2D: extrudes a 2D map::TileLayer into a 3D terrain mesh (TileMap3D) and
 # renders 2D sprite sheets / characters as camera-facing 3D billboards
 # (Sprite3D) via the ECS Renderable3D forward path.
@@ -155,7 +160,8 @@ eve_declare_module(NAME avatar_editor LAYER 7 SCRIPT AvatarEditorModule SLOT ava
                    DEPS avatar_editing editor GROUP 3d)
 eve_declare_module(NAME biome_editor LAYER 7 DEPS biome_editing editor procgen
                    SCRIPT BiomeEditorModule SLOT biomeEditor GROUP 3d)
-eve_declare_module(NAME building_editor LAYER 7 DEPS building_editing editor GROUP 2d 3d web)
+# building_editing requires building (Poco); keep off web/WASM with building.
+eve_declare_module(NAME building_editor LAYER 7 DEPS building_editing editor GROUP 2d 3d)
 eve_declare_module(NAME domain_gizmo_editor LAYER 7 DEPS domain_gizmo_editing editor GROUP 3d web)
 eve_declare_module(NAME camera_editor LAYER 7 DEPS camera_editing domain_gizmo_editor editor GROUP 3d web)
 eve_declare_module(NAME crowd_editor LAYER 7 DEPS crowd_editing editor GROUP 2d 3d web)
@@ -207,7 +213,7 @@ eve_declare_module(NAME voxel_editor LAYER 7 DEPS editor voxel_editing
 # L6 -- orchestration (continued)
 eve_declare_module(NAME virtualgeometry_editing LAYER 6
                    DEPS editing virtualgeometry
-                   GROUP 3d)
+                   GROUP 3d web)
 eve_declare_module(NAME hd2d_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS hd2d
@@ -226,10 +232,12 @@ eve_declare_module(NAME fluids_editing LAYER 6
 eve_declare_module(NAME gpuagents_editing LAYER 6
                    DEPS editing gpuagents
                    GROUP 3d web)
+# Authoring documents stay available without the dialogue runtime (audio/avatar
+# are trimmed on WASM). Runtime bridges drop out via OPTIONAL_DEPS.
 eve_declare_module(NAME dialogue_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS dialogue
-                   GROUP web)
+                   GROUP 3d web)
 eve_declare_module(NAME localization_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS audio dialogue
@@ -270,17 +278,15 @@ eve_declare_module(NAME procgen_animation DIR procgen/animation LAYER 6
                    SCRIPT ProcgenAnimation SLOT procgenAnimation
                    DEPS animation procgen
                    GROUP 3d)
+# Precipitation (Weather) only needs graphics. Interactive Snow applies to
+# procgen heightmaps and is an OPTIONAL_DEPS bridge: when procgen is off
+# (web/WASM, or an explicit trim), Snow.cpp is excluded and the Snow script
+# slot is dropped in src/modules/CMakeLists.txt so the profile does not pull
+# procgen -> map (map JSON/TSX no longer pulls Poco).
 eve_declare_module(NAME weather LAYER 6 SCRIPT Weather Snow SLOT weather snow
-                   DEPS graphics procgen
+                   DEPS graphics
+                   OPTIONAL_DEPS procgen
                    GROUP 3d web)
-if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    # Browser weather keeps the pre-merge surface. Interactive snow has always
-    # been a native 3D feature and would otherwise pull procgen -> map -> Poco
-    # into the WASM closure, where Poco is intentionally unavailable.
-    set(EVE_MODULE_weather_SCRIPT Weather CACHE INTERNAL "" FORCE)
-    set(EVE_MODULE_weather_SLOT weather CACHE INTERNAL "" FORCE)
-    set(EVE_MODULE_weather_DEPS graphics CACHE INTERNAL "" FORCE)
-endif()
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS action animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp

@@ -33,7 +33,7 @@ eve::Result<double> checkedNumber(double value, std::string_view name) {
 eve::Result<settlement::SettlementRequest> requestFailure(eve::DiagnosticCode code, std::string message,
                                                            std::string path) {
     return eve::Result<settlement::SettlementRequest>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path)));
+        eve::Diagnostic::error(code, message, path));
 }
 
 eve::Result<settlement::SettlementRequest> requestFailure(eve::Status status) {

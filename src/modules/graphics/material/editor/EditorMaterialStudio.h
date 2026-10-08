@@ -44,31 +44,31 @@ public:
                              IMaterialPreviewRenderer& renderer);
 
     /** @brief Replace preview geometry, camera, resolution, and environment settings. */
-    [[nodiscard]] EditorResult<void> setPreviewSettings(MaterialPreviewSettings settings);
+    [[nodiscard]] Result<void> setPreviewSettings(MaterialPreviewSettings settings);
     /** @brief Start one coalesced property gesture from the current live document revision. */
-    [[nodiscard]] EditorResult<void> beginInteraction(PropertyPath path);
+    [[nodiscard]] Result<void> beginInteraction(PropertyPath path);
     /** @brief Update the owned draft and mark its isolated preview dirty. */
-    [[nodiscard]] EditorResult<void> updateInteraction(EditorValue value);
+    [[nodiscard]] Result<void> updateInteraction(EditorValue value);
     /** @brief Atomically publish the final draft value as one undoable transaction. */
-    [[nodiscard]] EditorResult<TransactionReceipt> commitInteraction();
+    [[nodiscard]] Result<TransactionReceipt> commitInteraction();
     /** @brief Abandon the draft without changing the live material. */
-    [[nodiscard]] EditorResult<void> cancelInteraction();
+    [[nodiscard]] Result<void> cancelInteraction();
     /**
      * @brief Render a dirty preview when the injected monotonic time reaches the rate limit.
      * @param monotonicMilliseconds Host-provided monotonic time; wall-clock time is not read.
      * @return Applied when rendered, NoOp when clean or rate-limited, otherwise a diagnostic.
      */
-    [[nodiscard]] EditorResult<void> tick(std::uint64_t monotonicMilliseconds);
+    [[nodiscard]] Result<void> tick(std::uint64_t monotonicMilliseconds);
     /** @brief Force an isolated preview of the current draft or live document. */
-    [[nodiscard]] EditorResult<void> refreshPreview();
+    [[nodiscard]] Result<void> refreshPreview();
     /** @brief Set the maximum preview rate; valid range is 1 to 240 Hz. */
-    [[nodiscard]] EditorResult<void> setPreviewRate(double framesPerSecond);
+    [[nodiscard]] Result<void> setPreviewRate(double framesPerSecond);
     /** @brief Return an owning snapshot suitable for any developer or in-game UI host. */
     [[nodiscard]] MaterialStudioState state() const;
 
 private:
     [[nodiscard]] SelectionSnapshot  selectionFor(const MaterialDocumentTarget& material) const;
-    [[nodiscard]] EditorResult<void> renderPreview(const MaterialDocumentTarget& material);
+    [[nodiscard]] Result<void> renderPreview(const MaterialDocumentTarget& material);
     void                             clearInteraction();
 
     DocumentId                              document_;

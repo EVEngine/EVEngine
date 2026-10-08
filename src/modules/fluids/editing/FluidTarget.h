@@ -21,8 +21,7 @@ using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
 
-template <class T>
-using EditorResult           = editing::Result<T>;
+using editing::Result;
 using EditorStatus           = editing::Status;
 using EditorValue            = editing::Value;
 using IDomainOperationTarget = editing::IDomainOperationTarget;
@@ -83,13 +82,13 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                         queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return an immutable settings copy. */
     FluidSimulationSettings settings() const { return settings_; }
@@ -101,7 +100,7 @@ public:
     /** @brief Capture deterministic settings. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load schema-version-one settings. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     bool                    matches(const SelectionSnapshot& selection) const;
@@ -113,7 +112,7 @@ private:
 class FluidSimulationRuntimeApplier {
 public:
     /** @brief Apply validated mutable solver parameters; capacity remains runtime-owned. */
-    EditorResult<void> apply(const FluidSimulationTarget& target, fluids::FluidSimulation* simulation) const;
+    Result<void> apply(const FluidSimulationTarget& target, fluids::FluidSimulation* simulation) const;
 };
 
 }  // namespace eve::fluids_editing

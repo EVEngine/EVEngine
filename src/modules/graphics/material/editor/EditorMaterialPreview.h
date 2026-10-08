@@ -48,12 +48,12 @@ public:
 class EVENGINE_API_EDITORS MaterialPreviewService {
 public:
     /** @brief Validate and render a material snapshot in a unique isolated scene. */
-    EditorResult<TaskId> render(const DocumentId& document, const MaterialDocumentTarget& material,
+    Result<TaskId> render(const DocumentId& document, const MaterialDocumentTarget& material,
                                 MaterialPreviewSettings settings, IMaterialPreviewRenderer& renderer);
     /** @brief Return one immutable render result. */
-    EditorResult<MaterialPreviewRenderResult> result(const TaskId& task) const;
+    Result<MaterialPreviewRenderResult> result(const TaskId& task) const;
     /** @brief Publish only a successful result matching the current document revision. */
-    EditorResult<void> publish(const DocumentId& document, Revision currentRevision, const TaskId& task);
+    Result<void> publish(const DocumentId& document, Revision currentRevision, const TaskId& task);
     /** @brief Return the most recently published artifact for a document. */
     std::string publishedArtifact(const DocumentId& document) const;
 

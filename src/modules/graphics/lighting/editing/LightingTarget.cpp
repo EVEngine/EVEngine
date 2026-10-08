@@ -125,7 +125,7 @@ void* LightingPropertyTargetBase::queryCapability(const CapabilityId& capability
                                                                                : nullptr;
 }
 
-EditorResult<void> LightingPropertyTargetBase::applyDomainOperation(const DomainOperation& operation) {
+Result<void> LightingPropertyTargetBase::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.lighting.target-mismatch"),
                                           "Lighting operation targets another document");
@@ -165,7 +165,7 @@ PropertyReadResult LightingPropertyTargetBase::read(const SelectionSnapshot& sel
                                   : PropertyReadResult{PropertyReadState::Value, found->second, {}};
 }
 
-EditorResult<DomainOperation> LightingPropertyTargetBase::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> LightingPropertyTargetBase::makeSet(const SelectionSnapshot& selection,
                                                                   const PropertyPath& path, const EditorValue& assigned,
                                                                   PropertySetMode mode) const {
     if (!selectionMatches(selection))
@@ -181,7 +181,7 @@ EditorResult<DomainOperation> LightingPropertyTargetBase::makeSet(const Selectio
                                                      RuleId("editor.lighting.property-unsupported"),
                                                      "Lighting property is unknown: " + path.value());
     auto valid = validatePropertyValue(*descriptor, assigned);
-    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
+    if (!valid.ok()) return Result<DomainOperation>::failure(valid.status());
     const auto          previous = values_.find(path.value());
     EditorValue::Object payload{{"path", path.value()}, {"value", assigned}};
     EditorValue::Object inverse{{"path", path.value()}, {"value", previous->second}};
@@ -196,7 +196,7 @@ EditorResult<DomainOperation> LightingPropertyTargetBase::makeSet(const Selectio
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> LightingPropertyTargetBase::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> LightingPropertyTargetBase::makeReset(const SelectionSnapshot& selection,
                                                                     const PropertyPath&      path) const {
     auto descriptor = schema_.find(path);
     if (!descriptor)
@@ -212,7 +212,7 @@ EditorValue LightingPropertyTargetBase::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"properties", std::move(properties)}};
 }
 
-EditorResult<void> LightingPropertyTargetBase::loadSnapshot(const EditorValue& snapshot) {
+Result<void> LightingPropertyTargetBase::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionValue    = field(snapshot, "schemaVersion");
     const EditorValue* propertiesValue = field(snapshot, "properties");
     const auto*        version         = versionValue ? versionValue->getIf<int64_t>() : nullptr;

@@ -40,7 +40,7 @@ void* PhysicsJointTarget::queryCapability(const CapabilityId& capability) {
                                                                          : nullptr;
 }
 
-EditorResult<void> PhysicsJointTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> PhysicsJointTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "physics.joint.property.set.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.joint-operation"),
                                           "Operation is not valid for this physics joint");
@@ -66,7 +66,7 @@ std::unique_ptr<IDomainOperationTarget> PhysicsJointTarget::cloneDomainState() c
     return std::make_unique<PhysicsJointTarget>(*this);
 }
 
-EditorResult<void> PhysicsJointTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> PhysicsJointTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<PhysicsJointTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.physics.joint-candidate-mismatch"),
@@ -92,7 +92,7 @@ PropertyReadResult PhysicsJointTarget::read(const SelectionSnapshot& selection, 
                                   : PropertyReadResult{PropertyReadState::Value, found->second, {}};
 }
 
-EditorResult<DomainOperation> PhysicsJointTarget::makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+Result<DomainOperation> PhysicsJointTarget::makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                                           const EditorValue& value, PropertySetMode mode) const {
     if (!selectionMatches(selection) || mode != PropertySetMode::Absolute)
         return eve::editing::failed<DomainOperation>(
@@ -104,7 +104,7 @@ EditorResult<DomainOperation> PhysicsJointTarget::makeSet(const SelectionSnapsho
                                                      "Unknown joint property: " + path.value());
     auto valid = validatePropertyValue(*descriptor, value);
     if (!valid.ok()) {
-        return EditorResult<DomainOperation>::failure(valid.status());
+        return Result<DomainOperation>::failure(valid.status());
     }
     auto payload = [&](const EditorValue& assigned) {
         EditorValue::Object object;
@@ -123,7 +123,7 @@ EditorResult<DomainOperation> PhysicsJointTarget::makeSet(const SelectionSnapsho
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> PhysicsJointTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> PhysicsJointTarget::makeReset(const SelectionSnapshot& selection,
                                                             const PropertyPath&      path) const {
     auto descriptor = jointSchema().find(path);
     if (!descriptor)

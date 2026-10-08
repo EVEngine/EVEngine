@@ -110,7 +110,7 @@ void SequenceRuntime::restoreExecutionState(ExecutionState state) {
 eve::Result<void> SequenceRuntime::fail(eve::DiagnosticCode code, std::string message, std::string path) {
     failureText_ = message;
     return eve::Result<void>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "dnut.runtime"));
+        eve::Diagnostic::error(code, message, path, {}, "dnut.runtime"));
 }
 
 void SequenceRuntime::emit(EventKind kind, const SequenceNode* node, const std::string& detail) const {

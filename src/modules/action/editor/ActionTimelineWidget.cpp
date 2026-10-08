@@ -19,7 +19,7 @@ constexpr float kNotifyWidth  = 8.0f;
 constexpr std::size_t kMaximumWaveformBuckets = 512;
 constexpr std::size_t kMaximumCurveSegments   = 128;
 
-EditorResult<void> widgetError(std::string rule, std::string message, EditorStatus status = EditorStatus::Rejected) {
+Result<void> widgetError(std::string rule, std::string message, EditorStatus status = EditorStatus::Rejected) {
     return eve::editing::failed<void>(status, RuleId(std::move(rule)), std::move(message));
 }
 
@@ -66,9 +66,9 @@ Duration difference(Duration left, Duration right) {
     return Duration::fromNanoseconds(left.nanoseconds() - right.nanoseconds());
 }
 
-EditorResult<void> adapt(const EditorResult<std::size_t>& result, std::string rule, std::string message) {
+Result<void> adapt(const Result<std::size_t>& result, std::string rule, std::string message) {
     if (result.ok()) return eve::editing::applied<void>();
-    if (!result.diagnostics().empty()) return EditorResult<void>::failure(result.status());
+    if (!result.diagnostics().empty()) return Result<void>::failure(result.status());
     return eve::editing::failed<void>(result.code(), RuleId(std::move(rule)), std::move(message));
 }
 
@@ -166,7 +166,7 @@ std::string_view timelineItemVisualName(TimelineItemVisual visual) noexcept {
 ActionTimelineWidget::ActionTimelineWidget(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry)
     : editor_(editor), registry_(registry) {}
 
-EditorResult<void> ActionTimelineWidget::setViewport(float width, float rowHeight, float labelWidth) {
+Result<void> ActionTimelineWidget::setViewport(float width, float rowHeight, float labelWidth) {
     if (!std::isfinite(width) || !std::isfinite(rowHeight) || !std::isfinite(labelWidth) || width <= 0.0f ||
         rowHeight < 12.0f || labelWidth < 0.0f || labelWidth + 16.0f >= width)
         return widgetError("editor.action.timeline.widget.viewport", "Timeline widget dimensions are invalid");
@@ -176,14 +176,14 @@ EditorResult<void> ActionTimelineWidget::setViewport(float width, float rowHeigh
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::setSnapInterval(Duration interval) {
+Result<void> ActionTimelineWidget::setSnapInterval(Duration interval) {
     if (interval < Duration::zero())
         return widgetError("editor.action.timeline.widget.snap", "Timeline snap interval must be non-negative");
     snapInterval_ = interval;
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::setVisibleRange(Duration start, Duration end) {
+Result<void> ActionTimelineWidget::setVisibleRange(Duration start, Duration end) {
     const Duration duration = editor_.target().timeline().duration;
     if (start < Duration::zero() || end <= start || end > duration)
         return widgetError("editor.action.timeline.widget.visible-range",
@@ -193,7 +193,7 @@ EditorResult<void> ActionTimelineWidget::setVisibleRange(Duration start, Duratio
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::zoom(double factor, double normalizedAnchor) {
+Result<void> ActionTimelineWidget::zoom(double factor, double normalizedAnchor) {
     if (!std::isfinite(factor) || factor <= 0.0 || !std::isfinite(normalizedAnchor) || normalizedAnchor < 0.0 ||
         normalizedAnchor > 1.0)
         return widgetError("editor.action.timeline.widget.zoom", "Timeline zoom factor or anchor is invalid");
@@ -212,7 +212,7 @@ EditorResult<void> ActionTimelineWidget::zoom(double factor, double normalizedAn
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::pan(Duration delta) {
+Result<void> ActionTimelineWidget::pan(Duration delta) {
     const Duration duration = editor_.target().timeline().duration;
     const Duration start    = visibleEnd_ > visibleStart_ ? visibleStart_ : Duration::zero();
     const Duration end      = visibleEnd_ > visibleStart_ ? visibleEnd_ : duration;
@@ -496,7 +496,7 @@ std::optional<TimelineHit> ActionTimelineWidget::hitTest(float x, float y) const
     return std::nullopt;
 }
 
-EditorResult<void> ActionTimelineWidget::pointerDown(float x, float y, bool additiveSelection) {
+Result<void> ActionTimelineWidget::pointerDown(float x, float y, bool additiveSelection) {
     if (drag_) return widgetError("editor.action.timeline.widget.drag-active", "A timeline drag is already active");
     const auto hit = hitTest(x, y);
     if (!hit) {
@@ -516,7 +516,7 @@ EditorResult<void> ActionTimelineWidget::pointerDown(float x, float y, bool addi
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::updateDrag(float x) {
+Result<void> ActionTimelineWidget::updateDrag(float x) {
     if (!drag_) return widgetError("editor.action.timeline.widget.drag-missing", "No timeline drag is active");
     const Duration cursor   = xToTime(x);
     const Duration duration = editor_.target().timeline().duration;
@@ -573,9 +573,9 @@ EditorResult<void> ActionTimelineWidget::updateDrag(float x) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::pointerMove(float x) { return updateDrag(x); }
+Result<void> ActionTimelineWidget::pointerMove(float x) { return updateDrag(x); }
 
-EditorResult<void> ActionTimelineWidget::pointerUp(float x) {
+Result<void> ActionTimelineWidget::pointerUp(float x) {
     auto updated = updateDrag(x);
     if (!updated.ok()) return updated;
     const DragState completed = *drag_;
@@ -601,13 +601,13 @@ EditorResult<void> ActionTimelineWidget::pointerUp(float x) {
     return editor_.moveItem(completed.itemId, difference(completed.previewStart, completed.originalStart));
 }
 
-EditorResult<void> ActionTimelineWidget::seek(float x) { return editor_.seek(xToTime(x)); }
+Result<void> ActionTimelineWidget::seek(float x) { return editor_.seek(xToTime(x)); }
 
-EditorResult<void> ActionTimelineWidget::inspectSelection(IEditorInspector& inspector) {
+Result<void> ActionTimelineWidget::inspectSelection(IEditorInspector& inspector) {
     const auto selected = editor_.selectedItemIds();
     if (selected.size() > 1) {
         auto range = editor_.selectionRange();
-        if (!range.ok()) return EditorResult<void>::failure(range.status());
+        if (!range.ok()) return Result<void>::failure(range.status());
         float       startSeconds = static_cast<float>(range.value().start.seconds());
         float       endSeconds   = static_cast<float>(range.value().end.seconds());
         const float maximum = static_cast<float>(editor_.target().timeline().duration.seconds());
@@ -795,7 +795,7 @@ std::vector<TimelineWidgetCommandDescriptor> ActionTimelineWidget::commands() co
             {TimelineWidgetCommand::PlayPause, editor_.playing() ? "Pause" : "Play", "Space", true}};
 }
 
-EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
+Result<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
     switch (command) {
         case TimelineWidgetCommand::Copy: {
             const auto selected = editor_.selectedItemIds();
@@ -822,12 +822,12 @@ EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
         case TimelineWidgetCommand::Undo: {
             auto result = editor_.undo();
             if (result.ok()) return eve::editing::applied<void>();
-            return EditorResult<void>::failure(result.status());
+            return Result<void>::failure(result.status());
         }
         case TimelineWidgetCommand::Redo: {
             auto result = editor_.redo();
             if (result.ok()) return eve::editing::applied<void>();
-            return EditorResult<void>::failure(result.status());
+            return Result<void>::failure(result.status());
         }
         case TimelineWidgetCommand::PlayPause:
             if (editor_.playing())
@@ -840,7 +840,7 @@ EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
                        EditorStatus::Unsupported);
 }
 
-EditorResult<void> ActionTimelineWidget::handleShortcut(std::string_view shortcut) {
+Result<void> ActionTimelineWidget::handleShortcut(std::string_view shortcut) {
     if (shortcut == "Ctrl+C") return invoke(TimelineWidgetCommand::Copy);
     if (shortcut == "Ctrl+V") return invoke(TimelineWidgetCommand::Paste);
     if (shortcut == "Delete" || shortcut == "Backspace") return invoke(TimelineWidgetCommand::DeleteSelection);
@@ -868,7 +868,7 @@ LogicalId ActionTimelineWidget::generatedItemId() {
     }
 }
 
-EditorResult<void> ActionTimelineWidget::addNotifyAtCursor(const LogicalId& trackId, std::string_view type,
+Result<void> ActionTimelineWidget::addNotifyAtCursor(const LogicalId& trackId, std::string_view type,
                                                            Value::Object payload) {
     auto parsed = LogicalId::parse(type);
     if (!parsed) return widgetError("editor.action.timeline.widget.type-invalid", "Notify type is invalid");
@@ -879,7 +879,7 @@ EditorResult<void> ActionTimelineWidget::addNotifyAtCursor(const LogicalId& trac
     return editor_.addNotify(trackId, {event.itemId, event.type, event.time, std::move(payload)});
 }
 
-EditorResult<void> ActionTimelineWidget::addStateAtCursor(const LogicalId& trackId, std::string_view type,
+Result<void> ActionTimelineWidget::addStateAtCursor(const LogicalId& trackId, std::string_view type,
                                                           Duration duration, Value::Object payload) {
     if (duration < Duration::zero())
         return widgetError("editor.action.timeline.widget.state-duration", "Notify-state duration is negative");

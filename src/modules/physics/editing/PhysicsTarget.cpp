@@ -42,7 +42,7 @@ void* PhysicsColliderTarget::queryCapability(const CapabilityId& capability) {
                                                                             : nullptr;
 }
 
-EditorResult<void> PhysicsColliderTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> PhysicsColliderTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.target-mismatch"),
                                           "Physics operation targets another collider");
@@ -71,7 +71,7 @@ std::unique_ptr<IDomainOperationTarget> PhysicsColliderTarget::cloneDomainState(
     return std::make_unique<PhysicsColliderTarget>(*this);
 }
 
-EditorResult<void> PhysicsColliderTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> PhysicsColliderTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<PhysicsColliderTarget*>(candidate.get());
     if (!typed || typed->id_ != id_ || typed->dimensions_ != dimensions_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.physics.candidate-mismatch"),
@@ -97,7 +97,7 @@ PropertyReadResult PhysicsColliderTarget::read(const SelectionSnapshot& selectio
                                   : PropertyReadResult{PropertyReadState::Value, found->second, {}};
 }
 
-EditorResult<DomainOperation> PhysicsColliderTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> PhysicsColliderTarget::makeSet(const SelectionSnapshot& selection,
                                                              const PropertyPath& path, const EditorValue& value,
                                                              PropertySetMode mode) const {
     if (!selectionMatches(selection))
@@ -113,7 +113,7 @@ EditorResult<DomainOperation> PhysicsColliderTarget::makeSet(const SelectionSnap
                                                      RuleId("editor.physics.property-unsupported"),
                                                      "Unknown collider property: " + path.value());
     auto valid = validateAssignment(*descriptor, value);
-    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
+    if (!valid.ok()) return Result<DomainOperation>::failure(valid.status());
     const auto previous = values_.find(path.value());
     auto       payload  = [&](const EditorValue& assigned) {
         EditorValue::Object object;
@@ -132,7 +132,7 @@ EditorResult<DomainOperation> PhysicsColliderTarget::makeSet(const SelectionSnap
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> PhysicsColliderTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> PhysicsColliderTarget::makeReset(const SelectionSnapshot& selection,
                                                                const PropertyPath&      path) const {
     auto descriptor = colliderSchema().find(path);
     if (!descriptor)
@@ -200,7 +200,7 @@ std::map<std::string, EditorValue> PhysicsColliderTarget::defaults() const {
     return result;
 }
 
-EditorResult<void> PhysicsColliderTarget::validateAssignment(const PropertyDescriptor& descriptor,
+Result<void> PhysicsColliderTarget::validateAssignment(const PropertyDescriptor& descriptor,
                                                              const EditorValue&        value) const {
     auto result = validatePropertyValue(descriptor, value);
     if (!result.ok()) return result;

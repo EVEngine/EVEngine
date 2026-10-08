@@ -28,9 +28,9 @@ public:
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                        const GraphPinRecord& to) const override;
     /** @brief Construct a line, branch, choice, call, command, wait, or end node. */
-    EditorResult<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& kind) const;
+    Result<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& kind) const;
     /** @brief Construct one stable labelled route for a branch or choice node. */
-    EditorResult<GraphNodeRecord> makeRouteNode(const GraphNodeId& id,
+    Result<GraphNodeRecord> makeRouteNode(const GraphNodeId& id,
                                                 const std::string& label = {}) const;
     /** @brief Validate and compile the graph into a deterministic value definition. */
     DialogueGraphCompileResult compile(const GraphDocumentData& graph) const;
@@ -40,7 +40,7 @@ public:
 class EVENGINE_API_ORCHESTRATION DialogueGraphRuntimeBuilder {
 public:
     /** @brief Build a validated ConversationDocument; caller owns the returned document. */
-    EditorResult<dialogue::ConversationDocument*> build(const GraphDocumentData& graph) const;
+    Result<dialogue::ConversationDocument*> build(const GraphDocumentData& graph) const;
 };
 
 }  // namespace eve::dialogue_editing

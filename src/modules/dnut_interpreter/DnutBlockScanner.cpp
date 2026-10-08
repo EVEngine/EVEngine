@@ -9,7 +9,7 @@ namespace {
 
 eve::Result<std::vector<DnutBlock>> scanFailure(const std::string& path, const DnutToken& token, std::string message) {
     return eve::Result<std::vector<DnutBlock>>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::ParseError, std::move(message), path,
+        eve::DiagnosticCode::ParseError, message, path,
         {{"line", std::to_string(token.line)}, {"column", std::to_string(token.column)}}, "dnut.block-scanner"));
 }
 

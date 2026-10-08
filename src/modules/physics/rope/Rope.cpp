@@ -122,7 +122,7 @@ eve::Result<Rope3D*> Rope::newRope3DFromJson(const std::string& json) {
     auto        document = eve::json::Document::parse(json, &parseError);
     if (!document.valid())
         return eve::Result<Rope3D*>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(parseError), {},
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, parseError, {},
                                    eve::DiagnosticDetails{{"schemaId", kRopeCreateSchemaId}, {"schemaVersion", "1"}},
                                    "physics.rope3d.create-schema"));
     const auto root = document.root();

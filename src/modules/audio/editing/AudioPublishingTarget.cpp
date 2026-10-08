@@ -19,7 +19,7 @@ void* AudioSourcePublishingTarget::queryCapability(const CapabilityId& capabilit
     return document_.queryCapability(capability);
 }
 
-EditorResult<void> AudioSourcePublishingTarget::applyDomainOperation(
+Result<void> AudioSourcePublishingTarget::applyDomainOperation(
     const DomainOperation& operation) {
     if (staging_) return document_.applyDomainOperation(operation);
     auto candidate = cloneDomainState();
@@ -34,7 +34,7 @@ std::unique_ptr<IDomainOperationTarget> AudioSourcePublishingTarget::cloneDomain
     return candidate;
 }
 
-EditorResult<void> AudioSourcePublishingTarget::commitDomainState(
+Result<void> AudioSourcePublishingTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<AudioSourcePublishingTarget*>(candidate.get());
     if (!typed || typed->targetId() != targetId() || typed->sink_ != sink_ || !typed->staging_)
@@ -43,7 +43,7 @@ EditorResult<void> AudioSourcePublishingTarget::commitDomainState(
     if (!sink_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.publishing-sink-missing"),
                                           "Audio publishing target requires a live runtime sink");
-    EditorResult<void> published = sink_->publish(typed->document_);
+    Result<void> published = sink_->publish(typed->document_);
     if (!published.ok()) return published;
     document_ = typed->document_;
     return eve::editing::applied<void>();

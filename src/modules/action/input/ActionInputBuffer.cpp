@@ -6,11 +6,6 @@
 namespace eve::action::input {
 namespace {
 
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 bool matchesAllow(const std::string& input, const std::vector<std::string>& allows) {
     return std::find(allows.begin(), allows.end(), input) != allows.end();
 }
@@ -21,9 +16,12 @@ ActionInputBuffer::ActionInputBuffer(std::uint32_t capacity, std::uint32_t lifet
     : capacity_(capacity), lifetimeTicks_(lifetimeTicks) {}
 
 Result<void> ActionInputBuffer::push(BufferedInput input) {
-    if (!input.subject.isValid()) return invalid("buffered subject is nil", "subject");
-    if (input.input.empty()) return invalid("buffered input is empty", "input");
-    if (capacity_ == 0 || lifetimeTicks_ == 0) return invalid("input buffer capacity/lifetime invalid", "capacity");
+    if (!input.subject.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "buffered subject is nil", "subject"));
+    if (input.input.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "buffered input is empty", "input"));
+    if (capacity_ == 0 || lifetimeTicks_ == 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "input buffer capacity/lifetime invalid", "capacity"));
     if (entries_.size() >= capacity_)
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::Failed, "action input buffer is full", "buffer"));

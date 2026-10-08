@@ -203,7 +203,7 @@ RPGActor* Battle::lowestHealthTarget(int side, bool sameSide) const {
 eve::Result<void> Battle::setActionChecked(RPGActor* actor, const std::string& skillId, RPGActor* target) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<void>::failure(
-            eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "rpg.battle.action"));
+            eve::Diagnostic::error(code, message, path, {}, "rpg.battle.action"));
     };
     if (!actor) return reject(eve::DiagnosticCode::InvalidArgument, "actor must not be null", "actor");
     if (finished_ || started_)

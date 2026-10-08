@@ -391,15 +391,6 @@ PhysicalBalancePose* Animation::newPhysicalBalancePose(AnimSkeleton* skeleton) {
     return new PhysicalBalancePose(skeleton);
 }
 
-AnimSkeleton *Animation::newSkeletonFromModel(eve::model3d::ModelData *model) {
-    return AnimImporter::loadSkeletonFromModel(model);
-}
-
-AnimClip *Animation::newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
-                                      int animIndex) {
-    return AnimImporter::loadClipFromModel(model, skeleton, animIndex);
-}
-
 AnimSkeleton *Animation::newSkeletonFromAnimationFixtureText(const std::string &path) {
     AnimSkeleton *sk = nullptr;
     AnimClip *clip   = nullptr;
@@ -417,18 +408,8 @@ AnimClip *Animation::newClipFromAnimationFixtureText(const std::string &path) {
     return clip;
 }
 
-AnimSkin *Animation::newSkinFromModel(eve::model3d::ModelData *model, int meshIndex,
-                                      AnimSkeleton *skeleton) {
-    return AnimSkin::fromModel(model, meshIndex, skeleton);
-}
-
 AnimLattice *Animation::newLattice(int divX, int divY, int divZ) {
     return new AnimLattice(divX, divY, divZ);
-}
-
-AnimLattice *Animation::newLatticeFromModel(eve::model3d::ModelData *model, int meshIndex,
-                                            int divX, int divY, int divZ) {
-    return AnimLattice::fromModel(model, meshIndex, divX, divY, divZ);
 }
 
 AnimTrail *Animation::newTrail(int capacity) { return new AnimTrail(capacity); }
@@ -1351,13 +1332,12 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newControlAnim", &Animation::newControlAnim);
     cls.addFunc("newControlPose", &Animation::newControlPose);
     cls.addFunc("newPhysicalBalancePose", &Animation::newPhysicalBalancePose);
-    cls.addFunc("newSkeletonFromModel", &Animation::newSkeletonFromModel);
-    cls.addFunc("newClipFromModel", &Animation::newClipFromModel);
     cls.addFunc("newSkeletonFromAnimationFixtureText", &Animation::newSkeletonFromAnimationFixtureText);
     cls.addFunc("newClipFromAnimationFixtureText", &Animation::newClipFromAnimationFixtureText);
-    cls.addFunc("newSkinFromModel", &Animation::newSkinFromModel);
     cls.addFunc("newLattice", &Animation::newLattice);
-    cls.addFunc("newLatticeFromModel", &Animation::newLatticeFromModel);
+#if defined(EVE_ANIMATION_MODEL3D)
+    exposeAnimationModelImportBindings(cls);
+#endif
     cls.addFunc("newTrail", &Animation::newTrail);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);

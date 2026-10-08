@@ -132,7 +132,7 @@ PropertyReadResult Hd2dDocumentTarget::read(const SelectionSnapshot& s, const Pr
         value = array(v.wallUv.data(), 4);
     return {PropertyReadState::Value, std::move(value), {}};
 }
-EditorResult<DomainOperation> Hd2dDocumentTarget::replacement(EditorValue c, std::string p) const {
+Result<DomainOperation> Hd2dDocumentTarget::replacement(EditorValue c, std::string p) const {
     DomainOperation op;
     op.type        = "hd2d.document.replace.v1";
     op.inverseType = op.type;
@@ -144,7 +144,7 @@ EditorResult<DomainOperation> Hd2dDocumentTarget::replacement(EditorValue c, std
     op.mergeKey = "hd2d:" + id_ + ":" + p;
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> Hd2dDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> Hd2dDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                           const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
@@ -190,7 +190,7 @@ EditorResult<DomainOperation> Hd2dDocumentTarget::makeSet(const SelectionSnapsho
                                                      "HD2D edit produces an invalid preset");
     return replacement(c.contentValue(), p.value());
 }
-EditorResult<DomainOperation> Hd2dDocumentTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> Hd2dDocumentTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
         return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.hd2d.property"),
@@ -225,7 +225,7 @@ std::vector<EditorDiagnostic> Hd2dDocumentTarget::validate() const {
                                                  "HD2D size, tint or tile extrusion values are invalid"));
     return d;
 }
-EditorResult<void> Hd2dDocumentTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> Hd2dDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "hd2d.document.replace.v1" || !op.payload.isWithinLimits(5, 64, 4096))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.hd2d.operation"),
                                           "HD2D operation is invalid");
@@ -284,7 +284,7 @@ EditorResult<void> Hd2dDocumentTarget::applyDomainOperation(const DomainOperatio
 std::unique_ptr<IDomainOperationTarget> Hd2dDocumentTarget::cloneDomainState() const {
     return std::make_unique<Hd2dDocumentTarget>(*this);
 }
-EditorResult<void> Hd2dDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
+Result<void> Hd2dDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<Hd2dDocumentTarget*>(c.get());
     if (!t || t->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.hd2d.candidate"),
@@ -295,7 +295,7 @@ EditorResult<void> Hd2dDocumentTarget::commitDomainState(std::unique_ptr<IDomain
 EditorValue Hd2dDocumentTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> Hd2dDocumentTarget::loadSnapshot(const EditorValue& s) {
+Result<void> Hd2dDocumentTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
@@ -309,7 +309,7 @@ EditorResult<void> Hd2dDocumentTarget::loadSnapshot(const EditorValue& s) {
     if (result.ok()) clearDirtyRegion();
     return result;
 }
-EditorResult<Hd2dFramePreview> Hd2dFramePreviewService::evaluate(const Hd2dDocumentTarget& d, float time) const {
+Result<Hd2dFramePreview> Hd2dFramePreviewService::evaluate(const Hd2dDocumentTarget& d, float time) const {
     if (d.value().kind != "sprite" || !std::isfinite(time) || time < 0 || time > 86400)
         return eve::editing::failed<Hd2dFramePreview>(EditorStatus::Rejected, RuleId("editor.hd2d.preview"),
                                                       "HD2D frame preview requires a sprite and bounded time");

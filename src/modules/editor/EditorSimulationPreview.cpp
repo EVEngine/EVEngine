@@ -6,7 +6,7 @@
 
 namespace eve::editor {
 
-EditorResult<void> SimulationPreviewController::setFixedDelta(double seconds) {
+Result<void> SimulationPreviewController::setFixedDelta(double seconds) {
     if (!std::isfinite(seconds) || seconds <= 0.0 || seconds > 1.0)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.simulation.invalid-fixed-delta"),
                                           "Simulation preview delta must be finite and within (0, 1] seconds");
@@ -14,12 +14,12 @@ EditorResult<void> SimulationPreviewController::setFixedDelta(double seconds) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<SimulationPreviewFrame> SimulationPreviewController::advance(IEditorSimulationBackend& backend,
+Result<SimulationPreviewFrame> SimulationPreviewController::advance(IEditorSimulationBackend& backend,
                                                                           std::uint64_t             tick) const {
     auto stepped = backend.step(tick, fixedDelta_);
-    if (!stepped.ok()) return EditorResult<SimulationPreviewFrame>::failure(stepped.status());
+    if (!stepped.ok()) return Result<SimulationPreviewFrame>::failure(stepped.status());
     auto captured = backend.capture();
-    if (!captured.ok()) return EditorResult<SimulationPreviewFrame>::failure(captured.status());
+    if (!captured.ok()) return Result<SimulationPreviewFrame>::failure(captured.status());
     std::set<std::string> ids;
     for (const auto& object : captured.value()) {
         if (object.object.empty() || !ids.insert(object.object).second)
@@ -39,7 +39,7 @@ EditorResult<SimulationPreviewFrame> SimulationPreviewController::advance(IEdito
         {tick, static_cast<double>(tick) * fixedDelta_, std::move(captured.value())});
 }
 
-EditorResult<SimulationPreviewFrame> SimulationPreviewController::singleStep(const IEditorSimulationBackend& source) {
+Result<SimulationPreviewFrame> SimulationPreviewController::singleStep(const IEditorSimulationBackend& source) {
     if (!previewBackend_) previewBackend_ = source.cloneForPreview();
     if (!previewBackend_)
         return eve::editing::failed<SimulationPreviewFrame>(EditorStatus::Unsupported,
@@ -55,9 +55,9 @@ void SimulationPreviewController::rewind() {
     previewBackend_.reset();
 }
 
-EditorResult<SimulationPreviewFrame> SimulationPreviewController::update(const IEditorSimulationBackend& source) {
+Result<SimulationPreviewFrame> SimulationPreviewController::update(const IEditorSimulationBackend& source) {
     if (paused_) {
-        return EditorResult<SimulationPreviewFrame>::success(
+        return Result<SimulationPreviewFrame>::success(
             SimulationPreviewFrame{tick_, static_cast<double>(tick_) * fixedDelta_, {}},
             eve::Status::success(EditorStatus::NoOp));
     }

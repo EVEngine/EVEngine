@@ -9,18 +9,16 @@
 namespace eve::combat {
 namespace {
 
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 bool finiteNonNegative(double value) { return std::isfinite(value) && value >= 0.0; }
 
 Result<void> validateAmounts(const DamageAmounts& amounts) {
-    if (!finiteNonNegative(amounts.healthDamage)) return invalid("Resolved health damage is invalid", "healthDamage");
-    if (!finiteNonNegative(amounts.poiseDamage)) return invalid("Resolved poise damage is invalid", "poiseDamage");
+    if (!finiteNonNegative(amounts.healthDamage)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Resolved health damage is invalid", "healthDamage"));
+    if (!finiteNonNegative(amounts.poiseDamage)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Resolved poise damage is invalid", "poiseDamage"));
     if (!finiteNonNegative(amounts.knockbackScale))
-        return invalid("Resolved knockback scale is invalid", "knockbackScale");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Resolved knockback scale is invalid", "knockbackScale"));
     return Result<void>::success();
 }
 
@@ -139,32 +137,44 @@ private:
 }  // namespace
 
 Result<void> CombatState::validate() const {
-    if (!subject.isValid()) return invalid("Combat subject is invalid", "subject");
+    if (!subject.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Combat subject is invalid", "subject"));
     if (!finiteNonNegative(maxHealth) || !finiteNonNegative(health) || health > maxHealth)
-        return invalid("Combat health is outside [0,maxHealth]", "health");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Combat health is outside [0,maxHealth]", "health"));
     if (!finiteNonNegative(maxPoise) || !finiteNonNegative(poise) || poise > maxPoise)
-        return invalid("Combat poise is outside [0,maxPoise]", "poise");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Combat poise is outside [0,maxPoise]", "poise"));
     return Result<void>::success();
 }
 
 Result<void> DamageRequest::validate() const {
-    if (!target.isValid()) return invalid("Damage target is invalid", "target");
-    if (!tags::isValidGameplayTagName(damageType)) return invalid("Damage type must be a gameplay tag", "damageType");
-    if (!finiteNonNegative(healthDamage)) return invalid("Health damage is invalid", "healthDamage");
-    if (!finiteNonNegative(poiseDamage)) return invalid("Poise damage is invalid", "poiseDamage");
+    if (!target.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Damage target is invalid", "target"));
+    if (!tags::isValidGameplayTagName(damageType)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Damage type must be a gameplay tag", "damageType"));
+    if (!finiteNonNegative(healthDamage)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Health damage is invalid", "healthDamage"));
+    if (!finiteNonNegative(poiseDamage)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Poise damage is invalid", "poiseDamage"));
     if (!finiteNonNegative(incomingDamageMultiplier))
-        return invalid("Incoming damage multiplier is invalid", "incomingDamageMultiplier");
-    if (!finiteNonNegative(availableShield)) return invalid("Available shield is invalid", "availableShield");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Incoming damage multiplier is invalid", "incomingDamageMultiplier"));
+    if (!finiteNonNegative(availableShield)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Available shield is invalid", "availableShield"));
     if (!std::isfinite(knockback.x) || !std::isfinite(knockback.y) || !std::isfinite(knockback.z))
-        return invalid("Knockback impulse must be finite", "knockback");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Knockback impulse must be finite", "knockback"));
     return Result<void>::success();
 }
 
 Result<void> HitReactionPolicy::validate() const {
     if (!finiteNonNegative(flinchDamageThreshold))
-        return invalid("Flinch threshold is invalid", "flinchDamageThreshold");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Flinch threshold is invalid", "flinchDamageThreshold"));
     if (!std::isfinite(staggerPoiseFraction) || staggerPoiseFraction < 0.0 || staggerPoiseFraction > 1.0)
-        return invalid("Stagger poise fraction must be in [0,1]", "staggerPoiseFraction");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Stagger poise fraction must be in [0,1]", "staggerPoiseFraction"));
     return Result<void>::success();
 }
 

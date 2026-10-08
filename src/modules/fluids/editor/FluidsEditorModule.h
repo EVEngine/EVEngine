@@ -22,7 +22,7 @@ public:
     /** @brief Accepted fluid target type names (simulation, surface, volume). */
     std::vector<std::string_view> types() const override;
     /** @brief Create a fluid document and optionally load its strict `snapshot` request field. */
-    editor::EditorResult<editor::AutomationOwnedTarget> create(const editor::TargetId& target, std::string_view type,
+    editor::Result<editor::AutomationOwnedTarget> create(const editor::TargetId& target, std::string_view type,
                                                                const editor::EditorValue::Object& request) override;
 };
 

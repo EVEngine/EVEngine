@@ -87,7 +87,7 @@ const EditorValue* field(const EditorValue& value, const char* key) {
     return found == object->end() ? nullptr : &found->second;
 }
 
-EditorResult<BuildingInstanceSnapshot> parseInstance(const EditorValue& value) {
+Result<BuildingInstanceSnapshot> parseInstance(const EditorValue& value) {
     const auto integer = [&](const char* key) -> const int64_t* {
         const EditorValue* entry = field(value, key);
         return entry ? entry->getIf<int64_t>() : nullptr;
@@ -220,7 +220,7 @@ EditorResult<BuildingInstanceSnapshot> parseInstance(const EditorValue& value) {
     return eve::editing::applied<BuildingInstanceSnapshot>(std::move(result));
 }
 
-EditorResult<std::vector<BuildingInstanceSnapshot>> parseInstances(const EditorValue& value) {
+Result<std::vector<BuildingInstanceSnapshot>> parseInstances(const EditorValue& value) {
     const auto* values = value.getIf<EditorValue::Array>();
     if (!values || values->empty())
         return eve::editing::failed<std::vector<BuildingInstanceSnapshot>>(
@@ -277,7 +277,7 @@ EditorValue edgeCurveValue(const building::EdgeCurveGroup& group,
                                {"instances", std::move(values)}};
 }
 
-EditorResult<EdgeCurvePayload> parseEdgeCurve(const EditorValue& value) {
+Result<EdgeCurvePayload> parseEdgeCurve(const EditorValue& value) {
     const EditorValue* groupIdValue = field(value, "groupId");
     const EditorValue* buildingIdValue = field(value, "buildingId");
     const EditorValue* levelValue = field(value, "level");
@@ -452,7 +452,7 @@ DomainOperation instanceOperation(const std::string& target, std::string type, s
     return result;
 }
 
-EditorResult<DomainOperation> areaOperation(
+Result<DomainOperation> areaOperation(
     const std::string& target, building::PlacementWorld* world,
     const building::PlacementSystem::AreaPreview& preview) {
     if (!world || preview.cells.empty() || preview.rejectedCount != 0 ||
@@ -526,7 +526,7 @@ void* BuildingPlacementTarget::queryCapability(const CapabilityId& capability) {
     return capability == editorCapabilityId() ? this : nullptr;
 }
 
-EditorResult<BuildingInstanceSnapshot> BuildingPlacementTarget::instance(int instanceId) const {
+Result<BuildingInstanceSnapshot> BuildingPlacementTarget::instance(int instanceId) const {
     if (!world_)
         return eve::editing::failed<BuildingInstanceSnapshot>(
             EditorStatus::Rejected, RuleId("editor.building.world-required"), "Placement world is unavailable");
@@ -603,7 +603,7 @@ BuildingPlacementPreview BuildingPlacementTarget::preview(const std::string& bui
     return result;
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makePlace(
+Result<DomainOperation> BuildingPlacementTarget::makePlace(
     const BuildingInstanceSnapshot& placed) const {
     if (!world_ || placed.instanceId <= 0 || world_->hasBuilding(placed.instanceId))
         return eve::editing::failed<DomainOperation>(EditorStatus::Conflict,
@@ -634,7 +634,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makePlace(
         id_, "building.instance.set.v4", "building.instance.delete.v4", placed, placed));
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeMove(int instanceId, int cellX, int cellY,
+Result<DomainOperation> BuildingPlacementTarget::makeMove(int instanceId, int cellX, int cellY,
                                                                 double rotationDegrees) const {
     auto current = instance(instanceId);
     if (!current.ok())
@@ -681,7 +681,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeMove(int instanceId, 
         id_, "building.instance.set.v4", "building.instance.set.v4", desired, current.value()));
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeMoveFree(
+Result<DomainOperation> BuildingPlacementTarget::makeMoveFree(
     int instanceId, double worldX, double worldY, double elevation,
     double rotationDegrees) const {
     auto current = instance(instanceId);
@@ -710,7 +710,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeMoveFree(
         current.value()));
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeReplace(
+Result<DomainOperation> BuildingPlacementTarget::makeReplace(
     int instanceId, const std::string& replacementBuildingId) const {
     auto current = instance(instanceId);
     if (!current.ok())
@@ -771,7 +771,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeReplace(
         id_, "building.instance.set.v4", "building.instance.set.v4", desired, current.value()));
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeRectangle(
+Result<DomainOperation> BuildingPlacementTarget::makeRectangle(
     const std::string& buildingId, int minCellX, int minCellY, int maxCellX, int maxCellY,
     double rotationDegrees) const {
     auto preview = building::PlacementSystem::previewRectangle(
@@ -784,7 +784,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeRectangle(
     return areaOperation(id_, world_, preview.value());
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeBrush(
+Result<DomainOperation> BuildingPlacementTarget::makeBrush(
     const std::string& buildingId, int centerCellX, int centerCellY, int radius,
     double rotationDegrees) const {
     auto preview = building::PlacementSystem::previewBrush(
@@ -796,7 +796,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeBrush(
     return areaOperation(id_, world_, preview.value());
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeEdgePath(
+Result<DomainOperation> BuildingPlacementTarget::makeEdgePath(
     const std::string& buildingId,
     const std::vector<BuildingEdgePathVertex>& vertices) const {
     std::vector<building::CornerAddress> runtimeVertices;
@@ -852,7 +852,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeEdgePath(
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezier(
+Result<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezier(
     const std::string& buildingId,
     const std::vector<BuildingEdgeCurvePoint>& controlPoints,
     int subdivisions) const {
@@ -896,7 +896,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezier(
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezierOnSurface(
+Result<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezierOnSurface(
     const std::string& buildingId,
     const std::vector<BuildingEdgeCurvePoint>& controlPoints, int subdivisions,
     const std::string& surfaceName) const {
@@ -1109,7 +1109,7 @@ editing::GizmoSnapshot BuildingPlacementTarget::edgeCubicBezierGizmo(
     return gizmo;
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeUpdateEdgeCubicBezier(
+Result<DomainOperation> BuildingPlacementTarget::makeUpdateEdgeCubicBezier(
     int memberInstanceId, const std::vector<BuildingEdgeCurvePoint>& controlPoints,
     int subdivisions) const {
     if (!world_)
@@ -1164,7 +1164,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeUpdateEdgeCubicBezier
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<BuildingEdgeCurvePoint> BuildingPlacementTarget::curveLogicalPointFromWorld(
+Result<BuildingEdgeCurvePoint> BuildingPlacementTarget::curveLogicalPointFromWorld(
     double worldX, double worldY, double worldZ) const {
     if (!world_ || !std::isfinite(worldX) || !std::isfinite(worldY) ||
         !std::isfinite(worldZ))
@@ -1194,7 +1194,7 @@ EditorResult<BuildingEdgeCurvePoint> BuildingPlacementTarget::curveLogicalPointF
     return eve::editing::applied<BuildingEdgeCurvePoint>(point);
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeRemove(int instanceId) const {
+Result<DomainOperation> BuildingPlacementTarget::makeRemove(int instanceId) const {
     auto current = instance(instanceId);
     if (!current.ok())
         return eve::editing::failed<DomainOperation>(current.code(), RuleId("editor.building.instance-not-found"),
@@ -1203,7 +1203,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeRemove(int instanceId
         id_, "building.instance.delete.v4", "building.instance.set.v4", current.value(), current.value()));
 }
 
-EditorResult<void> BuildingPlacementTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> BuildingPlacementTarget::applyDomainOperation(const DomainOperation& operation) {
     if (!world_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.building.world-required"),
                                           "Placement world is unavailable");
@@ -1411,7 +1411,7 @@ std::unique_ptr<IDomainOperationTarget> BuildingPlacementTarget::cloneDomainStat
         new BuildingPlacementTarget(id_, world_->cloneState(), revisionValue()));
 }
 
-EditorResult<void> BuildingPlacementTarget::commitDomainState(
+Result<void> BuildingPlacementTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* buildingCandidate = dynamic_cast<BuildingPlacementTarget*>(candidate.get());
     if (!world_ || !buildingCandidate || !buildingCandidate->ownedWorld_ ||
@@ -1461,7 +1461,7 @@ BuildingEdgeCurveDragSession::BuildingEdgeCurveDragSession(
       subdivisions_(subdivisions),
       surfaceName_(std::move(surfaceName)) {}
 
-EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::previewCurrent() const {
+Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::previewCurrent() const {
     if (!target_)
         return eve::editing::failed<BuildingEdgeCurveDragPreview>(EditorStatus::Rejected,
                                                                   RuleId("editor.building.curve-drag-target-required"),
@@ -1477,7 +1477,7 @@ EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::preview
     return eve::editing::applied<BuildingEdgeCurveDragPreview>(std::move(result));
 }
 
-EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::beginDrag(
+Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::beginDrag(
     double rayOriginX, double rayOriginY, double rayOriginZ, double rayDirectionX,
     double rayDirectionY, double rayDirectionZ) {
     cancelDrag();
@@ -1530,7 +1530,7 @@ EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::beginDr
     return previewCurrent();
 }
 
-EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::updateDrag(
+Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::updateDrag(
     double rayOriginX, double rayOriginY, double rayOriginZ, double rayDirectionX,
     double rayDirectionY, double rayDirectionZ) {
     if (!dragging_ || !target_)
@@ -1580,7 +1580,7 @@ EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::updateD
     return preview;
 }
 
-EditorResult<DomainOperation> BuildingEdgeCurveDragSession::finishDrag() {
+Result<DomainOperation> BuildingEdgeCurveDragSession::finishDrag() {
     if (!dragging_ || !target_)
         return eve::editing::failed<DomainOperation>(
             EditorStatus::Rejected, RuleId("editor.building.curve-drag-not-active"), "Curve drag has not begun");

@@ -55,7 +55,7 @@ TextureRecipeTarget::TextureRecipeTarget(std::string id, std::string recipe)
     auto initialized = initializeDefaults();
     if (!initialized.ok()) throw std::invalid_argument("Texture recipe is not registered: " + recipe_);
 }
-EditorResult<void> TextureRecipeTarget::initializeDefaults() {
+Result<void> TextureRecipeTarget::initializeDefaults() {
     auto& r = procgen::TextureRecipeRegistry::instance();
     r.registerBuiltins();
     const auto* d = r.descriptor(recipe_);
@@ -118,7 +118,7 @@ PropertyReadResult TextureRecipeTarget::read(const SelectionSnapshot& s, const P
 EditorValue TextureRecipeTarget::contentValue() const {
     return EditorValue::Object{{"recipe", recipe_}, {"values", values_}};
 }
-EditorResult<DomainOperation> TextureRecipeTarget::makeSet(const SelectionSnapshot& s,
+Result<DomainOperation> TextureRecipeTarget::makeSet(const SelectionSnapshot& s,
                                                            const PropertyPath& p,
                                                            const EditorValue& v,
                                                            PropertySetMode mode) const {
@@ -140,7 +140,7 @@ EditorResult<DomainOperation> TextureRecipeTarget::makeSet(const SelectionSnapsh
     op.mergeKey = "texture-recipe:" + id_ + ":" + p.value();
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> TextureRecipeTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> TextureRecipeTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
         return eve::editing::failed<DomainOperation>(
@@ -169,7 +169,7 @@ std::vector<EditorDiagnostic> TextureRecipeTarget::validate() const {
                                "Texture recipe contains unknown parameters"));
     return d;
 }
-EditorResult<void> TextureRecipeTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> TextureRecipeTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "texture-recipe.replace.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.texture-recipe.operation"),
                                           "Texture recipe operation is invalid");
@@ -192,7 +192,7 @@ EditorResult<void> TextureRecipeTarget::applyDomainOperation(const DomainOperati
 std::unique_ptr<IDomainOperationTarget> TextureRecipeTarget::cloneDomainState() const {
     return std::make_unique<TextureRecipeTarget>(*this);
 }
-EditorResult<void> TextureRecipeTarget::commitDomainState(
+Result<void> TextureRecipeTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<TextureRecipeTarget*>(c.get());
     if (!t || t->id_ != id_ || t->recipe_ != recipe_)
@@ -204,7 +204,7 @@ EditorResult<void> TextureRecipeTarget::commitDomainState(
 EditorValue TextureRecipeTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> TextureRecipeTarget::loadSnapshot(const EditorValue& s) {
+Result<void> TextureRecipeTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *c = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !c)
@@ -220,11 +220,11 @@ EditorResult<void> TextureRecipeTarget::loadSnapshot(const EditorValue& s) {
 }
 TextureRecipePreviewRuntime::TextureRecipePreviewRuntime()  = default;
 TextureRecipePreviewRuntime::~TextureRecipePreviewRuntime() = default;
-EditorResult<TextureRecipePreviewArtifact> TextureRecipePreviewRuntime::generate(
+Result<TextureRecipePreviewArtifact> TextureRecipePreviewRuntime::generate(
     const TextureRecipeTarget& target) {
     const auto diagnostics = target.validate();
     if (hasErrors(diagnostics)) {
-        return EditorResult<TextureRecipePreviewArtifact>::failure(
+        return Result<TextureRecipePreviewArtifact>::failure(
             eve::Status(EditorStatus::Rejected, diagnostics));
     }
     procgen::Params params;

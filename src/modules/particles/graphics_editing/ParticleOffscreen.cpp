@@ -2,7 +2,7 @@
 
 namespace eve::particles_graphics_editing {
 
-EditorResult<OffscreenPreviewArtifact> ParticleOffscreenPreviewService::render(
+Result<OffscreenPreviewArtifact> ParticleOffscreenPreviewService::render(
     const ParticleOffscreenPreviewRequest& request) const {
     if (!previews_ || (!draw_ && !presenter_) || request.previewId.empty())
         return eve::editing::failed<OffscreenPreviewArtifact>(EditorStatus::Rejected,
@@ -10,13 +10,13 @@ EditorResult<OffscreenPreviewArtifact> ParticleOffscreenPreviewService::render(
     ParticleGraphDomain domain;
     ParticleGraphCompileResult compiled = domain.compile(request.graph);
     if (compiled.status != EditorStatus::Applied) {
-        return EditorResult<OffscreenPreviewArtifact>::failure(
+        return Result<OffscreenPreviewArtifact>::failure(
             eve::Status(compiled.status, compiled.diagnostics));
     }
     ParticleGraphPreviewResult estimate = domain.preview(request.graph, request.seconds,
         request.fixedStep, request.particleBudget);
     if (estimate.status != EditorStatus::Applied) {
-        return EditorResult<OffscreenPreviewArtifact>::failure(
+        return Result<OffscreenPreviewArtifact>::failure(
             eve::Status(estimate.status, estimate.diagnostics));
     }
     OffscreenPreviewRequest offscreen;

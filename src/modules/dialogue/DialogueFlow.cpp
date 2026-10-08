@@ -23,12 +23,6 @@ Module_IMPL(DialogueFlow, new DialogueFlow());
 
 namespace {
 
-template <class T = void>
-eve::Result<T> flowFailure(eve::DiagnosticCode code, const std::string& message, const std::string& path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, message, path, {}, "dialogue.flow"));
-}
-
 bool buildPoolWorkspace(const std::unordered_map<std::string, DataValue>& sources, DataValue& root,
                         std::string& error) {
     DataValue::Object combined;
@@ -122,11 +116,6 @@ void pushState(HSQUIRRELVM vm, const StateValue& value) {
     }
 }
 
-eve::Result<void> dialogueFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "dialogue.flow"));
-}
-
 class DialogueSelectionParticipant final : public eve::transaction::ITransactionParticipant {
 public:
     DialogueSelectionParticipant(eve::dnut::SequenceRuntime& runner, std::string routeId, eve::Value before)
@@ -135,44 +124,44 @@ public:
     [[nodiscard]] std::string_view  name() const noexcept override { return "dialogue.choice"; }
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext& context) override {
         if (context.transactionId().empty())
-            return dialogueFailure(eve::DiagnosticCode::InvalidArgument,
-                                   "dialogue choice transaction requires a transaction id", "transactionId");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue choice transaction requires a transaction id", "transactionId", {}, "dialogue.flow"));
         if (phase_ != Phase::Idle)
-            return dialogueFailure(eve::DiagnosticCode::Conflict, "dialogue choice is not idle",
-                                   "transaction.lifecycle");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue choice is not idle", "transaction.lifecycle", {}, "dialogue.flow"));
         phase_ = Phase::Prepared;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return dialogueFailure(eve::DiagnosticCode::Conflict, "dialogue choice has no prepared stage",
-                                   "transaction.lifecycle");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue choice has no prepared stage", "transaction.lifecycle", {}, "dialogue.flow"));
         auto selected = runner_.selectRouteForTransaction(routeId_);
         if (!selected.ok()) {
             std::string error = selected.status().describe();
             auto        restored = runner_.restoreState(before_);
             if (!restored && error.empty()) error = restored.status().describe();
-            return dialogueFailure(eve::DiagnosticCode::Failed,
-                                   error.empty() ? "dialogue choice selection failed" : error, "route");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.empty() ? "dialogue choice selection failed" : error, "route", {}, "dialogue.flow"));
         }
         phase_ = Phase::Committed;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return dialogueFailure(eve::DiagnosticCode::Conflict, "dialogue choice has no prepared stage to roll back",
-                                   "transaction.lifecycle");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue choice has no prepared stage to roll back", "transaction.lifecycle", {}, "dialogue.flow"));
         phase_ = Phase::RolledBack;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext&) override {
         if (phase_ != Phase::Committed)
-            return dialogueFailure(eve::DiagnosticCode::Conflict, "dialogue choice is not committed",
-                                   "transaction.lifecycle");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue choice is not committed", "transaction.lifecycle", {}, "dialogue.flow"));
         auto restored = runner_.restoreState(before_);
         if (!restored)
-            return dialogueFailure(eve::DiagnosticCode::Failed,
-                                   restored.status().describe(), "route");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, restored.status().describe(), "route", {}, "dialogue.flow"));
         phase_ = Phase::RolledBack;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
@@ -503,20 +492,24 @@ int DialogueFlow::reloadDnutImpl(const std::string& source, const std::string& p
 eve::Result<void> DialogueFlow::removeSourceChecked(const std::string& path) {
     const auto source = sourceAssets_.find(path);
     if (source == sourceAssets_.end())
-        return flowFailure(eve::DiagnosticCode::NotFound, "dnut source is not loaded", path);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "dnut source is not loaded", path, {}, "dialogue.flow"));
     if (runner_.isActive()) {
         failureMessage_ = "cannot remove a dnut source while a conversation is active";
-        return flowFailure(eve::DiagnosticCode::PreconditionViolation, failureMessage_, path);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, failureMessage_, path, {}, "dialogue.flow"));
     }
     auto candidatePoolSources = sourcePools_;
     candidatePoolSources.erase(path);
     DataValue poolWorkspace;
     if (!buildPoolWorkspace(candidatePoolSources, poolWorkspace, failureMessage_))
-        return flowFailure(eve::DiagnosticCode::Conflict, failureMessage_, path);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, failureMessage_, path, {}, "dialogue.flow"));
     Dialogue* dialogue = Dialogue::create();
     if (!dialogue || (dialogue->replacePoolsFromData(poolWorkspace) == 0 && !dialogue->getLastPoolsError().empty())) {
         failureMessage_ = dialogue ? dialogue->getLastPoolsError() : "dialogue pool runtime is unavailable";
-        return flowFailure(eve::DiagnosticCode::Failed, failureMessage_, path);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, failureMessage_, path, {}, "dialogue.flow"));
     }
     assets_.erase(std::remove_if(assets_.begin(), assets_.end(),
                                  [&](const auto& asset) {
@@ -592,14 +585,16 @@ eve::Result<void> DialogueFlow::lintAllChecked() {
         }
     }
     failureMessage_  = valid || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
-    if (!valid) return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, "<dialogue-workspace>");
+    if (!valid) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, failureMessage_, "<dialogue-workspace>", {}, "dialogue.flow"));
     return eve::Result<void>::success();
 }
 
 eve::Result<void> DialogueFlow::renameConversationChecked(const std::string& oldId, const std::string& newId) {
     if (runner_.isActive()) {
         failureMessage_ = "cannot rename a conversation while a conversation is active";
-        return flowFailure(eve::DiagnosticCode::PreconditionViolation, failureMessage_, oldId);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, failureMessage_, oldId, {}, "dialogue.flow"));
     }
     std::vector<eve::dnut::SequenceAsset> candidate = assets_;
     auto renamed = renameConversationAsset(candidate, oldId, newId);
@@ -611,7 +606,8 @@ eve::Result<void> DialogueFlow::renameConversationChecked(const std::string& old
     if (!lintConversationWorkspace(candidate, "<dialogue-workspace>", candidateDiagnostics)) {
         diagnostics_ = std::move(candidateDiagnostics);
         failureMessage_ = diagnostics_.empty() ? "conversation rename validation failed" : diagnostics_.front().message;
-        return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, oldId);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, failureMessage_, oldId, {}, "dialogue.flow"));
     }
     assets_ = std::move(candidate);
     if (const auto owner = assetSources_.find(oldId); owner != assetSources_.end()) {
@@ -629,7 +625,8 @@ eve::Result<void> DialogueFlow::renameNodeChecked(const std::string& conversatio
                                                   const std::string& newId) {
     if (runner_.isActive()) {
         failureMessage_ = "cannot rename a node while a conversation is active";
-        return flowFailure(eve::DiagnosticCode::PreconditionViolation, failureMessage_, conversationId + "/" + oldId);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, failureMessage_, conversationId + "/" + oldId, {}, "dialogue.flow"));
     }
     std::vector<eve::dnut::SequenceAsset> candidate = assets_;
     auto renamed = renameConversationNode(candidate, conversationId, oldId, newId);
@@ -641,7 +638,8 @@ eve::Result<void> DialogueFlow::renameNodeChecked(const std::string& conversatio
     if (!lintConversationWorkspace(candidate, "<dialogue-workspace>", candidateDiagnostics)) {
         diagnostics_ = std::move(candidateDiagnostics);
         failureMessage_ = diagnostics_.empty() ? "node rename validation failed" : diagnostics_.front().message;
-        return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, conversationId + "/" + oldId);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, failureMessage_, conversationId + "/" + oldId, {}, "dialogue.flow"));
     }
     assets_ = std::move(candidate);
     return eve::Result<void>::success();
@@ -756,7 +754,8 @@ eve::Result<int> DialogueFlow::importLocalizationCsvChecked(const std::string& c
     const int count = localization_.importCsv(csv, defaultLocale, diagnostics_);
     failureMessage_ = count > 0 || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
     if (!failureMessage_.empty())
-        return flowFailure<int>(eve::DiagnosticCode::ParseError, failureMessage_, "dialogue.localization.csv");
+        return eve::Result<int>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, failureMessage_, "dialogue.localization.csv", {}, "dialogue.flow"));
     return eve::Result<int>::success(count);
 }
 
@@ -814,7 +813,8 @@ ConversationDocument* DialogueFlow::getDocument(const std::string& id) const {
 eve::Result<void> DialogueFlow::applyDocumentChecked(ConversationDocument* document) {
     if (!document) {
         failureMessage_ = "conversation document must not be null";
-        return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, "authoring");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, failureMessage_, "authoring", {}, "dialogue.flow"));
     }
     std::vector<eve::dnut::SequenceAsset> candidate = assets_;
     const auto existing = std::find_if(candidate.begin(), candidate.end(),
@@ -828,7 +828,8 @@ eve::Result<void> DialogueFlow::applyDocumentChecked(ConversationDocument* docum
         diagnostics_ = std::move(candidateDiagnostics);
         failureMessage_ =
             diagnostics_.empty() ? "conversation document validation failed" : diagnostics_.front().message;
-        return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, "authoring");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, failureMessage_, "authoring", {}, "dialogue.flow"));
     }
     assets_ = std::move(candidate);
     diagnostics_.clear();
@@ -864,12 +865,14 @@ eve::Result<void> DialogueFlow::startChecked(const std::string& id, ssq::Object 
         sq_settop(vm_, top);
         if (!ok) {
             failureMessage_ = "conversation bindings must be a scalar-only table";
-            return dialogueFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, "dialogue.bindings");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, failureMessage_, "dialogue.bindings", {}, "dialogue.flow"));
         }
     }
     const eve::dnut::SequenceAsset* asset = find(id);
     if (!asset)
-        return dialogueFailure(eve::DiagnosticCode::NotFound, "conversation was not found: " + id, "dialogue." + id);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "conversation was not found: " + id, "dialogue." + id, {}, "dialogue.flow"));
     auto started = runner_.start(asset, toCanonicalValue(converted));
     if (!started) return eve::Result<void>::failure(started.status());
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -904,9 +907,8 @@ eve::Result<void> DialogueFlow::select(const std::string& routeId) {
     std::vector<eve::StateMutation> mutations = std::move(mutationResult).takeValue();
     if (payment.empty() && mutations.empty()) return runner_.selectRouteForTransaction(routeId);
     if (!stateMutationProvider_ && !mutations.empty()) {
-        return dialogueFailure(eve::DiagnosticCode::Unsupported,
-                               "dialogue choice state mutations require a StatePatch-compatible provider",
-                               "route.stateMutations");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "dialogue choice state mutations require a StatePatch-compatible provider", "route.stateMutations", {}, "dialogue.flow"));
     }
 
     eve::Value before;
@@ -1067,9 +1069,8 @@ std::string DialogueFlow::getRouteId(int index) const {
 
 eve::Result<void> DialogueFlow::setExpressionEvaluatorChecked(ssq::Object fn) {
     if (!vm_ || fn.getRaw()._type != OT_CLOSURE)
-        return flowFailure(eve::DiagnosticCode::InvalidArgument,
-                           "dialogue expression evaluator must be a closure owned by the active VM",
-                           "dialogue.expressionEvaluator");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue expression evaluator must be a closure owned by the active VM", "dialogue.expressionEvaluator", {}, "dialogue.flow"));
     clearExpressionEvaluator();
     evaluator_ = fn.getRaw();
     sq_addref(vm_, &evaluator_);
@@ -1305,22 +1306,22 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc(
         "startChecked", [vm = cls.getHandle()](DialogueFlow* value, const std::string& id, ssq::Object bindings) {
             if (!value)
-                return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
-                                                                      "dialogue flow must not be null", "dialogue"));
+                return eve::script::projectResult(vm, eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue flow must not be null", "dialogue", {}, "dialogue.flow")));
             return eve::script::projectResult(vm, value->startChecked(id, std::move(bindings)));
         });
     cls.addFunc("advanceChecked", [vm = cls.getHandle()](DialogueFlow* value) {
         if (!value)
-            return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
-                                                                  "dialogue flow must not be null", "dialogue"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue flow must not be null", "dialogue", {}, "dialogue.flow")));
         return eve::script::projectResult(vm, value->advanceChecked());
     });
     cls.addFunc("resumeCommandChecked", [vm = cls.getHandle()](DialogueFlow* value,
                                                                const std::string& requestId,
                                                                ssq::Object result) {
         if (!value)
-            return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
-                                                                  "dialogue flow must not be null", "dialogue"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue flow must not be null", "dialogue", {}, "dialogue.flow")));
         auto converted = eve::script::valueFromSquirrel(result, {.source = "dialogue.resumeCommand"});
         if (!converted)
             return eve::script::projectResult(vm, eve::Result<void>::failure(converted.status()));
@@ -1329,8 +1330,8 @@ void DialogueFlow::expose(ssq::Class& cls) {
     });
     cls.addFunc("select", [vm = cls.getHandle()](DialogueFlow* value, const std::string& routeId) {
         if (!value)
-            return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
-                                                                  "dialogue flow must not be null", "dialogue"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue flow must not be null", "dialogue", {}, "dialogue.flow")));
         return eve::script::projectResult(vm, value->select(routeId));
     });
     cls.addFunc("isActive", &DialogueFlow::isActive);

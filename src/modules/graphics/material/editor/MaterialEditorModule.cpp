@@ -26,16 +26,16 @@ const std::int64_t* integerField(const editor::EditorValue::Object& request, con
 
 class AutomationMaterialAssetResolver final : public material_editing::IMaterialRuntimeAssetResolver {
 public:
-    editor::EditorResult<graphics::Texture*> resolveTexture(const std::string& asset) const override {
+    editor::Result<graphics::Texture*> resolveTexture(const std::string& asset) const override {
         return unresolved<graphics::Texture>(asset);
     }
-    editor::EditorResult<graphics::Shader*> resolveShader(const std::string& asset) const override {
+    editor::Result<graphics::Shader*> resolveShader(const std::string& asset) const override {
         return unresolved<graphics::Shader>(asset);
     }
 
 private:
     template <class T>
-    static editor::EditorResult<T*> unresolved(const std::string& asset) {
+    static editor::Result<T*> unresolved(const std::string& asset) {
         return eve::editing::failed<T*>(
             editor::EditorStatus::Unsupported, editor::RuleId("editor.automation.material-asset"),
             "Automation binding cannot resolve material asset: " + asset);
@@ -69,7 +69,7 @@ class MaterialEditorModule::TargetFactory final : public editor::IEditorAutomati
 public:
     std::vector<std::string_view> types() const override { return {"material", "material-renderable3d"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type,
         const editor::EditorValue::Object& request) override {
         editor::AutomationOwnedTarget owned;
@@ -100,7 +100,7 @@ public:
         auto publishing = std::make_unique<material_editing::MaterialPublishingTarget>(target.value(), sink.get());
         auto loaded = publishing->authoringTarget().loadSnapshot(runtimeMaterialSnapshot(*renderer));
         if (!loaded.ok()) {
-            return editor::EditorResult<editor::AutomationOwnedTarget>::failure(loaded.status());
+            return editor::Result<editor::AutomationOwnedTarget>::failure(loaded.status());
         }
         owned.support = std::move(sink);
         owned.target = std::move(publishing);

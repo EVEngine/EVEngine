@@ -15,7 +15,7 @@ namespace {
 
 eve::Result<eve::MutationReceipt> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
     return eve::Result<eve::MutationReceipt>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path)));
+        eve::Diagnostic::error(code, message, path));
 }
 
 eve::Result<eve::Value> readJsonValue(const Store& store, std::string_view subject, std::string_view key) {

@@ -47,35 +47,35 @@ public:
     /** @brief Return the stable capability id. */
     static CapabilityId editingCapabilityId() { return CapabilityId("eve.procgen.target.spline-path-document"); }
     /** @brief Plan creation or atomic replacement of one control point. */
-    virtual EditorResult<DomainOperation> makeSetPoint(const SplinePathControlPoint& point) const = 0;
+    virtual Result<DomainOperation> makeSetPoint(const SplinePathControlPoint& point) const = 0;
     /** @brief Plan removal of one stable control point. */
-    virtual EditorResult<DomainOperation> makeDeletePoint(const StableId& point) const = 0;
+    virtual Result<DomainOperation> makeDeletePoint(const StableId& point) const = 0;
     /** @brief Plan interpolation and closure settings replacement. */
-    virtual EditorResult<DomainOperation> makeSetSettings(const SplinePathSettings& settings) const = 0;
+    virtual Result<DomainOperation> makeSetSettings(const SplinePathSettings& settings) const = 0;
     /** @brief Plan shape-preserving insertion into one curve segment. */
-    virtual EditorResult<DomainOperation> makeInsertPointAt(int segment, double t, const StableId& point) const = 0;
+    virtual Result<DomainOperation> makeInsertPointAt(int segment, double t, const StableId& point) const = 0;
     /** @brief Plan anchor snapping to a positive world-space grid size. */
-    virtual EditorResult<DomainOperation> makeSnapPoint(const StableId& point, double gridSize) const = 0;
+    virtual Result<DomainOperation> makeSnapPoint(const StableId& point, double gridSize) const = 0;
     /** @brief Plan snapping every anchor to a positive world-space grid in one reversible operation. */
-    virtual EditorResult<DomainOperation> makeSnapAll(double gridSize) const = 0;
+    virtual Result<DomainOperation> makeSnapAll(double gridSize) const = 0;
     /** @brief Plan reversal of traversal direction while preserving Bezier geometry. */
-    virtual EditorResult<DomainOperation> makeFlipDirection() const = 0;
+    virtual Result<DomainOperation> makeFlipDirection() const = 0;
     /** @brief Plan splitting or reconnecting the chunk boundary before one point. */
-    virtual EditorResult<DomainOperation> makeSetChunkBreak(const StableId& point, bool disconnected) const = 0;
+    virtual Result<DomainOperation> makeSetChunkBreak(const StableId& point, bool disconnected) const = 0;
     /** @brief Plan appending one disconnected two-point chunk in one reversible operation. */
-    virtual EditorResult<DomainOperation> makeAppendChunk(const SplinePathControlPoint& first,
+    virtual Result<DomainOperation> makeAppendChunk(const SplinePathControlPoint& first,
                                                           const SplinePathControlPoint& second) const = 0;
     /** @brief Plan removing one zero-based disconnected chunk in one reversible operation. */
-    virtual EditorResult<DomainOperation> makeDeleteChunk(int chunk) const = 0;
+    virtual Result<DomainOperation> makeDeleteChunk(int chunk) const = 0;
     /** @brief Plan absolute point-local pitch, yaw, and roll replacement. */
-    virtual EditorResult<DomainOperation> makeSetPointRotation(const StableId& point, double pitchDegrees,
+    virtual Result<DomainOperation> makeSetPointRotation(const StableId& point, double pitchDegrees,
                                                                double yawDegrees, double rollDegrees) const = 0;
     /** @brief Plan resetting one point-local orientation to identity. */
-    virtual EditorResult<DomainOperation> makeResetPointRotation(const StableId& point) const = 0;
+    virtual Result<DomainOperation> makeResetPointRotation(const StableId& point) const = 0;
     /** @brief Plan moving an interior control point to the midpoint of its connected neighbours. */
-    virtual EditorResult<DomainOperation> makeCenterPoint(const StableId& point) const = 0;
+    virtual Result<DomainOperation> makeCenterPoint(const StableId& point) const = 0;
     /** @brief Plan mirroring the complete path and handles across x, y, or z. */
-    virtual EditorResult<DomainOperation> makeMirrorAxis(std::string_view axis) const = 0;
+    virtual Result<DomainOperation> makeMirrorAxis(std::string_view axis) const = 0;
 };
 
 /**
@@ -100,36 +100,36 @@ public:
      * @lifetime Valid until this document is destroyed.
      */
     void*              queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
-    EditorResult<DomainOperation>    makeSetPoint(const SplinePathControlPoint& point) const override;
-    EditorResult<DomainOperation>    makeDeletePoint(const StableId& point) const override;
-    EditorResult<DomainOperation>    makeSetSettings(const SplinePathSettings& settings) const override;
-    EditorResult<DomainOperation>    makeInsertPointAt(int segment, double t, const StableId& point) const override;
-    EditorResult<DomainOperation>    makeSnapPoint(const StableId& point, double gridSize) const override;
-    EditorResult<DomainOperation>    makeSnapAll(double gridSize) const override;
-    EditorResult<DomainOperation>    makeFlipDirection() const override;
-    EditorResult<DomainOperation>    makeSetChunkBreak(const StableId& point, bool disconnected) const override;
-    EditorResult<DomainOperation>    makeAppendChunk(const SplinePathControlPoint& first,
+    [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<DomainOperation>    makeSetPoint(const SplinePathControlPoint& point) const override;
+    Result<DomainOperation>    makeDeletePoint(const StableId& point) const override;
+    Result<DomainOperation>    makeSetSettings(const SplinePathSettings& settings) const override;
+    Result<DomainOperation>    makeInsertPointAt(int segment, double t, const StableId& point) const override;
+    Result<DomainOperation>    makeSnapPoint(const StableId& point, double gridSize) const override;
+    Result<DomainOperation>    makeSnapAll(double gridSize) const override;
+    Result<DomainOperation>    makeFlipDirection() const override;
+    Result<DomainOperation>    makeSetChunkBreak(const StableId& point, bool disconnected) const override;
+    Result<DomainOperation>    makeAppendChunk(const SplinePathControlPoint& first,
                                                      const SplinePathControlPoint& second) const override;
-    EditorResult<DomainOperation>    makeDeleteChunk(int chunk) const override;
-    EditorResult<DomainOperation>    makeSetPointRotation(const StableId& point, double pitchDegrees, double yawDegrees,
+    Result<DomainOperation>    makeDeleteChunk(int chunk) const override;
+    Result<DomainOperation>    makeSetPointRotation(const StableId& point, double pitchDegrees, double yawDegrees,
                                                           double rollDegrees) const override;
-    EditorResult<DomainOperation>    makeResetPointRotation(const StableId& point) const override;
-    EditorResult<DomainOperation>    makeCenterPoint(const StableId& point) const override;
-    EditorResult<DomainOperation>    makeMirrorAxis(std::string_view axis) const override;
+    Result<DomainOperation>    makeResetPointRotation(const StableId& point) const override;
+    Result<DomainOperation>    makeCenterPoint(const StableId& point) const override;
+    Result<DomainOperation>    makeMirrorAxis(std::string_view axis) const override;
 
     /** @brief Return points in deterministic order and stable-id tie order. */
     [[nodiscard]] std::vector<SplinePathControlPoint> points() const;
     /** @brief Return current interpolation and closure settings. */
     [[nodiscard]] const SplinePathSettings& settings() const noexcept { return settings_; }
     /** @brief Compile an owning runtime spline without retaining document references. */
-    [[nodiscard]] EditorResult<procgen::SplinePath> compilePath() const;
+    [[nodiscard]] Result<procgen::SplinePath> compilePath() const;
     /** @brief Capture schema `eve.procgen.splinePath` version one. */
     [[nodiscard]] EditorValue snapshotValue() const;
     /** @brief Atomically load a validated version-one snapshot. */
-    [[nodiscard]] EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    [[nodiscard]] Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     std::string                                id_;
@@ -138,6 +138,6 @@ private:
 };
 
 /** @brief Compile a version-one spline snapshot for isolated graph preview. */
-[[nodiscard]] EditorResult<procgen::SplinePath> compileSplinePathSnapshot(const EditorValue& snapshot);
+[[nodiscard]] Result<procgen::SplinePath> compileSplinePathSnapshot(const EditorValue& snapshot);
 
 }  // namespace eve::procgen_editing

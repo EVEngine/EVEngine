@@ -18,7 +18,7 @@ Result<std::string> requiredString(const Value::Object& object, std::string_view
     if (!value || !value->isString() || value->asString().empty())
         return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError,
                                                               "Unreal adapter field must be a non-empty string",
-                                                              std::move(path), {}, "asset.import"));
+                                                              path, {}, "asset.import"));
     return Result<std::string>::success(value->asString());
 }
 
@@ -28,7 +28,7 @@ Result<std::uint32_t> requiredUint32(const Value::Object& object, std::string_vi
         value->asInt() > std::numeric_limits<std::uint32_t>::max())
         return Result<std::uint32_t>::failure(Diagnostic::error(DiagnosticCode::ParseError,
                                                                 "Unreal adapter field must be a positive uint32",
-                                                                std::move(path), {}, "asset.import"));
+                                                                path, {}, "asset.import"));
     return Result<std::uint32_t>::success(static_cast<std::uint32_t>(value->asInt()));
 }
 
@@ -38,11 +38,11 @@ Result<float> number(const Value& value, std::string path) {
     else if (value.isInt64()) result = static_cast<double>(value.asInt());
     else
         return Result<float>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unreal numeric field is invalid",
-                                                        std::move(path), {}, "asset.import"));
+                                                        path, {}, "asset.import"));
     if (!std::isfinite(result) || result < -std::numeric_limits<float>::max() ||
         result > std::numeric_limits<float>::max())
         return Result<float>::failure(Diagnostic::error(
-            DiagnosticCode::ParseError, "Unreal numeric field is non-finite", std::move(path), {}, "asset.import"));
+            DiagnosticCode::ParseError, "Unreal numeric field is non-finite", path, {}, "asset.import"));
     return Result<float>::success(static_cast<float>(result));
 }
 
@@ -52,7 +52,7 @@ Result<std::array<float, Count>> numberArray(const Value* value, std::string pat
     if (!array || array->size() != Count)
         return Result<std::array<float, Count>>::failure(Diagnostic::error(DiagnosticCode::ParseError,
                                                                            "Unreal vector field has the wrong shape",
-                                                                           std::move(path), {}, "asset.import"));
+                                                                           path, {}, "asset.import"));
     std::array<float, Count> result{};
     for (std::size_t index = 0; index < Count; ++index) {
         auto parsed = number((*array)[index], path + "[" + std::to_string(index) + "]");

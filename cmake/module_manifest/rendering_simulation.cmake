@@ -58,14 +58,13 @@ eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
                    GROUP 2d 3d web)
 eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
                    DEPS data filesystem graphics grid
-                   THIRDPARTY poco
                    GROUP 2d 3d)
 # Interactive 3D hex map: an editable pointy-top cell grid plus per-chunk mesh
 # generation (ground fans, blend strips, terraces, cliffs, water, rivers, roads,
 # city walls, decorations and the fog overlay).
 eve_declare_module(NAME hexmap LAYER 4 SCRIPT HexMap SLOT hexmap
                    DEPS graphics
-                   GROUP 3d)
+                   GROUP 3d web)
 eve_declare_module(NAME map_editing LAYER 4
                    DEPS editing
                    OPTIONAL_DEPS map
@@ -76,7 +75,7 @@ eve_declare_module(NAME buildingfx LIB EVBuildingFx LAYER 4 SCRIPT BuildingFx SL
 # vehicles / turrets all attach the same WeaponMount system.
 eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    DEPS action attributes effects transaction definitions
-                   GROUP 2d 3d)
+                   GROUP 2d 3d web)
 # L5 -- vehicle adapter
 # Cloth is a host-owned physics satellite: rigid-body physics stays usable in
 # trimmed builds without cloth topology, rendering, or compute backends. Its
@@ -126,10 +125,10 @@ eve_declare_module(NAME combat_navigation DIR combat/navigation LAYER 5
                    GROUP 2d 3d)
 eve_declare_module(NAME pixelworld_physics LAYER 5 SCRIPT PixelWorldPhysics SLOT pixelworldPhysics
                    DEPS pixelworld physics
-                   GROUP 2d)
+                   GROUP 2d web)
 eve_declare_module(NAME scene_physics DIR scene/physics LAYER 5 SCRIPT ScenePhysics SLOT scenePhysics
                    DEPS physics scene
-                   GROUP 3d)
+                   GROUP 3d web)
 # Optional editing satellite. Runtime-only profiles can enable physics without
 # pulling editing/editor contracts or AssetDB adapters.
 eve_declare_module(NAME physics_editing LAYER 5
@@ -145,36 +144,49 @@ eve_declare_module(NAME physics_softbody_editing DIR physics/softbody/editing LA
 eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
                    DEPS attributes definitions effects orders weapon settlement game_event
                    OPTIONAL_DEPS physics
-                   GROUP 2d 3d)
+                   GROUP 2d 3d web)
 # L4 -- rendering extensions and simulation (continued)
+# Runtime pose/clip/skin/lattice stay Assimp-free. ModelData/Assimp import
+# (AnimImporterAssimp, *FromModel, AnimationModelImport) is an OPTIONAL_DEPS
+# model3d bridge excluded when model3d is trimmed — mirrors spritestack.
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
-                   DEPS action data filesystem graphics image model3d
-                   THIRDPARTY poco assimp
+                   DEPS action data filesystem graphics image
+                   OPTIONAL_DEPS model3d
+                   THIRDPARTY poco
                    GROUP 2d 3d)
 eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight
                    DEPS graphics
                    GROUP 3d web)
+# stylize / decal keep GROUP web: native Dawn and the browser profile already
+# ship their WGSL paths, and several web-tagged editors hard-depend on them.
 eve_declare_module(NAME decal LAYER 4 SCRIPT Decal SLOT decal
                    DEPS graphics stylize
-                   GROUP 3d)
+                   GROUP 3d web)
 eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
                    DEPS graphics image
-                   GROUP 3d)
+                   GROUP 3d web)
 # L5 -- voxel aggregate
+# WebGPU face instances live in graphics/webgpu/GraphicsVoxel.cpp, but the
+# public VoxelWorld API embeds procgen::TerrainStreamingCache / TerrainSampler.
+# Soft-dep + web membership wait on that API split (procgen still pulls map).
 eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
                    DEPS graphics procgen thread
                    GROUP 3d)
 # L4 -- rendering extensions (continued)
+# Pure-2D stacks + WGSL card path need only graphics/image. Assimp-backed
+# sliceModel lives in SpriteStackModel.cpp and follows OPTIONAL_DEPS model3d.
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
-                   DEPS graphics image model3d
-                   GROUP 2d)
+                   DEPS graphics image
+                   OPTIONAL_DEPS model3d
+                   GROUP 2d web)
 eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
                    DEPS data graphics image model3d
                    GROUP 3d)
 eve_declare_module(NAME archspace LIB EVArchSpace LAYER 4 SCRIPT ArchSpace SLOT archspace
                    DEPS data
-                   GROUP 3d)
+                   GROUP 3d web)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
-                   DEPS attributes decision definitions effects graphics settlement transaction)
+                   DEPS attributes decision definitions effects graphics settlement transaction
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME demo LAYER 4 SCRIPT Demo
                    DEPS graphics sound)

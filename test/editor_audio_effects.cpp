@@ -11,7 +11,7 @@ AudioEffectRecord gain(const char* id, double decibels) {
 }
 class Sink final : public IAudioEffectChainSink {
 public:
-    EditorResult<void> publish(const std::string& id, Revision sourceRevision,
+    Result<void> publish(const std::string& id, Revision sourceRevision,
                                const std::vector<AudioEffectRecord>& value) override {
         chain=id;revision=sourceRevision;effects=value;return eve::editing::applied<void>();
     }

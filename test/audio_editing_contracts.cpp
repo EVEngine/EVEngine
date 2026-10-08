@@ -23,7 +23,7 @@ SelectionSnapshot select(const AudioSourceTarget& target) {
 
 class RecordingSink final : public IAudioSourceRuntimeSink {
 public:
-    EditorResult<void> publish(const AudioSourceTarget& candidate) override {
+    Result<void> publish(const AudioSourceTarget& candidate) override {
         ++calls;
         observedRevision = candidate.revision();
         if (reject)

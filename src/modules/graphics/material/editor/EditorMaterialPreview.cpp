@@ -30,7 +30,7 @@ std::vector<EditorDiagnostic> validateSettings(const MaterialPreviewSettings& se
 
 }  // namespace
 
-EditorResult<TaskId> MaterialPreviewService::render(const DocumentId& document,
+Result<TaskId> MaterialPreviewService::render(const DocumentId& document,
                                                     const MaterialDocumentTarget& material,
                                                     MaterialPreviewSettings settings,
                                                     IMaterialPreviewRenderer& renderer) {
@@ -43,7 +43,7 @@ EditorResult<TaskId> MaterialPreviewService::render(const DocumentId& document,
                        std::make_move_iterator(settingsDiagnostics.end()));
     for (const EditorDiagnostic& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<TaskId>::failure(
+            return Result<TaskId>::failure(
                 Status(EditorStatus::Rejected, std::move(diagnostics)));
     const TaskId task("material-preview-" + std::to_string(++sequence_));
     MaterialPreviewRenderRequest request;
@@ -64,7 +64,7 @@ EditorResult<TaskId> MaterialPreviewService::render(const DocumentId& document,
     return eve::editing::applied<TaskId>(task);
 }
 
-EditorResult<MaterialPreviewRenderResult> MaterialPreviewService::result(const TaskId& task) const {
+Result<MaterialPreviewRenderResult> MaterialPreviewService::result(const TaskId& task) const {
     const auto found = tasks_.find(task);
     if (found == tasks_.end())
         return eve::editing::failed<MaterialPreviewRenderResult>(EditorStatus::NotFound,
@@ -73,7 +73,7 @@ EditorResult<MaterialPreviewRenderResult> MaterialPreviewService::result(const T
     return eve::editing::applied<MaterialPreviewRenderResult>(found->second.result);
 }
 
-EditorResult<void> MaterialPreviewService::publish(const DocumentId& document, Revision currentRevision,
+Result<void> MaterialPreviewService::publish(const DocumentId& document, Revision currentRevision,
                                                    const TaskId& task) {
     const auto found = tasks_.find(task);
     if (found == tasks_.end())
@@ -89,7 +89,7 @@ EditorResult<void> MaterialPreviewService::publish(const DocumentId& document, R
         const EditorStatus status = found->second.result.status == EditorStatus::Applied
                                         ? EditorStatus::Failed
                                         : found->second.result.status;
-        return EditorResult<void>::failure(Status(status, found->second.result.diagnostics));
+        return Result<void>::failure(Status(status, found->second.result.diagnostics));
     }
     published_[document] = found->second.result.artifact;
     return eve::editing::applied<void>();

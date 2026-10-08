@@ -35,9 +35,6 @@ vk::Format imageFormat(ShaderImageFormat value) {
     }
     return vk::Format::eUndefined;
 }
-Result<void> failure(std::string message, DiagnosticCode code = DiagnosticCode::InvalidArgument) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), "shader.resources"));
-}
 }  // namespace
 
 struct MeshShaderResources {
@@ -80,10 +77,10 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
                               [&](const auto& gpu) { return gpu->owner == &shader; });
     if (!initialized || found == ownedGpuShaders.end() || !(*found)->isMesh3D || (*found)->isHair3D ||
         shader.isXray() || swapchainPassOpen || offscreen3DPassOpen)
-        return failure("Expected an owned, ordinary mesh shader outside frame submission");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Expected an owned, ordinary mesh shader outside frame submission", "shader.resources"));
     if (inputs.images.empty() || inputs.images.size() > 16 || inputs.constants.size() > 65536 ||
         inputs.constants.size() % 16 != 0)
-        return failure("Expected 1-16 images and at most 64 KiB of aligned uniform bytes");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Expected 1-16 images and at most 64 KiB of aligned uniform bytes", "shader.resources"));
     std::set<uint32_t>                          bindings;
     std::vector<std::vector<ShaderImageRegion>> regions;
     const auto&                                 limits        = device.physical_device.properties.limits;
@@ -92,25 +89,25 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
     if (inputs.instanceMatrices.size() > limits.maxStorageBufferRange ||
         (!inputs.instanceMatrices.empty() &&
          (limits.maxPerStageDescriptorStorageBuffers < 2 || limits.maxDescriptorSetStorageBuffers < 2)))
-        return failure("Instance matrix buffer exceeds device limits", DiagnosticCode::Unsupported);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Instance matrix buffer exceeds device limits", "shader.resources"));
     if (inputs.images.size() + 13 > limits.maxPerStageDescriptorSamplers ||
         inputs.images.size() + 13 > limits.maxPerStageDescriptorSampledImages ||
         inputs.constants.size() > limits.maxUniformBufferRange)
-        return failure("Resource program exceeds device descriptor or uniform limits", DiagnosticCode::Unsupported);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Resource program exceeds device descriptor or uniform limits", "shader.resources"));
     for (const auto& image : inputs.images) {
-        if (!bindings.insert(image.binding).second) return failure("Duplicate resource image binding");
+        if (!bindings.insert(image.binding).second) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Duplicate resource image binding", "shader.resources"));
         auto layout = shaderImageRegions(image);
         if (!layout) return Result<void>::failure(layout.status());
         if (image.width > limits.maxImageDimension2D || image.height > limits.maxImageDimension2D ||
             image.layers > limits.maxImageArrayLayers)
-            return failure("Resource image exceeds device dimensions", DiagnosticCode::Unsupported);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Resource image exceeds device dimensions", "shader.resources"));
         const auto flags = device.physical_device->getFormatProperties(imageFormat(image.format)).optimalTilingFeatures;
         const auto required = vk::FormatFeatureFlagBits::eSampledImage | vk::FormatFeatureFlagBits::eTransferDst;
         if ((flags & required) != required ||
             ((image.sampler.min == FilterMode::Linear || image.sampler.mag == FilterMode::Linear ||
               image.sampler.mipmap == MipmapMode::Linear) &&
              !(flags & vk::FormatFeatureFlagBits::eSampledImageFilterLinear)))
-            return failure("Device cannot sample the requested image format/filter", DiagnosticCode::Unsupported);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Device cannot sample the requested image format/filter", "shader.resources"));
         regions.push_back(std::move(layout).takeValue());
     }
     auto admitted = detail::validateResourceShaderStages(vertSpv, fragSpv, inputs);
@@ -325,7 +322,7 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
         for (auto pipeline :
              {candidate->mesh3dPipeline, candidate->mesh3dOffscreenPipeline, candidate->mesh3dHdrOffscreenPipeline})
             if (pipeline) device->destroyPipeline(pipeline);
-        return failure(error.what(), DiagnosticCode::Failed);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "shader.resources"));
     }
     auto& old = **found;
     for (auto pipeline :
