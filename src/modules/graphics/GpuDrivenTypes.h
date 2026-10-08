@@ -55,6 +55,7 @@ enum class GpuResidentSubmitStatus : uint8_t {
 };
 
 /// @brief GPU mesh table record (std430). Mirrors GLSL GpuMeshRecord.
+/** @brief GpuMeshRecord public API. */
 struct GpuMeshRecord {
     glm::vec4 boundsCenterRadius;  // model-space bounding sphere (xyz = center, w = radius)
     uint32_t  vertexOffset = 0;    // offset into pooled vertex buffer (vertex count)
@@ -85,6 +86,7 @@ struct GpuVegetationVertexRecord {
 static_assert(sizeof(GpuVegetationVertexRecord) == 112, "GpuVegetationVertexRecord must be 112B (std430 16B aligned)");
 
 /// @brief GPU material table record (std430). Mirrors GLSL GpuMaterialRecord.
+/** @brief GpuMaterialRecord public API. */
 struct GpuMaterialRecord {
     glm::vec4 tint;              // rgba
     glm::vec4 pbr;               // x = metallic, y = roughness, z = receiveShadow, w = receiveLight
@@ -100,6 +102,7 @@ struct GpuMaterialRecord {
 static_assert(sizeof(GpuMaterialRecord) == 112, "GpuMaterialRecord must be 112B (std430 16B aligned)");
 
 /// @brief Per-instance GPU record (std430). Mirrors GLSL GpuInstance.
+/** @brief GpuInstance public API. */
 struct GpuInstance {
     glm::mat4  model;
     uint32_t   meshId     = kInvalidGpuDrivenSlot;  // -> GpuMeshRecord table
@@ -116,6 +119,7 @@ struct GpuInstance {
 static_assert(sizeof(GpuInstance) == 208, "GpuInstance must be 208B (std430)");
 
 /// @brief Indirect draw command; layout identical to VkDrawIndexedIndirectCommand.
+/** @brief GpuIndirectCommand public API. */
 struct GpuIndirectCommand {
     uint32_t indexCount    = 0;
     uint32_t instanceCount = 0;
@@ -127,6 +131,7 @@ static_assert(sizeof(GpuIndirectCommand) == 20, "GpuIndirectCommand must match V
 
 /// @brief GPU-packed cluster node (std430, 4 x uvec4). Mirrors the
 /// virtualgeometry module's VgGpuCluster layout.
+/** @brief GpuVgCluster public API. */
 struct GpuVgCluster {
     std::uint32_t u0[4];  // bounds: f32(cx), f32(cy), f32(cz), f32(r)
     std::uint32_t u1[4];  // triStart, triCount, lodLevel, parent
@@ -138,6 +143,7 @@ static_assert(sizeof(GpuVgCluster) == 64, "GpuVgCluster must be 64B (4 x uvec4)"
 /// @brief Neutral GPU upload for one virtual-geometry asset. Raw arrays so the
 /// graphics module does not depend on the virtualgeometry module.
 /// @lifetime Every array is borrowed for the upload call only and is never retained.
+/** @brief GpuVgAssetUpload public API. */
 struct GpuVgAssetUpload {
     const float*         positions     = nullptr;  // xyz packed, 3 * vertexCount
     int                  vertexCount   = 0;

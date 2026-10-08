@@ -41,11 +41,16 @@ struct EVENGINE_API_PLATFORM SettlementContext {
     std::unordered_map<std::string, double> values;
     std::vector<std::string> tags;
 
+    /** @brief Returns the value. */
     double get(const std::string &key, double fallback = 0.0) const;
+    /** @brief Sets the value. */
     void set(const std::string &key, double value);
+    /** @brief True when active. */
     bool has(const std::string &key) const;
 
+    /** @brief Adds tag. */
     void addTag(const std::string &tag);
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
 };
 
@@ -62,11 +67,17 @@ public:
     /** @brief 同名 stage 已存在则整体覆盖（fn/priority），并重置为 enabled。 */
     static void registerStage(const std::string &pipeline, const std::string &stage, int priority,
                                Stage fn);
+    /** @brief Unregisters stage. */
     static bool unregisterStage(const std::string &pipeline, const std::string &stage);
+    /** @brief Sets the stage enabled. */
     static bool setStageEnabled(const std::string &pipeline, const std::string &stage, bool enabled);
+    /** @brief Sets the stage priority. */
     static bool setStagePriority(const std::string &pipeline, const std::string &stage, int priority);
+    /** @brief True when stage. */
     static bool hasStage(const std::string &pipeline, const std::string &stage);
+    /** @brief Stage count. */
     static int stageCount(const std::string &pipeline);
+    /** @brief Clears pipeline. */
     static void clearPipeline(const std::string &pipeline);
 
     /** @brief 按 priority 升序依次执行 pipeline 内已启用的阶段；ctx.cancelled 时提前终止。 */

@@ -25,7 +25,9 @@ class VirtualGeometryRenderer;
 class EVENGINE_API_DOMAINS VirtualGeometry : public Module {
 public:
     Module_REG(VirtualGeometry);
+    /** @brief Virtual geometry. */
     VirtualGeometry() = default;
+    /** @brief Virtual geometry. */
     ~VirtualGeometry() override = default;
 
     /** @brief True when the active Graphics backend can run virtual geometry. */

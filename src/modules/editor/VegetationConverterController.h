@@ -12,6 +12,7 @@ namespace eve::editor {
 
 /** @brief Host-visible state of the TVE conversion tool. */
 struct VegetationConverterState {
+    /** @brief Phase public API. */
     enum class Phase { Empty, Dirty, Prepared, Published, Error };
     Phase                         phase                 = Phase::Empty;
     std::uint64_t                 requestRevision       = 0;
@@ -26,6 +27,7 @@ struct VegetationConverterState {
 /** @brief Worker boundary used to prepare a complete vegetation package candidate. */
 class IVegetationConversionPreparer {
 public:
+    /** @brief Releases IVegetationConversionPreparer resources. */
     virtual ~IVegetationConversionPreparer() = default;
     /** @brief Prepare an owning candidate without external mutation or retained request references. */
     [[nodiscard]] virtual Result<asset_import::PreparedAssetImport> prepare(
@@ -35,6 +37,7 @@ public:
 /** @brief Built-in preparer backed by the canonical TVE batch transaction. */
 class NativeVegetationConversionPreparer final : public IVegetationConversionPreparer {
 public:
+    /** @brief Prepare. */
     [[nodiscard]] Result<asset_import::PreparedAssetImport> prepare(
         const asset_import::UnityVegetationBatchImportRequest& request) const override;
 };
@@ -42,6 +45,7 @@ public:
 /** @brief Atomic host publication boundary for one prepared vegetation package. */
 class IVegetationConversionPublisher {
 public:
+    /** @brief Releases IVegetationConversionPublisher resources. */
     virtual ~IVegetationConversionPublisher() = default;
     /** @brief Publish one immutable complete candidate.
      * @param candidate Borrowed only during this synchronous call and never retained.
@@ -59,6 +63,7 @@ public:
  */
 class EVENGINE_API_ORCHESTRATION VegetationConverterController {
 public:
+    /** @brief Vegetation converter controller. */
     VegetationConverterController(const IVegetationConversionPreparer& preparer,
                                   IVegetationConversionPublisher&      publisher);
 

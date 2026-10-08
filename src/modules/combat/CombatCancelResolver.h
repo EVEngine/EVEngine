@@ -35,9 +35,13 @@ struct CombatCancelResolution {
  */
 class EVENGINE_API_BACKENDS CombatCancelResolver {
 public:
+    /** @brief Sets the buffer. */
     void setBuffer(action::input::ActionInputBuffer& buffer) noexcept { buffer_ = &buffer; }
+    /** @brief Sets the cancels. */
     void setCancels(const action::input::ActionCancelWindowState& cancels) noexcept { cancels_ = &cancels; }
+    /** @brief Sets the combos. */
     void setCombos(const action::input::ActionComboWindowState* combos) noexcept { combos_ = combos; }
+    /** @brief Sets the graph. */
     void setGraph(const ComboGraph* graph) noexcept { graph_ = graph; }
 
     /**

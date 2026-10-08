@@ -20,6 +20,7 @@ struct SplineBindingPose {
 /** @brief Consumer-owned transform lookup contract used by spline binding. */
 class ISplineBindingTransformSource {
 public:
+    /** @brief Releases ISplineBindingTransformSource resources. */
     virtual ~ISplineBindingTransformSource() = default;
     /** @brief Resolve one stable source identity without returning borrowed storage. */
     [[nodiscard]] virtual Result<SplineBindingPose> resolve(const std::string& host,
@@ -31,6 +32,7 @@ class EVENGINE_API_ORCHESTRATION SceneQuerySplineBindingSource final : public IS
 public:
     /** @brief Construct from a borrowed capability; null represents a trimmed scene provider. */
     explicit SceneQuerySplineBindingSource(const ISceneQuery* query) : query_(query) {}
+    /** @brief Resolve. */
     [[nodiscard]] Result<SplineBindingPose> resolve(const std::string& host,
                                                           const std::string& object) const override;
 

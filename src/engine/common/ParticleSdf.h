@@ -26,6 +26,7 @@ class EVENGINE_API_FOUNDATION_INLINE IParticleSdfField {
 public:
     static constexpr const char* capabilityName = "IParticleSdfField";
 
+    /** @brief I particle sdf field. */
     virtual ~IParticleSdfField() = default;
 
     /**

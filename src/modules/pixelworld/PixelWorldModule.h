@@ -14,7 +14,9 @@ class EVENGINE_API_FOUNDATION PixelWorldModule : public Module {
 public:
     Module_REG(PixelWorldModule);
 
+    /** @brief Pixel world module. */
     PixelWorldModule();
+    /** @brief Pixel world module. */
     ~PixelWorldModule() override;
 
     /** @brief Create a caller-owned world using the supplied deterministic seed. */

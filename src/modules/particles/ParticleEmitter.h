@@ -70,10 +70,13 @@ struct Particle {
  */
 class EVENGINE_API_DOMAINS ParticleEmitter : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(ParticleEmitter, ecs::Entity)
 
+    /** @brief Release. */
     void release() override;
 
+    /** @brief Config public API. */
     struct Config {
         /** @brief Timed burst emission (fired once while the emitter is active). */
         struct Burst {
@@ -102,6 +105,7 @@ public:
         int randomSeed = 0;
         /** @brief Generate a new seed on each start. */
         bool autoRandomSeed = true;
+        /** @brief ParameterBinding public API. */
         struct ParameterBinding {
             std::string parameter;
             float       scale  = 1.f;
@@ -110,11 +114,13 @@ public:
         /** @brief Gameplay-owned exposed values and target bindings. */
         std::unordered_map<std::string, float>            floatParameters;
         std::unordered_map<std::string, ParameterBinding> parameterBindings;
+        /** @brief Resolved parameter scale. */
         float                                             resolvedParameterScale(const std::string& target) const {
             auto binding = parameterBindings.find(target);
             if (binding == parameterBindings.end()) return 1.f;
             auto value = floatParameters.find(binding->second.parameter);
             if (value == floatParameters.end()) return 1.f;
+            /** @brief Max. */
             return std::max(0.f, value->second * binding->second.scale + binding->second.offset);
         }
         float direction = 0.f;
@@ -297,6 +303,7 @@ public:
 
     /** @brief Bound config file for hot reload (empty path = unbound). */
     struct Resource {
+        /** @brief ReloadObservation public API. */
         enum class ReloadObservation {
             Unbound,
             AutoReloadDisabled,
@@ -325,6 +332,7 @@ public:
      * - IK Skeleton2D / Skeleton3D + bone id (FABRIK chains)
      */
     struct Attach {
+        /** @brief Kind public API. */
         enum class Kind { None, AnimPose, Spine, Ik2D, Ik3D };
 
         Kind kind = Kind::None;
@@ -706,8 +714,11 @@ public:
     void emitFromSkin(int count);
 };
 
+/** @brief Spawn particle. */
 bool spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
+/** @brief Spawn particle at. */
 bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
+/** @brief Step emitter sim. */
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 /** @brief Apply playback speed and optional bounded fixed stepping before simulation. */
 EVENGINE_API_DOMAINS float advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
@@ -717,11 +728,14 @@ EVENGINE_API_DOMAINS float advanceEmitterSim(ParticleEmitter::Config &cfg, Parti
                                                                        const eve::SimulationStep &step);
 /** @brief World collision query used by emitters with worldCollision enabled. */
 using WorldCollisionFn = bool (*)(float x, float y, float radius, float &nx, float &ny);
+/** @brief Sets the world collision resolver. */
 void setWorldCollisionResolver(WorldCollisionFn fn);
+/** @brief Returns the world collision resolver. */
 WorldCollisionFn getWorldCollisionResolver();
 /** @brief Sync bone attach + refresh skin cache; call before stepEmitterSim when using Attach/SkinSource. */
 void syncEmitterSources(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
                         ParticleEmitter::Attach &attach, ParticleEmitter::SkinSource &skinSrc);
+/** @brief Sample skin spawn. */
 bool sampleSkinSpawn(ParticleEmitter::SkinSource &skinSrc, ParticleEmitter::Sim &sim, float &outX,
                      float &outY);
 

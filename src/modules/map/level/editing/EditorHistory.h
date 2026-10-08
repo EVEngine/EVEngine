@@ -16,18 +16,28 @@ namespace eve::level_editing {
  */
 class EVENGINE_API_DOMAINS EditorHistory {
 public:
+    /** @brief Clears . */
     void clear();
 
+    /** @brief Pushes . */
     void push(const std::string &name, const std::string &payload);
 
+    /** @brief Begins group. */
     void beginGroup(const std::string &name);
+    /** @brief Record tile. */
     void recordTile(int x, int y, int oldGid, int newGid);
+    /** @brief Ends group. */
     void endGroup();
+    /** @brief True when grouping. */
     bool isGrouping() const { return grouping_; }
 
+    /** @brief Can undo. */
     bool canUndo() const;
+    /** @brief Can redo. */
     bool canRedo() const;
+    /** @brief Returns the undo count. */
     int getUndoCount() const;
+    /** @brief Returns the redo count. */
     int getRedoCount() const;
 
     /** @brief Move the latest action to redo history and return its stable name. */
@@ -45,13 +55,21 @@ public:
     /** @brief Compatibility-only nullable pointer projection of applyLastToBufferChecked(). */
     bool applyLastToBuffer(TileBuffer *buffer);
 
+    /** @brief Returns the last action name. */
     std::string getLastActionName() const;
+    /** @brief Returns the last action kind. */
     std::string getLastActionKind() const;  // "opaque" | "tiles"
+    /** @brief Returns the last payload. */
     std::string getLastPayload() const;
+    /** @brief Returns the last tile count. */
     int getLastTileCount() const;
+    /** @brief Returns the last tile x. */
     int getLastTileX(int index) const;
+    /** @brief Returns the last tile y. */
     int getLastTileY(int index) const;
+    /** @brief Returns the last tile old gid. */
     int getLastTileOldGid(int index) const;
+    /** @brief Returns the last tile new gid. */
     int getLastTileNewGid(int index) const;
 
 private:

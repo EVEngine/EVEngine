@@ -38,12 +38,18 @@ using Owned = std::unique_ptr<T>;
  *          reset-to-own or heap-management operation.
  */
 template <class T>
+/** @brief Borrowed public API. */
 class Borrowed {
 public:
+    /** @brief Constructs a Borrowed. */
     constexpr Borrowed() noexcept = default;
+    /** @brief Constructs a Borrowed. */
     explicit constexpr Borrowed(T* value, std::uint64_t ownerEpoch = 0) noexcept
+        /** @brief Value. */
         : value_(value), ownerEpoch_(ownerEpoch) {}
+    /** @brief Constructs a Borrowed. */
     explicit constexpr Borrowed(T& value, std::uint64_t ownerEpoch = 0) noexcept
+        /** @brief Value. */
         : value_(&value), ownerEpoch_(ownerEpoch) {}
 
     /**
@@ -81,6 +87,7 @@ private:
  * numbers happen to restart at the same values.
  */
 template <class Tag>
+/** @brief RuntimeHandleRef public API. */
 struct RuntimeHandleRef {
     RuntimeHandle<Tag> handle     = RuntimeHandle<Tag>::invalid();
     std::uint64_t      ownerEpoch = 0;
@@ -99,6 +106,7 @@ using OwnedInstanceDestroy = void (*)(void*) noexcept;
 
 /** @brief Type-erased cleanup used when the VM never took the object. */
 template <class T>
+/** @brief Owned instance destroy. */
 void ownedInstanceDestroy(void* pointer) noexcept {
     delete static_cast<T*>(pointer);
 }
@@ -135,6 +143,7 @@ public:
     // must therefore stay at a fixed address for its whole lifetime.
     RuntimeSlotStore(RuntimeSlotStore&&)            = delete;
     RuntimeSlotStore& operator=(RuntimeSlotStore&&) = delete;
+    /** @brief Releases RuntimeSlotStore resources. */
     EVENGINE_API ~RuntimeSlotStore();
 
     /**
@@ -194,20 +203,24 @@ public:
      *         the store.
      */
     template <class F>
+    /** @brief For each live. */
     void forEachLive(F&& visit) {
         for (std::uint32_t index = 0; index < slots_.size(); ++index) {
             void* object = slots_[index].object;
             if (object == nullptr) continue;
+            /** @brief Visit. */
             visit(index, object);
         }
     }
 
     /** @brief Read-only overload: the callback receives `const void*`. */
     template <class F>
+    /** @brief For each live. */
     void forEachLive(F&& visit) const {
         for (std::uint32_t index = 0; index < slots_.size(); ++index) {
             const void* object = slots_[index].object;
             if (object == nullptr) continue;
+            /** @brief Visit. */
             visit(index, object);
         }
     }
@@ -259,6 +272,7 @@ class RuntimeObjectRegistry;
  * @tparam Tag Owner-specific tag of the producing registry.
  */
 template <class T, class Tag>
+/** @brief RuntimePin public API. */
 class RuntimePin {
 public:
     using Ref = RuntimeHandleRef<Tag>;
@@ -270,6 +284,7 @@ public:
 
     /** @brief Moves the keep-alive to a new pin; the source becomes unbound. */
     RuntimePin(RuntimePin&& other) noexcept
+        /** @brief Store. */
         : store_(other.store_), reference_(other.reference_), object_(other.object_) {
         other.store_  = nullptr;
         other.object_ = nullptr;
@@ -278,6 +293,7 @@ public:
     /** @brief Move-assigns, releasing any keep-alive this pin already held. */
     RuntimePin& operator=(RuntimePin&& other) noexcept {
         if (this != &other) {
+            /** @brief Release. */
             release();
             store_        = other.store_;
             reference_    = other.reference_;
@@ -339,6 +355,7 @@ private:
  *          per-(T, Tag); the store below performs the bookkeeping once.
  */
 template <class T, class Tag>
+/** @brief RuntimeObjectRegistry public API. */
 class RuntimeObjectRegistry {
 public:
     using Handle = RuntimeHandle<Tag>;
@@ -351,7 +368,9 @@ public:
     // The store lives behind a stable heap address, so moving the registry relocates only
     // that pointer: pins issued before the move keep referencing the same store and stay
     // valid, which is why the registry may be movable while RuntimeSlotStore is not.
+    /** @brief Constructs a RuntimeObjectRegistry. */
     RuntimeObjectRegistry(RuntimeObjectRegistry&&) noexcept            = default;
+    /** @brief Operator =. */
     RuntimeObjectRegistry& operator=(RuntimeObjectRegistry&&) noexcept = default;
 
     /**
@@ -361,6 +380,7 @@ public:
      */
     [[nodiscard]] eve::Result<Ref> emplace(Owned<T> object) {
         if (!object) {
+            /** @brief Failure. */
             return eve::Result<Ref>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                     "runtime registry cannot own a null object", {}, {},
                                                                     "runtime.registry"));
@@ -369,6 +389,7 @@ public:
         if (!slot.ok()) return eve::Result<Ref>::failure(slot.status());
         const detail::RuntimeSlotCoordinates coordinates = slot.value();
         object.release();
+        /** @brief Success. */
         return eve::Result<Ref>::success(Ref{Handle(coordinates.index, coordinates.generation), store_->ownerEpoch()});
     }
 
@@ -440,6 +461,7 @@ public:
      *         the registry.
      */
     template <class F>
+    /** @brief For each live. */
     void forEachLive(F&& visit) {
         store_->forEachLive(
             [&](std::uint32_t index, void* object) { visit(index, static_cast<T&>(*static_cast<T*>(object))); });
@@ -447,8 +469,10 @@ public:
 
     /** @brief Read-only overload: the callback receives `const T&`. */
     template <class F>
+    /** @brief For each live. */
     void forEachLive(F&& visit) const {
         store_->forEachLive([&](std::uint32_t index, const void* object) {
+            /** @brief Visit. */
             visit(index, static_cast<const T&>(*static_cast<const T*>(object)));
         });
     }

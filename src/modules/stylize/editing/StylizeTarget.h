@@ -66,20 +66,31 @@ class EVENGINE_API_DOMAINS StylizeRecipeTarget final : public ::eve::editing::Ed
                                                        public IDomainOperationTargetStaging,
                                                        public IPropertyProvider {
 public:
+    /** @brief Stylize recipe target. */
     explicit StylizeRecipeTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Plan insertion of a known style under a stable pass ID. */
@@ -98,8 +109,11 @@ public:
     Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool                                 matches(const SelectionSnapshot& selection) const;
+    /** @brief Content value. */
     EditorValue                          contentValue() const;
+    /** @brief Replacement. */
     Result<DomainOperation>        replacement(EditorValue payload, std::string property = {}) const;
     std::string                          id_;
     std::map<ObjectId, StylizePassValue> passes_;
@@ -109,7 +123,9 @@ private:
 /** @brief Compiled, owned StyleRecipe generation used for live and offscreen preview. */
 class EVENGINE_API_DOMAINS StylizeRecipeRuntime {
 public:
+    /** @brief Stylize recipe runtime. */
     StylizeRecipeRuntime();
+    /** @brief Stylize recipe runtime. */
     ~StylizeRecipeRuntime();
     /** @brief Compile a complete candidate before replacing the active generation. */
     Result<void> publish(const StylizeRecipeTarget& document, graphics::Graphics* graphics);

@@ -46,7 +46,9 @@ class EditorTargetCoordinator;
 class EVENGINE_API_ORCHESTRATION Editor : public Module {
 public:
     Module_REG(Editor);
+    /** @brief Editor. */
     Editor();
+    /** @brief Editor. */
     ~Editor() override;
 
     /** @brief Create a transform gizmo. @ownership Unique ownership transfers to the caller. */

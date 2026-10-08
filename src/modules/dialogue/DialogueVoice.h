@@ -18,6 +18,7 @@ namespace eve::dialogue {
 class EVENGINE_API_ORCHESTRATION DialogueVoice : public Module {
 public:
     Module_REG(DialogueVoice);
+    /** @brief Dialogue voice. */
     ~DialogueVoice() override;
 
     /** @brief Register clip metadata; envelope is comma-separated 0..1 amplitudes. */
@@ -25,19 +26,32 @@ public:
                       const std::string& envelope);
     /** @brief Bind a playable Audio Source; the caller retains source ownership. */
     bool bindSource(const std::string& lineId, const std::string& locale, audio::Source* source);
+    /** @brief True when clip. */
     bool hasClip(const std::string& lineId, const std::string& locale) const;
+    /** @brief Clears . */
     void clear();
 
+    /** @brief Play. */
     bool play(const std::string& lineId, const std::string& locale);
+    /** @brief Stops . */
     void stop();
+    /** @brief Updates . */
     void update(float dt);
+    /** @brief True when playing. */
     bool isPlaying() const;
+    /** @brief Returns the time. */
     float getTime() const;
+    /** @brief Returns the duration. */
     float getDuration() const;
+    /** @brief Returns the amplitude. */
     float getAmplitude() const;
+    /** @brief Should auto advance. */
     bool shouldAutoAdvance() const;
+    /** @brief Returns the current line id. */
     std::string getCurrentLineId() const { return currentLineId_; }
+    /** @brief Sets the envelope rate. */
     void setEnvelopeRate(float samplesPerSecond);
+    /** @brief Returns the envelope rate. */
     float getEnvelopeRate() const { return envelopeRate_; }
 
 private:

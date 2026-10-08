@@ -18,6 +18,7 @@ namespace eve::animation {
 
 class AnimBoneMask;
 
+/** @brief MontageHandleTag public API. */
 struct MontageHandleTag {};
 /** @brief Generation-qualified identity owned by one MontageCoordinator. */
 using MontageHandle = RuntimeHandle<MontageHandleTag>;

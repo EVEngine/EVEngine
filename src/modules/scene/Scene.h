@@ -51,7 +51,9 @@ class SceneObject;
 class EVENGINE_API_PLATFORM Scene : public Module {
 public:
     Module_REG(Scene);
+    /** @brief Scene. */
     Scene();
+    /** @brief Scene. */
     ~Scene() override = default;
 
     /**
@@ -127,16 +129,22 @@ public:
 
     // --- Generic link system (host-scoped primitives; script wrappers in
     // kSceneEntityScript provide selected-host convenience + NodeRef forms) ---
+    /** @brief Link renderable 2 d at. */
     bool linkRenderable2DAt(const std::string &hostName, const std::string &nodeId,
                             graphics::Renderable2D *r);
+    /** @brief Link renderable 3 d at. */
     bool linkRenderable3DAt(const std::string &hostName, const std::string &nodeId,
                             graphics::Renderable3D *r);
+    /** @brief Link physics 2 d at. */
     bool linkPhysics2DAt(const std::string &hostName, const std::string &nodeId,
                          physics::Body *b, const std::string &mode);
+    /** @brief Link physics 3 d at. */
     bool linkPhysics3DAt(const std::string &hostName, const std::string &nodeId,
                          physics::Body3D *b, const std::string &mode);
+    /** @brief Link camera 3 d at. */
     bool linkCamera3DAt(const std::string &hostName, const std::string &nodeId,
                         graphics::Camera3D *c);
+    /** @brief Link audio 3 d at. */
     bool linkAudio3DAt(const std::string &hostName, const std::string &nodeId,
                        audio::Source *s);
     /** @brief Remove every link on the node. */
@@ -144,28 +152,38 @@ public:
     /** @brief Remove links of one kind ("renderable2d"|"renderable3d"|"physics2d"|...). */
     bool unlinkNodeKindAt(const std::string &hostName, const std::string &nodeId,
                           const std::string &kind);
+    /** @brief Link count at. */
     int linkCountAt(const std::string &hostName, const std::string &nodeId);
 
     // --- Script-API completeness (host-scoped primitives; script wrappers in
     // kSceneEntityScript provide selected-host convenience + NodeRef forms) ---
 
+    /** @brief Returns the node position at. */
     std::vector<float> getNodePositionAt(const std::string &hostName,
                                          const std::string &nodeId) const;
+    /** @brief Returns the node rotation at. */
     std::vector<float> getNodeRotationAt(const std::string &hostName,
                                          const std::string &nodeId) const;
+    /** @brief Returns the node scale at. */
     std::vector<float> getNodeScaleAt(const std::string &hostName,
                                       const std::string &nodeId) const;
+    /** @brief Returns the node visible at. */
     bool getNodeVisibleAt(const std::string &hostName, const std::string &nodeId) const;
+    /** @brief Returns the node world position at. */
     std::vector<float> getNodeWorldPositionAt(const std::string &hostName,
                                               const std::string &nodeId) const;
+    /** @brief Returns the node world rotation at. */
     std::vector<float> getNodeWorldRotationAt(const std::string &hostName,
                                               const std::string &nodeId) const;
+    /** @brief Returns the node world scale at. */
     std::vector<float> getNodeWorldScaleAt(const std::string &hostName,
                                            const std::string &nodeId) const;
 
+    /** @brief Local to world at. */
     std::vector<float> localToWorldAt(const std::string &hostName,
                                       const std::string &nodeId, float x, float y,
                                       float z) const;
+    /** @brief World to local at. */
     std::vector<float> worldToLocalAt(const std::string &hostName,
                                       const std::string &nodeId, float x, float y,
                                       float z) const;
@@ -175,30 +193,41 @@ public:
                          const std::string &parentId);
     /** @brief Detach node from its parent (arena node stays; rebuild to delete). */
     bool removeNodeAt(const std::string &hostName, const std::string &nodeId);
+    /** @brief Adds child at. */
     bool addChildAt(const std::string &hostName, const std::string &parentId,
                     const std::string &childId);
+    /** @brief Removes child at. */
     bool removeChildAt(const std::string &hostName, const std::string &parentId,
                        const std::string &childId);
 
+    /** @brief Sets the node quaternion at. */
     bool setNodeQuaternionAt(const std::string &hostName, const std::string &nodeId,
                              float qx, float qy, float qz, float qw);
+    /** @brief Returns the node quaternion at. */
     std::vector<float> getNodeQuaternionAt(const std::string &hostName,
                                            const std::string &nodeId) const;
     /** @brief Orient node so its local +Z axis points at (tx,ty,tz). */
     bool setNodeLookAtAt(const std::string &hostName, const std::string &nodeId,
                          float tx, float ty, float tz);
 
+    /** @brief Adds node tag at. */
     bool addNodeTagAt(const std::string &hostName, const std::string &nodeId,
                       const std::string &tag);
+    /** @brief Removes node tag at. */
     bool removeNodeTagAt(const std::string &hostName, const std::string &nodeId,
                          const std::string &tag);
+    /** @brief True when node tag at. */
     bool hasNodeTagAt(const std::string &hostName, const std::string &nodeId,
                       const std::string &tag) const;
+    /** @brief Returns the node tags at. */
     std::vector<std::string> getNodeTagsAt(const std::string &hostName,
                                            const std::string &nodeId) const;
+    /** @brief Collect ids by tag at. */
     std::vector<std::string> collectIdsByTagAt(const std::string &hostName,
                                                const std::string &tag) const;
+    /** @brief Sets the node layer at. */
     bool setNodeLayerAt(const std::string &hostName, const std::string &nodeId, int layer);
+    /** @brief Returns the node layer at. */
     int getNodeLayerAt(const std::string &hostName, const std::string &nodeId) const;
 
     /**
@@ -210,15 +239,20 @@ public:
     bool setNodeEventHandlerAt(const std::string &hostName, ssq::Object cb);
 
     // --- Bounds (picking / culling / spatial index) ---
+    /** @brief Sets the node bounds at. */
     bool setNodeBoundsAt(const std::string &hostName, const std::string &nodeId,
                          float minX, float minY, float minZ, float maxX, float maxY,
                          float maxZ);
+    /** @brief True when node bounds at. */
     bool hasNodeBoundsAt(const std::string &hostName, const std::string &nodeId) const;
+    /** @brief Returns the node bounds at. */
     std::vector<float> getNodeBoundsAt(const std::string &hostName,
                                        const std::string &nodeId) const;
 
     // --- Serialization (SceneHost ↔ JSON) ---
+    /** @brief Serialize host at. */
     std::string serializeHostAt(const std::string &hostName) const;
+    /** @brief Deserialize host at. */
     bool deserializeHostAt(const std::string &hostName, const std::string &json);
 
     // --- Picking ---
@@ -253,39 +287,69 @@ public:
     std::string nodeIdFromSpatialIdAt(const std::string &hostName, int index) const;
 
     // --- Query / traverse (current host; script-friendly, id-based) ---
+    /** @brief True when node. */
     bool hasNode(const std::string &id);
+    /** @brief Returns the node count. */
     int getNodeCount();
+    /** @brief Returns the root id. */
     std::string getRootId();
+    /** @brief Returns the parent id. */
     std::string getParentId(const std::string &id);
+    /** @brief Returns the child count. */
     int getChildCount(const std::string &id);
+    /** @brief Returns the child id at. */
     std::string getChildIdAt(const std::string &parentId, int childOrdinal);
+    /** @brief Finds id by name. */
     std::string findIdByName(const std::string &name);
+    /** @brief Finds id by path. */
     std::string findIdByPath(const std::string &path);
+    /** @brief Returns the node path. */
     std::string getNodePath(const std::string &id);
+    /** @brief True when ancestor. */
     bool isAncestor(const std::string &ancestorId, const std::string &nodeId);
+    /** @brief True when descendant. */
     bool isDescendant(const std::string &nodeId, const std::string &ancestorId);
+    /** @brief Collect ids. */
     std::vector<std::string> collectIds();
+    /** @brief Collect ids from. */
     std::vector<std::string> collectIdsFrom(const std::string &id);
+    /** @brief Collect ids by name. */
     std::vector<std::string> collectIdsByName(const std::string &name);
+    /** @brief Collect ids visible. */
     std::vector<std::string> collectIdsVisible(bool visible);
+    /** @brief Collect child ids. */
     std::vector<std::string> collectChildIds(const std::string &parentId);
     /** @brief DFS order of ids under root (same as collectIds). Kept for script naming clarity. */
     std::vector<std::string> walkDepthFirstIds();
+    /** @brief Walk breadth first ids. */
     std::vector<std::string> walkBreadthFirstIds();
 
     // --- Imperative builder (script / isomorphic to UI) ---
+    /** @brief Begins build. */
     void beginBuild();
+    /** @brief Begins node. */
     void beginNode(const std::string &id, const std::string &name = "");
+    /** @brief Begins group. */
     void beginGroup(const std::string &id = "");
+    /** @brief Ends . */
     void end();
+    /** @brief Adds node. */
     void addNode(const std::string &id, const std::string &name = "");
+    /** @brief Sets the build position. */
     void setBuildPosition(float x, float y, float z = 0.f);
+    /** @brief Sets the build rotation. */
     void setBuildRotation(float yaw, float pitch = 0.f, float roll = 0.f);
+    /** @brief Sets the build scale. */
     void setBuildScale(float sx, float sy, float sz = 1.f);
+    /** @brief Sets the build space. */
     void setBuildSpace(const std::string &space);
+    /** @brief Sets the build visible. */
     void setBuildVisible(bool visible);
+    /** @brief Mounts build. */
     bool mountBuild();
+    /** @brief Mounts build as. */
     bool mountBuildAs(const std::string &name);
+    /** @brief Remount build as. */
     bool remountBuildAs(const std::string &name);
 
     // ------------------------------------------------------------------
@@ -308,8 +372,11 @@ public:
     /** @brief updateTransformsAll() + call update(dt) on every rooted instance. */
     void updateScripts(float dt);
 
+    /** @brief Current host name. */
     std::string currentHostName() const;
+    /** @brief Returns the node ref at. */
     [[nodiscard]] SceneNodeRef *getNodeRefAt(const std::string &hostName, const std::string &nodeId) const;
+    /** @brief Returns the node ref by path at. */
     [[nodiscard]] SceneNodeRef *getNodeRefByPathAt(const std::string &hostName, const std::string &path) const;
 
 private:

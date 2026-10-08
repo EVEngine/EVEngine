@@ -108,24 +108,34 @@ public:
      */
     Diagnostic(DiagnosticCode code, Severity severity, std::string message, std::string path = {},
                DiagnosticDetails details = {}, std::string source = {})
+        /** @brief Code. */
         : code_(code),
+          /** @brief Severity. */
           severity_(severity),
+          /** @brief Message. */
           message_(std::move(message)),
+          /** @brief Path. */
           path_(std::move(path)),
+          /** @brief Details. */
           details_(std::move(details)),
+          /** @brief Source. */
           source_(std::move(source)) {}
 
     /** @brief Construct an error diagnostic with the standard error severity. */
     static Diagnostic error(DiagnosticCode code, std::string message, std::string path = {},
                             DiagnosticDetails details = {}, std::string source = {}) {
+        /** @brief Diagnostic. */
         return Diagnostic(code, Severity::Error, std::move(message), std::move(path), std::move(details),
+                          /** @brief Moves . */
                           std::move(source));
     }
 
     /** @brief Construct a warning diagnostic. */
     static Diagnostic warning(DiagnosticCode code, std::string message, std::string path = {},
                               DiagnosticDetails details = {}, std::string source = {}) {
+        /** @brief Diagnostic. */
         return Diagnostic(code, Severity::Warning, std::move(message), std::move(path), std::move(details),
+                          /** @brief Moves . */
                           std::move(source));
     }
 
@@ -193,6 +203,7 @@ private:
 
 /** @brief Writes the stable diagnostic-code spelling to a stream. */
 inline std::ostream& operator<<(std::ostream& stream, DiagnosticCode code) {
+    /** @brief Diagnostic code name. */
     return stream << diagnosticCodeName(code);
 }
 

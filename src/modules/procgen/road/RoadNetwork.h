@@ -226,17 +226,26 @@ public:
     /** @brief Clear every node, edge and link. */
     void clear();
 
+    /** @brief Node count. */
     [[nodiscard]] int nodeCount() const noexcept { return static_cast<int>(nodes_.size()); }
+    /** @brief Edge count. */
     [[nodiscard]] int edgeCount() const noexcept { return static_cast<int>(edges_.size()); }
+    /** @brief Lane link count. */
     [[nodiscard]] int laneLinkCount() const noexcept { return static_cast<int>(laneLinks_.size()); }
     /** @brief Return persistent exact turn prohibitions owned by this network. */
     [[nodiscard]] int blockedLaneLinkCount() const noexcept { return static_cast<int>(blockedLaneLinks_.size()); }
+    /** @brief Revision. */
     [[nodiscard]] std::uint64_t revision() const noexcept { return revision_; }
 
+    /** @brief Node result. */
     [[nodiscard]] Result<RoadNode> nodeResult(std::uint32_t id) const;
+    /** @brief Edge result. */
     [[nodiscard]] Result<RoadEdge> edgeResult(std::uint32_t id) const;
+    /** @brief Nodes. */
     [[nodiscard]] const std::vector<RoadNode>& nodes() const noexcept { return nodes_; }
+    /** @brief Edges. */
     [[nodiscard]] const std::vector<RoadEdge>& edges() const noexcept { return edges_; }
+    /** @brief Lane links. */
     [[nodiscard]] const std::vector<RoadLaneConnection>& laneLinks() const noexcept { return laneLinks_; }
     /** @brief Borrow deterministic persistent turn prohibitions until the next network mutation. */
     [[nodiscard]] const std::vector<RoadLaneConnection>& blockedLaneLinks() const noexcept {

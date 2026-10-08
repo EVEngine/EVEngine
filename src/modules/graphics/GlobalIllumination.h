@@ -29,7 +29,9 @@ class Texture;
  */
 class EVENGINE_API_BACKENDS GlobalIllumination {
 public:
+    /** @brief Global illumination. */
     explicit GlobalIllumination(Graphics *gfx);
+    /** @brief Global illumination. */
     ~GlobalIllumination();
 
     GlobalIllumination(const GlobalIllumination &) = delete;
@@ -37,6 +39,7 @@ public:
 
     /** @brief "low" | "medium" | "high" | "ultra" (unknown becomes medium). */
     void setQuality(const std::string &quality);
+    /** @brief Returns the quality. */
     std::string getQuality() const { return quality_; }
 
     /**
@@ -47,6 +50,7 @@ public:
                    float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ,
                    float farZ);
 
+    /** @brief Sets the inv view proj. */
     void setInvViewProj(const glm::mat4 &invViewProj);
     /** @brief Set the GBuffer world-normal texture used for guided GI sampling. */
     void setWorldNormalTexture(Texture *worldNormal) { worldNormal_ = worldNormal; }
@@ -62,25 +66,36 @@ public:
     /** @brief Discard temporal GI history after a render-chain discontinuity. */
     void invalidateHistory() { historyValid_ = false; }
 
+    /** @brief Sets the radius. */
     void setRadius(float radius);
+    /** @brief Sets the intensity. */
     void setIntensity(float intensity);
     /** @brief Set world-space hit thickness used to reject screen-space GI leaks. */
     void setThickness(float thickness);
     /** @brief Set internal GI resolution scale in the range 0.25 to 1.0. */
     void setResolutionScale(float scale);
+    /** @brief Sets the light direction. */
     void setLightDirection(float dx, float dy, float dz);
+    /** @brief Sets the light color. */
     void setLightColor(float r, float g, float b);
 
+    /** @brief Returns the radius. */
     float getRadius() const { return radius_; }
+    /** @brief Returns the intensity. */
     float getIntensity() const { return intensity_; }
     /** @brief Return world-space GI hit thickness. */
     float getThickness() const { return thickness_; }
+    /** @brief Returns the resolution scale. */
     float getResolutionScale() const { return resolutionScale_; }
 
+    /** @brief True when param. */
     bool hasParam(const std::string &name) const;
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
 
+    /** @brief Returns the sample count. */
     int getSampleCount() const;
     /** @brief Number of explicit A-trous prefilter passes for the active quality. */
     int getSpatialPassCount() const {
@@ -93,19 +108,25 @@ public:
      * 3D path: applyFromScene(color, hwDepth) with D32 NDC z.
      */
     void applyFromDepth(Graphics *gfx, Texture *packedAlbedo);
+    /** @brief Applies from depth to. */
     void applyFromDepthTo(Graphics *gfx, Texture *packedAlbedo, Canvas *dest);
+    /** @brief Applies from scene to. */
     void applyFromSceneTo(Graphics *gfx, Texture *color, Texture *hwDepth, Canvas *dest);
+    /** @brief Applies from scene to. */
     void applyFromSceneTo(Graphics *gfx, Texture *color, Texture *hwDepth);
     /** @lifetime Returned canvas is borrowed from this effect until its targets are recreated. */
+    /** @brief Returns the working canvas. */
     Canvas *getWorkingCanvas();
     /**
      * @brief Temporally resolved GI texture, or the raw working texture before history exists.
      * @lifetime Returned texture is borrowed from this effect until its targets are recreated.
      */
     Texture *getWorkingTexture();
+    /** @brief Applies from scene. */
     void applyFromScene(Graphics *gfx, Texture *color, Texture *hwDepth);
 
     /** @lifetime Returned shader is borrowed and owned by Graphics. */
+    /** @brief Returns the shader. */
     Shader *getShader() const { return ssgi_; }
 
 private:

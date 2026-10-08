@@ -24,6 +24,7 @@ struct ProjectilePoint {
     double y = 0.0;
     double z = 0.0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const ProjectilePoint&, const ProjectilePoint&) = default;
 };
 
@@ -33,6 +34,7 @@ struct ProjectileVector {
     double y = 0.0;
     double z = 0.0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const ProjectileVector&, const ProjectileVector&) = default;
 };
 
@@ -41,6 +43,7 @@ struct ProjectileHandle {
     std::uint32_t slot       = 0;
     std::uint32_t generation = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const ProjectileHandle&, const ProjectileHandle&) = default;
 };
 
@@ -98,6 +101,7 @@ struct ProjectileRuntimeSnapshot {
 /** @brief Optional target-position boundary used only by homing projectiles. */
 class IProjectileTargetProvider {
 public:
+    /** @brief Releases IProjectileTargetProvider resources. */
     virtual ~IProjectileTargetProvider() = default;
     /** @brief Resolve one generation-checked target to an owning simulation-space position. */
     [[nodiscard]] virtual Result<ProjectilePoint> position(ecs::EntityHandle target) const = 0;
@@ -113,6 +117,7 @@ public:
  */
 class EVENGINE_API_WORLD ProjectileRuntime {
 public:
+    /** @brief Projectile runtime. */
     ProjectileRuntime();
 
     /** @brief Resize the pool while empty; capacity must be in 1..1048576. */

@@ -18,6 +18,7 @@ class IEditorInspector;
 
 /** @brief Pointer input normalized by an editor viewport adapter. */
 struct EditorPointerEvent {
+    /** @brief Phase public API. */
     enum class Phase { Down, Move, Up, Cancel };
 
     Phase phase     = Phase::Move;
@@ -51,9 +52,13 @@ struct ToolResponse {
     bool capturePointer = false;
     bool releasePointer = false;
 
+    /** @brief Ignored. */
     static ToolResponse ignored() { return {}; }
+    /** @brief Consumed. */
     static ToolResponse consumed() { return {true, false, false}; }
+    /** @brief Capture. */
     static ToolResponse capture() { return {true, true, false}; }
+    /** @brief Release. */
     static ToolResponse release() { return {true, false, true}; }
 };
 
@@ -65,12 +70,14 @@ struct ToolResponse {
  */
 class EVENGINE_API_ORCHESTRATION EditorContext {
 public:
+    /** @brief Editor context. */
     explicit EditorContext(EditorSession* session = nullptr) : session_(session) {}
 
     /** @brief Session currently dispatching the tool callback. @return Borrowed session pointer, or null. @lifetime Valid only for the current dispatch callback. */
     EditorSession* session() const { return session_; }
     /** @brief Target currently bound to the session. @return Borrowed target pointer, or null. @lifetime Valid only for the current dispatch callback. */
     IEditableTarget* target() const;
+    /** @brief Transactions. */
     EditorTransactions& transactions() const;
     /** @brief Send a command through constraints into the active transaction. */
     bool execute(std::unique_ptr<IEditCommand> command) const;
@@ -79,6 +86,7 @@ public:
 
     /** @brief Query a capability from the current target. @return Borrowed capability pointer, or null. @lifetime Valid only for the current dispatch callback. */
     template <typename Capability>
+    /** @brief Target capability. */
     Capability* targetCapability() const;
 
 private:
@@ -101,6 +109,7 @@ struct ToolDescriptor {
  */
 class IEditorTool {
 public:
+    /** @brief Releases IEditorTool resources. */
     virtual ~IEditorTool() = default;
 
     /** @brief Stable tool identity and presentation metadata. */
@@ -115,6 +124,7 @@ public:
     virtual ToolResponse pointerEvent(EditorContext& context, const EditorPointerEvent& event) {
         (void)context;
         (void)event;
+        /** @brief Ignored. */
         return ToolResponse::ignored();
     }
 
@@ -122,6 +132,7 @@ public:
     virtual ToolResponse keyEvent(EditorContext& context, const EditorKeyEvent& event) {
         (void)context;
         (void)event;
+        /** @brief Ignored. */
         return ToolResponse::ignored();
     }
 
@@ -153,6 +164,7 @@ namespace eve::editor {
 
 template <typename Capability>
 /** @return Borrowed capability pointer, or null. @lifetime Valid only for the current dispatch callback. */
+/** @brief Target capability. */
 Capability* EditorContext::targetCapability() const {
     IEditableTarget* current = target();
     return current ? current->query<Capability>() : nullptr;

@@ -27,8 +27,10 @@ struct OptimizedGraph;
  */
 class EVENGINE_API_DOMAINS GpuProgram {
 public:
+    /** @brief Gpu program. */
     ~GpuProgram();
 
+    /** @brief Try build. */
     static GpuProgram *tryBuild(const Graph &graph, const OptimizedGraph &opt, int outputNode);
 
     /** @brief feeds[slot] must point to `placeholderSize(slot)` floats. Returns the output buffer. */

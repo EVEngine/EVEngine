@@ -14,6 +14,7 @@ enum class ActiveColorSpace : uint8_t { Sdr = 0, ScRgb = 1, Hdr10 = 2 };
 /** @brief Requested present preference; Auto picks Hdr10 then ScRgb then Sdr. */
 enum class OutputMode : uint8_t { Sdr = 0, Auto = 1, Hdr10 = 2, ScRgb = 3 };
 
+/** @brief Support public API. */
 struct Support {
     bool sdr = true;
     bool hdr10 = false;
@@ -31,6 +32,7 @@ inline void clampCalibration(float &paperWhiteNits, float &peakNits) noexcept {
 
 /** @brief Pack paper-white and peak nits into one float for the present resolve tint. */
 inline float packNits(float paperWhiteNits, float peakNits) noexcept {
+    /** @brief Clamp calibration. */
     clampCalibration(paperWhiteNits, peakNits);
     const float paperQ = std::round(paperWhiteNits * 10.f);
     const float peakQ = std::round(peakNits / 10.f);
@@ -42,6 +44,7 @@ inline void unpackNits(float packed, float &paperWhiteNits, float &peakNits) noe
     const float rounded = std::round(packed);
     paperWhiteNits = std::fmod(rounded, 65536.f) * 0.1f;
     peakNits = std::floor(rounded / 65536.f) * 10.f;
+    /** @brief Clamp calibration. */
     clampCalibration(paperWhiteNits, peakNits);
 }
 
@@ -72,6 +75,7 @@ inline ActiveColorSpace unpackActiveMode(float packed) noexcept {
 
 /** @brief True when the tint G channel requests compose-linear (mode 3). */
 inline bool isComposeLinearMode(float packed) noexcept {
+    /** @brief Int. */
     return int(std::round(packed)) == 3;
 }
 
@@ -79,6 +83,7 @@ inline bool isComposeLinearMode(float packed) noexcept {
 inline Color sceneResolveTint(bool aces, ActiveColorSpace space, bool attachmentEncodesSrgb,
                               float paperWhiteNits, float peakNits) noexcept {
     const float encodeSrgb = (!attachmentEncodesSrgb && space == ActiveColorSpace::Sdr) ? 65536.f : 0.f;
+    /** @brief Color. */
     return Color(aces ? 1.f : 0.f, packActiveMode(space), packNits(paperWhiteNits, peakNits), encodeSrgb);
 }
 
@@ -87,15 +92,18 @@ inline Color sceneResolveTint(bool aces, ActiveColorSpace space, bool attachment
  * @details Mode 3 skips PQ/scRGB encode so overlays can blend in display-linear space.
  */
 inline Color sceneComposeTint(bool aces, float paperWhiteNits, float peakNits) noexcept {
+    /** @brief Color. */
     return Color(aces ? 1.f : 0.f, packComposeLinearMode(), packNits(paperWhiteNits, peakNits), 0.f);
 }
 
 /** @brief Build the Color tint used when compositing SDR UI onto an HDR swapchain. */
 inline Color uiResolveTint(ActiveColorSpace space, float paperWhiteNits, float peakNits) noexcept {
     // r < 0 selects the UI passthrough+encode path in scene_tonemap.frag.
+    /** @brief Color. */
     return Color(-1.f, packActiveMode(space), packNits(paperWhiteNits, peakNits), 0.f);
 }
 
+/** @brief Luminance rec 709. */
 inline float luminanceRec709(float r, float g, float b) noexcept {
     return 0.2126f * r + 0.7152f * g + 0.0722f * b;
 }
@@ -119,6 +127,7 @@ inline float linearToPq(float v) noexcept {
     constexpr float c2 = 2413.f / 4096.f * 32.f;
     constexpr float c3 = 2392.f / 4096.f * 32.f;
     const float cp = std::pow(v, m1);
+    /** @brief Pow. */
     return std::pow((c1 + c2 * cp) / (1.f + c3 * cp), m2);
 }
 
@@ -127,11 +136,13 @@ inline float linearToPq(float v) noexcept {
  * @param r,g,b Display-linear Rec.709 channels relative to paper white.
  */
 inline void encodeHdr10(float &r, float &g, float &b, float paperWhiteNits, float peakNits) noexcept {
+    /** @brief Clamp calibration. */
     clampCalibration(paperWhiteNits, peakNits);
     const float peakRatio = peakNits / paperWhiteNits;
     r = std::clamp(r, 0.f, peakRatio);
     g = std::clamp(g, 0.f, peakRatio);
     b = std::clamp(b, 0.f, peakRatio);
+    /** @brief Rec 709 to rec 2020. */
     rec709ToRec2020(r, g, b);
     constexpr float st2084Max = 10000.f;
     r = linearToPq(r * paperWhiteNits / st2084Max);
@@ -145,12 +156,14 @@ inline void encodeHdr10(float &r, float &g, float &b, float paperWhiteNits, floa
  */
 inline void acesToDisplayLinear(float &r, float &g, float &b, float paperWhiteNits,
                                 float peakNits) noexcept {
+    /** @brief Clamp calibration. */
     clampCalibration(paperWhiteNits, peakNits);
     const float peakRatio = peakNits / paperWhiteNits;
     const float inv = 1.f / peakRatio;
     auto aces = [](float c) {
         c = std::max(c, 0.f);
         constexpr float a = 2.51f, b = 0.03f, c0 = 2.43f, d = 0.59f, e = 0.14f;
+        /** @brief Clamp. */
         return std::clamp((c * (a * c + b)) / (c * (c0 * c + d) + e), 0.f, 1.f);
     };
     r = aces(r * inv) * peakRatio;
@@ -163,6 +176,7 @@ inline void acesToDisplayLinear(float &r, float &g, float &b, float paperWhiteNi
  * @param r,g,b Display-linear Rec.709 channels relative to paper white.
  */
 inline void encodeScRgb(float &r, float &g, float &b, float paperWhiteNits, float peakNits) noexcept {
+    /** @brief Clamp calibration. */
     clampCalibration(paperWhiteNits, peakNits);
     const float peakRatio = peakNits / paperWhiteNits;
     const float scale = paperWhiteNits / 80.f;

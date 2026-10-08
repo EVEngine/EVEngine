@@ -47,7 +47,9 @@ public:
     [[nodiscard]] std::vector<FlattenedContour2D> flatten(float tolerance = 0.25f, std::uint32_t maxDepth = 12) const;
 
     void                       setFillRule(PathFillRule rule) noexcept { fillRule_ = rule; }
+    /** @brief Fill rule. */
     [[nodiscard]] PathFillRule fillRule() const noexcept { return fillRule_; }
+    /** @brief Empty. */
     [[nodiscard]] bool         empty() const noexcept { return verbs_.empty(); }
 
 private:

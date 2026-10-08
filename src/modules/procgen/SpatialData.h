@@ -34,6 +34,7 @@ struct SpatialBounds {
  */
 class EVENGINE_API_DOMAINS SpatialData {
 public:
+    /** @brief Kind public API. */
     enum class Kind {
         Empty,
         Points,

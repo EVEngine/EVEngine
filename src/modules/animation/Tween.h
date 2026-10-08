@@ -24,32 +24,50 @@ class Animation;
  */
 class EVENGINE_API_WORLD Tween {
 public:
+    /** @brief Tween. */
     explicit Tween(float duration = 1.f);
+    /** @brief Tween. */
     ~Tween();
 
     Tween(const Tween &)            = delete;
     Tween &operator=(const Tween &) = delete;
 
+    /** @brief Sets the from. */
     void setFrom(const std::string &name, float value);
+    /** @brief Sets the to. */
     void setTo(const std::string &name, float value);
     /** @brief Relative change: end = start + delta (resolved when start() runs). */
     void setDelta(const std::string &name, float delta);
 
+    /** @brief Sets the from angle. */
     void setFromAngle(const std::string &name, float radians);
+    /** @brief Sets the to angle. */
     void setToAngle(const std::string &name, float radians);
+    /** @brief Sets the delta angle. */
     void setDeltaAngle(const std::string &name, float deltaRadians);
 
+    /** @brief True when active. */
     bool  has(const std::string &name) const;
+    /** @brief Returns the value. */
     float get(const std::string &name) const;
+    /** @brief Returns the from. */
     float getFrom(const std::string &name) const;
+    /** @brief Returns the to. */
     float getTo(const std::string &name) const;
+    /** @brief Returns the delta. */
     float getDelta(const std::string &name) const;
 
+    /** @brief Sets the duration. */
     void        setDuration(float seconds);
+    /** @brief Returns the duration. */
     float       getDuration() const { return duration_; }
+    /** @brief Sets the delay. */
     void        setDelay(float seconds);
+    /** @brief Returns the delay. */
     float       getDelay() const { return delay_; }
+    /** @brief Sets the ease. */
     void        setEase(const std::string &kind);
+    /** @brief Returns the ease. */
     std::string getEase() const { return ease_; }
 
     /**
@@ -57,21 +75,35 @@ public:
      * Values < -1 are clamped to -1.
      */
     void setRepeat(int count);
+    /** @brief Returns the repeat. */
     int  getRepeat() const { return repeat_; }
+    /** @brief Sets the yoyo. */
     void setYoyo(bool enabled) { yoyo_ = enabled; }
+    /** @brief Returns the yoyo. */
     bool getYoyo() const { return yoyo_; }
 
+    /** @brief Starts . */
     void start();
+    /** @brief Pause. */
     void pause();
+    /** @brief Resume. */
     void resume();
+    /** @brief Stops . */
     void stop();
+    /** @brief Resets . */
     void reset();
 
+    /** @brief True when running. */
     bool isRunning() const { return state_ == State::Running; }
+    /** @brief True when paused. */
     bool isPaused() const { return state_ == State::Paused; }
+    /** @brief True when finished. */
     bool isFinished() const { return state_ == State::Finished; }
+    /** @brief True when stopped. */
     bool isStopped() const { return state_ == State::Idle || state_ == State::Stopped; }
+    /** @brief True when delayed. */
     bool isDelayed() const { return state_ == State::Delayed; }
+    /** @brief True when active. */
     bool isActive() const {
         return state_ == State::Delayed || state_ == State::Running || state_ == State::Paused;
     }
@@ -97,6 +129,7 @@ public:
 
     /** @brief Names of all property tracks (stable order = insertion order). */
     int         getPropertyCount() const { return static_cast<int>(order_.size()); }
+    /** @brief Returns the property name. */
     std::string getPropertyName(int index) const;
 
 private:

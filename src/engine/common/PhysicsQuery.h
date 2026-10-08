@@ -20,6 +20,7 @@ class EVENGINE_API_FOUNDATION_INLINE IPhysicsQuery {
 public:
     static constexpr const char* capabilityName = "IPhysicsQuery";
 
+    /** @brief I physics query. */
     virtual ~IPhysicsQuery() = default;
 
     /** @brief Create a world with the given gravity; returns a non-negative id. */

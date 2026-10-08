@@ -72,6 +72,7 @@ struct AirborneDroplet {
 class EVENGINE_API_DOMAINS SurfaceDropletSimulation {
 public:
     /** @param binding dynamic surface; it must outlive this solver. */
+    /** @brief Surface droplet simulation. */
     explicit SurfaceDropletSimulation(FluidSurfaceBinding* binding,
                                       const SurfaceDropletParams& params = {},
                                       SurfaceWetnessField* wetness = nullptr);
@@ -84,21 +85,27 @@ public:
     void step(float dt);
 
     /** @return currently attached droplets. */
+    /** @brief Droplets. */
     const std::vector<SurfaceDroplet>& droplets() const { return droplets_; }
 
     /** @return droplets detached during the most recent step. */
+    /** @brief Detached droplets. */
     const std::vector<DetachedDroplet>& detachedDroplets() const { return detached_; }
 
     /** @return droplets currently travelling through world space. */
+    /** @brief Airborne droplets. */
     const std::vector<AirborneDroplet>& airborneDroplets() const { return airborne_; }
 
     /** @return spherical-cap base radius derived from volume and contact angle. */
+    /** @brief Droplet radius. */
     float dropletRadius(float volume) const;
 
     /** @return mutable solver parameters. */
+    /** @brief Params. */
     SurfaceDropletParams& params() { return params_; }
 
     /** @return solver parameters. */
+    /** @brief Params. */
     const SurfaceDropletParams& params() const { return params_; }
 
     /** @brief Remove attached droplets and pending detach events. */

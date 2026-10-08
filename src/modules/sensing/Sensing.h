@@ -133,10 +133,14 @@ struct RankedCandidate {
 /** @brief Owning ranked result; does not assign a primary target. */
 class CandidateQueryResult {
 public:
+    /** @brief Constructs a CandidateQueryResult. */
     CandidateQueryResult() = default;
+    /** @brief Constructs a CandidateQueryResult. */
     explicit CandidateQueryResult(std::vector<RankedCandidate> ranked) : ranked_(std::move(ranked)) {}
 
+    /** @brief Ranked. */
     [[nodiscard]] std::span<const RankedCandidate> ranked() const noexcept { return ranked_; }
+    /** @brief Returns the size of . */
     [[nodiscard]] std::size_t size() const noexcept { return ranked_.size(); }
 
 private:
@@ -224,10 +228,13 @@ public:
     [[nodiscard]] const std::map<std::string, Subject>& subjects() const noexcept { return subjects_; }
 
     SensingWorld() = default;
+    /** @brief Sensing world. */
     ~SensingWorld() = default;
     SensingWorld(const SensingWorld&) = delete;
     SensingWorld& operator=(const SensingWorld&) = delete;
+    /** @brief Sensing world. */
     SensingWorld(SensingWorld&&) noexcept = default;
+    /** @brief Operator =. */
     SensingWorld& operator=(SensingWorld&&) noexcept = default;
 
 private:
@@ -272,6 +279,7 @@ public:
     Module_REG(Sensing);
     /** @brief Registers the read-only sensing capability for automation hosts. */
     Sensing();
+    /** @brief Sensing. */
     ~Sensing() override;
     /**
      * @brief Script factory for independent sensing worlds.
@@ -290,8 +298,10 @@ public:
     [[nodiscard]] static bool isStale(SensingWorldHandleRef reference) noexcept;
 
     /** @copydoc eve::ISensingQuery::worldCount */
+    /** @brief World count. */
     [[nodiscard]] int worldCount() const override;
     /** @copydoc eve::ISensingQuery::lastQueries */
+    /** @brief Last queries. */
     [[nodiscard]] std::vector<eve::SensingWorldQuery> lastQueries() const override;
 
 private:

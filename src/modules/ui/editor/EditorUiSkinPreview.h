@@ -17,6 +17,7 @@ struct UiTextureMetadata {
 /** @brief Asset metadata boundary used by renderer-neutral UI preview planning. */
 class IUiSkinAssetResolver {
 public:
+    /** @brief Releases IUiSkinAssetResolver resources. */
     virtual ~IUiSkinAssetResolver() = default;
     /** @brief Resolve texture dimensions, returning NotFound for missing assets. */
     virtual Result<UiTextureMetadata> texture(const std::string& asset) const = 0;
@@ -24,6 +25,7 @@ public:
     virtual Result<void> font(const std::string& asset) const = 0;
 };
 
+/** @brief UiSkinDrawKind public API. */
 enum class UiSkinDrawKind { Image, Text };
 
 /** @brief One deterministic text or image command, including effective clipping. */
@@ -58,6 +60,7 @@ public:
 /** @brief Narrow presentation boundary consuming a renderer-neutral UI skin plan. */
 class IUiSkinPlanRenderer {
 public:
+    /** @brief Releases IUiSkinPlanRenderer resources. */
     virtual ~IUiSkinPlanRenderer() = default;
     /** @brief Draw all commands in document order into the active target. */
     virtual Result<void> render(const UiSkinDrawPlan& plan) = 0;

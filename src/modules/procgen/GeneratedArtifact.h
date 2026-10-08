@@ -78,7 +78,9 @@ private:
 
 namespace std {
 template <>
+/** @brief hash public API. */
 struct hash<eve::procgen::BuildKey> {
+    /** @brief Operator . */
     size_t operator()(const eve::procgen::BuildKey& key) const noexcept {
         return std::hash<std::string>{}(key.format());
     }

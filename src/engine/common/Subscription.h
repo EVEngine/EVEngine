@@ -39,8 +39,11 @@ public:
 
     Subscription(const Subscription &)            = delete;
     Subscription &operator=(const Subscription &) = delete;
+    /** @brief Subscription. */
     Subscription(Subscription &&other) noexcept;
+    /** @brief Operator =. */
     Subscription &operator=(Subscription &&other) noexcept;
+    /** @brief Subscription. */
     ~Subscription();
 
     /** @brief Cancels this registration; safe to call repeatedly. */
@@ -75,15 +78,18 @@ private:
  * @tparam Args Callback argument types, passed as const references.
  */
 template <typename... Args>
+/** @brief Observer public API. */
 class Observer {
 public:
     using Callback = std::function<void(const Args &...)>;
 
+    /** @brief Constructs a Observer. */
     Observer() : state_(std::make_shared<State>()) {}
     Observer(const Observer &)            = delete;
     Observer &operator=(const Observer &) = delete;
     Observer(Observer &&)                 = delete;
     Observer &operator=(Observer &&)      = delete;
+    /** @brief Releases Observer resources. */
     ~Observer()                           = default;
 
     /**
@@ -102,9 +108,11 @@ public:
         state_->entries.push_back(entry);
 
         const std::weak_ptr<State> weakState = state_;
+        /** @brief Subscription. */
         return Subscription([weakState, entry]() noexcept {
             entry->active = false;
             if (const auto state = weakState.lock()) {
+                /** @brief Erases if. */
                 std::erase_if(state->entries,
                               [&entry](const std::shared_ptr<Entry> &candidate) { return candidate == entry; });
             }
@@ -138,6 +146,7 @@ public:
      *          next-dispatch rules as notify().
      */
     template <typename FailureHandler>
+    /** @brief Notify checked. */
     [[nodiscard]] std::size_t notifyChecked(FailureHandler &&onFailure, const Args &...args) {
         const auto  snapshot = state_->entries;
         std::size_t failures = 0;
@@ -146,6 +155,7 @@ public:
             Callback callback = entry->callback;
             if (!entry->active || !callback) continue;
             try {
+                /** @brief Callback. */
                 callback(args...);
             } catch (...) {
                 ++failures;
@@ -165,6 +175,7 @@ public:
 
     /** @brief Removes inactive entries without invoking user callbacks. */
     void compactInactive() {
+        /** @brief Erases if. */
         std::erase_if(state_->entries, [](const std::shared_ptr<Entry> &entry) { return !entry->active; });
     }
 

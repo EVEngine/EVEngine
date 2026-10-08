@@ -22,7 +22,9 @@ namespace eve::stylize {
 struct AttackVfxLayerHandle {
     std::uint64_t id = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const AttackVfxLayerHandle&, const AttackVfxLayerHandle&) = default;
+    /** @brief Valid. */
     [[nodiscard]] bool valid() const noexcept { return id != 0; }
 };
 
@@ -54,6 +56,7 @@ struct AttackVfxLayerStartRequest {
 class IAttackVfxLayerExecutor {
 public:
     static constexpr const char* capabilityName = "eve.stylize.attack-vfx-layer-executor";
+    /** @brief Releases IAttackVfxLayerExecutor resources. */
     virtual ~IAttackVfxLayerExecutor() = default;
 
     /** @brief Role this executor owns. One listener should own one role. */

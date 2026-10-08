@@ -13,12 +13,14 @@ namespace eve::tensor {
 namespace q {
 
 /** True for the weight-quantization dtypes (stored packed, dequantized on use). */
+/** @brief True when quant d type. */
 inline bool isQuantDType(DType dt) {
     return dt == DType::Fp16 || dt == DType::Fp8E4M3 || dt == DType::Fp4E2M1 ||
            dt == DType::Int8 || dt == DType::Int4;
 }
 
 /** Bytes needed to store `count` elements of `dt` (int4/fp4 pack two per byte). */
+/** @brief Quant byte size. */
 inline int quantByteSize(DType dt, int count) {
     switch (dt) {
         case DType::Fp16: return count * 2;
@@ -31,8 +33,10 @@ inline int quantByteSize(DType dt, int count) {
 }
 
 // ---------------------------------------------------------------- fp16
+/** @brief F 32 to f 16. */
 inline uint16_t f32ToF16(float x) {
     uint32_t b;
+    /** @brief Memcpy. */
     std::memcpy(&b, &x, 4);
     const uint32_t sign = (b >> 16) & 0x8000u;
     const int32_t e = int32_t((b >> 23) & 0xFFu) - 127 + 15;
@@ -45,14 +49,17 @@ inline uint16_t f32ToF16(float x) {
         uint32_t half = m >> shift;
         const uint32_t rem = m & ((1u << shift) - 1u);
         if (rem > (1u << (shift - 1)) || (rem == (1u << (shift - 1)) && (half & 1u))) ++half;
+        /** @brief Uint 16 t. */
         return uint16_t(sign | half);
     }
     uint32_t half = (uint32_t(e) << 10) | (m >> 13);
     const uint32_t rem = m & 0x1FFFu;
     if (rem > 0x1000u || (rem == 0x1000u && (half & 1u))) ++half;
+    /** @brief Uint 16 t. */
     return uint16_t(sign | half);
 }
 
+/** @brief F 16 to f 32. */
 inline float f16ToF32(uint16_t h) {
     const uint32_t sign = uint32_t(h & 0x8000u) << 16;
     uint32_t e = (h >> 10) & 0x1Fu;
@@ -74,11 +81,13 @@ inline float f16ToF32(uint16_t h) {
         bits = sign | ((e + (127 - 15)) << 23) | (m << 13);
     }
     float f;
+    /** @brief Memcpy. */
     std::memcpy(&f, &bits, 4);
     return f;
 }
 
 // ---------------------------------------------------------------- fp8 e4m3
+/** @brief Fp 8 e 4 m 3 to f 32. */
 inline float fp8E4M3ToF32(uint8_t v) {
     const uint32_t sign = uint32_t(v & 0x80u) << 24;
     const uint32_t e = (v >> 3) & 0xFu;
@@ -90,11 +99,13 @@ inline float fp8E4M3ToF32(uint8_t v) {
         bits = sign | (uint32_t(e + 120) << 23) | (m << 20);  // 2^(e-7) -> fp32 exp e+120
     }
     float f;
+    /** @brief Memcpy. */
     std::memcpy(&f, &bits, 4);
     return f;
 }
 
 // ---------------------------------------------------------------- fp4 e2m1
+/** @brief Fp 4 e 2 m 1 to f 32. */
 inline float fp4E2M1ToF32(uint8_t nib) {
     const float sign = (nib & 0x8u) ? -1.f : 1.f;
     const int e = int((nib >> 1) & 0x3u);
@@ -107,7 +118,9 @@ inline float fp4E2M1ToF32(uint8_t nib) {
  * Round-trip encode of an arbitrary float into a tiny e/m format (nearest,
  * via a cached value table + binary search — no per-element exponential math).
  */
+/** @brief Float to efm. */
 inline uint32_t floatToEfm(float x, int expBits, int manBits, int bias) {
+    /** @brief EfmEntry public API. */
     struct EfmEntry {
         float value;
         uint32_t bits;
@@ -123,10 +136,12 @@ inline uint32_t floatToEfm(float x, int expBits, int manBits, int bias) {
             for (uint32_t m = 0; m < uint32_t(manCount); ++m) {
                 float v = e == 0
                               ? std::ldexp(float(m), 1 - bias - manBits)
+                              /** @brief Ldexp. */
                               : std::ldexp(1.0f + float(m) / float(manCount), int(e) - bias);
                 cache->push_back({v, (e << manBits) | m});
             }
         }
+        /** @brief Sort. */
         std::sort(cache->begin(), cache->end(),
                   [](const EfmEntry &a, const EfmEntry &b) { return a.value < b.value; });
         cacheExp = expBits;
@@ -148,6 +163,7 @@ inline uint32_t floatToEfm(float x, int expBits, int manBits, int bias) {
     }
     size_t best = lo;
     if (lo + 1 < cache->size() &&
+        /** @brief Fabs. */
         std::fabs((*cache)[lo + 1].value - ax) < std::fabs((*cache)[lo].value - ax))
         best = lo + 1;
     const uint32_t bits = (*cache)[best].bits;
@@ -155,64 +171,80 @@ inline uint32_t floatToEfm(float x, int expBits, int manBits, int bias) {
     return x < 0 ? (signBit | bits) : bits;
 }
 
+/** @brief F 32 to fp 8 e 4 m 3. */
 inline uint8_t f32ToFp8E4M3(float x) {
+    /** @brief Uint 8 t. */
     return uint8_t(floatToEfm(x, 4, 3, 7));
 }
 
+/** @brief F 32 to fp 4 e 2 m 1. */
 inline uint8_t f32ToFp4E2M1(float x) {
+    /** @brief Uint 8 t. */
     return uint8_t(floatToEfm(x, 2, 1, 1) & 0xFu);
 }
 
 /** Largest finite magnitude of an e/m format (used for block scaling). */
+/** @brief Efm max magnitude. */
 inline float efmMaxMagnitude(int expBits, int manBits, int bias) {
     const int maxExp = (1 << expBits) - 2;
     const int maxMan = (1 << manBits) - 1;
+    /** @brief Ldexp. */
     return std::ldexp(1.0f + float(maxMan) / float(1 << manBits), maxExp - bias);
 }
 
 // ---------------------------------------------------------------- dequant
+/** @brief Dequant value. */
 inline float dequantValue(DType dt, const uint8_t *bytes, const float *scales, int group,
                           int idx) {
     switch (dt) {
         case DType::Fp16: {
             uint16_t h;
+            /** @brief Memcpy. */
             std::memcpy(&h, bytes + size_t(idx) * 2, 2);
+            /** @brief F 16 to f 32. */
             return f16ToF32(h);
         }
         case DType::Fp8E4M3:
+            /** @brief Fp 8 e 4 m 3 to f 32. */
             return fp8E4M3ToF32(bytes[static_cast<size_t>(idx)]) *
                    scales[static_cast<size_t>(idx) / size_t(group)];
         case DType::Int8: {
             const int8_t v = int8_t(bytes[static_cast<size_t>(idx)]);
+            /** @brief Float. */
             return float(v) * scales[static_cast<size_t>(idx) / size_t(group)];
         }
         case DType::Fp4E2M1: {
             const uint8_t byte = bytes[static_cast<size_t>(idx) / 2];
             const uint8_t nib = (idx & 1) ? uint8_t(byte >> 4) : uint8_t(byte & 0xFu);
+            /** @brief Fp 4 e 2 m 1 to f 32. */
             return fp4E2M1ToF32(nib) * scales[static_cast<size_t>(idx) / size_t(group)];
         }
         case DType::Int4: {
             const uint8_t byte = bytes[static_cast<size_t>(idx) / 2];
             int nib = (idx & 1) ? int(byte >> 4) : int(byte & 0xFu);
             if (nib >= 8) nib -= 16;
+            /** @brief Float. */
             return float(nib) * scales[static_cast<size_t>(idx) / size_t(group)];
         }
         default: return 0.f;
     }
 }
 
+/** @brief Dequantize all. */
 inline void dequantizeAll(DType dt, const uint8_t *bytes, const float *scales, int group,
                           int count, float *out) {
     for (int i = 0; i < count; ++i) out[static_cast<size_t>(i)] = dequantValue(dt, bytes, scales, group, i);
 }
 
 // ---------------------------------------------------------------- quantize
+/** @brief QuantPayload public API. */
 struct QuantPayload {
     std::vector<uint8_t> bytes;
     std::vector<float> scales;
     int group = 0;
 };
 
+/** @brief Quantize. */
 inline QuantPayload quantize(const float *src, int count, DType dt, int group) {
     QuantPayload p;
     p.group = group <= 0 ? count : group;
@@ -227,6 +259,7 @@ inline QuantPayload quantize(const float *src, int count, DType dt, int group) {
                            : dt == DType::Int4 ? 7.f
                            : dt == DType::Fp8E4M3
                                ? efmMaxMagnitude(4, 3, 7)
+                               /** @brief Efm max magnitude. */
                                : efmMaxMagnitude(2, 1, 1);  // Fp4E2M1
         const int groups = (count + p.group - 1) / p.group;
         p.scales.resize(static_cast<size_t>(groups));
@@ -271,6 +304,7 @@ inline QuantPayload quantize(const float *src, int count, DType dt, int group) {
         switch (dt) {
             case DType::Fp16: {
                 const uint16_t h = f32ToF16(v);
+                /** @brief Memcpy. */
                 std::memcpy(p.bytes.data() + size_t(i) * 2, &h, 2);
                 break;
             }

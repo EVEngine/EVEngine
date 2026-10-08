@@ -34,65 +34,93 @@ class Document;
  * Handle to one node of a parsed Document. Cheap to copy, but only valid while
  * the owning Document is alive.
  */
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION Value {
 public:
+    /** @brief Value. */
     Value() = default;
 
     /** True when this handle refers to an actual node. */
+    /** @brief Bool. */
     explicit operator bool() const { return node_ != nullptr; }
 
+    /** @brief True when null. */
     bool isNull() const;
+    /** @brief True when bool. */
     bool isBool() const;
+    /** @brief True when number. */
     bool isNumber() const;
     /** @brief True when the JSON number was an integer literal that fits Int64. */
     bool isInt64() const;
     /** @brief True when the JSON number had no fraction or exponent. */
     bool isIntegerLiteral() const;
+    /** @brief True when string. */
     bool isString() const;
+    /** @brief True when object. */
     bool isObject() const;
+    /** @brief True when array. */
     bool isArray() const;
 
     // --- object access -----------------------------------------------------
+    /** @brief True when active. */
     bool  has(const char* key) const;
     /** Member value, or a null Value when absent / not an object. */
+    /** @brief Returns the value. */
     Value get(const char* key) const;
     /** Member names in document order; empty when not an object. */
+    /** @brief Keys. */
     std::vector<std::string> keys() const;
 
     // --- array access ------------------------------------------------------
     /** Element count for arrays, member count for objects, else 0. */
+    /** @brief Returns the size of . */
     size_t size() const;
     /** Element at index, or a null Value when out of range / not an array. */
+    /** @brief At. */
     Value at(size_t index) const;
 
     // --- scalars -----------------------------------------------------------
     // Conversions are lenient (a numeric string reads as a number and back)
     // and fall back rather than throw.
+    /** @brief As bool. */
     bool        asBool(bool fallback = false) const;
+    /** @brief As int. */
     int         asInt(int fallback = 0) const;
+    /** @brief As float. */
     float       asFloat(float fallback = 0.f) const;
+    /** @brief As double. */
     double      asDouble(double fallback = 0.0) const;
     /** @brief Read an exact Int64 literal, or return the caller-supplied default for other numbers. */
     std::int64_t asInt64(std::int64_t fallback = 0) const;
+    /** @brief As string. */
     std::string asString(const std::string& fallback = {}) const;
 
     // --- keyed shorthand ---------------------------------------------------
     // get(key).asX(fallback), which is the dominant shape in config loaders.
+    /** @brief Returns the bool. */
     bool        getBool(const char* key, bool fallback = false) const;
+    /** @brief Returns the int. */
     int         getInt(const char* key, int fallback = 0) const;
+    /** @brief Returns the float. */
     float       getFloat(const char* key, float fallback = 0.f) const;
+    /** @brief Returns the double. */
     double      getDouble(const char* key, double fallback = 0.0) const;
+    /** @brief Returns the string. */
     std::string getString(const char* key, const std::string& fallback = {}) const;
 
     // --- collections -------------------------------------------------------
     // Empty when the key is absent or the value has the wrong shape.
+    /** @brief Returns the string array. */
     std::vector<std::string> getStringArray(const char* key) const;
+    /** @brief Returns the int array. */
     std::vector<int>         getIntArray(const char* key) const;
+    /** @brief Returns the float array. */
     std::vector<float>       getFloatArray(const char* key) const;
     std::unordered_map<std::string, std::string> getStringMap(const char* key) const;
     std::unordered_map<std::string, int>         getIntMap(const char* key) const;
 
     /** This node read as an array of strings (for a Value already in hand). */
+    /** @brief To string array. */
     std::vector<std::string> toStringArray() const;
 
 private:
@@ -104,11 +132,16 @@ private:
 /**
  * Owns a parsed JSON tree. Move-only; every Value handed out points into it.
  */
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION Document {
 public:
+    /** @brief Document. */
     Document();
+    /** @brief Document. */
     ~Document();
+    /** @brief Document. */
     Document(Document&&) noexcept;
+    /** @brief Operator =. */
     Document& operator=(Document&&) noexcept;
     Document(const Document&) = delete;
     Document& operator=(const Document&) = delete;
@@ -117,9 +150,12 @@ public:
      * Parse `text`. On failure the Document is invalid, `error` (when given)
      * describes the problem, and root() returns a null Value.
      */
+    /** @brief Parse. */
     static Document parse(const std::string& text, std::string* error = nullptr);
 
+    /** @brief Valid. */
     bool  valid() const { return root_ != nullptr; }
+    /** @brief Root. */
     Value root() const { return Value(root_.get()); }
 
 private:

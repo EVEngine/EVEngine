@@ -26,14 +26,22 @@ class AvatarInstance;
 struct VrmSurface;
 
 // Private import transaction and runtime owner. ECS projections are always resolved by generation.
+/** @brief VrmRuntime public API. */
 class VrmRuntime {
 public:
+    /** @brief Constructs a VrmRuntime. */
     VrmRuntime();
+    /** @brief Releases VrmRuntime resources. */
     ~VrmRuntime();
+    /** @brief Prepare. */
     static eve::Result<std::unique_ptr<VrmRuntime>> prepare(std::string_view path);
+    /** @brief Animate. */
     void animate(AvatarInstance& avatar, animation::AnimPose& pose, float dt);
+    /** @brief Synchronizes . */
     void sync(AvatarInstance& avatar, const glm::mat4& world, bool visible);
+    /** @brief Morphs. */
     void morphs(AvatarInstance& avatar);
+    /** @brief Gaze. */
     void gaze(AvatarInstance& avatar, animation::AnimPose& pose, const glm::mat4& world, bool enabled, glm::vec3 target,
               float weight);
     std::weak_ptr<const void>                providerLifetime;
@@ -43,6 +51,7 @@ public:
     std::unique_ptr<animation::AnimPlayer>   player;
     std::vector<int>                         nodeBones;
     std::map<int, std::array<float, 3>>      rotations;
+    /** @brief Part public API. */
     struct Part {
         ecs::EntityHandle                    entity, outline;
         graphics::Mesh*                      mesh       = nullptr;

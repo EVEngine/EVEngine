@@ -25,25 +25,37 @@ namespace eve::stylize {
  */
 class EVENGINE_API_WORLD StylePass {
 public:
+    /** @brief Style pass. */
     StylePass(const std::string &style, graphics::Shader *shader);
+    /** @brief Style pass. */
     ~StylePass() = default;
 
     StylePass(const StylePass &) = delete;
     StylePass &operator=(const StylePass &) = delete;
 
+    /** @brief Returns the style. */
     std::string getStyle() const { return style_; }
+    /** @brief Returns the shader. */
     graphics::Shader *getShader() const { return shader_; }
+    /** @brief Returns the stage. */
     std::string getStage() const;
+    /** @brief Returns the priority. */
     int getPriority() const { return desc_.priority; }
+    /** @brief Sets the priority. */
     void setPriority(int priority) { desc_.priority = priority; }
+    /** @brief Requires input. */
     bool requiresInput(const std::string &input) const;
 
+    /** @brief True when param. */
     bool hasParam(const std::string &name) const;
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
 
     /** @brief Advance time-driven knobs (watercolor warp / ink jitter). */
     void setTime(float seconds);
+    /** @brief Returns the time. */
     float getTime() const;
 
     /**
@@ -51,6 +63,7 @@ public:
      * Automatically uploads texel size + screen size uniforms.
      */
     void apply(graphics::Graphics *gfx, graphics::Texture *source);
+    /** @brief Applies canvas. */
     void applyCanvas(graphics::Graphics *gfx, graphics::Canvas *source);
 
     /**
@@ -58,6 +71,7 @@ public:
      * Preferred hook for chains / tooling that manage ping-pong targets.
      */
     void applyTo(graphics::Graphics *gfx, graphics::Texture *source, graphics::Canvas *dest);
+    /** @brief Applies canvas to. */
     void applyCanvasTo(graphics::Graphics *gfx, graphics::Canvas *source, graphics::Canvas *dest);
 
 private:

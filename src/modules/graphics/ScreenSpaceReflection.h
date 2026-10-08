@@ -29,7 +29,9 @@ class Texture;
  */
 class EVENGINE_API_BACKENDS ScreenSpaceReflection {
 public:
+    /** @brief Screen space reflection. */
     explicit ScreenSpaceReflection(Graphics *gfx);
+    /** @brief Screen space reflection. */
     ~ScreenSpaceReflection();
 
     ScreenSpaceReflection(const ScreenSpaceReflection &) = delete;
@@ -39,6 +41,7 @@ public:
     void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
                    float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ,
                    float farZ);
+    /** @brief Sets the inv view proj. */
     void setInvViewProj(const glm::mat4 &invViewProj);
     /** @brief Set packed linear-depth and motion texture used by temporal SSR resolve. */
     void setTemporalMotionTexture(Texture *motionDepth) { temporalMotionDepth_ = motionDepth; }
@@ -52,6 +55,7 @@ public:
 
     /** @brief Enable/disable the pass. When disabled it emits transparent (0 hit). */
     void setEnabled(bool enabled);
+    /** @brief Returns the enabled. */
     bool getEnabled() const { return enabled_; }
 
     /** @brief Set "low", "medium", "high" or "ultra" SSR quality preset. */
@@ -59,26 +63,38 @@ public:
     /** @brief Return the active SSR quality preset. */
     std::string getQuality() const { return quality_; }
 
+    /** @brief Sets the max distance. */
     void setMaxDistance(float meters);
+    /** @brief Sets the step length. */
     void setStepLength(float meters);
+    /** @brief Sets the max steps. */
     void setMaxSteps(int steps);
+    /** @brief Sets the thickness. */
     void setThickness(float meters);
+    /** @brief Sets the strength. */
     void setStrength(float strength);
     /** @brief Skip SSR above this material roughness and rely on reflection backup. */
     void setMaxRoughness(float roughness);
     /** @brief Set internal SSR resolution scale in the range 0.25 to 1.0. */
     void setResolutionScale(float scale);
+    /** @brief Returns the strength. */
     float getStrength() const { return strength_; }
+    /** @brief Returns the max roughness. */
     float getMaxRoughness() const { return maxRoughness_; }
+    /** @brief Returns the resolution scale. */
     float getResolutionScale() const { return resolutionScale_; }
 
+    /** @brief True when param. */
     bool hasParam(const std::string &name) const;
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
 
     /** @brief Write the SSR result into the currently bound canvas / dest. */
     void applyFromSceneTo(Graphics *gfx, Texture *sceneColor, Texture *hwDepth,
                           Texture *worldNormal, Canvas *dest) {
+        /** @brief Applies from scene to. */
         applyFromSceneTo(gfx, sceneColor, hwDepth, worldNormal, nullptr, dest);
     }
     /** @brief Write SSR using albedo to preserve diffuse energy during reflection replacement. */
@@ -99,6 +115,7 @@ public:
         return quality_ == "ultra" ? 3 : quality_ == "high" ? 2 : quality_ == "medium" ? 1 : 0;
     }
 
+    /** @brief Returns the shader. */
     Shader *getShader() const { return ssr_; }
 
 private:

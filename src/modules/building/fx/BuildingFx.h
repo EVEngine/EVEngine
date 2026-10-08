@@ -37,12 +37,14 @@ namespace eve::buildingfx {
 /** @brief Script-safe outcome of refreshing a custom-surface curve preview. */
 enum class CurvePreviewUpdateStatus { Updated, Rejected };
 
+/** @brief EVENGINE_API_WORLD public API. */
 class EVENGINE_API_WORLD BuildingFx : public Module {
 public:
     /** @brief One cubic Bezier control point in logical grid-vertex coordinates. */
     struct CurveControlPoint {
         float x = 0.f;
         float y = 0.f;
+        /** @brief Operator ==. */
         bool operator==(const CurveControlPoint &) const = default;
     };
     /** @brief Owning backend-neutral indexed extrusion generated along an edge curve. */
@@ -193,12 +195,15 @@ private:
     };
 
     struct WorldState {
+        /** @brief LevelVisibility public API. */
         enum class LevelVisibility { All, Active, ActiveAndBelow };
+        /** @brief HeatCell public API. */
         struct HeatCell {
             int x = 0;
             int y = 0;
             bool accepted = false;
         };
+        /** @brief CurveVisual public API. */
         struct CurveVisual {
             graphics::Renderable3D *renderable = nullptr;
             graphics::Mesh *mesh = nullptr;

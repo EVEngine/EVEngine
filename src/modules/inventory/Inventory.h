@@ -29,7 +29,9 @@ public:
     // a defaulted constructor in the class body has to destroy the members it
     // already built when a later one throws -- which needs the complete type
     // (C2027 "can't delete an incomplete type" in the Dawn parity lane).
+    /** @brief Inventory. */
     Inventory();
+    /** @brief Inventory. */
     ~Inventory() override;
 
     /** @brief 从 JSON 注册物品定义；返回成功注册数量。 */
@@ -40,39 +42,60 @@ public:
     int getItemDefinitionCount();
     /** @brief 物品定义查询（显示名/堆叠/重量/体积/类别/装备槽/标签/额外属性）。 */
     bool hasItemDefinition(const std::string &itemId);
+    /** @brief Returns the item display name. */
     std::string getItemDisplayName(const std::string &itemId);
+    /** @brief Returns the item max stack. */
     int getItemMaxStack(const std::string &itemId);
+    /** @brief Returns the item weight. */
     float getItemWeight(const std::string &itemId);
+    /** @brief Returns the item volume. */
     float getItemVolume(const std::string &itemId);
+    /** @brief Returns the item category. */
     std::string getItemCategory(const std::string &itemId);
+    /** @brief Returns the item equip slot. */
     std::string getItemEquipSlot(const std::string &itemId);
+    /** @brief Item has tag. */
     bool itemHasTag(const std::string &itemId, const std::string &tag);
+    /** @brief Returns the item extra. */
     std::string getItemExtra(const std::string &itemId, const std::string &key,
                              const std::string &fallback = {});
 
     /** @brief 工厂：创建容器 / 装备栏。 */
     Bag *newBag(int slotCount);
+    /** @brief Creates a equipment set. @ownership Caller deletes unless documented otherwise. */
     EquipmentSet *newEquipmentSet();
 
     /** @brief 跨容器转移（按物品 id / 按槽位）；返回实际转移数量。 */
     int transferItem(Bag *from, Bag *to, const std::string &itemId, int quantity);
+    /** @brief Transfer slot. */
     int transferSlot(Bag *from, int fromSlot, Bag *to, int quantity);
 
     /** @brief 扩展策略是否存在（接受规则 / 容量策略 / 堆叠规则）。 */
     bool hasAcceptRule(const std::string &name);
+    /** @brief True when capacity policy. */
     bool hasCapacityPolicy(const std::string &name);
+    /** @brief True when stack rule. */
     bool hasStackRule(const std::string &name);
 
     /** @brief 变更事件队列（添加/移除/移动/装备）。 */
     void clearChangeEvents();
+    /** @brief Returns the change event count. */
     int getChangeEventCount() const;
+    /** @brief Returns the change event action. */
     std::string getChangeEventAction(int index) const;
+    /** @brief Returns the change event bag id. */
     std::string getChangeEventBagId(int index) const;
+    /** @brief Returns the change event other bag id. */
     std::string getChangeEventOtherBagId(int index) const;
+    /** @brief Returns the change event item id. */
     std::string getChangeEventItemId(int index) const;
+    /** @brief Returns the change event quantity. */
     int getChangeEventQuantity(int index) const;
+    /** @brief Returns the change event slot. */
     int getChangeEventSlot(int index) const;
+    /** @brief Returns the change event other slot. */
     int getChangeEventOtherSlot(int index) const;
+    /** @brief Returns the change event equip slot. */
     std::string getChangeEventEquipSlot(int index) const;
 
     /**

@@ -146,7 +146,9 @@ using ProcgenLSystemHandleRef           = eve::script::RuntimeHandleRef<ProcgenL
 class EVENGINE_API_DOMAINS Procgen : public Module {
 public:
     Module_REG(Procgen);
+    /** @brief Procgen. */
     Procgen();
+    /** @brief Procgen. */
     ~Procgen() override;
 
     /**
@@ -188,65 +190,88 @@ public:
     [[nodiscard]] bool isPointSetStale(ProcgenPointSetHandleRef reference) const noexcept;
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> sampleGridHandle(int width, int depth, float spacing,
                                                                          uint32_t seed, float jitter);
+    /** @brief Filter height handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterHeightHandle(ProcgenPointSetHandleRef input,
                                                                            float minHeight, float maxHeight);
+    /** @brief Filter density handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterDensityHandle(ProcgenPointSetHandleRef input,
                                                                             float minDensity, float maxDensity);
+    /** @brief Filter box handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterBoxHandle(ProcgenPointSetHandleRef input, float minX,
                                                                         float minY, float minZ, float maxX, float maxY,
                                                                         float maxZ, bool invert = false);
+    /** @brief Filter slope handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterSlopeHandle(ProcgenPointSetHandleRef input,
                                                                           float minDegrees, float maxDegrees);
+    /** @brief Filter polygon handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterPolygonHandle(ProcgenPointSetHandleRef input,
                                                                             ProcgenPointSetHandleRef polygon,
                                                                             bool                     invert = false);
+    /** @brief Filter spline distance handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterSplineDistanceHandle(
         ProcgenPointSetHandleRef input, ProcgenPointSetHandleRef controlPoints, float minDistance, float maxDistance);
+    /** @brief Exclude radius handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> excludeRadiusHandle(ProcgenPointSetHandleRef input, float x,
                                                                             float z, float radius);
+    /** @brief Jitter points handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> jitterPointsHandle(ProcgenPointSetHandleRef input,
                                                                            uint32_t seed, float amountX, float amountZ);
+    /** @brief Self prune handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> selfPruneHandle(ProcgenPointSetHandleRef input, float radius);
+    /** @brief Project to heightmap handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> projectToHeightmapHandle(ProcgenPointSetHandleRef  input,
                                                                                  ProcgenHeightmapHandleRef heightmap,
                                                                                  float originX, float originZ,
                                                                                  float cellSize, float heightScale);
+    /** @brief Sample spline handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> sampleSplineHandle(ProcgenPointSetHandleRef controlPoints,
                                                                            float spacing, uint32_t seed,
                                                                            float lateralJitter);
+    /** @brief Poisson disk handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> poissonDiskHandle(int width, int depth, float radius,
                                                                           uint32_t seed, int maxPoints);
+    /** @brief Merge points handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> mergePointsHandle(ProcgenPointSetHandleRef first,
                                                                           ProcgenPointSetHandleRef second);
+    /** @brief Union points handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> unionPointsHandle(ProcgenPointSetHandleRef first,
                                                                           ProcgenPointSetHandleRef second);
+    /** @brief Intersect points handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> intersectPointsHandle(ProcgenPointSetHandleRef first,
                                                                               ProcgenPointSetHandleRef second);
+    /** @brief Difference points handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> differencePointsHandle(ProcgenPointSetHandleRef first,
                                                                                ProcgenPointSetHandleRef second);
+    /** @brief Transform points handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> transformPointsHandle(ProcgenPointSetHandleRef input,
                                                                               float translateX, float translateY,
                                                                               float translateZ, float yawDegrees,
                                                                               float scaleX, float scaleY, float scaleZ);
+    /** @brief Transform points 3 d handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> transformPoints3DHandle(
         ProcgenPointSetHandleRef input, float translateX, float translateY, float translateZ, float pitchDegrees,
         float yawDegrees, float rollDegrees, float scaleX, float scaleY, float scaleZ);
+    /** @brief Copies points handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> copyPointsHandle(ProcgenPointSetHandleRef source,
                                                                          ProcgenPointSetHandleRef targets,
                                                                          bool inheritTargetAttributes);
+    /** @brief Remap density handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> remapDensityHandle(ProcgenPointSetHandleRef input,
                                                                            float inputMin, float inputMax,
                                                                            float outputMin, float outputMax,
                                                                            bool clampOutput);
+    /** @brief Math float attribute handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> mathFloatAttributeHandle(ProcgenPointSetHandleRef input,
                                                                                  const std::string&       attribute,
                                                                                  const std::string& outputAttribute,
                                                                                  const std::string& operation,
                                                                                  float operand, float defaultValue);
+    /** @brief Filter float attribute handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterFloatAttributeHandle(ProcgenPointSetHandleRef input,
                                                                                    const std::string&       name,
                                                                                    float minValue, float maxValue,
                                                                                    bool invert);
+    /** @brief Filter string attribute handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterStringAttributeHandle(ProcgenPointSetHandleRef input,
                                                                                     const std::string&       name,
                                                                                     const std::string&       value,
@@ -255,6 +280,7 @@ public:
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> excludeGridMaskHandle(
         ProcgenPointSetHandleRef input, ProcgenGridHandleRef mask, float originX, float originZ, float cellSize,
         int semantic, float clearance, int maximumChecks);
+    /** @brief Density cull handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> densityCullHandle(ProcgenPointSetHandleRef input, uint32_t seed,
                                                                           float multiplier);
     /** @brief Project points through the optional world-query capability. */
@@ -263,39 +289,55 @@ public:
                                                                              bool keepUnmatched);
 
     // --- Spatial data and composable PCG domains ---
+    /** @brief Point data handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> pointDataHandle(ProcgenPointSetHandleRef points);
+    /** @brief Box volume handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> boxVolumeHandle(float minX, float minY, float minZ,
                                                                            float maxX, float maxY, float maxZ);
+    /** @brief Sphere volume handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> sphereVolumeHandle(float x, float y, float z, float radius);
+    /** @brief Polygon volume handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> polygonVolumeHandle(ProcgenPointSetHandleRef controlPoints,
                                                                                float minY, float maxY);
+    /** @brief Spline data handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> splineDataHandle(ProcgenPointSetHandleRef controlPoints,
                                                                             float                    radius);
+    /** @brief Heightfield data handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> heightfieldDataHandle(ProcgenHeightmapHandleRef heightmap,
                                                                                  float originX, float originZ,
                                                                                  float cellSize, float heightScale);
+    /** @brief Texture mask data handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> textureMaskDataHandle(ProcgenHeightmapHandleRef values,
                                                                                  float originX, float originZ,
                                                                                  float cellSize, float minValue,
                                                                                  float maxValue, float minY,
                                                                                  float maxY);
+    /** @brief Mesh surface data handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> meshSurfaceDataHandle(ProcgenMeshBuildHandleRef mesh,
                                                                                  float                     tolerance);
+    /** @brief Union spatial handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> unionSpatialHandle(ProcgenSpatialDataHandleRef left,
                                                                               ProcgenSpatialDataHandleRef right);
+    /** @brief Intersect spatial handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> intersectSpatialHandle(ProcgenSpatialDataHandleRef left,
                                                                                   ProcgenSpatialDataHandleRef right);
+    /** @brief Difference spatial handle. */
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> differenceSpatialHandle(ProcgenSpatialDataHandleRef left,
                                                                                    ProcgenSpatialDataHandleRef right);
+    /** @brief Sample spatial handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> sampleSpatialHandle(ProcgenSpatialDataHandleRef spatial,
                                                                             float spacing, uint32_t seed, float jitter);
+    /** @brief Filter spatial handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterSpatialHandle(ProcgenPointSetHandleRef    input,
                                                                             ProcgenSpatialDataHandleRef spatial,
                                                                             bool                        invert);
+    /** @brief Project to spatial handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> projectToSpatialHandle(ProcgenPointSetHandleRef    input,
                                                                                ProcgenSpatialDataHandleRef spatial);
 
+    /** @brief Creates a runtime generation handle. @ownership Caller deletes unless documented otherwise. */
     [[nodiscard]] eve::Result<ProcgenRuntimeGenerationHandleRef> newRuntimeGenerationHandle(uint32_t worldSeed);
+    /** @brief Creates a point graph handle. @ownership Caller deletes unless documented otherwise. */
     [[nodiscard]] eve::Result<ProcgenPointGraphHandleRef>        newPointGraphHandle();
     /** @brief Allocate a module-owned mesh modifier graph. */
     [[nodiscard]] eve::Result<ProcgenMeshModifierGraphHandleRef> newMeshModifierGraphHandle();
@@ -313,6 +355,7 @@ public:
     [[nodiscard]] eve::script::Borrowed<SpatialData> resolveSpatialData(ProcgenSpatialDataHandleRef reference) noexcept;
     [[nodiscard]] eve::script::Borrowed<RuntimeGeneration> resolveRuntimeGeneration(
         ProcgenRuntimeGenerationHandleRef reference) noexcept;
+    /** @brief Resolve point graph. */
     [[nodiscard]] eve::script::Borrowed<PointGraph>   resolvePointGraph(ProcgenPointGraphHandleRef reference) noexcept;
     /** @brief Resolve a mesh modifier graph for the current synchronous call only. */
     [[nodiscard]] eve::script::Borrowed<MeshModifierGraph> resolveMeshModifierGraph(
@@ -330,9 +373,13 @@ public:
     [[nodiscard]] eve::script::Borrowed<BiomeRules>   resolveBiomeRules(ProcgenBiomeRulesHandleRef reference) noexcept;
     [[nodiscard]] eve::script::Borrowed<ShapeGrammar> resolveShapeGrammar(
         ProcgenShapeGrammarHandleRef reference) noexcept;
+    /** @brief Resolve l system. */
     [[nodiscard]] eve::script::Borrowed<LSystem> resolveLSystem(ProcgenLSystemHandleRef reference) noexcept;
+    /** @brief Release. */
     [[nodiscard]] eve::Result<void>              release(ProcgenSpatialDataHandleRef reference);
+    /** @brief Release. */
     [[nodiscard]] eve::Result<void>              release(ProcgenRuntimeGenerationHandleRef reference);
+    /** @brief Release. */
     [[nodiscard]] eve::Result<void>              release(ProcgenPointGraphHandleRef reference);
     /** @brief Release a module-owned mesh modifier graph. */
     [[nodiscard]] eve::Result<void> release(ProcgenMeshModifierGraphHandleRef reference);
@@ -367,7 +414,9 @@ public:
     [[nodiscard]] eve::Result<void> publishInstances(const std::string& batchId, ProcgenPointSetHandleRef points,
                                                      const std::string& assetAttribute,
                                                      const std::string& defaultAsset);
+    /** @brief Removes instances. */
     [[nodiscard]] eve::Result<void> removeInstances(const std::string& batchId);
+    /** @brief Publish cell instances. */
     [[nodiscard]] eve::Result<void> publishCellInstances(const std::string& prefix, const ProcgenCellRequest& request,
                                                          ProcgenPointSetHandleRef points,
                                                          const std::string&       assetAttribute,
@@ -443,6 +492,7 @@ public:
         const std::string& prefix, const std::vector<const RuntimeGeneration*>& runtimes,
         const std::vector<const ProcgenCellRequest*>& requests, const std::string& assetAttribute,
         const std::string& defaultAsset);
+    /** @brief Removes cell instances. */
     [[nodiscard]] eve::Result<void> removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request);
     /**
      * @brief Atomically remove the Scene batches identified by several cleanup requests.
@@ -469,10 +519,15 @@ public:
     [[nodiscard]] eve::Result<uint64_t> completeCellCleanupAtomic(
         const std::string& prefix, const std::vector<RuntimeGeneration*>& runtimes,
         const std::vector<const ProcgenCellRequest*>& requests);
+    /** @brief Returns the published instance count. */
     int      getPublishedInstanceCount(const std::string& batchId) const;
+    /** @brief Returns the published created count. */
     int      getPublishedCreatedCount(const std::string& batchId) const;
+    /** @brief Returns the published reused count. */
     int      getPublishedReusedCount(const std::string& batchId) const;
+    /** @brief Returns the published removed count. */
     int      getPublishedRemovedCount(const std::string& batchId) const;
+    /** @brief Derive seed. */
     uint32_t deriveSeed(uint32_t parent, const std::string& scope) const;
 
     // --- Atomic script rebuilds ---
@@ -492,38 +547,57 @@ public:
     [[nodiscard]] eve::Result<void> abortSystem(ProcgenContextHandleRef context);
     [[nodiscard]] eve::Result<void> removeSystem(const std::string& name);
     bool                            hasSystem(const std::string& name) const;
+    /** @brief Returns the system revision. */
     uint64_t                        getSystemRevision(const std::string& name) const;
+    /** @brief Returns the system seed. */
     uint32_t                        getSystemSeed(const std::string& name) const;
+    /** @brief Returns the system build key. */
     std::string                     getSystemBuildKey(const std::string& name) const;
+    /** @brief Returns the system output count. */
     int                             getSystemOutputCount(const std::string& name) const;
+    /** @brief Returns the system output name. */
     std::string                     getSystemOutputName(const std::string& name, int index) const;
+    /** @brief Returns the system debug stage count. */
     int                             getSystemDebugStageCount(const std::string& name) const;
+    /** @brief Returns the system debug stage name. */
     std::string                     getSystemDebugStageName(const std::string& name, int index) const;
+    /** @brief Returns the system output handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> getSystemOutputHandle(const std::string& name,
                                                                               const std::string& outputName) const;
+    /** @brief Returns the system debug stage handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> getSystemDebugStageHandle(const std::string& name,
                                                                                   const std::string& stageName) const;
+    /** @brief Returns the previous system debug stage handle. */
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> getPreviousSystemDebugStageHandle(
         const std::string& name, const std::string& stageName) const;
     /** @brief Revision number of the snapshot retained for hot-reload comparison. */
     uint64_t    getPreviousSystemRevision(const std::string& name) const;
+    /** @brief Returns the system debug report. */
     std::string getSystemDebugReport(const std::string& name) const;
     /** @brief Human-readable point-count changes between the current and previous commits. */
     std::string getSystemDebugDiffReport(const std::string& name) const;
 
     // --- Phase A: maps ---
+    /** @brief Generate handle. */
     [[nodiscard]] eve::Result<ProcgenGridHandleRef> generateHandle(const std::string&     algorithmId,
                                                                    ProcgenParamsHandleRef params);
+    /** @brief Generate to. */
     [[nodiscard]] eve::Result<void> generateTo(const std::string& algorithmId, ProcgenParamsHandleRef params,
                                                ProcgenOutputHandleRef output);
+    /** @brief Applies to layer. */
     [[nodiscard]] eve::Result<void> applyToLayer(ProcgenGridHandleRef grid, const std::string& palette,
                                                  map::TileLayer& layer);
 
+    /** @brief Sets the palette gid. */
     void setPaletteGid(const std::string& palette, const std::string& semantic, int gid);
+    /** @brief Returns the palette gid. */
     int  getPaletteGid(const std::string& palette, const std::string& semantic) const;
 
+    /** @brief Returns the algorithm count. */
     int         getAlgorithmCount() const;
+    /** @brief Returns the algorithm id. */
     std::string getAlgorithmId(int index) const;
+    /** @brief True when algorithm. */
     bool        hasAlgorithm(const std::string& algorithmId) const;
     /** @brief Returns an owning copy of an algorithm schema or a diagnostic. */
     [[nodiscard]] eve::Result<RecipeDescriptor> getAlgorithmSchema(const std::string& algorithmId) const;
@@ -594,9 +668,11 @@ public:
     /** @brief Fresh non-zero seed for regenerating a level. */
     uint32_t randomSeed();
 
+    /** @brief Grid to json. */
     [[nodiscard]] eve::Result<std::string> gridToJson(ProcgenGridHandleRef grid) const;
 
     // --- Phase B: textures ---
+    /** @brief Generate image handle. */
     [[nodiscard]] eve::Result<ProcgenImageHandleRef> generateImageHandle(const std::string&     recipeId,
                                                                          ProcgenParamsHandleRef params);
     /**
@@ -672,8 +748,11 @@ public:
                                                                                    ProcgenParamsHandleRef params,
                                                                                    graphics::Graphics*    gfx);
 
+    /** @brief Returns the texture recipe count. */
     int         getTextureRecipeCount() const;
+    /** @brief Returns the texture recipe id. */
     std::string getTextureRecipeId(int index) const;
+    /** @brief True when texture recipe. */
     bool        hasTextureRecipe(const std::string& recipeId) const;
     /** @brief Returns an owning copy of a texture schema or a diagnostic. */
     [[nodiscard]] eve::Result<RecipeDescriptor> getTextureRecipeSchema(const std::string& recipeId) const;
@@ -711,12 +790,18 @@ public:
      */
     [[nodiscard]] eve::Result<ProcgenPbrMaterialHandleRef> generatePbrMaterialHandle(const std::string&     recipeId,
                                                                                      ProcgenParamsHandleRef params);
+    /** @brief Resolve pbr material. */
     [[nodiscard]] eve::script::Borrowed<PbrTextureSet>     resolvePbrMaterial(ProcgenPbrMaterialHandleRef) noexcept;
+    /** @brief Release pbr material. */
     [[nodiscard]] eve::Result<void>                        releasePbrMaterial(ProcgenPbrMaterialHandleRef);
+    /** @brief True when pbr material stale. */
     [[nodiscard]] bool isPbrMaterialStale(ProcgenPbrMaterialHandleRef) const noexcept;
 
+    /** @brief Returns the pbr recipe count. */
     int         getPbrRecipeCount() const;
+    /** @brief Returns the pbr recipe id. */
     std::string getPbrRecipeId(int index) const;
+    /** @brief True when pbr recipe. */
     bool        hasPbrRecipe(const std::string& recipeId) const;
     /** @brief Returns an owning copy of a PBR schema or a diagnostic. */
     [[nodiscard]] eve::Result<RecipeDescriptor> getPbrRecipeSchema(const std::string& recipeId) const;
@@ -732,8 +817,11 @@ public:
      */
     [[nodiscard]] eve::Result<ProcgenMeshBuildHandleRef> buildMeshHandle(const std::string&     recipeId,
                                                                          ProcgenParamsHandleRef params);
+    /** @brief Resolve mesh build. */
     [[nodiscard]] eve::script::Borrowed<MeshBuild>       resolveMeshBuild(ProcgenMeshBuildHandleRef) noexcept;
+    /** @brief Release mesh build. */
     [[nodiscard]] eve::Result<void>                      releaseMeshBuild(ProcgenMeshBuildHandleRef);
+    /** @brief True when mesh build stale. */
     [[nodiscard]] bool                                   isMeshBuildStale(ProcgenMeshBuildHandleRef) const noexcept;
     /**
      * @brief Build an owning backend-neutral CPU artifact for a mesh recipe.
@@ -801,8 +889,11 @@ public:
                                                                              ProcgenParamsHandleRef params,
                                                                              graphics::Graphics*    gfx);
 
+    /** @brief Returns the mesh recipe count. */
     int         getMeshRecipeCount() const;
+    /** @brief Returns the mesh recipe id. */
     std::string getMeshRecipeId(int index) const;
+    /** @brief True when mesh recipe. */
     bool        hasMeshRecipe(const std::string& recipeId) const;
     /** @brief Returns an owning copy of a mesh schema or a diagnostic. */
     [[nodiscard]] eve::Result<RecipeDescriptor> getMeshRecipeSchema(const std::string& recipeId) const;
@@ -890,11 +981,13 @@ public:
     graphics::Shader* createTerrainMaterialShader(graphics::Graphics* gfx);
     /** @brief Compatibility water facade. @lifetime Returned shader is owned by Graphics. */
     graphics::Shader*                                    createTerrainWaterShader(graphics::Graphics* gfx);
+    /** @brief Generate heightmap handle. */
     [[nodiscard]] eve::Result<ProcgenHeightmapHandleRef> generateHeightmapHandle(ProcgenParamsHandleRef params);
     /** @brief Classify a heightmap into a module-owned grid using params bands. */
     [[nodiscard]] eve::Result<ProcgenGridHandleRef> heightmapToGrid(ProcgenHeightmapHandleRef heightmap,
                                                                     ProcgenParamsHandleRef    params);
 
+    /** @brief Palettes. */
     PaletteTable& palettes() { return palettes_; }
 
 private:

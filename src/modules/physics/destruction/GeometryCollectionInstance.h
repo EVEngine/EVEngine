@@ -97,6 +97,7 @@ class EVENGINE_API_DOMAINS GeometryCollectionInstance {
 public:
     GeometryCollectionInstance(const GeometryCollectionInstance&)            = delete;
     GeometryCollectionInstance& operator=(const GeometryCollectionInstance&) = delete;
+    /** @brief Geometry collection instance. */
     ~GeometryCollectionInstance();
 
     /**
@@ -149,6 +150,7 @@ public:
     [[nodiscard]] int clusterBreakEventCount() const noexcept {
         return static_cast<int>(clusterBreakEvents_.size());
     }
+    /** @brief Cluster break event at. */
     [[nodiscard]] ClusterBreakEvent clusterBreakEventAt(int index) const;
     /** @brief Edges still waiting because of the break budget. */
     [[nodiscard]] int pendingEdgeBreakCount() const noexcept { return static_cast<int>(pendingEdgeBreaks_.size()); }

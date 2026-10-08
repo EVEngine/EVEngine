@@ -23,6 +23,7 @@ namespace eve::tensor {
  *    `inputsReadPass1` inputs + `statsCount` stats buffers; pass2 binds all
  *    inputs + stats + the output as the last binding.
  */
+/** @brief KernelSpec public API. */
 struct KernelSpec {
     std::string pass1;   // empty when single-pass
     std::string pass2;   // always set
@@ -50,6 +51,7 @@ struct KernelSpec {
  * Returns false when the group cannot be lowered (e.g. too many inputs for the
  * fixed 8-binding descriptor layout) — callers fall back to the CPU interpreter.
  */
+/** @brief Generate kernel. */
 EVENGINE_API_DOMAINS bool generateKernel(const Graph &graph, const FusedGroup &group, KernelSpec &out);
 
 /**
@@ -57,6 +59,7 @@ EVENGINE_API_DOMAINS bool generateKernel(const Graph &graph, const FusedGroup &g
  * output naive; tiled=true: shared-memory 16x16 tiles). Only rank-2 matmuls
  * support the tiled variant.
  */
+/** @brief Generate mat mul variant. */
 bool generateMatMulVariant(const Graph &graph, const FusedGroup &group, bool tiled,
                            KernelSpec &out);
 

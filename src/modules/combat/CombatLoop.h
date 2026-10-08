@@ -52,18 +52,29 @@ struct CombatLoopFrame {
  */
 class EVENGINE_API_BACKENDS CombatLoopRuntime {
 public:
+    /** @brief Sets the characters. */
     void setCharacters(CombatCharacterRuntime& characters) noexcept { characters_ = &characters; }
+    /** @brief Sets the melee. */
     void setMelee(MeleeHitRuntime& melee) noexcept { melee_ = &melee; }
+    /** @brief Sets the windows. */
     void setWindows(const CombatActionWindowState* windows) noexcept { windows_ = windows; }
+    /** @brief Sets the guards. */
     void setGuards(const GuardWindowState* guards) noexcept { guards_ = guards; }
+    /** @brief Sets the feel. */
     void setFeel(HitFeelRuntime* feel) noexcept { feel_ = feel; }
+    /** @brief Sets the targets. */
     void setTargets(CombatTargetRuntime* targets) noexcept { targets_ = targets; }
+    /** @brief Sets the camera focus. */
     void setCameraFocus(SubjectRef player) noexcept { cameraFocus_ = player; }
     /** @brief Borrow the map of CombatState values mutated by melee hits. */
     void setDamageStates(std::map<std::string, CombatState, std::less<>>* states) noexcept { states_ = states; }
+    /** @brief Sets the cancel resolver. */
     void setCancelResolver(CombatCancelResolver* cancels) noexcept { cancelResolver_ = cancels; }
+    /** @brief Sets the cancel subject. */
     void setCancelSubject(SubjectRef subject) noexcept { cancelSubject_ = subject; }
+    /** @brief Sets the cancel ability. */
     void setCancelAbility(LogicalId ability) noexcept { cancelAbility_ = std::move(ability); }
+    /** @brief Sets the enemy ai. */
     void setEnemyAI(CombatEnemyIntentSource* enemies) noexcept { enemies_ = enemies; }
 
     /**

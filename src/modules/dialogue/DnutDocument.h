@@ -17,6 +17,7 @@ struct DnutSourceSpan {
 
 /** @brief Stable diagnostic emitted by dnut compilation, lint, or migration. */
 struct ConversationDiagnostic {
+    /** @brief Severity public API. */
     enum class Severity { Warning, Error };
     Severity severity = Severity::Error;
     std::string path;

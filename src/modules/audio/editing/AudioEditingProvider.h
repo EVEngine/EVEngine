@@ -13,6 +13,7 @@ namespace eve::audio_editing {
 /** @brief Open capability for constructing audio authoring targets without editor type switches. */
 class IAudioEditingFactory {
 public:
+    /** @brief Releases IAudioEditingFactory resources. */
     virtual ~IAudioEditingFactory() = default;
     /**
      * @brief Create an independently owned publishing target.

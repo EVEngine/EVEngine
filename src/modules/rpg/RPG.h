@@ -56,7 +56,9 @@ struct WorldLootRequest;
 class EVENGINE_API_PLATFORM RPG : public Module {
 public:
     Module_REG(RPG);
+    /** @brief Rpg. */
     RPG() = default;
+    /** @brief Rpg. */
     ~RPG() override = default;
 
     /**
@@ -80,12 +82,16 @@ public:
 
     /** @brief 效果定义注册（数据驱动，进程级注册表）。 */
     int registerEffectsFromJson(const std::string &json);
+    /** @brief Clears effect definitions. */
     void clearEffectDefinitions();
+    /** @brief Returns the effect definition count. */
     int getEffectDefinitionCount();
 
     /** @brief 技能定义注册。 */
     int registerSkillsFromJson(const std::string &json);
+    /** @brief Clears skill definitions. */
     void clearSkillDefinitions();
+    /** @brief Returns the skill definition count. */
     int getSkillDefinitionCount();
 
     /** @brief 任务定义注册。 */
@@ -98,6 +104,7 @@ public:
      */
     [[nodiscard]] eve::Result<int> replaceQuestsFromJson(const std::string &json);
     void clearQuestDefinitions();
+    /** @brief Returns the quest definition count. */
     int getQuestDefinitionCount();
     /** @brief Return whether one exact quest definition is present in the current catalogue. */
     bool hasQuestDefinition(const std::string &id) const;
@@ -145,11 +152,17 @@ public:
     void clearShopOffers();
     /** @brief Return whether an exact shop offer id exists. */
     bool hasShopOffer(const std::string &offerId) const;
+    /** @brief Returns the shop offer id. */
     std::string getShopOfferId(int index) const;
+    /** @brief Returns the shop offer item id. */
     std::string getShopOfferItemId(int index) const;
+    /** @brief Returns the shop offer name. */
     std::string getShopOfferName(int index) const;
+    /** @brief Returns the shop offer description. */
     std::string getShopOfferDescription(int index) const;
+    /** @brief Returns the shop offer buy price. */
     int getShopOfferBuyPrice(int index) const;
+    /** @brief Returns the shop offer sell price. */
     int getShopOfferSellPrice(int index) const;
     /** @brief Buy using the item and price from the authoritative shop catalogue. */
     [[nodiscard]] eve::Result<int> buyShopOffer(GameState *gameState, inventory::Bag *bag,
@@ -162,7 +175,9 @@ public:
     /** @brief Strictly replace the data-driven encounter catalogue. */
     [[nodiscard]] eve::Result<int> replaceEncountersFromJson(const std::string &json);
     void clearEncounters();
+    /** @brief True when encounter. */
     bool hasEncounter(const std::string &encounterId) const;
+    /** @brief Returns the encounter member count. */
     int getEncounterMemberCount(const std::string &encounterId) const;
     /**
      * @brief Create the first member through the single-enemy compatibility facade.
@@ -182,9 +197,13 @@ public:
      * @reentrancy Does not invoke callbacks.
      */
     RPGActor *newEncounterMemberActor(const std::string &encounterId, int memberIndex);
+    /** @brief Returns the encounter display name. */
     std::string getEncounterDisplayName(const std::string &encounterId) const;
+    /** @brief Returns the encounter max hp. */
     double getEncounterMaxHp(const std::string &encounterId) const;
+    /** @brief Returns the encounter member display name. */
     std::string getEncounterMemberDisplayName(const std::string &encounterId, int memberIndex) const;
+    /** @brief Returns the encounter member max hp. */
     double getEncounterMemberMaxHp(const std::string &encounterId, int memberIndex) const;
     /** @brief Strictly replace ordered companion/AI battle tactics. */
     [[nodiscard]] eve::Result<int> replaceBattleTacticsFromJson(const std::string &json);
@@ -241,49 +260,69 @@ public:
 
     /** @brief 升级事件缓存（上一次 update() 产生的，供脚本轮询）。 */
     int getLevelUpEventCount() const;
+    /** @brief Returns the level up event actor. */
     RPGActor *getLevelUpEventActor(int index) const;
+    /** @brief Returns the level up event previous level. */
     int getLevelUpEventPreviousLevel(int index) const;
+    /** @brief Returns the level up event new level. */
     int getLevelUpEventNewLevel(int index) const;
 
     /** @brief 生命等资源事件缓存（上一次 update() 产生的，供脚本轮询）。 */
     int getVitalsEventCount() const;
+    /** @brief Returns the vitals event actor. */
     RPGActor *getVitalsEventActor(int index) const;
+    /** @brief Returns the vitals event resource. */
     std::string getVitalsEventResource(int index) const;
+    /** @brief Returns the vitals event action. */
     std::string getVitalsEventAction(int index) const;
+    /** @brief Returns the vitals event amount. */
     double getVitalsEventAmount(int index) const;
+    /** @brief Returns the vitals event source. */
     std::string getVitalsEventSource(int index) const;
+    /** @brief Returns the vitals event current. */
     double getVitalsEventCurrent(int index) const;
+    /** @brief Returns the vitals event max. */
     double getVitalsEventMax(int index) const;
 
     /** @brief 装备加成（物品 id → 属性加成）注册与同步。 */
     int registerItemStatsFromJson(const std::string &itemId, const std::string &json);
+    /** @brief Clears item stats. */
     void clearItemStats(const std::string &itemId);
+    /** @brief Clears all item stats. */
     void clearAllItemStats();
+    /** @brief Returns the item stat count. */
     int getItemStatCount();
     /** @brief 把装备栏当前装备同步为 actor 属性修改器；返回施加条数。 */
     int syncEquipModifiers(RPGActor *actor, inventory::EquipmentSet *equip);
 
     /** @brief 掉落表注册与 roll。 */
     int registerLootTablesFromJson(const std::string &json);
+    /** @brief Clears loot tables. */
     void clearLootTables();
+    /** @brief Returns the loot table count. */
     int getLootTableCount();
     /** @brief 用种子随机流 roll 掉落表，把命中物品加入背包；返回掉落物品种类数。 */
     int rollLoot(const std::string &tableId, inventory::Bag *bag, int seed);
 
     /** @brief 特征定义注册。 */
     int registerTraitsFromJson(const std::string &json);
+    /** @brief Clears trait definitions. */
     void clearTraitDefinitions();
+    /** @brief Returns the trait definition count. */
     int getTraitDefinitionCount();
 
     /** @brief 职业定义注册。 */
     int registerClassesFromJson(const std::string &json);
+    /** @brief Clears class definitions. */
     void clearClassDefinitions();
+    /** @brief Returns the class definition count. */
     int getClassDefinitionCount();
 
     /** @brief 技能伤害注册（战斗用）与战斗对象。 */
     int registerSkillDamage(const std::string &skillId, const std::string &damageType,
                             const std::string &formula, const std::string &element,
                             double critChance, int hitChance);
+    /** @brief Clears skill damage. */
     void clearSkillDamage();
     /**
      * @brief 创建一场新的回合制战斗。
@@ -349,9 +388,13 @@ public:
      * @reentrancy Do not retain across callbacks or event-cache refresh.
      */
     RPGActor *getTickEventActor(int index) const;
+    /** @brief Returns the tick event instance id. */
     int getTickEventInstanceId(int index) const;
+    /** @brief Returns the tick event effect id. */
     std::string getTickEventEffectId(int index) const;
+    /** @brief Returns the tick event source. */
     std::string getTickEventSource(int index) const;
+    /** @brief Returns the tick event stacks. */
     int getTickEventStacks(int index) const;
 
     /** @brief 状态生命周期变更事件（apply/refresh/extend/stack/remove/expire/reject）。 */
@@ -365,11 +408,17 @@ public:
      * @reentrancy Do not retain across callbacks or event-cache refresh.
      */
     RPGActor *getStatusChangeEventActor(int index) const;
+    /** @brief Returns the status change event instance id. */
     int getStatusChangeEventInstanceId(int index) const;
+    /** @brief Returns the status change event effect id. */
     std::string getStatusChangeEventEffectId(int index) const;
+    /** @brief Returns the status change event source. */
     std::string getStatusChangeEventSource(int index) const;
+    /** @brief Returns the status change event action. */
     std::string getStatusChangeEventAction(int index) const;
+    /** @brief Returns the status change event stacks. */
     int getStatusChangeEventStacks(int index) const;
+    /** @brief Returns the status change event reason. */
     std::string getStatusChangeEventReason(int index) const;
 
     /** @brief 技能释放结算事件。 */
@@ -392,6 +441,7 @@ public:
      * @reentrancy Do not retain across callbacks or event-cache refresh.
      */
     RPGActor *getCastEventTarget(int index) const;
+    /** @brief Returns the cast event skill id. */
     std::string getCastEventSkillId(int index) const;
 
     /**
@@ -403,14 +453,21 @@ public:
      * @reentrancy Construction invokes no external callbacks; do not pass the context to re-entrant mutation.
      */
     SettlementContext *newSettlementContext();
+    /** @brief Run settlement. */
     void runSettlement(const std::string &pipeline, SettlementContext *ctx);
+    /** @brief Returns the settlement stage count. */
     int getSettlementStageCount(const std::string &pipeline);
+    /** @brief True when settlement stage. */
     bool hasSettlementStage(const std::string &pipeline, const std::string &stage);
+    /** @brief Sets the settlement stage enabled. */
     bool setSettlementStageEnabled(const std::string &pipeline, const std::string &stage,
                                     bool enabled);
+    /** @brief Sets the settlement stage priority. */
     bool setSettlementStagePriority(const std::string &pipeline, const std::string &stage,
                                      int priority);
+    /** @brief Removes settlement stage. */
     bool removeSettlementStage(const std::string &pipeline, const std::string &stage);
+    /** @brief Clears settlement pipeline. */
     void clearSettlementPipeline(const std::string &pipeline);
 
 private:

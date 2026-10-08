@@ -23,7 +23,9 @@ class Sequence;
 class EVENGINE_API_WORLD Gpgpu : public Module, public IMeshDeformationCompute {
 public:
     Module_REG(Gpgpu);
+    /** @brief Gpgpu. */
     Gpgpu();
+    /** @brief Gpgpu. */
     ~Gpgpu() override;
 
     /** @brief Execute mesh deformation through the active compute backend. */

@@ -32,6 +32,7 @@ class EVENGINE_API_ORCHESTRATION EvpackTerrainLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */
     explicit EvpackTerrainLoader(const asset::EvpackResourceReader& reader) noexcept
+        /** @brief Reader. */
         : reader_(reader) {}
 
     /**

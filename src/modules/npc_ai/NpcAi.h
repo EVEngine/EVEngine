@@ -21,10 +21,15 @@ namespace eve::npc_ai {
 
 using BlackboardValue = std::variant<bool, std::int64_t, double, std::string>;
 
+/** @brief BlackboardType public API. */
 enum class BlackboardType : std::uint8_t { Boolean, Integer, Number, String };
+/** @brief CompareOp public API. */
 enum class CompareOp : std::uint8_t { Exists, Equal, NotEqual, Less, LessEqual, Greater, GreaterEqual };
+/** @brief TaskStatus public API. */
 enum class TaskStatus : std::uint8_t { Running, Succeeded, Failed };
+/** @brief StopReason public API. */
 enum class StopReason : std::uint8_t { Completed, Transition, StartupRollback, AgentDestroyed, DefinitionReplaced };
+/** @brief TraceKind public API. */
 enum class TraceKind : std::uint8_t {
     AgentCreated,
     AgentDestroyed,
@@ -39,6 +44,7 @@ enum class TraceKind : std::uint8_t {
     PerceptionForgotten
 };
 
+/** @brief BlackboardKeySpec public API. */
 struct BlackboardKeySpec {
     std::string                    key;
     BlackboardType                 type     = BlackboardType::Boolean;
@@ -46,18 +52,21 @@ struct BlackboardKeySpec {
     std::optional<BlackboardValue> defaultValue;
 };
 
+/** @brief BlackboardPredicate public API. */
 struct BlackboardPredicate {
     std::string                    key;
     CompareOp                      op = CompareOp::Exists;
     std::optional<BlackboardValue> value;
 };
 
+/** @brief TaskSpec public API. */
 struct TaskSpec {
     std::string id;
     std::string type;
     std::string parametersJson = "{}";
 };
 
+/** @brief Transition public API. */
 struct Transition {
     std::string                      targetState;
     std::string                      signal;
@@ -65,6 +74,7 @@ struct Transition {
     std::uint32_t                    priority = 0;
 };
 
+/** @brief StateDefinition public API. */
 struct StateDefinition {
     std::string                      id;
     std::optional<std::string>       parent;
@@ -82,6 +92,7 @@ struct BehaviorDefinition {
     std::vector<StateDefinition>   states;
 };
 
+/** @brief AgentHandleTag public API. */
 struct AgentHandleTag {};
 using AgentHandle = eve::RuntimeHandle<AgentHandleTag>;
 
@@ -95,6 +106,7 @@ struct PerceptionMemory {
     std::string   payloadJson      = "{}";
 };
 
+/** @brief TraceEvent public API. */
 struct TraceEvent {
     std::uint64_t tick = 0;
     AgentHandle   agent;
@@ -103,6 +115,7 @@ struct TraceEvent {
     std::string   detail;
 };
 
+/** @brief NpcAiWorldConfig public API. */
 struct NpcAiWorldConfig {
     std::size_t traceCapacity       = 2048;
     std::size_t maxMemoriesPerAgent = 128;
@@ -116,6 +129,7 @@ struct TickContext {
     std::uint32_t maxTransitionsPerAgent = 8;
 };
 
+/** @brief TickReport public API. */
 struct TickReport {
     std::uint32_t agentsUpdated              = 0;
     std::uint32_t agentsDeferred             = 0;
@@ -124,6 +138,7 @@ struct TickReport {
     std::uint32_t tasksTicked                = 0;
 };
 
+/** @brief AgentSnapshot public API. */
 struct AgentSnapshot {
     AgentHandle                            handle;
     std::string                            behaviorId;
@@ -162,6 +177,7 @@ struct AgentArchive {
     std::uint64_t                          lastTick = 0;
 };
 
+/** @brief TaskContext public API. */
 struct TaskContext {
     AgentHandle                                   agent;
     std::string_view                              stateId;
@@ -178,11 +194,15 @@ struct TaskContext {
  */
 class ITaskService {
 public:
+    /** @brief Releases ITaskService resources. */
     virtual ~ITaskService()                                                             = default;
+    /** @brief Starts . */
     [[nodiscard]] virtual Result<void>       start(const TaskContext& context, const TaskSpec& spec,
                                                    std::string& inOutMemoryJson)        = 0;
+    /** @brief Tick. */
     [[nodiscard]] virtual Result<TaskStatus> tick(const TaskContext& context, const TaskSpec& spec,
                                                   std::string& inOutMemoryJson)         = 0;
+    /** @brief Stops . */
     virtual void                             stop(const TaskContext& context, const TaskSpec& spec, StopReason reason,
                                                   std::string_view memoryJson) noexcept = 0;
 };
@@ -195,6 +215,7 @@ public:
  */
 class EVENGINE_API_PLATFORM NpcAiWorld {
 public:
+    /** @brief Npc ai world. */
     explicit NpcAiWorld(NpcAiWorldConfig config = {});
     NpcAiWorld(const NpcAiWorld&)            = delete;
     NpcAiWorld& operator=(const NpcAiWorld&) = delete;

@@ -37,6 +37,7 @@ public:
     void clear();
     /** @brief 序列化为 JSON / 从 JSON 恢复。 */
     std::string toJson() const;
+    /** @brief From json. */
     [[nodiscard]] eve::Result<void> fromJson(std::string_view json);
     /** @brief 校验布局是否满足组件库规则。 */
     [[nodiscard]] eve::Result<void> validate(const HouseComponentLibrary &library) const;

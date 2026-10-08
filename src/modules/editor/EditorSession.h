@@ -29,7 +29,9 @@ class EditorTargetCoordinator;
  */
 class EVENGINE_API_ORCHESTRATION EditorSession {
 public:
+    /** @brief Editor session. */
     EditorSession();
+    /** @brief Editor session. */
     ~EditorSession() noexcept;
 
     EditorSession(const EditorSession&)            = delete;
@@ -42,13 +44,18 @@ public:
     /** @brief Remove all tools and release any pointer capture. */
     void clearTools();
 
+    /** @brief Returns the tool count. */
     int          getToolCount() const;
+    /** @brief Returns the tool. */
     IEditorTool* getTool(int index) const;
+    /** @brief Finds tool. */
     IEditorTool* findTool(const std::string& id) const;
 
     /** @brief Activate a registered tool by id. Empty id deactivates all tools. */
     bool         activateTool(const std::string& id);
+    /** @brief Active tool. */
     IEditorTool* activeTool() const { return activeTool_; }
+    /** @brief Active tool id. */
     std::string  activeToolId() const;
 
     /** @brief Route input to the active tool and apply pointer-capture response. */
@@ -64,9 +71,13 @@ public:
     /** @brief Cancel its gesture and clear pointer capture. */
     void cancelActiveTool();
 
+    /** @brief True when pointer capture. */
     bool                 hasPointerCapture() const { return capturedPointerId_ >= 0; }
+    /** @brief Captured pointer id. */
     int                  capturedPointerId() const { return capturedPointerId_; }
+    /** @brief Context. */
     EditorContext&       context() { return context_; }
+    /** @brief Context. */
     const EditorContext& context() const { return context_; }
     /**
      * @brief Bind a caller-managed editable target available to every tool callback.
@@ -82,7 +93,9 @@ public:
     IEditableTarget* target() const;
     /** @brief Return the identity of the current binding without dereferencing the target. */
     const TargetId&         boundTargetId() const noexcept { return boundTargetId_; }
+    /** @brief Transactions. */
     EditorTransactions&     transactions() { return transactions_; }
+    /** @brief Constraints. */
     EditConstraintPipeline& constraints() { return constraints_; }
     /** @brief Validate then execute a command in the active transaction. */
     bool execute(std::unique_ptr<IEditCommand> command);

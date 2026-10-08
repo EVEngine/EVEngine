@@ -37,25 +37,32 @@ public:
     AttributeSetResourceAccount(AttributeSetResourceAccount&&)                 = delete;
     AttributeSetResourceAccount& operator=(AttributeSetResourceAccount&&)      = delete;
 
+    /** @brief Attribute set resource account. */
     ~AttributeSetResourceAccount() override = default;
 
     /** @copydoc eve::resource::IResourceAccount::canAfford */
+    /** @brief Can afford. */
     [[nodiscard]] eve::Result<eve::resource::Affordability> canAfford(
         const eve::resource::CostSpec& cost) const override;
 
     /** @copydoc eve::resource::IResourceAccount::reserve */
+    /** @brief Reserve. */
     [[nodiscard]] eve::Result<eve::resource::Reservation> reserve(const eve::resource::CostSpec& cost) override;
 
     /** @copydoc eve::resource::IResourceAccount::debit */
+    /** @brief Debit. */
     [[nodiscard]] eve::Result<eve::resource::Receipt> debit(const eve::resource::CostSpec& cost) override;
 
     /** @copydoc eve::resource::IResourceAccount::credit */
+    /** @brief Credit. */
     [[nodiscard]] eve::Result<eve::resource::Receipt> credit(const eve::resource::CostSpec& cost) override;
 
     /** @copydoc eve::resource::IResourceAccount::commit */
+    /** @brief Commits . */
     [[nodiscard]] eve::Result<eve::resource::Receipt> commit(const eve::resource::Reservation& reservation) override;
 
     /** @copydoc eve::resource::IResourceAccount::rollback */
+    /** @brief Rollback. */
     [[nodiscard]] eve::Result<void> rollback(const eve::resource::Reservation& reservation) override;
 
 private:

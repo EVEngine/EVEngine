@@ -53,6 +53,7 @@ inline constexpr std::int32_t kMaxHexSphereSubdivision = 7;
  */
 class EVENGINE_API_WORLD HexSphereTopology {
 public:
+    /** @brief Hex sphere topology. */
     HexSphereTopology() = default;
 
     /**

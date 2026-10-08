@@ -29,8 +29,11 @@ public:
     /** @brief Snap all levels around a new camera position. */
     void updateCenter(const glm::vec3 &cameraPosition);
 
+    /** @brief Returns the level count. */
     int getLevelCount() const { return int(levels_.size()); }
+    /** @brief Returns the level. */
     AtmosphereClipmapLevel &getLevel(int level);
+    /** @brief Returns the level. */
     const AtmosphereClipmapLevel &getLevel(int level) const;
 
     /** @brief Select the finest level containing a world position, or -1. */

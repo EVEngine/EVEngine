@@ -69,6 +69,7 @@ public:
         const WetSurfaceMaterialParams& params = {});
 
     /** @return current oriented droplet instances. */
+    /** @brief Droplets. */
     const std::vector<SurfaceDropletRenderInstance>& droplets() const { return droplets_; }
 
 private:

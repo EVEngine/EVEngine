@@ -6,6 +6,7 @@
 
 namespace eve::procgen {
 
+/** @brief CaveBiogenicCorrosionInput public API. */
 struct CaveBiogenicCorrosionInput {
     float    along             = 0.f;
     float    angle             = 0.f;
@@ -16,6 +17,7 @@ struct CaveBiogenicCorrosionInput {
     uint32_t seed              = 0;
 };
 
+/** @brief CaveBiogenicCorrosionSample public API. */
 struct CaveBiogenicCorrosionSample {
     float erosion                 = 0.f;
     float fluvialScallopRetention = 1.f;

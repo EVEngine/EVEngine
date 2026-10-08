@@ -26,6 +26,7 @@ namespace eve::asset_graphics {
  */
 class EVENGINE_API_WORLD VegetationAsset {
 public:
+    /** @brief Vegetation asset. */
     ~VegetationAsset();
     VegetationAsset(const VegetationAsset&)            = delete;
     VegetationAsset& operator=(const VegetationAsset&) = delete;

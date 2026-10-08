@@ -29,6 +29,7 @@ class EVENGINE_API_ORCHESTRATION EvpackPointGraphLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */
     explicit EvpackPointGraphLoader(const asset::EvpackResourceReader& reader) noexcept
+        /** @brief Reader. */
         : reader_(reader) {}
 
     /**

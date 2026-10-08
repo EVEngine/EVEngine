@@ -32,6 +32,7 @@ public:
     RTSEconomyAdapter& operator=(const RTSEconomyAdapter&) = delete;
     RTSEconomyAdapter(RTSEconomyAdapter&&)                 = delete;
     RTSEconomyAdapter& operator=(RTSEconomyAdapter&&)      = delete;
+    /** @brief Rts economy adapter. */
     ~RTSEconomyAdapter()                                   = default;
 
     /**

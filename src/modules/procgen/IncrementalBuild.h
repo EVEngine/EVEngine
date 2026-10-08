@@ -20,10 +20,15 @@ struct BuildClusterChange {
 /** @brief Ordered changes required to synchronize a scene-side cluster cache. */
 class EVENGINE_API_DOMAINS IncrementalBuildDelta {
 public:
+    /** @brief Returns the count. */
     [[nodiscard]] int  getCount() const noexcept;
+    /** @brief Returns the cluster x. */
     [[nodiscard]] int  getClusterX(int index) const noexcept;
+    /** @brief Returns the cluster z. */
     [[nodiscard]] int  getClusterZ(int index) const noexcept;
+    /** @brief True when removed. */
     [[nodiscard]] bool isRemoved(int index) const noexcept;
+    /** @brief Returns the artifacts. */
     [[nodiscard]] Result<BuildLayerExecution> getArtifacts(int index) const;
 
 private:
@@ -55,8 +60,11 @@ public:
     [[nodiscard]] Result<IncrementalBuildDelta> update(const BuildLayerStack& stack, const Grid2D& grid,
                                                         const PointSet& points, int clusterSizeCells,
                                                         float cellSizeWorld, const PointSet* orientation = nullptr);
+    /** @brief Clears . */
     void                                    clear();
+    /** @brief Returns the cached cluster count. */
     [[nodiscard]] int                       getCachedClusterCount() const noexcept;
+    /** @brief Returns the cached artifacts. */
     [[nodiscard]] Result<BuildLayerExecution> getCachedArtifacts(int clusterX, int clusterZ) const;
 
 private:

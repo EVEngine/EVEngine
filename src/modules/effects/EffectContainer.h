@@ -195,6 +195,7 @@ public:
      */
     [[nodiscard]] EffectInstance* find(const std::string& id);
     /** @copydoc EffectContainer::find(const std::string&) */
+    /** @brief Finds . */
     [[nodiscard]] const EffectInstance* find(const std::string& id) const;
     /**
      * @brief Returns an active instance by UUID-backed identity, or nullptr.
@@ -206,6 +207,7 @@ public:
      */
     [[nodiscard]] EffectInstance* find(eve::EffectId id);
     /** @copydoc EffectContainer::find(eve::EffectId) */
+    /** @brief Finds . */
     [[nodiscard]] const EffectInstance* find(eve::EffectId id) const;
     /** @brief Returns active instance count in deterministic creation order. */
     int effectCount() const;
@@ -219,6 +221,7 @@ public:
      */
     EffectInstance* effectAt(int index);
     /** @copydoc EffectContainer::effectAt(int) */
+    /** @brief Effect at. */
     const EffectInstance* effectAt(int index) const;
     /** @brief Returns active instance count for a subject. */
     int subjectCount(const std::string& subject) const;
@@ -232,6 +235,7 @@ public:
      */
     EffectInstance* subjectAt(const std::string& subject, int index);
     /** @copydoc EffectContainer::subjectAt(const std::string&, int) */
+    /** @brief Subject at. */
     const EffectInstance* subjectAt(const std::string& subject, int index) const;
     /** @brief Returns active subject instances containing a tag. */
     int taggedCount(const std::string& subject, const std::string& tag) const;
@@ -245,6 +249,7 @@ public:
      */
     EffectInstance* taggedAt(const std::string& subject, const std::string& tag, int index);
     /** @copydoc EffectContainer::taggedAt(const std::string&, const std::string&, int) */
+    /** @brief Tagged at. */
     const EffectInstance* taggedAt(const std::string& subject, const std::string& tag, int index) const;
 
     /** @brief Returns retained event count. */
@@ -259,6 +264,7 @@ public:
      */
     EffectEvent* eventAt(int index);
     /** @copydoc EffectContainer::eventAt(int) */
+    /** @brief Event at. */
     const EffectEvent* eventAt(int index) const;
     /** @brief Clears retained events without resetting their sequence counter. */
     void clearEvents();
