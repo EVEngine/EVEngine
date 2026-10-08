@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/Time.h"
@@ -212,7 +214,7 @@ struct PixelFragmentRasterReceipt {
  * affine and invokes no callbacks. Rendering and physics consume snapshots or
  * queries through adapters; neither owns a mutable copy of the world.
  */
-class PixelWorld {
+class EVENGINE_API_FOUNDATION PixelWorld {
 public:
     /** @brief Construct an empty world with an explicit deterministic seed. */
     explicit PixelWorld(std::uint64_t seed = 1);

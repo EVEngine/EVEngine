@@ -46,7 +46,7 @@ class ConsolePanel;
  *
  * Not shipped on Android/iOS trimmed runtimes (EVDevTools is desktop-only).
  */
-class EVENGINE_API DevTool {
+class EVENGINE_API_FOUNDATION DevTool {
 public:
     static DevTool& instance();
 

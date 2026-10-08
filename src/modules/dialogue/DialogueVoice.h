@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -13,7 +15,7 @@ class Source;
 namespace eve::dialogue {
 
 /** @brief Localized voice assets, duration-based advance, and amplitude lip sync. */
-class DialogueVoice : public Module {
+class EVENGINE_API_ORCHESTRATION DialogueVoice : public Module {
 public:
     Module_REG(DialogueVoice);
     ~DialogueVoice() override;

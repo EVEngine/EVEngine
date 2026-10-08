@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexCoordinates.h @brief Axial hex coordinates and world-space conversion. */
 
@@ -17,7 +19,7 @@ namespace eve::hexmap {
  * pair is directly the `(column, row)` pair with even rows starting at column 0
  * and odd rows shifted half a cell to the right.
  */
-struct HexCoordinates {
+struct EVENGINE_API_WORLD HexCoordinates {
     std::int32_t x = 0;
     std::int32_t z = 0;
 

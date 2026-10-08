@@ -13,7 +13,7 @@
 namespace eve {
 
 /** @brief Render surface / frame state snapshot (value type). */
-struct EVENGINE_API RenderStatusInfo {
+struct EVENGINE_API_FOUNDATION_INLINE RenderStatusInfo {
     int width = 0, height = 0, pixelWidth = 0, pixelHeight = 0;
     bool had3DThisFrame = false;
     bool readbackEnabled = false;
@@ -21,7 +21,7 @@ struct EVENGINE_API RenderStatusInfo {
 };
 
 /** @brief Generation-qualified snapshot of one live field-backed Renderable3D. */
-struct EVENGINE_API Renderable3DInfo {
+struct EVENGINE_API_FOUNDATION_INLINE Renderable3DInfo {
     std::uint32_t entityId = 0;
     std::uint32_t generation = 0;
     float x = 0.f, y = 0.f, z = 0.f;
@@ -32,7 +32,7 @@ struct EVENGINE_API Renderable3DInfo {
 };
 
 /** @brief Frame capture + camera + visible-entity inspection (graphics). */
-class EVENGINE_API IRenderCapture {
+class EVENGINE_API_FOUNDATION_INLINE IRenderCapture {
 public:
     static constexpr const char* capabilityName = "IRenderCapture";
 

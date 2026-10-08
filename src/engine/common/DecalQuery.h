@@ -14,7 +14,7 @@ namespace eve {
  * common layer stays graphics-free; providers reinterpret it as
  * graphics::Texture*.
  */
-class EVENGINE_API IDecalQuery {
+class EVENGINE_API_FOUNDATION_INLINE IDecalQuery {
 public:
     static constexpr const char* capabilityName = "IDecalQuery";
 

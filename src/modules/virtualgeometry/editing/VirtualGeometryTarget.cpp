@@ -114,7 +114,7 @@ PropertyReadResult VirtualGeometryDocumentTarget::read(const SelectionSnapshot& 
         value = int64_t{v.distanceSamples};
     return {PropertyReadState::Value, std::move(value), {}};
 }
-EditorResult<DomainOperation> VirtualGeometryDocumentTarget::replacement(EditorValue content,
+Result<DomainOperation> VirtualGeometryDocumentTarget::replacement(EditorValue content,
                                                                           std::string property) const {
     DomainOperation op;
     op.type        = "virtualgeometry.document.replace.v1";
@@ -127,7 +127,7 @@ EditorResult<DomainOperation> VirtualGeometryDocumentTarget::replacement(EditorV
     op.mergeKey = "virtualgeometry:" + id_ + ":" + property;
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> VirtualGeometryDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> VirtualGeometryDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                                      const EditorValue& value,
                                                                      PropertySetMode    mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
@@ -166,7 +166,7 @@ EditorResult<DomainOperation> VirtualGeometryDocumentTarget::makeSet(const Selec
                                                      "VirtualGeometry edit violates importer invariants");
     return replacement(candidate.contentValue(), p.value());
 }
-EditorResult<DomainOperation> VirtualGeometryDocumentTarget::makeReset(const SelectionSnapshot& s,
+Result<DomainOperation> VirtualGeometryDocumentTarget::makeReset(const SelectionSnapshot& s,
                                                                        const PropertyPath&      p) const {
     auto d = schema(s).find(p);
     if (!d)
@@ -198,7 +198,7 @@ std::vector<EditorDiagnostic> VirtualGeometryDocumentTarget::validate() const {
                                                  "VirtualGeometry LOD preview sweep is invalid"));
     return d;
 }
-EditorResult<void> VirtualGeometryDocumentTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> VirtualGeometryDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "virtualgeometry.document.replace.v1" ||
         !op.payload.isWithinLimits(4, 64, 4096))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.virtualgeometry.operation"),
@@ -248,7 +248,7 @@ EditorResult<void> VirtualGeometryDocumentTarget::applyDomainOperation(const Dom
 std::unique_ptr<IDomainOperationTarget> VirtualGeometryDocumentTarget::cloneDomainState() const {
     return std::make_unique<VirtualGeometryDocumentTarget>(*this);
 }
-EditorResult<void> VirtualGeometryDocumentTarget::commitDomainState(
+Result<void> VirtualGeometryDocumentTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<VirtualGeometryDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
@@ -260,7 +260,7 @@ EditorResult<void> VirtualGeometryDocumentTarget::commitDomainState(
 EditorValue VirtualGeometryDocumentTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> VirtualGeometryDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> VirtualGeometryDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto *v = field(snapshot, "schemaVersion"), *content = field(snapshot, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)

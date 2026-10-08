@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/IEconomy.h"
 #include "common/Module.h"
@@ -15,7 +17,7 @@ class EconomyControl;
 /**
  * @brief 经济模块（eve.Economy）：资源类型注册 + 玩家账本 + 事件 + 采集流水线。
  */
-class Economy : public Module, public IEconomy {
+class EVENGINE_API_FOUNDATION Economy : public Module, public IEconomy {
 public:
     Module_REG(Economy);
     Economy();

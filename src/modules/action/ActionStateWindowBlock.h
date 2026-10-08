@@ -1,24 +1,29 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionStateWindowBlock.h @brief Typed combat/input/collision action-state window contracts. */
 
 #include "action/ActionNotifyRegistry.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 
 namespace eve::action {
 
 /** @brief Stable semantic kind for one built-in state window. */
-enum class ActionStateWindowKind : std::uint8_t { Hitbox, Invulnerability, Combo, CollisionIgnore };
+enum class ActionStateWindowKind : std::uint8_t { Hitbox, Invulnerability, Combo, CollisionIgnore, Cancel, Guard };
 
 /** @brief Owning validated state-window request authored on an action timeline. */
-struct ActionStateWindowBinding {
+struct EVENGINE_API_PLATFORM ActionStateWindowBinding {
     ActionStateWindowKind kind = ActionStateWindowKind::Hitbox;
-    /** @brief Hitbox, input action, or collision channel identifier; empty for invulnerability. */
+    /** @brief Hitbox, input action, collision channel, cancel allow-list, or guard mode. */
     std::string resource;
     /** @brief Optional target index; absence selects ActionNotifyContext::source. */
     std::optional<std::size_t> targetIndex;
+    /** @brief Optional cancel priority; higher wins when multiple windows match. */
+    std::int32_t priority = 0;
 
     /** @brief Decode one known state-window payload without mutating domain state. */
     [[nodiscard]] static Result<ActionStateWindowBinding> fromPayload(std::string_view type,

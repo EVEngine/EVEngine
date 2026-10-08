@@ -109,7 +109,7 @@ editing::GizmoSnapshot SplinePathGizmoBuilder::build(const SplinePathDocument& d
 SplinePathDragSession::SplinePathDragSession(SplinePathDocument* document, int sampleCount)
     : document_(document), sampleCount_(sampleCount) {}
 
-EditorResult<SplinePathDragPreview> SplinePathDragSession::previewCurrent() const {
+Result<SplinePathDragPreview> SplinePathDragSession::previewCurrent() const {
     if (!document_ || !dragging_)
         return eve::editing::failed<SplinePathDragPreview>(
             EditorStatus::Rejected, RuleId("editor.spline.drag-not-active"), "Spline drag has not begun");
@@ -129,7 +129,7 @@ EditorResult<SplinePathDragPreview> SplinePathDragSession::previewCurrent() cons
     return eve::editing::applied<SplinePathDragPreview>(std::move(result));
 }
 
-EditorResult<SplinePathDragPreview> SplinePathDragSession::beginDrag(double rayOriginX, double rayOriginY,
+Result<SplinePathDragPreview> SplinePathDragSession::beginDrag(double rayOriginX, double rayOriginY,
                                                                      double rayOriginZ, double rayDirectionX,
                                                                      double rayDirectionY, double rayDirectionZ) {
     cancelDrag();
@@ -185,7 +185,7 @@ EditorResult<SplinePathDragPreview> SplinePathDragSession::beginDrag(double rayO
     return previewCurrent();
 }
 
-EditorResult<SplinePathDragPreview> SplinePathDragSession::updateDrag(double rayOriginX, double rayOriginY,
+Result<SplinePathDragPreview> SplinePathDragSession::updateDrag(double rayOriginX, double rayOriginY,
                                                                       double rayOriginZ, double rayDirectionX,
                                                                       double rayDirectionY, double rayDirectionZ) {
     if (!dragging_ || !document_)
@@ -234,7 +234,7 @@ EditorResult<SplinePathDragPreview> SplinePathDragSession::updateDrag(double ray
     return previewCurrent();
 }
 
-EditorResult<DomainOperation> SplinePathDragSession::finishDrag() {
+Result<DomainOperation> SplinePathDragSession::finishDrag() {
     if (!dragging_ || !document_)
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spline.drag-not-active"),
                                                      "Spline drag has not begun");

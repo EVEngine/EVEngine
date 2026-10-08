@@ -4,6 +4,7 @@
 #include <span>
 #include <string>
 #include <vector>
+#include "common/Export.h"
 #include "common/Result.h"
 namespace eve::asset {
 /** @brief Owning float vertex attribute; one to four components per vertex. */
@@ -36,14 +37,14 @@ struct CanonicalMeshLimits {
  * @thread Worker-safe and reentrant; no IO, callbacks, backend calls or global mutation.
  * @details Older versions are compatibility inputs. V3 additionally retains named float attributes.
  */
-[[nodiscard]] Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> bytes,
-                                                            const CanonicalMeshLimits&    limits = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<CanonicalMeshData> decodeCanonicalMesh(
+    std::span<const std::uint8_t> bytes, const CanonicalMeshLimits& limits = {});
 /** @brief Encode an owning snapshot to EVMESH v3, or v2 when no named attributes exist.
  * Borrows input synchronously;
  * worker-safe, reentrant, without callbacks or retained pointers.
  * @return Complete bytes or checked
  * validation/budget failure; no partial output escapes.
  */
-[[nodiscard]] Result<std::vector<std::uint8_t>> encodeCanonicalMesh(const CanonicalMeshData&   mesh,
-                                                                    const CanonicalMeshLimits& limits = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> encodeCanonicalMesh(
+    const CanonicalMeshData& mesh, const CanonicalMeshLimits& limits = {});
 }  // namespace eve::asset

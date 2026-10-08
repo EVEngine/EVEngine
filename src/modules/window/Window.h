@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "common/Export.h"
 #include "common/Module.h"
 
 namespace eve {
@@ -43,7 +44,7 @@ struct WindowSettings {
  * @brief Platform window interface (SDL implementation on desktop/mobile).
  * Script: `win <- eve.Window();`
  */
-class Window : public Module {
+class EVENGINE_API_PLATFORM Window : public Module {
 public:
     Module_REG(Window);
 

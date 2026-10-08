@@ -34,7 +34,7 @@ struct ObjectTransformRange {
  * attributes. The layer never creates scene objects or retains input pointers.
  * @thread Affine; configure and build on the owning thread.
  */
-class ObjectBuildLayer {
+class EVENGINE_API_DOMAINS ObjectBuildLayer {
 public:
     /** @brief Add a weighted asset candidate. Zero and negative weights are rejected. */
     [[nodiscard]] Result<void> addAsset(std::string asset, float weight);

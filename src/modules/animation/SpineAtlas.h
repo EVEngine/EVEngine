@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -11,7 +13,7 @@ namespace eve::animation {
  * Does not load image pixels — bind GPU textures by page name/index in SpineAnim.
  * Script type: `SpineAtlas`.
  */
-class SpineAtlas {
+class EVENGINE_API_WORLD SpineAtlas {
 public:
     SpineAtlas() = default;
     ~SpineAtlas() = default;

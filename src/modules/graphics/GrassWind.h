@@ -17,8 +17,8 @@ struct VegetationWindProfile;
  * callbacks. No GPU allocation or callback occurs. Re-baking creates a new shader with disabled wind;
  * callers reapply their authoritative snapshot after baking. This function does not advance state.
  */
-[[nodiscard]] Result<void> applyGrassWind(Shader& shader, const VegetationWindState& state,
-                                          const VegetationWindProfile& profile, double seconds);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyGrassWind(Shader& shader, const VegetationWindState& state,
+                                                                const VegetationWindProfile& profile, double seconds);
 /** @brief Register wind state/profile and checked operations on the VM owner thread, retaining no table reference. */
-void exposeGrassWindBindings(ssq::Table& table);
+EVENGINE_API_BACKENDS void exposeGrassWindBindings(ssq::Table& table);
 }  // namespace eve::graphics

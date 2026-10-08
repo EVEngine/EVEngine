@@ -31,7 +31,7 @@ struct ProcgenOpenTrace {
 };
 
 /** @brief Staging area for one atomic rebuild of a named procedural system. */
-class ProcgenContext {
+class EVENGINE_API_DOMAINS ProcgenContext {
 public:
     ProcgenContext(std::string systemName, uint32_t seed, std::string buildKey = {}, bool cacheHit = false);
 

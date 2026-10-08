@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSTypes.h
@@ -148,7 +150,7 @@ struct AbilitySpec {
 };
 
 /** @brief Entity-local sorted tags; this is the RTS entity's tag authority. */
-class TagSet {
+class EVENGINE_API_DOMAINS TagSet {
 public:
     /** @brief Add a tag in deterministic lexical order. */
     [[nodiscard]] Result<void> add(std::string_view tag);
@@ -296,7 +298,7 @@ using SocialLink     = ServiceLink<SocialLinkTag>;
 using GameEventLink  = ServiceLink<GameEventLinkTag>;
 
 /** @brief Canonical attributes component adapter, backed by attributes::AttributeSet. */
-class AttributeComponent {
+class EVENGINE_API_DOMAINS AttributeComponent {
 public:
     AttributeComponent();
     ~AttributeComponent();
@@ -352,7 +354,7 @@ private:
 };
 
 /** @brief Generic orders component adapter; the queue remains the sole order owner. */
-class OrderComponent {
+class EVENGINE_API_DOMAINS OrderComponent {
 public:
     /** @brief Complete RTS order projection snapshot; entity handles must be rebound by the owning domain. */
     struct Snapshot {
@@ -402,7 +404,7 @@ private:
 };
 
 /** @brief Production adapter whose queue owns all task state. */
-class ProductionComponent {
+class EVENGINE_API_DOMAINS ProductionComponent {
 public:
     ProductionComponent();
     ~ProductionComponent();
@@ -414,22 +416,26 @@ public:
     /** @brief Enqueue a production task with an injected simulation duration. */
     [[nodiscard]] Result<std::string> enqueue(std::string_view owner, std::string_view kind, std::string_view product,
                                               Duration duration, int priority = 0);
+    /** @brief Enqueue a fully validated canonical request, including a pinned definition handle. */
+    [[nodiscard]] Result<std::string> enqueue(production::ProductionRequest request);
     /** @brief Advance the queue using a caller-owned deterministic step. */
     [[nodiscard]] Result<void> advance(const SimulationStep& step);
     /** @brief Return the number of retained tasks. */
     [[nodiscard]] std::size_t taskCount() const noexcept;
     /** @brief Borrow a retained canonical task by enqueue index. */
-    [[nodiscard]] OptionalRef<production::ProductionTask> taskAt(int index);
+    [[nodiscard]] OptionalRef<const production::ProductionTask> taskAt(int index);
     /** @brief Borrow a retained canonical task by stable task id. */
-    [[nodiscard]] OptionalRef<production::ProductionTask> find(std::string_view taskId);
+    [[nodiscard]] OptionalRef<const production::ProductionTask> find(std::string_view taskId);
     /** @brief Pause a queued or running task through the canonical queue. */
     [[nodiscard]] Result<void> pause(std::string_view taskId);
     /** @brief Resume a paused task through the canonical queue. */
     [[nodiscard]] Result<void> resume(std::string_view taskId);
     /** @brief Cancel a non-terminal task through the canonical queue. */
     [[nodiscard]] Result<void> cancel(std::string_view taskId, std::string_view reason = "cancelled");
-    /** @brief Copy completed canonical tasks of one kind for domain settlement. */
-    [[nodiscard]] std::vector<production::ProductionTask> completed(std::string_view kind) const;
+    /** @brief Copy work-complete tasks of one kind that await domain settlement. */
+    [[nodiscard]] std::vector<production::ProductionTask> readyToSettle(std::string_view kind) const;
+    /** @brief Commit one domain settlement with an idempotency receipt. */
+    [[nodiscard]] Result<void> settle(std::string_view taskId, production::ProductionSettlementReceipt receipt);
     /** @brief Serialize the canonical production queue for persistence/replay. */
     [[nodiscard]] Result<std::string> snapshot() const;
     /** @brief Transactionally restore the canonical production queue. */
@@ -449,7 +455,7 @@ private:
  * This class owns no generic gameplay behavior. Its components are the
  * composition points consumed by RTS systems and adapters.
  */
-class Unit : public ecs::Entity {
+class EVENGINE_API_DOMAINS Unit : public ecs::Entity {
 public:
     ENTITY(Unit, ecs::Entity)
 
@@ -788,7 +794,7 @@ public:
 };
 
 /** @brief RTS building domain root with placement and production composition. */
-class Building : public ecs::Entity {
+class EVENGINE_API_DOMAINS Building : public ecs::Entity {
 public:
     ENTITY(Building, ecs::Entity)
 
@@ -1018,7 +1024,7 @@ public:
 };
 
 /** @brief Harvestable RTS resource node; deposited balances are owned by an external resource account. */
-class ResourceNode : public ecs::Entity {
+class EVENGINE_API_DOMAINS ResourceNode : public ecs::Entity {
 public:
     ENTITY(ResourceNode, ecs::Entity)
 
@@ -1123,7 +1129,7 @@ public:
 };
 
 /** @brief Faction domain root; membership is a set of typed runtime handles. */
-class Faction : public ecs::Entity {
+class EVENGINE_API_DOMAINS Faction : public ecs::Entity {
 public:
     ENTITY(Faction, ecs::Entity)
 
@@ -1203,6 +1209,8 @@ public:
     struct Technology {
         std::vector<std::string> unlocked;
         std::vector<std::string> consumedTasks;
+        /** @brief Validated immutable rule payload accepted for each completed research id. */
+        std::map<std::string, Value::Object> unlockedDefinitions;
     };
 
     COMPONENT(Identity, identity)
@@ -1235,7 +1243,7 @@ enum class VictoryRule : std::uint8_t { Annihilation, DestroyHeadquarters, Resou
 enum class MatchPhase : std::uint8_t { Setup, Running, Finished };
 
 /** @brief Independent match composition root; factions may participate in different matches. */
-class Match : public ecs::Entity {
+class EVENGINE_API_DOMAINS Match : public ecs::Entity {
 public:
     ENTITY(Match, ecs::Entity)
     void release() override { ecs::DestroyEntity(this); }

@@ -61,7 +61,10 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.supports("aa"));
     CHECK(rc.supports("msaa"));
     CHECK(rc.supports("shadow"));
+    CHECK(rc.supports("clusteredDeferred"));
     CHECK(!rc.supports("deferred"));
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+    CHECK(!rc.isDeferredLightingAvailable());
 
     rc.compile();
     CHECK(rc.isCompiled());
@@ -69,6 +72,8 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.hasPass("forward"));
     CHECK(rc.hasPass("hair"));
     CHECK(rc.hasPass("gbuffer"));
+    CHECK(!rc.hasPass("deferredLighting"));
+    CHECK(rc.getEffectiveLightingMode() == LightingMode::ForwardPlus);
     CHECK(rc.isEnabled("ao"));
     CHECK(rc.isEnabled("gi"));
     CHECK(rc.isEnabled("aa"));
@@ -110,6 +115,68 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.isEnabled("gbuffer"));
     rc.disable("gbuffer");
     CHECK(!rc.isEnabled("gbufferAlbedo"));
+}
+
+TEST_CASE("renderControl.lightingModeHybridFallback") {
+    RenderControl rc;
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+    CHECK(!rc.isEnabled("clusteredDeferred"));
+
+    auto okHybrid = rc.setLightingMode(LightingMode::Hybrid);
+    CHECK(okHybrid.ok());
+    CHECK(rc.getLightingMode() == LightingMode::Hybrid);
+    CHECK(rc.isEnabled("clusteredDeferred"));
+    CHECK(rc.isEnabled("gbuffer"));
+    CHECK(rc.isEnabled("gbufferAlbedo"));
+    CHECK(rc.isDirty());
+
+    rc.compile();
+    // Detached RenderControl has no Graphics backend — Hybrid falls back to
+    // ForwardPlus and is observable via hasHybridLightingFallback().
+    CHECK(!rc.isDeferredLightingAvailable());
+    CHECK(rc.getEffectiveLightingMode() == LightingMode::ForwardPlus);
+    CHECK(rc.hasHybridLightingFallback());
+    CHECK(!rc.hasPass("deferredLighting"));
+    CHECK(rc.hasPass("forward"));
+    CHECK(rc.hasPass("gbuffer"));
+
+    auto bad = rc.setLightingMode("nope");
+    CHECK(!bad.ok());
+    CHECK(rc.getLightingMode() == LightingMode::Hybrid);
+
+    auto okName = rc.setLightingMode("forwardPlus");
+    CHECK(okName.ok());
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+    rc.compile();
+    CHECK(rc.getEffectiveLightingMode() == LightingMode::ForwardPlus);
+    CHECK(!rc.hasHybridLightingFallback());
+
+    rc.enable("clusteredDeferred");
+    CHECK(rc.getLightingMode() == LightingMode::Hybrid);
+    rc.disable("clusteredDeferred");
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+}
+
+TEST_CASE("renderControl.lightingPresetNames") {
+    RenderControl rc;
+    auto          mobile = rc.applyLightingPreset("mobile");
+    CHECK(mobile.ok());
+    CHECK(rc.getLightingPreset() == LightingPreset::Mobile);
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+
+    auto ci = rc.applyLightingPreset(LightingPreset::Ci);
+    CHECK(ci.ok());
+    CHECK(rc.getLightingPreset() == LightingPreset::Ci);
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+
+    // Detached: Desktop cannot promote to Hybrid (no deferred backend).
+    auto desktop = rc.applyLightingPreset("desktop");
+    CHECK(desktop.ok());
+    CHECK(rc.getLightingPreset() == LightingPreset::Desktop);
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+
+    auto bad = rc.applyLightingPreset("web");
+    CHECK(!bad.ok());
 }
 
 TEST_CASE("renderControl.atmospherePassDependencies") {
@@ -228,6 +295,8 @@ TEST_CASE("gbuffer.bufferQueries") {
     CHECK(gb.hasBuffer("albedo"));
     CHECK(gb.getBuffer("depth") == &depth);
     CHECK(!gb.hasBuffer("hwDepth"));
+    CHECK(!gb.hasBuffer("pbrParams"));
+    CHECK(!gb.hasBuffer("emissive"));
     CHECK(gb.getBuffer("missing") == nullptr);
 
     Texture hw;
@@ -235,7 +304,19 @@ TEST_CASE("gbuffer.bufferQueries") {
     CHECK(gb.hasBuffer("hwDepth"));
     CHECK(gb.getHwDepthTexture() == &hw);
     CHECK(gb.getBuffer("hwDepth") == &hw);
+    CHECK(!gb.hasBuffer("pbrParams"));
+
+    Texture pbr, emissive;
+    gb.setTargets(128, 96, &depth, &normal, &albedo, &hw, &pbr, &emissive);
+    CHECK(gb.hasBuffer("pbrParams"));
+    CHECK(gb.hasBuffer("emissive"));
+    CHECK(gb.getPbrParamsTexture() == &pbr);
+    CHECK(gb.getEmissiveTexture() == &emissive);
+    CHECK(gb.getBuffer("pbrParams") == &pbr);
+    CHECK(gb.getBuffer("emissive") == &emissive);
 
     gb.clear();
     CHECK(!gb.isValid());
+    CHECK(!gb.hasBuffer("pbrParams"));
+    CHECK(!gb.hasBuffer("emissive"));
 }

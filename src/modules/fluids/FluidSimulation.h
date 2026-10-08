@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief CPU reference fluid solver for surface flows.
@@ -45,7 +47,7 @@ struct SimGrid {
 };
 
 /** @brief CPU reference surface-flow solver. */
-class FluidSimulation {
+class EVENGINE_API_DOMAINS FluidSimulation {
 public:
     /**
      * @param maxParticles capacity of the particle buffer.

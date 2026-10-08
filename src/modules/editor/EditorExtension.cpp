@@ -5,7 +5,7 @@
 
 namespace eve::editor {
 
-EditorResult<void> EditorExtensionRegistry::load(IGameEditorExtension& extension) {
+Result<void> EditorExtensionRegistry::load(IGameEditorExtension& extension) {
     if (!commands_)
         return invalid("editor.extension.missing-command-service", "Extension registry has no command service");
     const std::string owner = extension.ownerModule();
@@ -75,7 +75,7 @@ std::vector<ExtensionRuleDescriptor> EditorExtensionRegistry::rules(const HostPr
     return result;
 }
 
-EditorResult<EditorValue> EditorExtensionRegistry::registerCommand(CommandDescriptor    descriptor,
+Result<EditorValue> EditorExtensionRegistry::registerCommand(CommandDescriptor    descriptor,
                                                                    EditorCommandHandler handler,
                                                                    ExtensionAudience    audiences) {
     if (activeOwner_.empty())
@@ -83,12 +83,12 @@ EditorResult<EditorValue> EditorExtensionRegistry::registerCommand(CommandDescri
                                                 RuleId("editor.extension.registration-outside-load"),
                                                 "Commands may only be registered while loading an extension");
     descriptor.ownerModule           = activeOwner_;
-    EditorResult<EditorValue> result = commands_->registerCommand(descriptor, std::move(handler));
+    Result<EditorValue> result = commands_->registerCommand(descriptor, std::move(handler));
     if (result.ok()) commandVisibility_.push_back({descriptor.id, activeOwner_, audiences});
     return result;
 }
 
-EditorResult<void> EditorExtensionRegistry::registerTool(ExtensionToolDescriptor descriptor) {
+Result<void> EditorExtensionRegistry::registerTool(ExtensionToolDescriptor descriptor) {
     if (activeOwner_.empty() || descriptor.id.empty())
         return invalid("editor.extension.invalid-tool", "Tool registration requires an active owner and id");
     if (std::any_of(tools_.begin(), tools_.end(),
@@ -99,7 +99,7 @@ EditorResult<void> EditorExtensionRegistry::registerTool(ExtensionToolDescriptor
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> EditorExtensionRegistry::registerPalette(ExtensionPaletteDescriptor descriptor) {
+Result<void> EditorExtensionRegistry::registerPalette(ExtensionPaletteDescriptor descriptor) {
     if (activeOwner_.empty() || descriptor.id.empty())
         return invalid("editor.extension.invalid-palette", "Palette registration requires an active owner and id");
     descriptor.ownerModule = activeOwner_;
@@ -107,7 +107,7 @@ EditorResult<void> EditorExtensionRegistry::registerPalette(ExtensionPaletteDesc
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> EditorExtensionRegistry::registerRule(ExtensionRuleDescriptor descriptor) {
+Result<void> EditorExtensionRegistry::registerRule(ExtensionRuleDescriptor descriptor) {
     if (activeOwner_.empty() || descriptor.id.empty())
         return invalid("editor.extension.invalid-rule", "Rule registration requires an active owner and id");
     descriptor.ownerModule = activeOwner_;
@@ -125,7 +125,7 @@ ExtensionAudience EditorExtensionRegistry::audienceFor(const HostProfile& profil
     return ExtensionAudience::None;
 }
 
-EditorResult<void> EditorExtensionRegistry::invalid(const char* rule, std::string message) {
+Result<void> EditorExtensionRegistry::invalid(const char* rule, std::string message) {
     return eve::editing::failed<void>(EditorStatus::Rejected, RuleId(rule), std::move(message));
 }
 

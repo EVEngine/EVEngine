@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Profile.h"
@@ -60,7 +62,7 @@ struct ProfilerFrameSnapshot {
  * aggregation (no game script changes required). beginFrame()/endFrame() are also
  * exposed for manual frame delimitation around arbitrary code.
  */
-class Profiler : public Module, public eve::debug::IRenderTracer {
+class EVENGINE_API_FOUNDATION Profiler : public Module, public eve::debug::IRenderTracer {
 public:
     Module_REG(Profiler);
     Profiler();

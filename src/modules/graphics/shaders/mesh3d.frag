@@ -374,9 +374,11 @@ void main() {
                 vTint;
     if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w)
         discard;
-    // Alpha hash is stable in screen space and avoids object-order artifacts.
-    // "coverage" uses the same fallback when MSAA alpha-to-coverage is unavailable.
-    float alphaHash = fract(dot(floor(gl_FragCoord.xy), vec2(0.06711056, 0.00583715)));
+    // Screen-space primary; UV secondary so coverage still varies if fragment
+    // position is degenerate. "coverage" uses the same fallback when MSAA
+    // alpha-to-coverage is unavailable.
+    float alphaHash = fract(dot(floor(gl_FragCoord.xy), vec2(0.06711056, 0.00583715)) +
+                            dot(uv * 64.0, vec2(0.7548777, 0.5698403)));
     if (ubo.texBomb.w > 2.5 && base.a < alphaHash)
         discard;
     vec3 albedo = base.rgb;

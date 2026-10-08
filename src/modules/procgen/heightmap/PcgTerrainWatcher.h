@@ -27,7 +27,7 @@ struct PcgTerrainChange {
  * @ownership Owns copied terrain ids and changes; retains no scene object or callback.
  * @thread Caller-thread affine. No method invokes script or user callbacks.
  */
-class PcgTerrainWatcher {
+class EVENGINE_API_DOMAINS PcgTerrainWatcher {
 public:
     /** @brief Begin a candidate hierarchy scan without changing the published cache. */
     void beginScan();

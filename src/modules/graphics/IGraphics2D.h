@@ -74,9 +74,18 @@ public:
                                              const Color &tint) = 0;
 
     /** @brief Lit 2D draw (albedo + normal map); normal may be null → flat. */
-    virtual void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w,
-                                       float h, float u0, float v0, float u1, float v1,
-                                       const Color &color) = 0;
+    virtual void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0,
+                                       float v0, float u1, float v1, const Color &color,
+                                       BlendMode blend = BlendMode::Alpha) = 0;
+    /**
+     * @brief Lit 2D draw rotated `degrees` clockwise (screen Y-down) around (cx, cy).
+     * @param albedo Borrowed albedo texture; nullptr draws a solid tinted rect.
+     * @param normal Borrowed tangent-space normal map; nullptr uses a flat +Z map.
+     * @param blend Compositing mode; matches the non-lit textured 2D path.
+     */
+    virtual void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w, float h,
+                                              float degrees, float u0, float v0, float u1, float v1, const Color &color,
+                                              BlendMode blend = BlendMode::Alpha) = 0;
     /** @brief Upload per-frame / per-canvas 2D lighting constants. */
     virtual void setLighting2D(const Lighting2DUBO &ubo) = 0;
 

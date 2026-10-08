@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editor/EditorAuthority.h"
@@ -26,10 +28,10 @@ struct ProjectSettingsSchema {
 };
 
 /** @brief Schema-driven, reversible settings target with secret-reference enforcement. */
-class ProjectSettingsTarget final : public ::eve::editing::EditableTargetState,
-                                    public virtual IEditableTarget,
-                                    public IDomainOperationTarget,
-                                    public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION ProjectSettingsTarget final : public ::eve::editing::EditableTargetState,
+                                                               public virtual IEditableTarget,
+                                                               public IDomainOperationTarget,
+                                                               public IPropertyProvider {
 public:
     ProjectSettingsTarget(std::string id, ProjectSettingsSchema schema);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -37,20 +39,20 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                         queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return settings whose changed values require subsystem restart. */
     std::vector<PropertyPath> pendingRestart() const;
     /** @brief Capture values without ever serializing raw sensitive values. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load matching-schema values. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     /** @brief Find a setting descriptor. @return Borrowed pointer into the immutable descriptor table, or null.
@@ -64,7 +66,7 @@ private:
 };
 
 /** @brief Common engine project settings covering content, network and database boundaries. */
-ProjectSettingsSchema defaultProjectSettingsSchema();
+EVENGINE_API_ORCHESTRATION ProjectSettingsSchema defaultProjectSettingsSchema();
 
 /** @brief Create per-importer settings without hard-coding a presenter. */
 ProjectSettingsSchema importerSettingsSchema(std::string importerId, std::vector<ProjectSettingDescriptor> settings,

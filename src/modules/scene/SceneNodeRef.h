@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Identity.h"
 
@@ -15,7 +17,7 @@ class Scene;
  * rather than arena pointers, so it stays valid across rebuilds/reconcile.
  * Node-level entity bindings are forwarded through the Scene module.
  */
-class SceneNodeRef {
+class EVENGINE_API_PLATFORM SceneNodeRef {
 public:
     SceneNodeRef() = default;
     SceneNodeRef(std::string hostName, std::string nodeId)

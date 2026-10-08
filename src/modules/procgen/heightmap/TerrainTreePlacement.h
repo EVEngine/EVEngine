@@ -76,7 +76,7 @@ struct TerrainTreeTile {
  * @return Mapping report with emitted or removed point total in changedSamples, or a structured diagnostic.
  * @ownership Retains no pointer or raster. Caller exclusively owns every output on one thread for the call.
  */
-[[nodiscard]] Result<TerrainMultiTileReport> applyTerrainTreesMultiTile(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> applyTerrainTreesMultiTile(
     const std::vector<TerrainTreeTile>& tiles, const Heightmap& operationFitness,
     const TerrainTreePlacementSettings& settings, const TerrainStampSettings& operationSettings,
     TerrainTreeOperationMode mode, bool worldMapOperation = false,
@@ -87,7 +87,7 @@ struct TerrainTreeTile {
  * Tree sets and height rasters are copied on insertion. Each operation and all-tile history snapshot is evaluated in
  * a private candidate and published by one owner-thread swap. No external pointer, callback or hidden RNG survives.
  */
-class TerrainMultiTreeWorkspace {
+class EVENGINE_API_DOMAINS TerrainMultiTreeWorkspace {
 public:
     TerrainMultiTreeWorkspace();
     ~TerrainMultiTreeWorkspace();
@@ -140,9 +140,9 @@ private:
  * owner thread; the operation retains no references, invokes no callbacks, reads no hidden time and publishes nothing
  * on failure.
  */
-[[nodiscard]] Result<int> exportTerrainTreePoints(PointSet& output, const Heightmap& fitness,
-                                                  const Heightmap& heights,
-                                                  const TerrainTreePlacementSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> exportTerrainTreePoints(PointSet& output, const Heightmap& fitness,
+                                                                       const Heightmap&                    heights,
+                                                                       const TerrainTreePlacementSettings& settings);
 
 /**
  * @brief Remove matching tree points wherever the current fitness is strictly above the threshold.
@@ -153,8 +153,9 @@ private:
  * @return Removed count or a structured diagnostic. Points outside the rectangle and other assets remain untouched.
  * Caller serializes access on the owner thread; no references or callbacks survive the call.
  */
-[[nodiscard]] Result<int> removeTerrainTreePoints(PointSet& output, const PointSet& input, const Heightmap& fitness,
-                                                  const TerrainTreePlacementSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> removeTerrainTreePoints(PointSet& output, const PointSet& input,
+                                                                       const Heightmap&                    fitness,
+                                                                       const TerrainTreePlacementSettings& settings);
 
 /**
  * @brief Atomically refresh scale, bounds and bend metadata for one tree asset while preserving identity/transform.
@@ -165,6 +166,6 @@ private:
  * @return Number of matching rows, or a structured validation/attribute diagnostic. Position, yaw, color, stable ID,
  * row order and unrelated attributes are retained. Owner-thread only; no callbacks or retained references.
  */
-[[nodiscard]] Result<int> rescaleTerrainTreePoints(PointSet& output, const PointSet& input,
-                                                   const TerrainTreeRescaleSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> rescaleTerrainTreePoints(PointSet& output, const PointSet& input,
+                                                                        const TerrainTreeRescaleSettings& settings);
 }  // namespace eve::procgen

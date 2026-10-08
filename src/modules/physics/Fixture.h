@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -13,7 +15,7 @@ class World;
  * @brief 2D fixture: a shape attached to a Body with material + filter settings.
  * Also carries a string tag used by contact events.
  */
-class Fixture {
+class EVENGINE_API_WORLD Fixture {
 public:
     /** @brief Internal: wraps a Box2D fixture (use Body::new*Fixture). */
     Fixture(World *world, Body *body, b2Fixture *fixture);

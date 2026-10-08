@@ -2,29 +2,17 @@
 
 #include "avatar/editor/AvatarDocumentEditor.h"
 #include "avatar/editor/AvatarEditorModule.h"
-#include "common/SquirrelBinding.h"
-#include "common/SquirrelOwnership.h"
 #include "editor/EditorWorkspace.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
-#include <cstdint>
-#include <memory>
 #include <string>
-#include <utility>
 #include "editor/EditorScriptProjection.h"
 
 namespace eve::avatar_editor {
 namespace {
 
 constexpr const char* kBindingSource = "editor.avatar.document.squirrel";
-
-using eve::editor::project;
-
-ssq::Table bindingFailure(HSQUIRRELVM vm, DiagnosticCode code, std::string message, std::string path = {}) {
-    return script::projectStatusResult(
-        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)));
-}
 
 class ScriptAvatarDocumentEditor {
 public:
@@ -40,108 +28,62 @@ private:
 }  // namespace
 
 void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
-    const HSQUIRRELVM vm = table.getHandle();
-    auto avatarEditor    = table.addClass<ScriptAvatarDocumentEditor>(
-        "AvatarDocumentEditor",
-        std::function<ScriptAvatarDocumentEditor*()>([]() -> ScriptAvatarDocumentEditor* { return nullptr; }), true);
-
-    avatarEditor.addFunc("configureWorkspace",
-                         [vm](ScriptAvatarDocumentEditor* self, editor::EditorWorkspace* workspace) {
-                             if (!self || !workspace)
-                                 return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                       "avatar editor and workspace must not be null", "workspace");
-                             return project(vm, self->editor().configureWorkspace(*workspace));
-                         });
-    avatarEditor.addFunc("selectLayer", [vm](ScriptAvatarDocumentEditor* self, const std::string& id) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().selectLayer(id));
+    const editor::ScriptBind bind{table.getHandle(), kBindingSource};
+    auto avatarEditor = editor::addScriptClass<ScriptAvatarDocumentEditor>(table, "AvatarDocumentEditor");
+    editor::registerEditorWorkspace<ScriptAvatarDocumentEditor>(avatarEditor, bind,
+                                   "avatar editor and workspace must not be null");
+    avatarEditor.addFunc("selectLayer", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().selectLayer(id); });
     });
-    avatarEditor.addFunc("selectParameter", [vm](ScriptAvatarDocumentEditor* self, const std::string& id) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().selectParameter(id));
+    avatarEditor.addFunc("selectParameter", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().selectParameter(id); });
     });
-    avatarEditor.addFunc("selectExpression", [vm](ScriptAvatarDocumentEditor* self, const std::string& id) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().selectExpression(id));
+    avatarEditor.addFunc("selectExpression", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().selectExpression(id); });
     });
-    avatarEditor.addFunc("pointerDown", [vm](ScriptAvatarDocumentEditor* self, float x, float y) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().pointerDown(x, y));
+    avatarEditor.addFunc("pointerDown", [bind](ScriptAvatarDocumentEditor* self, float x, float y) {
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().pointerDown(x, y); });
     });
-    avatarEditor.addFunc("setLayerVisible", [vm](ScriptAvatarDocumentEditor* self, bool visible) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().setLayerVisible(visible));
+    avatarEditor.addFunc("setLayerVisible", [bind](ScriptAvatarDocumentEditor* self, bool visible) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().setLayerVisible(visible); });
     });
-    avatarEditor.addFunc("setLayerZ", [vm](ScriptAvatarDocumentEditor* self, int zIndex) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().setLayerZ(zIndex));
+    avatarEditor.addFunc("setLayerZ", [bind](ScriptAvatarDocumentEditor* self, int zIndex) {
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().setLayerZ(zIndex); });
     });
-    avatarEditor.addFunc("setParameterValue", [vm](ScriptAvatarDocumentEditor* self, float value) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().setParameterValue(static_cast<double>(value)));
+    avatarEditor.addFunc("setParameterValue", [bind](ScriptAvatarDocumentEditor* self, float value) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().setParameterValue(static_cast<double>(value)); });
     });
     avatarEditor.addFunc("createLayer",
-                         [vm](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
-                             if (!self)
-                                 return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                       "avatar editor must not be null");
-                             return project(vm, self->editor().createLayer(id, name));
+                         [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
+                             return bind.checked(self, "avatar editor must not be null",
+                                                 [&] { return self->editor().createLayer(id, name); });
                          });
-    avatarEditor.addFunc("deleteSelectedLayer", [vm](ScriptAvatarDocumentEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().deleteSelectedLayer());
+    avatarEditor.addFunc("deleteSelectedLayer", [bind](ScriptAvatarDocumentEditor* self) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().deleteSelectedLayer(); });
     });
     avatarEditor.addFunc("createParameter",
-                         [vm](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
-                             if (!self)
-                                 return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                       "avatar editor must not be null");
-                             return project(vm, self->editor().createParameter(id, name));
+                         [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
+                             return bind.checked(self, "avatar editor must not be null",
+                                                 [&] { return self->editor().createParameter(id, name); });
                          });
-    avatarEditor.addFunc("deleteSelectedParameter", [vm](ScriptAvatarDocumentEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().deleteSelectedParameter());
+    avatarEditor.addFunc("deleteSelectedParameter", [bind](ScriptAvatarDocumentEditor* self) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().deleteSelectedParameter(); });
     });
     avatarEditor.addFunc("createExpression",
-                         [vm](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
-                             if (!self)
-                                 return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                       "avatar editor must not be null");
-                             return project(vm, self->editor().createExpression(id, name));
+                         [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
+                             return bind.checked(self, "avatar editor must not be null",
+                                                 [&] { return self->editor().createExpression(id, name); });
                          });
-    avatarEditor.addFunc("deleteSelectedExpression", [vm](ScriptAvatarDocumentEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        return project(vm, self->editor().deleteSelectedExpression());
+    avatarEditor.addFunc("deleteSelectedExpression", [bind](ScriptAvatarDocumentEditor* self) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().deleteSelectedExpression(); });
     });
-    avatarEditor.addFunc("undo", [vm](ScriptAvatarDocumentEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        auto result = self->editor().undo();
-        return project(vm, result,
-                       Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
-    });
-    avatarEditor.addFunc("redo", [vm](ScriptAvatarDocumentEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar editor must not be null");
-        auto result = self->editor().redo();
-        return project(vm, result,
-                       Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
-    });
-    avatarEditor.addFunc("canUndo", [](ScriptAvatarDocumentEditor* self) { return self && self->editor().canUndo(); });
-    avatarEditor.addFunc("canRedo", [](ScriptAvatarDocumentEditor* self) { return self && self->editor().canRedo(); });
-    avatarEditor.addFunc("getRevision", [](ScriptAvatarDocumentEditor* self) {
-        return self ? static_cast<int>(self->editor().revision()) : 0;
-    });
+    editor::registerEditorHistory<ScriptAvatarDocumentEditor>(avatarEditor, bind, "avatar editor must not be null");
     avatarEditor.addFunc("getPreviewRevision", [](ScriptAvatarDocumentEditor* self) {
         return self ? static_cast<int>(self->editor().previewRevision()) : 0;
     });
@@ -246,19 +188,7 @@ void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& mod
                              return self ? self->editor().expressionChannelName(expression, channel) : std::string{};
                          });
 
-    moduleClass.addFunc("create", [vm](AvatarEditorModule*, const std::string& targetId) {
-        if (targetId.empty())
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "avatar target id must not be empty",
-                                  "targetId");
-        auto object = script::makeOwnedSquirrelInstance<ScriptAvatarDocumentEditor>(
-            vm, std::make_unique<ScriptAvatarDocumentEditor>(targetId));
-        if (!object) return script::projectStatusResult(vm, object.status());
-        ssq::Object owned = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
-        result.set("value", owned);
-        result.set("ownership", std::string("owned"));
-        return result;
-    });
+    editor::registerEditorOwnedCreate<ScriptAvatarDocumentEditor, AvatarEditorModule>(moduleClass, bind, "avatar target id must not be empty");
 }
 
 }  // namespace eve::avatar_editor

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <Poco/AutoPtr.h>
 #include <Poco/DOM/Document.h>
@@ -7,7 +9,7 @@ namespace eve {
 namespace data {
 
 /** @brief Thin RAII wrapper over a Poco XML DOM document. */
-class XmlDocument {
+class EVENGINE_API_FOUNDATION XmlDocument {
 public:
     /** @brief Creates an empty document. */
     XmlDocument();

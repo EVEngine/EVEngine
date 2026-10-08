@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -20,7 +22,7 @@ class Animation;
  *
  * No API overloads; ease kind is a string (same set as Math.ease).
  */
-class Tween {
+class EVENGINE_API_WORLD Tween {
 public:
     explicit Tween(float duration = 1.f);
     ~Tween();

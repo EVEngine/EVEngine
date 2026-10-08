@@ -44,7 +44,7 @@ Decal::Decal() : proceduralBakeCache_(std::make_unique<ProceduralBakeCache>()) {
         });
 }
 
-Decal::~Decal() = default;
+Decal::~Decal() { unregisterDecalAttackVfxExecutor(); }
 
 int Decal::project(float x, float y, float z, float nx, float ny, float nz,
                    graphics::Texture *albedo, const std::string &kind, float size, float depth,

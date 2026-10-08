@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "ui/UIHost.h"
 
@@ -67,10 +69,10 @@ struct FlexResult {
  * Distribute flex items along main/cross axis. Pure — no ImGui state touched,
  * so it can be unit-tested headlessly.
  */
-FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
-                       FlexAlign containerAlign, FlexJustify justify,
-                       const std::vector<FlexItemSpec> &items, bool wrap = false,
-                       float crossGap = -1.f);
+EVENGINE_API_WORLD FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
+                                          FlexAlign containerAlign, FlexJustify justify,
+                                          const std::vector<FlexItemSpec> &items, bool wrap = false,
+                                          float crossGap = -1.f);
 
 struct GridItemSpec {
     float basisW = 0.f;
@@ -91,14 +93,14 @@ struct GridResult {
 };
 
 /** @brief Places source-ordered items into equal-width fixed columns. */
-GridResult gridArrange(int columns, float columnGap, float rowGap, float availWidth,
-                       const std::vector<GridItemSpec> &items);
+EVENGINE_API_WORLD GridResult gridArrange(int columns, float columnGap, float rowGap, float availWidth,
+                                          const std::vector<GridItemSpec> &items);
 
 /** Measure one node (recursively) and fill UINode::measuredW/H. */
 void measureNode(UIHost::Tree &tree, int index);
 
 /** Measure the whole tree from its root. */
-void measureTree(UIHost::Tree &tree);
+EVENGINE_API_WORLD void measureTree(UIHost::Tree &tree);
 
 /** Flow measure helpers for non-flex containers (Window/Group/Child/Header). */
 void measureFlowChildren(UIHost::Tree &tree, int firstChild, float *outW, float *outH);

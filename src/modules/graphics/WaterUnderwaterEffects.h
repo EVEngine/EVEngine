@@ -19,8 +19,8 @@ class Renderable3D;
 struct UnderwaterColorStop { float time = 0.0F; glm::vec3 color{1.0F}; };
 
 /** @brief Caller-owned ordered color gradient used for depth or time-of-day fog. */
-class UnderwaterColorGradient {
-  public:
+class EVENGINE_API_BACKENDS UnderwaterColorGradient {
+public:
     /** @brief Add a finite key in [0,1]; duplicate times are rejected atomically. */
     [[nodiscard]] Result<void> addStop(float time, float r, float g, float b);
     /** @brief Remove every key. */
@@ -32,8 +32,8 @@ class UnderwaterColorGradient {
 };
 
 /** @brief Caller-owned normalized scalar curve used by Pcg underwater post exposure. */
-class UnderwaterScalarCurve {
-  public:
+class EVENGINE_API_BACKENDS UnderwaterScalarCurve {
+public:
     /** @brief Add a finite key in [0,1]; duplicate times are rejected atomically. */
     [[nodiscard]] Result<void> addKey(float time, float value);
     /** @brief Remove every key. */
@@ -189,7 +189,7 @@ struct WaterSurfaceMaterialSnapshot {
  * @return Success or InvalidArgument; failure preserves state and output.
  * @thread Synchronous and deterministic; retains no pointer and invokes no callback.
  */
-[[nodiscard]] Result<void> advanceWaterUnderwaterEffects(
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> advanceWaterUnderwaterEffects(
     WaterUnderwaterState& state, WaterUnderwaterOutput& output, const WaterUnderwaterSettings& settings,
     const WaterUnderwaterInput& input, const UnderwaterColorGradient& depthGradient,
     const UnderwaterColorGradient& timeGradient, const UnderwaterScalarCurve& postExposureCurve,
@@ -204,9 +204,9 @@ struct WaterSurfaceMaterialSnapshot {
  * @return Success or InvalidArgument; malformed events preserve state and mismatched tags are ignored.
  * @thread Deterministic simulation-owner operation; retains no pointer and invokes no callback.
  */
-[[nodiscard]] Result<void> advanceWaterUnderwaterDisableTrigger(
-    WaterUnderwaterDisableTriggerState& state, const WaterUnderwaterTriggerEvent& event,
-    int expectedSensorTag, int expectedVisitorTag);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> advanceWaterUnderwaterDisableTrigger(
+    WaterUnderwaterDisableTriggerState& state, const WaterUnderwaterTriggerEvent& event, int expectedSensorTag,
+    int expectedVisitorTag);
 
 /**
  * @brief Apply a water-effects snapshot to an existing EVEngine volumetric fog provider.
@@ -216,9 +216,9 @@ struct WaterSurfaceMaterialSnapshot {
  * @return Success or InvalidArgument; validation completes before provider mutation.
  * @thread Must run on the owning graphics thread outside render callbacks.
  */
-[[nodiscard]] Result<void> applyWaterUnderwaterFog(Volumetric* volumetric,
-                                                   const WaterUnderwaterOutput& output,
-                                                   const WaterSurfaceFogSnapshot& surface);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyWaterUnderwaterFog(Volumetric*                    volumetric,
+                                                                         const WaterUnderwaterOutput&   output,
+                                                                         const WaterSurfaceFogSnapshot& surface);
 
 /**
  * @brief Apply underwater exposure and final-composite color to borrowed graphics providers.
@@ -229,9 +229,9 @@ struct WaterSurfaceMaterialSnapshot {
  * @return Success or InvalidArgument; validation completes before either provider is mutated.
  * @thread Must run on the owning graphics thread outside render callbacks.
  */
-[[nodiscard]] Result<void> applyWaterUnderwaterPostFx(Graphics* graphics, Camera3D* camera,
-                                                      const WaterUnderwaterOutput& output,
-                                                      const WaterSurfacePostFxSnapshot& surface);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyWaterUnderwaterPostFx(Graphics* graphics, Camera3D* camera,
+                                                                            const WaterUnderwaterOutput&      output,
+                                                                            const WaterSurfacePostFxSnapshot& surface);
 
 /**
  * @brief Synchronize Pcg's underwater horizon mesh visibility.
@@ -240,8 +240,8 @@ struct WaterSurfaceMaterialSnapshot {
  * @return Success or InvalidArgument.
  * @thread Scene owner thread only; callbacks are not invoked.
  */
-[[nodiscard]] Result<void> applyWaterUnderwaterHorizon(Renderable3D* horizon,
-                                                       const WaterUnderwaterOutput& output);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyWaterUnderwaterHorizon(Renderable3D*                horizon,
+                                                                             const WaterUnderwaterOutput& output);
 
 /**
  * @brief Apply Pcg's per-frame underwater material color to a dedicated water renderable.
@@ -251,9 +251,8 @@ struct WaterSurfaceMaterialSnapshot {
  * @return Success or InvalidArgument; validation completes before mutation.
  * @thread Scene owner thread only; callbacks are not invoked.
  */
-[[nodiscard]] Result<void> applyWaterUnderwaterMaterial(
-    Renderable3D* renderable, const WaterUnderwaterOutput& output,
-    const WaterSurfaceMaterialSnapshot& surface);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyWaterUnderwaterMaterial(
+    Renderable3D* renderable, const WaterUnderwaterOutput& output, const WaterSurfaceMaterialSnapshot& surface);
 
 /** @brief Register underwater-effects value types and checked transition with the VM owner thread. */
 void exposeWaterUnderwaterEffectsBindings(ssq::Table& table);

@@ -16,7 +16,7 @@ class Solver3D;
  * Provides 2D/3D skeleton + solver factories. No overloads: use Skeleton2D /
  * Skeleton3D and Solver2D / Solver3D explicitly.
  */
-class IK : public Module {
+class EVENGINE_API_FOUNDATION IK : public Module {
 public:
     Module_REG(IK);
     IK() = default;

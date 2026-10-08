@@ -80,7 +80,7 @@ struct PropertyDescriptor {
 };
 
 /** @brief Versioned schema for one view model or editable target. */
-struct PropertySchema {
+struct EVENGINE_API_FOUNDATION PropertySchema {
     std::string                     typeId;
     std::uint32_t                   version = 1;
     std::vector<PropertyDescriptor> properties;
@@ -109,9 +109,12 @@ struct WriteResult {
  *
  * This is the single semantic validation entry point for property-access property
  * adapters. Host-specific adapters may translate its diagnostics, but must not
- * reimplement kind, enum, finite or numeric-range validation.
+ * reimplement kind, enum, finite, arity or numeric-range validation.
+ *
+ * Color requires an Array of 4 numeric components; Vec2/Vec3/Vec4 require 2/3/4.
+ * Rejected composites use `property_access.property.arity` when the length is wrong.
  */
-EVENGINE_API WriteResult validatePropertyValue(const PropertyDescriptor &property, const Value &value);
+EVENGINE_API_FOUNDATION WriteResult validatePropertyValue(const PropertyDescriptor &property, const Value &value);
 
 /** @brief Availability of a property in an immutable model snapshot. */
 enum class PropertyChangeState { Value, Mixed, Missing };
@@ -140,7 +143,7 @@ using Subscription = eve::Subscription;
  * targets or remote automation. Writes express intent; the implementation
  * decides whether to assign directly, dispatch a command, or reject it.
  */
-class EVENGINE_API IPropertyAccess {
+class EVENGINE_API_FOUNDATION_INLINE IPropertyAccess {
 public:
     using ChangeCallback = std::function<void(const PropertyChange &)>;
 

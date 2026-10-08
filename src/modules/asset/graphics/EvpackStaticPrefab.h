@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <array>
 #include <cstdint>
@@ -29,7 +31,7 @@ struct StaticPrefabGpuPart {
  * @thread Creation, drawing, release and destruction are graphics-thread affine.
  * @reentrancy No scripts or caller callbacks and no locks; do not reenter from backend methods.
  */
-class EvpackStaticPrefab final {
+class EVENGINE_API_WORLD EvpackStaticPrefab final {
 public:
     ~EvpackStaticPrefab();
     EvpackStaticPrefab(const EvpackStaticPrefab&)            = delete;

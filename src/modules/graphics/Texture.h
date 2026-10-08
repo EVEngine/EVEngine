@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -13,7 +15,7 @@ class Graphics;
  * @brief GPU texture created via Graphics::newTexture.
  * Owns GPU resources through an opaque backend handle.
  */
-class Texture : public Drawable {
+class EVENGINE_API_BACKENDS Texture : public Drawable {
 public:
     Texture();
     ~Texture() override;

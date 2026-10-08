@@ -34,12 +34,14 @@
 #endif
 
 #include "common/BootWarmup.h"
+#include "common/Capability.h"
 #include "common/CrashLog.h"
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/GraphicsCapabilities.h"
+#include "graphics/IRayTracing.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
@@ -99,6 +101,8 @@ std::vector<const char*> collectFastInstanceExtensions(const std::vector<vk::Ext
                                                        vk::InstanceCreateFlags*                    flagsOut) {
     std::vector<const char*> exts;
     addIfAvailable(exts, props, "VK_KHR_surface");
+    // Required before surface formats report HDR10 / extended-sRGB color spaces.
+    addIfAvailable(exts, props, "VK_EXT_swapchain_colorspace");
 #if defined(_WIN32)
     addIfAvailable(exts, props, "VK_KHR_win32_surface");
 #elif defined(__ANDROID__)
@@ -302,6 +306,8 @@ Graphics::~Graphics() {
         return;
     }
     device->waitIdle();
+    // Drop optional RT resources while the logical device is still valid.
+    if (auto* rt = eve::cap::query<eve::graphics::IRayTracing>()) rt->detachFromGraphics();
     destroyPbrResources();
     deferredFileTextures_.clear();
     if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
@@ -327,6 +333,8 @@ Graphics::~Graphics() {
         if (g->offscreenPipeline) device->destroyPipeline(g->offscreenPipeline);
         if (g->swapchainOpaquePipeline) device->destroyPipeline(g->swapchainOpaquePipeline);
         if (g->offscreenOpaquePipeline) device->destroyPipeline(g->offscreenOpaquePipeline);
+        if (g->hdrOffscreenPipeline) device->destroyPipeline(g->hdrOffscreenPipeline);
+        if (g->hdrOffscreenOpaquePipeline) device->destroyPipeline(g->hdrOffscreenOpaquePipeline);
         if (g->mesh3dPipeline) device->destroyPipeline(g->mesh3dPipeline);
         if (g->mesh3dXrayPipeline) device->destroyPipeline(g->mesh3dXrayPipeline);
         if (g->mesh3dOffscreenPipeline) device->destroyPipeline(g->mesh3dOffscreenPipeline);
@@ -384,7 +392,15 @@ Graphics::~Graphics() {
     }
     clusteredStorages.clear();
     if (lit2dPipeline) device->destroyPipeline(lit2dPipeline);
+    if (lit2dAdditivePipeline) device->destroyPipeline(lit2dAdditivePipeline);
+    if (lit2dPremultipliedPipeline) device->destroyPipeline(lit2dPremultipliedPipeline);
+    if (lit2dMultiplyPipeline) device->destroyPipeline(lit2dMultiplyPipeline);
+    if (lit2dOpaquePipeline) device->destroyPipeline(lit2dOpaquePipeline);
     if (offscreenLitPipeline) device->destroyPipeline(offscreenLitPipeline);
+    if (offscreenLitAdditivePipeline) device->destroyPipeline(offscreenLitAdditivePipeline);
+    if (offscreenLitPremultipliedPipeline) device->destroyPipeline(offscreenLitPremultipliedPipeline);
+    if (offscreenLitMultiplyPipeline) device->destroyPipeline(offscreenLitMultiplyPipeline);
+    if (offscreenLitOpaquePipeline) device->destroyPipeline(offscreenLitOpaquePipeline);
     if (lit2dPipelineLayout) device->destroyPipelineLayout(lit2dPipelineLayout);
     lit2dSetLayoutUnique.reset();
     for (auto& m : lit2dSets) m.clear();
@@ -404,6 +420,22 @@ Graphics::~Graphics() {
     if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
     if (hdrOffscreenTexPipeline) device->destroyPipeline(hdrOffscreenTexPipeline);
     if (hdrOffscreenOpaqueTexPipeline) device->destroyPipeline(hdrOffscreenOpaqueTexPipeline);
+    if (hdrOffscreenAdditiveTexPipeline) device->destroyPipeline(hdrOffscreenAdditiveTexPipeline);
+    if (hdrOffscreenPremultipliedTexPipeline) device->destroyPipeline(hdrOffscreenPremultipliedTexPipeline);
+    if (hdrOffscreenMultiplyTexPipeline) device->destroyPipeline(hdrOffscreenMultiplyTexPipeline);
+    if (hdrOffscreenSolidPipeline) device->destroyPipeline(hdrOffscreenSolidPipeline);
+    if (hdrOffscreenSolidAlphaPipeline) device->destroyPipeline(hdrOffscreenSolidAlphaPipeline);
+    if (hdrOffscreenAdditiveSolidPipeline) device->destroyPipeline(hdrOffscreenAdditiveSolidPipeline);
+    if (hdrOffscreenPremultipliedSolidPipeline) device->destroyPipeline(hdrOffscreenPremultipliedSolidPipeline);
+    if (hdrOffscreenMultiplySolidPipeline) device->destroyPipeline(hdrOffscreenMultiplySolidPipeline);
+    if (hdrOffscreenLitPipeline) device->destroyPipeline(hdrOffscreenLitPipeline);
+    if (hdrOffscreenLitAdditivePipeline) device->destroyPipeline(hdrOffscreenLitAdditivePipeline);
+    if (hdrOffscreenLitPremultipliedPipeline) device->destroyPipeline(hdrOffscreenLitPremultipliedPipeline);
+    if (hdrOffscreenLitMultiplyPipeline) device->destroyPipeline(hdrOffscreenLitMultiplyPipeline);
+    if (hdrOffscreenLitOpaquePipeline) device->destroyPipeline(hdrOffscreenLitOpaquePipeline);
+    if (hdrOffscreenTonemapPipeline) device->destroyPipeline(hdrOffscreenTonemapPipeline);
+    if (hdrOffscreenParticleDistortionPipeline) device->destroyPipeline(hdrOffscreenParticleDistortionPipeline);
+    destroyPresentComposeResources();
     if (hdrOffscreenRenderPass) device->destroyRenderPass(hdrOffscreenRenderPass);
     texSetLayoutUnique.reset();
     if (descriptorPool) device->destroyDescriptorPool(descriptorPool);
@@ -443,6 +475,15 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
         selector.add_required_extension("VK_KHR_portability_subset");
 #endif
+        // Soft-request KHR ray tracing. Devices without these extensions remain
+        // selectable; supported ones get the extensions into extensions_to_enable.
+        selector.add_desired_extension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_RAY_QUERY_EXTENSION_NAME);
         auto phys = selector.select();
         {
             // Record the GPU identity into the crash/error log before any Vulkan
@@ -505,25 +546,122 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 phys.features.multiDrawIndirect                       = VK_TRUE;
             }
         }
+        // Optional KHR ray tracing: soft-request extensions via desired list
+        // (already added before select). Probe features here; enable them only
+        // when every required extension is present on the physical device.
+        // extensions_to_enable is private to vk-bootstrap — re-enumerate instead.
+        rayTracingCaps_ = RayTracingCaps{};
+        vk::PhysicalDeviceAccelerationStructureFeaturesKHR rtAsEnable{};
+        vk::PhysicalDeviceRayTracingPipelineFeaturesKHR    rtPipeEnable{};
+        vk::PhysicalDeviceRayQueryFeaturesKHR              rtQueryEnable{};
+        bool                                               enableRtFeatures = false;
+        {
+            const auto extProps = phys->enumerateDeviceExtensionProperties();
+            auto       hasExt   = [&](const char* name) {
+                for (const auto& p : extProps) {
+                    if (std::strcmp(p.extensionName, name) == 0) return true;
+                }
+                return false;
+            };
+            const bool extsOk  = hasExt(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
+                                 hasExt(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME) &&
+                                 hasExt(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+            const bool api12   = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            const bool bdaExt  = hasExt(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME) || api12;
+            const bool spirv14 = hasExt(VK_KHR_SPIRV_1_4_EXTENSION_NAME) || api12;
+
+            vk::PhysicalDeviceBufferDeviceAddressFeatures bdaFeat{};
+            bdaFeat.sType = vk::StructureType::ePhysicalDeviceBufferDeviceAddressFeatures;
+            vk::PhysicalDeviceAccelerationStructureFeaturesKHR asFeat{};
+            asFeat.sType = vk::StructureType::ePhysicalDeviceAccelerationStructureFeaturesKHR;
+            asFeat.pNext = &bdaFeat;
+            vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rtFeat{};
+            rtFeat.sType = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
+            rtFeat.pNext = &asFeat;
+            vk::PhysicalDeviceFeatures2 features2Rt{};
+            features2Rt.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+            features2Rt.pNext = &rtFeat;
+            phys->getFeatures2(&features2Rt);
+
+            vk::PhysicalDeviceRayQueryFeaturesKHR rqFeat{};
+            rqFeat.sType = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
+            if (hasExt(VK_KHR_RAY_QUERY_EXTENSION_NAME)) {
+                // Probe rayQuery separately so its feature struct is not required
+                // on devices that only expose the acceleration-structure path.
+                vk::PhysicalDeviceFeatures2 features2Rq{};
+                features2Rq.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+                features2Rq.pNext = &rqFeat;
+                phys->getFeatures2(&features2Rq);
+            }
+
+            const bool featuresOk = rtFeat.rayTracingPipeline == VK_TRUE && asFeat.accelerationStructure == VK_TRUE &&
+                                    bdaFeat.bufferDeviceAddress == VK_TRUE;
+
+            if (extsOk && bdaExt && spirv14 && featuresOk) {
+                rayTracingCaps_.accelerationStructure = true;
+                rayTracingCaps_.rayTracingPipeline    = true;
+                rayTracingCaps_.bufferDeviceAddress   = true;
+                rayTracingCaps_.available             = true;
+                if (hasExt(VK_KHR_RAY_QUERY_EXTENSION_NAME) && rqFeat.rayQuery == VK_TRUE)
+                    rayTracingCaps_.rayQuery = true;
+
+                vk::PhysicalDeviceRayTracingPipelinePropertiesKHR rtProps{};
+                rtProps.sType = vk::StructureType::ePhysicalDeviceRayTracingPipelinePropertiesKHR;
+                vk::PhysicalDeviceProperties2 props2{};
+                props2.sType = vk::StructureType::ePhysicalDeviceProperties2;
+                props2.pNext = &rtProps;
+                phys->getProperties2(&props2);
+                rayTracingCaps_.shaderGroupHandleSize      = rtProps.shaderGroupHandleSize;
+                rayTracingCaps_.shaderGroupBaseAlignment   = rtProps.shaderGroupBaseAlignment;
+                rayTracingCaps_.shaderGroupHandleAlignment = rtProps.shaderGroupHandleAlignment;
+                rayTracingCaps_.maxRecursionDepth          = rtProps.maxRayRecursionDepth;
+
+                // VUID-02830: do not chain VkPhysicalDeviceBufferDeviceAddressFeatures
+                // alongside VkPhysicalDeviceVulkan12Features. Enable BDA via the 1.2
+                // feature struct below; only AS / RT pipeline / optional rayQuery here.
+                rtAsEnable.sType                 = vk::StructureType::ePhysicalDeviceAccelerationStructureFeaturesKHR;
+                rtAsEnable.accelerationStructure = VK_TRUE;
+                rtPipeEnable.sType               = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
+                rtPipeEnable.rayTracingPipeline  = VK_TRUE;
+                rtPipeEnable.pNext               = &rtAsEnable;
+                if (rayTracingCaps_.rayQuery) {
+                    rtQueryEnable.sType    = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
+                    rtQueryEnable.rayQuery = VK_TRUE;
+                    rtAsEnable.pNext       = &rtQueryEnable;
+                }
+                enableRtFeatures = true;
+            }
+            // When features are missing, desired RT extensions may still be
+            // listed on the device; they stay inert without the feature bits.
+        }
+
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
-        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws).
+        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws) and BDA for RT.
         vk::PhysicalDeviceVulkan12Features vk12Enable{};
         vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
+        if (enableRtFeatures) {
+            vk12Enable.bufferDeviceAddress = VK_TRUE;
+            deviceBuilder.add_pNext(&rtPipeEnable);
+        }
         deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
+        // Load device-level extension entry points (needed for KHR RT).
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(device.instance);
 #if defined(VKB_ENABLE_VMA)
         vmaAllocatorOwner_.create(inst, phys, device);
 #endif
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
-        eve::recordLogEvent("info", "gpu: logical device created (gpuDriven=" +
-                                        std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+        eve::recordLogEvent("info",
+                            "gpu: logical device created (gpuDriven=" +
+                                std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+                                ", rayTracing=" + std::string(rayTracingCaps_.rayTracingAvailable() ? "on" : "off") +
 #if defined(VKB_ENABLE_VMA)
-                                        ", allocator=VMA" +
+                                ", allocator=VMA" +
 #else
-                                        ", allocator=native" +
+                                ", allocator=native" +
 #endif
-                                        ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
+                                ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
     }
 }
 

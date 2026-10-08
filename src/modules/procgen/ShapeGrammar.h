@@ -24,7 +24,7 @@ struct ShapeModuleVariant {
  * suffix. Module symbols do not contain decimal digits, which are reserved for
  * exact repetition. Repetitions fill available spline length without crossing its end.
  */
-class ShapeGrammar {
+class EVENGINE_API_DOMAINS ShapeGrammar {
 public:
     /** @brief Remove every registered symbol and diagnostic. */
     void clear();

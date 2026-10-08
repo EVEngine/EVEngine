@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 
@@ -11,7 +13,8 @@ class SnowField;
 namespace eve::lighting_editing {
 
 /** @brief Non-owning scalar-field adapter for a live interactive snow field. */
-class SnowFieldTarget final : public editing::IEditableTarget, public editing::IScalarFieldTarget {
+class EVENGINE_API_ORCHESTRATION SnowFieldTarget final : public editing::IEditableTarget,
+                                                         public editing::IScalarFieldTarget {
 public:
     /** @brief Bind a live snow field which must outlive this adapter. */
     SnowFieldTarget(std::string id, weather::SnowField* field);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -27,7 +29,7 @@ struct ResourceTypeDef {
 /**
  * @brief 资源类型注册表：注册 / 查询 / 清理。
  */
-class ResourceTypeRegistry {
+class EVENGINE_API_FOUNDATION ResourceTypeRegistry {
 public:
     /** @brief 注册或替换一个资源类型定义。@return false 当 id 为空。 */
     static bool registerType(const ResourceTypeDef& def);

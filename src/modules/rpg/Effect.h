@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 效果系统：数据驱动的 Effect "定义/模板"（类似 GAS 的 GameplayEffect）。
 //
@@ -29,7 +31,7 @@ struct EffectModifierSpec {
     int priority = 0;
 };
 
-struct EffectDefinition {
+struct EVENGINE_API_PLATFORM EffectDefinition {
     std::string id;
 
     /** @brief "instant" | "duration" | "infinite"（未知值按 "instant" 处理）。 */
@@ -59,7 +61,7 @@ struct EffectDefinition {
 };
 
 /** @brief 全局效果定义表：进程级单例，供任意模块 / 脚本按 id 引用。 */
-class EffectRegistry {
+class EVENGINE_API_PLATFORM EffectRegistry {
 public:
     static void registerEffect(const EffectDefinition &def);
     /**

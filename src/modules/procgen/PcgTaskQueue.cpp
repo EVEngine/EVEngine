@@ -4,17 +4,19 @@
 #include <cmath>
 #include <simplesquirrel/simplesquirrel.hpp>
 namespace eve::procgen {
-namespace { template<class T> Result<T> invalid(const char* message) { return Result<T>::failure(Diagnostic::error(
-    DiagnosticCode::InvalidArgument,message,{}, {},"procgen.taskQueue")); } }
+namespace {  }
 Result<std::uint64_t> PcgTaskQueue::add(double wait) {
-    if(!std::isfinite(wait)||wait<0) return invalid<std::uint64_t>("task wait time must be finite and non-negative");
+    if(!std::isfinite(wait)||wait<0) return Result<std::uint64_t>::failure(Diagnostic::error(
+    DiagnosticCode::InvalidArgument,"task wait time must be finite and non-negative",{}, {},"procgen.taskQueue"));
     const auto id=nextId_++; tasks_.push_back({id,wait,wait});
     if(status_==PcgTaskQueueStatus::Idle) status_=PcgTaskQueueStatus::Waiting;
     return Result<std::uint64_t>::success(id);
 }
 Result<PcgTaskQueueStatus> PcgTaskQueue::tick(double dt) {
-    if(!std::isfinite(dt)||dt<0) return invalid<PcgTaskQueueStatus>("delta time must be finite and non-negative");
-    if(status_==PcgTaskQueueStatus::Ready) return invalid<PcgTaskQueueStatus>("ready task must be resolved before ticking");
+    if(!std::isfinite(dt)||dt<0) return Result<PcgTaskQueueStatus>::failure(Diagnostic::error(
+    DiagnosticCode::InvalidArgument,"delta time must be finite and non-negative",{}, {},"procgen.taskQueue"));
+    if(status_==PcgTaskQueueStatus::Ready) return Result<PcgTaskQueueStatus>::failure(Diagnostic::error(
+    DiagnosticCode::InvalidArgument,"ready task must be resolved before ticking",{}, {},"procgen.taskQueue"));
     if(tasks_.empty()) { status_=PcgTaskQueueStatus::Idle; return Result<PcgTaskQueueStatus>::success(status_); }
     cursor_%=tasks_.size(); auto& task=tasks_[cursor_]; task.remaining-=dt;
     if(task.remaining<=1e-12) { readyId_=task.id; status_=PcgTaskQueueStatus::Ready; }
@@ -22,7 +24,8 @@ Result<PcgTaskQueueStatus> PcgTaskQueue::tick(double dt) {
     return Result<PcgTaskQueueStatus>::success(status_);
 }
 Result<PcgTaskQueueStatus> PcgTaskQueue::resolveReady(bool finished) {
-    if(status_!=PcgTaskQueueStatus::Ready||tasks_.empty()) return invalid<PcgTaskQueueStatus>("no task is ready");
+    if(status_!=PcgTaskQueueStatus::Ready||tasks_.empty()) return Result<PcgTaskQueueStatus>::failure(Diagnostic::error(
+    DiagnosticCode::InvalidArgument,"no task is ready",{}, {},"procgen.taskQueue"));
     if(finished) tasks_.erase(tasks_.begin()+static_cast<std::ptrdiff_t>(cursor_));
     else { tasks_[cursor_].remaining=tasks_[cursor_].wait; ++cursor_; }
     readyId_=0;

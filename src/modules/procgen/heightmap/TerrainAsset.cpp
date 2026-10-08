@@ -206,7 +206,7 @@ Result<void> TerrainAsset::openSource(std::shared_ptr<const ITerrainArchiveSourc
     std::string error;
     if (!next.openMetadata(metadata.value().data(), metadata.value().size(), source->size(), &error))
         return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::ParseError, std::move(error), {}, {}, "procgen.terrain-source"));
+            DiagnosticCode::ParseError, error, {}, {}, "procgen.terrain-source"));
     next.source_ = std::move(source);
     *this = std::move(next);
     return Result<void>::success();

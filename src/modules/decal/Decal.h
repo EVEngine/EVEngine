@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Module.h"
 #include "decal/DecalManager.h"
 
@@ -25,7 +26,7 @@ namespace eve::decal {
  * pass (see setEnabled). `decal.update(dt)` must be called each frame to
  * advance fades and evict expired instances.
  */
-class Decal : public Module {
+class EVENGINE_API_WORLD Decal : public Module {
 public:
     Module_REG(Decal);
     Decal();
@@ -115,5 +116,10 @@ private:
 
 /** @brief Register the IDecalQuery capability (implemented in DecalCapabilities.cpp). */
 void registerDecalCapabilities();
+
+/** @brief Register the AttackVfx Decal layer executor (soft-skips when Graphics is absent). */
+void registerDecalAttackVfxExecutor();
+/** @brief Unregister the AttackVfx Decal layer executor. */
+void unregisterDecalAttackVfxExecutor();
 
 }  // namespace eve::decal

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Result.h"
 #include "common/Value.h"
@@ -20,7 +21,7 @@ using MigrationFunction = std::function<eve::Result<eve::Value>(const eve::Value
  * a migrated match contains every explicit edge endpoint. No implicit
  * nearest-version or downgrade behavior is represented by this type.
  */
-struct EVENGINE_API SchemaCompatibility {
+struct EVENGINE_API_FOUNDATION_INLINE SchemaCompatibility {
     std::string      schemaId;
     int              fromVersion = 0;
     int              toVersion   = 0;
@@ -31,7 +32,7 @@ struct EVENGINE_API SchemaCompatibility {
 };
 
 /** @brief Process-wide registry for runtime gameplay schemas. */
-class EVENGINE_API SchemaRegistry {
+class EVENGINE_API_FOUNDATION SchemaRegistry {
 public:
     /** @brief Registers or replaces the exact `(id, version)` entry.
      * @param definition Schema to copy into the registry.

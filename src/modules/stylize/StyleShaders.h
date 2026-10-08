@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/PostEffect.h"
 
@@ -34,27 +36,27 @@ struct StyleParameterDesc {
 };
 
 /** @brief Return a built-in definition, or nullptr when the id is unknown. */
-const StyleDefinition *findStyleDefinition(const std::string &style);
+EVENGINE_API_WORLD const StyleDefinition *findStyleDefinition(const std::string &style);
 
 /** Built-in style ids accepted by string APIs. */
-bool isKnownStyle(const std::string &style);
+EVENGINE_API_WORLD bool isKnownStyle(const std::string &style);
 int styleCount();
 std::string styleIdAt(int index);
 
 /** Feature flags: "post" | "mesh" | "cpu" | "depth" | "normal" | "gbuffer". */
-bool styleSupports(const std::string &style, const std::string &feature);
+EVENGINE_API_WORLD bool styleSupports(const std::string &style, const std::string &feature);
 
 /** Built-in post param name table (for tooling / UI introspection). */
-int styleParamCount(const std::string &style);
+EVENGINE_API_WORLD int                       styleParamCount(const std::string &style);
 std::string styleParamName(const std::string &style, int index);
-const StyleParameterDesc *findStyleParameter(const std::string &style, const std::string &name);
-const StyleParameterDesc *styleParameterAt(const std::string &style, int index);
+EVENGINE_API_WORLD const StyleParameterDesc *findStyleParameter(const std::string &style, const std::string &name);
+EVENGINE_API_WORLD const StyleParameterDesc *styleParameterAt(const std::string &style, int index);
 
 /** Declare + seed default push-constant uniforms for a post style shader. */
 void bindPostUniforms(graphics::Shader *shader, const std::string &style);
 
 /** Declare + seed defaults for a mesh style shader. */
-void bindMeshUniforms(graphics::Shader *shader, const std::string &style);
+EVENGINE_API_WORLD void bindMeshUniforms(graphics::Shader *shader, const std::string &style);
 
 /** Create a 2D post-process Shader from embedded SPIR-V (owned by Graphics). */
 graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &style);
@@ -63,6 +65,6 @@ graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &s
  * Create a 3D mesh Shader for styles that have object-space variants.
  * cartoon → reuse graphics mesh3d_toon SPIR-V; ink → ink_mesh; others → nullptr.
  */
-graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &style);
+EVENGINE_API_WORLD graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &style);
 
 }  // namespace eve::stylize

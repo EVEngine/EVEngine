@@ -23,6 +23,6 @@ namespace eve::procgen {
  * @param error Failure description.
  * @return True when a non-empty mesh was generated.
  */
-bool generateHexTerrainMesh(const Params& params, MeshBuild& out, std::string& error);
+EVENGINE_API_DOMAINS bool generateHexTerrainMesh(const Params& params, MeshBuild& out, std::string& error);
 
 }  // namespace eve::procgen

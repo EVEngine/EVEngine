@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "archspace/ArchSpaceTypes.h"
 #include "common/Result.h"
@@ -17,7 +19,7 @@ namespace eve::archspace {
  * @thread Owner thread only.
  * @failure Mutators return a checked Result and leave the previous document state unchanged.
  */
-class Document {
+class EVENGINE_API_WORLD Document {
 public:
     Document() = default;
 

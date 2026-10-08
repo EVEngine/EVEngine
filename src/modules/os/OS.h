@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/FramePacing.h"
@@ -14,7 +16,7 @@ namespace eve::os {
  *
  * Script: `os <- eve.OS();`.
  */
-class OS : public Module, public IFramePacing {
+class EVENGINE_API_FOUNDATION OS : public Module, public IFramePacing {
 public:
     Module_REG(OS);
     OS();

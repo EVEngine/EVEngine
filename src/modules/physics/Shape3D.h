@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "physics/PhysicsHandles.h"
 
@@ -20,7 +22,7 @@ struct WorldSnapshotAccess;
  * @brief 3D shape (box/sphere/capsule) attached to a Body3D with material
  * settings. Created via Body3D::new*Shape; owned by the world.
  */
-class Shape3D {
+class EVENGINE_API_WORLD Shape3D {
 public:
     /** @brief Shape geometry kind. */
     enum class Kind { Box, Sphere, Capsule, ConvexHull, TriangleMesh, HeightField };

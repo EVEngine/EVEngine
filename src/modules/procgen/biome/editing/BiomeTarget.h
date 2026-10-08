@@ -1,7 +1,9 @@
 #pragma once
+
 #include <memory>
 #include <string>
 #include <vector>
+#include "common/Export.h"
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
 #include "editing/EditingProperty.h"
@@ -17,8 +19,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -55,12 +56,12 @@ using editing::validatePropertyValue;
     std::vector<BiomeAssetValue> assets;
 };
 /** @brief Revisioned BiomeRules asset. */
-class BiomeDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public IPropertyProvider,
-                                  public IEditingSnapshotProvider {
+class EVENGINE_API_ORCHESTRATION BiomeDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                             public virtual IEditableTarget,
+                                                             public IDomainOperationTarget,
+                                                             public IDomainOperationTargetStaging,
+                                                             public IPropertyProvider,
+                                                             public IEditingSnapshotProvider {
 public:
     explicit BiomeDocumentTarget(std::string id);
     /** @brief Capability identity published by describe() for Inspector property editing. */
@@ -76,30 +77,30 @@ public:
      * @thread Owner-thread only.
      */
     void*                                   queryCapability(const CapabilityId&) override;
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     PropertySchema                          schema(const SelectionSnapshot&) const override;
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
-    EditorResult<DomainOperation>           makeCreateLayer(const BiomeLayerValue&) const;
-    EditorResult<DomainOperation>           makeDeleteLayer(const ObjectId&) const;
-    EditorResult<DomainOperation>           makeCreateAsset(const ObjectId& layer, const BiomeAssetValue&) const;
-    EditorResult<DomainOperation>           makeDeleteAsset(const ObjectId&) const;
-    EditorResult<DomainOperation>           makeSetExclusions(std::vector<std::string>) const;
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation>           makeCreateLayer(const BiomeLayerValue&) const;
+    Result<DomainOperation>           makeDeleteLayer(const ObjectId&) const;
+    Result<DomainOperation>           makeCreateAsset(const ObjectId& layer, const BiomeAssetValue&) const;
+    Result<DomainOperation>           makeDeleteAsset(const ObjectId&) const;
+    Result<DomainOperation>           makeSetExclusions(std::vector<std::string>) const;
     const std::vector<BiomeLayerValue>&     layers() const { return layers_; }
     const std::vector<std::string>&         exclusions() const { return exclusions_; }
     std::vector<EditorDiagnostic>           validate() const;
     EditorValue                             snapshotValue() const override;
-    EditorResult<void>                      loadSnapshot(const EditorValue&);
+    Result<void>                      loadSnapshot(const EditorValue&);
 
 private:
     bool                          matches(const SelectionSnapshot&) const;
     EditorValue                   contentValue() const;
-    EditorResult<DomainOperation> replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation> replacement(EditorValue, std::string = {}) const;
     std::string                   id_;
     std::vector<BiomeLayerValue>  layers_;
     std::vector<std::string>      exclusions_;
@@ -114,21 +115,21 @@ public:
      * @lifetime Valid for the duration of publish(); must not be retained afterward.
      * @thread Owner-thread only.
      */
-    virtual EditorResult<procgen::SpatialData*> resolve(const std::string&) const = 0;
+    virtual Result<procgen::SpatialData*> resolve(const std::string&) const = 0;
 };
 /** @brief Candidate-first BiomeRules generation. */
-class BiomeDocumentRuntime {
+class EVENGINE_API_ORCHESTRATION BiomeDocumentRuntime {
 public:
     BiomeDocumentRuntime();
     ~BiomeDocumentRuntime();
-    EditorResult<void> publish(const BiomeDocumentTarget&, const IBiomeSpatialResolver&);
+    Result<void> publish(const BiomeDocumentTarget&, const IBiomeSpatialResolver&);
     /**
      * @brief Generate a PointSet from a previously published candidate.
      * @param domain Borrowed spatial query domain; must outlive this call.
      * @ownership Success transfers the PointSet to the caller.
      * @thread Owner-thread only.
      */
-    EditorResult<std::unique_ptr<procgen::PointSet>> preview(procgen::SpatialData* domain, float spacing,
+    Result<std::unique_ptr<procgen::PointSet>> preview(procgen::SpatialData* domain, float spacing,
                                                              std::uint32_t seed, float jitter,
                                                              Revision expectedRevision);
     /**

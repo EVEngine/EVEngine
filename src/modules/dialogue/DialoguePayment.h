@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file DialoguePayment.h
@@ -31,7 +33,7 @@ namespace eve::dialogue {
  * not a balance mirror: the actual values are read and changed only through
  * the account adapters supplied to DialoguePaymentAdapter.
  */
-struct PaymentSpec {
+struct EVENGINE_API_ORCHESTRATION PaymentSpec {
     /** @brief Optional money amount, in the configured money resource. */
     std::optional<std::int64_t> money;
     /** @brief Optional reputation amount, in the configured reputation resource. */
@@ -120,7 +122,7 @@ private:
  * already committed debits are compensated.  The call is synchronous and
  * non-reentrant on the owner thread.
  */
-class DialoguePaymentAdapter final {
+class EVENGINE_API_ORCHESTRATION DialoguePaymentAdapter final {
 public:
     /** @brief Construct an adapter with borrowed account bindings. */
     explicit DialoguePaymentAdapter(DialogueAccountBindings bindings = {});

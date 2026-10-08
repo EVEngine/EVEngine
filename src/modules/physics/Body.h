@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "physics/PhysicsHandles.h"
 
@@ -16,7 +18,7 @@ class Fixture;
  * @brief 2D rigid body (Box2D) in pixel-space coordinates.
  * Owned by a World; create shapes with newRectangleFixture/newCircleFixture.
  */
-class Body {
+class EVENGINE_API_WORLD Body {
 public:
     /** @brief Internal: wraps a Box2D body (use World::newBody). */
     Body(World *world, b2Body *body, int id, PhysicsBodyHandle runtimeHandle);

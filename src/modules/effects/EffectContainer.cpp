@@ -12,17 +12,17 @@ namespace {
 
 eve::Result<std::string> rejected(std::string message) {
     return eve::Result<std::string>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message)));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message));
 }
 
 eve::Result<std::string> conflict(std::string message) {
     return eve::Result<std::string>::failure(
-        eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message))));
+        eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message)));
 }
 
 eve::Result<void> notFound(std::string message) {
     return eve::Result<void>::failure(
-        eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move(message))));
+        eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, message)));
 }
 
 eve::Result<EffectUpdateSummary> invalidDelta() {
@@ -386,6 +386,62 @@ eve::Result<void> EffectContainer::remove(eve::EffectId id, const std::string& r
     emit(EffectEventKind::Removed, **it, reason);
     effects_.erase(it);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<std::vector<std::string>> EffectContainer::dispel(const std::string& subject,
+                                                              const std::string& categoryTag, int strength,
+                                                              std::size_t maxCount, const std::string& reason) {
+    if (subject.empty())
+        return eve::Result<std::vector<std::string>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dispel subject must not be empty",
+                                   "subject"));
+    if (categoryTag.empty())
+        return eve::Result<std::vector<std::string>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dispel category tag must not be empty",
+                                   "categoryTag"));
+    if (reason.empty())
+        return eve::Result<std::vector<std::string>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dispel reason must not be empty",
+                                   "reason"));
+    if (maxCount == 0)
+        return eve::Result<std::vector<std::string>>::success(
+            {}, eve::Status::success(eve::StatusCode::NoOp));
+
+    struct Candidate {
+        std::string id;
+        int         priority = 0;
+        std::size_t order    = 0;
+    };
+    std::vector<Candidate> matches;
+    matches.reserve(effects_.size());
+    std::size_t order = 0;
+    for (const auto& instance : effects_) {
+        if (instance->subject == subject && instance->priority <= strength && instance->hasTag(categoryTag) &&
+            !instance->hasTag("effect:undispellable"))
+            matches.push_back({instance->id, instance->priority, order});
+        ++order;
+    }
+    std::stable_sort(matches.begin(), matches.end(), [](const Candidate& left, const Candidate& right) {
+        if (left.priority != right.priority) return left.priority > right.priority;
+        return left.order < right.order;
+    });
+    if (matches.size() > maxCount) matches.resize(maxCount);
+    if (matches.empty())
+        return eve::Result<std::vector<std::string>>::success(
+            {}, eve::Status::success(eve::StatusCode::NoOp));
+
+    EffectContainer          candidate = snapshot();
+    std::vector<std::string> removed;
+    removed.reserve(matches.size());
+    for (const auto& match : matches) {
+        auto removal = candidate.remove(match.id, reason);
+        if (!removal) return eve::Result<std::vector<std::string>>::failure(removal.status());
+        removed.push_back(match.id);
+    }
+    auto committed = restore(candidate);
+    if (!committed) return eve::Result<std::vector<std::string>>::failure(committed.status());
+    return eve::Result<std::vector<std::string>>::success(
+        std::move(removed), eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<EffectUpdateSummary> EffectContainer::advanceInstances(double dtSeconds, eve::SimulationTick tick) {

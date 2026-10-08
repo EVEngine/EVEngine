@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file AnimationClipEditor.h
@@ -33,7 +34,7 @@ namespace eve::animation_editor {
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class AnimationClipEditor {
+class EVENGINE_API_EDITORS AnimationClipEditor {
 public:
     /** @brief Construct a seeded two-bone preview clip. */
     explicit AnimationClipEditor(std::string targetId);
@@ -45,7 +46,7 @@ public:
      * @return Applied, or a structured rejection when the runtime inputs are invalid.
      * @thread Owner thread only. @reentrancy Does not invoke scripts or callbacks.
      */
-    [[nodiscard]] animation_editing::EditorResult<void> loadRuntimeClip(const animation::AnimSkeleton& skeleton,
+    [[nodiscard]] animation_editing::Result<void> loadRuntimeClip(const animation::AnimSkeleton& skeleton,
                                                                         const animation::AnimClip& clip);
     /**
      * @brief Replace a runtime clip with the current authoritative editor document.
@@ -54,7 +55,7 @@ public:
      * @return Applied, or a structured error; failure leaves @p clip unchanged.
      * @thread Owner thread only. @reentrancy Does not invoke scripts or callbacks.
      */
-    [[nodiscard]] animation_editing::EditorResult<void> writeRuntimeClip(animation::AnimClip& clip,
+    [[nodiscard]] animation_editing::Result<void> writeRuntimeClip(animation::AnimClip& clip,
                                                                          const animation::AnimSkeleton& skeleton) const;
 
     AnimationClipEditor(const AnimationClipEditor&)            = delete;
@@ -67,7 +68,7 @@ public:
      * @brief Install Skeleton / Pose Preview / Inspector / Dope panels.
      * @note Does not retain @p workspace.
      */
-    [[nodiscard]] animation_editing::EditorResult<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+    [[nodiscard]] animation_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
 
     /**
      * @brief Configure dope-sheet pixel layout.
@@ -75,46 +76,46 @@ public:
      * @param rowHeight Track row height.
      * @param labelWidth Left bone-name column width.
      */
-    [[nodiscard]] animation_editing::EditorResult<void> setViewport(float width, float rowHeight, float labelWidth);
+    [[nodiscard]] animation_editing::Result<void> setViewport(float width, float rowHeight, float labelWidth);
 
-    [[nodiscard]] animation_editing::EditorResult<void> seekSeconds(double seconds);
-    [[nodiscard]] animation_editing::EditorResult<void> seekX(float x);
-    [[nodiscard]] animation_editing::EditorResult<void> pointerDown(float x, float y);
-    [[nodiscard]] animation_editing::EditorResult<void> selectBone(std::string bone);
-    [[nodiscard]] animation_editing::EditorResult<void> setMaskWeight(double weight);
+    [[nodiscard]] animation_editing::Result<void> seekSeconds(double seconds);
+    [[nodiscard]] animation_editing::Result<void> seekX(float x);
+    [[nodiscard]] animation_editing::Result<void> pointerDown(float x, float y);
+    [[nodiscard]] animation_editing::Result<void> selectBone(std::string bone);
+    [[nodiscard]] animation_editing::Result<void> setMaskWeight(double weight);
     /**
      * @brief Commit clip duration through the document transaction path.
      * @param duration New duration in seconds; must be positive and finite.
      */
-    [[nodiscard]] animation_editing::EditorResult<void> setDuration(double duration);
+    [[nodiscard]] animation_editing::Result<void> setDuration(double duration);
     /**
      * @brief Commit authored sample rate through the document transaction path.
      * @param sampleRate New sample rate; must be positive and finite.
      */
-    [[nodiscard]] animation_editing::EditorResult<void> setSampleRate(double sampleRate);
+    [[nodiscard]] animation_editing::Result<void> setSampleRate(double sampleRate);
     /** @brief Commit looping through the document transaction path. */
-    [[nodiscard]] animation_editing::EditorResult<void> setLoop(bool loop);
+    [[nodiscard]] animation_editing::Result<void> setLoop(bool loop);
     /** @brief Insert or replace a transform key for the selected bone at the playhead. */
-    [[nodiscard]] animation_editing::EditorResult<void> keySelectedBone();
+    [[nodiscard]] animation_editing::Result<void> keySelectedBone();
     /** @brief Delete the selected transform key. */
-    [[nodiscard]] animation_editing::EditorResult<void> deleteSelectedKey();
+    [[nodiscard]] animation_editing::Result<void> deleteSelectedKey();
     /** @brief Replace the selected bone position at the playhead and create a key when needed. */
-    [[nodiscard]] animation_editing::EditorResult<void> setSelectedPosition(double x, double y, double z);
+    [[nodiscard]] animation_editing::Result<void> setSelectedPosition(double x, double y, double z);
     /** @brief Replace the selected bone Euler rotation in degrees and create a key when needed. */
-    [[nodiscard]] animation_editing::EditorResult<void> setSelectedRotation(double xDegrees, double yDegrees,
+    [[nodiscard]] animation_editing::Result<void> setSelectedRotation(double xDegrees, double yDegrees,
                                                                             double zDegrees);
     /** @brief Replace the selected bone scale at the playhead and create a key when needed. */
-    [[nodiscard]] animation_editing::EditorResult<void> setSelectedScale(double x, double y, double z);
-    [[nodiscard]] animation_editing::EditorResult<void> moveSelectedKey(double time);
+    [[nodiscard]] animation_editing::Result<void> setSelectedScale(double x, double y, double z);
+    [[nodiscard]] animation_editing::Result<void> moveSelectedKey(double time);
 
-    [[nodiscard]] animation_editing::EditorResult<editor::TransactionReceipt> undo();
-    [[nodiscard]] animation_editing::EditorResult<editor::TransactionReceipt> redo();
+    [[nodiscard]] animation_editing::Result<editor::TransactionReceipt> undo();
+    [[nodiscard]] animation_editing::Result<editor::TransactionReceipt> redo();
 
     void play() noexcept;
     void pause() noexcept;
     void stop() noexcept;
     /** @brief Advance playhead by injected dt and refresh pose/overlay. */
-    [[nodiscard]] animation_editing::EditorResult<void> update(double deltaSeconds);
+    [[nodiscard]] animation_editing::Result<void> update(double deltaSeconds);
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
@@ -183,10 +184,10 @@ private:
         int                         row      = 0;
     };
 
-    [[nodiscard]] animation_editing::EditorResult<void> commit(
-        animation_editing::EditorResult<animation_editing::DomainOperation> operation, std::string label);
-    [[nodiscard]] animation_editing::EditorResult<void> refreshPreview();
-    [[nodiscard]] animation_editing::EditorResult<void> updateSelectedTransform(
+    [[nodiscard]] animation_editing::Result<void> commit(
+        animation_editing::Result<animation_editing::DomainOperation> operation, std::string label);
+    [[nodiscard]] animation_editing::Result<void> refreshPreview();
+    [[nodiscard]] animation_editing::Result<void> updateSelectedTransform(
         const animation_editing::AnimationTransformKey& value, std::string label);
     [[nodiscard]] animation_editing::AnimationTransformKey sampledSelectedTransform() const;
     void                                                seedPreviewClip();

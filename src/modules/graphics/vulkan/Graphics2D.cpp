@@ -421,8 +421,8 @@ image::ImageData *Graphics::renderEntityIdMask(
     // 上层可通过 getDepthTexture()/getNormalTexture() 读取本次离屏 ID 渲染
     // 生成的深度/法线（供 capture_render_frame 的 depth/normal 复用）。
     if (RenderControl *rc = getRenderControl()) {
-        rc->getGBuffer()->setTargets(int(w), int(h), &slot->depthColorTex, &slot->normalTex,
-                                     &slot->albedoTex, &slot->depthTex);
+        rc->getGBuffer()->setTargets(int(w), int(h), &slot->depthColorTex, &slot->normalTex, &slot->albedoTex,
+                                     &slot->depthTex, &slot->pbrParamsTex, &slot->emissiveTex);
     }
     return img;
 }
@@ -438,6 +438,10 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
         src = &slot->normal;
     else if (attachment == "albedo")
         src = &slot->albedo;
+    else if (attachment == "pbrParams")
+        src = &slot->pbrParams;
+    else if (attachment == "emissive")
+        src = &slot->emissive;
     else
         return nullptr;
 
@@ -944,20 +948,36 @@ void Graphics::ensureFlatNormalTexture() {
     flatNormalTexture = newTexture(1, 1, px);
 }
 
-void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w,
-                                     float h, float u0, float v0, float u1, float v1,
-                                     const Color &color) {
+void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0,
+                                     float v0, float u1, float v1, const Color &color, BlendMode blend) {
     if (!albedo) {
-        drawSolidRect(x, y, w, h, color);
+        drawSolidRect(x, y, w, h, color, blend);
         return;
     }
     ensureFlatNormalTexture();
     if (!normal) normal = flatNormalTexture;
-    if (litBatches.empty() || litBatches.back().albedo != albedo ||
-        litBatches.back().normal != normal) {
-        litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
+    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal ||
+        litBatches.back().blend != blend) {
+        litBatches.push_back(LitBatch{albedo, normal, blend, Batcher{}});
     }
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
+    noteLitOverlay(uint32_t(litBatches.size() - 1));
+}
+
+void Graphics::drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w, float h,
+                                            float degrees, float u0, float v0, float u1, float v1, const Color &color,
+                                            BlendMode blend) {
+    if (!albedo) {
+        drawSolidRectRotated(cx, cy, w, h, degrees, color, blend);
+        return;
+    }
+    ensureFlatNormalTexture();
+    if (!normal) normal = flatNormalTexture;
+    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal ||
+        litBatches.back().blend != blend) {
+        litBatches.push_back(LitBatch{albedo, normal, blend, Batcher{}});
+    }
+    litBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1);
     noteLitOverlay(uint32_t(litBatches.size() - 1));
 }
 
@@ -1025,11 +1045,10 @@ vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth, GpuTex
     return bound;
 }
 
-void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline litPipeline,
-                              std::vector<LitBatch> &batches,
-                              std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex,
-                              bool offscreen) {
-    if (!litPipeline || batches.empty() || !lit2dPipelineLayout) return;
+void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, std::vector<LitBatch> &batches,
+                              std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex, bool offscreen,
+                              bool hdr) {
+    if (batches.empty() || !lit2dPipelineLayout) return;
     lighting2dFrame.meta.y = float(viewW);
     lighting2dFrame.meta.z = float(viewH);
     vkb::GenericBuffer &ubo = offscreen ? offscreenLighting2dUbo : currentLighting2dUbo();
@@ -1037,6 +1056,8 @@ void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pi
 
     for (auto &lb : batches) {
         if (lb.batch.empty() || !lb.albedo || !lb.albedo->gpuHandle) continue;
+        vk::Pipeline litPipeline = selectLit2DPipeline(lb.blend, offscreen, hdr);
+        if (!litPipeline) continue;
         ensureFlatNormalTexture();
         Texture *ntex = lb.normal ? lb.normal : flatNormalTexture;
         if (!ntex || !ntex->gpuHandle) continue;
@@ -1363,7 +1384,18 @@ void Graphics::flushToSwapchain() {
         renderUiOverlayPass();
     }
 
-    if (hasScenePath || !continue3D) {
+    // HDR present: compose scene + overlays in paper-white-relative linear space,
+    // then encode once into the swapchain. SDR (and the rare already-open 3D
+    // path) keep drawing directly into the present pass.
+    const bool useHdrCompose =
+        isDisplayHdrActive() && (hasScenePath || !continue3D) && !swapchainPassOpen;
+    if (useHdrCompose) {
+        if (!beginPresentComposePass()) {
+            // Compose target unavailable — fall back to direct swapchain draws.
+            beginSwapchainColorPass();
+            swapchainPassOpen = true;
+        }
+    } else if (hasScenePath || !continue3D) {
         beginSwapchainColorPass();
         swapchainPassOpen = true;
     }
@@ -1391,6 +1423,21 @@ void Graphics::flushToSwapchain() {
     size_t texBufIndex = 0;
 
     auto swapchainTexPipe = [&](BlendMode mode) -> vk::Pipeline {
+        if (presentComposeActive_) {
+            switch (mode) {
+                case BlendMode::Additive:
+                    return hdrOffscreenAdditiveTexPipeline;
+                case BlendMode::Premultiplied:
+                    return hdrOffscreenPremultipliedTexPipeline;
+                case BlendMode::Multiply:
+                    return hdrOffscreenMultiplyTexPipeline;
+                case BlendMode::Opaque:
+                    return hdrOffscreenOpaqueTexPipeline;
+                case BlendMode::Alpha:
+                default:
+                    return hdrOffscreenTexPipeline;
+            }
+        }
         switch (mode) {
             case BlendMode::Additive:
                 return additiveTexPipeline;
@@ -1406,6 +1453,21 @@ void Graphics::flushToSwapchain() {
         }
     };
     auto swapchainSolidPipe = [&](BlendMode mode) -> vk::Pipeline {
+        if (presentComposeActive_) {
+            switch (mode) {
+                case BlendMode::Additive:
+                    return hdrOffscreenAdditiveSolidPipeline;
+                case BlendMode::Premultiplied:
+                    return hdrOffscreenPremultipliedSolidPipeline;
+                case BlendMode::Multiply:
+                    return hdrOffscreenMultiplySolidPipeline;
+                case BlendMode::Alpha:
+                    return hdrOffscreenSolidAlphaPipeline;
+                case BlendMode::Opaque:
+                default:
+                    return hdrOffscreenSolidPipeline;
+            }
+        }
         switch (mode) {
             case BlendMode::Additive:
                 return additiveSolidPipeline;
@@ -1420,6 +1482,14 @@ void Graphics::flushToSwapchain() {
                 return pipeline;
         }
     };
+    const vk::Pipeline tonemapPipe =
+        presentComposeActive_ && hdrOffscreenTonemapPipeline ? hdrOffscreenTonemapPipeline
+                                                             : sceneTonemapPipeline;
+    const vk::Pipeline distortionPipe =
+        presentComposeActive_ && hdrOffscreenParticleDistortionPipeline
+            ? hdrOffscreenParticleDistortionPipeline
+            : particleDistortionPipeline;
+    const bool litAvailable = lit2dPipeline || (presentComposeActive_ && hdrOffscreenLitPipeline);
 
     auto drawTextured = [&](TexturedBatch &tb, bool toneMapScene = false) {
         if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
@@ -1451,15 +1521,28 @@ void Graphics::flushToSwapchain() {
         vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
         if (tb.effect == TexturedBatch::Effect::SceneColorDistortion) {
-            if (!particleDistortionPipeline) return;
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, particleDistortionPipeline);
+            if (!distortionPipe) return;
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, distortionPipe);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0, nullptr);
+        } else if (tb.effect == TexturedBatch::Effect::DisplayEncode) {
+            if (!tonemapPipe) return;
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, tonemapPipe);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0,
+                                  nullptr);
         } else if (tb.shader && tb.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
-            vk::Pipeline customPipeline =
-                tb.blend == BlendMode::Opaque && gs->swapchainOpaquePipeline
-                    ? gs->swapchainOpaquePipeline
-                    : gs->swapchainPipeline;
+            vk::Pipeline customPipeline = nullptr;
+            if (presentComposeActive_) {
+                ensureShaderHdrOffscreenPipeline(tb.shader);
+                customPipeline = tb.blend == BlendMode::Opaque && gs->hdrOffscreenOpaquePipeline
+                                     ? gs->hdrOffscreenOpaquePipeline
+                                     : gs->hdrOffscreenPipeline;
+            } else {
+                customPipeline = tb.blend == BlendMode::Opaque && gs->swapchainOpaquePipeline
+                                     ? gs->swapchainOpaquePipeline
+                                     : gs->swapchainPipeline;
+            }
+            if (!customPipeline) return;
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, customPipeline);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1,
                                   &texSet, 0, nullptr);
@@ -1467,7 +1550,7 @@ void Graphics::flushToSwapchain() {
                              vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                              Shader::kPushConstantBytes, tb.shader->pushConstantData());
         } else {
-            vk::Pipeline pipe = toneMapScene ? sceneTonemapPipeline : swapchainTexPipe(tb.blend);
+            vk::Pipeline pipe = toneMapScene ? tonemapPipe : swapchainTexPipe(tb.blend);
             if (!pipe) return;
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1,
@@ -1509,13 +1592,13 @@ void Graphics::flushToSwapchain() {
         for (const auto &sp : list) {
             if (sp.kind == OverlayKind::Solid && sp.index < solid.size() && sp.vertCount > 0) {
                 drawSolidSpan(sp.index, sp.vertBegin, sp.vertCount);
-            } else if (sp.kind == OverlayKind::Textured && texPipeline &&
+            } else if (sp.kind == OverlayKind::Textured && (texPipeline || hdrOffscreenTexPipeline) &&
                        sp.index < textured.size()) {
                 drawTextured(textured[sp.index]);
-            } else if (sp.kind == OverlayKind::Lit && lit2dPipeline && sp.index < lit.size()) {
+            } else if (sp.kind == OverlayKind::Lit && litAvailable && sp.index < lit.size()) {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
-                drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+                drawLitBatches(cb, width, height, one, texBufs, texBufIndex, false);
             } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
                 drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
@@ -1566,17 +1649,16 @@ void Graphics::flushToSwapchain() {
             if (!solid[i].batch.empty())
                 drawSolidSpan(uint32_t(i), 0, uint32_t(solid[i].batch.vertices().size()));
         }
-        if (texPipeline) {
+        if (texPipeline || hdrOffscreenTexPipeline) {
             for (auto &tb : textured) drawTextured(tb);
         }
-        if (lit2dPipeline) drawLitBatches(cb, width, height, lit2dPipeline, lit, texBufs, texBufIndex,
-                                          false);
+        if (litAvailable) drawLitBatches(cb, width, height, lit, texBufs, texBufIndex, false);
     } else {
         for (const auto &sp : spans) {
             if (sp.kind == OverlayKind::Solid && sp.index < solid.size() && sp.vertCount > 0) {
                 drawSolidSpan(sp.index, sp.vertBegin, sp.vertCount);
-            } else if (sp.kind == OverlayKind::Textured && texPipeline &&
-                       sp.index < textured.size()) {
+            } else if (sp.kind == OverlayKind::Textured &&
+                       (texPipeline || hdrOffscreenTexPipeline) && sp.index < textured.size()) {
                 // Distortion overlays sample scene color; they are not
                 // drawScene3D placements. Replacing them with the ACES
                 // resolve skips particleDistortionPipeline and can cover
@@ -1592,10 +1674,10 @@ void Graphics::flushToSwapchain() {
                 if (placedScene) {
                     drawEngine3D();
                 }
-            } else if (sp.kind == OverlayKind::Lit && lit2dPipeline && sp.index < lit.size()) {
+            } else if (sp.kind == OverlayKind::Lit && litAvailable && sp.index < lit.size()) {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
-                drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+                drawLitBatches(cb, width, height, one, texBufs, texBufIndex, false);
             } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
                 drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
@@ -1612,6 +1694,15 @@ void Graphics::flushToSwapchain() {
     if (presentOverlayFn_ && continue3D && !hadScenePass) {
         VkCommandBuffer raw = static_cast<VkCommandBuffer>(cb);
         presentOverlayFn_(presentOverlayUser_, raw);
+    }
+
+    if (presentComposeActive_) {
+        endPresentComposePass();
+        beginSwapchainColorPass();
+        swapchainPassOpen = true;
+        auto &presentCb = currentPresentCb();
+        setViewportAndScissor(presentCb, swapchain.extent.width, swapchain.extent.height);
+        encodePresentComposeToSwapchain(presentCb);
     }
 
     presentRecording = swapchainPass.endRenderPass();

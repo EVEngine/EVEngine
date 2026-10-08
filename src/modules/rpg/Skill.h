@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 技能系统：数据驱动的 SkillDefinition（消耗、冷却、读条时间、命中后授予的效果……）。
 //
@@ -38,7 +40,7 @@ struct SkillDefinition {
     bool hasTag(const std::string &tag) const;
 };
 
-class SkillRegistry {
+class EVENGINE_API_PLATFORM SkillRegistry {
 public:
     /**
      * @brief Return the common registry that owns canonical skill JSON.

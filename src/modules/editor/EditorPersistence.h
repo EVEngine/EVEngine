@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorDocumentService.h"
 #include "editor/EditorProtocol.h"
@@ -24,7 +26,7 @@ struct EditorPersistenceSnapshot {
  * use DiskAtomicDocumentStore for scene documents and adapt their game save
  * service to IAtomicDocumentStore for savegame slots.
  */
-class EditorPersistenceAdapter {
+class EVENGINE_API_ORCHESTRATION EditorPersistenceAdapter {
 public:
     /**
      * @brief Bind one logical persistence target.
@@ -36,13 +38,13 @@ public:
         : kind_(kind), store_(store), resourceUri_(std::move(resourceUri)) {}
 
     /** @brief Load the last committed checkpoint and journal. */
-    EditorResult<EditorPersistenceSnapshot> load() const;
+    Result<EditorPersistenceSnapshot> load() const;
     /** @brief Atomically commit a checkpoint against its loaded revision/hash. */
-    EditorResult<EditorPersistenceSnapshot> commit(const EditorPersistenceSnapshot& base, EditorValue content,
+    Result<EditorPersistenceSnapshot> commit(const EditorPersistenceSnapshot& base, EditorValue content,
                                                    std::vector<DomainOperation> journal);
 
 private:
-    static EditorResult<EditorPersistenceSnapshot> decode(EditorPersistenceKind kind, const StoredDocument& stored);
+    static Result<EditorPersistenceSnapshot> decode(EditorPersistenceKind kind, const StoredDocument& stored);
     EditorPersistenceKind                          kind_;
     IAtomicDocumentStore*                          store_ = nullptr;
     std::string                                    resourceUri_;

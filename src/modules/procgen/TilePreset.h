@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string_view>
@@ -48,7 +50,7 @@ struct TilePresetVariant {
  * @return Deterministic tile category, rotation, mirror flag and reference configuration.
  * @note Configuration 350 is intentionally `None`, matching the reference table's unclassified entry.
  */
-[[nodiscard]] TilePresetVariant resolveTilePreset(std::uint8_t neighbourMask) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS TilePresetVariant resolveTilePreset(std::uint8_t neighbourMask) noexcept;
 
 /** @brief Stable lowercase identifier used in mesh build-layer group names. */
 [[nodiscard]] std::string_view tilePresetKindName(TilePresetKind kind) noexcept;

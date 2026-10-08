@@ -1,6 +1,11 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
+#include "common/SubjectRef.h"
+#include "settlement/Settlement.h"
+#include "settlement/SettlementRules.h"
 
 /**
  * @file Battle.h
@@ -19,25 +24,26 @@ namespace eve::rpg {
 
 class RPGActor;
 class BattleTacticsCatalogue;
+struct StatusTickEvent;
 
 /** @brief 阵营是任意整数 id（0/1 仅为常见约定的便捷常量，可自定义更多阵营）。 */
 namespace BattleSide {
-inline constexpr int Party = 0;
+inline constexpr int Party   = 0;
 inline constexpr int Enemies = 1;
-}
+}  // namespace BattleSide
 
 /** @brief Deterministic target-selection policies for queued battle actions. */
 enum class BattleTargetPolicy { Auto, Self, LowestHealthAlly, LowestHealthEnemy };
 
 /** @brief 一次战斗反馈事件。 */
 struct BattleEvent {
-    /** @brief roundStart | actionStart | damage | heal | miss | effect | victory | defeat */
-    std::string action;
-    std::string skillId;
-    class RPGActor *caster = nullptr;
-    class RPGActor *target = nullptr;
-    double amount = 0.0;
-    bool crit = false;
+    /** @brief roundStart | actionStart | damage | heal | miss | effect | settlementFailed | victory | defeat */
+    std::string     action;
+    std::string     skillId;
+    class RPGActor* caster = nullptr;
+    class RPGActor* target = nullptr;
+    double          amount = 0.0;
+    bool            crit   = false;
 };
 
 /**
@@ -45,18 +51,39 @@ struct BattleEvent {
  * @ownership 由调用方创建/销毁；Battle 不持有参与者的所有权（参与者为借用 ECS actor）。
  * @thread 在单一模拟线程上驱动整场战斗。
  */
-class Battle {
+class EVENGINE_API_PLATFORM Battle {
 public:
-    Battle() = default;
+    Battle()  = default;
     ~Battle() = default;
 
-    Battle(const Battle &) = delete;
-    Battle &operator=(const Battle &) = delete;
+    Battle(const Battle&)            = delete;
+    Battle& operator=(const Battle&) = delete;
 
     /** @brief 加入参战者；side 为任意阵营 id。 */
-    void addActor(RPGActor *actor, int side);
+    void addActor(RPGActor* actor, int side);
+    /**
+     * @brief Replace declarative buff/effect rules used by subsequent battle settlements.
+     * @param rules Validated rule set to install.
+     * @return Applied, or a structured configuration failure while retaining the previous rules.
+     * @thread Call on the battle's owning simulation thread between rounds.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> configureSettlementRules(const settlement::SettlementRuleSet& rules);
+    /**
+     * @brief Execute one emitted periodic status tick through this battle's canonical settlement path.
+     * @param tick Tick whose target actor must be a current battle participant.
+     * @param source Stable source identity, or nil when the effect source is not a participant identity.
+     * @param simulationTick Deterministic scheduler tick recorded in settlement and replay data.
+     * @return Owning root/derived outcomes in stable chain order, or a checked projection/chain failure.
+     * @remarks Successful numeric outcomes publish the same VitalsEvent and BattleEvent forms as actions.
+     * @thread Call on the battle and actor owning simulation thread after StatusSystem emits the tick.
+     * @reentrancy Does not invoke scripts; policies must not re-enter this battle.
+     * @cost One normal settlement per root/derived request plus active status projection for each chain item.
+     */
+    [[nodiscard]] eve::Result<std::vector<settlement::SettlementBatchItemResult>> settleStatusTick(
+        const StatusTickEvent& tick, SubjectRef source, SimulationTick simulationTick);
     /** @brief 为参战者设置本回合行动；target 为空由目标规则自动解析。 */
-    void setAction(RPGActor *actor, const std::string &skillId, RPGActor *target = nullptr);
+    void setAction(RPGActor* actor, const std::string& skillId, RPGActor* target = nullptr);
     /**
      * @brief Validate and queue exactly one action for a living participant this round.
      * @return Applied, or a structured failure without mutating the pending action set.
@@ -64,16 +91,15 @@ public:
      * @thread Call on the battle's owning simulation thread between rounds.
      * @reentrancy Does not invoke callbacks.
      */
-    [[nodiscard]] eve::Result<void> setActionChecked(RPGActor *actor, const std::string &skillId,
-                                                     RPGActor *target = nullptr);
+    [[nodiscard]] eve::Result<void> setActionChecked(RPGActor* actor, const std::string& skillId,
+                                                     RPGActor* target = nullptr);
     /**
      * @brief Resolve a deterministic target policy and queue one checked action atomically.
      * @return Applied, or a structured failure without changing the pending action set.
      * @remarks Lowest-health ties preserve participant insertion order. Policy and skill target type
      * must agree; Auto retains the normal target-type resolver.
      */
-    [[nodiscard]] eve::Result<void> setActionByPolicyChecked(RPGActor *actor,
-                                                             const std::string &skillId,
+    [[nodiscard]] eve::Result<void> setActionByPolicyChecked(RPGActor* actor, const std::string& skillId,
                                                              BattleTargetPolicy policy);
     /** @brief 未设行动的 AI 侧自动选一个随机已学技能（或普攻）打随机存活敌对目标。 */
     void autoEnemyActions();
@@ -89,12 +115,12 @@ public:
     bool isDefeat() const;
     /** @brief 玩家阵营 id（isVictory/isDefeat 依据），默认 0。 */
     void setPlayerSide(int side);
-    int getPlayerSide() const;
+    int  getPlayerSide() const;
     /** @brief 获胜阵营 id；未结束或平局（双方全灭）返回 -1。 */
     int getWinnerSide() const;
     /** @brief 当前回合数（1 起）。 */
-    int getTurn() const;
-    bool isActorAlive(RPGActor *actor) const;
+    int  getTurn() const;
+    bool isActorAlive(RPGActor* actor) const;
 
     int getActorCount() const;
     /**
@@ -103,12 +129,12 @@ public:
      * @ownership The ECS world owns the actor; callers must not delete it.
      * @lifetime Valid until the actor or battle is destroyed; do not retain across rounds.
      */
-    RPGActor *getActor(int index) const;
-    int getSide(int index) const;
+    RPGActor* getActor(int index) const;
+    int       getSide(int index) const;
 
-    int getEventCount() const;
+    int         getEventCount() const;
     BattleEvent getEvent(int index) const;
-    void pollEvents();
+    void        pollEvents();
     // 事件字段访问（脚本向）
     std::string getEventAction(int index) const;
     std::string getEventSkillId(int index) const;
@@ -118,53 +144,59 @@ public:
      * @ownership The ECS world owns the actor; callers must not delete it.
      * @lifetime Valid until the actor is destroyed; do not retain beyond the poll.
      */
-    RPGActor *getEventCaster(int index) const;
+    RPGActor* getEventCaster(int index) const;
     /**
      * @brief Return the target of a polled event, or null when out of range.
      * @return Borrowed nullable ECS actor; the event cache does not own it.
      * @ownership The ECS world owns the actor; callers must not delete it.
      * @lifetime Valid until the actor is destroyed; do not retain beyond the poll.
      */
-    RPGActor *getEventTarget(int index) const;
-    double getEventAmount(int index) const;
-    bool getEventCrit(int index) const;
+    RPGActor* getEventTarget(int index) const;
+    double    getEventAmount(int index) const;
+    bool      getEventCrit(int index) const;
 
 private:
     struct Participant {
-        RPGActor *actor = nullptr;
-        int side = 0;
+        RPGActor*  actor = nullptr;
+        int        side  = 0;
+        SubjectRef settlementSubject;
     };
     struct PendingAction {
-        RPGActor *actor = nullptr;
+        RPGActor*   actor = nullptr;
         std::string skillId;
-        RPGActor *target = nullptr;
-        double initiative = 0.0;
+        RPGActor*   target     = nullptr;
+        double      initiative = 0.0;
     };
 
-    bool isDead(const Participant &p) const;
-    std::vector<RPGActor *> livingOnSide(int side) const;
-    int sideOf(RPGActor *actor) const;
+    bool                   isDead(const Participant& p) const;
+    std::vector<RPGActor*> livingOnSide(int side) const;
+    int                    sideOf(RPGActor* actor) const;
+    SubjectRef             settlementSubjectOf(RPGActor* actor) const noexcept;
     /**
      * @brief Pick a random living opponent for a side (borrowed actor).
      * @ownership The ECS world owns the returned actor; callers must not delete it.
      * @lifetime Valid until the actor is destroyed; do not retain across rounds.
      */
-    RPGActor *randomOpponent(int mySide);
-    RPGActor *lowestHealthTarget(int side, bool sameSide) const;
-    int computeWinnerSide() const;
-    void execute(PendingAction &pa, unsigned &seedCounter);
+    RPGActor* randomOpponent(int mySide);
+    RPGActor* lowestHealthTarget(int side, bool sameSide) const;
+    int       computeWinnerSide() const;
+    [[nodiscard]] eve::Result<std::vector<settlement::SettlementBatchItemResult>> settleRequest(
+        const settlement::SettlementRequest& request);
+    void      execute(PendingAction& pa, unsigned& seedCounter);
 
-    std::vector<Participant> participants_;
-    std::vector<PendingAction> queue_;
-    std::vector<PendingAction> roundActions_;
-    std::vector<BattleEvent> events_;
-    std::vector<BattleEvent> polled_;
-    int turn_ = 0;
-    bool started_ = false;
-    bool finished_ = false;
-    int winner_ = -1;
-    int playerSide_ = BattleSide::Party;
-    unsigned seedCounter_ = 1;
+    std::vector<Participant>       participants_;
+    std::vector<PendingAction>     queue_;
+    std::vector<PendingAction>     roundActions_;
+    std::vector<BattleEvent>       events_;
+    std::vector<BattleEvent>       polled_;
+    int                            turn_                  = 0;
+    bool                           started_               = false;
+    bool                           finished_              = false;
+    int                            winner_                = -1;
+    int                            playerSide_            = BattleSide::Party;
+    unsigned                       seedCounter_           = 1;
+    std::uint64_t                  nextSettlementSubject_ = 1;
+    settlement::SettlementPipeline settlement_;
     friend class BattleTacticsCatalogue;
 };
 

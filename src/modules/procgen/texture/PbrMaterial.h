@@ -22,7 +22,7 @@ namespace eve::procgen {
  * displacement field so albedo, normal, height, roughness, metallic and AO
  * line up pixel-for-pixel.
  */
-struct PbrTextureSet {
+struct EVENGINE_API_DOMAINS PbrTextureSet {
     /** @brief Releases all generated maps when the owning set is destroyed. */
     ~PbrTextureSet();
     image::ImageData *albedo    = nullptr;  // RGBA8
@@ -51,7 +51,7 @@ struct PbrTextureSet {
 /** @brief Recipe returns a newly owned full PBR set, or null on failure. */
 using PbrRecipeFn = std::function<std::unique_ptr<PbrTextureSet>(const Params &params, std::string &error)>;
 
-class PbrRecipeRegistry {
+class EVENGINE_API_DOMAINS PbrRecipeRegistry {
 public:
     /** @brief Access the process-wide PBR registry. @return Registry instance. */
     static PbrRecipeRegistry &instance();

@@ -1,5 +1,7 @@
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/ColorRamp.h"
+#include "procgen/texture/CableTextures.h"
+#include "procgen/texture/FloorTextures.h"
 #include "procgen/texture/NoiseField.h"
 
 #include "image/ImageData.h"
@@ -90,6 +92,8 @@ void PbrRecipeRegistry::registerPbrBuiltins() {
             return generatePbrSet(def, params, error);
         });
     }
+    registerFloorPbrRecipes(*this);
+    registerCablePbrRecipes(*this);
     builtinsRegistered_ = true;
 }
 

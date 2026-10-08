@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/Value.h"
@@ -35,7 +37,7 @@ struct LocationSnapshot {
  * @brief Caller-owned Pcg location and bookmark state.
  * Mutable operations validate complete candidate data before publication. No scene objects are retained.
  */
-class LocationProfile {
+class EVENGINE_API_PLATFORM LocationProfile {
 public:
     /** @brief Save the one-shot startup location, replacing the previous value atomically. */
     [[nodiscard]] Result<void> saveLocation(const LocationPose& camera,

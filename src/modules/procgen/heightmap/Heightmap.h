@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/Grid2D.h"
 #include "procgen/heightmap/TerrainSampler.h"
@@ -16,7 +18,7 @@ namespace eve::procgen {
  * `sampleBilinear(x, y)` to read values back, and `toGrid()` to classify the
  * heights into a semantic Grid2D ready for tilemap generation.
  */
-class Heightmap {
+class EVENGINE_API_DOMAINS Heightmap {
 public:
     Heightmap() = default;
     Heightmap(int width, int height);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -6,7 +8,7 @@
 namespace eve::editor {
 
 /** @brief Simple editor chrome regions: left / right / top / bottom / center. */
-class EditorDock {
+class EVENGINE_API_ORCHESTRATION EditorDock {
 public:
     EditorDock();
 

@@ -31,7 +31,7 @@ class Texture;
  * Waterfall::bindParams for the layout. Caller owns Waterfall*; its Mesh / Shader
  * are owned by Graphics.
  */
-class Waterfall {
+class EVENGINE_API_BACKENDS Waterfall {
 public:
     explicit Waterfall(Graphics *gfx);
     ~Waterfall();

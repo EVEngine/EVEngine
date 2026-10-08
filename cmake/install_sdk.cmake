@@ -135,6 +135,14 @@ foreach(_eve_mod IN LISTS EVE_ENABLED_MODULES)
     foreach(_eve_nested IN LISTS _eve_nested_heads)
         list(APPEND _eve_install_excludes PATTERN "${_eve_nested}" EXCLUDE)
     endforeach()
+    # UiMotionSinks.h includes animation/MotionTypes.h and its .cpp is omitted when
+    # animation is trimmed; do not install a header the UI-only SDK cannot satisfy.
+    if(_eve_mod STREQUAL "ui")
+        list(FIND EVE_ENABLED_MODULES animation _eve_sdk_anim_idx)
+        if(_eve_sdk_anim_idx EQUAL -1)
+            list(APPEND _eve_install_excludes PATTERN "UiMotionSinks.h" EXCLUDE)
+        endif()
+    endif()
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod_dir}/"
         DESTINATION include/eve/${_eve_mod_dir}
         FILES_MATCHING

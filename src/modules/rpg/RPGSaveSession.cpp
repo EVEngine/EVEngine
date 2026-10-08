@@ -496,6 +496,7 @@ eve::Result<void> RPGSaveSession::restoreSnapshotJsonImpl(std::string_view json,
     gameState_->switches_.swap(candidateGameState.switches_);
     gameState_->variables_.swap(candidateGameState.variables_);
     gameState_->selfVariables_.swap(candidateGameState.selfVariables_);
+    gameState_->selfStrings_.swap(candidateGameState.selfStrings_);
     tracker_->entries.swap(candidateTracker.entries);
     tracker_->order.swap(candidateTracker.order);
     tracker_->pending.swap(candidateTracker.pending);

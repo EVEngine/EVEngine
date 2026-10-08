@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "economy/EconomyLedger.h"
 
@@ -22,7 +24,7 @@ using EconomyHook = std::function<void(const EconomyEvent&)>;
 /**
  * @brief 经济系统门面：按玩家持有账本、转发事件、注册钩子。
  */
-class EconomySystem {
+class EVENGINE_API_FOUNDATION EconomySystem {
 public:
     /** @brief 重置所有玩家账本、事件与钩子（测试用）。 */
     static void clear();

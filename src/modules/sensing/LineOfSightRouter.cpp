@@ -16,7 +16,7 @@ namespace {
 
 template <typename T>
 Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
+    return Result<T>::failure(Diagnostic::error(code, message, path));
 }
 
 /** @brief Stable path name for a rejected location, so diagnostics point at the right argument. */

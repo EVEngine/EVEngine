@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -10,7 +12,7 @@ class GatherNode;
  * @brief 采集者：WorkerTrip 基线的状态机
  * （选目标→接近→采集→载荷判定→运输→卸货入账）。
  */
-class Collector {
+class EVENGINE_API_FOUNDATION Collector {
 public:
     /** @brief 采集状态机的相位。 */
     enum class State { Idle, MovingToNode, Gathering, MovingToDrop, Depositing };

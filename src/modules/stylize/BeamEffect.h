@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "stylize/TrailEffect.h"
 
@@ -43,8 +45,8 @@ struct BeamBuildResult {
  * @thread Thread-safe; performs deterministic CPU work only.
  * @reentrancy Does not invoke callbacks or retain arguments.
  */
-[[nodiscard]] BeamBuildResult buildBeamEffect(const glm::vec3& start, const glm::vec3& end,
-                                              const glm::vec3& cameraForward,
-                                              const BeamEffectConfig& config = {});
+[[nodiscard]] EVENGINE_API_WORLD BeamBuildResult buildBeamEffect(const glm::vec3& start, const glm::vec3& end,
+                                                                 const glm::vec3&        cameraForward,
+                                                                 const BeamEffectConfig& config = {});
 
 }  // namespace eve::stylize

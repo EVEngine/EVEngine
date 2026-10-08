@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -145,7 +147,7 @@ struct LoadOptions {
  * uploaded once), removed objects are destroyed, and identical objects are left
  * completely untouched (no re-upload, no rebuild).
  */
-class SceneLoader : public Module {
+class EVENGINE_API_ORCHESTRATION SceneLoader : public Module {
 public:
     Module_REG(SceneLoader);
 

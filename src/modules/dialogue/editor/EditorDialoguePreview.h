@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editor/EditorAudioWaveform.h"
 
@@ -44,7 +46,7 @@ struct DialogueSubtitlePreview {
 };
 
 /** @brief Renderer-neutral subtitle layout and waveform-derived lip envelope service. */
-class DialogueSubtitlePreviewService {
+class EVENGINE_API_EDITORS DialogueSubtitlePreviewService {
 public:
     /** @brief Build safe-area text layout and optionally derive lip amplitude from a waveform. */
     DialogueSubtitlePreview build(const DialogueSubtitleRequest& request,

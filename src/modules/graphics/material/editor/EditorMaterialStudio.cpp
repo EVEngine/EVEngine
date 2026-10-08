@@ -6,7 +6,7 @@
 namespace eve::editor {
 namespace {
 
-EditorResult<void> noStudioChange() {
+Result<void> noStudioChange() {
     return eve::editing::noOp();
 }
 
@@ -21,13 +21,13 @@ MaterialStudioController::MaterialStudioController(DocumentId document, Material
       previews_(previews),
       renderer_(renderer) {}
 
-EditorResult<void> MaterialStudioController::setPreviewSettings(MaterialPreviewSettings settings) {
+Result<void> MaterialStudioController::setPreviewSettings(MaterialPreviewSettings settings) {
     settings_     = std::move(settings);
     previewDirty_ = true;
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> MaterialStudioController::beginInteraction(PropertyPath path) {
+Result<void> MaterialStudioController::beginInteraction(PropertyPath path) {
     if (activeProperty_ || transactions_.active())
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material.studio-interaction-active"),
                                           "Finish or cancel the active material edit first");
@@ -43,14 +43,14 @@ EditorResult<void> MaterialStudioController::beginInteraction(PropertyPath path)
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> MaterialStudioController::updateInteraction(EditorValue value) {
+Result<void> MaterialStudioController::updateInteraction(EditorValue value) {
     if (!draft_ || !activeProperty_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.studio-no-interaction"),
                                           "Begin a material interaction before updating it");
     auto operation = draft_->makeSet(selectionFor(*draft_), *activeProperty_, value, PropertySetMode::Absolute);
     if (!operation.ok()) {
         diagnostics_ = operation.diagnostics();
-        return EditorResult<void>::failure(operation.status());
+        return Result<void>::failure(operation.status());
     }
     auto applied = draft_->applyDomainOperation(operation.value());
     if (!applied.ok()) {
@@ -63,7 +63,7 @@ EditorResult<void> MaterialStudioController::updateInteraction(EditorValue value
     return eve::editing::applied<void>();
 }
 
-EditorResult<TransactionReceipt> MaterialStudioController::commitInteraction() {
+Result<TransactionReceipt> MaterialStudioController::commitInteraction() {
     if (!draft_ || !activeProperty_ || !finalValue_)
         return eve::editing::failed<TransactionReceipt>(EditorStatus::Rejected,
                                                         RuleId("editor.material.studio-no-final-value"),
@@ -71,7 +71,7 @@ EditorResult<TransactionReceipt> MaterialStudioController::commitInteraction() {
     auto operation = target_.authoringTarget().makeSet(selectionFor(target_.authoringTarget()), *activeProperty_,
                                                        *finalValue_, PropertySetMode::Absolute);
     if (!operation.ok())
-        return EditorResult<TransactionReceipt>::failure(operation.status());
+        return Result<TransactionReceipt>::failure(operation.status());
     TransactionSpec specification;
     specification.id           = TransactionId("material-studio-" + std::to_string(++transactionSequence_));
     specification.label        = "Edit material " + activeProperty_->value();
@@ -101,7 +101,7 @@ EditorResult<TransactionReceipt> MaterialStudioController::commitInteraction() {
     return committed;
 }
 
-EditorResult<void> MaterialStudioController::cancelInteraction() {
+Result<void> MaterialStudioController::cancelInteraction() {
     if (!draft_) return noStudioChange();
     clearInteraction();
     previewDirty_ = true;
@@ -109,7 +109,7 @@ EditorResult<void> MaterialStudioController::cancelInteraction() {
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> MaterialStudioController::tick(std::uint64_t monotonicMilliseconds) {
+Result<void> MaterialStudioController::tick(std::uint64_t monotonicMilliseconds) {
     if (!previewDirty_) return noStudioChange();
     if (hasPreviewTimestamp_ && monotonicMilliseconds < lastPreviewMilliseconds_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.studio-time-regressed"),
@@ -124,11 +124,11 @@ EditorResult<void> MaterialStudioController::tick(std::uint64_t monotonicMillise
     return rendered;
 }
 
-EditorResult<void> MaterialStudioController::refreshPreview() {
+Result<void> MaterialStudioController::refreshPreview() {
     return renderPreview(draft_ ? *draft_ : target_.authoringTarget());
 }
 
-EditorResult<void> MaterialStudioController::setPreviewRate(double framesPerSecond) {
+Result<void> MaterialStudioController::setPreviewRate(double framesPerSecond) {
     if (!std::isfinite(framesPerSecond) || framesPerSecond < 1.0 || framesPerSecond > 240.0)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.studio-preview-rate"),
                                           "Material preview rate must be between 1 and 240 Hz");
@@ -161,7 +161,7 @@ SelectionSnapshot MaterialStudioController::selectionFor(const MaterialDocumentT
     return selection;
 }
 
-EditorResult<void> MaterialStudioController::renderPreview(const MaterialDocumentTarget& material) {
+Result<void> MaterialStudioController::renderPreview(const MaterialDocumentTarget& material) {
     auto task = previews_.render(document_, material, settings_, renderer_);
     if (!task.ok()) {
         diagnostics_ = task.diagnostics();

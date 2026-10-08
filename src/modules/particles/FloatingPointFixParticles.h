@@ -15,6 +15,6 @@ class ParticleEmitter;
  * @thread Simulation owner thread only; call before the next particle update/render.
  * Playback, pause state, velocity, lifetime and emitter position remain unchanged.
  */
-[[nodiscard]] Result<int> shiftWorldSpaceParticles(ParticleEmitter* emitter, float shiftX,
-                                                    float shiftY);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> shiftWorldSpaceParticles(ParticleEmitter* emitter, float shiftX,
+                                                                        float shiftY);
 }

@@ -1,11 +1,13 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cmath>
 
 namespace eve::math {
 
 /** @brief 2D float vector (script-facing math module value). */
-class Vec2 {
+class EVENGINE_API_FOUNDATION Vec2 {
 public:
     Vec2() = default;
     /** @brief Creates a vector from components. */

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Time.h"
@@ -23,11 +25,11 @@ class ParticleEffect;
  * float integration tolerance; resident GPU integration is tolerance-bounded
  * and may expose a backend-specific observable particle count.
  */
-class Particles : public Module {
+class EVENGINE_API_DOMAINS Particles : public Module {
 public:
     Module_REG(Particles);
     Particles();
-    ~Particles() override = default;
+    ~Particles() override;
 
     ParticleEmitter *newEmitter(int bufferSize = 1000);
     /** @brief Create emitter from JSON config file (reads optional "buffer"). */

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <vector>
@@ -6,7 +8,7 @@
 namespace eve::editor {
 
 /** @brief Tool strip state for assembling editor chrome with `ui`. */
-class EditorToolbar {
+class EVENGINE_API_ORCHESTRATION EditorToolbar {
 public:
     void clear();
     void addTool(const std::string &id, const std::string &label);

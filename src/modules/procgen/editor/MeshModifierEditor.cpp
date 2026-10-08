@@ -6,14 +6,14 @@
 
 namespace eve::procgen_editor {
 namespace {
-procgen_editing::EditorResult<void> rejected(const char* rule, const char* message) {
+procgen_editing::Result<void> rejected(const char* rule, const char* message) {
     return eve::editing::failed<void>(procgen_editing::EditorStatus::Rejected,
                                       eve::editing::RuleId(rule), message);
 }
 }
 MeshModifierEditor::MeshModifierEditor(std::string targetId) : targetId_(std::move(targetId)) {}
 
-procgen_editing::EditorResult<void> MeshModifierEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
+procgen_editing::Result<void> MeshModifierEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
     if (targetId_.empty()) return rejected("editor.mesh-modifier.target", "Mesh modifier target id is empty");
     editor::EditorWorkspace candidate = workspace;
     struct Panel { const char* id; const char* title; const char* region; const char* context; int order; };
@@ -40,7 +40,7 @@ procgen_editing::EditorResult<void> MeshModifierEditor::configureWorkspace(edito
     return eve::editing::applied<void>();
 }
 
-procgen_editing::EditorResult<void> MeshModifierEditor::activateTool(editor::EditorWorkspace& workspace,
+procgen_editing::Result<void> MeshModifierEditor::activateTool(editor::EditorWorkspace& workspace,
                                                                      std::string tool) {
     std::string panel;
     if (tool == "graph") panel = "meshModifier.graph";
@@ -59,7 +59,7 @@ procgen_editing::EditorResult<void> MeshModifierEditor::activateTool(editor::Edi
     return eve::editing::applied<void>();
 }
 
-procgen_editing::EditorResult<void> MeshModifierEditor::observeRevision(std::string document, std::uint64_t revision) {
+procgen_editing::Result<void> MeshModifierEditor::observeRevision(std::string document, std::uint64_t revision) {
     std::uint64_t* destination = nullptr;
     if (document == "graph") destination = &graphRevision_;
     else if (document == "spline") destination = &splineRevision_;

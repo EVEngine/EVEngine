@@ -77,6 +77,37 @@ if (!gridResult.ok) throw gridResult.status.summary;
 local grid = gridResult.value;
 ```
 
+Hexmap 地形不走 `generate` / `Grid2D`。`hex.terrain` 与 `hex.sphere` 只提供 Params
+schema（给 `applyAlgorithmDefaults` 用）；真正的出口是 `generateHexTerrain` /
+`generateHexSphere`，返回 hexmap 可 `applyTerrain` / `applySphereTerrain` 的 bake
+对象。`generate("hex.terrain", …)` 会失败并指向这两个入口。`width`/`height` 必须是
+hexmap 的 5×5 分块整数倍。
+
+```squirrel
+local p = procgen.newParams().value;
+p.setSeed(st.seed);
+p.setSize(hexmap.cellCountX(), hexmap.cellCountZ());
+procgen.applyAlgorithmDefaults("hex.terrain", p);
+p.setInt("landPercentage", 50);
+local baked = procgen.generateHexTerrain(p);
+if (!baked.ok) throw baked.status.summary;
+local applied = hexmap.applyTerrain(gfx, baked.value);
+if (!applied.ok) throw applied.status.summary;
+```
+
+球面拓扑由 `hexmap.newSphere` 先建好，bake 必须匹配同一 `subdivision`：
+
+```squirrel
+hexmap.newSphere(gfx, subdivision, radius, seed);
+local p = procgen.newParams().value;
+p.setSeed(seed);
+procgen.applyAlgorithmDefaults("hex.sphere", p);
+p.setInt("subdivision", subdivision);
+p.setFloat("radius", radius);
+local baked = procgen.generateHexSphere(p);
+hexmap.applySphereTerrain(gfx, baked.value);
+```
+
 `Grid2D` 的资产对象接口用于把生成布局与任意项目资产包解耦：
 `addAssetObject(name, role, asset, x, y, width, height, rotation, flags)` 添加带语义角色、
 资产标识、占地、旋转和标志位的对象；读取时使用 `getObjectAsset(index)`、
@@ -217,6 +248,103 @@ local texture = textureResult.value;
 纹理参数还包括 `guideSteps`、`backgroundR/G/B` 与 `lineR/G/B`。C++ 可用
 `prototypeTextureDescriptors()` 枚举，并以 `generatePrototypeTexture()` 生成 owning
 RGBA8 `ImageData`。相同参数逐字节确定；生成结果应按参数 build key 缓存，不能每帧重建。
+
+## 程序化地板纹理（木地板 / 瓷砖）
+
+`tex.floor.wood` 与 `tex.floor.tile` 用参数排列组合生成可平铺地板 albedo，无需外部图片。
+对应的完整 PBR 配方为 `pbr.floor.wood` / `pbr.floor.tile`，一次烘焙产出
+albedo / normal / roughness / metallic / height / AO（位移场与 albedo 像素对齐）。
+示例见 `examples/procedural-textures`（Material 绑定 albedo+normal+height，scalar roughness/metallic）。
+
+木地板 `layout` 支持 `planks` / `staggered` / `herringbone` / `chevron` / `parquet` /
+`basket` / `diagonal` / `ladder` / `finger` / `versailles`；`tone` 支持 `oak` / `walnut` /
+`pine` / `cherry` / `ebony` / `ash` / `maple` / `teak`。
+其余常用旋钮：`rows`、`cols`、`gap`、`grain`、`warp`、`wear`、`stain`、`bevel`。
+PBR 额外旋钮：`roughnessLow`、`roughnessHigh`、`metallic`、`normalStrength`、`aoStrength`、
+`heightStrength`（沟槽偏粗糙，板面偏光滑）。
+
+瓷砖 `pattern` 支持 `square` / `checker` / `diamond` / `hex` / `subway` / `brick` /
+`stack` / `mosaic` / `basket` / `herringbone` / `octagon` / `fishscale` / `scallop` /
+`pinwheel` / `windmill` / `star` / `moroccan` / `cobble` / `arabesque` / `terrazzo`；
+`palette` 支持 `ceramic` / `terracotta` / `slate` / `porcelain` / `marble` / `black` /
+`mosaic` / `subway` / `encaustic` / `jade` / `cobalt`。其余常用旋钮：`tilesX`、
+`tilesY`、`grout`、`bevel`、`glaze`、`wear`、`speckles`、`motif`。釉面越高，板面粗糙度越低。
+
+```squirrel
+local textureParamsResult = gen.newParams();
+if (!textureParamsResult.ok) throw textureParamsResult.status.summary;
+local tp = textureParamsResult.value;
+tp.setSize(256, 256);
+tp.setString("layout", "herringbone");
+tp.setString("tone", "walnut");
+tp.setInt("rows", 8);
+tp.setInt("cols", 8);
+tp.setFloat("gap", 0.035);
+local textureResult = gen.generateTexture("tex.floor.wood", tp, gfx);
+if (!textureResult.ok) throw textureResult.status.summary;
+
+local pbrResult = gen.generatePbrMaterial("pbr.floor.wood", tp);
+if (!pbrResult.ok) throw pbrResult.status.summary;
+local maps = pbrResult.value;
+local albedo = maps.getAlbedo();
+local normal = maps.getNormal();
+local height = maps.getHeight();
+local roughness = maps.getRoughness();
+local metallic = maps.getMetallic();
+local ao = maps.getAo();
+maps.destroy();
+```
+
+C++ 可用 `generateWoodFloorTexture()` / `generateTileFloorTexture()` 获得 albedo，以及
+`generateWoodFloorPbr()` / `generateTileFloorPbr()` 获得完整 `PbrTextureSet`；注册入口为
+`registerFloorTextureRecipes()` 与 `registerFloorPbrRecipes()`。
+
+## 程序化钢缆 / 铁链 / 麻绳
+
+`mesh.cable` / `mesh.chain` / `mesh.rope` 沿 +X 生成可拼接线性构件；配套纹理与完整
+PBR 配方为 `tex.cable.steel` / `pbr.cable.steel`、`tex.chain.iron` / `pbr.chain.iron`、
+`tex.rope.hemp` / `pbr.rope.hemp`。示例见 `examples/cable-chain-rope`。
+
+| 网格 | 材质 | 形态 |
+|------|------|------|
+| `mesh.cable` | 钢缆编织 albedo + PBR | 多股螺旋管（默认 6 股） |
+| `mesh.chain` | 铸铁/锈蚀金属 | 交替椭圆环互扣 |
+| `mesh.rope`  | 麻纤维编织 | 三股螺旋（股径更大、略鼓） |
+
+网格共享参数：`segments`、`segLength`、`radius`、`thickness`、`strands`、`twists`、
+`lengthSegs`、`radialSegs`、`majorSegs`、`minorSegs`、`scale`、`uvRepeat`。
+`twists` 取整数时，每股螺旋在单元接缝处相位闭合，可无缝拼接。
+
+纹理常用旋钮：`strands`、`twist`、`gap`、`wear`、`contrast`；钢缆另有 `polish`，
+铁链有 `rust`，麻绳有 `fiber`。PBR 额外旋钮与地板配方相同（`roughnessLow` /
+`roughnessHigh` / `metallic` / `normalStrength` / `aoStrength` / `heightStrength`）。
+
+```squirrel
+local pResult = gen.newParams();
+if (!pResult.ok) throw pResult.status.summary;
+local p = pResult.value;
+p.setInt("segments", 8);
+p.setFloat("segLength", 1.0);
+p.setFloat("radius", 0.08);
+p.setFloat("thickness", 0.022);
+p.setInt("strands", 6);
+p.setInt("twists", 1);
+local meshResult = gen.buildMesh("mesh.cable", p);
+if (!meshResult.ok) throw meshResult.status.summary;
+
+local tpResult = gen.newParams();
+if (!tpResult.ok) throw tpResult.status.summary;
+local tp = tpResult.value;
+tp.setSize(256, 256);
+tp.setInt("strands", 6);
+tp.setFloat("twist", 3.0);
+local pbrResult = gen.generatePbrMaterial("pbr.cable.steel", tp);
+if (!pbrResult.ok) throw pbrResult.status.summary;
+```
+
+C++ 入口：`generateCableChainRope()` / `registerCableChainRopeRecipes()`，以及
+`generateSteelCableTexture()` / `generateIronChainTexture()` / `generateHempRopeTexture()`
+与对应 `*Pbr` / `registerCableTextureRecipes()` / `registerCablePbrRecipes()`。
 
 ### Params 的类型与尺寸语义
 
@@ -1355,6 +1483,25 @@ local mesh = meshResult.value; // mesh.greatwall / mesh.hedge / mesh.chevaldefri
 ```
 
 共享参数：`segments`、`segLength`、`height`、`depth`、`thickness`、`scale`、`uvRepeat`。
+
+### 生成钢缆 / 铁链 / 麻绳
+
+```squirrel
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
+p.setInt("segments", 6);
+p.setFloat("segLength", 1.0);
+p.setFloat("radius", 0.10);
+p.setFloat("thickness", 0.045);
+p.setInt("strands", 3);
+p.setInt("twists", 1);
+local meshResult = gen.buildMesh("mesh.rope", p); // 或 mesh.cable / mesh.chain
+if (!meshResult.ok) throw meshResult.status.summary;
+```
+
+详见上文「程序化钢缆 / 铁链 / 麻绳」；配套 PBR 为 `pbr.cable.steel` /
+`pbr.chain.iron` / `pbr.rope.hemp`。
 
 ### 生成无缝材质
 

@@ -79,6 +79,10 @@ void Graphics::buildDeferredFrameGraphs() {
             auto depthColorH =
                 graph->importTexture("gbDepthColor", slot.depthColor.image(), slot.depthColor.imageView(), colorDesc);
             auto albedoH = graph->importTexture("gbAlbedo", slot.albedo.image(), slot.albedo.imageView(), colorDesc);
+            auto pbrParamsH =
+                graph->importTexture("gbPbrParams", slot.pbrParams.image(), slot.pbrParams.imageView(), colorDesc);
+            auto emissiveH =
+                graph->importTexture("gbEmissive", slot.emissive.image(), slot.emissive.imageView(), colorDesc);
 
             vkb::TextureDesc depthDesc;
             depthDesc.format      = depthFmt;
@@ -88,17 +92,21 @@ void Graphics::buildDeferredFrameGraphs() {
             depthDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             auto depthH = graph->importTexture("gbHwDepth", slot.depth.image(), slot.depth.imageView(), depthDesc);
 
-            std::array<vk::ClearValue, 4> clears{};
+            std::array<vk::ClearValue, 6> clears{};
             clears[0].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
             clears[1].color        = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
             clears[2].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-            clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+            clears[3].color        = vk::ClearColorValue(std::array<float, 4>{0, 1, 1, 1});
+            clears[4].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+            clears[5].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
             graph->addPass("gbuffer")
                 .colorAttachment(normalH, vkb::AttachmentOp::clear(clears[0]))
                 .colorAttachment(depthColorH, vkb::AttachmentOp::clear(clears[1]))
                 .colorAttachment(albedoH, vkb::AttachmentOp::clear(clears[2]))
-                .depthAttachment(depthH, vkb::AttachmentOp::clear(clears[3]))
-                .record([this](vkb::FrameGraphPassContext &ctx) { recordGBufferPassDraws(ctx); });
+                .colorAttachment(pbrParamsH, vkb::AttachmentOp::clear(clears[3]))
+                .colorAttachment(emissiveH, vkb::AttachmentOp::clear(clears[4]))
+                .depthAttachment(depthH, vkb::AttachmentOp::clear(clears[5]))
+                .record([this](vkb::FrameGraphPassContext& ctx) { recordGBufferPassDraws(ctx); });
         }
         graph->compile();
         deferredFrameGraphs_[i] = std::move(graph);

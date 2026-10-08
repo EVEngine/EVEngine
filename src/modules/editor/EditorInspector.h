@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <vector>
@@ -6,7 +8,7 @@
 namespace eve::editor {
 
 /** @brief Property sheet descriptors + values (host renders via `ui`). */
-class EditorInspector {
+class EVENGINE_API_ORCHESTRATION EditorInspector {
 public:
     void clear();
 

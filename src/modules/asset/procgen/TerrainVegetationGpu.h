@@ -83,7 +83,7 @@ struct TerrainVegetationGpuFrame {
  * @return Detached GPU records, or failure before any graphics submission.
  * @thread Graphics thread only because resolver resources are backend-owned.
  */
-[[nodiscard]] Result<TerrainVegetationGpuPlan> buildTerrainVegetationGpuPlan(
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainVegetationGpuPlan> buildTerrainVegetationGpuPlan(
     const TerrainVegetationRealization& realization, ITerrainVegetationGpuResolver& resolver,
     const TerrainVegetationGpuFrame& frame = {});
 
@@ -104,7 +104,7 @@ struct TerrainVegetationGpuFrame {
  * graphics-thread operations. The realization is owned so import/hot-reload code can atomically
  * replace the renderer without retaining temporary loader storage.
  */
-class TerrainVegetationRenderer {
+class EVENGINE_API_ORCHESTRATION TerrainVegetationRenderer {
 public:
     TerrainVegetationRenderer(TerrainVegetationRealization realization,
                               ITerrainVegetationGpuResolver& resolver);

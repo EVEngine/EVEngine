@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EvaManifest.h
@@ -78,7 +80,7 @@ struct EvaManifest {
  * @thread Worker-safe when each call owns its input and result.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<EvaManifest> parseEvaManifest(std::string_view json);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaManifest> parseEvaManifest(std::string_view json);
 
 /**
  * @brief Serialize a validated manifest as deterministic compact JSON.
@@ -86,6 +88,6 @@ struct EvaManifest {
  * @thread Worker-safe when the manifest is not concurrently mutated.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<std::string> serializeEvaManifest(const EvaManifest& manifest);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> serializeEvaManifest(const EvaManifest& manifest);
 
 }  // namespace eve::asset

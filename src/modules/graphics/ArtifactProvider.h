@@ -68,7 +68,7 @@ struct GraphicsArtifactResource {
  * This adapter intentionally consumes only the common publication view. It is
  * used for Vulkan/WebGPU parity tests and does not include either backend SDK.
  */
-class WebGpuArtifactDescriptorAdapter final {
+class EVENGINE_API_BACKENDS WebGpuArtifactDescriptorAdapter final {
 public:
     /** @brief Describe the selected mesh part, or return empty for invalid input. */
     [[nodiscard]] static std::optional<GraphicsArtifactDescriptor> describe(
@@ -83,7 +83,7 @@ public:
  * boundary; an unavailable/uninitialized backend is an explicit observable CPU
  * capability-degraded path rather than a hidden mock.
  */
-class GraphicsArtifactProvider final : public eve::artifact::IGraphicsArtifactAdapter {
+class EVENGINE_API_BACKENDS GraphicsArtifactProvider final : public eve::artifact::IGraphicsArtifactAdapter {
 public:
     /** @brief Stage and copy the mesh leaf from a generated publication. */
     [[nodiscard]] eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> prepare(
@@ -141,9 +141,9 @@ private:
 };
 
 /** @brief Return the process-owned graphics artifact provider singleton. */
-[[nodiscard]] GraphicsArtifactProvider& graphicsArtifactProvider() noexcept;
+[[nodiscard]] EVENGINE_API_BACKENDS GraphicsArtifactProvider& graphicsArtifactProvider() noexcept;
 /** @brief Register the graphics provider in the common capability registry. */
-void registerGraphicsArtifactProvider(Graphics* graphics = nullptr);
+EVENGINE_API_BACKENDS void registerGraphicsArtifactProvider(Graphics* graphics = nullptr);
 /** @brief Detach a Graphics instance before its derived backend is destroyed. */
 void detachGraphicsArtifactProvider(Graphics* graphics) noexcept;
 

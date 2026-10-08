@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionGameplayEventBlock.h @brief Typed instantaneous gameplay-event action contract. */
 
@@ -10,7 +12,7 @@
 namespace eve::action {
 
 /** @brief Owning validated event request authored on an action timeline. */
-struct ActionGameplayEventBinding {
+struct EVENGINE_API_PLATFORM ActionGameplayEventBinding {
     /** @brief Canonical gameplay-tag event topic. */
     std::string tag;
     /** @brief Optional target index; absence routes the event to the source subject. */

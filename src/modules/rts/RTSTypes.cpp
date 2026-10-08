@@ -14,10 +14,6 @@
 namespace eve::rts {
 namespace {
 
-Result<void> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool finitePosition(WorldPosition position) { return std::isfinite(position.x) && std::isfinite(position.y); }
 
 bool handleEqual(const ecs::EntityHandle& left, const ecs::EntityHandle& right) {
@@ -204,15 +200,13 @@ const char* orderKindName(OrderKind kind) noexcept {
 
 Result<void> CommandSpec::validate() const {
     if (!finitePosition(target) || !finitePosition(secondaryTarget)) {
-        return failure(DiagnosticCode::InvalidArgument, "RTS command target must contain finite coordinates", "target");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS command target must contain finite coordinates", "target"));
     }
     if (!std::isfinite(timeoutSeconds) || timeoutSeconds < 0.0) {
-        return failure(DiagnosticCode::InvalidArgument, "RTS command timeout must be finite and non-negative",
-                       "timeoutSeconds");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS command timeout must be finite and non-negative", "timeoutSeconds"));
     }
     if (!std::isfinite(radius) || radius < 0.0f)
-        return failure(DiagnosticCode::InvalidArgument, "RTS command radius must be finite and non-negative",
-                       "radius");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS command radius must be finite and non-negative", "radius"));
     switch (kind) {
         case OrderKind::Move:
         case OrderKind::Attack:
@@ -233,11 +227,11 @@ Result<void> CommandSpec::validate() const {
         case OrderKind::SuppressArea:
         case OrderKind::SupplyRelay: return Result<void>::success(Status::success(StatusCode::Applied));
     }
-    return failure(DiagnosticCode::InvalidArgument, "RTS command kind is invalid", "kind");
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS command kind is invalid", "kind"));
 }
 
 Result<void> TagSet::add(std::string_view tag) {
-    if (tag.empty()) return failure(DiagnosticCode::InvalidArgument, "RTS tag must not be empty", "tag");
+    if (tag.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS tag must not be empty", "tag"));
     auto it = std::lower_bound(values_.begin(), values_.end(), tag,
                                [](const std::string& value, std::string_view key) { return value < key; });
     if (it != values_.end() && *it == tag) return Result<void>::success(Status::success(StatusCode::NoOp));
@@ -246,10 +240,10 @@ Result<void> TagSet::add(std::string_view tag) {
 }
 
 Result<void> TagSet::remove(std::string_view tag) {
-    if (tag.empty()) return failure(DiagnosticCode::InvalidArgument, "RTS tag must not be empty", "tag");
+    if (tag.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS tag must not be empty", "tag"));
     auto it = std::lower_bound(values_.begin(), values_.end(), tag,
                                [](const std::string& value, std::string_view key) { return value < key; });
-    if (it == values_.end() || *it != tag) return failure(DiagnosticCode::NotFound, "RTS tag is not present", "tag");
+    if (it == values_.end() || *it != tag) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "RTS tag is not present", "tag"));
     values_.erase(it);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -278,8 +272,7 @@ AttributeComponent& AttributeComponent::operator=(AttributeComponent&& other) no
 
 Result<void> AttributeComponent::setBase(std::string_view attribute, double value) {
     if (attribute.empty() || !std::isfinite(value)) {
-        return failure(DiagnosticCode::InvalidArgument, "RTS attribute base requires a non-empty finite value",
-                       "attribute");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS attribute base requires a non-empty finite value", "attribute"));
     }
     if (!impl_) impl_ = std::make_unique<Impl>();
     return impl_->values.setBase(attribute, value);
@@ -287,8 +280,7 @@ Result<void> AttributeComponent::setBase(std::string_view attribute, double valu
 
 Result<void> AttributeComponent::modifyBase(std::string_view attribute, double delta) {
     if (attribute.empty() || !std::isfinite(delta)) {
-        return failure(DiagnosticCode::InvalidArgument, "RTS attribute delta requires a non-empty finite value",
-                       "attribute");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS attribute delta requires a non-empty finite value", "attribute"));
     }
     if (!impl_) impl_ = std::make_unique<Impl>();
     return impl_->values.modifyBase(attribute, delta);
@@ -423,33 +415,33 @@ Result<OrderRecord> OrderComponent::current() const {
 }
 
 Result<void> OrderComponent::complete(std::string_view orderId) {
-    if (orderId.empty()) return failure(DiagnosticCode::InvalidArgument, "RTS order id must not be empty", "orderId");
+    if (orderId.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS order id must not be empty", "orderId"));
     if (!impl_ || !impl_->queue.find(std::string(orderId)))
-        return failure(DiagnosticCode::NotFound, "RTS order id is not present", "orderId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "RTS order id is not present", "orderId"));
     if (!impl_->queue.complete(std::string(orderId)).ok())
-        return failure(DiagnosticCode::Conflict, "RTS order is not active or is already terminal", "orderId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "RTS order is not active or is already terminal", "orderId"));
     impl_->extended.erase(std::string(orderId));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> OrderComponent::fail(std::string_view orderId, std::string_view reason) {
     if (orderId.empty() || reason.empty())
-        return failure(DiagnosticCode::InvalidArgument, "RTS order failure requires an id and reason", "order");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS order failure requires an id and reason", "order"));
     if (!impl_ || !impl_->queue.find(std::string(orderId)))
-        return failure(DiagnosticCode::NotFound, "RTS order id is not present", "orderId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "RTS order id is not present", "orderId"));
     if (!impl_->queue.fail(std::string(orderId), std::string(reason)).ok())
-        return failure(DiagnosticCode::Conflict, "RTS order is not active", "orderId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "RTS order is not active", "orderId"));
     impl_->extended.erase(std::string(orderId));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> OrderComponent::cancel(std::string_view orderId, std::string_view reason) {
     if (orderId.empty() || reason.empty())
-        return failure(DiagnosticCode::InvalidArgument, "RTS order cancellation requires an id and reason", "order");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS order cancellation requires an id and reason", "order"));
     if (!impl_ || !impl_->queue.find(std::string(orderId)))
-        return failure(DiagnosticCode::NotFound, "RTS order id is not present", "orderId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "RTS order id is not present", "orderId"));
     if (!impl_->queue.cancel(std::string(orderId), std::string(reason)).ok())
-        return failure(DiagnosticCode::Conflict, "RTS order is already terminal", "orderId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "RTS order is already terminal", "orderId"));
     impl_->extended.erase(std::string(orderId));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -501,8 +493,7 @@ Result<void> OrderComponent::restoreState(const Snapshot& snapshotValue) {
         auto valid = command.validate();
         if (!valid) return valid;
         if (!queue.find(id))
-            return failure(DiagnosticCode::Conflict,
-                           "RTS order extension references an absent canonical queue record", "orders.extended");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "RTS order extension references an absent canonical queue record", "orders.extended"));
     }
     auto candidate = std::make_unique<Impl>();
     candidate->queue = std::move(queue);
@@ -554,6 +545,11 @@ Result<std::string> ProductionComponent::enqueue(std::string_view owner, std::st
     return impl_->queue.enqueue(owner, kind, product, eve::Value(eve::Value::Object{}), duration.seconds(), priority);
 }
 
+Result<std::string> ProductionComponent::enqueue(production::ProductionRequest request) {
+    if (!impl_) impl_ = std::make_unique<Impl>();
+    return impl_->queue.enqueue(std::move(request));
+}
+
 Result<void> ProductionComponent::advance(const SimulationStep& step) {
     if (!impl_) impl_ = std::make_unique<Impl>();
     return impl_->queue.advance(step);
@@ -563,12 +559,12 @@ std::size_t ProductionComponent::taskCount() const noexcept {
     return impl_ ? static_cast<std::size_t>(impl_->queue.taskCount()) : 0u;
 }
 
-OptionalRef<production::ProductionTask> ProductionComponent::taskAt(int index) {
-    return impl_ ? impl_->queue.taskAt(index) : OptionalRef<production::ProductionTask>{};
+OptionalRef<const production::ProductionTask> ProductionComponent::taskAt(int index) {
+    return impl_ ? impl_->queue.taskAt(index) : OptionalRef<const production::ProductionTask>{};
 }
 
-OptionalRef<production::ProductionTask> ProductionComponent::find(std::string_view taskId) {
-    return impl_ ? impl_->queue.find(taskId) : OptionalRef<production::ProductionTask>{};
+OptionalRef<const production::ProductionTask> ProductionComponent::find(std::string_view taskId) {
+    return impl_ ? impl_->queue.find(taskId) : OptionalRef<const production::ProductionTask>{};
 }
 
 Result<void> ProductionComponent::pause(std::string_view taskId) {
@@ -592,15 +588,22 @@ Result<void> ProductionComponent::cancel(std::string_view taskId, std::string_vi
     return impl_->queue.cancel(taskId, reason);
 }
 
-std::vector<production::ProductionTask> ProductionComponent::completed(std::string_view kind) const {
+std::vector<production::ProductionTask> ProductionComponent::readyToSettle(std::string_view kind) const {
     std::vector<production::ProductionTask> result;
     if (!impl_ || kind.empty()) return result;
     for (int index = 0; index < impl_->queue.taskCount(); ++index) {
         const auto task = impl_->queue.taskAt(index);
-        if (task && task->get().kind == kind && task->get().state == production::TaskState::Completed)
+        if (task && task->get().kind == kind && task->get().state == production::TaskState::ReadyToSettle)
             result.push_back(task->get());
     }
     return result;
+}
+
+Result<void> ProductionComponent::settle(std::string_view taskId, production::ProductionSettlementReceipt receipt) {
+    if (!impl_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RTS production task was not found", "taskId"));
+    return impl_->queue.settle(taskId, std::move(receipt));
 }
 
 Result<std::string> ProductionComponent::snapshot() const {

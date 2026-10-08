@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。
@@ -29,7 +31,7 @@ class RPGSaveSession;
 class Party;
 
 /** @brief 属性 / 状态 / 技能三表合一的 ECS 实体。 */
-class RPGActor : public ecs::Entity {
+class EVENGINE_API_PLATFORM RPGActor : public ecs::Entity {
 public:
     ENTITY(RPGActor, ecs::Entity)
 

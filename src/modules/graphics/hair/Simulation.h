@@ -49,7 +49,7 @@ struct GuideSimParams {
  * @reentrancy Does not invoke callbacks.
  * @determinism Tolerance-bounded for identical params/seeded inputs.
  */
-class GuideSimulator {
+class EVENGINE_API_BACKENDS GuideSimulator {
 public:
     GuideSimulator() = default;
 

@@ -13,7 +13,7 @@ namespace {
 eve::Result<int> tradeFailure(eve::DiagnosticCode code, std::string message,
                               std::string path, const std::string &itemId) {
     return eve::Result<int>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path), {{"itemId", itemId}}, "rpg.shop-transaction"));
+        code, message, path, {{"itemId", itemId}}, "rpg.shop-transaction"));
 }
 
 eve::Result<double> validateTrade(const GameState &gameState, const std::string &currencyId,
