@@ -23,7 +23,9 @@ class Demo : public Module {
 public:
     Module_REG(Demo);
 
+    /** @brief Constructs a Demo. */
     Demo();
+    /** @brief Releases Demo resources. */
     ~Demo() override;
 
     /** @brief kind: "music" | "shoot" | "explode" | "hit" */

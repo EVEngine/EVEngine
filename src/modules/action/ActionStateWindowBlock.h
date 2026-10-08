@@ -39,6 +39,7 @@ struct EVENGINE_API_PLATFORM ActionStateWindowBinding {
 class IActionStateWindowSink {
 public:
     static constexpr const char* capabilityName = "eve.action.state-window-sink";
+    /** @brief Releases IActionStateWindowSink resources. */
     virtual ~IActionStateWindowSink() = default;
 
     /** @brief Whether this sink owns the supplied semantic window kind. */

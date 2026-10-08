@@ -48,12 +48,15 @@ enum class PropertyFlag : std::uint64_t {
     MultiEdit  = 1ull << 6
 };
 
+/** @brief Operator |. */
 constexpr PropertyFlag operator|(PropertyFlag left, PropertyFlag right) {
     return static_cast<PropertyFlag>(static_cast<std::uint64_t>(left) | static_cast<std::uint64_t>(right));
 }
+/** @brief Operator &. */
 constexpr PropertyFlag operator&(PropertyFlag left, PropertyFlag right) {
     return static_cast<PropertyFlag>(static_cast<std::uint64_t>(left) & static_cast<std::uint64_t>(right));
 }
+/** @brief True when flag. */
 constexpr bool hasFlag(PropertyFlag value, PropertyFlag flag) { return (value & flag) == flag; }
 
 /** @brief Numeric editing metadata independent of a slider or spin-box widget. */
@@ -95,7 +98,9 @@ struct WriteResult {
     std::string code;
     std::string message;
 
+    /** @brief Success. */
     static WriteResult success() { return {true, {}, {}}; }
+    /** @brief Reject. */
     static WriteResult reject(std::string code, std::string message) {
         return {false, std::move(code), std::move(message)};
     }
@@ -147,6 +152,7 @@ class EVENGINE_API_FOUNDATION_INLINE IPropertyAccess {
 public:
     using ChangeCallback = std::function<void(const PropertyChange &)>;
 
+    /** @brief I property access. */
     virtual ~IPropertyAccess() = default;
     /** @brief Return the stable schema exposed by this model. */
     virtual const PropertySchema &schema() const = 0;

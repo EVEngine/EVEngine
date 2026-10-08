@@ -27,6 +27,7 @@ namespace eve::ui {
  */
 class EVENGINE_API_WORLD UiHostPosSink final : public eve::animation::IMotionVec2Sink {
 public:
+    /** @brief Ui host pos sink. */
     explicit UiHostPosSink(UIHostHandle host) : host_(host) {}
 
     /** @brief Write interpolated host position in pixels. */
@@ -42,8 +43,10 @@ private:
  */
 class EVENGINE_API_WORLD UiHostSizeSink final : public eve::animation::IMotionVec2Sink {
 public:
+    /** @brief Ui host size sink. */
     explicit UiHostSizeSink(UIHostHandle host) : host_(host) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(eve::animation::MotionVec2 value) override;
 
 private:
@@ -56,8 +59,10 @@ private:
  */
 class EVENGINE_API_WORLD UiHostOverlayAlphaSink final : public eve::animation::IMotionFloatSink {
 public:
+    /** @brief Ui host overlay alpha sink. */
     explicit UiHostOverlayAlphaSink(UIHostHandle host) : host_(host) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(float value) override;
 
 private:
@@ -70,9 +75,12 @@ private:
  */
 class EVENGINE_API_WORLD UiNodeOpacitySink final : public eve::animation::IMotionFloatSink {
 public:
+    /** @brief Ui node opacity sink. */
     UiNodeOpacitySink(UIHostHandle host, std::string nodeId)
+        /** @brief Host. */
         : host_(host), nodeId_(std::move(nodeId)) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(float value) override;
 
 private:
@@ -87,9 +95,12 @@ private:
  */
 class EVENGINE_API_WORLD UiNodePosSink final : public eve::animation::IMotionVec2Sink {
 public:
+    /** @brief Ui node pos sink. */
     UiNodePosSink(UIHostHandle host, std::string nodeId)
+        /** @brief Host. */
         : host_(host), nodeId_(std::move(nodeId)) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(eve::animation::MotionVec2 value) override;
 
 private:

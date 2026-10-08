@@ -22,11 +22,14 @@ class DistanceField3D;
 class EVENGINE_API_WORLD Physics : public Module {
 public:
     Module_REG(Physics);
+    /** @brief Physics. */
     Physics();
+    /** @brief Physics. */
     ~Physics() override = default;
 
     /** @brief Pixels per meter for 2D Box2D worlds (default 30, same as LÖVE). */
     void  setMeter(float pixelsPerMeter);
+    /** @brief Returns the meter. */
     float getMeter() const;
 
     /**

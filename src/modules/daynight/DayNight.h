@@ -95,7 +95,9 @@ class EVENGINE_API_WORLD DayNight : public Module {
 public:
     Module_REG(DayNight);
 
+    /** @brief Day night. */
     DayNight();
+    /** @brief Day night. */
     ~DayNight() override;
 
     /** @brief Idempotent; builds lights / sky cubemap on first call. */
@@ -104,11 +106,17 @@ public:
     void update(float dt, graphics::Graphics *gfx);
 
     // ---- clock ----
+    /** @brief Sets the time of day. */
     void setTimeOfDay(float hours);   // 0..24
+    /** @brief Returns the time of day. */
     float getTimeOfDay() const;
+    /** @brief Sets the speed. */
     void setSpeed(float hoursPerRealHour);   // default 1.0
+    /** @brief Returns the speed. */
     float getSpeed() const;
+    /** @brief Sets the paused. */
     void setPaused(bool paused);
+    /** @brief True when paused. */
     bool isPaused() const;
     /** @brief True when the sun is below the horizon (night). */
     bool isNight() const;
@@ -120,7 +128,9 @@ public:
     float getSunAzimuth() const;
     /** @brief World-space direction pointing AT the sun (normalized). */
     float getSunDirX() const;
+    /** @brief Returns the sun dir y. */
     float getSunDirY() const;
+    /** @brief Returns the sun dir z. */
     float getSunDirZ() const;
     /** @brief 0..1 sun energy; ramps to 0 below the horizon. */
     float getSunIntensity() const;
@@ -171,21 +181,31 @@ public:
     // ---- atmosphere ----
     /** @brief Set aerosol turbidity. 1.5 is very clear; 10 is hazy. */
     void setTurbidity(float turbidity);
+    /** @brief Returns the turbidity. */
     float getTurbidity() const;
     /** @brief Exposure used when mapping physical sky radiance to the RGBA8 sky cubemap. */
     void setSkyExposure(float exposure);
+    /** @brief Returns the sky exposure. */
     float getSkyExposure() const;
     /** @brief Relative Mie aerosol density; controls horizon haze and solar halo. */
     void setMieStrength(float strength);
+    /** @brief Returns the mie strength. */
     float getMieStrength() const;
 
     // ---- sky / ambient (sampled by the scene) ----
+    /** @brief Returns the sky r. */
     float getSkyR() const;
+    /** @brief Returns the sky g. */
     float getSkyG() const;
+    /** @brief Returns the sky b. */
     float getSkyB() const;
+    /** @brief Returns the ambient r. */
     float getAmbientR() const;
+    /** @brief Returns the ambient g. */
     float getAmbientG() const;
+    /** @brief Returns the ambient b. */
     float getAmbientB() const;
+    /** @brief Returns the ambient brightness. */
     float getAmbientBrightness() const;
 
     /**
@@ -211,16 +231,21 @@ public:
      * @param lightningFlash Transient lightning energy in [0,1].
      */
     void setWeatherInfluence(float cloudiness, float lightningFlash);
+    /** @brief Returns the weather cloudiness. */
     float getWeatherCloudiness() const;
+    /** @brief Returns the weather flash. */
     float getWeatherFlash() const;
 
     // ---- skybox ----
+    /** @brief Sets the skybox enabled. */
     void setSkyboxEnabled(bool enabled);
+    /** @brief True when skybox enabled. */
     bool isSkyboxEnabled() const;
 
     // ---- night lighting ----
     /** @brief Enable a named light system: "moonlight"|"starlight"|"fire"|"fireflies". */
     void setNightLight(const std::string &name, bool enabled);
+    /** @brief True when night light. */
     bool isNightLight(const std::string &name) const;
     static const char *const kNamedLights[];
     static const int kNamedLightCount;
@@ -229,7 +254,9 @@ public:
     void setFirePosition(float x, float y, float z);
     /** @brief Add one firefly anchor (world space); up to kMaxFireflies. */
     void addFirefly(float x, float y, float z);
+    /** @brief Clears fireflies. */
     void clearFireflies();
+    /** @brief Returns the firefly count. */
     int getFireflyCount() const;
 
 private:

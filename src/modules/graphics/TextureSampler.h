@@ -38,6 +38,7 @@ struct TextureSampler {
     /** @brief Inclusive upper LOD clamp. Large values mean "use all available mips". */
     float maxLod = 1000.f;
 
+    /** @brief Nearest. */
     static TextureSampler nearest() {
         TextureSampler s;
         s.min = FilterMode::Nearest;
@@ -46,6 +47,7 @@ struct TextureSampler {
         return s;
     }
 
+    /** @brief Linear. */
     static TextureSampler linear() {
         TextureSampler s;
         s.min = FilterMode::Linear;
@@ -70,21 +72,25 @@ struct TextureSampler {
         return s;
     }
 
+    /** @brief Parse filter. */
     static FilterMode parseFilter(const std::string &name) {
         if (name == "nearest" || name == "Nearest" || name == "NEAREST") return FilterMode::Nearest;
         return FilterMode::Linear;
     }
 
+    /** @brief Parse mipmap. */
     static MipmapMode parseMipmap(const std::string &name) {
         if (name == "none" || name == "None" || name == "NONE" || name.empty()) return MipmapMode::Disabled;
         if (name == "nearest" || name == "Nearest" || name == "NEAREST") return MipmapMode::Nearest;
         return MipmapMode::Linear;
     }
 
+    /** @brief Filter name. */
     static const char *filterName(FilterMode m) {
         return m == FilterMode::Nearest ? "nearest" : "linear";
     }
 
+    /** @brief Mipmap name. */
     static const char *mipmapName(MipmapMode m) {
         switch (m) {
         case MipmapMode::Disabled:
@@ -105,8 +111,10 @@ struct TextureCreateInfo {
     TextureSampler sampler{};
     bool generateMipmaps = false;
 
+    /** @brief Defaults. */
     static TextureCreateInfo defaults() { return {}; }
 
+    /** @brief With mipmaps. */
     static TextureCreateInfo withMipmaps(bool aniso = true, float maxAniso = 16.f) {
         TextureCreateInfo info;
         info.generateMipmaps = true;

@@ -19,12 +19,19 @@ namespace eve::os {
 class EVENGINE_API_FOUNDATION OS : public Module, public IFramePacing {
 public:
     Module_REG(OS);
+    /** @brief Os. */
     OS();
+    /** @brief Os. */
     ~OS() override;
+    /** @brief Sets the vertical sync count. */
     [[nodiscard]] Result<void> setVerticalSyncCount(int count) override;
+    /** @brief Returns the vertical sync count. */
     [[nodiscard]] int getVerticalSyncCount() const noexcept override { return verticalSyncCount_; }
+    /** @brief Sets the target frames per second. */
     [[nodiscard]] Result<void> setTargetFramesPerSecond(int target) override;
+    /** @brief Returns the target frames per second. */
     [[nodiscard]] int getTargetFramesPerSecond() const noexcept override { return targetFramesPerSecond_; }
+    /** @brief Limit frame. */
     void limitFrame() override;
 
     /** @brief Engine version string (e.g. "v0.1.0"). */
@@ -39,6 +46,7 @@ public:
      */
     std::string getOS() const;
 
+    /** @brief Returns the processor count. */
     int getProcessorCount() const;
     /** @brief CPU L1 cache line size in bytes (0 if unknown). */
     int getCPUCacheLineSize() const;
@@ -51,6 +59,7 @@ public:
     /** @brief UTC wall-clock seconds since Unix epoch (float for script). */
     float getWallTime() const;
 
+    /** @brief Sleep milliseconds. */
     void sleepMilliseconds(int ms);
 
     /**
@@ -63,11 +72,14 @@ public:
     /** @brief Battery percent 0–100, or -1 if unknown. */
     int getPowerPercent() const;
 
+    /** @brief Returns the clipboard text. */
     std::string getClipboardText() const;
+    /** @brief Sets the clipboard text. */
     void        setClipboardText(const std::string &text);
 
     /** @brief GPU queries — empty/0 if Graphics not initialized yet. */
     std::string getGpuName() const;
+    /** @brief Returns the gpu vendor. */
     std::string getGpuVendor() const;
     /** @brief "discrete" | "integrated" | "virtual" | "cpu" | "other" | "" */
     std::string getGpuDeviceType() const;

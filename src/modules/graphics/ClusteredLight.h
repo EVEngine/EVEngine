@@ -20,6 +20,7 @@ struct ClusteredLightConfig {
 
 using ClusteredLightGpu = Light3DGpu;
 
+/** @brief ClusterTableEntry public API. */
 struct ClusterTableEntry {
     uint32_t offset = 0;
     uint32_t count = 0;
@@ -32,6 +33,7 @@ struct ClusterTableEntry {
 struct ClusteredLightingUpload {
     glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f};
     glm::vec4 gridInfo{float(ClusteredLightConfig::kTilesX), float(ClusteredLightConfig::kTilesY),
+                       /** @brief Float. */
                        float(ClusteredLightConfig::kSlices), 0.f};  // w = point light count
     glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};  // near, far, screenW, screenH
     glm::mat4 view{1.f};

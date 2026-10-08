@@ -14,6 +14,7 @@ namespace eve::dialogue {
 class EVENGINE_API_ORCHESTRATION ConversationTextRenderer {
 public:
     using Evaluator = std::function<bool(const std::string&)>;
+    /** @brief ToneRule public API. */
     struct ToneRule {
         std::string expression;
         std::string prefix;

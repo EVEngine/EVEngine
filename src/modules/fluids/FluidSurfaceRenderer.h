@@ -106,7 +106,9 @@ public:
      * @param params camera / resolution / material tuning.
      * @param preferGpu use compute kernels when a device is available.
      */
+    /** @brief Fluid surface renderer. */
     FluidSurfaceRenderer(const FluidSurfaceParams& params, bool preferGpu);
+    /** @brief Fluid surface renderer. */
     ~FluidSurfaceRenderer();
 
     FluidSurfaceRenderer(const FluidSurfaceRenderer&)            = delete;
@@ -392,7 +394,9 @@ public:
      */
     void renderFrom(FluidSimulator* sim);
 
+    /** @brief Returns the width. */
     int getWidth() const { return params_.width; }
+    /** @brief Returns the height. */
     int getHeight() const { return params_.height; }
 
     /** @brief Linear view depth per pixel (FLT_MAX where no fluid). */
@@ -408,11 +412,13 @@ public:
     const std::vector<uint8_t>& color() const { return color_; }
 
     /** @return true when the GPU compute path is active. */
+    /** @brief Using gpu. */
     bool usingGpu() const { return reducedRenderer_ ? reducedRenderer_->usingGpu() : gpuOk_; }
 
     /** @brief Switch shading: 0 water, 1 mud. */
     void setMode(int mode) {
         params_.mode = mode;
+        /** @brief Resets reduced renderers. */
         resetReducedRenderers();
     }
 

@@ -23,6 +23,7 @@ namespace eve::procgen {
 /** @brief Recipe returns a newly owned RGBA8 image, or null on failure. */
 using TextureRecipeFn = std::function<std::unique_ptr<image::ImageData>(const Params &params, std::string &error)>;
 
+/** @brief EVENGINE_API_DOMAINS public API. */
 class EVENGINE_API_DOMAINS TextureRecipeRegistry {
 public:
     /** @brief Access the process-wide texture recipe registry. @return Registry instance. */
@@ -64,6 +65,7 @@ private:
     bool builtinsRegistered_ = false;
 };
 
+/** @brief TextureGenContext public API. */
 struct TextureGenContext {
     int      width     = 64;
     int      height    = 64;
@@ -75,14 +77,17 @@ struct TextureGenContext {
     bool     seamless  = true;
     float    warpAmp   = 1.f;
 
+    /** @brief From params. */
     static TextureGenContext fromParams(const Params &params);
 };
 
+/** @brief Paint height to image. */
 void paintHeightToImage(image::ImageData &img, const std::vector<float> &height, int w, int h,
                         const ColorRamp &ramp, int bands, int pixelSize);
 
 /** @brief Sample a height function over the full [w×h] grid into `height` (clamped to [0,1]). */
 void fillHeightField(const TextureGenContext &ctx,
+                     /** @brief Float. */
                      const std::function<float(float, float, const NoiseField &)> &fn,
                      std::vector<float> &height);
 
@@ -105,6 +110,7 @@ struct PbrParams {
     float aoStrength        = 1.f;    // cavity/ambient-occlusion strength
     float heightStrength    = 1.f;    // height-map displacement scale
 
+    /** @brief From params. */
     static PbrParams fromParams(const Params &params);
 };
 
@@ -116,6 +122,7 @@ struct PbrParams {
 struct TextureRecipeDef {
     std::string id;  // albedo recipe id, e.g. "tex.marble"
     ColorRamp   albedo;
+    /** @brief Float. */
     std::function<float(float, float, const NoiseField &)> height;  // clamped to [0,1]
     PbrParams   pbr;
 };

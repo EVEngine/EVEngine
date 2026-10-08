@@ -67,18 +67,26 @@ class Graphics;
  */
 class EVENGINE_API_BACKENDS RenderControl {
 public:
+    /** @brief Renders control. */
     RenderControl();
+    /** @brief Renders control. */
     ~RenderControl() = default;
 
     RenderControl(const RenderControl &) = delete;
     RenderControl &operator=(const RenderControl &) = delete;
 
+    /** @brief Attaches . */
     void attach(Graphics *gfx);
+    /** @brief Returns the graphics. */
     Graphics *getGraphics() const { return gfx_; }
 
+    /** @brief Supports. */
     bool supports(const std::string &feature) const;
+    /** @brief Enables . */
     void enable(const std::string &feature);
+    /** @brief Disables . */
     void disable(const std::string &feature);
+    /** @brief True when enabled. */
     bool isEnabled(const std::string &feature) const;
 
     /**
@@ -146,15 +154,21 @@ public:
 
     /** @brief Rebuild the executable pass list from current feature flags. */
     void compile();
+    /** @brief True when compiled. */
     bool isCompiled() const { return compiled_ && !dirty_; }
+    /** @brief True when dirty. */
     bool isDirty() const { return dirty_; }
 
+    /** @brief Returns the pass count. */
     int getPassCount() const { return int(passes_.size()); }
     /** @brief Return the compiled pass name at index, or an empty string. */
     std::string getPassName(int index) const;
+    /** @brief True when pass. */
     bool hasPass(const std::string &name) const;
 
+    /** @brief Returns the g buffer. */
     GBuffer *getGBuffer() { return &gbuffer_; }
+    /** @brief Returns the g buffer. */
     const GBuffer *getGBuffer() const { return &gbuffer_; }
 
     /** @brief Ensure compiled; no-op when already clean. */

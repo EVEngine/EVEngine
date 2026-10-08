@@ -41,7 +41,9 @@ public:
 
     void clear();
 
+    /** @brief Cluster count. */
     [[nodiscard]] size_t clusterCount() const { return clusters_.size(); }
+    /** @brief Cluster at. */
     [[nodiscard]] const HairCluster *clusterAt(size_t index) const;
 
     /**

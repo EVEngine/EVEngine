@@ -37,6 +37,7 @@ struct ActionExecutionResult {
  */
 class IRTSActionExecutor {
 public:
+    /** @brief Releases IRTSActionExecutor resources. */
     virtual ~IRTSActionExecutor() = default;
 
     /**
@@ -61,12 +62,14 @@ class EVENGINE_API_DOMAINS ActionAdapter final : public IRTSActionExecutor {
 public:
     /** @brief Bind the adapter to an owner-thread action runtime. */
     explicit ActionAdapter(action::ActionRuntime& runtime);
+    /** @brief Action adapter. */
     ~ActionAdapter() override;
 
     ActionAdapter(const ActionAdapter&)            = delete;
     ActionAdapter& operator=(const ActionAdapter&) = delete;
 
     /** @copydoc IRTSActionExecutor::execute */
+    /** @brief Execute. */
     [[nodiscard]] Result<ActionExecutionResult> execute(Unit& unit, const OrderRecord& order,
                                                         const SimulationStep& step) override;
     /** @brief Forget runtime execution correlations so restored orders are rebound on their next step. */

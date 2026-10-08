@@ -20,6 +20,7 @@ class UIBackend;
 
 namespace eve::ui {
 
+/** @brief UIEvent public API. */
 struct UIEvent {
     UIHostHandle host{};
     std::string hostName;
@@ -63,6 +64,7 @@ struct UIDrop {
 };
 
 /** Per-frame UI statistics (P2-3 profiler counters). */
+/** @brief UIStats public API. */
 struct UIStats {
     int hostCount = 0;
     int nodeCount = 0;
@@ -75,6 +77,7 @@ struct UIStats {
  * owned by Graphics, and the input routed from the widget rect (local mouse,
  * drag delta, wheel). Filled during UISystem::render().
  */
+/** @brief ViewportState public API. */
 struct ViewportState {
     std::string key;                 // "hostName/nodeId"
     graphics::Canvas *canvas = nullptr;
@@ -90,6 +93,7 @@ struct ViewportState {
     float wheel = 0.f;
 };
 
+/** @brief EVENGINE_API_WORLD public API. */
 class EVENGINE_API_WORLD UISystem {
 public:
     /** @brief Sets the borrowed backend used for the current UI/render lifetime. */
@@ -126,7 +130,9 @@ public:
     /** @brief Walk all UIHost (+ subclasses) via ECS View. */
     static void render();
 
+    /** @brief Pending events. */
     static std::vector<UIEvent> &pendingEvents();
+    /** @brief Dispatches events. */
     static void dispatchEvents();
 
     /**
@@ -149,6 +155,7 @@ public:
     [[nodiscard]] static UIHostHandle findHostByOwner(uint32_t ownerId);
 
     static std::vector<UIClick> &clickQueue();
+    /** @brief Change queue. */
     static std::vector<UIChange> &changeQueue();
     /** @brief Returns retained drag-and-drop availability for this build target. */
     [[nodiscard]] static DragDropSupport dragDropSupport() noexcept;

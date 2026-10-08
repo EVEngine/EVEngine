@@ -48,7 +48,9 @@ class EVENGINE_API_WORLD AnimSkin {
 public:
     static constexpr int kMaxInfluences = 4;
 
+    /** @brief Anim skin. */
     AnimSkin()  = default;
+    /** @brief Anim skin. */
     ~AnimSkin() = default;
 
     AnimSkin(const AnimSkin&)            = delete;
@@ -70,11 +72,14 @@ public:
     [[nodiscard]] static Result<std::unique_ptr<AnimSkin>> fromStreams(AnimSkinStreamData streams);
 
     int getVertexCount() const { return vertexCount_; }
+    /** @brief Returns the bone count. */
     int getBoneCount() const { return static_cast<int>(skeletonBone_.size()); }
+    /** @brief Returns the influence count. */
     int getInfluenceCount() const { return kMaxInfluences; }
 
     /** @brief Skeleton bone index used by skin joint i (-1 if unused). */
     int         getSkeletonBone(int skinBoneIndex) const;
+    /** @brief Returns the skin bone name. */
     std::string getSkinBoneName(int skinBoneIndex) const;
 
     /** @brief Inverse-bind matrix element (column-major, 0..15) for skin joint i. */
@@ -118,7 +123,9 @@ public:
 
     /** @brief Cached skinned position component (requires updateSkinnedPositions). */
     float getSkinnedPositionX(int vertexIndex) const;
+    /** @brief Returns the skinned position y. */
     float getSkinnedPositionY(int vertexIndex) const;
+    /** @brief Returns the skinned position z. */
     float getSkinnedPositionZ(int vertexIndex) const;
 
     /**
@@ -152,13 +159,16 @@ public:
 
     /** @brief Bind-pose (unskinned) position component for vertex v (0..vertexCount-1). */
     float getBindPositionX(int vertexIndex) const;
+    /** @brief Returns the bind position y. */
     float getBindPositionY(int vertexIndex) const;
+    /** @brief Returns the bind position z. */
     float getBindPositionZ(int vertexIndex) const;
 
     /** @brief Influence slot i (0..3) for vertex: skeleton bone index or -1. */
     int   getVertexBone(int vertexIndex, int influenceIndex) const;
     /** @brief Influence slot i (0..3) for vertex: skin-local joint index or -1. */
     int   getVertexSkinJoint(int vertexIndex, int influenceIndex) const;
+    /** @brief Returns the vertex weight. */
     float getVertexWeight(int vertexIndex, int influenceIndex) const;
 
 private:

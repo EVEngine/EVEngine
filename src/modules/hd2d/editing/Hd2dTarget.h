@@ -61,8 +61,11 @@ class EVENGINE_API_ORCHESTRATION Hd2dDocumentTarget final : public ::eve::editin
                                                             public IDomainOperationTargetStaging,
                                                             public IPropertyProvider {
 public:
+    /** @brief Hd 2 d document target. */
     explicit Hd2dDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId                                targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor                        describe() const override;
     /**
      * @brief Query an optional stable editing capability.
@@ -70,23 +73,38 @@ public:
      * @lifetime Valid until this target is destroyed or the capability is explicitly invalidated.
      */
     void*                                   queryCapability(const CapabilityId&) override;
+    /** @brief Applies domain operation. */
     Result<void>                      applyDomainOperation(const DomainOperation&) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
+    /** @brief Schema. */
     PropertySchema                          schema(const SelectionSnapshot&) const override;
+    /** @brief Reads . */
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Make set. */
     Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Value. */
     const Hd2dAssetValue&                   value() const { return value_; }
+    /** @brief Validate. */
     std::vector<EditorDiagnostic>           validate() const;
+    /** @brief Snapshot value. */
     EditorValue                             snapshotValue() const;
+    /** @brief Loads snapshot. */
     Result<void>                      loadSnapshot(const EditorValue&);
 
 private:
+    /** @brief Matches. */
     bool                          matches(const SelectionSnapshot&) const;
+    /** @brief Content value. */
     EditorValue                   contentValue() const;
+    /** @brief Replacement. */
     Result<DomainOperation> replacement(EditorValue, std::string) const;
     std::string                   id_;
     Hd2dAssetValue                value_;
@@ -99,22 +117,30 @@ struct Hd2dFramePreview {
 /** @brief Pure sprite animation scrub evaluator. */
 class EVENGINE_API_ORCHESTRATION Hd2dFramePreviewService {
 public:
+    /** @brief Evaluate. */
     Result<Hd2dFramePreview> evaluate(const Hd2dDocumentTarget&, float time) const;
 };
 /** @brief Resolves an HD-2D sprite texture. */
 class IHd2dTextureResolver {
 public:
+    /** @brief Releases IHd2dTextureResolver resources. */
     virtual ~IHd2dTextureResolver()                                            = default;
+    /** @brief Texture. */
     virtual Result<graphics::Texture*> texture(const std::string&) const = 0;
 };
 /** @brief Candidate-first live Sprite3D/TileMap3D preset publication. */
 class EVENGINE_API_ORCHESTRATION Hd2dDocumentRuntime {
 public:
+    /** @brief Hd 2 d document runtime. */
     Hd2dDocumentRuntime();
+    /** @brief Hd 2 d document runtime. */
     ~Hd2dDocumentRuntime();
+    /** @brief Publish sprite. */
     Result<hd2d::Sprite3D*>  publishSprite(const Hd2dDocumentTarget&, hd2d::Hd2D*, graphics::Graphics*,
                                                  graphics::Camera3D*, const IHd2dTextureResolver&);
+    /** @brief Publish tile map. */
     Result<hd2d::TileMap3D*> publishTileMap(const Hd2dDocumentTarget&, hd2d::Hd2D*);
+    /** @brief Revision. */
     Revision                       revision() const { return revision_; }
 
 private:

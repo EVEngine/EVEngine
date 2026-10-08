@@ -18,6 +18,7 @@ namespace eve::gpuagents {
  */
 class EVENGINE_API_DOMAINS EffectBackend {
 public:
+    /** @brief Effect backend. */
     EffectBackend() = default;
 
     /**

@@ -19,13 +19,20 @@ class EVENGINE_API_BACKENDS SparseVolumeTexture {
 public:
     /** @brief Allocate a logical volume; bricks are created only for non-empty voxels. */
     void resize(int width, int height, int depth, int brickSize = 8);
+    /** @brief Clears . */
     void clear();
 
+    /** @brief Returns the width. */
     int getWidth() const { return width_; }
+    /** @brief Returns the height. */
     int getHeight() const { return height_; }
+    /** @brief Returns the depth. */
     int getDepth() const { return depth_; }
+    /** @brief Returns the brick size. */
     int getBrickSize() const { return brickSize_; }
+    /** @brief Returns the brick count. */
     std::size_t getBrickCount() const { return bricks_.size(); }
+    /** @brief Returns the allocated voxel count. */
     std::size_t getAllocatedVoxelCount() const;
 
     /** @brief Store one voxel; all-zero voxels do not allocate a new brick. */

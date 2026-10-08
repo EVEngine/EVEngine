@@ -31,13 +31,16 @@ struct EVENGINE_API_PLATFORM ClassDefinition {
     std::vector<std::string> tags;
     std::unordered_map<std::string, std::string> extra;
 
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the extra. */
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
 /** @brief 进程级职业定义注册表。 */
 class EVENGINE_API_PLATFORM ClassRegistry {
 public:
+    /** @brief Registers class. */
     static void registerClass(const ClassDefinition &def);
     /**
      * @brief Find a registered class definition by id.
@@ -48,7 +51,9 @@ public:
     static const ClassDefinition *find(const std::string &id);
     /** @brief Remove a class by id (compatibility facade returning whether it was present). */
     static bool remove(const std::string &id);
+    /** @brief Clears . */
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
 
     /** @brief 从 JSON 数组/对象批量注册。元素形如：

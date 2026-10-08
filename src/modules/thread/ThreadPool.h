@@ -25,14 +25,19 @@ class Channel;
  */
 class EVENGINE_API_FOUNDATION ThreadPool {
 public:
+    /** @brief Thread pool. */
     explicit ThreadPool(int workerCount);
+    /** @brief Thread pool. */
     ~ThreadPool();
 
     ThreadPool(const ThreadPool &) = delete;
     ThreadPool &operator=(const ThreadPool &) = delete;
 
+    /** @brief Returns the worker count. */
     int getWorkerCount() const;
+    /** @brief Returns the pending count. */
     int getPendingCount() const;
+    /** @brief True when running. */
     bool isRunning() const;
 
     /** @brief Submit a C++ callable. Caller owns the Task wrapper; work owns its shared state. */

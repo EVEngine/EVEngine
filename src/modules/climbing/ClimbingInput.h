@@ -31,6 +31,7 @@ struct BufferedClimbingCommand {
     eve::SimulationTick expiryTick          = eve::SimulationTick::zero();
     ClimbingExecutionId consumedExecutionId = ClimbingExecutionId::zero();
 
+    /** @brief Operator ==. */
     friend bool operator==(const BufferedClimbingCommand&, const BufferedClimbingCommand&) = default;
 };
 

@@ -14,6 +14,7 @@ namespace eve::daynight {
  */
 class EVENGINE_API_WORLD PcgLightingFogPhotoMode final : public IPhotoModeFieldSink {
 public:
+    /** @brief Pcg lighting fog photo mode. */
     ~PcgLightingFogPhotoMode() override;
     /** @brief Attach a borrowed DayNight target and seed local state from it. */
     void setTarget(DayNight *target) noexcept;

@@ -35,7 +35,9 @@ class NetRpc;
 class EVENGINE_API_PLATFORM Network : public Module, public eve::service::INetwork {
 public:
     Module_REG(Network);
+    /** @brief Network. */
     Network();
+    /** @brief Network. */
     ~Network() override;
 
     /** @brief Creates an owning TCP socket handle for C++ callers. */
@@ -82,9 +84,11 @@ public:
 
     /** @brief Default socket/HTTP timeout in milliseconds. */
     void setTimeout(int ms);
+    /** @brief Returns the timeout. */
     int  getTimeout() const;
     /** @brief Whether TLS peer certificates are verified (default true). */
     void setVerifySsl(bool verify);
+    /** @brief Returns the verify ssl. */
     bool getVerifySsl() const;
 
     /** @brief Return a thread-safe copied telemetry snapshot for diagnostics tools. */

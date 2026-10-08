@@ -20,7 +20,9 @@ namespace eve::graphics::raytracing {
 class EVENGINE_API_WORLD RayTracing : public eve::Module {
 public:
     Module_REG(RayTracing);
+    /** @brief Ray tracing. */
     RayTracing() = default;
+    /** @brief Ray tracing. */
     ~RayTracing() override = default;
 
     /** @brief True when the active Graphics device enabled hardware RT. */

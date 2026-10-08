@@ -21,7 +21,9 @@ namespace eve::fluids {
 class VolumeFluidShadowCaster final {
 public:
     /** @param graphics Initialized backend that must outlive this caster. */
+    /** @brief Constructs a VolumeFluidShadowCaster. */
     explicit VolumeFluidShadowCaster(graphics::Graphics& graphics);
+    /** @brief Releases VolumeFluidShadowCaster resources. */
     ~VolumeFluidShadowCaster();
     VolumeFluidShadowCaster(const VolumeFluidShadowCaster&)            = delete;
     VolumeFluidShadowCaster& operator=(const VolumeFluidShadowCaster&) = delete;

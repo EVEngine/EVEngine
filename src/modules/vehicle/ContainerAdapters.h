@@ -51,14 +51,18 @@ public:
     VehicleSeatContainerAdapter(eve::container::ContainerId id, VehicleEntity* vehicle,
                                 eve::container::AcceptedCondition accepted = {});
 
+    /** @brief Descriptor. */
     [[nodiscard]] const eve::container::ContainerDescriptor& descriptor() const noexcept override {
         return descriptor_;
     }
+    /** @brief Snapshot. */
     [[nodiscard]] eve::Result<eve::container::ContainerSnapshot> snapshot() const override;
+    /** @brief Validate insert. */
     [[nodiscard]] eve::Result<void>                              validateInsert(
                                      const eve::container::ContainerObject& object, std::optional<eve::container::SlotIndex> destination,
                                      std::optional<eve::container::MembershipId> ignoredObject = std::nullopt) const override;
     /** @copydoc eve::container::IContainer::prepare */
+    /** @brief Prepare. */
     [[nodiscard]] eve::Result<std::unique_ptr<eve::container::IContainer::PreparedState>> prepare(
         const eve::container::ContainerSnapshot& expected, const eve::container::ContainerSnapshot& candidate) override;
 

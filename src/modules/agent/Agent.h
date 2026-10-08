@@ -35,6 +35,7 @@ struct Observation {
  */
 class IEnvironment {
 public:
+    /** @brief Releases IEnvironment resources. */
     virtual ~IEnvironment() = default;
     /** @brief Reset atomically to the injected seed; return initial state (reward zero). */
     [[nodiscard]] virtual Result<Observation> reset(std::uint64_t seed) = 0;
@@ -113,6 +114,7 @@ struct Policy {
 class IPolicyBackend {
 public:
     static constexpr const char* capabilityName = "agent.IPolicyBackend";
+    /** @brief Releases IPolicyBackend resources. */
     virtual ~IPolicyBackend()                   = default;
     /** @brief Owning device/backend label; must describe the actual execution path. */
     [[nodiscard]] virtual std::string name() const = 0;

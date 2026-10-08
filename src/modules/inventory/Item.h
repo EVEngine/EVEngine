@@ -11,12 +11,18 @@
 
 namespace eve::inventory {
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION ItemRegistry {
 public:
+    /** @brief Registers item. */
     static void registerItem(const ItemDefinition &def);
+    /** @brief Finds find. */
     static const ItemDefinition *find(const std::string &id);
+    /** @brief Removes remove. */
     static bool remove(const std::string &id);
+    /** @brief Clears clear. */
     static void clear();
+    /** @brief Returns the number of count. */
     static int count();
 
     /**

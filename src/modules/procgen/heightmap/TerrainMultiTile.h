@@ -127,9 +127,13 @@ struct TerrainMultiTileReport {
  */
 class EVENGINE_API_DOMAINS TerrainMultiTileWorkspace {
 public:
+    /** @brief Terrain multi tile workspace. */
     TerrainMultiTileWorkspace();
+    /** @brief Terrain multi tile workspace. */
     ~TerrainMultiTileWorkspace();
+    /** @brief Terrain multi tile workspace. */
     TerrainMultiTileWorkspace(TerrainMultiTileWorkspace&&) noexcept;
+    /** @brief Operator =. */
     TerrainMultiTileWorkspace& operator=(TerrainMultiTileWorkspace&&) noexcept;
     TerrainMultiTileWorkspace(const TerrainMultiTileWorkspace&) = delete;
     TerrainMultiTileWorkspace& operator=(const TerrainMultiTileWorkspace&) = delete;
@@ -173,9 +177,13 @@ private:
  */
 class EVENGINE_API_DOMAINS TerrainMultiDetailWorkspace {
 public:
+    /** @brief Terrain multi detail workspace. */
     TerrainMultiDetailWorkspace();
+    /** @brief Terrain multi detail workspace. */
     ~TerrainMultiDetailWorkspace();
+    /** @brief Terrain multi detail workspace. */
     TerrainMultiDetailWorkspace(TerrainMultiDetailWorkspace&&) noexcept;
+    /** @brief Operator =. */
     TerrainMultiDetailWorkspace& operator=(TerrainMultiDetailWorkspace&&) noexcept;
     TerrainMultiDetailWorkspace(const TerrainMultiDetailWorkspace&) = delete;
     TerrainMultiDetailWorkspace& operator=(const TerrainMultiDetailWorkspace&) = delete;

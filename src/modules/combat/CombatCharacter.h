@@ -98,6 +98,7 @@ struct CombatCharacterAdvance {
  */
 class ICombatGroundProvider {
 public:
+    /** @brief Releases ICombatGroundProvider resources. */
     virtual ~ICombatGroundProvider() = default;
     /** @brief Return finite ground height at the supplied world XZ. */
     [[nodiscard]] virtual Result<double> sampleHeight(double x, double z) const = 0;
@@ -110,6 +111,7 @@ public:
  */
 class ICombatMoveProbe {
 public:
+    /** @brief Releases ICombatMoveProbe resources. */
     virtual ~ICombatMoveProbe() = default;
     /**
      * @brief Resolve a candidate translation for one capsule.
@@ -194,9 +196,11 @@ public:
     [[nodiscard]] Result<void> setTimeFrozen(SubjectRef subject, bool frozen);
     /** @brief Borrow a ground sampler; must outlive this runtime or be cleared. */
     void setGroundProvider(ICombatGroundProvider& provider) noexcept { ground_ = &provider; }
+    /** @brief Clears ground provider. */
     void clearGroundProvider() noexcept { ground_ = nullptr; }
     /** @brief Borrow a capsule move probe; must outlive this runtime or be cleared. */
     void setMoveProbe(ICombatMoveProbe& probe) noexcept { probe_ = &probe; }
+    /** @brief Clears move probe. */
     void clearMoveProbe() noexcept { probe_ = nullptr; }
     /** @brief Atomically advance every character using only the supplied deterministic step. */
     [[nodiscard]] Result<CombatCharacterAdvance> advance(const SimulationStep& step);

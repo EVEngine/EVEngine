@@ -52,6 +52,7 @@ public:
      * @param resolver Owning callback used only on window enter to resolve body links.
      */
     ActionCollisionIgnoreState(World3D& world, ActionCollisionPairResolver resolver);
+    /** @brief Action collision ignore state. */
     ~ActionCollisionIgnoreState() override;
 
     /** @brief Opt this adapter into or out of Action state-window dispatch. */
@@ -59,12 +60,15 @@ public:
     /** @brief Return whether this exact adapter is registered. */
     [[nodiscard]] bool enabled() const;
     /** @copydoc eve::action::IActionStateWindowSink::supports */
+    /** @brief Supports. */
     [[nodiscard]] bool supports(eve::action::ActionStateWindowKind kind) const noexcept override;
     /** @copydoc eve::action::IActionStateWindowSink::enter */
+    /** @brief Enter. */
     [[nodiscard]] Result<void> enter(const eve::action::ActionStateWindowBinding& binding,
                                      const eve::action::ActionTimelineEvent& event,
                                      const eve::action::ActionNotifyContext& context) override;
     /** @copydoc eve::action::IActionStateWindowSink::exit */
+    /** @brief Exit. */
     [[nodiscard]] Result<void> exit(const eve::action::ActionStateWindowBinding& binding,
                                     const eve::action::ActionTimelineEvent& event,
                                     const eve::action::ActionNotifyContext& context) override;
@@ -85,7 +89,9 @@ private:
     struct PairKey {
         PhysicsBodyHandle first;
         PhysicsBodyHandle second;
+        /** @brief Operator ==. */
         friend bool operator==(const PairKey&, const PairKey&) noexcept = default;
+        /** @brief Operator <=>. */
         friend auto operator<=>(const PairKey&, const PairKey&) noexcept = default;
     };
     struct PairState {

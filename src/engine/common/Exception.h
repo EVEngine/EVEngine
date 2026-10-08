@@ -9,9 +9,12 @@
 namespace eve {
 
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION Exception : public std::exception {
 public:
+    /** @brief Exception. */
     Exception(const char *fmt, ...);
+	/** @brief Exception. */
 	virtual ~Exception() throw();
 
     /**

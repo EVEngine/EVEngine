@@ -4,9 +4,11 @@
 
 namespace eve::physics {
 class World3D;
+/** @brief Registers physics capabilities. */
 void registerPhysicsCapabilities();
 /** @brief Registers the backend-neutral generated-artifact collider provider. */
 EVENGINE_API_WORLD void registerPhysicsArtifactProvider();
+/** @brief Registers camera obstruction world. */
 void registerCameraObstructionWorld(World3D* world);
 /**
  * @brief Registers a borrowed live World3D with the targeting LOS adapter.

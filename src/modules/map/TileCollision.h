@@ -18,6 +18,7 @@ struct EVENGINE_API_WORLD_INLINE TileCollisionRect {
 class EVENGINE_API_WORLD_INLINE ITileCollisionSink {
 public:
     static constexpr const char* capabilityName = "ITileCollisionSink";
+    /** @brief I tile collision sink. */
     virtual ~ITileCollisionSink()               = default;
 
     /** @brief Atomically replace collision geometry for a stable layer identity. */

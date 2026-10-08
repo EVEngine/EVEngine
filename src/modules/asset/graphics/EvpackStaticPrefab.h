@@ -33,6 +33,7 @@ struct StaticPrefabGpuPart {
  */
 class EVENGINE_API_WORLD EvpackStaticPrefab final {
 public:
+    /** @brief Evpack static prefab. */
     ~EvpackStaticPrefab();
     EvpackStaticPrefab(const EvpackStaticPrefab&)            = delete;
     EvpackStaticPrefab& operator=(const EvpackStaticPrefab&) = delete;

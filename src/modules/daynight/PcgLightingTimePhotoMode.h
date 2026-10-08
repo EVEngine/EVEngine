@@ -15,13 +15,16 @@ class DayNight;
  */
 class EVENGINE_API_WORLD PcgLightingTimePhotoMode final : public IPhotoModeFieldSink {
 public:
+    /** @brief Pcg lighting time photo mode. */
     ~PcgLightingTimePhotoMode() override;
     /** @brief Attach a borrowed DayNight target. */
     void setTarget(DayNight* target) noexcept { target_ = target; }
     /** @brief Register or revoke this instance as owner of the three Pcg time fields. */
     void setAuthority(bool enabled);
 
+    /** @brief Accepts photo mode field. */
     PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment& assignment) const noexcept override;
+    /** @brief Applies photo mode field. */
     [[nodiscard]] Result<void> applyPhotoModeField(const PhotoModeAssignment& assignment) override;
 
 private:

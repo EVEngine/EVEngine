@@ -17,6 +17,7 @@ namespace eve::asset {
 /** @brief Abstract immutable byte-range provider for files, mmap, HTTP or object storage. */
 class EvpackRangeSource {
 public:
+    /** @brief Releases EvpackRangeSource resources. */
     virtual ~EvpackRangeSource() = default;
 
     /** @brief Return the authoritative immutable object size. */
@@ -36,7 +37,9 @@ class FileEvpackRangeSource final : public EvpackRangeSource {
 public:
     /** @brief Bind a path; the file is opened separately for every operation. */
     explicit FileEvpackRangeSource(std::filesystem::path path) : path_(std::move(path)) {}
+    /** @brief Returns the size of . */
     [[nodiscard]] Result<std::uint64_t> size() const override;
+    /** @brief Reads . */
     [[nodiscard]] Result<std::vector<std::uint8_t>> read(
         std::uint64_t offset, std::uint64_t size) const override;
 private:

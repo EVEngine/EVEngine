@@ -42,6 +42,7 @@ using ParallelForBody = std::function<void(int first, int last)>;
  */
 class Job {
 public:
+    /** @brief Releases Job resources. */
     virtual ~Job() = default;
 
     /**
@@ -107,6 +108,7 @@ public:
  */
 class TaskGroup {
 public:
+    /** @brief Releases TaskGroup resources. */
     virtual ~TaskGroup() = default;
 
     /**
@@ -154,6 +156,7 @@ public:
  */
 class JobSystem {
 public:
+    /** @brief Releases JobSystem resources. */
     virtual ~JobSystem() = default;
 
     /** @brief Number of scheduler worker threads. */

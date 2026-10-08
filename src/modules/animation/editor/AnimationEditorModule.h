@@ -11,7 +11,9 @@ namespace eve::animation_editor {
 class EVENGINE_API_EDITORS AnimationEditorModule final : public Module {
 public:
     Module_REG(AnimationEditorModule);
+    /** @brief Animation editor module. */
     AnimationEditorModule();
+    /** @brief Animation editor module. */
     ~AnimationEditorModule() override;
 
 private:

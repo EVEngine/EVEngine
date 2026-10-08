@@ -59,7 +59,9 @@ public:
 
     /** @brief 事件队列（按发生顺序）。 */
     static void clearEvents();
+    /** @brief Event count. */
     static int eventCount();
+    /** @brief Event at. */
     static const EconomyEvent& eventAt(int index);
 
 private:

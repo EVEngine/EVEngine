@@ -54,12 +54,18 @@ class StyleRecipe;
 class EVENGINE_API_WORLD Stylize : public Module {
 public:
     Module_REG(Stylize);
+    /** @brief Stylize. */
     Stylize();
+    /** @brief Stylize. */
     ~Stylize() override;
 
+    /** @brief Returns the style count. */
     int         getStyleCount() const;
+    /** @brief Returns the style id. */
     std::string getStyleId(int index) const;
+    /** @brief True when style. */
     bool        hasStyle(const std::string &style) const;
+    /** @brief True when mesh style. */
     bool        hasMeshStyle(const std::string &style) const;
 
     /**
@@ -74,6 +80,7 @@ public:
 
     /** @brief Introspect built-in post param names (empty for unknown / custom-only ids). */
     int         getStyleParamCount(const std::string &style) const;
+    /** @brief Returns the style param name. */
     std::string getStyleParamName(const std::string &style, int index) const;
 
     /** @brief Create a mutable parameter instance of an immutable style definition. */
@@ -105,6 +112,7 @@ public:
     StylePass *newPassFromShader(const std::string &styleId, graphics::Shader *shader);
 
     /** Empty multi-pass chain (caller adds StylePass*). */
+    /** @brief Creates a chain. @ownership Caller deletes unless documented otherwise. */
     StyleChain *newChain();
 
     /** @brief Raw post Shader with defaults (owned by Graphics). */

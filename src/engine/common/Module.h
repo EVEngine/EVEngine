@@ -47,12 +47,16 @@ namespace eve {
 
 class Runtime;
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION Module {
 public:
+    /** @brief Module. */
     virtual ~Module() {}
+    /** @brief Returns the name. */
     virtual std::string getName() const = 0;
 };
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION ModuleManager {
 public:
     typedef Module* (*creator_t)();
@@ -96,8 +100,10 @@ public:
      */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.
+    /** @brief Expose. */
     static void expose(ssq::VM& vm);
     // Expose modules registered after the initial expose() (e.g. plugins).
+    /** @brief Expose pending. */
     static int  expose_pending();
     /**
      * @brief Active runtime associated with the last expose() call, or nullptr.
@@ -156,6 +162,7 @@ public:
     static void requireAll();
 
 protected:
+    /** @brief Expose vm. */
     static void exposeVM(ssq::VM& vm);
 
 private:
@@ -179,6 +186,7 @@ private:
     static Module* requireInstanceRaw(const char* name);
 
 protected:
+    /** @brief ModuleInfo public API. */
     struct ModuleInfo {
         creator_t creator = nullptr;
         exposer_t exposer = nullptr;
@@ -195,7 +203,9 @@ protected:
     friend struct ModuleBindAccess;
 };
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 struct EVENGINE_API_FOUNDATION ModuleRegister {
+    /** @brief Module register. */
     ModuleRegister(const char* name, ModuleManager::creator_t c, ModuleManager::exposer_t e);
 };
 

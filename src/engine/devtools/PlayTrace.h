@@ -41,7 +41,9 @@ namespace eve::dev {
 /** @brief RAII flag so nested Play requests during replay are not recorded. */
 class EVENGINE_API_FOUNDATION PlayReplayGuard final {
 public:
+    /** @brief Play replay guard. */
     PlayReplayGuard();
+    /** @brief Play replay guard. */
     ~PlayReplayGuard();
     PlayReplayGuard(const PlayReplayGuard&)            = delete;
     PlayReplayGuard& operator=(const PlayReplayGuard&) = delete;
@@ -55,17 +57,24 @@ public:
  */
 class EVENGINE_API_FOUNDATION PlayTraceBuffer final {
 public:
+    /** @brief Instance. */
     static PlayTraceBuffer& instance();
 
+    /** @brief Clears . */
     void clear();
     /** @brief True while `replayPlayTrace` is executing. */
     [[nodiscard]] bool isReplaying() const { return replaying_; }
     void setReplaying(bool value) { replaying_ = value; }
+    /** @brief Begins . */
     void begin(std::string contractId, std::string contractHash, std::int64_t seed,
                std::string startCheckpoint);
+    /** @brief Append. */
     void append(const Value& request, const Value& response, std::uint64_t hostFrame);
+    /** @brief True when recording. */
     [[nodiscard]] bool isRecording() const { return begun_; }
+    /** @brief Empty. */
     [[nodiscard]] bool empty() const { return stepCount_ == 0; }
+    /** @brief Export trace. */
     [[nodiscard]] Value exportTrace() const;
 
 private:

@@ -79,6 +79,7 @@ struct MutationReceipt {
 class EVENGINE_API_FOUNDATION_INLINE IStateQuery {
 public:
     static constexpr const char* capabilityName = "eve.state.IStateQuery";
+    /** @brief I state query. */
     virtual ~IStateQuery()                      = default;
 
     /** @brief Query a generic world value. */
@@ -106,6 +107,7 @@ public:
 class EVENGINE_API_FOUNDATION_INLINE IStateMutation {
 public:
     static constexpr const char* capabilityName = "eve.state.IStateMutation";
+    /** @brief I state mutation. */
     virtual ~IStateMutation()                   = default;
 
     /** @brief Apply a complete mutation set atomically. */

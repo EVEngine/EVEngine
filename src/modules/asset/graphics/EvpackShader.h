@@ -26,6 +26,7 @@ namespace eve::asset_graphics {
  */
 class EVENGINE_API_WORLD EvpackShader final {
 public:
+    /** @brief Evpack shader. */
     ~EvpackShader();
     EvpackShader(const EvpackShader&)            = delete;
     EvpackShader& operator=(const EvpackShader&) = delete;

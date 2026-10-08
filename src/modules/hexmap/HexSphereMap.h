@@ -60,6 +60,7 @@ public:
     /** @brief Ratio of the default radial elevation step to the sphere radius. */
     static constexpr float kDefaultElevationRatio = 0.006f;
 
+    /** @brief Hex sphere map. */
     HexSphereMap() = default;
 
     /**

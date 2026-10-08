@@ -54,7 +54,9 @@ public:
      */
     [[nodiscard]] static eve::Result<int> replaceFromJsonStrict(const std::string &json);
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
+    /** @brief Finds . */
     static const EncounterDefinition *find(const std::string &id);
     /** @brief Return the number of ordered enemy members in an encounter, or zero when unknown. */
     static int memberCount(const std::string &id);

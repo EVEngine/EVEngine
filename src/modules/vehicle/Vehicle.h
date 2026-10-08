@@ -33,7 +33,9 @@ namespace eve::vehicle {
 class EVENGINE_API_DOMAINS Vehicle : public Module {
 public:
     Module_REG(Vehicle);
+    /** @brief Vehicle. */
     Vehicle();
+    /** @brief Vehicle. */
     ~Vehicle() override;
 
     /** @brief 从 JSON 注册载具模板；返回成功注册数量。 */
@@ -44,7 +46,9 @@ public:
     int getVehicleDefinitionCount();
     /** @brief 载具模板查询。 */
     bool        hasVehicleDefinition(const std::string& id);
+    /** @brief Returns the vehicle definition mobility. */
     std::string getVehicleDefinitionMobility(const std::string& id);
+    /** @brief Returns the vehicle definition max health. */
     float       getVehicleDefinitionMaxHealth(const std::string& id);
 
     /**
@@ -73,11 +77,17 @@ public:
 
     /** @brief RTS 命令。 */
     void moveTo(VehicleEntity* v, float x, float y);
+    /** @brief Attack move. */
     void attackMove(VehicleEntity* v, float x, float y);
+    /** @brief Attack. */
     void attack(VehicleEntity* v, float x, float y, int targetId = 0);
+    /** @brief Stops . */
     void stop(VehicleEntity* v);
+    /** @brief Hold. */
     void hold(VehicleEntity* v);
+    /** @brief Clears orders. */
     void clearOrders(VehicleEntity* v);
+    /** @brief Order count. */
     int  orderCount(VehicleEntity* v);
     /** @brief 当前命令类型名（"move" / "attack_move" / "attack" / "stop" / "hold" / "none"）。 */
     std::string getCurrentOrderType(VehicleEntity* v);
@@ -87,16 +97,27 @@ public:
 
     /** @brief 状态查询 / 设置。 */
     float       getX(VehicleEntity* v);
+    /** @brief Returns the y. */
     float       getY(VehicleEntity* v);
+    /** @brief Returns the heading. */
     float       getHeading(VehicleEntity* v);
+    /** @brief Returns the speed. */
     float       getSpeed(VehicleEntity* v);
+    /** @brief Sets the position. */
     void        setPosition(VehicleEntity* v, float x, float y);
+    /** @brief Sets the heading. */
     void        setHeading(VehicleEntity* v, float deg);
+    /** @brief True when arrived. */
     bool        isArrived(VehicleEntity* v);
+    /** @brief Returns the health. */
     float       getHealth(VehicleEntity* v);
+    /** @brief Sets the health. */
     void        setHealth(VehicleEntity* v, float hp);
+    /** @brief Returns the max health. */
     float       getMaxHealth(VehicleEntity* v);
+    /** @brief Returns the faction. */
     std::string getFaction(VehicleEntity* v);
+    /** @brief Sets the faction. */
     void        setFaction(VehicleEntity* v, const std::string& faction);
 
     /**
@@ -129,9 +150,13 @@ public:
 
     /** @brief 座位（FPS 面）。 */
     int         getSeatCount(VehicleEntity* v);
+    /** @brief Returns the seat name. */
     std::string getSeatName(VehicleEntity* v, int seatIndex);
+    /** @brief Returns the seat camera mode. */
     std::string getSeatCameraMode(VehicleEntity* v, int seatIndex);
+    /** @brief True when seat occupied. */
     bool        isSeatOccupied(VehicleEntity* v, int seatIndex);
+    /** @brief Returns the seat occupant. */
     int         getSeatOccupant(VehicleEntity* v, int seatIndex);
     /**
      * @brief 座位绑定的武器挂点（mountIndex 无效返回 nullptr）。
@@ -142,8 +167,11 @@ public:
      * @reentrancy The query invokes no callbacks; do not retain the pointer across seat or ECS mutation.
      */
     eve::weapon::WeaponMountEntity* getSeatMount(VehicleEntity* v, int seatIndex);
+    /** @brief Enter seat. */
     bool                            enterSeat(VehicleEntity* v, int seatIndex, int playerId);
+    /** @brief Exit seat. */
     bool                            exitSeat(VehicleEntity* v, int seatIndex);
+    /** @brief Exit seat by player. */
     int                             exitSeatByPlayer(VehicleEntity* v, int playerId);
 
     /** @brief 写入玩家控制（归一化；角度为度）。 */
@@ -159,6 +187,7 @@ public:
      * @reentrancy The query invokes no callbacks; do not retain the pointer across mutation.
      */
     int                             getMountCount(VehicleEntity* v);
+    /** @brief Returns the mount. */
     eve::weapon::WeaponMountEntity* getMount(VehicleEntity* v, int index);
 
     /** @brief 每帧推进全部载具（命令 → 移动 → RTS 自动瞄准）。 */
@@ -166,12 +195,19 @@ public:
 
     /** @brief 事件队列（order_completed 等，上一次 update 产生）。 */
     void        clearEvents();
+    /** @brief Returns the event count. */
     int         getEventCount() const;
+    /** @brief Returns the event type. */
     std::string getEventType(int index) const;
+    /** @brief Returns the event vehicle id. */
     std::string getEventVehicleId(int index) const;
+    /** @brief Returns the event def id. */
     std::string getEventDefId(int index) const;
+    /** @brief Returns the event order type. */
     std::string getEventOrderType(int index) const;
+    /** @brief Returns the event x. */
     float       getEventX(int index) const;
+    /** @brief Returns the event y. */
     float       getEventY(int index) const;
 
 private:

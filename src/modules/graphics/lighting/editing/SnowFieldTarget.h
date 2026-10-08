@@ -18,15 +18,25 @@ class EVENGINE_API_ORCHESTRATION SnowFieldTarget final : public editing::IEditab
 public:
     /** @brief Bind a live snow field which must outlive this adapter. */
     SnowFieldTarget(std::string id, weather::SnowField* field);
+    /** @brief Target id. */
     editing::TargetId         targetId() const override { return editing::TargetId(id_); }
+    /** @brief Revision. */
     std::uint64_t             revision() const override { return revision_; }
+    /** @brief Dirty region. */
     editing::EditRegion       dirtyRegion() const override { return dirty_; }
+    /** @brief Clears dirty region. */
     void                      clearDirtyRegion() override { dirty_.clear(); }
+    /** @brief Width. */
     int                       width() const override;
+    /** @brief Height. */
     int                       height() const override;
+    /** @brief True if cell. */
     bool                      containsCell(int x, int y) const override;
+    /** @brief Reads scalar. */
     float                     readScalar(int x, int y) const override;
+    /** @brief Writes scalar. */
     editing::FieldWriteStatus writeScalar(int x, int y, float value) override;
+    /** @brief Sample scalar. */
     float                     sampleScalar(float x, float y) const override;
     /** @brief Return the borrowed live field.
      * @return Borrowed pointer owned by the caller that constructed this adapter.

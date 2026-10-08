@@ -22,6 +22,7 @@ constexpr int kChunkSize = 32;
 struct PackedRect {
     uint32_t bits = 0;
 
+    /** @brief Pack. */
     static PackedRect pack(int x, int y, int z, int width, int height, int tex) {
         PackedRect r;
         r.bits = (uint32_t(x) & 31u) | ((uint32_t(y) & 31u) << 5) | ((uint32_t(z) & 31u) << 10) |
@@ -30,11 +31,17 @@ struct PackedRect {
         return r;
     }
 
+    /** @brief X. */
     int x() const { return int(bits & 31u); }
+    /** @brief Y. */
     int y() const { return int((bits >> 5) & 31u); }
+    /** @brief Z. */
     int z() const { return int((bits >> 10) & 31u); }
+    /** @brief Width. */
     int width() const { return int((bits >> 15) & 31u) + 1; }
+    /** @brief Height. */
     int height() const { return int((bits >> 20) & 31u) + 1; }
+    /** @brief Tex. */
     int tex() const { return int((bits >> 25) & 127u); }
 };
 

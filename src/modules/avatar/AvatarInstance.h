@@ -74,15 +74,23 @@ enum class SkinnedPartUpdateMode {
 /** @brief Optional Live2D runtime backend (Cubism etc.). Registered from C++ / plugins. */
 class ILive2DBackend {
 public:
+    /** @brief Releases ILive2DBackend resources. */
     virtual ~ILive2DBackend() = default;
+    /** @brief Returns the name. */
     virtual std::string getName() const = 0;
     /** @brief True only for a backend that can render a real Live2D model. */
     virtual bool  isRuntimeAvailable() const { return true; }
+    /** @brief Loads model. */
     virtual bool loadModel(const std::string &path) = 0;
+    /** @brief Updates . */
     virtual void update(float dt) = 0;
+    /** @brief Sets the parameter. */
     virtual void setParameter(const std::string &name, float value) = 0;
+    /** @brief Returns the parameter. */
     virtual float getParameter(const std::string &name) const = 0;
+    /** @brief Sets the expression. */
     virtual bool setExpression(const std::string &name) = 0;
+    /** @brief Sets the motion. */
     virtual bool setMotion(const std::string &name) = 0;
     /** @brief Optional: receive the Avatar's 2D transform. */
     virtual void setTransform(float /*x*/, float /*y*/, float /*sx*/, float /*sy*/) {}
@@ -106,38 +114,60 @@ public:
     /** @brief Callback fired exactly once, when the instance is destroyed. */
     using DestroyHook = std::function<void(AvatarInstance *)>;
 
+    /** @brief Avatar instance. */
     explicit AvatarInstance(std::string kind);
+    /** @brief Avatar instance. */
     ~AvatarInstance();
 
     AvatarInstance(const AvatarInstance &) = delete;
     AvatarInstance &operator=(const AvatarInstance &) = delete;
 
+    /** @brief Returns the kind. */
     std::string getKind() const { return kind_; }
 
+    /** @brief Sets the position. */
     void setPosition(float x, float y);
+    /** @brief Returns the x. */
     float getX() const { return x_; }
+    /** @brief Returns the y. */
     float getY() const { return y_; }
 
+    /** @brief Sets the scale. */
     void setScale(float sx, float sy);
+    /** @brief Returns the scale x. */
     float getScaleX() const { return sx_; }
+    /** @brief Returns the scale y. */
     float getScaleY() const { return sy_; }
 
+    /** @brief Sets the visible. */
     void setVisible(bool visible);
+    /** @brief True when visible. */
     bool isVisible() const { return visible_; }
 
+    /** @brief Sets the layer. */
     void setLayer(int layer);
+    /** @brief Returns the layer. */
     int getLayer() const { return layer_; }
 
+    /** @brief Sets the expression. */
     void setExpression(const std::string &name);
+    /** @brief Returns the expression. */
     std::string getExpression() const { return expression_; }
 
+    /** @brief Sets the motion. */
     void setMotion(const std::string &name);
+    /** @brief Returns the motion. */
     std::string getMotion() const { return motion_; }
 
+    /** @brief Sets the parameter. */
     void setParameter(const std::string &name, float value);
+    /** @brief Returns the parameter. */
     float getParameter(const std::string &name) const;
+    /** @brief True when parameter. */
     bool hasParameter(const std::string &name) const;
+    /** @brief Returns the parameter count. */
     int getParameterCount() const;
+    /** @brief Returns the parameter name. */
     std::string getParameterName(int index) const;
     /** @brief Define reflected Avatar parameter metadata for project-built inspectors. @return False for an empty name or invalid range. */
     bool defineParameter(const std::string& name, float defaultValue, float minimum, float maximum);
@@ -148,10 +178,12 @@ public:
     /** @brief Return a reflected parameter maximum, or one for an unknown parameter. */
     float getParameterMaximum(const std::string& name) const;
 
+    /** @brief Updates . */
     void update(float dt);
     /** @brief Push image / live2d layers into ECS or draw queues. */
     void sync();
 
+    /** @brief Release. */
     void release();
 
     /** @brief Register a destruction hook; returns an id usable with removeDestroyHook(). */
@@ -160,15 +192,25 @@ public:
     void removeDestroyHook(size_t id);
 
     // ---- image kind ----
+    /** @brief Adds layer. */
     bool addLayer(const std::string &name, graphics::Texture *texture, int zIndex);
+    /** @brief Sets the layer texture. */
     bool setLayerTexture(const std::string &name, graphics::Texture *texture);
+    /** @brief Sets the layer visible. */
     bool setLayerVisible(const std::string &name, bool visible);
+    /** @brief Sets the layer offset. */
     bool setLayerOffset(const std::string &name, float ox, float oy);
+    /** @brief Sets the layer color. */
     bool setLayerColor(const std::string &name, float r, float g, float b, float a);
+    /** @brief Sets the layer z. */
     bool setLayerZ(const std::string &name, int zIndex);
+    /** @brief Sets the layer size. */
     bool setLayerSize(const std::string &name, float w, float h);
+    /** @brief Returns the layer count. */
     int getLayerCount() const;
+    /** @brief Returns the layer name. */
     std::string getLayerName(int index) const;
+    /** @brief True when layer. */
     bool hasLayer(const std::string &name) const;
     /** @brief Return the native Renderable2D owned by a named image layer. */
     graphics::Renderable2D* getLayerRenderable(const std::string& name);
@@ -180,13 +222,17 @@ public:
     int getExpressionCount() const;
     /** @brief Return a stable sorted expression name, or empty text. */
     std::string getExpressionName(int index) const;
+    /** @brief Applies expression. */
     bool applyExpression(const std::string &name);
     /** @brief Blend numeric/bool expression channels over duration seconds. */
     bool transitionExpression(const std::string& name, float duration);
 
     // ---- live2d kind ----
+    /** @brief Loads live 2 d model. */
     bool loadLive2DModel(const std::string &path);
+    /** @brief Returns the live 2 d backend name. */
     std::string getLive2DBackendName() const;
+    /** @brief True when live 2 d backend. */
     bool hasLive2DBackend() const;
     /** @brief Append this instance's Live2D drawables to a shared draw queue. */
     void collectLive2DDrawItems(std::vector<graphics::DrawItem2D>& out);
@@ -221,13 +267,19 @@ public:
      */
     [[nodiscard]] eve::Result<void> setHumanoidBoneRotation(std::string_view semantic, float yaw, float pitch,
                                                             float roll);
+    /** @brief Binds vroid model data. */
     bool bindVroidModelData(model3d::ModelData *data);
     /** @brief Register morph target names from ModelData as parameters (weights default 0). */
     int loadMorphNamesFromModel(int meshIndex = 0);
+    /** @brief Sets the mesh. */
     void setMesh(graphics::Mesh *mesh);
+    /** @brief Sets the texture. */
     void setTexture(graphics::Texture *texture);
+    /** @brief Sets the position 3 d. */
     void setPosition3D(float x, float y, float z);
+    /** @brief Sets the rotation 3 d. */
     void setRotation3D(float yaw, float pitch, float roll);
+    /** @brief Sets the scale 3 d. */
     void setScale3D(float sx, float sy, float sz);
     /**
      * @brief Borrow the first imported render projection, or the manual projection.
@@ -242,6 +294,7 @@ public:
      * replacement, release or provider destruction. Manual mesh lifetime is caller-owned.
      */
     graphics::Mesh *getBoundMesh() const;
+    /** @brief Returns the vroid model path. */
     std::string getVroidModelPath() const { return vroidPath_; }
     /** @brief Push parameter weights onto Mesh morphs and bake GPU verts when possible. */
     bool bakeMorphs();
@@ -434,7 +487,9 @@ public:
     // ---- animation tween binding ----
     /** @brief Drive x/y/sx/sy and matching parameters from a Tween each update(). */
     void bindTween(animation::Tween *tween);
+    /** @brief Unbinds tween. */
     void unbindTween();
+    /** @brief Returns the bound tween. */
     animation::Tween *getBoundTween() const { return tween_; }
 
 private:

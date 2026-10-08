@@ -18,15 +18,23 @@ struct ConversationLocalizationEntry {
 /** @brief CSV-backed translation and voice recording catalog with default-locale resolution. */
 class EVENGINE_API_ORCHESTRATION ConversationLocalizationCatalog {
 public:
+    /** @brief Import csv. */
     int         importCsv(const std::string& csv, const std::string& defaultLocale,
                           std::vector<ConversationDiagnostic>& diagnostics);
+    /** @brief Resolve text. */
     std::string resolveText(const std::string& key, const std::string& locale, const std::string& fallback) const;
+    /** @brief Resolve voice. */
     std::string resolveVoice(const std::string& key, const std::string& locale, const std::string& fallback) const;
+    /** @brief Resolve status. */
     std::string resolveStatus(const std::string& key, const std::string& locale) const;
+    /** @brief Resolve duration. */
     double      resolveDuration(const std::string& key, const std::string& locale) const;
+    /** @brief Export missing csv. */
     std::string exportMissingCsv(const std::vector<eve::dnut::SequenceAsset>& assets, const std::string& locale) const;
+    /** @brief Export voice recording csv. */
     std::string exportVoiceRecordingCsv(const std::vector<eve::dnut::SequenceAsset>& assets,
                                         const std::string&                           locale) const;
+    /** @brief Clears . */
     void        clear() { entries_.clear(); }
 
 private:

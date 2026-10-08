@@ -31,6 +31,7 @@ class EVENGINE_API_FOUNDATION ISceneQuery {
 public:
     static constexpr const char* capabilityName = "ISceneQuery";
 
+    /** @brief I scene query. */
     virtual ~ISceneQuery() = default;
 
     /** @brief Name of the currently selected host, or "" when none. */

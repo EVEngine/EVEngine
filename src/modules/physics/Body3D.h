@@ -25,6 +25,7 @@ class EVENGINE_API_WORLD Body3D {
 public:
     /** @brief Internal: wraps a Box3D body (use World3D::newBody). */
     Body3D(World3D *world, b3BodyId bodyId, int id, PhysicsBodyHandle runtimeHandle);
+    /** @brief Body 3 d. */
     ~Body3D();
 
     Body3D(const Body3D &)            = delete;
@@ -35,21 +36,31 @@ public:
 
     /** @brief Position in meters. */
     void  setPosition(float x, float y, float z);
+    /** @brief Returns the x. */
     float getX() const;
+    /** @brief Returns the y. */
     float getY() const;
+    /** @brief Returns the z. */
     float getZ() const;
 
     /** @brief Orientation as quaternion (x, y, z, w). */
     void  setRotation(float qx, float qy, float qz, float qw);
+    /** @brief Returns the rot x. */
     float getRotX() const;
+    /** @brief Returns the rot y. */
     float getRotY() const;
+    /** @brief Returns the rot z. */
     float getRotZ() const;
+    /** @brief Returns the rot w. */
     float getRotW() const;
 
     /** @brief Linear velocity in m/s. */
     void  setLinearVelocity(float vx, float vy, float vz);
+    /** @brief Returns the linear velocity x. */
     float getLinearVelocityX() const;
+    /** @brief Returns the linear velocity y. */
     float getLinearVelocityY() const;
+    /** @brief Returns the linear velocity z. */
     float getLinearVelocityZ() const;
 
     /** @brief Body mass in kg. */
@@ -57,8 +68,11 @@ public:
 
     /** @brief Angular velocity in rad/s. */
     void  setAngularVelocity(float wx, float wy, float wz);
+    /** @brief Returns the angular velocity x. */
     float getAngularVelocityX() const;
+    /** @brief Returns the angular velocity y. */
     float getAngularVelocityY() const;
+    /** @brief Returns the angular velocity z. */
     float getAngularVelocityZ() const;
 
     /** @brief Converts a body-local point to world coordinates; returns {x,y,z}. */
@@ -201,22 +215,27 @@ public:
 
     /** @brief "static" | "kinematic" | "dynamic". */
     void        setType(const std::string &bodyType);
+    /** @brief Returns the type. */
     std::string getType() const;
 
     /** @brief Lock all angular axes (Box3D motion locks). */
     void setFixedRotation(bool fixed);
+    /** @brief True when fixed rotation. */
     bool isFixedRotation() const;
 
     /** @brief Disables/enables the body and its shapes. */
     void setActive(bool active);
+    /** @brief True when active. */
     bool isActive() const;
 
     /** @brief CCD bullet mode. */
     void setBullet(bool bullet);
+    /** @brief True when bullet. */
     bool isBullet() const;
 
     /** @brief Wakes / sleeps the body manually. */
     void setAwake(bool awake);
+    /** @brief True when awake. */
     bool isAwake() const;
 
     /**
@@ -326,6 +345,7 @@ public:
      * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
      */
     const World3D *getWorld() const { return world_; }
+    /** @brief Raw. */
     b3BodyId  raw() const { return bodyId_; }
     /** @brief True while the underlying Box3D body is still alive. */
     bool      isValid() const;

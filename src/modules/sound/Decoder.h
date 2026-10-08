@@ -23,6 +23,7 @@ class EVENGINE_API_PLATFORM Decoder {
 public:
     /** @brief Wraps a medialoader decoder and the encoded bytes it needs. */
     Decoder(std::unique_ptr<medialoader::Decoder> impl, std::vector<char> ownedData);
+    /** @brief Decoder. */
     ~Decoder();
 
     /**
@@ -50,7 +51,9 @@ public:
     bool isFinished();
     /** @brief Format metadata. */
     int getChannelCount() const;
+    /** @brief Returns the bit depth. */
     int getBitDepth() const;
+    /** @brief Returns the sample rate. */
     int getSampleRate() const;
     /** @brief Total duration in seconds. */
     double getDuration();

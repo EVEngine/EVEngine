@@ -24,7 +24,9 @@ using EffectContainerHandleRef = eve::script::RuntimeHandleRef<EffectContainerHa
 class Effects : public Module {
 public:
     Module_REG(Effects);
+    /** @brief Constructs a Effects. */
     Effects()           = default;
+    /** @brief Releases Effects resources. */
     ~Effects() override = default;
 
     /**

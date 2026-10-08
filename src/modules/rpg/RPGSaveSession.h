@@ -47,6 +47,7 @@ enum class RPGSaveIdDomain {
  */
 class EVENGINE_API_PLATFORM RPGSaveSession {
 public:
+    /** @brief Rpg save session. */
     RPGSaveSession() = default;
 
     /**
@@ -178,6 +179,7 @@ private:
         RPGSaveIdDomain domain = RPGSaveIdDomain::Item;
         std::string oldId;
 
+        /** @brief Operator <. */
         friend bool operator<(const MigrationKey &left, const MigrationKey &right) noexcept {
             if (left.fromContentVersion != right.fromContentVersion)
                 return left.fromContentVersion < right.fromContentVersion;

@@ -17,11 +17,14 @@
 
 namespace eve::npc_ai {
 
+/** @brief NavigationTicketTag public API. */
 struct NavigationTicketTag {};
 using NavigationTicket = RuntimeHandle<NavigationTicketTag>;
 
+/** @brief NavigationPhase public API. */
 enum class NavigationPhase : std::uint8_t { Pending, Moving, Arrived, Unreachable, Cancelled };
 
+/** @brief NavigationRequest public API. */
 struct NavigationRequest {
     AgentHandle           agent;
     std::array<double, 3> start{};
@@ -32,6 +35,7 @@ struct NavigationRequest {
     std::uint64_t         requestedTick = 0;
 };
 
+/** @brief NavigationProgress public API. */
 struct NavigationProgress {
     NavigationPhase       phase = NavigationPhase::Pending;
     std::array<double, 3> desiredVelocity{};
@@ -45,6 +49,7 @@ struct NavigationProgress {
  */
 class INavigationProvider {
 public:
+    /** @brief Releases INavigationProvider resources. */
     virtual ~INavigationProvider() = default;
     /** @brief Starts an owning backend request and returns its generation ticket. */
     [[nodiscard]] virtual Result<NavigationTicket> begin(const NavigationRequest& request) = 0;
@@ -61,6 +66,7 @@ public:
 /** @brief Builds a typed navigation request from an authored task and current agent projection. */
 class INavigationRequestFactory {
 public:
+    /** @brief Releases INavigationRequestFactory resources. */
     virtual ~INavigationRequestFactory() = default;
     /** @brief Creates an owning request without mutating provider or world state. */
     [[nodiscard]] virtual Result<NavigationRequest> create(const TaskContext& context, const TaskSpec& task) const = 0;
@@ -77,18 +83,22 @@ public:
     /** @brief Validates and transfers both required owners into a task service. */
     [[nodiscard]] static Result<std::unique_ptr<NavigationTaskService>> create(
         std::unique_ptr<INavigationProvider> provider, std::unique_ptr<INavigationRequestFactory> requestFactory);
+    /** @brief Navigation task service. */
     ~NavigationTaskService() override;
 
     NavigationTaskService(const NavigationTaskService&)            = delete;
     NavigationTaskService& operator=(const NavigationTaskService&) = delete;
 
     /** @copydoc ITaskService::start */
+    /** @brief Starts . */
     [[nodiscard]] Result<void> start(const TaskContext& context, const TaskSpec& spec,
                                      std::string& inOutMemoryJson) override;
     /** @copydoc ITaskService::tick */
+    /** @brief Tick. */
     [[nodiscard]] Result<TaskStatus> tick(const TaskContext& context, const TaskSpec& spec,
                                           std::string& inOutMemoryJson) override;
     /** @copydoc ITaskService::stop */
+    /** @brief Stops . */
     void stop(const TaskContext& context, const TaskSpec& spec, StopReason reason,
               std::string_view memoryJson) noexcept override;
     /** @brief Number of live backend tickets owned by this adapter. */
@@ -99,6 +109,7 @@ private:
         AgentHandle agent;
         std::string state;
         std::string task;
+        /** @brief Operator <. */
         friend bool operator<(const TaskKey& left, const TaskKey& right) noexcept {
             return std::tuple{left.agent, left.state, left.task} < std::tuple{right.agent, right.state, right.task};
         }

@@ -12,7 +12,9 @@ namespace eve::tags {
 class Tags : public Module {
 public:
     Module_REG(Tags);
+    /** @brief Constructs a Tags. */
     Tags()           = default;
+    /** @brief Releases Tags resources. */
     ~Tags() override = default;
 
     /** @brief Adds a tag to a subject. */

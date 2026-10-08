@@ -31,6 +31,7 @@ struct EntitySpatialPose {
 class EVENGINE_API_FOUNDATION_INLINE IEntitySpatialProvider {
 public:
     static constexpr const char* capabilityName = "eve.entity-spatial-provider";
+    /** @brief I entity spatial provider. */
     virtual ~IEntitySpatialProvider() = default;
 
     /**

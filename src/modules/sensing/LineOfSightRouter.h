@@ -36,6 +36,7 @@ namespace eve::sensing {
  */
 class EVENGINE_API_PLATFORM LineOfSightRouter final : public ILineOfSightQuery {
 public:
+    /** @brief Line of sight router. */
     LineOfSightRouter() = default;
 
     LineOfSightRouter(const LineOfSightRouter&)            = delete;

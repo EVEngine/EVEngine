@@ -51,6 +51,7 @@ struct GuideSimParams {
  */
 class EVENGINE_API_BACKENDS GuideSimulator {
 public:
+    /** @brief Guide simulator. */
     GuideSimulator() = default;
 
     /**
@@ -60,13 +61,19 @@ public:
     [[nodiscard]] Result<void> reset(const StrandsDatas &guides,
                                      const GuideSimParams &params = {});
 
+    /** @brief Clears . */
     void clear();
 
+    /** @brief Sets the params. */
     void setParams(const GuideSimParams &params);
+    /** @brief Params. */
     [[nodiscard]] const GuideSimParams &params() const { return params_; }
 
+    /** @brief True when ready. */
     [[nodiscard]] bool isReady() const { return !curves_.empty(); }
+    /** @brief Particle count. */
     [[nodiscard]] size_t particleCount() const { return pos_.size(); }
+    /** @brief Curve count. */
     [[nodiscard]] size_t curveCount() const { return curves_.size(); }
 
     /**

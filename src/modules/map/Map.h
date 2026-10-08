@@ -30,9 +30,12 @@ namespace eve::map {
 class EVENGINE_API_WORLD Map : public Module {
 public:
     Module_REG(Map);
+    /** @brief Map. */
     Map();
+    /** @brief Map. */
     ~Map() override = default;
 
+    /** @brief Creates a layer. @ownership Caller deletes unless documented otherwise. */
     TileLayer *newLayer(int mapW, int mapH, float tileW = 32.f, float tileH = 32.f);
 
     /** @brief Pathfinder bound to a TileLayer (syncs walkability from GIDs). */
@@ -89,35 +92,56 @@ public:
     [[nodiscard]] eve::Result<int> loadFromTextWithObjectContract(std::string_view mapJson,
                                                                   std::string_view contractJson);
 
+    /** @brief Updates . */
     void update(float dt);
+    /** @brief Renders . */
     void render(graphics::Graphics *gfx);
+    /** @brief Polls configs. */
     int pollConfigs();
     /** @brief Last tile collection counters for project-owned diagnostics UIs. */
     int getLastVisibleTileCount() const;
+    /** @brief Returns the last custom visual count. */
     int getLastCustomVisualCount() const;
+    /** @brief Returns the last atlas count. */
     int getLastAtlasCount() const;
+    /** @brief Returns the last visited chunk count. */
     int getLastVisitedChunkCount() const;
+    /** @brief Returns the last visited cell count. */
     int getLastVisitedCellCount() const;
 
     /** @brief Generate merged collision from non-walkable tile metadata and notify adapters. */
     int publishCollision(TileLayer *layer);
+    /** @brief Returns the collision rect count. */
     int getCollisionRectCount() const;
+    /** @brief Returns the collision rect x. */
     float getCollisionRectX(int index) const;
+    /** @brief Returns the collision rect y. */
     float getCollisionRectY(int index) const;
+    /** @brief Returns the collision rect width. */
     float getCollisionRectWidth(int index) const;
+    /** @brief Returns the collision rect height. */
     float getCollisionRectHeight(int index) const;
 
+    /** @brief Returns the layer count. */
     int getLayerCount() const;
     /** @brief Layer created by the most recent loadFromFile/newLayerFromFile call. */
     TileLayer *getLayer(int index) const;
 
+    /** @brief Returns the object count. */
     int getObjectCount() const;
+    /** @brief Returns the object name. */
     std::string getObjectName(int i) const;
+    /** @brief Returns the object type. */
     std::string getObjectType(int i) const;
+    /** @brief Returns the object x. */
     float getObjectX(int i) const;
+    /** @brief Returns the object y. */
     float getObjectY(int i) const;
+    /** @brief Returns the object width. */
     float getObjectWidth(int i) const;
+    /** @brief Returns the object height. */
     float getObjectHeight(int i) const;
+    /** @brief Returns the object gid. */
     int getObjectGid(int i) const;
 
     /**
@@ -199,6 +223,7 @@ public:
      * filledGid 0 = any non-zero logic cell counts as filled.
      */
     bool resolveDualGrid(TileLayer *logic, TileLayer *display);
+    /** @brief Resolve dual grid filled. */
     bool resolveDualGridFilled(TileLayer *logic, TileLayer *display, int filledGid);
     /** @brief 4-bit corner mask at display cell (dx,dy); see DualGrid.h. */
     int dualGridMaskAt(TileLayer *logic, int dx, int dy, int filledGid);
@@ -206,7 +231,9 @@ public:
     int dualGridFrame(int mask);
     /** @brief Projection-correct half-step origin delta for a logic layer. */
     float dualGridOffsetX(TileLayer *logic);
+    /** @brief Dual grid offset y. */
     float dualGridOffsetY(TileLayer *logic);
+    /** @brief Last dual grid error. */
     std::string lastDualGridError() const;
 
 private:

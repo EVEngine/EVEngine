@@ -9,11 +9,13 @@
 
 namespace eve::procgen {
 
+/** @brief CaveSurfaceAnchor public API. */
 struct CaveSurfaceAnchor {
     CaveFieldPoint position;
     CaveFieldPoint rockNormal;
 };
 
+/** @brief CaveVerticalSpan public API. */
 struct CaveVerticalSpan {
     CaveSurfaceAnchor floor;
     CaveSurfaceAnchor ceiling;

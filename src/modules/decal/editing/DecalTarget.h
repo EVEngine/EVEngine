@@ -32,19 +32,30 @@ class EVENGINE_API_DOMAINS DecalDocumentTarget final : public ::eve::editing::Ed
                                                        public IDomainOperationTargetStaging,
                                                        public IPropertyProvider {
 public:
+    /** @brief Decal document target. */
     explicit DecalDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
     /** @brief Read a renderer-neutral property by stable path. @return Borrowed pointer into this target, or null. @lifetime Valid until the target is mutated or destroyed. */
@@ -56,7 +67,9 @@ public:
     /** @brief Atomically load and validate persisted decal content. */
     Result<void> loadSnapshot(const EditorValue& snapshot);
 private:
+    /** @brief Matches. */
     bool matches(const SelectionSnapshot& selection) const;
+    /** @brief Decal schema. */
     static PropertySchema decalSchema();
     static std::map<std::string,EditorValue> defaults();
     std::string                              id_;
@@ -66,6 +79,7 @@ private:
 /** @brief Resolves every decal texture before a live generation is replaced. */
 class IDecalRuntimeAssetResolver {
 public:
+    /** @brief Releases IDecalRuntimeAssetResolver resources. */
     virtual ~IDecalRuntimeAssetResolver() = default;
     /** @brief Resolve a borrowed texture, returning NotFound for missing assets. */
     virtual Result<graphics::Texture*> texture(const std::string& asset) const = 0;
@@ -74,6 +88,7 @@ public:
 /** @brief Atomic publication boundary for a complete decal candidate. */
 class IDecalRuntimeSink {
 public:
+    /** @brief Releases IDecalRuntimeSink resources. */
     virtual ~IDecalRuntimeSink() = default;
     /** @brief Publish a candidate while preserving runtime state on rejection. */
     virtual Result<void> publish(const DecalDocumentTarget& document) = 0;
@@ -82,7 +97,9 @@ public:
 /** @brief Candidate-first binding from one stable decal document to DecalManager. */
 class EVENGINE_API_DOMAINS DecalRuntimeBinding final : public IDecalRuntimeSink {
 public:
+    /** @brief Decal runtime binding. */
     DecalRuntimeBinding(decal::DecalManager* manager, const IDecalRuntimeAssetResolver* assets)
+        /** @brief Manager. */
         : manager_(manager), assets_(assets) {}
     /** @brief Publish a complete replacement; failure preserves the previous generation. */
     Result<void> publish(const DecalDocumentTarget& document) override;
@@ -99,14 +116,23 @@ private:
 class EVENGINE_API_DOMAINS DecalPublishingTarget final : public IDomainOperationTarget,
                                                          public IDomainOperationTargetStaging {
 public:
+    /** @brief Decal publishing target. */
     DecalPublishingTarget(std::string id, IDecalRuntimeSink* sink)
+        /** @brief Document. */
         : document_(std::move(id)), sink_(sink) {}
+    /** @brief Target id. */
     TargetId targetId() const override { return TargetId(document_.targetId()); }
+    /** @brief Revision. */
     std::uint64_t revision() const override { return document_.revision(); }
+    /** @brief Dirty region. */
     EditRegion dirtyRegion() const override { return document_.dirtyRegion(); }
+    /** @brief Clears dirty region. */
     void clearDirtyRegion() override { document_.clearDirtyRegion(); }
+    /** @brief Applies domain operation. */
     Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Mutable document used by the Inspector to plan operations. */
     DecalDocumentTarget& authoringTarget() { return document_; }

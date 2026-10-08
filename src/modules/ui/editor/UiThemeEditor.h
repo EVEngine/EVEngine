@@ -61,20 +61,33 @@ public:
     [[nodiscard]] ui_editing::Result<void> applyPreviewHost(const std::string& hostName);
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
+    /** @brief Can redo. */
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
+    /** @brief Revision. */
     std::uint64_t revision() const noexcept { return target_.revision(); }
+    /** @brief Preview revision. */
     std::uint64_t previewRevision() const noexcept { return preview_.documentRevision; }
+    /** @brief Selected id. */
     std::string   selectedId() const { return selectedId_; }
+    /** @brief Active id. */
     std::string   activeId() const { return target_.activeId().value(); }
+    /** @brief Preview runtime name. */
     std::string   previewRuntimeName() const { return preview_.runtimeName; }
 
+    /** @brief Theme count. */
     int         themeCount() const { return static_cast<int>(target_.themes().size()); }
+    /** @brief Theme id. */
     std::string themeId(int index) const;
+    /** @brief Theme name. */
     std::string themeName(int index) const;
+    /** @brief True when theme selected. */
     bool        isThemeSelected(int index) const;
+    /** @brief True when theme active. */
     bool        isThemeActive(int index) const;
 
+    /** @brief Returns the color channel. */
     float getColorChannel(const std::string& path, int channel) const;
+    /** @brief Returns the float. */
     float getFloat(const std::string& path) const;
 
 private:

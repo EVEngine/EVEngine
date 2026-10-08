@@ -343,8 +343,11 @@ public:
     void sortAndLimit(std::size_t limit);
     /** @brief Exchange complete owning slot storage without allocating. */
     void swap(ClimbingCandidateSet& other) noexcept;
+    /** @brief Empty. */
     [[nodiscard]] bool empty() const noexcept { return size_ == 0; }
+    /** @brief Returns the size of . */
     [[nodiscard]] std::size_t size() const noexcept { return size_; }
+    /** @brief Front. */
     [[nodiscard]] const ClimbingCandidate& front() const noexcept { return values_[0]; }
     /** @brief Move the best candidate out of a non-empty set. */
     [[nodiscard]] ClimbingCandidate takeFront() noexcept { return std::move(values_[0]); }
@@ -369,6 +372,7 @@ private:
 };
 
 namespace detail {
+/** @brief ClimbingPredictionSequenceTag public API. */
 struct ClimbingPredictionSequenceTag {};
 }
 
@@ -388,6 +392,7 @@ struct ClimbingCandidateKey {
     std::uint64_t           definitionGeneration = 0;
     std::uint32_t           sortedRank = 0;
     std::uint64_t           fingerprint = 0;
+    /** @brief Operator ==. */
     friend bool operator==(const ClimbingCandidateKey&, const ClimbingCandidateKey&) noexcept = default;
 };
 
@@ -654,10 +659,13 @@ public:
     /** @brief Hard bound for undelivered post-simulation events owned by one runtime. */
     static constexpr std::size_t PendingEventCapacity = 64;
 
+    /** @brief Climbing runtime. */
     ClimbingRuntime() = default;
     ClimbingRuntime(const ClimbingRuntime&) = delete;
     ClimbingRuntime& operator=(const ClimbingRuntime&) = delete;
+    /** @brief Climbing runtime. */
     ClimbingRuntime(ClimbingRuntime&&) noexcept = default;
+    /** @brief Operator =. */
     ClimbingRuntime& operator=(ClimbingRuntime&&) noexcept = default;
     /** @brief Releases any live anchor reservation before runtime storage is destroyed. */
     ~ClimbingRuntime() noexcept;

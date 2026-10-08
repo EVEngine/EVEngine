@@ -50,6 +50,7 @@ using ResourcePin = script::RuntimePin<Resource, ResourceCacheTag>;
  */
 class Resource {
 public:
+    /** @brief Releases Resource resources. */
     virtual ~Resource() {}
 
     /**
@@ -68,6 +69,7 @@ public:
     Resource(const Resource&)            = delete;
     Resource& operator=(const Resource&) = delete;
 
+    /** @brief Returns the uri. */
     std::string getUri() const { return uri; }
 
     /**
@@ -108,6 +110,7 @@ public:
     virtual void adopt(eve::Resource& replacement) = 0;
 
 protected:
+    /** @brief Constructs a Resource. */
     Resource(std::string uri) : uri(uri) {}
 
     /** @brief Set the resource URI (the cache key). Used by ResourceManager. */
@@ -148,6 +151,7 @@ protected:
  */
 class EVENGINE_API_FOUNDATION ResourceManager : public eve::caps::IAssetReloader {
 public:
+	/** @brief Returns the instance. */
 	static ResourceManager& getInstance();
 
     /** @brief Normalize a VFS path: backslashes to '/', strip leading "./" and trailing '/'. */
@@ -275,7 +279,9 @@ public:
      * @reentrancy Does not invoke callbacks.
      */
     const char* reloadKind() const override { return "cache"; }
+    /** @brief Handles path. */
     bool handlesPath(const std::string& normPath) const override;
+    /** @brief Reloads . */
     [[nodiscard("resource reload outcome must be checked")]] eve::Result<bool> reload(
         const std::string& normPath) override;
     /**
@@ -293,13 +299,19 @@ public:
     }
 
 protected:
+    /** @brief Resource manager. */
     ResourceManager() = default;
 
+    /** @brief Ensure registered. */
     void ensureRegistered();
+    /** @brief Loads replacement. */
     Resource* loadReplacement(const std::string& key);
+    /** @brief Loads uncached. */
     Resource* loadUncached(const std::string& norm);
+    /** @brief Run load job. */
     void runLoadJob(std::string norm, uint64_t epoch);
 
+    /** @brief AsyncLoad public API. */
     struct AsyncLoad {
         bool done = false;
         bool failed = false;

@@ -31,22 +31,33 @@ class EVENGINE_API_BACKENDS MaterialDocumentTarget final : public ::eve::editing
                                                            public eve::editing::IEditingSnapshotProvider,
                                                            public IPropertyProvider {
 public:
+    /** @brief Material document target. */
     explicit MaterialDocumentTarget(std::string id);
 
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
 
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
 
@@ -58,10 +69,13 @@ public:
     std::vector<EditorDiagnostic> validate() const;
 
 private:
+    /** @brief Material schema. */
     static PropertySchema materialSchema();
     static std::map<std::string, EditorValue> defaults();
+    /** @brief Validate assignment. */
     static Result<void> validateAssignment(const PropertyDescriptor& descriptor,
                                                  const EditorValue& value);
+    /** @brief Selection matches. */
     bool selectionMatches(const SelectionSnapshot& selection) const;
 
     std::string                        id_;
@@ -71,6 +85,7 @@ private:
 /** @brief Atomic runtime publication boundary for a complete material candidate. */
 class IMaterialRuntimeSink {
 public:
+    /** @brief Releases IMaterialRuntimeSink resources. */
     virtual ~IMaterialRuntimeSink() = default;
     /** @brief Publish a candidate; failure must leave the runtime material unchanged. */
     virtual Result<void> publish(const MaterialDocumentTarget& candidate) = 0;
@@ -82,10 +97,15 @@ class EVENGINE_API_BACKENDS MaterialPublishingTarget final : public IDomainOpera
 public:
     /** @brief Create an owned material document bound to a non-owning runtime sink. */
     MaterialPublishingTarget(std::string id, IMaterialRuntimeSink* sink);
+    /** @brief Target id. */
     TargetId targetId() const override { return TargetId(document_.targetId()); }
+    /** @brief Revision. */
     std::uint64_t revision() const override { return document_.revision(); }
+    /** @brief Dirty region. */
     EditRegion dirtyRegion() const override { return document_.dirtyRegion(); }
+    /** @brief Clears dirty region. */
     void clearDirtyRegion() override { document_.clearDirtyRegion(); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /**
      * @brief Forward property and snapshot capabilities from the authoring document.
@@ -93,8 +113,11 @@ public:
      * @lifetime Valid until this target is destroyed or its document is replaced.
      */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Mutable authoring document used by property inspectors. */
@@ -129,6 +152,7 @@ namespace eve::material_editing {
 /** @brief Resolves authoring asset references before mutating a Renderable3D. */
 class IMaterialRuntimeAssetResolver {
 public:
+    /** @brief Releases IMaterialRuntimeAssetResolver resources. */
     virtual ~IMaterialRuntimeAssetResolver() = default;
     /** @brief Resolve a texture asset reference to a borrowed live texture. */
     virtual Result<graphics::Texture*> resolveTexture(const std::string& asset) const = 0;
@@ -142,7 +166,9 @@ public:
     /** @brief Bind a live renderable and asset resolver; both must outlive the sink. */
     Renderable3DMaterialRuntimeSink(graphics::Renderable3D* renderable,
                                     const IMaterialRuntimeAssetResolver* assets);
+    /** @brief Renderable 3 d material runtime sink. */
     ~Renderable3DMaterialRuntimeSink() override;
+    /** @brief Publish. */
     Result<void> publish(const MaterialDocumentTarget& candidate) override;
 
 private:

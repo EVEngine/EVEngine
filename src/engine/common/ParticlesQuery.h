@@ -11,8 +11,10 @@ class EVENGINE_API_FOUNDATION_INLINE IParticlesQuery {
 public:
     static constexpr const char* capabilityName = "IParticlesQuery";
 
+    /** @brief I particles query. */
     virtual ~IParticlesQuery() = default;
 
+    /** @brief Emitter count. */
     virtual int emitterCount() = 0;
 
     /** @brief Create + start + emit once; fills position/count. */
