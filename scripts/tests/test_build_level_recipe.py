@@ -51,25 +51,27 @@ class BuildLevelRecipeTests(unittest.TestCase):
         self.assertAlmostEqual(roll[2], -90.0)
 
     def test_filters_prefix_and_output_is_deterministic(self):
-        component = lambda mesh, x: {
-            "mesh": mesh,
-            "transform": {
-                "locationCentimeters": [x, 0.0, 0.0],
-                "rotationDegrees": [0.0, 0.0, 0.0],
-                "scale": [1.0, 1.0, 1.0],
-            },
-            "instances": [],
-        }
+        def component(mesh, x):
+            return {
+                "mesh": mesh,
+                "transform": {
+                    "locationCentimeters": [x, 0.0, 0.0],
+                    "rotationDegrees": [0.0, 0.0, 0.0],
+                    "scale": [1.0, 1.0, 1.0],
+                },
+                "instances": [],
+            }
         report = {"actors": [{"components": [component("/Game/Kit/B", 1), component("/Game/Foliage/Moss", 2), component("/Game/Kit/A", 3)]}]}
         result = recipe.collect_placements(report, "/Game/Kit/", (0.0, 0.0, 0.0))
         self.assertEqual([item["asset"] for item in result], ["/Game/Kit/A", "/Game/Kit/B"])
 
     def test_collects_instances_and_applies_radius_and_exclusions(self):
-        transform = lambda x: {
-            "locationCentimeters": [x, 0.0, 0.0],
-            "rotationDegrees": [0.0, 0.0, 0.0],
-            "scale": [1.0, 1.0, 1.0],
-        }
+        def transform(x):
+            return {
+                "locationCentimeters": [x, 0.0, 0.0],
+                "rotationDegrees": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+            }
         report = {"actors": [{"components": [
             {"mesh": "/Game/Kit/Crate", "transform": transform(0),
              "instances": [transform(50), transform(500)]},
