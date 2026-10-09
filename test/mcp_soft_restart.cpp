@@ -18,8 +18,8 @@
 #include <Poco/Net/NetException.h>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Net/StreamSocket.h>
+#include <Poco/Exception.h>
 #include <Poco/Timespan.h>
-#include <Poco/TimeoutException.h>
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
