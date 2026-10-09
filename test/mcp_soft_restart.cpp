@@ -172,7 +172,7 @@ TEST_CASE("devtools.softRestart.keepsResourceCacheAndAppliesArgs") {
     request.reloadScripts = true;
 
     auto result = executeSoftRestart(vm.getHandle(), request);
-    REQUIRE(result);
+    REQUIRE(result.ok());
     CHECK(result.value().scriptsReloaded);
     CHECK(result.value().initCalled);
     CHECK_EQ(result.value().resourceCountBefore, before);
@@ -183,7 +183,7 @@ TEST_CASE("devtools.softRestart.keepsResourceCacheAndAppliesArgs") {
     request.args->set("seed", 99);
     request.reloadScripts = false;
     auto again            = executeSoftRestart(vm.getHandle(), std::move(request));
-    REQUIRE(again);
+    REQUIRE(again.ok());
     CHECK(!again.value().scriptsReloaded);
     CHECK_EQ(again.value().resourceCountAfter, before);
     CHECK_EQ(vm.find("restart_count").toInt(), 2);
