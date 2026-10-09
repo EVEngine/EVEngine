@@ -18,6 +18,9 @@ layout(location = 5) in vec4 inColor;
 struct Light3D {
     vec4 posRadius;
     vec4 color;
+    // Must stay layout-identical to mesh3d.vert / Light3DGpu: Light3D spot
+    // cone packing lands in the Frame prefix before skinInfo.
+    vec4 spot;
 };
 
 layout(set = 0, binding = 0, std140) uniform Frame {
