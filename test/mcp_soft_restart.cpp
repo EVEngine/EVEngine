@@ -140,7 +140,7 @@ Poco::JSON::Object::Ptr parseObject(const std::string& json) {
 void installSoftRestartStub(ssq::VM& vm) {
     vm.addTable("eve");
     DevTool::instance().exposeScriptApi(vm);
-    vm.run(R"SQ(
+    vm.run(vm.compileSource(R"SQ(
 restart_count <- 0
 last_seed <- -1
 function soft_restart_game(reload_scripts = true) {
@@ -152,7 +152,7 @@ function soft_restart_game(reload_scripts = true) {
     return true;
 }
 eve_init <- function() {}
-)SQ");
+)SQ"));
 }
 
 }  // namespace
