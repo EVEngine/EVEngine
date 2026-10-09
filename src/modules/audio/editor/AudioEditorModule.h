@@ -21,7 +21,9 @@ namespace eve::audio_editor {
 class EVENGINE_API_EDITORS AudioEditorModule final : public Module {
 public:
     Module_REG(AudioEditorModule);
+    /** @brief Audio editor module. */
     AudioEditorModule();
+    /** @brief Audio editor module. */
     ~AudioEditorModule() override;
 
 private:

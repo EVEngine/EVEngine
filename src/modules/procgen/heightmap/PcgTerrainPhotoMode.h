@@ -19,6 +19,7 @@ enum class PcgTerrainTextureTier { Detailed = 0, Basemap = 1 };
 /** @brief Explicit photo-mode owner for runtime terrain quality selection. */
 class EVENGINE_API_DOMAINS PcgTerrainPhotoModeAuthority final : public IPhotoModeFieldSink {
 public:
+    /** @brief Pcg terrain photo mode authority. */
     ~PcgTerrainPhotoModeAuthority() override;
     /** @brief Register or revoke the unique terrain photo-mode authority. */
     void setAuthority(bool enabled);
@@ -29,7 +30,9 @@ public:
                   float viewportHeight, float verticalFovDegrees) const;
     /** @brief Return whether distance has crossed Pcg's basemap texture threshold. */
     PcgTerrainTextureTier textureTier(float distance) const noexcept;
+    /** @brief Accepts photo mode field. */
     PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment& assignment) const noexcept override;
+    /** @brief Applies photo mode field. */
     [[nodiscard]] Result<void> applyPhotoModeField(const PhotoModeAssignment& assignment) override;
 private:
     bool authority_ = false;

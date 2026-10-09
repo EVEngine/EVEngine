@@ -26,24 +26,34 @@ class EVENGINE_API_BACKENDS FontData : public Resource {
 public:
     /** @brief 从字体字节创建指定像素尺寸的字体面。 */
     FontData(std::vector<uint8_t> bytes, int pixelSize, std::string uri = "");
+    /** @brief Font data. */
     ~FontData() override;
 
     /** @brief 字号 / 度量信息。 */
     int getSize() const;
+    /** @brief Returns the ascent. */
     float getAscent() const;
+    /** @brief Returns the descent. */
     float getDescent() const;
+    /** @brief Returns the line height. */
     float getLineHeight() const;
+    /** @brief Returns the baseline. */
     float getBaseline() const;
 
     /** @brief 字体元信息。 */
     std::string getFamilyName() const;
+    /** @brief Returns the style name. */
     std::string getStyleName() const;
+    /** @brief Returns the glyph count. */
     int getGlyphCount() const;
 
     /** @brief 字形 / 文本测量。 */
     bool hasGlyph(int codepoint) const;
+    /** @brief True when glyphs. */
     bool hasGlyphs(std::string text) const;
+    /** @brief Returns the width. */
     float getWidth(std::string text) const;
+    /** @brief Returns the kerning. */
     float getKerning(int leftCodepoint, int rightCodepoint) const;
 
     /** @brief Replace this face with `replacement`'s (cache reload). */
@@ -51,9 +61,13 @@ public:
 
     /** @brief 单字形度量（像素）。 */
     int getGlyphWidth(int codepoint) const;
+    /** @brief Returns the glyph height. */
     int getGlyphHeight(int codepoint) const;
+    /** @brief Returns the glyph bearing x. */
     int getGlyphBearingX(int codepoint) const;
+    /** @brief Returns the glyph bearing y. */
     int getGlyphBearingY(int codepoint) const;
+    /** @brief Returns the glyph advance. */
     int getGlyphAdvance(int codepoint) const;
 
     /**

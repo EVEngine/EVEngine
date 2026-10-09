@@ -43,6 +43,7 @@ class EVENGINE_API_WORLD AnimLattice {
 public:
     static constexpr int kMinDivisions = 2;
 
+    /** @brief Anim lattice. */
     AnimLattice();
 
     /** @brief Creates a lattice with the given divisions (each >= 2). */
@@ -55,20 +56,29 @@ public:
 
     /** @brief Changes divisions; resets all control points to identity and clears the bind. */
     void setDivisions(int divX, int divY, int divZ);
+    /** @brief Returns the divisions x. */
     int  getDivisionsX() const { return divX_; }
+    /** @brief Returns the divisions y. */
     int  getDivisionsY() const { return divY_; }
+    /** @brief Returns the divisions z. */
     int  getDivisionsZ() const { return divZ_; }
 
     /** @brief World-space size of the lattice box (components must be > 0). */
     void  setSize(float sx, float sy, float sz);
+    /** @brief Returns the size x. */
     float getSizeX() const { return sizeX_; }
+    /** @brief Returns the size y. */
     float getSizeY() const { return sizeY_; }
+    /** @brief Returns the size z. */
     float getSizeZ() const { return sizeZ_; }
 
     /** @brief Center of the lattice box in model space. */
     void  setOrigin(float ox, float oy, float oz);
+    /** @brief Returns the origin x. */
     float getOriginX() const { return originX_; }
+    /** @brief Returns the origin y. */
     float getOriginY() const { return originY_; }
+    /** @brief Returns the origin z. */
     float getOriginZ() const { return originZ_; }
 
     /**
@@ -76,6 +86,7 @@ public:
      * boundary cells; when false, lattice coordinates extrapolate linearly.
      */
     void setClamp(bool clamp) { clamp_ = clamp; }
+    /** @brief Returns the clamp. */
     bool getClamp() const { return clamp_; }
 
     // ---- control points ----
@@ -93,11 +104,17 @@ public:
     /** @brief Resets every control point to identity (offset 0, scale 1). */
     void reset();
 
+    /** @brief Returns the point scale x. */
     float getPointScaleX(int ix, int iy, int iz) const;
+    /** @brief Returns the point scale y. */
     float getPointScaleY(int ix, int iy, int iz) const;
+    /** @brief Returns the point scale z. */
     float getPointScaleZ(int ix, int iy, int iz) const;
+    /** @brief Returns the point offset x. */
     float getPointOffsetX(int ix, int iy, int iz) const;
+    /** @brief Returns the point offset y. */
     float getPointOffsetY(int ix, int iy, int iz) const;
+    /** @brief Returns the point offset z. */
     float getPointOffsetZ(int ix, int iy, int iz) const;
 
     // ---- binding ----
@@ -115,12 +132,16 @@ public:
     /** @brief Binds a packed xyz array (count * 3 floats). Uses current divisions/size/origin. */
     void bindPositions(const float* posXYZ, int count);
 
+    /** @brief Clears bind. */
     void clearBind();
+    /** @brief Returns the vertex count. */
     int  getVertexCount() const { return vertexCount_; }
 
     /** @brief Bind-pose position component for vertex v (0..vertexCount-1). */
     float getBindPositionX(int vertexIndex) const;
+    /** @brief Returns the bind position y. */
     float getBindPositionY(int vertexIndex) const;
+    /** @brief Returns the bind position z. */
     float getBindPositionZ(int vertexIndex) const;
 
     // ---- deformation ----
@@ -162,7 +183,9 @@ public:
 
     /** @brief Cached deformed position component (requires updateDeformedPositions). */
     float getDeformedPositionX(int vertexIndex) const;
+    /** @brief Returns the deformed position y. */
     float getDeformedPositionY(int vertexIndex) const;
+    /** @brief Returns the deformed position z. */
     float getDeformedPositionZ(int vertexIndex) const;
 
     /** @brief Copy of the cached deformed positions (xyz packed; empty when not updated). */

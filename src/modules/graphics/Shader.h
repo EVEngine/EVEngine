@@ -42,6 +42,7 @@ public:
     static constexpr std::size_t kMaxMeshTextures = 4;
     static constexpr uint32_t kPushConstantBytes = uint32_t(kMaxFloats * sizeof(float));
 
+    /** @brief Kind public API. */
     enum class Kind { eSprite2D, eMesh3D };
 
     enum ShaderType {

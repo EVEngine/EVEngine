@@ -457,6 +457,96 @@ function reset_transient_state() {
     eve.dev.clearStateRoots();
 }
 
+// Soft-restart the running game without unloading ResourceManager / GPU /
+// MCP. Opposite of soft_reload_scripts: state is reset, not migrated. Optional
+// parameters arrive as `eve.restartArgs` (set by the MCP eve_restart tool or
+// eve.dev.softRestart). Games may hook eve_before_restart / eve_after_restart.
+function soft_restart_game(reload_scripts = true) {
+    local args = ("restartArgs" in eve && eve.restartArgs != null) ? eve.restartArgs : {};
+
+    if ("async_cancel_continuations" in getroottable())
+        async_cancel_continuations("soft restart");
+
+    if ("eve_before_restart" in getroottable()) {
+        try {
+            eve_before_restart(args);
+        } catch (e) {
+            report_reload_failure("eve_before_restart failed: " + format_script_error(e));
+            return false;
+        }
+    }
+
+    // Snapshot the binding surface so a failed re-dofile can roll definitions
+    // back. Mutable state is intentionally NOT captured — restart means reset.
+    local oldBindings = capture_reload_bindings();
+
+    if (reload_scripts) {
+        local root = getroottable();
+        if ("dev" in eve) {
+            local names = [];
+            foreach (name in eve.dev.stateRoots()) names.append(name);
+            foreach (name in eve.dev.transientStateRoots()) names.append(name);
+            foreach (name in names) {
+                if (name in root) delete root[name];
+            }
+            eve.dev.clearStateRoots();
+            eve.dev.resetNativeState();
+        }
+
+        local candidates = null;
+        try {
+            candidates = compile_reload_candidates();
+        } catch (e) {
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("soft-restart compile failed: " + format_script_error(e));
+            return false;
+        }
+        foreach (candidate in candidates) {
+            try {
+                candidate.closure.call(getroottable());
+                print("soft-restart script: " + candidate.path + "\n");
+            } catch (e) {
+                restore_reload_bindings(oldBindings);
+                report_reload_failure(
+                    "soft-restart script failed: " + candidate.path + ": " + format_script_error(e));
+                return false;
+            }
+        }
+
+        try {
+            eve_init();
+        } catch (e) {
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("soft-restart eve_init failed: " + format_script_error(e));
+            return false;
+        }
+    } else {
+        // Keep script definitions and persist roots; only reset native providers
+        // and re-enter the game's restart/init path (for param-only retries).
+        if ("dev" in eve) eve.dev.resetNativeState();
+        try {
+            if ("eve_restart" in getroottable())
+                eve_restart(args);
+            else
+                eve_init();
+        } catch (e) {
+            report_reload_failure("soft-restart (no script reload) failed: " + format_script_error(e));
+            return false;
+        }
+    }
+
+    if ("eve_after_restart" in getroottable()) {
+        try {
+            eve_after_restart(args);
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("eve_after_restart failed: " + format_script_error(e) + "\n");
+        }
+    }
+    print("soft-restart: game restarted (resource cache kept)\n");
+    return true;
+}
+
 function soft_reload_scripts() {
     // Stage ①: compile the complete candidate set before cancelling work or
     // invoking lifecycle hooks.  A broken edit leaves the running game alone.
@@ -791,6 +881,12 @@ function handle_dev_key(key, scancode) {
     if (key == "F4") {
         eve.dev.console.toggleVisible();
         print("dev: console " + (eve.dev.console.isVisible() ? "shown" : "hidden") + "\n");
+        return;
+    }
+    // F3 = toggle DevTools FPS / frame-time overlay.
+    if (key == "F3") {
+        eve.dev.stats.toggleVisible();
+        print("dev: frame stats " + (eve.dev.stats.isVisible() ? "shown" : "hidden") + "\n");
     }
 }
 
@@ -802,6 +898,16 @@ function dev_draw_ai() {
 function dev_draw_console() {
     if (has_dev())
         eve.dev.console.draw();
+}
+
+function dev_draw_stats() {
+    if (has_dev())
+        eve.dev.stats.draw();
+}
+
+function dev_sample_stats(dt) {
+    if (has_dev())
+        eve.dev.stats.sample(dt);
 }
 
 // ---------------------------------------------------------------------------
@@ -879,9 +985,11 @@ eve_frame <- function() {
         if ("eve_ui_flush_components" in getroottable())
             eve_ui_flush_components();
         eve_render();
-        // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
+        // ImGui AI/MCP / console / frame-stats panels (need ui.beginFrameAndRender).
+        dev_sample_stats(dt);
         dev_draw_ai();
         dev_draw_console();
+        dev_draw_stats();
         clear_loop_error("frame");
     } catch (e) {
         emit_loop_error("frame", "frame error: ", e);

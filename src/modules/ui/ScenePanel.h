@@ -26,7 +26,9 @@ class UIHost;
  */
 class EVENGINE_API_WORLD ScenePanel {
 public:
+    /** @brief Scene panel. */
     ScenePanel() = default;
+    /** @brief Scene panel. */
     ~ScenePanel();
     ScenePanel(const ScenePanel&) = delete;
     ScenePanel& operator=(const ScenePanel&) = delete;

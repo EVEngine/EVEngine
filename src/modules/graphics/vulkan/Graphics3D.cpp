@@ -693,7 +693,7 @@ void Graphics::setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) {
 void Graphics::beginShadowPass(int cascadeIndex) {
     ASSERT(initialized);
     if (!shadowPipeline) createShadowResources();
-    if (cascadeIndex < 0 || cascadeIndex >= ShadowConfig::kCascades) {
+    if (cascadeIndex < 0 || cascadeIndex >= ShadowConfig::kTotalLayers) {
         throw Exception("beginShadowPass: cascadeIndex out of range");
     }
     shadowPassCascade = cascadeIndex;

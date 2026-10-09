@@ -36,14 +36,20 @@ class EVENGINE_API_BACKENDS ActionCancelWindowState final : public IActionStateW
 public:
     /** @brief Construct with a synchronous stable-subject resolver. */
     explicit ActionCancelWindowState(CancelSubjectResolver resolver);
+    /** @brief Action cancel window state. */
     ~ActionCancelWindowState() override;
 
+    /** @brief Sets the enabled. */
     void setEnabled(bool enabled);
+    /** @brief Enabled. */
     [[nodiscard]] bool enabled() const;
+    /** @brief Supports. */
     [[nodiscard]] bool supports(ActionStateWindowKind kind) const noexcept override;
+    /** @brief Enter. */
     [[nodiscard]] Result<void> enter(const ActionStateWindowBinding& binding,
                                      const ActionTimelineEvent& event,
                                      const ActionNotifyContext& context) override;
+    /** @brief Exit. */
     [[nodiscard]] Result<void> exit(const ActionStateWindowBinding& binding,
                                     const ActionTimelineEvent& event,
                                     const ActionNotifyContext& context) override;

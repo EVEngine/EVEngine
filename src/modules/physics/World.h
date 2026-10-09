@@ -40,6 +40,7 @@ class Mechanism2D;
  */
 class EVENGINE_API_WORLD World {
 public:
+    /** @brief ContactEvent public API. */
     struct ContactEvent {
         int bodyAId = 0;
         int bodyBId = 0;

@@ -19,6 +19,7 @@ struct ParticleOffscreenPreviewRequest;
 /** @brief Presentation boundary for an isolated, compiled particle preview. */
 class IParticleOffscreenPresenter {
 public:
+    /** @brief Releases IParticleOffscreenPresenter resources. */
     virtual ~IParticleOffscreenPresenter() = default;
     /** @brief Simulate and draw only the requested graph into the active Canvas. */
     virtual Result<void> draw(const ParticleOffscreenPreviewRequest& request,
@@ -44,11 +45,16 @@ class EVENGINE_API_ORCHESTRATION ParticleOffscreenPreviewService {
 public:
     using DrawCallback = std::function<Result<void>(const ParticleGraphCompileResult&,
         const ParticleGraphPreviewResult&, graphics::Graphics*, graphics::Canvas*)>;
+    /** @brief Particle offscreen preview service. */
     ParticleOffscreenPreviewService(GraphicsOffscreenPreviewService* previews, DrawCallback draw)
+        /** @brief Previews. */
         : previews_(previews), draw_(std::move(draw)) {}
+    /** @brief Particle offscreen preview service. */
     ParticleOffscreenPreviewService(GraphicsOffscreenPreviewService* previews,
                                     IParticleOffscreenPresenter* presenter)
+        /** @brief Previews. */
         : previews_(previews), presenter_(presenter) {}
+    /** @brief Renders . */
     Result<OffscreenPreviewArtifact> render(const ParticleOffscreenPreviewRequest& request) const;
 private:
     GraphicsOffscreenPreviewService* previews_ = nullptr;
@@ -60,8 +66,11 @@ private:
 class EVENGINE_API_ORCHESTRATION ParticleEmitterOffscreenPresenter final : public IParticleOffscreenPresenter {
 public:
     using TextureResolver = ParticleGraphRuntimeBuilder::TextureResolver;
+    /** @brief Particle emitter offscreen presenter. */
     explicit ParticleEmitterOffscreenPresenter(TextureResolver textures = {})
+        /** @brief Textures. */
         : textures_(std::move(textures)) {}
+    /** @brief Draws . */
     Result<void> draw(const ParticleOffscreenPreviewRequest& request,
                             const ParticleGraphCompileResult& compiled,
                             const ParticleGraphPreviewResult& estimate,

@@ -16,15 +16,23 @@ namespace eve::procgen {
 /** @brief One immutable runtime-generation cell request returned to script. */
 class EVENGINE_API_DOMAINS ProcgenCellRequest {
 public:
+    /** @brief Returns the level. */
     int      getLevel() const;
+    /** @brief Returns the x. */
     int      getX() const;
+    /** @brief Returns the z. */
     int      getZ() const;
+    /** @brief Returns the seed. */
     uint32_t getSeed() const;
     /** @brief Unique scheduler ticket used to reject stale asynchronous completions. */
     uint64_t getTicket() const;
+    /** @brief Returns the min x. */
     float    getMinX() const;
+    /** @brief Returns the min z. */
     float    getMinZ() const;
+    /** @brief Returns the max x. */
     float    getMaxX() const;
+    /** @brief Returns the max z. */
     float    getMaxZ() const;
 
 private:
@@ -123,16 +131,22 @@ public:
      * @return Level index, or -1 for invalid settings.
      */
     int addLevel(float cellSize, float generationRadius, float cleanupMultiplier);
+    /** @brief Returns the level count. */
     int getLevelCount() const;
+    /** @brief Returns the level cell size. */
     float getLevelCellSize(int level) const;
+    /** @brief Returns the level generation radius. */
     float getLevelGenerationRadius(int level) const;
+    /** @brief Returns the level cleanup radius. */
     float getLevelCleanupRadius(int level) const;
 
     /** @brief Weight favoring cells in front of the source, clamped to [0,1]. */
     void  setDirectionWeight(float weight);
+    /** @brief Returns the direction weight. */
     float getDirectionWeight() const;
     /** @brief Maximum simultaneously issued generation requests. */
     void setMaxGenerating(int count);
+    /** @brief Returns the max generating. */
     int  getMaxGenerating() const;
     /** @brief Maximum active plus in-flight cells; zero disables the resident-cell limit. */
     void setMaxActiveCells(int count);
@@ -161,6 +175,7 @@ public:
     int getMaxGenerationRetries() const;
     /** @brief CPU issue budget in milliseconds for one frame; zero disables the limit. */
     void  setFrameTimeBudget(float milliseconds);
+    /** @brief Returns the frame time budget. */
     float getFrameTimeBudget() const;
     /** @brief Start a new budget window before consuming generation requests. */
     void beginFrame();
@@ -199,9 +214,13 @@ public:
     /** @brief Add or update a named generation source, then rebuild desired cells. */
     bool setGenerationSource(const std::string& id, float x, float z, float directionX,
                              float directionZ, float radiusScale = 1.f);
+    /** @brief Removes generation source. */
     bool removeGenerationSource(const std::string& id);
+    /** @brief Clears generation sources. */
     void clearGenerationSources();
+    /** @brief Returns the generation source count. */
     int  getGenerationSourceCount() const;
+    /** @brief Returns the generation source id. */
     std::string getGenerationSourceId(int index) const;
     /** @brief Re-evaluate generation/cleanup queues from every registered source. */
     void refreshGenerationSources();
@@ -212,13 +231,20 @@ public:
      * @param behindRadius Cells nearer than this distance generate even outside the cone.
      */
     void setFrustumCulling(bool enabled, float halfAngleDegrees, float behindRadius);
+    /** @brief True when frustum culling enabled. */
     bool  isFrustumCullingEnabled() const;
+    /** @brief Returns the frustum half angle. */
     float getFrustumHalfAngle() const;
+    /** @brief Returns the frustum behind radius. */
     float getFrustumBehindRadius() const;
 
+    /** @brief Returns the pending generate count. */
     int                 getPendingGenerateCount() const;
+    /** @brief Returns the generating count. */
     int                 getGeneratingCount() const;
+    /** @brief Returns the active cell count. */
     int                 getActiveCellCount() const;
+    /** @brief Returns the pending cleanup count. */
     int                 getPendingCleanupCount() const;
     /** @brief Return issued generation requests invalidated before completion. */
     int                 getCancelledGenerationCount() const;
@@ -298,7 +324,9 @@ public:
     [[nodiscard]] Result<uint64_t> completeCleanupsAtomic(const std::vector<const ProcgenCellRequest*>& requests);
 
     bool      hasCell(int level, int x, int z) const;
+    /** @brief Returns the cell output. */
     PointSet* getCellOutput(int level, int x, int z) const;
+    /** @brief Returns the cell revision. */
     uint64_t  getCellRevision(int level, int x, int z) const;
     /**
      * @brief Atomically replace an active cell through an identity-based delta.
@@ -323,6 +351,7 @@ public:
     std::string serializeCell(int level, int x, int z) const;
     /** @brief Atomically restore one cell produced by serializeCell for this world seed. */
     bool deserializeCell(const std::string& definition);
+    /** @brief Debug report. */
     std::string debugReport() const;
 
 private:
@@ -338,11 +367,13 @@ private:
         int level = 0;
         int x     = 0;
         int z     = 0;
+        /** @brief Operator ==. */
         bool operator==(const CellKey& other) const {
             return level == other.level && x == other.x && z == other.z;
         }
     };
     struct CellKeyHash {
+        /** @brief Operator . */
         size_t operator()(const CellKey& key) const;
     };
     struct Cell {

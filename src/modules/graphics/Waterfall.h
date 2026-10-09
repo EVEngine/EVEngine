@@ -33,7 +33,9 @@ class Texture;
  */
 class EVENGINE_API_BACKENDS Waterfall {
 public:
+    /** @brief Waterfall. */
     explicit Waterfall(Graphics *gfx);
+    /** @brief Waterfall. */
     ~Waterfall();
 
     Waterfall(const Waterfall &) = delete;
@@ -56,38 +58,54 @@ public:
 
     /** @brief Advance the animation clock by dt seconds. */
     void update(float dt);
+    /** @brief Sets the time. */
     void setTime(float seconds);
+    /** @brief Returns the time. */
     float getTime() const { return time_; }
 
     // --- Animation / material knobs ---
     /** @brief Fall speed of the water (scales the downward scroll). */
     void setFlowSpeed(float speed);
+    /** @brief Returns the flow speed. */
     float getFlowSpeed() const { return flowSpeed_; }
 
     /** @brief Amount of turbulence / white-water streak in the body. */
     void setTurbulence(float t);
+    /** @brief Returns the turbulence. */
     float getTurbulence() const { return turbulence_; }
 
     /** @brief How many layered falling streaks are drawn. */
     void setStreakCount(int count);
+    /** @brief Returns the streak count. */
     int getStreakCount() const { return streakCount_; }
 
     /** @brief Horizontal stretch of the falling streaks (1 = circular, >1 elongated). */
     void setStreakScale(float scale);
+    /** @brief Returns the streak scale. */
     float getStreakScale() const { return streakScale_; }
 
     /** @brief Relative height (0..1) of the top foam lip and bottom splash bands. */
     void setTopFoam(float v);
+    /** @brief Returns the top foam. */
     float getTopFoam() const { return topFoam_; }
+    /** @brief Sets the bottom foam. */
     void setBottomFoam(float v);
+    /** @brief Returns the bottom foam. */
     float getBottomFoam() const { return bottomFoam_; }
+    /** @brief Sets the foam amount. */
     void setFoamAmount(float v);
+    /** @brief Returns the foam amount. */
     float getFoamAmount() const { return foamAmount_; }
 
+    /** @brief Sets the water color. */
     void setWaterColor(float r, float g, float b);
+    /** @brief Sets the reflection intensity. */
     void setReflectionIntensity(float intensity);
+    /** @brief Returns the reflection intensity. */
     float getReflectionIntensity() const { return reflectionIntensity_; }
+    /** @brief Sets the sun intensity. */
     void setSunIntensity(float intensity);
+    /** @brief Returns the sun intensity. */
     float getSunIntensity() const { return sunIntensity_; }
 
     /** @brief Upload current params to the shader push constants. */
@@ -105,11 +123,14 @@ public:
     /** @brief Return the reflection-capture visibility layer mask. */
     uint32_t getReflectionCaptureMask() const { return reflectionCaptureMask_; }
 
+    /** @brief Returns the shader. */
     Shader *getShader() const { return shader_; }
+    /** @brief Returns the mesh. */
     Mesh *getMesh() const { return mesh_; }
 
     /** @brief Names of the push-constant parameters (for UI / inspection). */
     static int paramCount();
+    /** @brief Param name. */
     static std::string paramName(int index);
 
 private:

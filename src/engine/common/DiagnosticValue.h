@@ -30,20 +30,27 @@ concept DiagnosticValue = std::is_enum_v<T> && requires(T value) {
 
 /** @brief Return the stable name supplied by a DiagnosticValue specialization. */
 template <DiagnosticValue T>
+/** @brief Diagnostic value name. */
 [[nodiscard]] constexpr std::string_view diagnosticValueName(T value) noexcept {
+    /** @brief Name. */
     return DiagnosticValueTraits<T>::name(value);
 }
 
 /** @brief Return the stable machine-readable code supplied by a DiagnosticValue specialization. */
 template <DiagnosticValue T>
+/** @brief Diagnostic value code. */
 [[nodiscard]] constexpr DiagnosticCode diagnosticValueCode(T value) noexcept {
+    /** @brief Code. */
     return DiagnosticValueTraits<T>::code(value);
 }
 
 /** @brief DiagnosticValue mapping for diagnostic severities. */
 template <>
+/** @brief DiagnosticValueTraits public API. */
 struct DiagnosticValueTraits<Severity> {
+    /** @brief Name. */
     static constexpr std::string_view name(Severity value) noexcept { return severityName(value); }
+    /** @brief Code. */
     static constexpr DiagnosticCode   code(Severity value) noexcept {
         return value == Severity::Error || value == Severity::Fatal ? DiagnosticCode::Failed : DiagnosticCode::None;
     }
@@ -51,15 +58,21 @@ struct DiagnosticValueTraits<Severity> {
 
 /** @brief DiagnosticValue mapping for machine-readable diagnostic codes. */
 template <>
+/** @brief DiagnosticValueTraits public API. */
 struct DiagnosticValueTraits<DiagnosticCode> {
+    /** @brief Name. */
     static constexpr std::string_view name(DiagnosticCode value) noexcept { return diagnosticCodeName(value); }
+    /** @brief Code. */
     static constexpr DiagnosticCode   code(DiagnosticCode value) noexcept { return value; }
 };
 
 /** @brief DiagnosticValue mapping for operation status categories. */
 template <>
+/** @brief DiagnosticValueTraits public API. */
 struct DiagnosticValueTraits<StatusCode> {
+    /** @brief Name. */
     static constexpr std::string_view name(StatusCode value) noexcept { return statusCodeName(value); }
+    /** @brief Code. */
     static constexpr DiagnosticCode   code(StatusCode value) noexcept {
         switch (value) {
             case StatusCode::Ok:

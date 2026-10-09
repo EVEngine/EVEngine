@@ -25,6 +25,7 @@ public:
     explicit TacticsActionExecutor(Battle& battle) noexcept : battle_(battle) {}
 
     /** @copydoc action::IActionEffectExecutor::prepare */
+    /** @brief Prepare. */
     [[nodiscard]] Result<std::unique_ptr<action::IActionEffectOperation>> prepare(
         const action::ActionDefinition& definition, const action::ActionRequest& request,
         const sensing::TargetSet* targets, SimulationTick tick) override;

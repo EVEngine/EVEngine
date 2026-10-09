@@ -20,6 +20,7 @@ struct VolumeBrushPoint {
 /** @brief Shape protocol for sparse volume painting. */
 class IVolumeBrushKernel {
 public:
+    /** @brief Releases IVolumeBrushKernel resources. */
     virtual ~IVolumeBrushKernel() = default;
     /** @brief Emit weighted integer cells around one center. */
     virtual void sample(float x, float y, float z, float radius,
@@ -33,6 +34,7 @@ public:
     explicit SphereVolumeBrushKernel(const IBrushFalloff* falloff = nullptr) : falloff_(falloff) {}
     /** @brief Replace the radial falloff used by later samples. */
     void setFalloff(const IBrushFalloff* falloff) { falloff_ = falloff; }
+    /** @brief Sample. */
     void sample(float x, float y, float z, float radius,
                 std::vector<VolumeBrushPoint>& out) const override;
 
@@ -47,6 +49,7 @@ public:
     explicit BoxVolumeBrushKernel(const IBrushFalloff* falloff = nullptr) : falloff_(falloff) {}
     /** @brief Replace the edge falloff used by later samples. */
     void setFalloff(const IBrushFalloff* falloff) { falloff_ = falloff; }
+    /** @brief Sample. */
     void sample(float x, float y, float z, float radius,
                 std::vector<VolumeBrushPoint>& out) const override;
 
@@ -76,6 +79,7 @@ class VolumeBrushTool final : public IEditorTool {
 public:
     /** @brief Create a reusable volume brush identified by a stable tool id. */
     VolumeBrushTool(std::string id, std::string label);
+    /** @brief Descriptor. */
     const ToolDescriptor& descriptor() const override { return descriptor_; }
     /** @brief Replace the volume kernel used by later stamps. */
     void setKernel(const IVolumeBrushKernel* kernel) { kernel_ = kernel; }
@@ -85,8 +89,11 @@ public:
     void setRadius(float radius);
     /** @brief Return radius in target voxel coordinates. */
     float radius() const { return radius_; }
+    /** @brief Pointer event. */
     ToolResponse pointerEvent(EditorContext& context, const EditorPointerEvent& event) override;
+    /** @brief Cancel. */
     void cancel(EditorContext& context) override;
+    /** @brief Inspect. */
     void inspect(EditorContext& context, IEditorInspector& inspector) override;
 
 private:

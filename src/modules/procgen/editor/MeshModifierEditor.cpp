@@ -24,6 +24,8 @@ procgen_editing::Result<void> MeshModifierEditor::configureWorkspace(editor::Edi
         {"meshModifier.spline", "Spline", "bottom", "spline", 100},
         {"meshModifier.sculpt", "Sculpt & Damage", "bottom", "sculpt", 110},
         {"meshModifier.uvPaint", "UV Paint", "bottom", "uv-paint", 120},
+        {"meshModifier.merge", "Static Merge", "bottom", "merge", 130},
+        {"meshModifier.adhere", "Dynamic Adhere", "bottom", "adhere", 140},
     };
     for (const auto& panel : panels) {
         editor::WorkspacePanelDescriptor descriptor{panel.id, panel.title, panel.region, "procgen.mesh-modifier",
@@ -47,6 +49,8 @@ procgen_editing::Result<void> MeshModifierEditor::activateTool(editor::EditorWor
     else if (tool == "spline") panel = "meshModifier.spline";
     else if (tool == "sculpt") panel = "meshModifier.sculpt";
     else if (tool == "uvPaint") panel = "meshModifier.uvPaint";
+    else if (tool == "merge") panel = "meshModifier.merge";
+    else if (tool == "adhere") panel = "meshModifier.adhere";
     else return rejected("editor.mesh-modifier.tool", "Unknown mesh modifier tool");
     editor::EditorWorkspace candidate = workspace;
     auto activated = candidate.activatePanel(editor::StableId(panel));

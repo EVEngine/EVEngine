@@ -19,6 +19,7 @@ namespace eve::graphics::fog {
  */
 class EVENGINE_API_WORLD BeerLightCache {
 public:
+    /** @brief LightKey public API. */
     struct LightKey {
         glm::vec3 direction{0.f, 1.f, 0.f};
         glm::vec3 color{1.f};

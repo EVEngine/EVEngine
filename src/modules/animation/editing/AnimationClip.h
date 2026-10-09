@@ -77,6 +77,7 @@ struct AnimationRetargetPreview {
 /** @brief Timeline editing capability for skeletal clips. */
 class IAnimationClipEditTarget {
 public:
+    /** @brief Releases IAnimationClipEditTarget resources. */
     virtual ~IAnimationClipEditTarget() = default;
     /** @brief Stable capability id for clip timeline operations. */
     static CapabilityId editingCapabilityId() { return CapabilityId("eve.editor.target.animation-clip"); }
@@ -104,20 +105,32 @@ class EVENGINE_API_DOMAINS AnimationClipDocumentTarget final : public ::eve::edi
                                                                public eve::editing::IEditingSnapshotProvider,
                                                                public IAnimationClipEditTarget {
 public:
+    /** @brief Animation clip document target. */
     explicit AnimationClipDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
+    /** @brief Make set settings. */
     Result<DomainOperation> makeSetSettings(double duration, double sampleRate, bool loop) const override;
+    /** @brief Make set track. */
     Result<DomainOperation> makeSetTrack(const AnimationBoneTrack& track) const override;
+    /** @brief Make delete track. */
     Result<DomainOperation> makeDeleteTrack(const StableId& track) const override;
+    /** @brief Make set event. */
     Result<DomainOperation> makeSetEvent(const AnimationEventRecord& event) const override;
+    /** @brief Make delete event. */
     Result<DomainOperation> makeDeleteEvent(const StableId& event) const override;
+    /** @brief Make set mask. */
     Result<DomainOperation> makeSetMask(const AnimationMaskEntry& mask) const override;
 
     /** @brief Clip duration in seconds. */

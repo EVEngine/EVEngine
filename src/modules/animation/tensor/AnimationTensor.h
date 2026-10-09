@@ -14,7 +14,9 @@ namespace eve::animation {
 class EVENGINE_API_ORCHESTRATION AnimationTensor : public Module {
 public:
     Module_REG(AnimationTensor);
+    /** @brief Animation tensor. */
     AnimationTensor();
+    /** @brief Animation tensor. */
     ~AnimationTensor() override;
 
 private:

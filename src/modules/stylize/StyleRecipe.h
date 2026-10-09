@@ -25,22 +25,33 @@ class StylePass;
  */
 class EVENGINE_API_WORLD StyleRecipe {
 public:
+    /** @brief Style recipe. */
     StyleRecipe() = default;
+    /** @brief Style recipe. */
     ~StyleRecipe();
 
     StyleRecipe(const StyleRecipe&)            = delete;
     StyleRecipe& operator=(const StyleRecipe&) = delete;
 
+    /** @brief Clears . */
     void           clear();
+    /** @brief Adds . */
     void           add(StyleInstance* instance);
+    /** @brief Returns the style count. */
     int            getStyleCount() const { return int(instances_.size()); }
+    /** @brief Returns the style. */
     StyleInstance* getStyle(int index) const;
 
+    /** @brief Compiles . */
     void        compile(graphics::Graphics* gfx);
+    /** @brief True when compiled. */
     bool        isCompiled() const { return compiled_; }
+    /** @brief Returns the stage. */
     std::string getStage() const { return stage_; }
 
+    /** @brief Applies . */
     void apply(graphics::Graphics* gfx, graphics::Texture* source, graphics::Canvas* dest);
+    /** @brief Applies canvas. */
     void applyCanvas(graphics::Graphics* gfx, graphics::Canvas* source, graphics::Canvas* dest);
 
 private:

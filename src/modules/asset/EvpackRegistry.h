@@ -22,6 +22,7 @@ struct EvpackHandle {
     PersistentId buildId;
     std::uint64_t generation = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const EvpackHandle&, const EvpackHandle&) noexcept = default;
 };
 
@@ -58,6 +59,7 @@ struct EvpackRegistryEvent {
 /** @brief Opaque identity used to cancel a registry subscription. */
 struct EvpackRegistrySubscription {
     std::uint64_t value = 0;
+    /** @brief Operator ==. */
     friend bool operator==(const EvpackRegistrySubscription&,
                            const EvpackRegistrySubscription&) noexcept = default;
 };
@@ -74,7 +76,9 @@ struct EvpackUnmountReceipt {
  */
 class PreparedEvpackMount {
 public:
+    /** @brief Constructs a PreparedEvpackMount. */
     PreparedEvpackMount(PreparedEvpackMount&&) noexcept = default;
+    /** @brief Operator =. */
     PreparedEvpackMount& operator=(PreparedEvpackMount&&) noexcept = default;
     PreparedEvpackMount(const PreparedEvpackMount&) = delete;
     PreparedEvpackMount& operator=(const PreparedEvpackMount&) = delete;

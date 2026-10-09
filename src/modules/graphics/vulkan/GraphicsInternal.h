@@ -31,17 +31,20 @@ constexpr auto kHostVisibleCoherent = vk::MemoryPropertyFlagBits::eHostVisible |
                                       vk::MemoryPropertyFlagBits::eHostCoherent;
 
 template <typename T, size_t N>
+/** @brief Embedded spirv. */
 std::vector<T> embeddedSpirv(const T (&words)[N]) {
     return {words, words + N};
 }
 
 template <typename Slots>
+/** @brief Current slot. */
 auto &currentSlot(Slots &slots, size_t slotCount, size_t slotIndex) {
     if (slots.size() != slotCount) slots.resize(slotCount);
     return slots[slotIndex];
 }
 
 template <typename FrameBuffers>
+/** @brief Release frame 2 d buffers. */
 void releaseFrame2dBuffers(FrameBuffers &buffers) {
     for (auto &buffer : buffers.solidBufs) buffer.release();
     buffers.solidBufs.clear();
@@ -49,6 +52,7 @@ void releaseFrame2dBuffers(FrameBuffers &buffers) {
     buffers.texBufs.clear();
 }
 
+/** @brief Sets the viewport and scissor. */
 void setViewportAndScissor(vk::CommandBuffer cb, uint32_t width, uint32_t height) {
     const vk::Viewport viewport{0.f, 0.f, float(width), float(height), 0.f, 1.f};
     const vk::Rect2D scissor{{0, 0}, {width, height}};
@@ -56,6 +60,7 @@ void setViewportAndScissor(vk::CommandBuffer cb, uint32_t width, uint32_t height
     cb.setScissor(0, 1, &scissor);
 }
 
+/** @brief Creates pipeline layout. */
 vk::PipelineLayout createPipelineLayout(vkb::Device &device,
                                         vk::DescriptorSetLayout setLayout = {},
                                         const vk::PushConstantRange *pushConstant = nullptr) {
@@ -71,6 +76,7 @@ vk::PipelineLayout createPipelineLayout(vkb::Device &device,
     return device->createPipelineLayout(info);
 }
 
+/** @brief Pushes constant range. */
 vk::PushConstantRange pushConstantRange(vk::ShaderStageFlags stages, uint32_t size) {
     vk::PushConstantRange range{};
     range.stageFlags = stages;
@@ -78,18 +84,21 @@ vk::PushConstantRange pushConstantRange(vk::ShaderStageFlags stages, uint32_t si
     return range;
 }
 
+/** @brief Destroys sampler. */
 void destroySampler(vkb::Device &device, vk::Sampler &sampler) {
     if (!sampler) return;
     device->destroySampler(sampler);
     sampler = vk::Sampler{};
 }
 
+/** @brief Destroys pipeline. */
 void destroyPipeline(vkb::Device &device, vk::Pipeline &pipeline) {
     if (!pipeline) return;
     device->destroyPipeline(pipeline);
     pipeline = vk::Pipeline{};
 }
 
+/** @brief Destroys pipeline layout. */
 void destroyPipelineLayout(vkb::Device &device, vk::PipelineLayout &layout) {
     if (!layout) return;
     device->destroyPipelineLayout(layout);
@@ -98,18 +107,21 @@ void destroyPipelineLayout(vkb::Device &device, vk::PipelineLayout &layout) {
 
 /** Latest written vertex copy: the dynamic ring, or the static buffer for
  *  meshes that are never updated. */
+/** @brief Mesh draw vertices. */
 vkb::HostVertexBuffer &meshDrawVertices(GpuMesh &mesh) {
     if (!mesh.dynamic) return mesh.vertices;
     const size_t slot = size_t((mesh.dynamicWriteCount - 1) % GpuMesh::kDynamicVertexCopies);
     return mesh.dynVertices[slot];
 }
 
+/** @brief Mesh draw indices. */
 vkb::GenericBuffer &meshDrawIndices(GpuMesh &mesh) {
     if (!mesh.dynamic) return mesh.indices;
     const size_t slot = size_t((mesh.dynamicWriteCount - 1) % GpuMesh::kDynamicVertexCopies);
     return mesh.dynIndices[slot];
 }
 
+/** @brief Draws indexed mesh. */
 void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh, uint32_t count = 1, uint32_t first = 0) {
     const vk::DeviceSize offset = 0;
     cb.bindVertexBuffers(0, 1, meshDrawVertices(mesh), &offset);
@@ -120,6 +132,7 @@ void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh, uint32_t count = 1, ui
 /** Switch a mesh to the dynamic ring on first update; take a CPU copy of the
  *  static index buffer so every ring slot can be populated (also normalizes
  *  16-bit indices to 32-bit). */
+/** @brief Ensure dynamic ring. */
 void ensureDynamicRing(GpuMesh &gpu) {
     if (gpu.dynamic) return;
     gpu.dynamic = true;
@@ -132,7 +145,9 @@ void ensureDynamicRing(GpuMesh &gpu) {
             for (uint32_t i = 0; i < gpu.indexCount; ++i)
                 gpu.cpuIndices[size_t(i)] = src[i];
         } else {
+            /** @brief Memcpy. */
             std::memcpy(gpu.cpuIndices.data(), ptr,
+                        /** @brief Returns the size of t. */
                         size_t(gpu.indexCount) * sizeof(uint32_t));
         }
         gpu.indices.unmap();
@@ -142,6 +157,7 @@ void ensureDynamicRing(GpuMesh &gpu) {
 
 /** Write one ring copy. No device-wide wait: the slot being overwritten is
  *  kDynamicVertexCopies frames old, i.e. past its in-flight window. */
+/** @brief Writes dynamic mesh. */
 void writeDynamicMesh(GpuMesh &gpu, const std::vector<MeshVertex> &verts, vkb::Device &device,
                       vkb::FrameSlot frame, const uint32_t *indices, int indexCount) {
     const size_t slot = size_t(gpu.dynamicWriteCount % GpuMesh::kDynamicVertexCopies);
@@ -154,14 +170,17 @@ void writeDynamicMesh(GpuMesh &gpu, const std::vector<MeshVertex> &verts, vkb::D
     if (!gpu.cpuIndices.empty()) {
         auto &ib = gpu.dynIndices[slot];
         ib.allocate(frame, device, vk::BufferUsageFlagBits::eIndexBuffer,
+                    /** @brief Device size. */
                     vk::DeviceSize(gpu.cpuIndices.size()) * sizeof(uint32_t),
                     kHostVisibleCoherent);
         ib.updateLocal(frame, gpu.cpuIndices.data(),
+                       /** @brief Device size. */
                        vk::DeviceSize(gpu.cpuIndices.size()) * sizeof(uint32_t));
     }
     ++gpu.dynamicWriteCount;
 }
 
+/** @brief Uploads gpu mesh. */
 std::unique_ptr<GpuMesh> uploadGpuMesh(vkb::Device &device, vkb::FrameSlot frame,
                                        const std::vector<MeshVertex> &vertices,
                                        const std::vector<uint32_t> &indices) {
@@ -176,6 +195,7 @@ std::unique_ptr<GpuMesh> uploadGpuMesh(vkb::Device &device, vkb::FrameSlot frame
 }
 
 /** 16-bit index upload (halves index memory for meshes with <= 65535 vertices). */
+/** @brief Uploads gpu mesh 16. */
 std::unique_ptr<GpuMesh> uploadGpuMesh16(vkb::Device &device, vkb::FrameSlot frame,
                                          const std::vector<MeshVertex> &vertices,
                                          const std::vector<uint16_t> &indices) {
@@ -190,6 +210,7 @@ std::unique_ptr<GpuMesh> uploadGpuMesh16(vkb::Device &device, vkb::FrameSlot fra
     return gpu;
 }
 
+/** @brief Make mesh handle. */
 std::unique_ptr<Mesh> makeMeshHandle(GpuMesh &gpu) {
     auto mesh = std::make_unique<Mesh>();
     mesh->indexCount = int(gpu.indexCount);
@@ -198,8 +219,10 @@ std::unique_ptr<Mesh> makeMeshHandle(GpuMesh &gpu) {
     return mesh;
 }
 
+/** @brief Assign mesh bounds. */
 void assignMeshBounds(Mesh *mesh, const std::vector<MeshVertex> &verts) {
     if (!mesh || verts.empty()) return;
+    /** @brief C. */
     glm::vec3 c(0.f);
     for (const auto &v : verts) c += v.pos;
     c /= float(verts.size());
@@ -218,19 +241,23 @@ void assignMeshBounds(Mesh *mesh, const std::vector<MeshVertex> &verts) {
 }
 
 /** Host-coherent write at a byte offset into a mapped ring buffer. */
+/** @brief Updates ring local. */
 void updateRingLocal(vkb::GenericBuffer &ring, vk::DeviceSize byteOffset, const void *data,
                      vk::DeviceSize bytes) {
     if (!ring.buffer || !data || bytes == 0) return;
     void *ptr = ring.map();
+    /** @brief Memcpy. */
     std::memcpy(static_cast<char *>(ptr) + byteOffset, data, size_t(bytes));
     ring.unmap();
 }
 
 template <typename T>
+/** @brief Align up value. */
 inline T alignUpValue(T value, T align) {
     return align > 0 ? (value + align - 1) / align * align : value;
 }
 
+/** @brief Make blend attachment. */
 vk::PipelineColorBlendAttachmentState makeBlendAttachment(BlendMode mode) {
     vk::PipelineColorBlendAttachmentState att{};
     att.colorWriteMask =
@@ -269,14 +296,20 @@ vk::PipelineColorBlendAttachmentState makeBlendAttachment(BlendMode mode) {
     return att;
 }
 
+/** @brief ShaderModulePair public API. */
 class ShaderModulePair {
 public:
+    /** @brief Constructs a ShaderModulePair. */
     ShaderModulePair(vkb::Device &device, const std::vector<uint32_t> &vert,
                      const std::vector<uint32_t> &frag)
+        /** @brief Device. */
         : device(device),
+          /** @brief Vert. */
           vert(vkb::PipelineBuilder::createShaderModule(device.instance, vert)),
+          /** @brief Frag. */
           frag(vkb::PipelineBuilder::createShaderModule(device.instance, frag)) {}
 
+    /** @brief Releases ShaderModulePair resources. */
     ~ShaderModulePair() {
         device->destroyShaderModule(vert);
         device->destroyShaderModule(frag);
@@ -292,11 +325,13 @@ public:
 
 
 
+/** @brief Pick g buffer color format. */
 vk::Format pickGBufferColorFormat(vkb::Device &device) {
     (void)device;
     return vk::Format::eR8G8B8A8Unorm;
 }
 
+/** @brief Sample count flag for. */
 vk::SampleCountFlagBits sampleCountFlagFor(int samples) {
     if (samples >= 8) return vk::SampleCountFlagBits::e8;
     if (samples >= 4) return vk::SampleCountFlagBits::e4;
@@ -306,11 +341,13 @@ vk::SampleCountFlagBits sampleCountFlagFor(int samples) {
 
 
 
+/** @brief Rgba 8 mip bytes. */
 uint32_t rgba8MipBytes(uint32_t width, uint32_t height) {
     // Matches VKBuilder GenericImage::upload packing for eR8G8B8A8Unorm.
     return 4u * width * height;
 }
 
+/** @brief Append box filtered mip. */
 void appendBoxFilteredMip(std::vector<uint8_t> &out, const uint8_t *src, uint32_t srcW,
                           uint32_t srcH, uint32_t dstW, uint32_t dstH) {
     const size_t base = out.size();
@@ -341,6 +378,7 @@ void appendBoxFilteredMip(std::vector<uint8_t> &out, const uint8_t *src, uint32_
 }
 
 /** Packed mip chain for one 2D layer (base + downsampled levels). */
+/** @brief Builds mip chain 2 d. */
 std::vector<uint8_t> buildMipChain2D(const uint8_t *rgba, uint32_t width, uint32_t height,
                                      uint32_t mipLevels) {
     std::vector<uint8_t> packed;
@@ -355,6 +393,7 @@ std::vector<uint8_t> buildMipChain2D(const uint8_t *rgba, uint32_t width, uint32
         const uint32_t dstH = std::max(srcH >> 1, 1u);
         const uint8_t *src = packed.data() + srcOffset;
         srcOffset = packed.size();
+        /** @brief Append box filtered mip. */
         appendBoxFilteredMip(packed, src, srcW, srcH, dstW, dstH);
         srcW = dstW;
         srcH = dstH;
@@ -366,11 +405,14 @@ std::vector<uint8_t> buildMipChain2D(const uint8_t *rgba, uint32_t width, uint32
  * Cubemap packed as VKBuilder expects: for each mip, for each face (+X..-Z).
  * Input faces are contiguous full-res faces.
  */
+/** @brief Builds mip chain cube. */
 std::vector<uint8_t> buildMipChainCube(const uint8_t *rgbaFaces, uint32_t faceSize,
                                        uint32_t mipLevels) {
+    /** @brief Builds ggx cubemap mip chain. */
     return eve::graphics::buildGgxCubemapMipChain(rgbaFaces, faceSize, mipLevels);
 }
 
+/** @brief Normalize texture info. */
 TextureCreateInfo normalizeTextureInfo(TextureCreateInfo info) {
     if (info.generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled)
         info.sampler.mipmap = MipmapMode::Linear;
@@ -380,6 +422,7 @@ TextureCreateInfo normalizeTextureInfo(TextureCreateInfo info) {
 
 
 
+/** @brief Normalize tex path. */
 std::string normalizeTexPath(std::string path) {
     for (char &c : path) {
         if (c == '\\') c = '/';

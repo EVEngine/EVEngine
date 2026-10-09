@@ -18,28 +18,46 @@ class EVENGINE_API_FOUNDATION_INLINE IEditorHost {
 public:
     static constexpr const char* capabilityName = "IEditorHost";
 
+    /** @brief I editor host. */
     virtual ~IEditorHost() = default;
 
+    /** @brief Status. */
     virtual std::string status() const = 0;
+    /** @brief Opens window. */
     virtual std::string openWindow(const std::string& title, int width, int height) = 0;
+    /** @brief Closes window. */
     virtual std::string closeWindow() = 0;
+    /** @brief Window state. */
     virtual std::string windowState() const = 0;
     /** @brief True while the host OS window is open. */
     virtual bool isWindowOpen() const = 0;
+    /** @brief Applies editor. */
     virtual std::string applyEditor(const std::string& json) = 0;
+    /** @brief Removes editor. */
     virtual std::string removeEditor(const std::string& id) = 0;
+    /** @brief List editors. */
     virtual std::string listEditors() const = 0;
+    /** @brief Editor state. */
     virtual std::string editorState(const std::string& id) const = 0;
+    /** @brief Sets the editor value. */
     virtual std::string setEditorValue(const std::string& editorId, const std::string& widgetId,
                                        const std::string& value) = 0;
+    /** @brief Consume events. */
     virtual std::string consumeEvents(const std::string& editorId) = 0;
+    /** @brief Widget rect. */
     virtual std::string widgetRect(const std::string& editorId,
                                    const std::string& widgetId) const = 0;
+    /** @brief Registers vm. */
     virtual std::string registerVM(const std::string& name, const std::string& source) = 0;
+    /** @brief Unregisters vm. */
     virtual std::string unregisterVM(const std::string& name) = 0;
+    /** @brief Saves editor. */
     virtual std::string saveEditor(const std::string& id) = 0;
+    /** @brief Unload editor. */
     virtual std::string unloadEditor(const std::string& id) = 0;
+    /** @brief Capture. */
     virtual std::string capture(const std::string& path) = 0;
+    /** @brief Run script. */
     virtual std::string runScript(const std::string& source) = 0;
     /** @brief Reload one project-scoped MCP host script or editor resource. */
     virtual std::string reloadResource(const std::string& path) = 0;
@@ -47,6 +65,7 @@ public:
     virtual std::string hotReloadStatus() const = 0;
     /** @brief Report the number of active project filesystem watches. */
     virtual void setHotReloadWatchCount(int count) = 0;
+    /** @brief Request exit. */
     virtual void requestExit() = 0;
     /** @brief True after requestExit() (main loop exit condition). */
     virtual bool exitRequested() = 0;

@@ -33,6 +33,7 @@ public:
     Source(Audio *audio, sound::SoundData *data);
     /** @brief Creates a streaming (or static-decoder) source; ownership of decoder is optional. */
     Source(Audio *audio, sound::Decoder *decoder, bool streaming, bool takeDecoderOwnership = false);
+    /** @brief Source. */
     ~Source();
 
     /** @brief Starts (or resumes) playback. */
@@ -41,16 +42,20 @@ public:
     void pause();
     /** @brief Stops playback and rewinds the play position. */
     void stop();
+    /** @brief True when playing. */
     bool isPlaying() const;
 
     /** @brief Sets source gain (clamped to >= 0). */
     void setVolume(float v);
+    /** @brief Returns the volume. */
     float getVolume() const;
     /** @brief Sets playback pitch (clamped to >= 0). */
     void setPitch(float p);
+    /** @brief Returns the pitch. */
     float getPitch() const;
     /** @brief Enables/disables looping. */
     void setLooping(bool l);
+    /** @brief True when looping. */
     bool isLooping() const;
 
     /** @brief Seeks to a time in seconds; false when seeking is unsupported. */
@@ -71,6 +76,7 @@ public:
     /** @brief Sets OpenAL reference and maximum attenuation distances. */
     void setAttenuationDistances(float ref, float max);
 
+    /** @brief True when streaming. */
     bool isStreaming() const { return streaming; }
     /** @brief Main thread: queues/unqueues AL buffers for a streaming source. */
     void pump();

@@ -33,33 +33,56 @@ struct ProcgenOpenTrace {
 /** @brief Staging area for one atomic rebuild of a named procedural system. */
 class EVENGINE_API_DOMAINS ProcgenContext {
 public:
+    /** @brief Procgen context. */
     ProcgenContext(std::string systemName, uint32_t seed, std::string buildKey = {}, bool cacheHit = false);
 
+    /** @brief Returns the name. */
     std::string getName() const;
+    /** @brief Returns the seed. */
     uint32_t    getSeed() const;
+    /** @brief Seed for. */
     uint32_t    seedFor(const std::string& scope) const;
+    /** @brief True when active. */
     bool        isActive() const;
+    /** @brief True when failed. */
     bool        hasFailed() const;
+    /** @brief True when cache hit. */
     bool        isCacheHit() const;
+    /** @brief Returns the error. */
     std::string getError() const;
+    /** @brief Returns the build key. */
     std::string getBuildKey() const;
 
+    /** @brief Publish. */
     bool        publish(const std::string& outputName, PointSet* points);
+    /** @brief True when output. */
     bool        hasOutput(const std::string& outputName) const;
+    /** @brief Returns the output count. */
     int         getOutputCount() const;
+    /** @brief Returns the output name. */
     std::string getOutputName(int index) const;
+    /** @brief Returns the output. */
     PointSet*   getOutput(const std::string& outputName) const;
 
+    /** @brief Capture debug. */
     bool        captureDebug(const std::string& stageName, PointSet* points);
+    /** @brief Returns the debug stage count. */
     int         getDebugStageCount() const;
+    /** @brief Returns the debug stage name. */
     std::string getDebugStageName(int index) const;
+    /** @brief Returns the debug stage. */
     PointSet*   getDebugStage(const std::string& stageName) const;
 
+    /** @brief Reuse stage. */
     PointSet* reuseStage(const std::string& stageName, const std::string& cacheKey);
+    /** @brief Cache stage. */
     bool      cacheStage(const std::string& stageName, const std::string& cacheKey, PointSet* points);
+    /** @brief Returns the stage cache hit count. */
     int       getStageCacheHitCount() const;
+    /** @brief Returns the stage cache miss count. */
     int       getStageCacheMissCount() const;
 
+    /** @brief Trace. */
     void        trace(const std::string& stageName, int inputCount, int outputCount, float milliseconds);
     /** @brief Start an automatically timed diagnostic stage. Timers may be nested. */
     bool        beginTrace(const std::string& stageName, int inputCount);
@@ -67,13 +90,20 @@ public:
     bool        endTrace(int outputCount);
     /** @brief Number of automatic timers that have not yet been finished. */
     int         getOpenTraceCount() const;
+    /** @brief Returns the trace count. */
     int         getTraceCount() const;
+    /** @brief Returns the trace name. */
     std::string getTraceName(int index) const;
+    /** @brief Returns the trace input count. */
     int         getTraceInputCount(int index) const;
+    /** @brief Returns the trace output count. */
     int         getTraceOutputCount(int index) const;
+    /** @brief Returns the trace milliseconds. */
     float       getTraceMilliseconds(int index) const;
 
+    /** @brief Fail. */
     void fail(const std::string& error);
+    /** @brief Aborts . */
     void abort();
 
 private:

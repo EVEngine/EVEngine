@@ -76,8 +76,9 @@ struct Mesh3DUBO {
     glm::vec4 diffuseVolumeInfo{0.f};  // x = probe count
     glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f}; // coverage, complementary pattern, enabled
 };
-static_assert(sizeof(Mesh3DUBO) == 2368, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 2496, "Mesh3DUBO layout must match the WGSL Frame block");
 
+/** @brief MeshVertex public API. */
 struct MeshVertex {
     glm::vec3 pos;
     glm::vec3 normal;
@@ -88,6 +89,7 @@ struct MeshVertex {
 };
 static_assert(sizeof(MeshVertex) == 72);
 
+/** @brief SkinPassUBO public API. */
 struct SkinPassUBO {
     glm::mat4 mvp{1.f};
     glm::mat4 model{1.f};
@@ -185,40 +187,67 @@ struct GpuShader {
     std::string wgslFrag;
 };
 
+/** @brief EVENGINE_API_BACKENDS public API. */
 class EVENGINE_API_BACKENDS Graphics final : public eve::graphics::Graphics {
 public:
     // Keep the base draw(Drawable*, mat4) overload visible alongside the
     // canvas composite overloads below.
     using eve::graphics::Graphics::draw;
 
+    /** @brief Graphics. */
     Graphics();
+    /** @brief Graphics. */
     ~Graphics() override;
 
+    /** @brief Returns the backend name. */
     std::string getBackendName() const override { return "webgpu"; }
+    /** @brief Supports g buffer post. */
     bool supportsGBufferPost() const override { return true; }
+    /** @brief Supports deferred lighting. */
     bool                    supportsDeferredLighting() const override { return true; }
+    /** @brief Draws deferred lighting. */
     void                    drawDeferredLighting() override;
+    /** @brief Supports gpu driven 3 d. */
     bool supportsGpuDriven3D() const override { return true; }
+    /** @brief Gpu driven enabled. */
     bool gpuDrivenEnabled() const override { return gpuDrivenEnabled_; }
+    /** @brief Gpu driven set enabled. */
     void gpuDrivenSetEnabled(bool enabled) override { gpuDrivenEnabled_ = enabled; }
+    /** @brief Gpu driven mesh record. */
     uint32_t gpuDrivenMeshRecord(Mesh *mesh) override;
+    /** @brief Gpu driven material record. */
     uint32_t gpuDrivenMaterialRecord(Material *material) override;
+    /** @brief Gpu driven material usable. */
     bool gpuDrivenMaterialUsable(Material *material) override;
+    /** @brief Gpu driven submit opaque. */
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    /** @brief Gpu driven submit resident. */
     GpuResidentSubmitStatus gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) override;
+    /** @brief Gpu driven cull enabled. */
     bool gpuDrivenCullEnabled() const override { return gpuDrivenEnabled_; }
+    /** @brief Gpu driven cull begin. */
     bool gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount) override;
+    /** @brief Gpu driven cull emit. */
     void     gpuDrivenCullEmit(const glm::mat4& viewProj, const glm::vec3& eye, float fovYDeg, float nearZ,
                                float farZ) override;
+    /** @brief Gpu driven draw opaque. */
     void gpuDrivenDrawOpaque() override;
+    /** @brief Gpu driven resolve wanted. */
     bool gpuDrivenResolveWanted() const override;
+    /** @brief Gpu driven record vis pass. */
     void gpuDrivenRecordVisPass() override;
+    /** @brief Gpu driven resolve. */
     void gpuDrivenResolve() override;
+    /** @brief Gpu driven vg upload. */
     uint32_t gpuDrivenVgUpload(const GpuVgAssetUpload &asset) override;
+    /** @brief Gpu driven vg asset id. */
     uint32_t gpuDrivenVgAssetId(Mesh *mesh) const override;
+    /** @brief Gpu driven vg attach to mesh. */
     bool gpuDrivenVgAttachToMesh(Mesh *mesh, uint32_t vgAssetId) override;
     /** @compatibility Implements the Graphics legacy boolean submission facade. */
+    /** @brief Gpu driven vg set instance. */
     bool     gpuDrivenVgSetInstance(uint32_t vgAssetId, const glm::mat4& model, uint32_t materialId) override;
+    /** @brief Gpu driven vg compute section. */
     void     gpuDrivenVgComputeSection(const glm::mat4& viewProj, const glm::vec3& eye, float fovYDeg, float nearZ,
                                        float farZ) override;
     /** @brief Return the last CPU compatibility-cull result for backend parity tests. */
@@ -237,6 +266,7 @@ public:
     uint32_t debugGpuDrivenVgIndirectDrawCount() const { return gpuDrivenVgLastIndirectDrawCount_; }
     /** @brief Read back the last VG indirect instance total (native tests). */
     uint32_t debugGpuDrivenVgGpuVisibleCount();
+    /** @brief Gpu driven release material record. */
     [[nodiscard]] Result<void> gpuDrivenReleaseMaterialRecord(Material *material) override;
     /** @brief Compile the generated full PBR WGSL stages under a validation scope. */
     [[nodiscard]] Result<void> debugValidatePbrVariantBaseSources();
@@ -246,130 +276,193 @@ public:
     [[nodiscard]] Result<void> debugValidatePbrVariantPipeline(const PbrVariantSources &sources);
 
     void initHeadless(int width, int height) override;
+    /** @brief Initializes with window. */
     void initWithWindow(void *nativeWindow) override;
+    /** @brief Present. */
     void present() override;
+    /** @brief Pushes validation scope. */
     void pushValidationScope() override;
+    /** @brief Pops validation scope. */
     void popValidationScope() override;
+    /** @brief Sets the msaa samples. */
     void setMsaaSamples(int samples) override;
+    /** @brief Request surface recreate. */
     void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }
+    /** @brief Sets the v sync. */
     void setVSync(bool enabled) override;
+    /** @brief Returns the msaa samples. */
     int getMsaaSamples() const override { return msaaSamples; }
+    /** @brief Sets the viewport size. */
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
+    /** @brief Draws solid rect. */
     void drawSolidRect(float x, float y, float w, float h, const Color &color,
                        BlendMode blend = BlendMode::Alpha) override;
+    /** @brief Draws primitive canvas. */
     void drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) override;
+    /** @brief Draws solid rect rotated. */
     void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                               const Color &color,
                               BlendMode blend = BlendMode::Alpha) override;
 
+    /** @brief Creates a texture. @ownership Caller deletes unless documented otherwise. */
     Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
                         bool repeatV = false) override;
+    /** @brief Creates a texture. @ownership Caller deletes unless documented otherwise. */
     Texture *newTexture(int width, int height, const uint8_t *rgba,
                         const TextureCreateInfo &info) override;
 #if !defined(__EMSCRIPTEN__)
     /** @copydoc IResourceFactory::newTextureMipChain */
+    /** @brief Creates a texture mip chain. @ownership Caller deletes unless documented otherwise. */
     [[nodiscard]] Result<Texture *> newTextureMipChain(uint32_t width, uint32_t height,
                                                        uint32_t levels,
                                                        std::span<const uint8_t> rgba) override;
     /** @copydoc IResourceFactory::newTextureArrayRgba16f */
+    /** @brief Creates a texture array rgba 16 f. @ownership Caller deletes unless documented otherwise. */
     [[nodiscard]] Result<Texture *> newTextureArrayRgba16f(
         uint32_t width, uint32_t height, uint32_t layers,
         std::span<const uint16_t> rgbaHalf) override;
     /** @copydoc IResourceFactory::newTexture3DRgba8 */
+    /** @brief Creates a texture 3 d rgba 8. @ownership Caller deletes unless documented otherwise. */
     [[nodiscard]] Result<Texture *> newTexture3DRgba8(uint32_t width, uint32_t height,
                                                       uint32_t depth,
                                                       std::span<const uint8_t> rgba) override;
 #endif
+    /** @brief Creates a cubemap. @ownership Caller deletes unless documented otherwise. */
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
+    /** @brief Creates a cubemap. @ownership Caller deletes unless documented otherwise. */
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                         const TextureCreateInfo &info) override;
     /** @lifetime Returned texture is Graphics-owned until explicitly released. */
+    /** @brief Creates a hdr cubemap. @ownership Caller deletes unless documented otherwise. */
     Texture *newHDRCubemap(int faceSize) override;
     /** @compatibility Implements the Graphics boolean submission facade. */
+    /** @brief Copies hdr canvas to cubemap face. */
     bool copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int face) override;
+    /** @brief Copies hdr canvases to cubemap. */
     bool copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
                                   Texture *cubemap) override;
     /** @compatibility Implements the Graphics boolean submission facade. */
+    /** @brief Filter hdr reflection cubemap. */
     bool filterHDRReflectionCubemap(Texture *cubemap, int sampleCount = 64) override;
+    /** @brief Creates a texture. @ownership Caller deletes unless documented otherwise. */
     Texture *newTexture(image::ImageData *data) override;
+    /** @brief Creates a texture. @ownership Caller deletes unless documented otherwise. */
     Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) override;
+    /** @brief Sets the texture sampler. */
     void setTextureSampler(Texture *texture, const TextureSampler &sampler) override;
+    /** @brief Returns the max anisotropy. */
     float getMaxAnisotropy() const override;
+    /** @brief Creates a texture from file. @ownership Caller deletes unless documented otherwise. */
     Texture *newTextureFromFile(const std::string &filename) override;
+    /** @brief Reloads texture from file. */
     bool reloadTextureFromFile(const std::string &filename) override;
+    /** @brief Uploads deferred file texture. */
     bool uploadDeferredFileTexture(Texture *texture, image::ImageData *data) override;
+    /** @brief Release texture. */
     bool releaseTexture(Texture *texture) override;
+    /** @brief Updates texture. */
     bool updateTexture(Texture *texture, int width, int height,
                        const uint8_t *rgba) override;
+    /** @brief Updates texture region. */
     eve::Result<void> updateTextureRegion(Texture *texture, int x, int y, int width,
                                           int height, std::span<const std::uint8_t> rgba,
                                           std::size_t bytesPerRow = 0) override;
+    /** @brief Updates texture regions. */
     eve::Result<void> updateTextureRegions(
         Texture *texture, std::span<const TextureRegionUpload> regions) override;
 
+    /** @brief Draws textured rect. */
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                           const Color &color) override;
+    /** @brief Draws textured rect shader. */
     void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w, float h,
                                 const Color &color) override;
+    /** @brief Draws textured rect uv. */
     void drawTexturedRectUV(Texture *texture, float x, float y, float w, float h, float u0, float v0,
                             float u1, float v1, const Color &color) override;
+    /** @brief Draws textured rect shader uv. */
     void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w,
                                   float h, float u0, float v0, float u1, float v1,
                                   const Color &color, bool rotatedUV = false,
                                   BlendMode blend = BlendMode::Alpha) override;
+    /** @brief Draws textured rect shader uv rotated. */
     void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
                                          float w, float h, float degrees, float u0, float v0,
                                          float u1, float v1, const Color &color,
                                          bool rotatedUV = false,
                                          BlendMode blend = BlendMode::Alpha) override;
+    /** @brief Draws textured rect shader depth. */
     void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x, float y,
                                      float w, float h, const Color &tint) override;
+    /** @brief Draws textured rect shader depth motion. */
     void drawTexturedRectShaderDepthMotion(Texture *color, Texture *depth, Texture *motion,
                                            Shader *shader, float x, float y, float w, float h,
                                            const Color &tint) override;
+    /** @brief Draws textured rect shader 4. */
     void drawTexturedRectShader4(Texture *color, Texture *depth, Texture *motion, Texture *extra,
                                  Shader *shader, float x, float y, float w, float h,
                                  const Color &tint) override;
+    /** @brief Draws textured rect shader 5. */
     void drawTexturedRectShader5(Texture *color, Texture *depth, Texture *motion, Texture *extra,
                                  Texture *specular, Shader *shader, float x, float y, float w,
                                  float h, const Color &tint) override;
+    /** @brief Draws textured rect lit uv. */
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0, float v0,
                                float u1, float v1, const Color &color, BlendMode blend = BlendMode::Alpha) override;
+    /** @brief Draws textured rect lit uv rotated. */
     void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w, float h,
                                       float degrees, float u0, float v0, float u1, float v1, const Color &color,
                                       BlendMode blend = BlendMode::Alpha) override;
+    /** @brief Sets the lighting 2 d. */
     void setLighting2D(const Lighting2DUBO &ubo) override;
 
+    /** @brief Creates a shader from spv. @ownership Caller deletes unless documented otherwise. */
     Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                              const std::vector<uint32_t> &fragSpv) override;
+    /** @brief Creates a shader from spv file. @ownership Caller deletes unless documented otherwise. */
     Shader *newShaderFromSpvFile(const std::string &vertPath, const std::string &fragPath) override;
+    /** @brief Creates a shader from wgsl. @ownership Caller deletes unless documented otherwise. */
     Shader *newShaderFromWgsl(const std::string &vertWgsl,
                               const std::string &fragWgsl) override;
+    /** @brief Replace shader from spv. */
     [[nodiscard]] Result<void> replaceShaderFromSpv(
         Shader &shader, const std::vector<uint32_t> &vertSpv,
         const std::vector<uint32_t> &fragSpv) override;
+    /** @brief Replace shader from wgsl. */
     [[nodiscard]] Result<void> replaceShaderFromWgsl(
         Shader &shader, const std::string &vertWgsl,
         const std::string &fragWgsl) override;
+    /** @brief Replace shader from glsl. */
     [[nodiscard]] Result<void> replaceShaderFromGlsl(
         Shader &shader, const std::string &vertGlsl,
         const std::string &fragGlsl) override;
+    /** @brief Creates a shader. @ownership Caller deletes unless documented otherwise. */
     Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
+    /** @brief Creates a mesh shader from spv. @ownership Caller deletes unless documented otherwise. */
     Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    /** @brief Creates a mesh shader from wgsl. @ownership Caller deletes unless documented otherwise. */
     Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
                                    const std::string &fragWgsl) override;
+    /** @brief Configure mesh shader surface. */
     eve::Result<void> configureMeshShaderSurface(Shader& shader, BlendMode blend,
                                                   bool depthWrite, bool doubleSided) override;
+    /** @brief Creates a mesh shader. @ownership Caller deletes unless documented otherwise. */
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
+    /** @brief Creates a hair shader from spv. @ownership Caller deletes unless documented otherwise. */
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    /** @brief Creates a hair shader from wgsl. @ownership Caller deletes unless documented otherwise. */
     Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
                                   const std::string &fragWgsl) override;
+    /** @brief Release shader. */
     bool releaseShader(Shader *shader) override;
 
+    /** @brief Creates a mesh from assimp. @ownership Caller deletes unless documented otherwise. */
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
+    /** @brief Creates a mesh from assimp. @ownership Caller deletes unless documented otherwise. */
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
+    /** @brief Creates a mesh from arrays. @ownership Caller deletes unless documented otherwise. */
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
     /**
@@ -385,24 +478,38 @@ public:
     /** @brief Return layout facts from the owned WebGPU mesh upload. */
     [[nodiscard]] std::optional<eve::graphics::MeshBackendDescriptor> describeMesh(Mesh *mesh) const override;
     bool bakeMeshMorph(Mesh *mesh) override;
+    /** @brief Updates mesh vertices. */
     bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
+    /** @brief Sets the mesh skinning data. */
     bool setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
                              int vertexCount) override;
+    /** @brief Creates a mesh sphere. @ownership Caller deletes unless documented otherwise. */
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
+    /** @brief Creates a mesh cylinder. @ownership Caller deletes unless documented otherwise. */
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
+    /** @brief Release mesh. */
     bool releaseMesh(Mesh *mesh) override;
 
+    /** @brief Begins 3 d frame. */
     void begin3DFrame() override;
+    /** @brief Begins 3 d frame to canvas. */
     void begin3DFrameToCanvas(Canvas *canvas) override;
+    /** @brief Ends 3 d frame to canvas. */
     void end3DFrameToCanvas() override;
+    /** @brief Draws primitive scene. */
     void  drawPrimitiveScene(const PrimitiveSceneCanvas3D &canvas) override;
+    /** @brief Returns the last offscreen 3 d gpu duration ms. */
     float getLastOffscreen3DGpuDurationMs() const override {
         return completedOffscreenTimestampMs.exchange(0.f);
     }
+    /** @brief Sets the mesh 3 d view proj. */
     void setMesh3DViewProj(const glm::mat4 &viewProj) override;
+    /** @brief Sets the mesh 3 d view. */
     void setMesh3DView(const glm::mat4 &view) override;
+    /** @brief Sets the mesh 3 d clip. */
     void setMesh3DClip(float nearZ, float farZ) override;
+    /** @brief Returns the scene color texture. */
     Texture *getSceneColorTexture() override;
     /**
      * @brief Return the active sampleable scene linear-depth texture when available.
@@ -410,52 +517,87 @@ public:
      * @lifetime Valid until render-target recreation or Graphics destruction.
      */
     Texture *getSceneLinearDepthTexture() override;
+    /** @brief Draws mesh. */
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
+    /** @brief Draws mesh shader. */
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
+    /** @brief Draws voxel face instances. */
     void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
                                 float originZ, const std::string &faceDir, Texture *atlas,
                                 int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
+    /** @brief Sets the mesh 3 d normal texture. */
     void setMesh3DNormalTexture(Texture *normal) override;
+    /** @brief Sets the mesh 3 d packed normal mask. */
     void setMesh3DPackedNormalMask(bool enabled) override;
+    /** @brief Sets the mesh 3 d height texture. */
     void setMesh3DHeightTexture(Texture *height) override;
+    /** @brief Sets the mesh 3 d virtual texture. */
     void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
                                  int atlasSlotsX, int atlasSlotsY,
                                  float borderFraction) override;
+    /** @brief Sets the mesh 3 d scene depth. */
     void     setMesh3DSceneDepth(Texture *depth) override;
+    /** @brief Sets the mesh 3 d scene color. */
     void     setMesh3DSceneColor(Texture *color) override;
+    /** @brief Capture mesh 3 d scene color. */
     [[nodiscard]] Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() override;
+    /** @brief Sets the mesh 3 d material. */
     void     setMesh3DMaterial(float metallic, float roughness) override;
+    /** @brief Sets the mesh 3 d pbr surface. */
     [[nodiscard]] Result<void> setMesh3DPbrSurface(const PbrSurface *surface) override;
+    /** @brief Sets the mesh 3 d surface. */
     void     setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                               bool doubleSided, float alphaCutoff,
                               const std::string &alphaTechnique = "cutoff") override;
+    /** @brief Sets the mesh 3 d tex cell bomb. */
     void     setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
+    /** @brief Sets the mesh 3 d parallax. */
     void     setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
+    /** @brief Sets the mesh 3 d lod dither. */
     void     setMesh3DLodDither(float weight, bool reverse, bool enabled) override;
+    /** @brief Sets the mesh 3 d lighting. */
     void     setMesh3DLighting(const Lighting3DPack &pack) override;
+    /** @brief Sets the cloud shadows. */
     void setCloudShadows(float strength, float worldCell, float time, float windSpeed, float windAngle, float coverage,
                          float detail) override;
+    /** @brief Sets the mesh 3 d clustered lighting. */
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
+    /** @brief Sets the mesh 3 d clustered active. */
     void setMesh3DClusteredActive(bool active) override;
+    /** @brief Sets the mesh 3 dssao. */
     void setMesh3DSSAO(float intensity) override;
+    /** @brief Sets the mesh 3 d light. */
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
+    /** @brief Sets the mesh 3 d camera pos. */
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
+    /** @brief Sets the mesh 3 d env. */
     void setMesh3DEnv(Texture *cube, float intensity) override;
+    /** @brief Sets the mesh 3 d env probe. */
     void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) override;
+    /** @brief Sets the mesh 3 d reflection probes. */
     void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) override;
+    /** @brief Sets the scene exposure. */
     void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
+    /** @brief Returns the scene exposure. */
     float getSceneExposure() const override { return sceneExposure; }
+    /** @brief Sets the scene color filter. */
     void  setSceneColorFilter(const glm::vec3& color) override { sceneColorFilter = glm::max(color, glm::vec3(0.f)); }
+    /** @brief Returns the scene color filter. */
     glm::vec3 getSceneColorFilter() const override { return sceneColorFilter; }
+    /** @brief Sets the scene lift gamma gain. */
     void setSceneLiftGammaGain(const glm::vec3& lift, const glm::vec3& inverseGamma, const glm::vec3& gain) override {
         sceneLift         = lift;
         sceneInverseGamma = glm::max(inverseGamma, glm::vec3(0.001F));
         sceneGain         = gain;
     }
+    /** @brief Returns the scene lift. */
     glm::vec3 getSceneLift() const override { return sceneLift; }
+    /** @brief Returns the scene inverse gamma. */
     glm::vec3 getSceneInverseGamma() const override { return sceneInverseGamma; }
+    /** @brief Returns the scene gain. */
     glm::vec3 getSceneGain() const override { return sceneGain; }
+    /** @brief Sets the scene transition fx. */
     void      setSceneTransitionFx(float vignette, float vignetteSmoothness, float lensDistortion,
                                    float lensScale) override {
         sceneTransitionVignette           = std::clamp(vignette, 0.0F, 1.0F);
@@ -463,24 +605,36 @@ public:
         sceneTransitionLensDistortion     = std::clamp(lensDistortion, 0.0F, 1.0F);
         sceneTransitionLensScale          = std::clamp(lensScale, 0.01F, 5.0F);
     }
+    /** @brief Returns the scene transition vignette. */
     float getSceneTransitionVignette() const override { return sceneTransitionVignette; }
+    /** @brief Returns the scene transition vignette smoothness. */
     float getSceneTransitionVignetteSmoothness() const override { return sceneTransitionVignetteSmoothness; }
+    /** @brief Returns the scene transition lens distortion. */
     float getSceneTransitionLensDistortion() const override { return sceneTransitionLensDistortion; }
+    /** @brief Returns the scene transition lens scale. */
     float getSceneTransitionLensScale() const override { return sceneTransitionLensScale; }
+    /** @brief Sets the scene auto exposure. */
     void setSceneAutoExposure(bool enabled, float minEV, float maxEV) override {
         sceneAutoExposure = enabled;
         sceneAutoExposureMinEV = minEV;
         sceneAutoExposureMaxEV = maxEV;
     }
+    /** @brief Returns the scene auto exposure. */
     bool getSceneAutoExposure() const override { return sceneAutoExposure; }
+    /** @brief Returns the scene auto exposure min ev. */
     float getSceneAutoExposureMinEV() const override { return sceneAutoExposureMinEV; }
+    /** @brief Returns the scene auto exposure max ev. */
     float getSceneAutoExposureMaxEV() const override { return sceneAutoExposureMaxEV; }
+    /** @brief Sets the scene bloom. */
     void setSceneBloom(float intensity, float threshold) override {
         sceneBloomIntensity = intensity;
         sceneBloomThreshold = threshold;
     }
+    /** @brief Returns the scene bloom intensity. */
     float getSceneBloomIntensity() const override { return sceneBloomIntensity; }
+    /** @brief Returns the scene bloom threshold. */
     float getSceneBloomThreshold() const override { return sceneBloomThreshold; }
+    /** @brief Sets the scene depth of field. */
     void setSceneDepthOfField(float focusDistance, float maxBlurPx, float focusRange, float nearZ,
                               float farZ) override {
         sceneDofFocusDistance = focusDistance;
@@ -489,76 +643,120 @@ public:
         sceneDofNearZ = nearZ;
         sceneDofFarZ = farZ;
     }
+    /** @brief Returns the scene dof focus distance. */
     float getSceneDofFocusDistance() const override { return sceneDofFocusDistance; }
+    /** @brief Returns the scene dof max blur. */
     float getSceneDofMaxBlur() const override { return sceneDofMaxBlurPx; }
+    /** @brief Returns the scene dof focus range. */
     float getSceneDofFocusRange() const override { return sceneDofFocusRange; }
+    /** @brief Returns the scene dof near z. */
     float getSceneDofNearZ() const override { return sceneDofNearZ; }
+    /** @brief Returns the scene dof far z. */
     float getSceneDofFarZ() const override { return sceneDofFarZ; }
+    /** @brief Sets the mesh 3 d shadows. */
     void setMesh3DShadows(const ShadowUpload &upload) override;
+    /** @brief Sets the mesh 3 d shadow receive. */
     void setMesh3DShadowReceive(bool receive) override;
+    /** @brief Sets the mesh 3 d skin influence limit. */
     void setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) override;
+    /** @brief Begins shadow pass. */
     void beginShadowPass(int cascadeIndex) override;
+    /** @brief Draws mesh shadow. */
     void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, bool doubleSided = true) override;
+    /** @brief Draws mesh shadow alpha. */
     void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr,
                              bool doubleSided = true, float lodWeight = 1.f,
                              bool lodFadeReverse = false, bool lodDither = false) override;
+    /** @brief Ends shadow pass. */
     void endShadowPass() override;
 
+    /** @brief Begins g buffer pass. */
     void beginGBufferPass(int width, int height) override;
+    /** @brief Draws mesh g buffer. */
     void drawMeshGBuffer(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
                          Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
                          float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f,
                          float metallic = 0.f) override;
+    /** @brief Draws mesh g buffer alpha. */
     void drawMeshGBufferAlpha(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
                               Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
                               float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f,
                               float metallic = 0.f) override;
+    /** @brief Ends g buffer pass. */
     void endGBufferPass() override;
+    /** @brief Reads g buffer to image data. */
     image::ImageData *readGBufferToImageData(const std::string &attachment) override;
 
+    /** @brief Supports decal. */
     bool supportsDecal() const override { return true; }
+    /** @brief Begins decal pass. */
     void beginDecalPass(int width, int height) override;
+    /** @brief Sets the decal camera. */
     void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override;
+    /** @brief Draws decal. */
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
                    float metalStrength, float emissiveStrength, int blendMode = 0,
                    int projectionMode = 0, float blendSharpness = 4.f) override;
+    /** @brief Ends decal pass. */
     void endDecalPass() override;
+    /** @brief Reads decal layer to image data. */
     image::ImageData *readDecalLayerToImageData(const std::string &attachment) override;
 
+    /** @brief Creates a canvas. @ownership Caller deletes unless documented otherwise. */
     Canvas *newCanvas(int width, int height) override;
     /** @lifetime Returned canvas is Graphics-owned until explicitly released. */
+    /** @brief Creates a hdr canvas. @ownership Caller deletes unless documented otherwise. */
     Canvas *newHDRCanvas(int width, int height) override;
+    /** @brief Sets the canvas. */
     void setCanvas(Canvas *canvas) override;
+    /** @brief True when canvas active. */
     bool isCanvasActive() const override;
+    /** @brief Returns the canvas. */
     Canvas *getCanvas() const override;
 
+    /** @brief Returns the texture. */
     Texture *getTexture() override;
+    /** @brief Creates a image data. @ownership Caller deletes unless documented otherwise. */
     image::ImageData *newImageData() override;
+    /** @brief Begins frame readback. */
     bool beginFrameReadback(const std::string &path) override;
+    /** @brief Frame readback status. */
     int frameReadbackStatus() const override;
     /** @brief Advances a pending frame readback; called every present(). */
     void pumpReadback();
+    /** @brief Draws . */
     void draw(eve::graphics::Graphics *gfx, const glm::mat4 &matrix) const override;
+    /** @brief Draws . */
     void draw(Canvas *C, const glm::mat4 &matrix) const override;
+    /** @brief Clears . */
     void  clear(std::optional<Color> color, std::optional<int> stencil, std::optional<double> depth) override;
+    /** @brief Returns the pixel. */
     Color getPixel(int x, int y) override;
 
     /** @brief Flush accumulated 2D batches into an offscreen canvas target. */
     void flush2DToCanvas(OffscreenCanvas *canvas);
     /** @brief Blocking CPU readback of an offscreen canvas or scene color target. */
     Color getPixelImpl(OffscreenCanvas *canvas, int x, int y);
+    /** @brief Creates a image data impl. @ownership Caller deletes unless documented otherwise. */
     image::ImageData *newImageDataImpl(OffscreenCanvas *canvas);
     /** @brief Blocking linear RGBA16F readback of an HDR offscreen canvas.
      * @ownership The caller owns the returned image data. */
     image::ImageData *newHDRImageDataImpl(OffscreenCanvas *canvas);
 
+    /** @brief Returns the instance. */
     wgpu::Instance &getInstance() { return instance; }
+    /** @brief Returns the device. */
     wgpu::Device &getDevice() { return device; }
+    /** @brief Returns the queue. */
     wgpu::Queue &getQueue() { return queue; }
+    /** @brief Returns the surface. */
     wgpu::Surface &getSurface() { return surface; }
+    /** @brief Returns the surface format. */
     WGPUTextureFormat getSurfaceFormat() const { return surfaceFormat; }
+    /** @brief Returns the sdl window. */
     void *getSdlWindow() const { return sdlWindow; }
+    /** @brief True when ready. */
     bool isReady() const { return initialized; }
 
     // The present overlay is rendered inside the swapchain render pass. The
@@ -567,6 +765,7 @@ public:
 
     friend class OffscreenCanvas;
 
+    /** @brief SolidBatch public API. */
     struct SolidBatch {
         BlendMode blend = BlendMode::Alpha;
         Batcher batch;
@@ -773,9 +972,11 @@ private:
         wgpu::Buffer buffer;
         uint64_t capacity = 0;
         uint64_t used = 0;
+        /** @brief Alloc. */
         uint32_t alloc(uint64_t size, uint64_t alignment);
         std::vector<wgpu::Buffer> palettes;
         size_t                    paletteIndex = 0;
+        /** @brief Resets . */
         void                      reset() {
             used         = 0;
             paletteIndex = 0;
@@ -790,7 +991,9 @@ private:
         wgpu::Buffer buffer;
         uint64_t capacity = 0;
         uint64_t used = 0;
+        /** @brief Alloc. */
         uint64_t alloc(uint64_t bytes);
+        /** @brief Resets . */
         void reset() { used = 0; }
     };
     VertexArena &currentVertexArena();
@@ -1090,7 +1293,7 @@ private:
     // Shadow pass state.
     int shadowPassCascade = -1;
     std::vector<ShadowDraw> shadowPassDraws;
-    std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];
+    std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kTotalLayers];
 
     // GBuffer pass state.
     bool gbufferPassActive = false;

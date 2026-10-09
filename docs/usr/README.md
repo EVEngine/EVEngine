@@ -319,7 +319,8 @@ config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
 2. 用 `eve create` 建新游戏，熟悉 `eve_init` / `eve_update` / `eve_render` 与热重载；
 3. 阅读 [EveScript 完整教程](EVESCRIPT.md)，再把脚本拆成显式 `import` / `export` 模块；
 4. 按需求查阅[模块使用手册](MODULES.md)（UI、ECS、RPG、程序化生成等）；
-5. 需要原生能力时，再使用 SDK 的 CMake 包编写插件（见仓库 `examples/native-plugin`）；
-6. 发布前阅读第 6 节打包步骤与许可条款。
+5. 需要持久化进度时阅读[跨模块存档用法](SAVE.md)；
+6. 需要原生能力时，再使用 SDK 的 CMake 包编写插件（见仓库 `examples/native-plugin`）；
+7. 发布前阅读第 6 节打包步骤与许可条款。
 
 本指南讲解稳定的使用流程，内部架构、设计取舍和实现进度统一维护在 [`docs/dev/`](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)，避免把尚未实现的设计稿误当作用户 API。

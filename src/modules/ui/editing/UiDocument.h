@@ -55,6 +55,7 @@ struct UiLayoutValue {
     double pivotX  = 0.0;
     double pivotY  = 0.0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const UiLayoutValue&) const = default;
 };
 
@@ -70,6 +71,7 @@ struct UiStyleValue {
     std::string align        = "start";
     std::string justify      = "start";
 
+    /** @brief Operator <=>. */
     auto operator<=>(const UiStyleValue&) const = default;
 };
 
@@ -84,6 +86,7 @@ struct UiContentValue {
     std::string imageFit = "stretch";
     bool        clip     = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const UiContentValue&) const = default;
 };
 
@@ -113,14 +116,23 @@ struct CreateUiWidgetRequest {
 /** @brief Hierarchy/layout capability consumed by UI tree and canvas tools. */
 class IUiDocumentEditTarget {
 public:
+    /** @brief Releases IUiDocumentEditTarget resources. */
     virtual ~IUiDocumentEditTarget() = default;
+    /** @brief Editor capability id. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.ui-document"); }
+    /** @brief Widget. */
     virtual Result<UiWidgetSnapshot> widget(const ObjectId& id) const                                     = 0;
+    /** @brief Children. */
     virtual std::vector<ObjectId>          children(const ObjectId& parent) const                               = 0;
+    /** @brief Make create. */
     virtual Result<DomainOperation>  makeCreate(const CreateUiWidgetRequest& request) const               = 0;
+    /** @brief Make delete. */
     virtual Result<DomainOperation>  makeDelete(const ObjectId& id) const                                 = 0;
+    /** @brief Make rename. */
     virtual Result<DomainOperation>  makeRename(const ObjectId& id, const std::string& name) const        = 0;
+    /** @brief Make reparent. */
     virtual Result<DomainOperation>  makeReparent(const ObjectId& id, const ObjectId& parent) const       = 0;
+    /** @brief Make set layout. */
     virtual Result<DomainOperation>  makeSetLayout(const ObjectId& id, const UiLayoutValue& layout) const = 0;
     /** @brief Plan replacement of renderer-neutral widget style. */
     virtual Result<DomainOperation> makeSetStyle(const ObjectId& id, const UiStyleValue& style) const = 0;
@@ -136,37 +148,55 @@ class EVENGINE_API_DOMAINS UiDocumentTarget final : public ::eve::editing::Edita
                                                     public IUiDocumentEditTarget,
                                                     public IPropertyProvider {
 public:
+    /** @brief Ui document target. */
     explicit UiDocumentTarget(std::string id);
 
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*              queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clone an isolated owning candidate for atomic compensation. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Publish a validated candidate belonging to this document. */
     Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
+    /** @brief Widget. */
     Result<UiWidgetSnapshot> widget(const ObjectId& id) const override;
+    /** @brief Children. */
     std::vector<ObjectId>          children(const ObjectId& parent) const override;
+    /** @brief Make create. */
     Result<DomainOperation>  makeCreate(const CreateUiWidgetRequest& request) const override;
+    /** @brief Make delete. */
     Result<DomainOperation>  makeDelete(const ObjectId& id) const override;
+    /** @brief Make rename. */
     Result<DomainOperation>  makeRename(const ObjectId& id, const std::string& name) const override;
+    /** @brief Make reparent. */
     Result<DomainOperation>  makeReparent(const ObjectId& id, const ObjectId& parent) const override;
+    /** @brief Make set layout. */
     Result<DomainOperation>  makeSetLayout(const ObjectId& id, const UiLayoutValue& layout) const override;
+    /** @brief Make set style. */
     Result<DomainOperation>  makeSetStyle(const ObjectId& id, const UiStyleValue& style) const override;
+    /** @brief Make set content. */
     Result<DomainOperation>  makeSetContent(const ObjectId& id, const UiContentValue& content) const override;
 
     /** @brief Validate style, hierarchy and viewport layout constraints. */
     std::vector<EditorDiagnostic> validate() const;
 
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
 
@@ -176,16 +206,26 @@ public:
     Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Layout value. */
     static EditorValue                    layoutValue(const UiLayoutValue& layout);
+    /** @brief Parse layout. */
     static Result<UiLayoutValue>    parseLayout(const EditorValue& value);
+    /** @brief Style value. */
     static EditorValue                    styleValue(const UiStyleValue& style);
+    /** @brief Parse style. */
     static Result<UiStyleValue>     parseStyle(const EditorValue& value);
+    /** @brief Content value. */
     static EditorValue                    contentValue(const UiContentValue& content);
+    /** @brief Parse content. */
     static Result<UiContentValue>   parseContent(const EditorValue& value);
+    /** @brief Widget value. */
     static EditorValue                    widgetValue(const UiWidgetSnapshot& widget);
+    /** @brief Parse widget. */
     static Result<UiWidgetSnapshot> parseWidget(const EditorValue& value);
+    /** @brief Make replace. */
     Result<DomainOperation>         makeReplace(const UiWidgetSnapshot& before, UiWidgetSnapshot after,
                                                       std::string property = {}) const;
+    /** @brief Would cycle. */
     bool                                  wouldCycle(const ObjectId& id, const ObjectId& parent,
                                                      const std::map<ObjectId, UiWidgetSnapshot>& widgets) const;
 

@@ -36,8 +36,11 @@ public:
      * @param causationId Identifier of the command/event that caused it, if any.
      */
     TransactionContext(std::string transactionId, std::string correlationId = {}, std::string causationId = {})
+        /** @brief Transaction id. */
         : transactionId_(std::move(transactionId)),
+          /** @brief Correlation id. */
           correlationId_(std::move(correlationId)),
+          /** @brief Causation id. */
           causationId_(std::move(causationId)) {}
 
     /**
@@ -49,9 +52,13 @@ public:
      */
     explicit TransactionContext(eve::TransactionId transactionId, std::string correlationId = {},
                                 std::string causationId = {})
+        /** @brief Identity. */
         : identity_(transactionId),
+          /** @brief Transaction id. */
           transactionId_(transactionId.isNil() ? std::string{} : transactionId.format()),
+          /** @brief Correlation id. */
           correlationId_(std::move(correlationId)),
+          /** @brief Causation id. */
           causationId_(std::move(causationId)) {}
 
     /** @brief Canonical UUID-backed identity; nil only for the legacy string facade. */
@@ -120,6 +127,7 @@ struct TransactionReceipt {
  */
 class ITransactionParticipant {
 public:
+    /** @brief Releases ITransactionParticipant resources. */
     virtual ~ITransactionParticipant() = default;
 
     /**
@@ -346,7 +354,9 @@ public:
     // the ledger was never copyable in practice.
     Ledger(const Ledger&)            = delete;
     Ledger& operator=(const Ledger&) = delete;
+    /** @brief Ledger. */
     Ledger(Ledger&&)                 = default;
+    /** @brief Operator =. */
     Ledger& operator=(Ledger&&)      = default;
     /**
      * @brief Creates an open plan with a UUID-backed identity.
@@ -413,7 +423,9 @@ EVENGINE_API_FOUNDATION std::string stateName(State state);
 class EVENGINE_API_FOUNDATION Transaction : public Module {
 public:
     Module_REG(Transaction);
+    /** @brief Transaction. */
     Transaction()           = default;
+    /** @brief Transaction. */
     ~Transaction() override = default;
 
     // std::vector<std::unique_ptr<Ledger>> makes the implicit copy operations
@@ -422,7 +434,9 @@ public:
     // a module instance was never copyable in practice.
     Transaction(const Transaction&)            = delete;
     Transaction& operator=(const Transaction&) = delete;
+    /** @brief Transaction. */
     Transaction(Transaction&&)                 = default;
+    /** @brief Operator =. */
     Transaction& operator=(Transaction&&)      = default;
 
     /**

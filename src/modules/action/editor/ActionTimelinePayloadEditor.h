@@ -21,6 +21,7 @@ class EVENGINE_API_EDITORS ActionTimelinePayloadEditor {
 public:
     /** @brief Construct a transient payload editor over borrowed authoritative services. */
     ActionTimelinePayloadEditor(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry)
+        /** @brief Editor. */
         : editor_(editor), registry_(registry) {}
 
     /** @brief Return an owning copy of one editable notify or state payload. */

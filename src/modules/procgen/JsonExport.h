@@ -9,6 +9,7 @@ namespace eve::procgen {
 /** @brief Compact JSON for debugging / reload workflows (not full Tiled). */
 EVENGINE_API_DOMAINS std::string gridToJson(const Grid2D &grid);
 
+/** @brief Writes grid json. */
 bool writeGridJson(const Grid2D &grid, const std::string &path, std::string *error);
 
 }  // namespace eve::procgen

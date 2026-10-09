@@ -43,6 +43,7 @@ class EVENGINE_API_WORLD GraphicsMeshFactoryAdapter final : public graphics::IMe
 public:
     /** @brief Bind a borrowed graphics factory that must outlive this adapter. */
     explicit GraphicsMeshFactoryAdapter(graphics::IResourceFactory& factory) noexcept
+        /** @brief Factory. */
         : factory_(factory) {}
 
     /**
@@ -50,11 +51,13 @@ public:
      * @ownership Returned mesh remains owned by the bound graphics factory.
      * @lifetime Valid until release, backend shutdown, or device loss.
      */
+    /** @brief Uploads mesh. */
     [[nodiscard]] Result<graphics::Mesh*> uploadMesh(
         const float* posXYZ, const float* nrmXYZ, const float* uvST, int vertexCount,
         const std::uint32_t* indices, int indexCount) override;
 
     /** @copydoc graphics::IMeshResourceFactory::uploadMeshColored */
+    /** @brief Uploads mesh colored. */
     [[nodiscard]] Result<graphics::Mesh*> uploadMeshColored(
         const float* posXYZ, const float* nrmXYZ, const float* uvST, const float* colorRGBA,
         int vertexCount, const std::uint32_t* indices, int indexCount) override;
@@ -63,12 +66,15 @@ public:
      * @copydoc graphics::IMeshResourceFactory::releaseMesh
      * @param mesh Borrowed factory-owned mesh, observed only for this call.
      */
+    /** @brief Release mesh. */
     [[nodiscard]] Result<void> releaseMesh(graphics::Mesh* mesh) override;
 
     /** @copydoc graphics::IMeshResourceFactory::setMeshTexcoords */
+    /** @brief Sets the mesh texcoords. */
     [[nodiscard]] Result<void> setMeshTexcoords(graphics::Mesh* mesh, std::uint32_t set,
                                                 std::span<const float> values) override;
     /** @copydoc graphics::IMeshResourceFactory::setMeshTangentFrame */
+    /** @brief Sets the mesh tangent frame. */
     [[nodiscard]] Result<void> setMeshTangentFrame(graphics::Mesh* mesh, std::span<const float> tangents,
                                                    std::span<const float> bitangents) override;
 
@@ -82,6 +88,7 @@ public:
     /** @brief Bind a reader and backend factory; both must outlive this adapter. */
     EvpackGraphicsLoader(const asset::EvpackResourceReader& reader,
                          graphics::IMeshResourceFactory& factory) noexcept
+        /** @brief Reader. */
         : reader_(reader), factory_(factory) {}
 
     /**

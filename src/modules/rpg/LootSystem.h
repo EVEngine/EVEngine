@@ -42,10 +42,15 @@ struct LootTableDefinition {
  */
 class EVENGINE_API_PLATFORM LootSystem {
 public:
+    /** @brief Registers table. */
     static void registerTable(const LootTableDefinition &def);
+    /** @brief Registers tables from json. */
     static int registerTablesFromJson(const std::string &json);
+    /** @brief Finds . */
     static const LootTableDefinition *find(const std::string &id);
+    /** @brief Clears . */
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
 
     /**

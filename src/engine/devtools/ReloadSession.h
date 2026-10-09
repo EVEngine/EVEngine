@@ -27,6 +27,7 @@ namespace eve::dev {
  */
 class EVENGINE_API_FOUNDATION ReloadSession {
 public:
+    /** @brief Instance. */
     static ReloadSession& instance();
 
     ReloadSession(const ReloadSession&)            = delete;

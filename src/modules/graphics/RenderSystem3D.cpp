@@ -22,6 +22,7 @@
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
 
 #include <algorithm>
@@ -97,6 +98,7 @@ void collectLights3D(std::vector<PackedLight3D>& out, size_t maxCount) {
     auto view = ecs::View<Light3D, Light3D::Data>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [d] = *it;
+        d->shadowLocalSlot = -1;  // cleared each frame; selectShadowCasters reassigns
         if (!d->enabled) continue;
         if (d->volumetricOnly) continue;  // emissive proxies skip surface lighting
         PackedLight3D pl;
@@ -121,6 +123,38 @@ void promoteDirectional(std::vector<PackedLight3D>& packed) {
     }
 }
 
+void fillLight3DGpu(Light3DGpu& g, const Light3D::Data& d, bool isPoint) {
+    g.color = glm::vec4(d.r * d.intensity, d.g * d.intensity, d.b * d.intensity, 1.f);
+    g.spot  = glm::vec4(0.f, 0.f, 0.f, -1.f);
+    if (!isPoint) {
+        glm::vec3 dir(d.dx, d.dy, d.dz);
+        if (glm::length(dir) < 1e-6f)
+            dir = glm::vec3(0.f, 1.f, 0.f);
+        else
+            dir = glm::normalize(dir);
+        g.posRadius = glm::vec4(dir, 0.f);
+        return;
+    }
+    g.posRadius = glm::vec4(d.x, d.y, d.z, d.radius);
+    if (d.type != "spot") return;
+    float cosOuter = 0.f, cosInner = 0.f;
+    lightSpotCosines(d.spotAngleDeg, d.spotSoftness, cosOuter, cosInner);
+    const float scale = 1.f / std::max(cosInner - cosOuter, 1e-4f);
+    const float bias  = -cosOuter * scale;
+    glm::vec3 beam(d.dx, d.dy, d.dz);
+    if (glm::length(beam) < 1e-6f)
+        beam = glm::vec3(0.f, -1.f, 0.f);
+    else
+        beam = glm::normalize(beam);
+    // Encode local shadow slot in beam length: |beam| = 1 + (slot+1)/100.
+    // spotAttenuation3D normalizes; shaders decode the slot independently of
+    // packed vs clustered light indices (which diverge after CSM promotion).
+    if (d.shadowLocalSlot >= 0 && d.shadowLocalSlot < ShadowConfig::kLocalSlots)
+        beam *= 1.f + float(d.shadowLocalSlot + 1) * 0.01f;
+    g.spot    = glm::vec4(beam, scale);
+    g.color.a = bias;
+}
+
 Lighting3DPack packLights3D(const std::vector<PackedLight3D>& lights, const Camera3D::Data* cam) {
     Lighting3DPack pack{};
     if (cam) {
@@ -130,24 +164,14 @@ Lighting3DPack packLights3D(const std::vector<PackedLight3D>& lights, const Came
         pack.count               = 1;
         pack.lights[0].posRadius = glm::vec4(gLightDir, 0.f);
         pack.lights[0].color     = glm::vec4(gLightColor, 1.f);
+        pack.lights[0].spot      = glm::vec4(0.f, 0.f, 0.f, -1.f);
         return pack;
     }
     const int n = std::min(int(lights.size()), Lighting3DPack::kMaxLights);
     pack.count  = n;
     for (int i = 0; i < n; ++i) {
         const auto* d = lights[size_t(i)].data;
-        Light3DGpu& g = pack.lights[i];
-        g.color       = glm::vec4(d->r * d->intensity, d->g * d->intensity, d->b * d->intensity, 1.f);
-        if (lights[size_t(i)].isPoint) {
-            g.posRadius = glm::vec4(d->x, d->y, d->z, d->radius);
-        } else {
-            glm::vec3 dir(d->dx, d->dy, d->dz);
-            if (glm::length(dir) < 1e-6f)
-                dir = glm::vec3(0.f, 1.f, 0.f);
-            else
-                dir = glm::normalize(dir);
-            g.posRadius = glm::vec4(dir, 0.f);
-        }
+        fillLight3DGpu(pack.lights[i], *d, lights[size_t(i)].isPoint);
     }
     return pack;
 }
@@ -159,19 +183,11 @@ void splitLights(const std::vector<PackedLight3D>& packed, std::vector<Clustered
     for (const auto& pl : packed) {
         const auto*       d = pl.data;
         ClusteredLightGpu g{};
-        g.color = glm::vec4(d->r * d->intensity, d->g * d->intensity, d->b * d->intensity, 1.f);
-        if (pl.isPoint) {
-            g.posRadius = glm::vec4(d->x, d->y, d->z, d->radius);
+        fillLight3DGpu(g, *d, pl.isPoint);
+        if (pl.isPoint)
             points.push_back(g);
-        } else {
-            glm::vec3 dir(d->dx, d->dy, d->dz);
-            if (glm::length(dir) < 1e-6f)
-                dir = glm::vec3(0.f, 1.f, 0.f);
-            else
-                dir = glm::normalize(dir);
-            g.posRadius = glm::vec4(dir, 0.f);
+        else
             dirs.push_back(g);
-        }
     }
 }
 
@@ -527,17 +543,32 @@ void RenderSystem3D::addDecalExtraDrawer(DecalExtraDrawer drawer) {
 
 namespace {
 
-Light3D::Data* findShadowCasterDir(const std::vector<PackedLight3D>& packed) {
-    Light3D::Data* best  = nullptr;
-    float          bestI = -1.f;
+ShadowPagingView makeShadowPagingView(Camera3D* cam, float aspect) {
+    ShadowPagingView view{};
+    if (!cam) return view;
+    auto cd = cam->data();
+    view.eye = glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ);
+    const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
+    const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
+    const glm::mat4 v = glm::lookAtRH(view.eye, target, up);
+    const float fov = cd->fovYDeg * 0.017453292519943295f;
+    const glm::mat4 p = perspectiveVulkanRH_ZO(fov, std::max(aspect, 1e-3f), cd->nearZ, cd->farZ);
+    view.viewProj = p * v;
+    view.valid = true;
+    return view;
+}
+
+void selectFrameShadowCasters(const std::vector<PackedLight3D>& packed, const ShadowPagingView& view,
+                              Light3D::Data*& directionalCaster, std::vector<LocalShadowSlot>& localSlots) {
+    std::vector<Light3D::Data*> lights;
+    std::vector<bool>           isPoint;
+    lights.reserve(packed.size());
+    isPoint.reserve(packed.size());
     for (const auto& pl : packed) {
-        if (pl.isPoint || !pl.data || !pl.data->castShadow) continue;
-        if (pl.data->intensity > bestI) {
-            bestI = pl.data->intensity;
-            best  = pl.data;
-        }
+        lights.push_back(pl.data);
+        isPoint.push_back(pl.isPoint);
     }
-    return best;
+    selectShadowCasters(lights, isPoint, ShadowSchemeSettings::current(), view, directionalCaster, localSlots);
 }
 
 void prioritizeShadowCaster(std::vector<PackedLight3D>& packed, Light3D::Data* caster) {
@@ -695,11 +726,28 @@ void RenderSystem3D::render(Graphics& gfx) {
     std::vector<PackedLight3D> packed;
     collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
     promoteDirectional(packed);
-    Light3D::Data* shadowCaster = doShadow ? findShadowCasterDir(packed) : nullptr;
+    Light3D::Data*              shadowCaster = nullptr;
+    std::vector<LocalShadowSlot> localShadowSlots;
+    const float aspectEarly =
+        (gfx.getHeight() > 0) ? float(gfx.getWidth()) / float(gfx.getHeight()) : 1.f;
+    if (doShadow)
+        selectFrameShadowCasters(packed, makeShadowPagingView(defaultCam, aspectEarly), shadowCaster,
+                                 localShadowSlots);
     prioritizeShadowCaster(packed, shadowCaster);
+    // CSM promotion may swap packed indices; refresh local slot → light mapping.
+    for (LocalShadowSlot& slot : localShadowSlots) {
+        slot.lightIndex = -1;
+        if (!slot.light) continue;
+        for (size_t i = 0; i < packed.size() && i < size_t(Lighting3DPack::kMaxLights); ++i) {
+            if (packed[i].data == slot.light) {
+                slot.lightIndex = int(i);
+                break;
+            }
+        }
+    }
     const bool haveExtraShadowCasters = doShadow && !g_shadowDrawers.empty();
 
-    const float aspect = (gfx.getHeight() > 0) ? float(gfx.getWidth()) / float(gfx.getHeight()) : 1.f;
+    const float aspect = aspectEarly;
 
     ShadowUpload shadowUpload{};
     shadowUpload.active = false;
@@ -720,6 +768,27 @@ void RenderSystem3D::render(Graphics& gfx) {
             glm::vec3(cd->upX, cd->upY, cd->upZ), fovRad, aspect, cd->nearZ, cd->farZ, shadowBias, shadowStrength);
         for (int c = 0; c < ShadowConfig::kCascades; ++c)
             cascadeFrustums[c] = extractFrustum(shadowUpload.ubo.lightVP[c]);
+    } else if (!localShadowSlots.empty()) {
+        // Local-only frame: keep CSM inactive but still upload local VPs.
+        shadowUpload.active = true;
+        shadowUpload.ubo.bias = glm::vec4(0.002f, 0.f, 1.f, 0.02f);
+        shadowUpload.ubo.splits.w = 0.f;
+    }
+    if (!localShadowSlots.empty()) {
+        shadowUpload.active = true;
+        shadowUpload.ubo.localMeta =
+            glm::vec4(float(localShadowSlots.size()), 1.f, 0.f, 0.f);
+        shadowUpload.ubo.localSlot01 = glm::vec4(-1.f);
+        shadowUpload.ubo.localSlot23 = glm::vec4(-1.f);
+        for (size_t s = 0; s < localShadowSlots.size(); ++s) {
+            const LocalShadowSlot& slot = localShadowSlots[s];
+            shadowUpload.ubo.localVP[s] = slot.lightVP;
+            if (s < 4) shadowUpload.ubo.localBias[int(s)] = slot.bias;
+            if (slot.lightIndex >= 0 && slot.lightIndex < 8) {
+                glm::vec4& bank = slot.lightIndex < 4 ? shadowUpload.ubo.localSlot01 : shadowUpload.ubo.localSlot23;
+                bank[slot.lightIndex % 4] = float(s);
+            }
+        }
     }
     gfx.setMesh3DShadows(shadowUpload);
 
@@ -875,7 +944,8 @@ void RenderSystem3D::render(Graphics& gfx) {
                     item.inDefaultView = defaultCam ? cams[0].frustum.sphereVisible(item.worldC, item.worldR) : true;
                     const Camera3D::Data* shadowCamera   = defaultCam ? defaultCam->data().operator->() : cv.data;
                     const float           shadowDistance = shadowCamera->shadowLayerCullDistances[size_t(mr->layer)];
-                    if (shadowActive && castsShadow && (shadowDistance <= 0.f || dist <= shadowDistance)) {
+                    if (shadowCaster && shadowActive && castsShadow &&
+                        (shadowDistance <= 0.f || dist <= shadowDistance)) {
                         for (int c = 0; c < ShadowConfig::kCascades; ++c) {
                             if (cascadeFrustums[c].sphereVisible(item.worldC, item.worldR))
                                 item.cascadeMask |= (1u << c);
@@ -887,7 +957,8 @@ void RenderSystem3D::render(Graphics& gfx) {
                     item.inDefaultView                   = true;
                     const Camera3D::Data* shadowCamera   = defaultCam ? defaultCam->data().operator->() : cv.data;
                     const float           shadowDistance = shadowCamera->shadowLayerCullDistances[size_t(mr->layer)];
-                    if (shadowActive && castsShadow && (shadowDistance <= 0.f || dist <= shadowDistance))
+                    if (shadowCaster && shadowActive && castsShadow &&
+                        (shadowDistance <= 0.f || dist <= shadowDistance))
                         item.cascadeMask = (1u << ShadowConfig::kCascades) - 1u;
                 }
                 items.push_back(item);
@@ -923,7 +994,9 @@ void RenderSystem3D::render(Graphics& gfx) {
     }
 
     // CSM shadow passes — replay the collected casters, culled per cascade.
-    if (shadowActive && (haveManager || haveExtraShadowCasters)) {
+    // Extra drawers may run without a Light3D caster (default gLightDir CSM).
+    if (shadowActive && (shadowCaster || haveExtraShadowCasters) &&
+        (haveManager || haveExtraShadowCasters)) {
         auto cd = defaultCam->data();
         for (int c = 0; c < ShadowConfig::kCascades; ++c) {
             eve::debug::rtPassBegin("ShadowPass");
@@ -950,6 +1023,37 @@ void RenderSystem3D::render(Graphics& gfx) {
             for (const auto& entry : g_shadowDrawers) entry.drawer(gfx, shadowUpload.ubo.lightVP[c], *cd);
             gfx.endShadowPass();
             eve::debug::rtPassEnd("ShadowPass");
+        }
+    }
+
+    // Spot (perspective) local shadow slots — layers after the three CSM cascades.
+    // Paging may keep a slot resident without redrawing when needsUpdate is false.
+    if (doShadow && !localShadowSlots.empty() && (haveManager || haveExtraShadowCasters) && defaultCam) {
+        auto cd = defaultCam->data();
+        for (const LocalShadowSlot& slot : localShadowSlots) {
+            if (!slot.needsUpdate) continue;
+            eve::debug::rtPassBegin("LocalShadowPass");
+            gfx.beginShadowPass(slot.layer);
+            const FrustumPlanes localFrustum = extractFrustum(slot.lightVP);
+            for (const auto& item : items) {
+                if (item.surfaceMode == SurfaceMode::Transparent) continue;
+                // Approximate: draw every opaque caster inside the spot frustum.
+                const glm::vec3 center = glm::vec3(item.model[3]);
+                if (!localFrustum.sphereVisible(center, 2.f)) continue;
+                eve::debug::rtBind("mesh", "localShadowCaster");
+                Texture* shadowAlbedo = item.material ? item.material->getAlbedoTexture() : item.mr->texture;
+                const bool doubleSidedShadow =
+                    item.shadowDoubleSided || (item.material && item.material->getDoubleSided());
+                gfx.setMesh3DSkinInfluenceLimit(skinInfluenceLimit(item.skinInfluenceLimit));
+                if (item.surfaceMode == SurfaceMode::Masked)
+                    gfx.drawMeshShadowAlpha(item.mesh, slot.lightVP * item.model, shadowAlbedo, doubleSidedShadow,
+                                            item.lodWeight, item.lodFadeReverse, item.speedTreeFade);
+                else
+                    gfx.drawMeshShadow(item.mesh, slot.lightVP * item.model, doubleSidedShadow);
+            }
+            for (const auto& entry : g_shadowDrawers) entry.drawer(gfx, slot.lightVP, *cd);
+            gfx.endShadowPass();
+            eve::debug::rtPassEnd("LocalShadowPass");
         }
     }
 

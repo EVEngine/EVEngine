@@ -242,10 +242,12 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     # This lane builds and tests both Vulkan and native Dawn configurations.
-    # Run 37790882507 exhausted 180 minutes during the second build after the
-    # Vulkan build/tests passed. Budget for the 105-minute Dawn build plus its
-    # 40/30-minute test steps; retain every per-step limit as a hang guard.
-    timeout-minutes: 300
+    # A cold Windows runner needs more than 90 minutes for the two independent
+    # unit_test builds; keep the per-step limits below as the hang guards.
+    # The Vulkan and native Dawn lanes are both cold-built on Windows. Their
+    # existing per-step guards sum to more than three hours; keep the job
+    # ceiling above that sum so a healthy compile cannot be cancelled mid-way.
+    timeout-minutes: 360
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
@@ -412,8 +414,11 @@ jobs:
             } catch {
               Write-Host $_ -ForegroundColor Yellow
             }
-            Remove-Item -Recurse -Force build/webgpu-native/_deps/dawn-src/third_party/abseil-cpp -ErrorAction SilentlyContinue
-            Remove-Item -Force build/webgpu-native/CMakeCache.txt -ErrorAction SilentlyContinue
+            # A failed Dawn dependency fetch can leave dawn-src with a stale
+            # fetch stamp while the dependency directory is absent. Reusing
+            # that tree makes all retries repeat the same CMake error; reset
+            # the configure tree so the next attempt refetches dependencies.
+            Remove-Item -Recurse -Force build/webgpu-native -ErrorAction SilentlyContinue
             Start-Sleep -Seconds (10 * $attempt)
           }
           throw 'Dawn parity configure failed after 3 attempts'

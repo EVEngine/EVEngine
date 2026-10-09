@@ -47,6 +47,7 @@ public:
         map::Pathfinder& pathfinder, PathfinderCombatNavigationConfig config);
 
     /** @copydoc ICombatNavigationProvider::steer */
+    /** @brief Steer. */
     [[nodiscard]] Result<CombatNavigationSteering> steer(const CombatLocomotionState& state,
                                                           const CombatNavigationGoal& goal,
                                                           SimulationTick tick) override;

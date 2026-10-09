@@ -27,6 +27,7 @@ struct EVENGINE_API_PLATFORM ActionVfxBinding {
     double                clipEndTime        = 0.5;
     double                lifetimeSeconds    = 0.0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionVfxBinding&) const = default;
 
     /**

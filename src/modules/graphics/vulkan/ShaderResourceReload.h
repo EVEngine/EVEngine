@@ -11,6 +11,7 @@ std::uint32_t meshResourceInstanceCount(const GpuShader& shader);
  */
 EVENGINE_API_BACKENDS bool isMeshResourceImageShared(const GpuShader& first, std::uint32_t firstSlot,
                                                      const GpuShader& second, std::uint32_t secondSlot);
+/** @brief Validate mesh resource shader reload. */
 Result<void> validateMeshResourceShaderReload(const GpuShader& shader, std::span<const uint32_t> vertex,
                                               std::span<const uint32_t> fragment);
 }  // namespace eve::graphics::vulkan

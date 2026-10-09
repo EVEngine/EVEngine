@@ -24,6 +24,7 @@ namespace eve::rpg {
 class RPGActor;
 struct EffectDefinition;
 
+/** @brief EVENGINE_API_PLATFORM public API. */
 class EVENGINE_API_PLATFORM StatusSystem {
 public:
     /**
@@ -47,19 +48,31 @@ public:
     /** @brief 生命周期钩子：每次产生 StatusChangeEvent 时同步回调（在事件入队之后）。 */
     using LifecycleHook = std::function<void(const StatusChangeEvent &ev)>;
 
+    /** @brief Registers apply condition. */
     static void registerApplyCondition(const std::string &name, ApplyCondition fn);
+    /** @brief Unregisters apply condition. */
     static void unregisterApplyCondition(const std::string &name);
+    /** @brief True when apply condition. */
     static bool hasApplyCondition(const std::string &name);
+    /** @brief Clears apply conditions. */
     static void clearApplyConditions();
 
+    /** @brief Registers stack policy. */
     static void registerStackPolicy(const std::string &name, StackPolicyFn fn);
+    /** @brief Unregisters stack policy. */
     static void unregisterStackPolicy(const std::string &name);
+    /** @brief True when stack policy. */
     static bool hasStackPolicy(const std::string &name);
+    /** @brief Clears stack policies. */
     static void clearStackPolicies();
 
+    /** @brief Registers lifecycle hook. */
     static void registerLifecycleHook(const std::string &name, LifecycleHook fn);
+    /** @brief Unregisters lifecycle hook. */
     static void unregisterLifecycleHook(const std::string &name);
+    /** @brief True when lifecycle hook. */
     static bool hasLifecycleHook(const std::string &name);
+    /** @brief Clears lifecycle hooks. */
     static void clearLifecycleHooks();
 
     /**
@@ -86,19 +99,27 @@ public:
     /** @brief 移除该 actor 身上所有 tag 匹配（效果定义带该 tag）的实例；返回移除数量。 */
     static int removeByTag(RPGActor *actor, const std::string &tag);
 
+    /** @brief True when effect. */
     static bool hasEffect(RPGActor *actor, const std::string &effectId);
     /** @brief 是否存在任一效果定义带有该 tag 的活动实例。 */
     static bool hasTag(RPGActor *actor, const std::string &tag);
+    /** @brief Returns the active count. */
     static int getActiveCount(RPGActor *actor);
+    /** @brief Returns the active effect id. */
     static std::string getActiveEffectId(RPGActor *actor, int index);
+    /** @brief Returns the active stacks. */
     static int getActiveStacks(RPGActor *actor, int index);
+    /** @brief Returns the active remaining. */
     static float getActiveRemaining(RPGActor *actor, int index);
+    /** @brief Returns the active instance id. */
     static int getActiveInstanceId(RPGActor *actor, int index);
+    /** @brief Returns the active source. */
     static std::string getActiveSource(RPGActor *actor, int index);
 
     /** @brief 按实例 id 读写 props；找不到实例时 get 返回 fallback，set 返回 false。 */
     static std::string getProp(RPGActor *actor, int instanceId, const std::string &key,
                                const std::string &fallback = {});
+    /** @brief Sets the prop. */
     static bool setProp(RPGActor *actor, int instanceId, const std::string &key,
                         const std::string &value);
 

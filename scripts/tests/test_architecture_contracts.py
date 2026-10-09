@@ -18,6 +18,7 @@ class ArchitectureContractTests(unittest.TestCase):
     def test_repository_catalogue_covers_all_rules(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
         self.assertEqual([], contracts.validate_catalogue(metadata, today=date(2026, 8, 26)))
+        self.assertIn("module-interface", contracts.RULES)
 
     def test_module_interface_requires_six_faces_and_cost_contract(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
@@ -159,6 +160,7 @@ class ArchitectureContractTests(unittest.TestCase):
         captured: dict[str, str | None] = {}
         original_changed = contracts._changed_lines
         original_lint = contracts.lint_contract_coverage
+        original_module = contracts.lint_module_interface
 
         def fake_changed(base):
             captured["changed"] = base
@@ -168,16 +170,83 @@ class ArchitectureContractTests(unittest.TestCase):
             captured["lint"] = base
             return []
 
+        def fake_module(lines, metadata):
+            return []
+
         contracts._changed_lines = fake_changed
         contracts.lint_contract_coverage = fake_lint
+        contracts.lint_module_interface = fake_module
         try:
             contracts.main([])
         finally:
             contracts._changed_lines = original_changed
             contracts.lint_contract_coverage = original_lint
+            contracts.lint_module_interface = original_module
 
         self.assertEqual("HEAD", captured["changed"])
         self.assertEqual("HEAD", captured["lint"])
+
+    def test_valid_module_interface_fixture_has_cost(self):
+        path = ROOT / "scripts/tests/fixtures_architecture_contracts/valid_module_interface.h"
+        lines = [
+            contracts.SourceLine(path.relative_to(ROOT).as_posix(), number, text)
+            for number, text in enumerate(path.read_text(encoding="utf-8").splitlines(), 1)
+        ]
+        codes = {finding.code for finding in contracts.lint_module_interface(lines, {"entries": []})}
+        self.assertNotIn("missing-cost-annotation", codes)
+
+    def test_module_interface_gates_capability_hot_path_and_runtime_lookup(self):
+        metadata = {
+            "entries": [
+                {
+                    "rule": "module-interface",
+                    "scope": "src/modules/fixture/**",
+                    "provides": [{"capability": "IGreeter"}],
+                    "requires": [],
+                    "hot_path": ["src/modules/fixture/Hot.cpp"],
+                }
+            ]
+        }
+        lines = [
+            contracts.SourceLine(
+                "src/modules/fixture/Wire.cpp",
+                10,
+                "eve::cap::provide<IGreeter>(&g);",
+            ),
+            contracts.SourceLine(
+                "src/modules/fixture/Wire.cpp",
+                11,
+                "eve::cap::ProviderRef<IGpuTimer>::bind();",
+            ),
+            contracts.SourceLine(
+                "src/modules/fixture/Hot.cpp",
+                12,
+                "auto* q = eve::cap::query<ISceneQuery>();",
+            ),
+            contracts.SourceLine(
+                "src/modules/fixture/Runtime.cpp",
+                13,
+                "auto* mod = getModInst(eve::gfx, Graphics);",
+            ),
+            contracts.SourceLine(
+                "src/modules/fixture/Api.h",
+                14,
+                "std::vector<std::string> collectIds();",
+            ),
+        ]
+        findings = contracts.lint_module_interface(lines, metadata)
+        codes = {finding.code for finding in findings}
+        self.assertIn("capability-not-declared", codes)  # IGpuTimer missing from requires
+        self.assertIn("hot-path-forbidden-primitive", codes)
+        self.assertIn("runtime-convenience-lookup", codes)
+        self.assertIn("missing-cost-annotation", codes)
+        # Declared provide should not emit capability-not-declared for IGreeter.
+        self.assertFalse(
+            any(
+                finding.code == "capability-not-declared" and "IGreeter" in finding.message
+                for finding in findings
+            )
+        )
 
 
 if __name__ == "__main__":

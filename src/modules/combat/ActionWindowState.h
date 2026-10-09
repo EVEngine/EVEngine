@@ -34,6 +34,7 @@ class EVENGINE_API_BACKENDS CombatActionWindowState final : public action::IActi
 public:
     /** @brief Construct with a synchronous resolver copied into the state owner. */
     explicit CombatActionWindowState(ActionWindowSubjectResolver resolver);
+    /** @brief Combat action window state. */
     ~CombatActionWindowState() override;
 
     /** @brief Opt this owner into or out of Action state-window dispatch. */
@@ -48,12 +49,15 @@ public:
     /** @brief Return whether this exact owner is registered. */
     [[nodiscard]] bool enabled() const;
     /** @copydoc action::IActionStateWindowSink::supports */
+    /** @brief Supports. */
     [[nodiscard]] bool supports(action::ActionStateWindowKind kind) const noexcept override;
     /** @copydoc action::IActionStateWindowSink::enter */
+    /** @brief Enter. */
     [[nodiscard]] Result<void> enter(const action::ActionStateWindowBinding& binding,
                                      const action::ActionTimelineEvent& event,
                                      const action::ActionNotifyContext& context) override;
     /** @copydoc action::IActionStateWindowSink::exit */
+    /** @brief Exit. */
     [[nodiscard]] Result<void> exit(const action::ActionStateWindowBinding& binding,
                                     const action::ActionTimelineEvent& event,
                                     const action::ActionNotifyContext& context) override;

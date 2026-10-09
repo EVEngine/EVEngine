@@ -20,6 +20,7 @@ namespace eve::rpg {
 class Tracker;
 struct QuestDefinition;
 
+/** @brief EVENGINE_API_PLATFORM public API. */
 class EVENGINE_API_PLATFORM QuestSystem {
 public:
     /** @brief 补建 Registry 里尚不在 Tracker 上的条目，并解开前置已齐的 locked 条目。 */
@@ -48,6 +49,7 @@ public:
     static bool reset(Tracker *t, const std::string &id);
     /** @brief abandon/fail → failed；对 completed/failed/locked/未知 id 为 reject（compatibility facade (脚本兼容门面)）。 */
     static bool abandon(Tracker *t, const std::string &id);
+    /** @brief Fail. */
     static bool fail(Tracker *t, const std::string &id, const std::string &reason);
 
     /** @brief 把 Tracker 的 pending 移动并清空到 out。 */

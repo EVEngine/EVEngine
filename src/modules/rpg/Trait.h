@@ -35,13 +35,16 @@ struct EVENGINE_API_PLATFORM TraitDefinition {
     std::vector<std::string> tags;
     std::unordered_map<std::string, std::string> extra;
 
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the extra. */
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
 /** @brief 进程级特征定义注册表。 */
 class EVENGINE_API_PLATFORM TraitRegistry {
 public:
+    /** @brief Registers trait. */
     static void registerTrait(const TraitDefinition &def);
     /**
      * @brief Find a registered trait definition by id.
@@ -52,7 +55,9 @@ public:
     static const TraitDefinition *find(const std::string &id);
     /** @brief Remove a trait by id (compatibility facade returning whether it was present). */
     static bool remove(const std::string &id);
+    /** @brief Clears . */
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
 
     /** @brief 从 JSON 数组/对象批量注册，返回成功数量。元素形如：

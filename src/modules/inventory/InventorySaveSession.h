@@ -27,8 +27,11 @@ public:
      */
     class EVENGINE_API_FOUNDATION PreparedRestore {
     public:
+        /** @brief Prepared restore. */
         ~PreparedRestore();
+        /** @brief Prepared restore. */
         PreparedRestore(PreparedRestore &&) noexcept;
+        /** @brief Operator =. */
         PreparedRestore &operator=(PreparedRestore &&) noexcept;
         PreparedRestore(const PreparedRestore &) = delete;
         PreparedRestore &operator=(const PreparedRestore &) = delete;

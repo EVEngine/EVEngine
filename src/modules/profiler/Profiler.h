@@ -2,6 +2,8 @@
 #include "common/Export.h"
 
 
+#include "common/Capability.h"
+#include "common/GpuTimer.h"
 #include "common/Module.h"
 #include "common/Profile.h"
 #include "common/RenderTrace.h"
@@ -65,7 +67,9 @@ struct ProfilerFrameSnapshot {
 class EVENGINE_API_FOUNDATION Profiler : public Module, public eve::debug::IRenderTracer {
 public:
     Module_REG(Profiler);
+    /** @brief Profiler. */
     Profiler();
+    /** @brief Profiler. */
     ~Profiler() override;
 
     /** @brief Enables/disables engine-wide collection. Disabled = cheap no-op. */
@@ -113,17 +117,26 @@ public:
 
     // IRenderTracer: route render passes into the core as "graphics" zones and
     // drive automatic per-frame aggregation from the render frame boundary.
+    /** @brief Frame begin. */
     void frameBegin() override;
+    /** @brief Frame end. */
     void frameEnd() override;
+    /** @brief Pass begin. */
     void passBegin(const char* name) override;
+    /** @brief Pass end. */
     void passEnd(const char* name) override;
+    /** @brief Draws . */
     void draw(const char* api, const char* detail) override {}
 
 private:
+    /** @brief Resolve IGpuTimer once (retries while absent); never re-query once bound. */
+    void ensureGpuTimer() const;
+
     int64_t frameBeginNs_ = 0;
     float   frameMs_      = 0.f;
     uint64_t captureSequence_ = 0;
     HSQUIRRELVM vm_       = nullptr;
+    mutable eve::cap::ProviderRef<eve::service::IGpuTimer> gpuTimer_;
 };
 
 /**

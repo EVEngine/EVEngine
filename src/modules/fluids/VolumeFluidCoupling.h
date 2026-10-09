@@ -24,7 +24,9 @@ struct VolumeFluidThermalRule;
  */
 class EVENGINE_API_DOMAINS VolumeFluidCoupling final {
 public:
+    /** @brief Volume fluid coupling. */
     VolumeFluidCoupling();
+    /** @brief Volume fluid coupling. */
     ~VolumeFluidCoupling();
     VolumeFluidCoupling(const VolumeFluidCoupling&)            = delete;
     VolumeFluidCoupling& operator=(const VolumeFluidCoupling&) = delete;

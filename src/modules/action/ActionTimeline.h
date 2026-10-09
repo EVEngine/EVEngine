@@ -45,6 +45,7 @@ struct ActionMontageSettings {
     bool          rootMotionVertical   = true;
     bool          rootMotionRotation   = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionMontageSettings&) const = default;
 };
 
@@ -67,6 +68,7 @@ struct ActionAnimationSection {
     /** @brief Curve used for the incoming cross-fade. */
     ActionBlendCurve blendCurve = ActionBlendCurve::EaseInOut;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionAnimationSection&) const = default;
 };
 
@@ -101,6 +103,7 @@ struct ActionNotify {
     Value::Object payload;
     bool          enabled = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionNotify&) const = default;
 };
 
@@ -113,6 +116,7 @@ struct ActionNotifyState {
     Value::Object payload;
     bool          enabled = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionNotifyState&) const = default;
 };
 
@@ -126,6 +130,7 @@ struct ActionTrack {
     std::vector<ActionNotify>      notifies;
     std::vector<ActionNotifyState> states;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionTrack&) const = default;
 };
 
@@ -146,6 +151,7 @@ struct ActionTimelineEvent {
     Duration                time = Duration::zero();
     Value::Object           payload;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionTimelineEvent&) const = default;
 };
 
@@ -158,6 +164,7 @@ struct ActionActiveBlock {
     Duration      duration  = Duration::zero();
     Value::Object payload;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionActiveBlock&) const = default;
 };
 

@@ -14,6 +14,7 @@ namespace eve {
 class IFramePacing {
 public:
     static constexpr const char* capabilityName = "eve.frame-pacing";
+    /** @brief Releases IFramePacing resources. */
     virtual ~IFramePacing() = default;
 
     /** @brief Record the presentation VSync interval; zero means unsynchronized. */

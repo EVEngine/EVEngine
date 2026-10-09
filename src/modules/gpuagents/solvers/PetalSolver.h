@@ -8,7 +8,9 @@ namespace eve::gpuagents {
 /** @brief Passive petal rigid-body aerodynamic solver (CPU reference). */
 class EVENGINE_API_DOMAINS PetalSolver final : public IAgentSolver {
 public:
+    /** @brief Kind. */
     EffectKind kind() const override { return EffectKind::Petal; }
+    /** @brief Step. */
     void step(std::span<const AgentState> read, std::span<AgentState> write, const EffectProfile& profile,
               const EnvironmentSnapshot& env, float dt) override;
 };

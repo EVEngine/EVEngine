@@ -25,7 +25,9 @@ class SpriteSheet;
  */
 class EVENGINE_API_WORLD SpriteAnim {
 public:
+    /** @brief Sprite anim. */
     SpriteAnim();
+    /** @brief Sprite anim. */
     ~SpriteAnim();
 
     SpriteAnim(const SpriteAnim &)            = delete;
@@ -33,16 +35,23 @@ public:
 
     /** @brief Optional sheet used by applyToQuad / bindQuad. */
     void         setSheet(SpriteSheet *sheet);
+    /** @brief Returns the sheet. */
     SpriteSheet *getSheet() const { return sheet_; }
 
+    /** @brief Play. */
     void       play(SpriteClip *clip);
     /** @brief Start at the clip end and play backward (speed becomes negative). */
     void       playReverse(SpriteClip *clip);
+    /** @brief Stops . */
     void       stop();
+    /** @brief Pause. */
     void       pause();
+    /** @brief Resume. */
     void       resume();
 
+    /** @brief Sets the speed. */
     void  setSpeed(float speed);
+    /** @brief Returns the speed. */
     float getSpeed() const { return speed_; }
     /** @brief Add a piecewise-linear speed multiplier key at curve time in seconds. */
     void addSpeedCurveKey(float seconds, float multiplier);
@@ -56,18 +65,30 @@ public:
     void setSpeedCurveInterpolation(const std::string &mode);
     /** @brief Return the current sampled curve multiplier. */
     float getSpeedCurveValue() const;
+    /** @brief Sets the frame. */
     void setFrame(int clipFrame);
+    /** @brief Step. */
     void step(int frames);
+    /** @brief Play once. */
     void playOnce(SpriteClip *clip);
+    /** @brief Queue. */
     void queue(SpriteClip *clip);
+    /** @brief Consume event. */
     std::string consumeEvent();
+    /** @brief Sets the time. */
     void  setTime(float seconds);
+    /** @brief Returns the time. */
     float getTime() const { return time_; }
+    /** @brief Sets the loop. */
     void  setLoop(bool loop);
+    /** @brief Returns the loop. */
     bool  getLoop() const;
 
+    /** @brief True when playing. */
     bool isPlaying() const { return playing_ && !paused_; }
+    /** @brief True when paused. */
     bool isPaused() const { return paused_; }
+    /** @brief True when finished. */
     bool isFinished() const { return finished_; }
     /** @brief Return loop boundaries crossed since play started. */
     int  getLoopCount() const { return loopCount_; }
@@ -76,6 +97,7 @@ public:
     /** @brief Consume and clear pending loop events, returning their count. */
     int  consumeLooped();
 
+    /** @brief Returns the clip. */
     SpriteClip *getClip() const { return clip_; }
     /** @brief Index inside the current clip (0..clipFrameCount-1), or -1. */
     int getClipFrame() const { return clipFrame_; }
@@ -84,7 +106,9 @@ public:
 
     /** @brief Keep this Quad's viewport updated each update/play. */
     void           bindQuad(graphics::Quad *quad);
+    /** @brief Unbinds quad. */
     void           unbindQuad();
+    /** @brief Returns the bound quad. */
     graphics::Quad *getBoundQuad() const { return boundQuad_; }
     /** @brief Bind a Sprite2D so trimmed frame layout is synchronized automatically. */
     void bindSprite(graphics::Renderable2D *sprite);

@@ -63,6 +63,7 @@ class EVENGINE_API_FOUNDATION_INLINE IProcgenSceneSink {
 public:
     static constexpr const char* capabilityName = "IProcgenSceneSink";
 
+    /** @brief I procgen scene sink. */
     virtual ~IProcgenSceneSink() = default;
     /** @brief Create or reconcile all instances in a named batch. */
     virtual bool applyBatch(const std::string& batchId,

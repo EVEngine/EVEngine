@@ -39,6 +39,7 @@ class EVENGINE_API_BACKENDS EvpackSceneTemplateLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */
     explicit EvpackSceneTemplateLoader(const asset::EvpackResourceReader& reader) noexcept
+        /** @brief Reader. */
         : reader_(reader) {}
 
     /**

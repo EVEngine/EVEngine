@@ -91,17 +91,22 @@ public:
     DialogueStateMutationParticipant& operator=(const DialogueStateMutationParticipant&) = delete;
     DialogueStateMutationParticipant(DialogueStateMutationParticipant&&)                 = delete;
     DialogueStateMutationParticipant& operator=(DialogueStateMutationParticipant&&)      = delete;
+    /** @brief Releases DialogueStateMutationParticipant resources. */
     ~DialogueStateMutationParticipant() override                                         = default;
 
     /** @brief Stable diagnostic name. */
     [[nodiscard]] std::string_view name() const noexcept override { return "dialogue.state-mutation"; }
     /** @copydoc eve::transaction::ITransactionParticipant::prepare */
+    /** @brief Prepare. */
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::commit */
+    /** @brief Commits . */
     [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::rollback */
+    /** @brief Rollback. */
     [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::compensate */
+    /** @brief Compensate. */
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext& context) override;
 
 private:

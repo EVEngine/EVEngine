@@ -5,10 +5,14 @@
 #include "common/BorrowedRef.h"
 #include "editing/EditingProtocol.h"
 namespace eve::editing {
+/** @brief EditRegion public API. */
 struct EditRegion {
     int  minX = 0, minY = 0, maxX = -1, maxY = -1;
+    /** @brief Empty. */
     bool empty() const { return maxX < minX || maxY < minY; }
+    /** @brief Clears clear. */
     void clear() { *this = {}; }
+    /** @brief Include. */
     void include(int x, int y) {
         if (empty()) {
             minX = maxX = x;
@@ -20,9 +24,12 @@ struct EditRegion {
         if (y < minY) minY = y;
         if (y > maxY) maxY = y;
     }
+    /** @brief Include. */
     void include(const EditRegion& o) {
         if (!o.empty()) {
+            /** @brief Include. */
             include(o.minX, o.minY);
+            /** @brief Include. */
             include(o.maxX, o.maxY);
         }
     }
@@ -37,12 +44,18 @@ struct TargetDescriptor {
     std::vector<CapabilityId> capabilities;
 };
 
+/** @brief IEditableTarget public API. */
 class IEditableTarget {
 public:
+    /** @brief Releases IEditableTarget resources. */
     virtual ~IEditableTarget()                     = default;
+    /** @brief Target id. */
     virtual TargetId           targetId() const    = 0;
+    /** @brief Revision. */
     virtual std::uint64_t      revision() const    = 0;
+    /** @brief Dirty region. */
     virtual EditRegion         dirtyRegion() const = 0;
+    /** @brief Clears dirty region. */
     virtual void               clearDirtyRegion()  = 0;
     /** @brief Describe the target for tools and automation. */
     virtual TargetDescriptor describe() const {
@@ -65,29 +78,36 @@ public:
      * @lifetime Valid until this target is destroyed or the capability is explicitly invalidated.
      */
     template <class C>
+    /** @brief Capability. */
     eve::OptionalRef<C> capability() {
+        /** @brief Constexpr. */
         if constexpr (requires { C::editingCapabilityId(); }) {
             if (void* raw = queryCapability(C::editingCapabilityId()))
                 return eve::OptionalRef<C>(std::ref(*static_cast<C*>(raw)));
         }
+        /** @brief Constexpr. */
         if constexpr (std::is_polymorphic_v<C>) {
             if (auto* typed = dynamic_cast<C*>(this)) return eve::OptionalRef<C>(std::ref(*typed));
         }
         return {};
     }
     template <class C>
+    /** @brief Capability. */
     eve::OptionalRef<const C> capability() const {
+        /** @brief Constexpr. */
         if constexpr (std::is_polymorphic_v<C>) {
             if (auto* typed = dynamic_cast<const C*>(this)) return eve::OptionalRef<const C>(std::ref(*typed));
         }
         return {};
     }
     template <class C>
+    /** @brief Queries query. */
     C* query() {
         auto cap = capability<C>();
         return cap ? &cap->get() : nullptr;
     }
     template <class C>
+    /** @brief Queries query. */
     const C* query() const {
         auto cap = capability<C>();
         return cap ? &cap->get() : nullptr;
@@ -130,6 +150,7 @@ public:
 // point, so the suppression below covers them.
 #pragma warning(disable : 4250)
 #endif
+/** @brief EditableTargetState public API. */
 class EditableTargetState : public virtual IEditableTarget {
 public:
     /** @brief Constructs the shared state with an explicit initial revision. */
@@ -162,17 +183,23 @@ protected:
     void setDirtyRegion(const EditRegion& region) { dirty_ = region; }
     /** @brief Include one cell in the dirty region and advance the revision. */
     void markDirty(int x, int y) {
+        /** @brief Widen dirty. */
         widenDirty(x, y);
+        /** @brief Bump revision. */
         bumpRevision();
     }
     /** @brief Include a whole region and advance the revision. */
     void markDirty(const EditRegion& region) {
+        /** @brief Widen dirty. */
         widenDirty(region);
+        /** @brief Bump revision. */
         bumpRevision();
     }
     /** @brief Mark an unknown area dirty and advance the revision. */
     void markDirty() {
+        /** @brief Widen dirty. */
         widenDirty();
+        /** @brief Bump revision. */
         bumpRevision();
     }
 
@@ -180,30 +207,46 @@ private:
     EditRegion dirty_;
     Revision   revision_;
 };
+/** @brief FieldWriteStatus public API. */
 enum class FieldWriteStatus { Applied, Unchanged, Rejected };
+/** @brief IGridTarget public API. */
 class IGridTarget {
 public:
+    /** @brief Releases IGridTarget resources. */
     virtual ~IGridTarget()                    = default;
+    /** @brief Width. */
     virtual int  width() const                = 0;
+    /** @brief Height. */
     virtual int  height() const               = 0;
+    /** @brief True if cell. */
     virtual bool containsCell(int, int) const = 0;
 };
+/** @brief IIntFieldTarget public API. */
 class IIntFieldTarget : public virtual IGridTarget {
 public:
+    /** @brief Editing capability id. */
     static CapabilityId editingCapabilityId() { return CapabilityId("eve.editing.target.int-field.v1"); }
+    /** @brief Reads int. */
     virtual int  readInt(int, int) const = 0;
+    /** @brief Writes int. */
     [[nodiscard]] virtual FieldWriteStatus writeInt(int, int, int) = 0;
 };
+/** @brief IScalarFieldTarget public API. */
 class IScalarFieldTarget : public virtual IGridTarget {
 public:
+    /** @brief Editing capability id. */
     static CapabilityId editingCapabilityId() { return CapabilityId("eve.editing.target.scalar-field.v1"); }
+    /** @brief Reads scalar. */
     virtual float            readScalar(int, int) const       = 0;
+    /** @brief Writes scalar. */
     [[nodiscard]] virtual FieldWriteStatus writeScalar(int, int, float)     = 0;
+    /** @brief Sample scalar. */
     virtual float            sampleScalar(float, float) const = 0;
 };
 /** @brief Optional capability exposing a deterministic, persistence-safe editing snapshot. */
 class IEditingSnapshotProvider {
 public:
+    /** @brief Releases IEditingSnapshotProvider resources. */
     virtual ~IEditingSnapshotProvider() = default;
     /** @brief Stable capability identity shared by every editable domain target. */
     static CapabilityId editingCapabilityId() { return CapabilityId("eve.editing.target.snapshot.v1"); }

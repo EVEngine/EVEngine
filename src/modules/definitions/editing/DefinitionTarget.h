@@ -41,10 +41,13 @@ public:
 
     /** @brief Construct an empty JSON-object definition with stable identity. */
     DefinitionDocument(std::string type, std::string id, int version = 1);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(targetId_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId&) override { return nullptr; }
+    /** @brief Applies domain operation. */
     Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Atomically replace canonical payload text after basic JSON-shape validation. */
     Result<void> setJson(std::string json);

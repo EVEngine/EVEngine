@@ -72,6 +72,7 @@ struct TargetingSourceContext {
  */
 class ITargetingTask {
 public:
+    /** @brief Releases ITargetingTask resources. */
     virtual ~ITargetingTask() = default;
 
     /** @brief Stable task id used by presets (e.g. "sensing.filter.cone"). */
@@ -100,7 +101,9 @@ public:
     // unique_ptr, so the implicit copy assignment would be a hard C2280.
     TargetingPipeline(const TargetingPipeline&)            = delete;
     TargetingPipeline& operator=(const TargetingPipeline&) = delete;
+    /** @brief Targeting pipeline. */
     TargetingPipeline(TargetingPipeline&&)                 = default;
+    /** @brief Operator =. */
     TargetingPipeline& operator=(TargetingPipeline&&)      = default;
 
     /** @brief Creates a pipeline with built-in sensing tasks and one coneSelect preset. */

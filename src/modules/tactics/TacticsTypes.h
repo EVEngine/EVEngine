@@ -32,8 +32,11 @@ struct Cell {
     int y     = 0;
     int layer = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const Cell&, const Cell&) noexcept = default;
+    /** @brief Operator <=>. */
     friend auto operator<=>(const Cell& left, const Cell& right) noexcept {
+        /** @brief Tie. */
         return std::tie(left.y, left.x, left.layer) <=> std::tie(right.y, right.x, right.layer);
     }
 };
@@ -235,6 +238,7 @@ private:
 /** @brief Tactical side short-root entity. */
 class TacticalSide : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(TacticalSide, ecs::Entity)
 
     /** @brief Release through the ECS generation boundary. */
@@ -253,6 +257,7 @@ public:
 /** @brief Tactical unit short-root entity. */
 class TacticalUnit : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(TacticalUnit, ecs::Entity)
 
     /** @brief Release through the ECS generation boundary. */
@@ -438,6 +443,7 @@ struct ObjectiveState {
 /** @brief Battle short-root and authoritative owner of board and turn state. */
 class Battle : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Battle, ecs::Entity)
 
     /** @brief Release through the ECS generation boundary. */

@@ -37,7 +37,9 @@ public:
     [[nodiscard]] Result<int> commitScan();
     /** @brief Discard a candidate scan. */
     void cancelScan();
+    /** @brief Returns the terrain count. */
     int getTerrainCount() const noexcept;
+    /** @brief Returns the change count. */
     int getChangeCount() const noexcept;
     /** @brief Copy a changed terrain id by index. */
     [[nodiscard]] Result<std::string> getChangeTerrainId(int index) const;

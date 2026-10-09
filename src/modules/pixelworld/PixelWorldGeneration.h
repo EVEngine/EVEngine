@@ -44,6 +44,7 @@ struct PixelGeneratedChunkSummary {
     std::uint32_t caveCells = 0;
     std::uint32_t stampedCells = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const PixelGeneratedChunkSummary&,
                            const PixelGeneratedChunkSummary&) = default;
 };

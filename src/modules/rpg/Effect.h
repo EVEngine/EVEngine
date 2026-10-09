@@ -31,6 +31,7 @@ struct EffectModifierSpec {
     int priority = 0;
 };
 
+/** @brief EVENGINE_API_PLATFORM public API. */
 struct EVENGINE_API_PLATFORM EffectDefinition {
     std::string id;
 
@@ -56,13 +57,16 @@ struct EVENGINE_API_PLATFORM EffectDefinition {
     /** @brief 游戏自定义附加数据（图标路径、特效名、脚本钩子……）。 */
     std::unordered_map<std::string, std::string> extra;
 
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the extra. */
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
 /** @brief 全局效果定义表：进程级单例，供任意模块 / 脚本按 id 引用。 */
 class EVENGINE_API_PLATFORM EffectRegistry {
 public:
+    /** @brief Registers effect. */
     static void registerEffect(const EffectDefinition &def);
     /**
      * @brief Find a registered effect definition by id.
@@ -73,8 +77,11 @@ public:
      * @reentrancy The lookup does not invoke callbacks and is not valid across re-entrant registry mutation.
      */
     static const EffectDefinition *find(const std::string &id);
+    /** @brief Removes . */
     static bool remove(const std::string &id);
+    /** @brief Clears . */
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
 
     /**

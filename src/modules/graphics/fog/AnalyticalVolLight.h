@@ -14,6 +14,7 @@ namespace eve::graphics::fog {
 
 /** @brief Analytic beam volume: capped cone frustum or pyramidal spot. */
 struct AnalyticBeam {
+    /** @brief Shape public API. */
     enum class Shape : uint8_t { ConeFrustum = 0, PyramidFrustum = 1 };
 
     Shape shape = Shape::ConeFrustum;

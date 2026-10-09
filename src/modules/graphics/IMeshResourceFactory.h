@@ -14,6 +14,7 @@ class Mesh;
 /** @brief Backend-owned mesh upload and release operations. */
 class IMeshResourceFactory {
 public:
+    /** @brief Releases IMeshResourceFactory resources. */
     virtual ~IMeshResourceFactory() = default;
 
     /**
@@ -33,6 +34,7 @@ public:
      */
     [[nodiscard]] virtual Result<Mesh*> uploadMeshColored(const float*, const float*, const float*, const float*, int,
                                                           const std::uint32_t*, int) {
+        /** @brief Failure. */
         return Result<Mesh*>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "mesh provider does not support vertex colors"));
     }
@@ -43,6 +45,7 @@ public:
      */
     [[nodiscard]] virtual Result<void> setMeshTexcoords(Mesh*, std::uint32_t, std::span<const float>) {
         return Result<void>::failure(
+            /** @brief Error. */
             Diagnostic::error(DiagnosticCode::Unsupported, "mesh provider does not support additional UV streams"));
     }
     /** @brief Attach authored XYZ tangent and bitangent streams before mesh publication.
@@ -53,6 +56,7 @@ public:
      */
     [[nodiscard]] virtual Result<void> setMeshTangentFrame(Mesh*, std::span<const float>, std::span<const float>) {
         return Result<void>::failure(
+            /** @brief Error. */
             Diagnostic::error(DiagnosticCode::Unsupported, "mesh provider does not support authored tangent frames"));
     }
 

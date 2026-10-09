@@ -41,14 +41,20 @@ public:
     /** @brief Remove all media and integrated lighting without changing dimensions. */
     void clear();
 
+    /** @brief Returns the width. */
     int getWidth() const { return width_; }
+    /** @brief Returns the height. */
     int getHeight() const { return height_; }
+    /** @brief Returns the depth. */
     int getDepth() const { return depth_; }
+    /** @brief Returns the froxel count. */
     std::size_t getFroxelCount() const { return media_.size(); }
 
     /** @brief Configure the world-distance range represented by logarithmic Z slices. */
     void setDepthRange(float nearDistance, float farDistance);
+    /** @brief Returns the near distance. */
     float getNearDistance() const { return nearDistance_; }
+    /** @brief Returns the far distance. */
     float getFarDistance() const { return farDistance_; }
     /** @brief World distance at the center of a Z slice. */
     float sliceDistance(int z) const;
@@ -57,6 +63,7 @@ public:
 
     /** @brief Read or write one froxel; indices are clamped to the grid. */
     FogFroxel &at(int x, int y, int z);
+    /** @brief At. */
     const FogFroxel &at(int x, int y, int z) const;
 
     /**

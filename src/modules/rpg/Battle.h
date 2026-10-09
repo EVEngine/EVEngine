@@ -53,7 +53,9 @@ struct BattleEvent {
  */
 class EVENGINE_API_PLATFORM Battle {
 public:
+    /** @brief Battle. */
     Battle()  = default;
+    /** @brief Battle. */
     ~Battle() = default;
 
     Battle(const Battle&)            = delete;
@@ -115,13 +117,16 @@ public:
     bool isDefeat() const;
     /** @brief 玩家阵营 id（isVictory/isDefeat 依据），默认 0。 */
     void setPlayerSide(int side);
+    /** @brief Returns the player side. */
     int  getPlayerSide() const;
     /** @brief 获胜阵营 id；未结束或平局（双方全灭）返回 -1。 */
     int getWinnerSide() const;
     /** @brief 当前回合数（1 起）。 */
     int  getTurn() const;
+    /** @brief True when actor alive. */
     bool isActorAlive(RPGActor* actor) const;
 
+    /** @brief Returns the actor count. */
     int getActorCount() const;
     /**
      * @brief Return a participant actor by index, or null when out of range.
@@ -130,13 +135,19 @@ public:
      * @lifetime Valid until the actor or battle is destroyed; do not retain across rounds.
      */
     RPGActor* getActor(int index) const;
+    /** @brief Returns the side. */
     int       getSide(int index) const;
 
+    /** @brief Returns the event count. */
     int         getEventCount() const;
+    /** @brief Returns the event. */
     BattleEvent getEvent(int index) const;
+    /** @brief Polls events. */
     void        pollEvents();
     // 事件字段访问（脚本向）
+    /** @brief Returns the event action. */
     std::string getEventAction(int index) const;
+    /** @brief Returns the event skill id. */
     std::string getEventSkillId(int index) const;
     /**
      * @brief Return the caster of a polled event, or null when out of range.
@@ -152,7 +163,9 @@ public:
      * @lifetime Valid until the actor is destroyed; do not retain beyond the poll.
      */
     RPGActor* getEventTarget(int index) const;
+    /** @brief Returns the event amount. */
     double    getEventAmount(int index) const;
+    /** @brief Returns the event crit. */
     bool      getEventCrit(int index) const;
 
 private:

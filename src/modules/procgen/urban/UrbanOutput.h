@@ -27,6 +27,7 @@ bool parseUrbanOptions(const Params& params, UrbanOptions& opts, std::string& er
 
 /** @brief Register "urban.parcels" (Grid2D) and "mesh.urban" (MeshBuild) builtins. */
 void registerUrbanGenerators(GeneratorRegistry& registry);
+/** @brief Registers urban mesh recipes. */
 void registerUrbanMeshRecipes(MeshRecipeRegistry& registry);
 
 /** @brief Grid2D rasterization of the urban layout (Semantic::Road/Floor/Wall + parcel detail). */

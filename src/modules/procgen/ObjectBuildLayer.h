@@ -74,6 +74,7 @@ public:
     /** @brief Script-friendly child rule using uniform scale and yaw ranges. */
     [[nodiscard]] Result<void> addChild(std::string asset, int count, float radius, float minScale, float maxScale,
                                         float minYaw, float maxYaw);
+    /** @brief Clears child rules. */
     void                       clearChildRules();
 
     /**

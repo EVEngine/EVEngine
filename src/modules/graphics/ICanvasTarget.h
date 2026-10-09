@@ -5,6 +5,7 @@ class Canvas;
 /** @brief Narrow render-target binding boundary for optional tooling modules. */
 class ICanvasTarget {
 public:
+    /** @brief Releases ICanvasTarget resources. */
     virtual ~ICanvasTarget() = default;
     /** @brief Bind an offscreen Canvas, or nullptr to restore the screen target. */
     virtual void setCanvas(Canvas* canvas) = 0;

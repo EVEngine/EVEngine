@@ -14,6 +14,7 @@ namespace eve::daynight {
  */
 class EVENGINE_API_WORLD PcgLightingSkyboxPhotoMode final : public IPhotoModeFieldSink {
 public:
+    /** @brief Pcg lighting skybox photo mode. */
     ~PcgLightingSkyboxPhotoMode() override;
     /** @brief Attach a borrowed DayNight target and seed local state from it. */
     void setTarget(DayNight *target) noexcept;

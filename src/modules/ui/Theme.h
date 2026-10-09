@@ -123,6 +123,7 @@ struct EVENGINE_API_WORLD Theme {
 
     /** @brief Built-in presets with matching geometry; only colors differ. */
     static Theme dark();
+    /** @brief Light. */
     static Theme light();
 };
 
@@ -179,11 +180,14 @@ EVENGINE_API_WORLD void clearStyleClasses();
 /** @brief Stable script-facing spelling of a mutation status. */
 const char *styleClassStatusName(StyleClassStatus status);
 
+/** @brief Global theme. */
 EVENGINE_API_WORLD Theme &globalTheme();
 /** @brief Current preset name: "dark", "light", or "custom". */
 EVENGINE_API_WORLD const std::string &globalThemeName();
 
+/** @brief Sets the global theme. */
 EVENGINE_API_WORLD void setGlobalTheme(const Theme &theme);
+/** @brief Sets the global theme. */
 EVENGINE_API_WORLD void setGlobalTheme(const Theme &theme, const std::string &name);
 
 /** @brief Apply a named preset ("dark" / "light"). Case-insensitive. Returns false if unknown. */
@@ -191,16 +195,20 @@ bool setThemeByName(const std::string &name);
 
 /** @brief Logical (point-space) UI scale. Default 1.0. */
 EVENGINE_API_WORLD void  setThemeUiScale(float scale);
+/** @brief Theme ui scale. */
 EVENGINE_API_WORLD float themeUiScale();
 
 /** Display DPI ratio (e.g. 1.5 on Windows at 150%, 2.0 on Retina). The font
  *  atlas is rasterized at this resolution so glyphs stay crisp; UI scale and
  *  FontGlobalScale then preserve the intended logical size per platform. */
+/** @brief Sets the theme dpi scale. */
 void setThemeDpiScale(float dpiScale);
+/** @brief Theme dpi scale. */
 float themeDpiScale();
 
 /** @brief Push tokens into ImGui style. Metrics are multiplied by uiScale (default: themeUiScale()). */
 EVENGINE_API_WORLD void applyThemeToImGui(const Theme &theme);
+/** @brief Applies theme to im gui. */
 EVENGINE_API_WORLD void applyThemeToImGui(const Theme &theme, float uiScale);
 
 }  // namespace eve::ui

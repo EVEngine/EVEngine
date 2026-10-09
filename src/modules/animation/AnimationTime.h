@@ -13,16 +13,20 @@ namespace eve::animation::detail {
 inline eve::Result<float> secondsForStep(const eve::SimulationStep& step, bool hasLastTick,
                                          eve::SimulationTick lastTick, const char* owner) {
     if (step.delta.nanoseconds() < 0)
+        /** @brief Failure. */
         return eve::Result<float>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, std::string(owner) + " simulation delta must be non-negative"));
     if (hasLastTick && step.tick <= lastTick)
+        /** @brief Failure. */
         return eve::Result<float>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, std::string(owner) + " simulation tick must advance monotonically"));
 
     const float seconds = static_cast<float>(step.delta.seconds());
     if (!std::isfinite(seconds))
+        /** @brief Failure. */
         return eve::Result<float>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, std::string(owner) + " simulation delta is outside float range"));
+    /** @brief Success. */
     return eve::Result<float>::success(seconds);
 }
 
@@ -33,8 +37,10 @@ inline eve::Result<eve::SimulationStep> legacyStep(float seconds, bool hasLastTi
     if (!duration) return eve::Result<eve::SimulationStep>::failure(duration.status());
     auto nextTick = hasLastTick ? lastTick.incremented() : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
     if (!nextTick)
+        /** @brief Failure. */
         return eve::Result<eve::SimulationStep>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvariantViolation, std::string(owner) + " simulation tick overflow"));
+    /** @brief Success. */
     return eve::Result<eve::SimulationStep>::success(eve::SimulationStep{*nextTick, std::move(duration).takeValue()});
 }
 

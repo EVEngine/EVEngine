@@ -16,7 +16,9 @@
 namespace eve::climbing {
 
 namespace detail {
+/** @brief ClimbingServiceSubjectTag public API. */
 struct ClimbingServiceSubjectTag {};
+/** @brief ClimbingStaminaReservationTag public API. */
 struct ClimbingStaminaReservationTag {};
 }  // namespace detail
 
@@ -37,6 +39,7 @@ enum class ClimbingOptionalServiceState : std::uint8_t { Disabled, ProviderAbsen
 class IClimbingStaminaAuthority {
 public:
     static constexpr const char* capabilityName = "eve.climbing.stamina-authority.v1";
+    /** @brief Releases IClimbingStaminaAuthority resources. */
     virtual ~IClimbingStaminaAuthority() = default;
 
     /** @brief Stable adapter identity matched against ClimbingProfileDefinition::staminaAdapter. */
@@ -64,6 +67,7 @@ enum class ClimbingConditionDecision : std::uint8_t { Allowed, Denied };
 class IClimbingConditionAuthority {
 public:
     static constexpr const char* capabilityName = "eve.climbing.condition-authority.v1";
+    /** @brief Releases IClimbingConditionAuthority resources. */
     virtual ~IClimbingConditionAuthority() = default;
     /** @brief Evaluate every required tag for one subject at the injected simulation tick. */
     [[nodiscard]] virtual eve::Result<ClimbingConditionDecision> evaluate(
@@ -75,6 +79,7 @@ public:
 class IClimbingEventSink {
 public:
     static constexpr const char* capabilityName = "eve.climbing.event-sink.v1";
+    /** @brief Releases IClimbingEventSink resources. */
     virtual ~IClimbingEventSink() = default;
     /** @brief Consume an owning event view after all ECS simulation views have closed. */
     [[nodiscard]] virtual eve::Result<void> publish(ClimbingServiceSubject subject,
@@ -85,6 +90,7 @@ public:
 class IClimbingPoseAdapter {
 public:
     static constexpr const char* capabilityName = "eve.climbing.pose-adapter.v1";
+    /** @brief Releases IClimbingPoseAdapter resources. */
     virtual ~IClimbingPoseAdapter() = default;
     /** @brief Apply one derived pose projection; failure never invalidates authoritative climbing motion. */
     [[nodiscard]] virtual eve::Result<void> apply(ClimbingServiceSubject subject,

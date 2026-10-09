@@ -58,6 +58,7 @@ namespace sceneloader {
  *  - Move:    object exists in both but was re-parented.
  */
 struct SceneDiffEntry {
+    /** @brief Action public API. */
     enum class Action { Add, Remove, Modify, Move };
 
     Action action = Action::Add;
@@ -65,6 +66,7 @@ struct SceneDiffEntry {
     std::string parent;  // new parent id (Add / Move only).
 };
 
+/** @brief SceneDiff public API. */
 struct SceneDiff {
     std::vector<SceneDiffEntry> entries;
     int added = 0;
@@ -72,6 +74,7 @@ struct SceneDiff {
     int modified = 0;
     int moved = 0;
 
+    /** @brief Empty. */
     bool empty() const { return entries.empty(); }
 };
 
@@ -153,11 +156,13 @@ public:
 
     /** @brief Construct the loader and publish its optional action-block provider. */
     SceneLoader();
+    /** @brief Scene loader. */
     ~SceneLoader() override;
 
     /** @brief Full load: build the GameObject tree from `path`, mount it, return host. */
     scene::SceneHost *load(const std::string &path, bool linkRenderables = true,
                            const LoadOptions &options = {});
+    /** @brief Loads . */
     scene::SceneHost *load(const std::string &path, const LoadOptions &options);
     /** @brief Load with a built-in preset: quality, balanced, mobile, or raw. */
     scene::SceneHost *loadPreset(const std::string &path, const std::string &preset);
@@ -200,10 +205,12 @@ public:
      * Returns false when a load for `path` is already in flight.
      */
     bool loadAsync(const std::string &path, const LoadOptions &options = {},
+                   /** @brief Void. */
                    std::function<void(scene::SceneHost *)> done = nullptr);
 
     /** @brief Script-friendly async load using the default import preset. */
     bool loadAsyncDefault(const std::string &path) { return loadAsync(path); }
+    /** @brief Loads async preset. */
     bool loadAsyncPreset(const std::string &path, const std::string &preset);
 
     /**
@@ -243,16 +250,19 @@ public:
 
     /** @brief Number of imported Light3D entities for `path`; 0 if none / disabled. */
     int lightCount(const std::string &path);
+    /** @brief Light. */
     graphics::Light3D *light(const std::string &path, int index);
 
     /** @brief Number of imported Camera3D entities for `path`; 0 if none / disabled. */
     int cameraCount(const std::string &path);
+    /** @brief Camera. */
     graphics::Camera3D *camera(const std::string &path, int index);
 
     /** @brief Number of imported animation clips for `path`; 0 if none / disabled. */
     int animationCount(const std::string &path);
     /** @brief Imported skeleton for `path` (nullptr when the scene has no animations). */
     animation::AnimSkeleton *skeleton(const std::string &path);
+    /** @brief Clip. */
     animation::AnimClip *clip(const std::string &path, int index);
 
     // ---- pure tree helpers (no graphics required; unit-testable) ----
@@ -303,9 +313,13 @@ private:
     };
 
     struct DecodedScene {
+        /** @brief Constructs a DecodedScene. */
         DecodedScene();
+        /** @brief Releases DecodedScene resources. */
         ~DecodedScene();
+        /** @brief Constructs a DecodedScene. */
         DecodedScene(DecodedScene &&) noexcept;
+        /** @brief Operator =. */
         DecodedScene &operator=(DecodedScene &&) noexcept;
         DecodedScene(const DecodedScene &) = delete;
         DecodedScene &operator=(const DecodedScene &) = delete;
@@ -321,6 +335,7 @@ private:
         animation::AnimSkeleton *skeleton = nullptr;
         std::vector<animation::AnimClip *> clips;
         bool prewarmOnly = false;
+        /** @brief Void. */
         std::function<void(scene::SceneHost *)> done;
     };
 

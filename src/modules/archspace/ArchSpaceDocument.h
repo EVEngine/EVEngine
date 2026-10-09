@@ -21,10 +21,13 @@ namespace eve::archspace {
  */
 class EVENGINE_API_WORLD Document {
 public:
+    /** @brief Document. */
     Document() = default;
 
+    /** @brief Root id. */
     [[nodiscard]] const std::string&                           rootId() const noexcept { return rootId_; }
     [[nodiscard]] const std::unordered_map<std::string, Node>& nodes() const noexcept { return nodes_; }
+    /** @brief Node count. */
     [[nodiscard]] std::size_t                                  nodeCount() const noexcept { return nodes_.size(); }
 
     /**

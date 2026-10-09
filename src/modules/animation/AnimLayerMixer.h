@@ -136,10 +136,15 @@ public:
      * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
      */
     AnimSkeleton*                     getSkeleton() const override { return skeleton_; }
+    /** @brief True when current tick. */
     [[nodiscard]] bool                hasCurrentTick() const noexcept override { return hasLastTick_; }
+    /** @brief Current tick. */
     [[nodiscard]] eve::SimulationTick currentTick() const noexcept override { return lastTick_; }
+    /** @brief Returns the event count. */
     [[nodiscard]] int                 getEventCount() const override { return static_cast<int>(events_.size()); }
+    /** @brief Returns the event name. */
     [[nodiscard]] std::string         getEventName(int index) const override;
+    /** @brief Returns the event payload. */
     [[nodiscard]] std::string         getEventPayload(int index) const override;
 
     /** @brief Source layer name; "base" identifies the base source. */

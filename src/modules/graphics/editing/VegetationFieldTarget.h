@@ -25,29 +25,42 @@ public:
     [[nodiscard]] static editing::Result<std::unique_ptr<VegetationFieldTarget>> create(
         std::string id, graphics::VegetationField& field);
 
+    /** @brief Target id. */
     editing::TargetId         targetId() const override { return editing::TargetId(id_); }
+    /** @brief Revision. */
     std::uint64_t             revision() const override { return revision_; }
+    /** @brief Dirty region. */
     editing::EditRegion       dirtyRegion() const override { return dirty_; }
+    /** @brief Clears dirty region. */
     void                      clearDirtyRegion() override { dirty_.clear(); }
+    /** @brief Describe. */
     editing::TargetDescriptor describe() const override;
     /** @brief Query the vegetation property capability.
      * @return Borrowed pointer owned by this target, or null for an unknown capability.
      * @lifetime Valid until this target is destroyed.
      */
     void*                               queryCapability(const editing::CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     [[nodiscard]] editing::Result<void> applyDomainOperation(const editing::DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<editing::IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] editing::Result<void>                            commitDomainState(
         std::unique_ptr<editing::IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     [[nodiscard]] eve::Result<eve::Revision> currentRevision(
         const editing::SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     editing::PropertySchema     schema(const editing::SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     editing::PropertyReadResult read(const editing::SelectionSnapshot& selection,
                                      const editing::PropertyPath&      path) const override;
+    /** @brief Make set. */
     [[nodiscard]] editing::Result<editing::DomainOperation> makeSet(const editing::SelectionSnapshot& selection,
                                                                     const editing::PropertyPath&      path,
                                                                     const editing::Value&             value,
                                                                     editing::PropertySetMode mode) const override;
+    /** @brief Make reset. */
     [[nodiscard]] editing::Result<editing::DomainOperation> makeReset(const editing::SelectionSnapshot& selection,
                                                                       const editing::PropertyPath& path) const override;
 
@@ -63,6 +76,7 @@ public:
     std::vector<editing::StableId> elementIds() const;
 
 private:
+    /** @brief Entry public API. */
     struct Entry {
         editing::StableId           id;
         graphics::VegetationElement value;
@@ -82,7 +96,9 @@ private:
      * @lifetime Valid until the target is mutated or destroyed.
      */
     Entry*                                                  selected(const std::string& id);
+    /** @brief Validate and publish. */
     [[nodiscard]] editing::Result<void>                     validateAndPublish(const std::vector<Entry>& entries);
+    /** @brief Replacement. */
     [[nodiscard]] editing::Result<editing::DomainOperation> replacement(const Entry& before, const Entry& after,
                                                                         std::string property) const;
 

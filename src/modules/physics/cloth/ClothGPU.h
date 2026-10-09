@@ -40,13 +40,16 @@ public:
      * @param originX top-left particle X (pixels)
      * @param originY top-left particle Y (pixels)
      */
+    /** @brief Cloth gpu. */
     ClothGPU(eve::gpgpu::Gpgpu *gpgpu, int cols, int rows, float spacing, float originX,
              float originY);
+    /** @brief Cloth gpu. */
     ~ClothGPU();
 
     ClothGPU(const ClothGPU &)            = delete;
     ClothGPU &operator=(const ClothGPU &) = delete;
 
+    /** @brief Updates . */
     void update(float dt);
 
     /** @brief Advances the production GPU cloth with the shared ticked contract. */
@@ -68,24 +71,31 @@ public:
     [[nodiscard("check GPU cloth observation restore")]]
     eve::Result<void> restoreObservation(const SimulationObservation &observation) override;
 
+    /** @brief Sets the gravity. */
     void  setGravity(float gx, float gy);
+    /** @brief Returns the gravity x. */
     float getGravityX() const { return gravityX_; }
+    /** @brief Returns the gravity y. */
     float getGravityY() const { return gravityY_; }
 
     /** @brief Constraint relaxation strength in [0,1] (default 0.85). */
     void  setStiffness(float stiffness);
+    /** @brief Returns the stiffness. */
     float getStiffness() const { return stiffness_; }
 
     /** @brief Constraint solver iterations per substep (default 4). */
     void setIterations(int iterations);
+    /** @brief Returns the iterations. */
     int  getIterations() const { return iterations_; }
 
     /** @brief Damping applied to Verlet velocity [0,1] (default 0.01). */
     void  setDamping(float damping);
+    /** @brief Returns the damping. */
     float getDamping() const { return damping_; }
 
     /** @brief Particle draw size in pixels (default 3). */
     void  setParticleSize(float size);
+    /** @brief Returns the particle size. */
     float getParticleSize() const { return particleSize_; }
 
     /**
@@ -96,18 +106,25 @@ public:
      * of particles. Without bounds it falls back to an O(n²) scan.
      */
     void  setSelfCollision(bool on);
+    /** @brief Returns the self collision. */
     bool  getSelfCollision() const { return selfCollision_; }
 
     /** @brief Axis-aligned walls; particles are clamped (with a small bounce). */
     void setBounds(float x, float y, float w, float h);
+    /** @brief Clears bounds. */
     void clearBounds();
 
+    /** @brief Pin. */
     void pin(int index);
+    /** @brief Unpin. */
     void unpin(int index);
+    /** @brief Pin top row. */
     void pinTopRow();
+    /** @brief True when pinned. */
     bool isPinned(int index) const;
 
     /** Uniform wind / force impulse applied this frame (pixels/s²). */
+    /** @brief Applies force. */
     void applyForce(float fx, float fy);
 
     /**
@@ -116,28 +133,42 @@ public:
      */
     void interactAt(float x, float y, float radius, float strength);
 
+    /** @brief Sets the color. */
     void  setColor(float r, float g, float b, float a = 1.f);
+    /** @brief Returns the color r. */
     float getColorR() const { return colorR_; }
+    /** @brief Returns the color g. */
     float getColorG() const { return colorG_; }
+    /** @brief Returns the color b. */
     float getColorB() const { return colorB_; }
+    /** @brief Returns the color a. */
     float getColorA() const { return colorA_; }
 
     /** @brief Draw links + particles from the latest GPU readback. */
     void draw(graphics::Graphics *gfx);
 
+    /** @brief Returns the cols. */
     int   getCols() const { return cols_; }
+    /** @brief Returns the rows. */
     int   getRows() const { return rows_; }
+    /** @brief Returns the particle count. */
     int   getParticleCount() const { return cols_ * rows_; }
+    /** @brief Returns the particle x. */
     float getParticleX(int index) const;
+    /** @brief Returns the particle y. */
     float getParticleY(int index) const;
 
+    /** @brief Returns the spacing. */
     float getSpacing() const { return spacing_; }
+    /** @brief Returns the origin x. */
     float getOriginX() const { return originX_; }
+    /** @brief Returns the origin y. */
     float getOriginY() const { return originY_; }
 
     /** @brief Restore the flat grid pose (top row pinned) and re-upload state. */
     void reset();
 
+    /** @brief Destroys . */
     void destroy();
 
 private:
