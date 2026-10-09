@@ -1293,14 +1293,20 @@ public:
      * `metalStrength` / `emissiveStrength` gate the per-channel blend in
      * mesh3d.frag.
      * @param blendMode 0 = premultiplied over, 1 = additive (emissive).
-     * @param projectionMode 0 = planar (local.xy), 1 = triplanar (YZ/XZ/XY blend).
+     * @param projectionMode 0 = planar, 1 = local triplanar, 2 = spherical, 3 = world-aligned triplanar.
      * @param blendSharpness Triplanar normal-weight exponent (ignored when planar).
+     * @param parallaxScale POM depth in normalized decal UV units; zero disables POM.
+     * @param parallaxMinLayers Minimum POM samples at a perpendicular view.
+     * @param parallaxMaxLayers Maximum POM samples at a grazing view.
+     * @param edgeFadeWidth Normalized projection-volume edge feather in [0, 0.49].
      */
     virtual void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
                            Texture *params, const float uvRect[4], float fade,
                            float normalStrength, float roughnessStrength, float metalStrength,
                            float emissiveStrength, int blendMode = 0, int projectionMode = 0,
-                           float blendSharpness = 4.f) = 0;
+                           float blendSharpness = 4.f, float parallaxScale = 0.f,
+                           float parallaxMinLayers = 8.f, float parallaxMaxLayers = 24.f,
+                           float edgeFadeWidth = 0.06f) = 0;
     /** @brief Ends decal pass. */
     virtual void endDecalPass() = 0;
 
@@ -1941,6 +1947,18 @@ public:
      * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.
      */
     Water *newWater();
+    /** @brief Apply a source-derived foliage wind profile using graphics-owned shared field textures.
+     * The first successful call uploads one 1x1x9 neutral motion array and one deterministic 4x4 noise texture;
+     * subsequent calls reuse them. Existing PBR textures and translucency remain unchanged.
+     * @return Failure before material publication, or a validated object-motion snapshot.
+     * @ownership Material is borrowed; Graphics owns both shared textures until shutdown.
+     * @thread Render thread only; synchronous and callback-free.
+     * @cost First call performs two tiny GPU uploads; later calls copy one material snapshot.
+     */
+    [[nodiscard]] Result<void> configureFoliageWind(Material *material, float directionX, float directionZ,
+                                                    float strength, float bending, float bendingSpeed, float branch,
+                                                    float branchSpeed, float flutter, float flutterSpeed,
+                                                    float fadeDistance, float bendFactor);
     /** @brief Create an incremental six-face HDR reflection-probe capture.
      * @ownership The caller owns the returned capture object. */
     ReflectionProbeCapture *newReflectionProbeCapture();
@@ -2258,6 +2276,8 @@ protected:
     int reflectionCompositeWidth_ = 0;
     int reflectionCompositeHeight_ = 0;
     Texture *finalSceneTexture_ = nullptr;
+    Texture                                                *foliageWindMotionTexture_  = nullptr;
+    Texture                                                *foliageWindNoiseTexture_   = nullptr;
     std::unique_ptr<Outline> pipelineOutline_;
 
     /** @brief FXAA resolve shader that writes opaque RGB (ignores scene-color depth alpha). */

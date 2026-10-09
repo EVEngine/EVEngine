@@ -592,6 +592,8 @@ public:
     Texture *newTexture(image::ImageData *data) override;
     /** @brief Creates a texture. @ownership Caller deletes unless documented otherwise. */
     Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) override;
+    /** @brief Reuse immutable imported pixels. Graphics owns the returned texture until release or shutdown. */
+    [[nodiscard]] ResultRef<Texture> newSharedTexture(image::ImageData *data, const std::string &contentKey) override;
     /** @brief Sets the texture sampler. */
     void setTextureSampler(Texture *texture, const TextureSampler &sampler) override;
     /** @brief Returns the max anisotropy. */
@@ -972,7 +974,9 @@ public:
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
                    float metalStrength, float emissiveStrength, int blendMode = 0,
-                   int projectionMode = 0, float blendSharpness = 4.f) override;
+                   int projectionMode = 0, float blendSharpness = 4.f,
+                   float parallaxScale = 0.f, float parallaxMinLayers = 8.f,
+                   float parallaxMaxLayers = 24.f, float edgeFadeWidth = 0.06f) override;
     /** @brief Ends decal pass. */
     void endDecalPass() override;
 
@@ -1829,8 +1833,9 @@ private:
         glm::vec4 uvRect{0.f, 0.f, 1.f, 1.f};
         glm::vec4 fadeParams{1.f, 0.f, 0.f, 0.f};   // fade, normalStrength, roughStrength, metalStrength
         glm::vec4 extraParams{0.f, 0.f, 0.f, 0.f};  // emissive, blendMode, projectionMode, sharpness
+        glm::vec4 surfaceParams{0.f, 8.f, 24.f, 0.06f};  // POM scale/min/max, edge fade width
     };
-    static_assert(sizeof(DecalInstanceData) == 112, "DecalInstanceData must be 112 bytes");
+    static_assert(sizeof(DecalInstanceData) == 128, "DecalInstanceData must be 128 bytes");
     struct DecalCameraUBO {
         glm::mat4 viewProj{1.f};
         glm::mat4 invViewProj{1.f};
@@ -1850,8 +1855,12 @@ private:
         float metalStrength = 0.f;
         float emissiveStrength = 0.f;
         int blendMode = 0;       // 0 = premultiplied over, 1 = additive (emissive)
-        int projectionMode = 0;  // 0 = planar, 1 = triplanar
+        int projectionMode = 0;  // 0 = planar, 1 = local triplanar, 2 = spherical, 3 = world-aligned
         float blendSharpness = 4.f;
+        float parallaxScale = 0.f;
+        float parallaxMinLayers = 8.f;
+        float parallaxMaxLayers = 24.f;
+        float edgeFadeWidth = 0.06f;
     };
     struct DecalSetKey {
         GpuTexture *albedo = nullptr;
@@ -2161,6 +2170,7 @@ private:
     std::vector<std::unique_ptr<GpuTexture>> ownedGpuTextures;
     /** Path-normalized → Texture* for hot reload (stable pointers). */
     std::unordered_map<std::string, Texture *> texturesByPath;
+    std::unordered_map<std::string, Texture *>          sharedTexturesByContent;
     std::vector<std::unique_ptr<Mesh>> ownedMeshes;
     std::vector<std::unique_ptr<GpuMesh>> ownedGpuMeshes;
     std::vector<std::unique_ptr<Shader>> ownedShaders;

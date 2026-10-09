@@ -348,6 +348,8 @@ public:
     Texture *newTexture(image::ImageData *data) override;
     /** @brief Creates a texture. @ownership Caller deletes unless documented otherwise. */
     Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) override;
+    /** @brief Reuse immutable imported pixels. Graphics owns the returned texture until release or shutdown. */
+    [[nodiscard]] ResultRef<Texture> newSharedTexture(image::ImageData *data, const std::string &contentKey) override;
     /** @brief Sets the texture sampler. */
     void setTextureSampler(Texture *texture, const TextureSampler &sampler) override;
     /** @brief Returns the max anisotropy. */
@@ -697,7 +699,9 @@ public:
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
                    float metalStrength, float emissiveStrength, int blendMode = 0,
-                   int projectionMode = 0, float blendSharpness = 4.f) override;
+                   int projectionMode = 0, float blendSharpness = 4.f,
+                   float parallaxScale = 0.f, float parallaxMinLayers = 8.f,
+                   float parallaxMaxLayers = 24.f, float edgeFadeWidth = 0.06f) override;
     /** @brief Ends decal pass. */
     void endDecalPass() override;
     /** @brief Reads decal layer to image data. */
@@ -866,6 +870,7 @@ private:
         glm::vec4 uvRect{0.f, 0.f, 1.f, 1.f};
         glm::vec4 fadeParams{1.f, 0.f, 0.f, 0.f};
         glm::vec4 extraParams{0.f};
+        glm::vec4 surfaceParams{0.f, 8.f, 24.f, 0.06f};
     };
 
     void configureSurface(int width, int height);
@@ -1395,6 +1400,7 @@ private:
     std::vector<std::unique_ptr<Texture>> ownedTextures;
     std::vector<std::unique_ptr<GpuTexture>> ownedGpuTextures;
     std::unordered_map<std::string, Texture *> texturesByPath;
+    std::unordered_map<std::string, Texture *> sharedTexturesByContent;
     std::vector<std::unique_ptr<Mesh>> ownedMeshes;
     std::vector<std::unique_ptr<GpuMesh>> ownedGpuMeshes;
     std::vector<std::unique_ptr<Shader>> ownedShaders;

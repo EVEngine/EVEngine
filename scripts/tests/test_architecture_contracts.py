@@ -30,6 +30,16 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertTrue(any("missing binds" in error for error in errors))
         self.assertTrue(any("trim.absent_profile" in error for error in errors))
 
+    def test_module_interface_requires_typed_faces(self):
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        reduced = copy.deepcopy(metadata)
+        entry = next(item for item in reduced["entries"] if item["rule"] == "module-interface")
+        entry["binds"] = "undocumented"
+        del entry["trim"]
+        errors = contracts.validate_catalogue(reduced, today=date(2026, 8, 26))
+        self.assertTrue(any("binds must be an array" in error for error in errors))
+        self.assertTrue(any("missing trim" in error for error in errors))
+
     def test_missing_required_contract_field_is_rejected(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
         reduced = copy.deepcopy(metadata)
@@ -213,6 +223,15 @@ class ArchitectureContractTests(unittest.TestCase):
         ]
         codes = {finding.code for finding in contracts.lint_module_interface(lines, {"entries": []})}
         self.assertNotIn("missing-cost-annotation", codes)
+
+    def test_container_data_member_is_not_an_owned_return_api(self):
+        lines = [contracts.SourceLine("fixture.h", 1, "std::vector<ModuleConnector> connectors;")]
+        self.assertEqual([], contracts.lint_module_interface(lines, {"entries": []}))
+
+    def test_owned_container_method_still_requires_cost(self):
+        lines = [contracts.SourceLine("fixture.h", 1, "std::vector<ModuleConnector> connectors();")]
+        codes = {finding.code for finding in contracts.lint_module_interface(lines, {"entries": []})}
+        self.assertIn("missing-cost-annotation", codes)
 
     def test_module_interface_gates_capability_hot_path_and_runtime_lookup(self):
         metadata = {

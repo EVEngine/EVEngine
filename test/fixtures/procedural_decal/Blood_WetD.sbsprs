@@ -1,0 +1,30 @@
+<sbspresets formatversion="1.0" count="1"><sbspreset pkgurl="pkg://EV_ProceduralDecalV1_Standard" label="" >
+<presetinput identifier="$outputsize" uid="3539185287" type="8" value="11,11" />
+<presetinput identifier="$randomseed" uid="2239871189" type="4" value="2088" />
+<presetinput identifier="quality" uid="3168543074" type="4" value="1" />
+<presetinput identifier="a_amount" uid="3168543092" type="0" value="0.376" />
+<presetinput identifier="a_contrast" uid="3168543098" type="0" value="0.76" />
+<presetinput identifier="a_color" uid="3168543096" type="2" value="0.354167,0.0003682,0" />
+<presetinput identifier="a_color_value_variation" uid="3168542982" type="0" value="0.348" />
+<presetinput identifier="a_color_variation_type" uid="3168542978" type="0" value="0.421" />
+<presetinput identifier="a_roughness" uid="3168542976" type="0" value="0.027" />
+<presetinput identifier="a_rough_variation" uid="3168542990" type="0" value="0.035" />
+<presetinput identifier="a_rough_variation_type" uid="3168542988" type="0" value="0.469" />
+<presetinput identifier="a_normal" uid="3168542986" type="0" value="0.5" />
+<presetinput identifier="a_normal_softness" uid="3168542984" type="0" value="0.044" />
+<presetinput identifier="a_normal_trim" uid="3168542996" type="0" value="0.171" />
+<presetinput identifier="b_pattern" uid="3168543002" type="4" value="7" />
+<presetinput identifier="b_tweak" uid="3168543000" type="0" value="0.823" />
+<presetinput identifier="b_contrast" uid="3168543010" type="0" value="0.551" />
+<presetinput identifier="b_color" uid="3168543008" type="2" value="0.671875,0.000698498,0" />
+<presetinput identifier="b_color_opacity" uid="3168543022" type="0" value="0.546" />
+<presetinput identifier="b_color_blurbelow" uid="3168543020" type="0" value="0.911" />
+<presetinput identifier="b_color_value_variation" uid="3168543018" type="0" value="0.253" />
+<presetinput identifier="b_color_variation_type" uid="3168543030" type="0" value="1" />
+<presetinput identifier="b_roughness" uid="3168543028" type="0" value="0.049" />
+<presetinput identifier="b_normal" uid="3168543038" type="0" value="0.1" />
+<presetinput identifier="b_normal_thickness" uid="3168543034" type="0" value="1.841" />
+<presetinput identifier="b_normal_trim" uid="3168543174" type="0" value="0.316" />
+<presetinput identifier="b_mask_invert" uid="3168543168" type="4" value="1" />
+</sbspreset>
+</sbspresets>

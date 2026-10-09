@@ -731,6 +731,75 @@
       "hot_path": []
     },
     {
+      "id": "graphics-import-surface",
+      "rule": "module-interface",
+      "scope": "src/modules/graphics/**",
+      "owner": "graphics-maintainers",
+      "issue": "EVENGINE-MODULAR-ASSET-IMPORT",
+      "reason": "Changed import faces retain backend-owned shared textures and explicit foliage material state; existing faces are unchanged.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/IResourceFactory.h",
+        "src/modules/graphics/Graphics.h",
+        "docs/usr/modules/graphics.md"
+      ],
+      "tests": [
+        "test/resource_lifetime.cpp",
+        "test/graphics_vegetation_translucency.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IResourceFactory",
+          "impl": "vulkan::Graphics and webgpu::Graphics",
+          "absent_behavior": "Default newSharedTexture reports Unsupported; no implicit uncached allocation."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "image::ImageData",
+          "required": true,
+          "fallback": "Borrowed only during upload; invalid input returns InvalidArgument."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "graphics.Material",
+          "methods": [
+            "setFoliageTranslucency"
+          ]
+        },
+        {
+          "script_class": "graphics",
+          "methods": [
+            "configureFoliageWind",
+            "setFoliageWindTime"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Graphics owner thread; upload and material preparation do not invoke callbacks.",
+      "trim": {
+        "absent_profile": "No new trim claim: graphics is required by this visual project; reduced backend profiles require separate builds."
+      },
+      "cost_notes": [
+        {
+          "api": "newSharedTexture",
+          "shape": "owned-result",
+          "why": "ResultRef borrows backend cache ownership; upload cost is paid on first model preparation, never in a frame loop."
+        },
+        {
+          "api": "configureFoliageWind",
+          "shape": "two-step",
+          "why": "Prepare once, then explicit setFoliageWindTime updates per frame."
+        }
+      ],
+      "hot_path": [
+        "src/modules/graphics/RenderSystem3D.cpp"
+      ]
+    },
+    {
       "id": "hexmap-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/hexmap/**",
@@ -774,6 +843,57 @@
       ]
     },
     {
+      "id": "model3d-import-surface",
+      "rule": "module-interface",
+      "scope": "src/modules/model3d/**",
+      "owner": "model3d-maintainers",
+      "issue": "EVENGINE-MODULAR-ASSET-IMPORT",
+      "reason": "Changed model import face prepares foliage metadata and consumes the graphics-owned texture cache through the existing factory interface.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/model3d/Model3D.h",
+        "src/modules/model3d/ModelRenderer.cpp",
+        "docs/usr/modules/model3d.md"
+      ],
+      "tests": [
+        "test/model3d.cpp",
+        "test/resource_lifetime.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "graphics::IResourceFactory",
+          "required": true,
+          "fallback": "Import consumes ResultRef; failed upload follows the established missing-texture import path."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "model3d.Model3D",
+          "methods": [
+            "prepareFoliageDeformation"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Model preparation and texture upload on graphics owner thread.",
+      "trim": {
+        "absent_profile": "No new L1/L2/L3/L4 trim claim; graphics remains an existing mandatory dependency."
+      },
+      "cost_notes": [
+        {
+          "api": "prepareFoliageDeformation",
+          "shape": "two-step",
+          "why": "Model-load-time vertex preparation precedes rendering and per-frame wind updates."
+        }
+      ],
+      "hot_path": [
+        "src/modules/model3d/ModelRenderer.cpp"
+      ]
+    },
+    {
       "id": "module-interface-policy",
       "rule": "module-interface",
       "scope": "src/**",
@@ -798,6 +918,67 @@
         "absent_profile": "policy envelope only; concrete modules declare their trim profile"
       },
       "thread_affinity": "policy envelope; concrete modules declare affinity",
+      "hot_path": []
+    },
+    {
+      "id": "procgen-module-assembly-surface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/ModuleAssembly*",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-MODULAR-ASSET-IMPORT",
+      "reason": "New assembly value owner validates declarative constraints before publishing placements; it has no scene, graphics or physics dependency.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/ModuleAssembly.h",
+        "docs/usr/modules/procgen.md"
+      ],
+      "tests": [
+        "test/procgen_module_assembly.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.ProcgenModuleAssemblyPlan",
+          "methods": [
+            "configure",
+            "applyConfigJson",
+            "setAllowedQuarterTurns",
+            "setMinimumSupportRatio",
+            "registerModule",
+            "registerVolumeModule",
+            "addConnector",
+            "addVolumeConnector",
+            "place",
+            "getPlacementCount",
+            "getPlacementModule",
+            "getPlacementX",
+            "getPlacementY",
+            "getPlacementZ",
+            "getPlacementYawDegrees"
+          ]
+        }
+      ],
+      "protocol": [
+        {
+          "method": "applyConfigJson",
+          "shape": "eve.procgen.module-assembly version 1; strict unknown fields; candidate validation before atomic replacement; placements not persisted."
+        }
+      ],
+      "thread_affinity": "Caller-affine; script binding runs on VM owner thread; no callbacks or locks.",
+      "trim": {
+        "absent_profile": "No trim claim until a procgen-core-only build exercises the new TU; all constraints are graphics-independent value data."
+      },
+      "cost_notes": [
+        {
+          "api": "applyConfigJson then place",
+          "shape": "two-step",
+          "why": "One-time configuration precedes candidate placement; accepted placements are exposed by borrowed read-only view."
+        }
+      ],
       "hot_path": []
     },
     {

@@ -844,7 +844,7 @@ def lint_module_interface(lines: list[SourceLine], metadata: Mapping[str, Any]) 
         # G-5: expensive or owning-container public APIs need @cost.
         if item.path.endswith((".h", ".hpp")) and not _is_non_public_declaration(item):
             expensive = bool(
-                (OWNED_CONTAINER_RETURN.search(text) and not OWNED_CONTAINER_MEMBER.search(text))
+                ("(" in text and OWNED_CONTAINER_RETURN.search(text) and not OWNED_CONTAINER_MEMBER.search(text))
                 or EXPENSIVE_API_NAME.search(text)
             )
             if expensive and not re.search(r"@cost\b", context, re.IGNORECASE):

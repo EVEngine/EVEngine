@@ -178,6 +178,14 @@ graphics::Renderable3D *Model3D::createRenderable(graphics::Graphics *gfx, Model
     return buildRenderable(*gfx, model, meshIndex);
 }
 
+eve::Result<void> Model3D::prepareFoliageDeformation(ModelData *model, int meshIndex,
+                                                     graphics::Renderable3D *renderable) {
+    if (!model || !renderable)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "model and renderable are required", "model3d.foliage-deformation"));
+    return model3d::prepareFoliageDeformation(*model, meshIndex, *renderable);
+}
+
 bool Model3D::bakeModel(const std::string &sourcePath, const std::string &destinationPath) {
     if (sourcePath.empty() || destinationPath.empty()) return false;
     filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
@@ -360,6 +368,10 @@ void Model3D::expose(ssq::Class &cls) {
     cls.addFunc("newModelDataFromFile",
                 static_cast<ModelData *(Model3D::*)(std::string)>(&Model3D::newModelDataFromFile));
     cls.addFunc("createRenderable", &Model3D::createRenderable);
+    cls.addFunc("prepareFoliageDeformation", [vm = cls.getHandle()](Model3D *self, ModelData *model, int meshIndex,
+                                                                    graphics::Renderable3D *renderable) {
+        return script::projectResult(vm, self->prepareFoliageDeformation(model, meshIndex, renderable));
+    });
     cls.addFunc("bakeModel", &Model3D::bakeModel);
 }
 
