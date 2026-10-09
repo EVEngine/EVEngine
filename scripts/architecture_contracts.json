@@ -1030,251 +1030,6 @@
       "failure_injection": "prepare, commit, rollback, restore and capability-loss failures are injected and assert no partial publication."
     },
     {
-      "id": "devtools-soft-restart-module-interface",
-      "rule": "module-interface",
-      "scope": "src/engine/devtools/**",
-      "owner": "devtools::SoftRestart",
-      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
-      "reason": "Soft restart walks every registered IStateProvider via forEach so game state resets without clearing ResourceManager.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "src/engine/devtools/SoftRestart.cpp",
-        "src/engine/common/IStateProvider.h",
-        "docs/dev/AI与MCP支持.md"
-      ],
-      "tests": [
-        "test/mcp_soft_restart.cpp",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "provides": [],
-      "requires": [
-        {
-          "capability": "IStateProvider",
-          "required": false,
-          "fallback": "empty forEach set: soft restart still reloads scripts / calls eve_init; no native providers reset"
-        }
-      ],
-      "emits": [],
-      "observes": [],
-      "binds": [],
-      "trim": {
-        "absent_profile": "devtools soft-restart remains available; IStateProvider listeners may be empty when modules are trimmed"
-      },
-      "thread_affinity": "main / MCP poll thread that owns the VM; forEach is not cross-thread",
-      "hot_path": []
-    },
-    {
-      "id": "module-interface-policy",
-      "rule": "module-interface",
-      "scope": "src/**",
-      "owner": "engine-maintainers",
-      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
-      "reason": "Changed-line gate requires path-scoped module-interface entries for new capability wiring, forbids runtime convenience lookups and hot_path primitives, and demands @cost on expensive public APIs.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "docs/dev/模块接口契约与机制选型规范.md",
-        "scripts/check_architecture_contracts.py"
-      ],
-      "tests": [
-        "scripts/tests/test_architecture_contracts.py",
-        "scripts/tests/fixtures_architecture_contracts/valid_module_interface.h"
-      ],
-      "provides": [],
-      "requires": [],
-      "emits": [],
-      "observes": [],
-      "binds": [],
-      "trim": {
-        "absent_profile": "policy envelope only; concrete modules declare their trim profile"
-      },
-      "thread_affinity": "policy envelope; concrete modules declare affinity",
-      "hot_path": []
-    },
-    {
-      "id": "profiler-module-interface",
-      "rule": "module-interface",
-      "scope": "src/modules/profiler/**",
-      "owner": "profiler::Profiler",
-      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
-      "reason": "Profiler caches IGpuTimer via ProviderRef and publishes IProfilerQuery; beginFrame/gpu timing are hot paths.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "src/modules/profiler/Profiler.h",
-        "src/modules/profiler/ProfilerCapabilities.cpp"
-      ],
-      "tests": [
-        "test/profiler.cpp",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "provides": [
-        {
-          "capability": "IProfilerQuery",
-          "impl": "ProfilerCapabilities",
-          "absent_behavior": "cap::query returns null when the module is trimmed"
-        }
-      ],
-      "requires": [
-        {
-          "capability": "IGpuTimer",
-          "required": false,
-          "fallback": "gpu timing fields stay zero / unavailable when the provider is absent"
-        }
-      ],
-      "emits": [],
-      "observes": [],
-      "binds": [
-        {
-          "script_class": "eve.Profiler",
-          "methods": [
-            "beginFrame",
-            "endFrame",
-            "snapshot"
-          ]
-        }
-      ],
-      "trim": {
-        "absent_profile": "runtime profiles may omit profiler; GPU timing consumers must tolerate absence"
-      },
-      "thread_affinity": "main / render thread that owns beginFrame; ProviderRef is not cross-thread",
-      "hot_path": [
-        "src/modules/profiler/Profiler.cpp"
-      ]
-    },
-    {
-      "id": "scene-module-interface",
-      "rule": "module-interface",
-      "scope": "src/modules/scene/**",
-      "owner": "scene::Scene",
-      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
-      "reason": "Scene publishes ISceneQuery/IProcgenSceneSink/spatial listeners and hosts per-frame TransformSystem work.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "src/modules/scene/SceneCapabilities.cpp",
-        "docs/dev/场景对象模型使用指南.md"
-      ],
-      "tests": [
-        "test/scene.cpp",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "provides": [
-        {
-          "capability": "ISceneQuery",
-          "impl": "SceneCapabilities",
-          "absent_behavior": "query returns null when scene is trimmed"
-        },
-        {
-          "capability": "IProcgenSceneSink",
-          "impl": "SceneCapabilities",
-          "absent_behavior": "procgen scene sink absent when scene is trimmed"
-        },
-        {
-          "capability": "IEntitySpatialProvider",
-          "impl": "SceneEntitySpatialProvider",
-          "absent_behavior": "listener removed with the module"
-        },
-        {
-          "capability": "ISceneArtifactAdapter",
-          "impl": "ArtifactProvider",
-          "absent_behavior": "artifact adapter absent when scene is trimmed"
-        }
-      ],
-      "requires": [
-        {
-          "capability": "ISceneCameraProjection",
-          "required": false,
-          "fallback": "camera query helpers return empty/default when projection provider is absent"
-        }
-      ],
-      "emits": [],
-      "observes": [],
-      "binds": [
-        {
-          "script_class": "eve.Scene",
-          "methods": [
-            "mount",
-            "update",
-            "scheduleDetachEntityAt",
-            "collectIds"
-          ]
-        }
-      ],
-      "trim": {
-        "absent_profile": "runtime-3d without scene drops ISceneQuery and script eve.Scene"
-      },
-      "thread_affinity": "main thread for mount/update/script; spatial resolve follows ECS current world",
-      "hot_path": [
-        "src/modules/scene/TransformSystem.cpp"
-      ]
-    },
-    {
-      "id": "statepatch-module-interface",
-      "rule": "module-interface",
-      "scope": "src/modules/statepatch/**",
-      "owner": "statepatch::StatePatchModule",
-      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
-      "reason": "Each live StatePatch store registers IStateQuery/IStateMutation listeners so DialogueState and other consumers resolve world state.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "src/modules/statepatch/StatePatch.cpp",
-        "src/modules/statepatch/StateAccessAdapter.h"
-      ],
-      "tests": [
-        "test/statepatch.cpp",
-        "test/dialogue_state_integration.cpp",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "provides": [
-        {
-          "capability": "IStateQuery",
-          "impl": "StatePatchStateAdapter",
-          "absent_behavior": "listener removed with the store; forEach sees remaining adapters"
-        },
-        {
-          "capability": "IStateMutation",
-          "impl": "StatePatchStateAdapter",
-          "absent_behavior": "same lifecycle as IStateQuery"
-        }
-      ],
-      "requires": [],
-      "emits": [],
-      "observes": [],
-      "binds": [
-        {
-          "script_class": "eve.StatePatch",
-          "methods": [
-            "create",
-            "destroy",
-            "apply"
-          ]
-        }
-      ],
-      "trim": {
-        "absent_profile": "profiles without statepatch leave IStateQuery/IStateMutation listener sets empty"
-      },
-      "thread_affinity": "main thread; capability listener register/remove is not thread-safe",
-      "hot_path": []
-    },
-    {
-      "id": "quality-debt-policy",
-      "rule": "debt-metadata",
-      "scope": "scripts/**",
-      "owner": "engine-maintainers",
-      "issue": "EVENGINE-QUALITY-DEBT",
-      "reason": "All explicit debt has owner, issue, reason, expiry and zero net-growth budget; the existing gate remains authoritative.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "scripts/check_quality_metadata.py",
-        "scripts/quality_debt_allowlist.json",
-        "scripts/quality_debt_baseline.json"
-      ],
-      "tests": [
-        "scripts/tests/test_quality_metadata.py",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "removal_condition": "remove the debt entry when the corresponding migration or documentation is complete; expiry forces review before renewal.",
-      "max_net_growth": 0
-    },
-    {
       "id": "crowd-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/crowd/Crowd*",
@@ -1407,6 +1162,123 @@
       ]
     },
     {
+      "id": "devtools-soft-restart-module-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/**",
+      "owner": "devtools::SoftRestart",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Soft restart walks every registered IStateProvider via forEach so game state resets without clearing ResourceManager.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/SoftRestart.cpp",
+        "src/engine/common/IStateProvider.h",
+        "docs/dev/AI与MCP支持.md"
+      ],
+      "tests": [
+        "test/mcp_soft_restart.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IStateProvider",
+          "required": false,
+          "fallback": "empty forEach set: soft restart still reloads scripts / calls eve_init; no native providers reset"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "devtools soft-restart remains available; IStateProvider listeners may be empty when modules are trimmed"
+      },
+      "thread_affinity": "main / MCP poll thread that owns the VM; forEach is not cross-thread",
+      "hot_path": [],
+      "protocol": [],
+      "cost_notes": []
+    },
+    {
+      "id": "module-interface-policy",
+      "rule": "module-interface",
+      "scope": "src/**",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Changed-line gate requires path-scoped module-interface entries for new capability wiring, forbids runtime convenience lookups and hot_path primitives, and demands @cost on expensive public APIs.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/模块接口契约与机制选型规范.md",
+        "scripts/check_architecture_contracts.py"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py",
+        "scripts/tests/fixtures_architecture_contracts/valid_module_interface.h"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "policy envelope only; concrete modules declare their trim profile"
+      },
+      "thread_affinity": "policy envelope; concrete modules declare affinity",
+      "hot_path": [],
+      "protocol": [],
+      "cost_notes": []
+    },
+    {
+      "id": "profiler-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/profiler/**",
+      "owner": "profiler::Profiler",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Profiler caches IGpuTimer via ProviderRef and publishes IProfilerQuery; beginFrame/gpu timing are hot paths.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/profiler/Profiler.h",
+        "src/modules/profiler/ProfilerCapabilities.cpp"
+      ],
+      "tests": [
+        "test/profiler.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IProfilerQuery",
+          "impl": "ProfilerCapabilities",
+          "absent_behavior": "cap::query returns null when the module is trimmed"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IGpuTimer",
+          "required": false,
+          "fallback": "gpu timing fields stay zero / unavailable when the provider is absent"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Profiler",
+          "methods": [
+            "beginFrame",
+            "endFrame",
+            "snapshot"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "runtime profiles may omit profiler; GPU timing consumers must tolerate absence"
+      },
+      "thread_affinity": "main / render thread that owns beginFrame; ProviderRef is not cross-thread",
+      "hot_path": [
+        "src/modules/profiler/Profiler.cpp"
+      ],
+      "protocol": [],
+      "cost_notes": []
+    },
+    {
       "id": "rts-movement-group-interface",
       "rule": "module-interface",
       "scope": "src/modules/rts/RTSMovementGroups.cpp",
@@ -1458,6 +1330,144 @@
         "src/modules/rts/RTSMovementGroups.cpp",
         "src/modules/rts/RTSFormationClearance.cpp"
       ]
+    },
+    {
+      "id": "scene-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/scene/**",
+      "owner": "scene::Scene",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Scene publishes ISceneQuery/IProcgenSceneSink/spatial listeners and hosts per-frame TransformSystem work.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/SceneCapabilities.cpp",
+        "docs/dev/场景对象模型使用指南.md"
+      ],
+      "tests": [
+        "test/scene.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "ISceneQuery",
+          "impl": "SceneCapabilities",
+          "absent_behavior": "query returns null when scene is trimmed"
+        },
+        {
+          "capability": "IProcgenSceneSink",
+          "impl": "SceneCapabilities",
+          "absent_behavior": "procgen scene sink absent when scene is trimmed"
+        },
+        {
+          "capability": "IEntitySpatialProvider",
+          "impl": "SceneEntitySpatialProvider",
+          "absent_behavior": "listener removed with the module"
+        },
+        {
+          "capability": "ISceneArtifactAdapter",
+          "impl": "ArtifactProvider",
+          "absent_behavior": "artifact adapter absent when scene is trimmed"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "ISceneCameraProjection",
+          "required": false,
+          "fallback": "camera query helpers return empty/default when projection provider is absent"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Scene",
+          "methods": [
+            "mount",
+            "update",
+            "scheduleDetachEntityAt",
+            "collectIds"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "runtime-3d without scene drops ISceneQuery and script eve.Scene"
+      },
+      "thread_affinity": "main thread for mount/update/script; spatial resolve follows ECS current world",
+      "hot_path": [
+        "src/modules/scene/TransformSystem.cpp"
+      ],
+      "protocol": [],
+      "cost_notes": []
+    },
+    {
+      "id": "statepatch-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/statepatch/**",
+      "owner": "statepatch::StatePatchModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Each live StatePatch store registers IStateQuery/IStateMutation listeners so DialogueState and other consumers resolve world state.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/statepatch/StatePatch.cpp",
+        "src/modules/statepatch/StateAccessAdapter.h"
+      ],
+      "tests": [
+        "test/statepatch.cpp",
+        "test/dialogue_state_integration.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IStateQuery",
+          "impl": "StatePatchStateAdapter",
+          "absent_behavior": "listener removed with the store; forEach sees remaining adapters"
+        },
+        {
+          "capability": "IStateMutation",
+          "impl": "StatePatchStateAdapter",
+          "absent_behavior": "same lifecycle as IStateQuery"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.StatePatch",
+          "methods": [
+            "create",
+            "destroy",
+            "apply"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without statepatch leave IStateQuery/IStateMutation listener sets empty"
+      },
+      "thread_affinity": "main thread; capability listener register/remove is not thread-safe",
+      "hot_path": [],
+      "protocol": [],
+      "cost_notes": []
+    },
+    {
+      "id": "quality-debt-policy",
+      "rule": "debt-metadata",
+      "scope": "scripts/**",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-QUALITY-DEBT",
+      "reason": "All explicit debt has owner, issue, reason, expiry and zero net-growth budget; the existing gate remains authoritative.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "scripts/check_quality_metadata.py",
+        "scripts/quality_debt_allowlist.json",
+        "scripts/quality_debt_baseline.json"
+      ],
+      "tests": [
+        "scripts/tests/test_quality_metadata.py",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "removal_condition": "remove the debt entry when the corresponding migration or documentation is complete; expiry forces review before renewal.",
+      "max_net_growth": 0
     }
   ]
 }

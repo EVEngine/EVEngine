@@ -70,7 +70,10 @@ struct SpawnRequest {
     AgentInteraction interaction;
 };
 
-/** @brief Caller-built transaction; positive budgets bound search and relaxation. */
+/**
+ * @brief Caller-built transaction; positive budgets bound search and relaxation.
+ * @cost Linear in requested agents plus bounded candidate/contact checks; callers amortize by batching spawns.
+ */
 struct SpawnBatch {
     std::vector<SpawnRequest> agents;
     SpawnPolicy               policy        = SpawnPolicy::PushNeighbors;
@@ -86,7 +89,10 @@ struct SpawnPlacement {
     float       x = 0.f, y = 0.f;
 };
 
-/** @brief Observations from a committed spawn transaction. */
+/**
+ * @brief Observations from a committed spawn transaction.
+ * @cost Linear in created placement count; returned by value once per spawn batch.
+ */
 struct SpawnReceipt {
     std::vector<SpawnPlacement> created;
     int                         displacedAgents = 0;

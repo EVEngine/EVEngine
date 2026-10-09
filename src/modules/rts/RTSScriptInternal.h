@@ -13,6 +13,10 @@ inline Result<SubjectRef> parseScriptSubject(std::string_view text, std::string_
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*parsed));
 }
 
+/**
+ * @brief Parse script UUID strings into stable subjects.
+ * @cost Linear in subject count; allocates one output vector for script boundary conversion.
+ */
 inline Result<std::vector<SubjectRef>> parseScriptSubjects(const std::vector<std::string>& texts) {
     std::vector<SubjectRef> subjects;
     subjects.reserve(texts.size());

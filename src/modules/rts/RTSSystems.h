@@ -41,7 +41,10 @@ struct FormationSpec {
     [[nodiscard]] EVENGINE_API_DOMAINS Result<void> validate() const;
 };
 
-/** @brief Caller-built admission batch for an immediate coordinated Move command. */
+/**
+ * @brief Caller-built admission batch for an immediate coordinated Move command.
+ * @cost Linear in unit count; callers own and pass stable identities once per command admission.
+ */
 struct MovementGroupBatch {
     std::vector<SubjectRef> units;  ///< Owned stable identities; no entity pointers are retained.
     WorldPosition           target;

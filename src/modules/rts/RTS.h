@@ -511,6 +511,10 @@ public:
     [[nodiscard]] std::size_t matchCount() const noexcept;
 
 private:
+    /**
+     * @brief Runtime movement-group cache.
+     * @cost Linear in group member count for handles and epoch snapshots; rebuilt at command/restore boundaries.
+     */
     struct MovementGroup {
         RTSMovementGroupSnapshot       state;
         std::vector<ecs::EntityHandle> handles;
@@ -518,7 +522,15 @@ private:
     };
     std::vector<MovementGroup>                                  movementGroups_;
     [[nodiscard]] Result<std::size_t>                           stepMovementGroups();
+    /**
+     * @brief Capture stable movement-group snapshots.
+     * @cost Linear in active movement groups and their member counts; intended for checkpoint boundaries.
+     */
     [[nodiscard]] Result<std::vector<RTSMovementGroupSnapshot>> captureMovementGroups() const;
+    /**
+     * @brief Prepare runtime movement-group caches from a snapshot.
+     * @cost Linear in saved movement groups and their member counts; resolves handles during restore.
+     */
     [[nodiscard]] Result<std::vector<MovementGroup>> prepareMovementGroups(const RTSStateSnapshot& snapshot) const;
     struct GameplayRuntime;
     [[nodiscard]] Player* resolvePlayer(SubjectRef subject) const noexcept;

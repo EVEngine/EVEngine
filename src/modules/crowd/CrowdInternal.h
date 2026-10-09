@@ -9,6 +9,11 @@
 
 namespace eve::crowd {
 
+/**
+ * @brief Private crowd runtime storage.
+ * @cost Linear in agent count for SOA vectors and transient broadphase/avoidance work buffers; capacity is bounded
+ * by maxAgents.
+ */
 struct Crowd::Impl {
     CrowdField field;
 
@@ -35,8 +40,16 @@ struct Crowd::Impl {
         size_t slot;
         double distance2;
     };
+    /**
+ * @brief Per-step avoidance neighbor scratch space.
+ * @cost Linear in checked neighbors and bounded by avoidance work limits.
+ */
     std::vector<AvoidanceNeighbor> avoidanceNeighbors;
 
+    /**
+ * @brief SOA agent storage, indexed by compact slot id.
+ * @cost Linear in agent count; mutation keeps all owned vectors aligned.
+ */
     // SOA 单位存储（id = 槽位索引）。
     std::vector<float>                   xs, ys, headings, vxs, vys, speeds;
     std::vector<float>                   nextVxs, nextVys, correctionXs, correctionYs;
@@ -50,6 +63,10 @@ struct Crowd::Impl {
     std::vector<std::string>             stableIds;
     std::unordered_map<std::string, int> namedAgents;
 
+    /**
+ * @brief Per-frame counting-sort broadphase workspace.
+ * @cost Linear in grid cells plus agent count when rebuilt.
+ */
     // 每帧重建的计数排序空间网格。
     std::vector<int32_t> cellCount, cellStart, cursor, sorted;
     int                  gridW       = 0;
