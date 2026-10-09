@@ -1,8 +1,4 @@
 #include "graphics/Graphics.h"
-#include "graphics/Bloom.h"
-#include "graphics/DepthOfField.h"
-#include "graphics/Exposure.h"
-#include "graphics/DepthPyramid.h"
 #include "common/Capability.h"
 #include "common/SquirrelBinding.h"
 #include "common/config.h"
@@ -15,10 +11,10 @@
 #include "graphics/Exposure.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/Grass.h"
-#include "graphics/HairShader.h"
 #include "graphics/HairCards.h"
-#include "graphics/hair/GroomInstance.h"
+#include "graphics/HairShader.h"
 #include "graphics/TreeWind.h"
+#include "graphics/hair/GroomInstance.h"
 
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
@@ -40,6 +36,7 @@
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
+#include "graphics/PcgWaterPhotoMode.h"
 #include "graphics/PrimitiveScene.h"
 #include "graphics/PrimitiveScriptBindings.h"
 #include "graphics/Quad.h"
@@ -55,12 +52,12 @@
 #include "graphics/VegetationScriptBindings.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
-#include "graphics/PcgWaterPhotoMode.h"
 #include "graphics/WaterPlanarReflection.h"
 #include "graphics/WaterReflectionMasker.h"
 #include "graphics/WaterSystem.h"
 #include "graphics/WaterUnderwaterEffects.h"
 #include "graphics/Waterfall.h"
+#include "image/ImageData.h"
 
 #ifndef EVENGINE_WEBGPU
 #include "font/FontData.h"
@@ -582,6 +579,17 @@ void Graphics::expose(ssq::Table& table) {
         table.addClass<Material>("Material", std::function<Material*()>([]() -> Material* { return nullptr; }), true);
     material.addFunc("setShadingModel", &Material::setShadingModel);
     material.addFunc("getShadingModel", &Material::getShadingModel);
+    material.addFunc(
+        "setFoliageTranslucency",
+        [vm = table.getHandle()](Material* self, float red, float green, float blue, float intensity, float strength,
+                                 float normalDistortion, float scattering, float direct, float ambient, float shadow) {
+            return eve::script::projectResult(
+                vm, self->setFoliageTranslucency(red, green, blue, intensity, strength, normalDistortion, scattering,
+                                                 direct, ambient, shadow));
+        });
+    material.addFunc("setFoliageWindTime", [vm = table.getHandle()](Material* self, float seconds) {
+        return eve::script::projectResult(vm, self->setFoliageWindTime(seconds));
+    });
     material.addFunc("setAlbedoTexture", &Material::setAlbedoTexture);
     material.addFunc("getAlbedoTexture", &Material::getAlbedoTexture);
     material.addFunc("setNormalTexture", &Material::setNormalTexture);
@@ -865,8 +873,7 @@ void Graphics::expose(ssq::Table& table) {
     foliage.addVar("snowR", &grass::GrassFoliageSettings::snowR);
     foliage.addVar("snowG", &grass::GrassFoliageSettings::snowG);
     foliage.addVar("snowB", &grass::GrassFoliageSettings::snowB);
-    auto detailOverwrite =
-        table.addClass<grass::TerrainDetailOverwriteSettings>("TerrainDetailOverwriteSettings");
+    auto detailOverwrite = table.addClass<grass::TerrainDetailOverwriteSettings>("TerrainDetailOverwriteSettings");
     detailOverwrite.addVar("pcgDetailDistance", &grass::TerrainDetailOverwriteSettings::pcgDetailDistance);
     detailOverwrite.addVar("pcgFadeoutDistance", &grass::TerrainDetailOverwriteSettings::pcgFadeoutDistance);
     detailOverwrite.addVar("unityDetailDistance", &grass::TerrainDetailOverwriteSettings::unityDetailDistance);
@@ -893,26 +900,26 @@ void Graphics::expose(ssq::Table& table) {
     grassField.addFunc("getAtlas", &GrassField::getAtlas);
     grassField.addFunc("getDenseCount", &GrassField::getDenseCount);
     grassField.addFunc("getSparseCount", &GrassField::getSparseCount);
-    grassField.addFunc("setTerrainDetailOverwrite",
-                       [vm = table.getHandle()](GrassField* field,
-                                                const grass::TerrainDetailOverwriteSettings& settings) {
-        return eve::script::projectResult(vm, field->setTerrainDetailOverwrite(settings),
-                                          [](int value) { return value; });
-    });
+    grassField.addFunc(
+        "setTerrainDetailOverwrite",
+        [vm = table.getHandle()](GrassField* field, const grass::TerrainDetailOverwriteSettings& settings) {
+            return eve::script::projectResult(vm, field->setTerrainDetailOverwrite(settings),
+                                              [](int value) { return value; });
+        });
     grassField.addFunc("getTerrainDetailHardDistance",
                        [](const GrassField* field) { return field->getTerrainDetailHardDistance(); });
     grassField.addFunc("getTerrainDetailDensity",
                        [](const GrassField* field) { return field->getTerrainDetailDensity(); });
     grassField.addFunc("setPhotoModeAuthority", &GrassField::setPhotoModeAuthority);
-    grassField.addFunc("getPhotoModeDensity", [](const GrassField* field){return field->getPhotoModeDensity();});
-    grassField.addFunc("getPhotoModeDistance", [](const GrassField* field){return field->getPhotoModeDistance();});
-    grassField.addFunc("getPhotoModeCellDistance", [](const GrassField* field){return field->getPhotoModeCellDistance();});
-    grassField.addFunc("getPhotoModeCellSubdivision", [](const GrassField* field){return field->getPhotoModeCellSubdivision();});
+    grassField.addFunc("getPhotoModeDensity", [](const GrassField* field) { return field->getPhotoModeDensity(); });
+    grassField.addFunc("getPhotoModeDistance", [](const GrassField* field) { return field->getPhotoModeDistance(); });
+    grassField.addFunc("getPhotoModeCellDistance",
+                       [](const GrassField* field) { return field->getPhotoModeCellDistance(); });
+    grassField.addFunc("getPhotoModeCellSubdivision",
+                       [](const GrassField* field) { return field->getPhotoModeCellSubdivision(); });
 
     auto groomInstance = table.addClass<hair::GroomInstance>(
-        "GroomInstance",
-        std::function<hair::GroomInstance *()>([]() -> hair::GroomInstance * { return nullptr; }),
-        true);
+        "GroomInstance", std::function<hair::GroomInstance*()>([]() -> hair::GroomInstance* { return nullptr; }), true);
     // Fallible bake/rebuild stay C++-only (Result); scripts use factory + draw getters.
     groomInstance.addFunc("draw", static_cast<void (hair::GroomInstance::*)()>(&hair::GroomInstance::draw));
     groomInstance.addFunc("setForcedLod", &hair::GroomInstance::setForcedLod);
@@ -1063,9 +1070,10 @@ void Graphics::expose(ssq::Table& table) {
     probeRegistry.addFunc("getLastCandidateCount", &ReflectionProbeRegistry::getLastCandidateCount);
     probeRegistry.addFunc("setDistanceCullingEnabled", &ReflectionProbeRegistry::setDistanceCullingEnabled);
     probeRegistry.addFunc("getDistanceCullingEnabled", &ReflectionProbeRegistry::getDistanceCullingEnabled);
-    probeRegistry.addFunc("setMaxRenderDistance", [vm=table.getHandle()](ReflectionProbeRegistry* self,float distance){
-        return eve::script::projectResult(vm,self->setMaxRenderDistance(distance));
-    });
+    probeRegistry.addFunc("setMaxRenderDistance",
+                          [vm = table.getHandle()](ReflectionProbeRegistry* self, float distance) {
+                              return eve::script::projectResult(vm, self->setMaxRenderDistance(distance));
+                          });
     probeRegistry.addFunc("getMaxRenderDistance", &ReflectionProbeRegistry::getMaxRenderDistance);
     probeRegistry.addFunc("getLastDistanceCulledCount", &ReflectionProbeRegistry::getLastDistanceCulledCount);
     probeRegistry.addFunc("queueCapture", &ReflectionProbeRegistry::queueCapture);
@@ -1332,18 +1340,16 @@ void Graphics::expose(ssq::Class& cls) {
                 static_cast<Texture* (Graphics::*)(image::ImageData*, bool, bool)>(&Graphics::newTextureFromImageData));
     cls.addFunc(
         "setRenderableTextureFromImageData",
-        [](Graphics *self, Renderable3D *renderable, image::ImageData *data, bool repeatU,
-           bool repeatV) -> Texture * {
+        [](Graphics* self, Renderable3D* renderable, image::ImageData* data, bool repeatU, bool repeatV) -> Texture* {
             if (!renderable) throw eve::Exception("setRenderableTextureFromImageData: null Renderable3D");
-            Texture *texture = self->newTextureFromImageData(data, repeatU, repeatV);
-            if (Material *material = renderable->getMaterial())
+            Texture* texture = self->newTextureFromImageData(data, repeatU, repeatV);
+            if (Material* material = renderable->getMaterial())
                 material->setAlbedoTexture(texture);
             else
                 renderable->setTexture(texture);
             return texture;
         });
-    cls.addFunc("updateTextureFromImageData", [](Graphics *self, Texture *texture,
-                                                  image::ImageData *data) {
+    cls.addFunc("updateTextureFromImageData", [](Graphics* self, Texture* texture, image::ImageData* data) {
         auto updated = self->updateTextureFromImageData(texture, data);
         if (!updated.ok()) throw eve::Exception("%s", updated.status().describe().c_str());
     });
@@ -1379,6 +1385,15 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newReflectionProbeCapture", &Graphics::newReflectionProbeCapture);
     cls.addFunc("newReflectionProbeRegistry", &Graphics::newReflectionProbeRegistry);
     cls.addFunc("newWater", &Graphics::newWater);
+    cls.addFunc(
+        "configureFoliageWind",
+        [vm = cls.getHandle()](Graphics* self, Material* material, float directionX, float directionZ, float strength,
+                               float bending, float bendingSpeed, float branch, float branchSpeed, float flutter,
+                               float flutterSpeed, float fadeDistance, float bendFactor) {
+            return eve::script::projectResult(
+                vm, self->configureFoliageWind(material, directionX, directionZ, strength, bending, bendingSpeed,
+                                               branch, branchSpeed, flutter, flutterSpeed, fadeDistance, bendFactor));
+        });
     cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShaderFromSpvFile));
     cls.addFunc("setShader", std::function<void(Graphics*, ssq::Object)>(setShaderScript));
@@ -1519,8 +1534,8 @@ DepthPyramid* Graphics::pipelineDepthPyramid() {
     return pipelineDepthPyramid_.get();
 }
 
-void Graphics::setSceneDepthOfField(float focusDistance, float maximumBlurPixels, float focusRange,
-                                    float nearPlane, float farPlane) {
+void Graphics::setSceneDepthOfField(float focusDistance, float maximumBlurPixels, float focusRange, float nearPlane,
+                                    float farPlane) {
     sceneDepthOfFieldEnabled_           = maximumBlurPixels > 0.f;
     sceneDepthOfFieldFocusDistance_     = focusDistance;
     sceneDepthOfFieldFocusRange_        = focusRange;
@@ -1553,27 +1568,23 @@ Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
         resolved = spatialAAResolve_->getTexture();
     }
     if (getSceneDofMaxBlur() > 0.f && renderControl_) {
-        GBuffer *gb = renderControl_->getGBuffer();
+        GBuffer* gb = renderControl_->getGBuffer();
         if (gb && gb->isValid()) {
-            Texture *depth = getBackendName() == "webgpu" ? gb->getDepthTexture()
-                                                          : gb->getHwDepthTexture();
+            Texture* depth = getBackendName() == "webgpu" ? gb->getDepthTexture() : gb->getHwDepthTexture();
             if (depth) {
-                resolved = pipelineDepthOfField()->apply(
-                    resolved, depth, getSceneDofFocusDistance(), getSceneDofMaxBlur(),
-                    getSceneDofFocusRange(), getSceneDofNearZ(), getSceneDofFarZ());
+                resolved =
+                    pipelineDepthOfField()->apply(resolved, depth, getSceneDofFocusDistance(), getSceneDofMaxBlur(),
+                                                  getSceneDofFocusRange(), getSceneDofNearZ(), getSceneDofFarZ());
             }
         }
     }
-    Texture *meterSource = resolved;
-    resolved = pipelineBloom()->apply(resolved, getSceneBloomIntensity(),
-                                      getSceneBloomThreshold());
-    return pipelineExposure()->apply(resolved, getSceneExposure(), getSceneAutoExposure(),
-                                     getSceneAutoExposureMinEV(), getSceneAutoExposureMaxEV(),
-                                     getSceneColorFilter(), getSceneLift(), getSceneInverseGamma(),
-                                     getSceneGain(), getSceneTransitionVignette(),
-                                     getSceneTransitionVignetteSmoothness(),
-                                     getSceneTransitionLensDistortion(), getSceneTransitionLensScale(),
-                                     meterSource);
+    Texture* meterSource = resolved;
+    resolved             = pipelineBloom()->apply(resolved, getSceneBloomIntensity(), getSceneBloomThreshold());
+    return pipelineExposure()->apply(resolved, getSceneExposure(), getSceneAutoExposure(), getSceneAutoExposureMinEV(),
+                                     getSceneAutoExposureMaxEV(), getSceneColorFilter(), getSceneLift(),
+                                     getSceneInverseGamma(), getSceneGain(), getSceneTransitionVignette(),
+                                     getSceneTransitionVignetteSmoothness(), getSceneTransitionLensDistortion(),
+                                     getSceneTransitionLensScale(), meterSource);
 }
 
 Canvas* Graphics::pipelineReflectionComposite(int width, int height) {
@@ -1601,13 +1612,9 @@ AntiAliasing* Graphics::newAntiAliasing() { return new AntiAliasing(this); }
 
 Shader* Graphics::newHairShader() { return hair::createShader(this); }
 
-Mesh* Graphics::newHairCardMesh(float width, float height) {
-    return hair::newCardMesh(this, width, height);
-}
+Mesh* Graphics::newHairCardMesh(float width, float height) { return hair::newCardMesh(this, width, height); }
 
-Material* Graphics::newHairCardMaterial(Texture *albedo) {
-    return hair::makeCardMaterial(this, albedo, nullptr);
-}
+Material* Graphics::newHairCardMaterial(Texture* albedo) { return hair::makeCardMaterial(this, albedo, nullptr); }
 
 Shader* Graphics::newGrassShader() { return grass::createShader(this); }
 
@@ -1615,13 +1622,12 @@ Shader* Graphics::newTreeWindShader() { return createTreeWindShader(this); }
 
 GrassField* Graphics::newGrassField() { return new GrassField(this); }
 
-hair::GroomInstance *Graphics::newGroomInstance() { return new hair::GroomInstance(this); }
+hair::GroomInstance* Graphics::newGroomInstance() { return new hair::GroomInstance(this); }
 
 Waterfall* Graphics::newWaterfall() { return new Waterfall(this); }
 Water*     Graphics::newWater() { return new Water(this); }
-ReflectionProbeCapture *Graphics::newReflectionProbeCapture() {
-    return new ReflectionProbeCapture(this);
-}
+
+ReflectionProbeCapture* Graphics::newReflectionProbeCapture() { return new ReflectionProbeCapture(this); }
 
 ReflectionProbeRegistry* Graphics::newReflectionProbeRegistry() { return new ReflectionProbeRegistry(); }
 

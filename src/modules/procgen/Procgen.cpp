@@ -6,6 +6,7 @@
 #include "common/SquirrelBinding.h"
 #include "procgen/BiomeScript.h"
 #include "procgen/GridMeshGraphScript.h"
+#include "procgen/ModuleAssemblyScript.h"
 #include "procgen/PointGraphScript.h"
 #include "procgen/ProcgenCapabilities.h"
 #include "procgen/ProcgenScriptObjects.h"
@@ -2981,6 +2982,8 @@ void Procgen::expose(ssq::Table& table) {
     exposeShapeGrammar(table);
     exposePcgFrameRateManagerBindings(table);
     exposePcgTaskQueueBindings(table);
+
+    exposeModuleAssembly(table);
 
     auto recipe = table.addClass<RecipeDescriptor>(
         "ProcgenRecipeSchema", std::function<RecipeDescriptor*()>([]() -> RecipeDescriptor* { return nullptr; }), true);

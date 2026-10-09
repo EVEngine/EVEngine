@@ -3260,6 +3260,36 @@ Point 或 Mesh 输入，必须经过显式转换或输入绑定。图拓扑、�
 
 TileWorldCreator 4 运行时核心能力的逐项对应和边界见
 [`TileWorldCreator4核心移植.md`](../../dev/TileWorldCreator4核心移植.md)。
+
+## 模块体积与连接约束
+
+`eve.ProcgenModuleAssemblyPlan()` 是 VM-owned 同步规划对象，不依赖渲染模块。
+`configure(cellSize,floorHeight,minX,maxX,minZ,maxZ,maxLevels,bounded,requireConnection)`、
+`setAllowedQuarterTurns(turn0,turn90,turn180,turn270)` 和 `setMinimumSupportRatio(ratio)`
+返回 Result，必须在注册定义或放置前调用。
+`registerModule(id,widthCells,depthCells)` 注册单层体积；
+`registerVolumeModule(id,widthCells,depthCells,heightLevels)` 注册多层体积。
+`addConnector(id,x,z,facing,tag,accepts)`、
+`addVolumeConnector(id,x,z,level,facing,tag,accepts)` 设置带类型的六向连接面；
+facing 0–5 对应 north/east/south/west/up/down。定义已使用后禁止修改连接器。
+这些写操作均返回 Result，失败不提交。
+
+`applyConfigJson(json)` 只接受空计划，原子加载
+`eve.procgen.module-assembly` schema version 1，unknownFields 必须为 reject。
+根字段为 schema/version/unknownFields/constraints/modules；constraints 包含
+cellSize、floorHeight、bounds、maxLevels、allowedQuarterTurns、requireConnection、
+minimumSupportRatio。modules 定义 id、widthCells、depthCells、heightLevels、connectors；
+connector 字段为 cellX/cellZ/level/facing/tag/accepts。未知版本/字段及非法值拒绝。
+v1 无前驱迁移，不恢复 placement；调用成本随 JSON/连接器大小增长，限制输入 1 MiB。
+
+`place(id,x,z,level,quarterTurn)` 返回 Result：整数体素占地不得重叠或越界，
+所有接触面必须双方 tag/accepts 互认，受旋转白名单、连通性和垂直支撑比例约束。
+拒绝后计划不变；quarterTurn 为 90 度整数倍。规划成本随已有体积和连接面增长，
+应在地图构建阶段执行，而非每帧调用。
+`getPlacementCount()`、`getPlacementModule(index)`、`getPlacementX(index)`、
+`getPlacementY(index)`、`getPlacementZ(index)`、`getPlacementYawDegrees(index)`
+读取已提交的布局及米制变换。所有方法由调用者线程独占使用，不执行回调、不持锁。
+
 # House generation grid and points
 
 房屋生成已归入 procgen，`eve.HouseGen()` 保留为兼容构造器。它提供
