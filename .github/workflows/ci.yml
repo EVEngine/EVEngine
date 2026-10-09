@@ -414,8 +414,11 @@ jobs:
             } catch {
               Write-Host $_ -ForegroundColor Yellow
             }
-            Remove-Item -Recurse -Force build/webgpu-native/_deps/dawn-src/third_party/abseil-cpp -ErrorAction SilentlyContinue
-            Remove-Item -Force build/webgpu-native/CMakeCache.txt -ErrorAction SilentlyContinue
+            # A failed Dawn dependency fetch can leave dawn-src with a stale
+            # fetch stamp while the dependency directory is absent. Reusing
+            # that tree makes all retries repeat the same CMake error; reset
+            # the configure tree so the next attempt refetches dependencies.
+            Remove-Item -Recurse -Force build/webgpu-native -ErrorAction SilentlyContinue
             Start-Sleep -Seconds (10 * $attempt)
           }
           throw 'Dawn parity configure failed after 3 attempts'
