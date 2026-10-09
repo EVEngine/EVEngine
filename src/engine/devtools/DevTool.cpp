@@ -425,18 +425,20 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         dev.addFunc("resourceCacheCount", []() {
             return static_cast<int>(resourceCacheCount());
         });
-        dev.addFunc("softRestart", [this](std::string argsJson, bool reloadScripts) {
+        // Parameter must not be named args*/argN — binding-contract codegen
+        // treats those as unresolved placeholders and fails the build.
+        dev.addFunc("softRestart", [this](std::string requestJson, bool reloadScripts) {
             SoftRestartRequest request;
             request.reloadScripts = reloadScripts;
-            if (!argsJson.empty()) {
+            if (!requestJson.empty()) {
                 try {
                     Poco::JSON::Parser parser;
-                    auto               parsed = parser.parse(argsJson);
+                    auto               parsed = parser.parse(requestJson);
                     request.args              = parsed.extract<Poco::JSON::Object::Ptr>();
                 } catch (const std::exception& e) {
-                    return std::string("error: invalid args JSON: ") + e.what();
+                    return std::string("error: invalid request JSON: ") + e.what();
                 } catch (...) {
-                    return std::string("error: invalid args JSON");
+                    return std::string("error: invalid request JSON");
                 }
             }
             auto result = executeSoftRestart(vm_, std::move(request));
