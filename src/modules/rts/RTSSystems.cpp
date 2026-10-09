@@ -347,7 +347,7 @@ Result<FanOutReceipt> CommandFanOutSystem::fanOut(std::span<const ecs::EntityHan
                                   "RTS fan-out selection contains a stale or non-Unit handle", "selection.units"));
         const auto liveHandle = ecs::handle_of(unit);
         const bool inView = std::any_of(visibleUnits.begin(), visibleUnits.end(), [&liveHandle](const auto& candidate) {
-            return sameHandle(candidate, liveHandle);
+            return isSameHandle(candidate, liveHandle);
         });
         if (!inView)
             return Result<FanOutReceipt>::failure(
