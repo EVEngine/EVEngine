@@ -592,6 +592,8 @@ public:
     Texture *newTexture(image::ImageData *data) override;
     /** @brief Creates a texture. @ownership Caller deletes unless documented otherwise. */
     Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) override;
+    /** @brief Reuse immutable imported pixels. Graphics owns the returned texture until release or shutdown. */
+    [[nodiscard]] ResultRef<Texture> newSharedTexture(image::ImageData *data, const std::string &contentKey) override;
     /** @brief Sets the texture sampler. */
     void setTextureSampler(Texture *texture, const TextureSampler &sampler) override;
     /** @brief Returns the max anisotropy. */
@@ -2168,6 +2170,7 @@ private:
     std::vector<std::unique_ptr<GpuTexture>> ownedGpuTextures;
     /** Path-normalized → Texture* for hot reload (stable pointers). */
     std::unordered_map<std::string, Texture *> texturesByPath;
+    std::unordered_map<std::string, Texture *>          sharedTexturesByContent;
     std::vector<std::unique_ptr<Mesh>> ownedMeshes;
     std::vector<std::unique_ptr<GpuMesh>> ownedGpuMeshes;
     std::vector<std::unique_ptr<Shader>> ownedShaders;

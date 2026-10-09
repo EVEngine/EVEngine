@@ -845,3 +845,14 @@ RGBA 模式任一通道命中即启用。`setMask(imageData)` 会复制像素，
 清除遮罩。`evaluate(playerX,playerZ,terrainX,terrainZ,width,depth,reflectionSettings)` 返回 0 Unchanged、
 1 Enabled 或 2 Disabled，并在状态变化时同步 `WaterPlanarReflectionSettings.enabled`。
 `getEnabled()`、`getHeightFeaturesEnabled()`、`getSampleX()` 和 `getSampleY()` 返回最近状态与采样坐标。
+
+## 导入植被的原生 PBR
+
+`material.setFoliageTranslucency(r,g,b,intensity,strength,normalDistortion,scattering,direct,ambient,shadow)`
+返回 Result；验证完整候选 PBR 状态后才提交，并启用双面背面法线翻转，不替换已导入贴图。
+`gfx.configureFoliageWind(material,dirX,dirZ,strength,bending,bendingSpeed,branch,branchSpeed,flutter,flutterSpeed,fadeDistance,bendFactor)`
+返回 Result，在渲染线程复用 Graphics-owned 风场纹理，首次调用含纹理上传成本。
+先调用 `model3d.prepareFoliageDeformation` 为匹配的静态网格建立变形数据。
+`material.setFoliageWindTime(seconds)` 返回 Result，要求已配置风；时间由调用方显式注入，
+不读墙钟。参数非法时材质状态不变；贴图借用在 Graphics 资源释放/关闭时失效，
+材质必须先停止使用这些资源。调用均为 main/render 线程同步路径，无回调。

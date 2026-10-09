@@ -8,6 +8,7 @@
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
+#include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/PbrSurface.h"
 #include "image/ImageData.h"
@@ -15,6 +16,52 @@
 #include "zeroerr/unittest.h"
 
 using namespace eve::graphics;
+
+TEST_CASE("graphics.vegetation.materialFoliageTranslucencyPublishesAtomically") {
+    Material material;
+    auto     accepted = material.setFoliageTranslucency(.34f, .55f, .18f, .52f, 2.f, .35f, 3.f, .85f, .18f, .35f);
+    REQUIRE(accepted.ok());
+    const auto published = material.pbrSurface();
+    CHECK_EQ(published.translucency.color, (std::array<float, 3>{.34f, .55f, .18f}));
+    CHECK_EQ(published.translucency.intensity, .52f);
+    CHECK_EQ(published.translucency.strength, 2.f);
+    CHECK_EQ(published.translucency.scattering, 3.f);
+    CHECK_EQ(published.vegetationColor.backfaceNormalMode, PbrVegetationBackfaceNormalMode::Flip);
+    CHECK(material.getDoubleSided());
+
+    auto rejected = material.setFoliageTranslucency(.9f, .1f, .1f, 2.f, 2.f, .35f, 3.f, .85f, .18f, .35f);
+    CHECK(!rejected.ok());
+    CHECK_EQ(material.pbrSurface().translucency.color, published.translucency.color);
+    CHECK_EQ(material.pbrSurface().translucency.intensity, published.translucency.intensity);
+}
+
+TEST_CASE("graphics.vegetation.materialFoliageWindPreservesPbrAndUpdatesExplicitTime") {
+    Material   material;
+    Texture    motion;
+    Texture    noise;
+    PbrSurface initial;
+    initial.translucency.intensity = .52f;
+    initial.albedoTextureStrength  = .73f;
+    REQUIRE(material.setPbrSurface(initial).ok());
+
+    REQUIRE(
+        material.setFoliageWind(&motion, &noise, .05f, 0.f, .5f, .18f, 2.f, .12f, 2.f, .072f, 1.f, 400.f, 2.f).ok());
+    const auto configured = material.pbrSurface();
+    CHECK_EQ(configured.translucency.intensity, .52f);
+    CHECK_EQ(configured.albedoTextureStrength, .73f);
+    CHECK_EQ(configured.vegetationMotion.texture, &motion);
+    CHECK_EQ(configured.vegetationMotion.noise, &noise);
+    CHECK_EQ(configured.vegetationMotion.fallback[0], 1.f);
+    CHECK_EQ(configured.vegetationMotion.fallback[2], .5f);
+    CHECK_EQ(configured.vegetationMotion.mode, PbrVegetationMotionMode::Object);
+    CHECK_EQ(configured.vegetationVertex.source, PbrVegetationDeformationSource::GpuFields);
+
+    REQUIRE(material.setFoliageWindTime(3.25).ok());
+    CHECK_EQ(material.pbrSurface().vegetationMotion.time, 3.25);
+    const auto beforeInvalid = material.pbrSurface();
+    CHECK(!material.setFoliageWind(nullptr, &noise, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f).ok());
+    CHECK_EQ(material.pbrSurface().vegetationMotion.time, beforeInvalid.vegetationMotion.time);
+}
 
 TEST_CASE("graphics.vegetation.translucency_validates_factors") {
     PbrSurface surface;
@@ -69,7 +116,7 @@ TEST_CASE("graphics.vegetation.translucency_gpu_backlight_and_ambient") {
     Color tint(.5f, .5f, .5f, 1);
     float materialRoughness = 1;
     auto  render            = [&](const PbrSurface& surface) {
-        auto drawSurface = surface;
+        auto drawSurface                               = surface;
         drawSurface.vegetationColor.backfaceNormalMode = PbrVegetationBackfaceNormalMode::Same;
         gfx->begin3DFrameToCanvas(canvas);
         gfx->setMesh3DLighting(lighting);

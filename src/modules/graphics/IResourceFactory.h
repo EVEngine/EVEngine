@@ -9,6 +9,7 @@
 #include <span>
 #include <string>
 #include <vector>
+#include "common/BorrowedRef.h"
 #include "common/Result.h"
 
 #include <assimp/matrix4x4.h>
@@ -115,6 +116,23 @@ public:
     virtual Texture *newTexture(image::ImageData *data) = 0;
     /** @brief Creates a texture. @ownership Caller deletes unless documented otherwise. */
     virtual Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) = 0;
+    /**
+     * @brief Reuse or upload immutable RGBA8 pixels under a caller-provided content key.
+     * @param contentKey Stable, collision-resistant key for the complete pixel payload and dimensions.
+     * @param data Borrowed image consumed synchronously when the key is not already resident.
+     * @return Structured result borrowing the factory-owned texture; Unsupported without a caching provider.
+     * @ownership The factory owns the returned texture.
+     * @lifetime Until releaseTexture or graphics shutdown.
+     * @thread Graphics thread only; no callbacks are invoked.
+     * @cost First use performs one texture upload; cache hits are hash-table lookups.
+     */
+    [[nodiscard]] virtual ResultRef<Texture> newSharedTexture(image::ImageData *data, const std::string &contentKey) {
+        (void)data;
+        (void)contentKey;
+        return ResultRef<Texture>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                             "immutable texture sharing is unavailable", {}, {},
+                                                             "graphics.texture.shared"));
+    }
     /** @brief Creates a texture from image data. @ownership Caller deletes unless documented otherwise. */
     virtual Texture *newTextureFromImageData(image::ImageData *data, bool repeatU = false,
                                              bool repeatV = false) = 0;

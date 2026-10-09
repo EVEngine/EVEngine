@@ -1562,6 +1562,24 @@ Texture* Graphics::newTexture(image::ImageData* data, const TextureCreateInfo& i
     return newTexture(data->getWidth(), data->getHeight(), static_cast<const uint8_t*>(data->getData()), info);
 }
 
+ResultRef<Texture> Graphics::newSharedTexture(image::ImageData* data, const std::string& contentKey) {
+    if (!data || contentKey.empty() || data->getFormat() != "RGBA8")
+        return ResultRef<Texture>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                             "RGBA8 image and nonempty content key are required", {},
+                                                             {}, "graphics.texture.shared"));
+    if (auto found = sharedTexturesByContent.find(contentKey); found != sharedTexturesByContent.end())
+        return ResultRef<Texture>::success(std::ref(*found->second));
+    try {
+        Texture* texture = newTexture(data);
+        if (!texture) throw Exception("shared texture upload produced no texture");
+        sharedTexturesByContent.emplace(contentKey, texture);
+        return ResultRef<Texture>::success(std::ref(*texture));
+    } catch (const std::exception& error) {
+        return ResultRef<Texture>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, error.what(), {}, {}, "graphics.texture.shared"));
+    }
+}
+
 Texture* Graphics::newTexture(int width, int height, const uint8_t* rgba, const TextureCreateInfo& rawInfo) {
     if (width <= 0 || height <= 0) throw Exception("newTexture: invalid size %dx%d", width, height);
 
@@ -2125,6 +2143,12 @@ bool Graphics::releaseTexture(Texture* texture) {
             else
                 ++it;
         }
+        for (auto it = sharedTexturesByContent.begin(); it != sharedTexturesByContent.end();) {
+            if (it->second == texture)
+                it = sharedTexturesByContent.erase(it);
+            else
+                ++it;
+        }
         (void)texIt->release();
         ownedTextures.erase(texIt);
         return true;
@@ -2147,6 +2171,12 @@ bool Graphics::releaseTexture(Texture* texture) {
     for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
         if (it->second == texture)
             it = texturesByPath.erase(it);
+        else
+            ++it;
+    }
+    for (auto it = sharedTexturesByContent.begin(); it != sharedTexturesByContent.end();) {
+        if (it->second == texture)
+            it = sharedTexturesByContent.erase(it);
         else
             ++it;
     }
