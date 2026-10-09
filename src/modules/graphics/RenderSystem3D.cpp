@@ -24,6 +24,7 @@
 #include "graphics/Shadow.h"
 #include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
+#include "graphics/ViewPreparation.h"
 
 #include <algorithm>
 #include <cmath>
@@ -1126,6 +1127,11 @@ void RenderSystem3D::render(Graphics& gfx) {
         gfx.setSceneDepthOfField(cd->dofFocusDistance, cd->dofMaxBlurPx, cd->dofFocusRange,
                                  cd->nearZ, cd->farZ);
     }
+    if (defaultCam) {
+        const auto& cv       = cams.front();
+        auto        prepared = detail::prepareViewResources(gfx, cv.viewProj, cv.eye);
+        if (!prepared) throw eve::Exception("%s", prepared.status().describe().c_str());
+    }
     gfx.begin3DFrame();
     if (!gfx.had3DThisFrame()) return;
 
@@ -1719,9 +1725,6 @@ void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* cam
     auto        cd     = camera->data();
     const float aspect = target->getWidth() > 0 ? float(target->getWidth()) / float(target->getHeight()) : 1.f;
 
-    // Preview-quality forward pass: no shadow / G-buffer / AO passes.
-    gfx.begin3DFrameToCanvas(target);
-
     const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
     const glm::vec3 look(cd->targetX, cd->targetY, cd->targetZ);
     const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
@@ -1729,6 +1732,10 @@ void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* cam
     const float     fovRad = cd->fovYDeg * 0.017453292519943295f;
     const glm::mat4 projM =
         cameraProjectionVulkanRH_ZO(cd->orthographic, fovRad, cd->orthoHeight, aspect, cd->nearZ, cd->farZ);
+    auto prepared = detail::prepareViewResources(gfx, projM * viewM, eye);
+    if (!prepared) throw eve::Exception("%s", prepared.status().describe().c_str());
+    // Preview-quality forward pass: no shadow / G-buffer / AO passes.
+    gfx.begin3DFrameToCanvas(target);
     gfx.setMesh3DViewProj(projM * viewM);
     gfx.setMesh3DView(viewM);
     gfx.setMesh3DClip(cd->nearZ, cd->farZ);

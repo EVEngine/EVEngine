@@ -1707,7 +1707,7 @@ void Graphics::materializeSceneColorResolve() {
             !composeLinear && (swapchain.image_format == vk::Format::eB8G8R8A8Srgb ||
                                swapchain.image_format == vk::Format::eR8G8B8A8Srgb);
         TexturedBatch resolve{postProcessed, nullptr, nullptr, BlendMode::Opaque, Batcher{}};
-        const Color tint =
+        Color tint =
             composeLinear
                 ? display::sceneComposeTint(getSceneToneMapping() == SceneToneMapping::Aces,
                                             displayPaperWhiteNits_, displayPeakNits_)
@@ -1719,6 +1719,8 @@ void Graphics::materializeSceneColorResolve() {
                                                        : display::ActiveColorSpace::Sdr),
                                             attachmentEncodesSrgb, displayPaperWhiteNits_,
                                             displayPeakNits_);
+        tint.r = static_cast<float>(getSceneToneMapping());
+        tint.g += getScenePhotographicVignette() * .25f;
         resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height), tint, 0.f, 0.f, 1.f, 1.f);
         pendingSceneResolve = std::move(resolve);
     }

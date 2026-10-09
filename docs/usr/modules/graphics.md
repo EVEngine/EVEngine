@@ -21,6 +21,17 @@
 
 API 细节：光照模式见 [rendering-effects](graphics/rendering-effects.md)；HDR present 与探针绑定见下文「显示器 HDR」「HDR、景深与反射探针绑定」。设计进度见 [`HDR与反射链AAA升级.md`](../../dev/HDR与反射链AAA升级.md)。
 
+`gfx.setSceneToneMapping("none" | "aces" | "filmic")` 返回标准 Result；
+`getSceneToneMapping()` 读取当前模式。默认仍为 `aces`。Vulkan 的 `filmic`
+使用固定 Rec.709/AP1 电影式曲线、蓝色修正和色域扩展，仅影响最终显示，
+不会把线性 HDR 反射或离屏纹理提前映射到 SDR。不支持切换的后端返回
+Unsupported 并保留原模式。曝光、暗角和其他镜头效果仍由各自组件控制。
+
+`gfx.setScenePhotographicVignette(intensity)` 返回 Result，强度范围 `[0,1]`，
+默认 `0` 关闭；`getScenePhotographicVignette()` 读取当前值。Vulkan 在最终
+色调映射前应用余弦四次方摄影暗角，不改变线性 HDR 捕获。非法参数保留旧值；
+未支持此效果的后端只接受 `0`。此选项与原来的过渡暗角独立。
+
 ## 基本用法
 
 ```squirrel
@@ -437,6 +448,13 @@ constantsPath 可为空。images 每项包含 `binding, path, format, dimension,
 layers, mips, filter, wrapU, wrapV, anisotropy`。格式支持 `r8-unorm`、`rg8-unorm`、
 `r16-unorm`、`rgba8-unorm`、`bgra8-unorm` 以及 RGBA/BGRA/BC1/BC3/BC7 对应
 `-srgb` 格式；BC1/3/7 也支持 `-unorm`。dimension 为 `2d/array2d/cube`。
+另支持 `rgba16-unorm`、`rgba16-float`、`rgba32-float`，浮点通道保留原始
+IEEE-754 小端字节，不裁剪 HDR 数值。`dimension = "3d"` 时必须提供正整数
+`depth` 和 `wrapW`，且 `layers = 1`；体纹理按 mip、Z 切片、行的顺序排列，
+每级 mip 同时将 XYZ 尺寸减半并下限为 1。体纹理不接受 BC 压缩，XYZ 各不超过
+2048，单纹理仍受 1 GiB 限制及设备能力约束。其他维度的 depth 省略或为 1。
+纯常量缓冲或实例矩阵程序可提供空 images；图片、常量、实例矩阵不能同时为空。
+wrapW 与 wrapU/V 同样使用 0 repeat、1 clamp；不提供时保持既有 2D 行为。
 字节严格按 layer-major、mip-major 紧密排列，不经过图片解码、预乘或缩放。
 filter 为 0 最近、1 双线性加最近 mip、2 三线性；wrapU/V 为 0 repeat、1 clamp。
 Cube 必须是六个等宽高面；最多 16 个图像，binding 在 0..31，常量使用 binding 32，
@@ -489,12 +507,12 @@ xyz 是导入的对象空间切线，w 是相对于 `cross(normal, tangent)` 的
 生成近似切线。带场景变换的导入会变换并归一化切线/副切线，保留镜像手性。
 该输入目前属于 Vulkan 资源 Shader ABI；未实现此资源路径的后端仍返回 Unsupported。
 
-`gfx.setSceneToneMapping("none" | "aces")` 返回 Result；默认 `aces` 保持既有输出。
+`gfx.setSceneToneMapping("none" | "aces" | "filmic")` 返回 Result；默认 `aces` 保持既有输出。
 `gfx.getSceneToneMapping()` 返回当前模式。`none` 仅在最终场景显示时将曝光后的
 线性 RGB 裁剪到显示范围，然后执行需要的 sRGB 编码，不应用 ACES 曲线。
 Bloom、曝光和 HDR 离屏纹理保持各自的职责；二维 UI 不经过此场景映射。
 设置属于 Graphics 的显示状态，在 graphics/render 线程修改，不持有调用者引用
-或触发回调。非法模式不改变旧值。Vulkan 支持两种模式；其他后端当前仅接受保留
+或触发回调。非法模式不改变旧值。Vulkan 支持三种模式；其他后端当前仅接受保留
 默认模式的空操作，切换返回 Unsupported，不静默使用不同映射。
 
 ### 显示器 HDR（swapchain 输出）
@@ -524,6 +542,11 @@ overlays 直接写入未编码的 HDR swapchain。Lavapipe / 无 HDR 显示器�
 and selects half-resolution prefiltering, separable Gaussian downsampling, and
 linear interpolation between pyramid levels. `"karisTent"` restores the default
 four-level filter. `gfx.getBloomFilter()` returns the selected name.
+`"gaussianPyramid"` selects up to six additively weighted photographic Gaussian
+scales instead; it uses fixed stage sizes and weights, with `maxIterations`
+capped at six. Its scatter argument does not alter those fixed kernels.
+Zero threshold passes the whole scene. Camera intensity multiplies the weighted
+sum once; the default filter remains `"karisTent"`.
 Camera bloom intensity and linear threshold remain controlled by `Camera3D.setBloom`.
 Scatter must be finite in [0,1], maximum iterations an integer in [1,16], and
 clamp finite in (0,65504]. Invalid settings leave the previous filter unchanged.
@@ -845,3 +868,15 @@ RGBA 模式任一通道命中即启用。`setMask(imageData)` 会复制像素，
 清除遮罩。`evaluate(playerX,playerZ,terrainX,terrainZ,width,depth,reflectionSettings)` 返回 0 Unchanged、
 1 Enabled 或 2 Disabled，并在状态变化时同步 `WaterPlanarReflectionSettings.enabled`。
 `getEnabled()`、`getHeightFeaturesEnabled()`、`getSampleX()` 和 `getSampleY()` 返回最近状态与采样坐标。
+
+独立天空的 `eve.sky-wisps/3` 资源增加 `sunDisk.color`（线性 HDR RGB）和
+`sunDisk.shape`（弧度半径、正柔化指数、非负反射倍率）。旧版本禁用圆盘。
+参数随资源准备复制，太阳方向复用独立帧快照；绘制不推进模拟时间。
+主视图和反射复用同一材质，圆盘在薄云混合、父材质对比度和高度雾之前合成。
+圆盘颜色目前是明确的配置常量，尚未接入昼夜颜色曲线或二维动态云遮罩。
+
+`eve.sky-wisps/4` 进一步要求十二个 `sunDiskCurve` 键（RGB 各四个）：
+`[height,value,arriveTangent,leaveTangent]`，每通道高度严格递增，末键值为正。
+按独立太阳方向计算高度，采用无权重三次 Hermite 插值及常量端点外推；
+颜色相对于末键缩放。准备阶段验证并复制所有数据，绘制期间不读取文件或推进时钟。
+版本 1—3 保留原有恒定圆盘颜色。该路径尚不包含日食、天气衰减或曲线 HSV 调整。

@@ -11,9 +11,12 @@ class Shader;
 class Texture;
 
 /** @brief Linear HDR reconstruction filter; KarisTent preserves the default pipeline. */
-enum class BloomFilter { KarisTent, GaussianScatter };
+enum class BloomFilter { KarisTent, GaussianScatter, GaussianPyramid };
 
-/** @brief Value-owned Gaussian bloom settings, independent of camera intensity and threshold. */
+/** @brief Value-owned Gaussian bloom settings, independent of camera intensity and threshold.
+ * @details GaussianPyramid adds up to six normalized separable Gaussian scales with fixed photographic
+ * radii: 0.3,1,2,10,30,64 percent times 4 and neutral stage tints, divided by six.
+ * maxIterations caps its stage count at six; scatter affects GaussianScatter only. */
 struct BloomFilterSettings {
     BloomFilter filter        = BloomFilter::KarisTent;
     float       scatter       = 0.68f;
@@ -80,9 +83,6 @@ private:
     Shader                  *gaussianShader_ = nullptr;
     std::array<Canvas *, 16> gaussianDown_{};
     std::array<Canvas *, 16> gaussianUp_{};
-    int                      gaussianWidth_  = 0;
-    int                      gaussianHeight_ = 0;
-    int                      gaussianLevels_ = 0;
     void ensureTargets(int sourceWidth, int sourceHeight);
     void configureDownsample(Texture *source, bool firstPass, float threshold);
     void configureUpsample(Texture *source, float scatter);

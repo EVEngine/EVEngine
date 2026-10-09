@@ -1,0 +1,17 @@
+{
+  "schema": "eve.sky-reference-capture/1",
+  "size": [1280, 720],
+  "warmupSeconds": 60,
+  "camera": {
+    "positionCm": [0, 0, 200],
+    "rotationDegrees": [15, 0, 0],
+    "horizontalFovDegrees": 75
+  },
+  "scenarios": [
+    {"name": "clear-noon", "timeOfDay": 1200, "cloudCoverage": 0},
+    {"name": "cloudy-noon", "timeOfDay": 1200, "cloudCoverage": 3.8},
+    {"name": "overcast-noon", "timeOfDay": 1200, "cloudCoverage": 10},
+    {"name": "cloudy-sunset", "timeOfDay": 1800, "cloudCoverage": 3.8},
+    {"name": "clear-midnight", "timeOfDay": 0, "cloudCoverage": 0}
+  ]
+}

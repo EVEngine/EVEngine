@@ -103,6 +103,14 @@ public:
     int getUniformFloatCount(const std::string &name) const;
 
     const float *pushConstantData() const { return floats_.data(); }
+    /** @brief Replace the entire fixed push-constant ABI without name lookup or allocation.
+     * @param values
+     * Borrowed values copied immediately; no storage is retained.
+     * @thread Graphics thread only, before draw
+     * submission. Existing named slots retain their offsets;
+     * the complete block is reserved and no further named
+     * slots can be declared. */
+    void     setPushConstantBlock(const std::array<float, kMaxFloats> &values) noexcept;
     uint32_t pushConstantSize() const { return uint32_t(usedFloats_ * sizeof(float)); }
     int usedFloats() const { return usedFloats_; }
 
