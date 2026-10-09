@@ -1379,16 +1379,19 @@ void RenderSystem3D::render(Graphics& gfx) {
         bool gpuDrivenUsed = false;
         if (gpuDrivenWanted && !useClustered && defaultCam &&
             (!opaque.empty() || !g_gpuOpaqueCollectors.empty())) {
-            bool eligible = true;
+            std::vector<const CulledItem*> gpuOpaque;
+            std::vector<const CulledItem*> cpuOpaque;
+            gpuOpaque.reserve(opaque.size());
+            cpuOpaque.reserve(opaque.size());
             for (const CulledItem* it : opaque) {
                 if (it->mesh->hasGpuSkinning() || it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
                     it->material->effectiveShader() != nullptr || it->lightProbeUsage != 0 ||
-                    !gfx.gpuDrivenMaterialUsable(it->material)) {
-                    eligible = false;
-                    break;
-                }
+                    !gfx.gpuDrivenMaterialUsable(it->material))
+                    cpuOpaque.push_back(it);
+                else
+                    gpuOpaque.push_back(it);
             }
-            if (eligible) {
+            if (!gpuOpaque.empty() || !g_gpuOpaqueCollectors.empty()) {
                 const CameraView&     cv  = cams[0];  // default camera is slot 0
                 const Camera3D::Data* cd  = cv.data;
                 const glm::vec3       eye = cv.eye;
@@ -1405,11 +1408,11 @@ void RenderSystem3D::render(Graphics& gfx) {
                 gfx.setMesh3DLighting(cv.lighting);
 
                 std::vector<eve::graphics::GpuInstance> instances;
-                instances.reserve(opaque.size());
+                instances.reserve(gpuOpaque.size());
                 bool       recordsOk     = true;
                 bool       vgAny         = false;
                 const bool resolveWanted = gfx.gpuDrivenResolveWanted();
-                for (const CulledItem* it : opaque) {
+                for (const CulledItem* it : gpuOpaque) {
                     const ReflectionProbeUpload probes = selectReflectionProbes(*cd, it->worldC);
                     // Stage 3 VG: meshes with a virtual-geometry asset are culled /
                     // drawn through the cluster path, not the instance chain.
@@ -1483,6 +1486,10 @@ void RenderSystem3D::render(Graphics& gfx) {
                         if (gfx.gpuDrivenSubmitOpaque(instances.data(), uint32_t(instances.size())))
                             gpuDrivenUsed = true;
                     }
+                }
+                if (gpuDrivenUsed) {
+                    if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
+                    for (const CulledItem* item : cpuOpaque) drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
                 }
             }
         }

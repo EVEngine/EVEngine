@@ -109,6 +109,18 @@ public:
                                              int meshIndex);
 
     /**
+     * @brief Prepare one default-imported renderable for native PBR vegetation motion.
+     * @param model Borrowed decoded model.
+     * @param meshIndex Matching imported mesh index.
+     * @param renderable Borrowed renderable returned by createRenderable for that index.
+     * @return Success or InvalidArgument; failure preserves the mesh stream.
+     * @ownership Retains nothing; call on the render thread before submitting the prototype.
+     * @cost O(vertex count) and nine persistent floats per vertex; intended as a one-time prototype build step.
+     */
+    [[nodiscard]] eve::Result<void> prepareFoliageDeformation(ModelData *model, int meshIndex,
+                                                              graphics::Renderable3D *renderable);
+
+    /**
      * @brief Pack a self-contained source model (normally GLB or embedded FBX) into
      * EVEngine's deterministic .evmodel envelope for deployment.
      * @return False when the source cannot be read or the destination cannot be written.
