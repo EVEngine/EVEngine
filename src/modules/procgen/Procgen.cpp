@@ -22,27 +22,28 @@
 
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/GtsMeshSplitter.h"
-#include "procgen/GtsTerrainLod.h"
-#include "procgen/PcgMeshLod.h"
-#include "procgen/PcgMeshLodBackup.h"
-#include "procgen/PcgFrameRateManager.h"
-#include "procgen/PcgTaskQueue.h"
 #include "procgen/GtsTerrainExportSettings.h"
+#include "procgen/GtsTerrainLod.h"
 #include "procgen/GtsTerrainLodRuntime.h"
 #include "procgen/JsonExport.h"
+#include "procgen/PcgFrameRateManager.h"
+#include "procgen/PcgMeshLod.h"
+#include "procgen/PcgMeshLodBackup.h"
+#include "procgen/PcgTaskQueue.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/RoguelikeGenerator.h"
 #include "procgen/heightmap/TerrainAsset.h"
-#include "procgen/heightmap/TerrainFile.h"
-#include "procgen/heightmap/TerrainImageAdapter.h"
 #include "procgen/heightmap/TerrainCurveTexture.h"
+#include "procgen/heightmap/TerrainFile.h"
 #include "procgen/heightmap/TerrainGrassAdapter.h"
+#include "procgen/heightmap/TerrainImageAdapter.h"
 #include "procgen/heightmap/TerrainStampScript.h"
-#include "procgen/texture/PbrMaterial.h"
-#include "procgen/texture/TextureRecipe.h"
+#include "procgen/house/HouseGen.h"
 #include "procgen/shaders/terrain_material_compat_frag_spv.inc"
 #include "procgen/shaders/terrain_water_compat_frag_spv.inc"
+#include "procgen/texture/PbrMaterial.h"
+#include "procgen/texture/TextureRecipe.h"
 
 #include "data/ByteData.h"
 #include "graphics/Graphics.h"
@@ -2976,6 +2977,7 @@ void Procgen::expose(ssq::Table& table) {
     exposePointGraph(table);
     exposeMeshModifierGraph(table);
     exposeGridMeshGraphs(table);
+    housegen::exposeHouseGeneration(table);
     exposeShapeGrammar(table);
     exposePcgFrameRateManagerBindings(table);
     exposePcgTaskQueueBindings(table);
