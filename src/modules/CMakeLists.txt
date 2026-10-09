@@ -166,8 +166,8 @@ if(NOT _has_camera_editor_bridge)
   list(APPEND EVENGINE_EXCLUDED_MODULE_FILES CameraTarget.cpp CameraRuntime.cpp)
 endif()
 
-eve_module_enabled(housegen _has_housegen_editor_bridge)
-if(NOT _has_housegen_editor_bridge)
+eve_module_enabled(procgen _has_procgen_editor_bridge)
+if(NOT _has_procgen_editor_bridge)
   list(APPEND EVENGINE_EXCLUDED_MODULE_FILES HouseGenTarget.cpp HouseGenRuntime.cpp)
 endif()
 

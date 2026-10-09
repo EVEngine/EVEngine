@@ -1,8 +1,8 @@
-#include "housegen/editing/HouseGenTarget.h"
+#include "procgen/editing/HouseGenTarget.h"
 
-#include "housegen/HouseComponentLibrary.h"
-#include "housegen/HouseGenerator.h"
-#include "housegen/HouseLayout.h"
+#include "procgen/house/HouseComponentLibrary.h"
+#include "procgen/house/HouseGenerator.h"
+#include "procgen/house/HouseLayout.h"
 
 #include <set>
 #include <utility>
