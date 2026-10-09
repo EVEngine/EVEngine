@@ -345,7 +345,8 @@ private:
  * @cost Linear in road mesh
  * triangles plus the bounded terrain-footprint raster.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> generateRoadNetworkArtifact(const Params& params, ArtifactId id);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateRoadNetworkArtifact(const Params& params,
+                                                                                              ArtifactId    id);
 
 /**
  * @brief Generate any registered mesh recipe as a CPU artifact.
@@ -354,7 +355,8 @@ private:
  * @param id Non-nil artifact instance identity.
  * @return Hex terrain, castle and road network become composites; other recipes become MeshData artifacts.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> generateMeshArtifact(std::string_view recipeId, const Params& params,
-                                                                  ArtifactId id);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateMeshArtifact(std::string_view recipeId,
+                                                                                       const Params&    params,
+                                                                                       ArtifactId       id);
 
 }  // namespace eve::procgen

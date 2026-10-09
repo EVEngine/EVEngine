@@ -86,8 +86,8 @@ struct RoadBakeResult {
  * @cost Linear in road triangle coverage plus covered cells times the blend-radius area; bounded by maximumWork.
  * @thread Synchronous and caller-thread-only; no callbacks are invoked.
  */
-[[nodiscard]] Result<int> conformHeightmapToRoad(Heightmap& terrain, const MeshBuild& roadMesh,
-                                                 const RoadTerrainConformOptions& options = {});
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> conformHeightmapToRoad(Heightmap& terrain, const MeshBuild& roadMesh,
+                                                                      const RoadTerrainConformOptions& options = {});
 
 /**
  * @brief Atomically conform terrain and return the exact reversible sample delta.
@@ -97,9 +97,8 @@ struct RoadBakeResult {
  * @return Owning receipt containing row-major changed indices and before/after values.
  * @cost Same as conformHeightmapToRoad, plus storage linear in changed samples.
  */
-[[nodiscard]] Result<RoadTerrainConformReceipt>
-conformHeightmapToRoadWithReceipt(Heightmap& terrain, const MeshBuild& roadMesh,
-                                  const RoadTerrainConformOptions& options = {});
+[[nodiscard]] EVENGINE_API_DOMAINS Result<RoadTerrainConformReceipt> conformHeightmapToRoadWithReceipt(
+    Heightmap& terrain, const MeshBuild& roadMesh, const RoadTerrainConformOptions& options = {});
 
 /**
  * @brief Atomically restore a conformance receipt if none of its samples became stale.
@@ -108,7 +107,7 @@ conformHeightmapToRoadWithReceipt(Heightmap& terrain, const MeshBuild& roadMesh,
  * @return Number of restored samples, or a structured stale/validation diagnostic.
  * @cost Linear in receipt sample count.
  */
-[[nodiscard]] Result<int> restoreHeightmapFromRoad(Heightmap& terrain,
-                                                   const RoadTerrainConformReceipt& receipt);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> restoreHeightmapFromRoad(Heightmap&                       terrain,
+                                                                        const RoadTerrainConformReceipt& receipt);
 
 }  // namespace eve::procgen::road
