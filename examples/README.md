@@ -226,6 +226,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [shader_effect_package](shader_effect_package/README.md) | 打包式 shader effect 资产包（`effect.vert` / `effect.frag` + `parameters.json`） |
 | [particle-effects](particle-effects/README.md) | 粒子特效 JSON 资产包：fire / smoke / impact / trail / weather，供 `newEffectFromFile` 加载 |
 | [surface-fluid-dynamic](surface-fluid-dynamic/README.md) | C++ 侧表面流体参考实现（确定性 CPU 解算） |
+| [workspace-recipes](workspace-recipes/README.md) | 编辑器 Workspace 配方目录：嵌套薄壳入口，指向完整领域编辑器示例（本身不参与 smoke） |
 
 ## 与设计目标对照
 

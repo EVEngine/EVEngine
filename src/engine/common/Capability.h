@@ -89,6 +89,54 @@ I* query() {
     return static_cast<I*>(detail::queryRaw(I::capabilityName));
 }
 
+/**
+ * @brief One-shot borrowed capability pointer for composition roots and hot paths.
+ *
+ * Resolve once at construction (or via `bind()`), store as a member, and never
+ * re-query the registry from a per-frame path. There is intentionally no
+ * `requery()` / `operator()` that hits the table again (`R-MECH-2` / `R-MECH-3`).
+ *
+ * @cost O(1) member access after construction; construction performs one registry lookup.
+ * @ownership Borrowed; the provider must outlive this reference or be revoked only after
+ *            every `ProviderRef` that observed it has been destroyed.
+ * @lifetime Valid until the referenced provider is revoked/replaced; the cached pointer is
+ *           not updated automatically.
+ * @thread Same affinity as `query()` — safe to read after registration has settled.
+ */
+template <class I>
+class ProviderRef {
+public:
+    ProviderRef() = default;
+    /** @brief Capture an already-resolved provider pointer (may be nullptr). */
+    explicit ProviderRef(I* impl) noexcept : ptr_(impl) {}
+
+    ProviderRef(const ProviderRef&)            = delete;
+    ProviderRef& operator=(const ProviderRef&) = delete;
+    ProviderRef(ProviderRef&& other) noexcept : ptr_(other.ptr_) { other.ptr_ = nullptr; }
+    ProviderRef& operator=(ProviderRef&& other) noexcept {
+        if (this != &other) {
+            ptr_       = other.ptr_;
+            other.ptr_ = nullptr;
+        }
+        return *this;
+    }
+
+    /**
+     * @brief Resolve `I` once from the registry.
+     * @return A `ProviderRef` holding the current provider, or an empty one when absent.
+     */
+    [[nodiscard]] static ProviderRef bind() { return ProviderRef(query<I>()); }
+
+    /** @brief Borrowed provider, or nullptr when unbound / absent at bind time. */
+    [[nodiscard]] I* get() const noexcept { return ptr_; }
+    [[nodiscard]] explicit operator bool() const noexcept { return ptr_ != nullptr; }
+    [[nodiscard]] I& operator*() const noexcept { return *ptr_; }
+    [[nodiscard]] I* operator->() const noexcept { return ptr_; }
+
+private:
+    I* ptr_ = nullptr;
+};
+
 /** Withdraw `impl`; a no-op when something else has since taken the slot. */
 template <class I>
 /** @brief Revoke. */

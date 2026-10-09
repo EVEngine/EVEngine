@@ -1,7 +1,10 @@
 #include "statepatch/StatePatch.h"
 
+#include "common/Capability.h"
 #include "common/Json.h"
+#include "common/StateAccess.h"
 #include "common/SquirrelBinding.h"
+#include "statepatch/StateAccessAdapter.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -635,9 +638,40 @@ eve::Result<void> StoreTransactionParticipant::compensate(const transaction::Tra
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
+StatePatch::~StatePatch() {
+    for (auto& [store, adapter] : worldAdapters_) {
+        (void)store;
+        if (!adapter) continue;
+        eve::cap::removeListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(adapter.get()));
+        eve::cap::removeListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(adapter.get()));
+    }
+    worldAdapters_.clear();
+}
+
+void StatePatch::attachWorldAdapter(Store& store) {
+    if (worldAdapters_.contains(&store)) return;
+    auto adapter = std::make_unique<StatePatchStateAdapter>(store);
+    eve::cap::addListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(adapter.get()));
+    eve::cap::addListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(adapter.get()));
+    worldAdapters_.emplace(&store, std::move(adapter));
+}
+
+void StatePatch::detachWorldAdapter(Store& store) {
+    const auto found = worldAdapters_.find(&store);
+    if (found == worldAdapters_.end()) return;
+    eve::cap::removeListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(found->second.get()));
+    eve::cap::removeListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(found->second.get()));
+    worldAdapters_.erase(found);
+}
+
 eve::Result<StateStoreHandleRef> StatePatch::newStore() {
     StatePatch* module = StatePatch::create();
-    return module->stores_.emplace(std::make_unique<Store>());
+    auto created = module->stores_.emplace(std::make_unique<Store>());
+    if (!created) return created;
+    auto ref = std::move(created).takeValue();
+    auto store = module->stores_.resolve(ref);
+    if (store.isBound()) module->attachWorldAdapter(*store);
+    return eve::Result<StateStoreHandleRef>::success(ref, eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::script::Borrowed<PatchBatch> StatePatch::resolveBatch(StateBatchHandleRef reference) noexcept {
@@ -681,6 +715,8 @@ eve::Result<void> StatePatch::release(StateStoreHandleRef reference) {
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                  "StatePatch module is no longer loaded", "store", {},
                                                                  "statepatch.squirrel"));
+    auto store = module->stores_.resolve(reference);
+    if (store.isBound()) module->detachWorldAdapter(*store);
     return module->stores_.erase(reference);
 }
 
