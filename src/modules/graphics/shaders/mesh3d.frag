@@ -4,6 +4,7 @@
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
 #include "virtual_texture.glsl"
+#include "light3d_spot.glsl"
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -13,8 +14,9 @@ layout(location = 4) in vec3 vCameraPos;
 layout(location = 5) in vec3 vViewPos;
 
 struct Light3D {
-    vec4 posRadius; // xyz = point OR dir; w = radius (0 => directional)
-    vec4 color;
+    vec4 posRadius; // xyz = point/spot OR dir; w = radius (0 => directional)
+    vec4 color;     // rgb * intensity; a = spotBias when spot
+    vec4 spot;      // xyz = beam dir; w = spotScale (<=0 => not a spot)
 };
 
 layout(set = 0, binding = 0, std140) uniform Frame {
@@ -62,6 +64,11 @@ layout(set = 0, binding = 4, std140) uniform ShadowFrame {
     vec4 bias;   // x = c0 fallback, y = enabled, z = receive, w unused
     vec4 cascadeBias; // xyz = per-cascade NDC compare bias
     vec4 cascadeTexel; // xyz = world units per shadow texel
+    mat4 localVP[4];
+    vec4 localSlot01; // per packed-light local slot (0..3) or -1
+    vec4 localSlot23;
+    vec4 localBias;
+    vec4 localMeta; // x = count
 } shadow;
 
 layout(set = 0, binding = 5) uniform sampler2DArrayShadow shadowMap;
@@ -460,6 +467,20 @@ void main() {
             L = toL / max(dist, 1e-4);
             float atten = clamp(1.0 - dist / max(Lgt.posRadius.w, 1e-3), 0.0, 1.0);
             atten *= atten;
+            // Spot cone: light-to-surface is -L.
+            atten *= spotAttenuation3D(-L, Lgt.spot, Lgt.color.a);
+            // Local spot shadow: slot is encoded in beam length (see light3d_spot.glsl).
+            int si = spotLocalShadowSlot(Lgt.spot);
+            if (si >= 0 && shadow.bias.z > 0.5) {
+                vec4 lc = shadow.localVP[si] * vec4(vWorldPos, 1.0);
+                vec3 proj = lc.xyz / max(lc.w, 1e-4);
+                vec2 uv = proj.xy * 0.5 + 0.5;
+                float zref = proj.z - shadow.localBias[si];
+                float vis = 1.0;
+                if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0 && lc.w > 0.0)
+                    vis = texture(shadowMap, vec4(uv, float(3 + si), zref));
+                atten *= mix(1.0 - shadow.splits.w, 1.0, vis);
+            }
             radiance *= atten;
         }
         Lo += shadeLight(N, V, albedo, metallic, roughness, L, radiance);

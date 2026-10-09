@@ -615,7 +615,7 @@ void Graphics::destroyShadowResources() {
     destroyPipeline(device, shadowSkinAlphaSingleSidedPipeline);
     destroyPipelineLayout(device, shadowAlphaPipelineLayout);
     for (auto &slot : shadowMaps) {
-        for (int i = 0; i < ShadowConfig::kCascades; ++i) {
+        for (int i = 0; i < ShadowConfig::kTotalLayers; ++i) {
             if (slot.framebuffers[i]) {
                 device->destroyFramebuffer(slot.framebuffers[i]);
                 slot.framebuffers[i] = vk::Framebuffer{};
@@ -1734,7 +1734,7 @@ void Graphics::createShadowResources() {
     if (!shadowMaps.empty()) return;
 
     const uint32_t size = uint32_t(ShadowConfig::kMapSize);
-    const uint32_t layers = uint32_t(ShadowConfig::kCascades);
+    const uint32_t layers = uint32_t(ShadowConfig::kTotalLayers);
 
     shadowMaps.resize(kAsyncResourceCopies);
     for (auto &slot : shadowMaps)
@@ -1921,7 +1921,7 @@ void Graphics::createShadowResources() {
                                 clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
                                 for (auto &slot : shadowMaps) {
                                     slot.image.beginDepthAttachment();
-                                    for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+                                    for (int c = 0; c < ShadowConfig::kTotalLayers; ++c) {
                                         vk::RenderPassBeginInfo rpBegin{};
                                         rpBegin.renderPass = shadowRenderPass;
                                         rpBegin.framebuffer = slot.framebuffers[c];
