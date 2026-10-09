@@ -938,6 +938,14 @@ Shape3D *World3D::findShape(PhysicsShapeHandle handle) const {
     return found->second;
 }
 
+Shape3D *World3D::findShapeById(int shapeId) const {
+    if (!isValid() || shapeId < 0) return nullptr;
+    for (Shape3D *shape : shapes_) {
+        if (shape && shape->isValid() && shape->getId() == shapeId) return shape;
+    }
+    return nullptr;
+}
+
 Joint3D *World3D::findJoint(PhysicsJointHandle handle) const {
     if (!isValid() || handle.isInvalid()) return nullptr;
     const auto found = jointHandles_.find(handle);

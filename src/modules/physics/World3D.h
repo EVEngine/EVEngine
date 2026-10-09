@@ -324,6 +324,8 @@ public:
     [[nodiscard]] Body3D *findBodyById(int bodyId) const;
     /** @brief Resolves a live shape handle; returns null when stale or foreign. */
     [[nodiscard]] Shape3D *findShape(PhysicsShapeHandle handle) const;
+    /** @brief Resolves a live shape by its world-local stable event/query id. */
+    [[nodiscard]] Shape3D *findShapeById(int shapeId) const;
     /** @brief Resolves a live joint handle; returns null when stale or foreign. */
     [[nodiscard]] Joint3D *findJoint(PhysicsJointHandle handle) const;
     /**
