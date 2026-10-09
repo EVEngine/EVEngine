@@ -25,7 +25,10 @@ struct RoadTerrainConformOptions {
     std::size_t maximumWork = 16u * 1024u * 1024u;
 };
 
-/** @brief Exact changed samples needed to safely restore one road terrain conformance. */
+/**
+ * @brief Exact changed samples needed to safely restore one road terrain conformance.
+ * @cost Storage, copy and move-destruction work are linear in the number of changed samples.
+ */
 struct RoadTerrainConformReceipt {
     int                        width  = 0;
     int                        height = 0;
