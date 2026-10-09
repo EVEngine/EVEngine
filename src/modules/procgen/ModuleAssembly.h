@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Result.h"
 
 #include <array>
@@ -65,7 +66,7 @@ struct ModuleAssemblyConstraints {
  * @thread Affine to the caller; external synchronization is required.
  * @reentrancy Does not invoke callbacks.
  */
-class ModuleAssemblyPlan {
+class EVENGINE_API_DOMAINS ModuleAssemblyPlan {
 public:
     /** @brief Construct an empty plan with default constraints. */
     ModuleAssemblyPlan() = default;

@@ -1,8 +1,10 @@
 #include "devtools/McpRuntimeTools.hpp"
 
 #include "devtools/ConsolePanel.hpp"
+#include "devtools/Debugger.hpp"
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpJson.hpp"
+#include "devtools/SoftRestart.hpp"
 
 #include "common/Capability.h"
 #include "common/CrashLog.h"
@@ -322,11 +324,45 @@ std::string screenshotImage(Poco::JSON::Object::Ptr args) {
     return imageContentResult(payload, "image/png", mcpStringify(Poco::Dynamic::Var(caption)));
 }
 
+std::string softRestart(Poco::JSON::Object::Ptr args) {
+    HSQUIRRELVM vm = Debugger::instance().vm();
+    if (!vm) return errorPayload("no VM attached; start the game with eve run --mcp-port ...");
+
+    SoftRestartRequest request;
+    request.reloadScripts = getArgBool(args, "reloadScripts", true);
+    if (args && args->has("args")) {
+        try {
+            request.args = args->getObject("args");
+        } catch (...) {
+            return errorPayload("args must be a JSON object");
+        }
+    }
+
+    auto result = executeSoftRestart(vm, std::move(request));
+    if (!result) {
+        const auto& status = result.status();
+        const auto* diag   = status.primaryDiagnostic();
+        return errorPayload(diag && !diag->message().empty() ? diag->message()
+                                                             : std::string(statusCodeName(status.code())));
+    }
+
+    const SoftRestartReport& report = result.value();
+    Poco::JSON::Object::Ptr  out    = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+    out->set("ok", true);
+    out->set("keptResources", true);
+    out->set("resourceCountBefore", static_cast<Poco::Int64>(report.resourceCountBefore));
+    out->set("resourceCountAfter", static_cast<Poco::Int64>(report.resourceCountAfter));
+    out->set("scriptsReloaded", report.scriptsReloaded);
+    out->set("initCalled", report.initCalled);
+    out->set("args", report.args ? Poco::Dynamic::Var(report.args) : Poco::Dynamic::Var(Poco::JSON::Object::Ptr(new Poco::JSON::Object())));
+    return textPayload(out);
+}
+
 }  // namespace
 
 bool isMcpRuntimeTool(std::string_view name) {
     return name == "eve_console_read" || name == "eve_console_write" || name == "eve_console_clear" ||
-           name == "eve_screenshot_image" || name == "eve_crash_report";
+           name == "eve_screenshot_image" || name == "eve_crash_report" || name == "eve_restart";
 }
 
 std::string callMcpRuntimeTool(std::string_view name, Poco::JSON::Object::Ptr args) {
@@ -335,6 +371,7 @@ std::string callMcpRuntimeTool(std::string_view name, Poco::JSON::Object::Ptr ar
     if (name == "eve_console_clear") return consoleClear();
     if (name == "eve_screenshot_image") return screenshotImage(args);
     if (name == "eve_crash_report") return crashReport(args);
+    if (name == "eve_restart") return softRestart(args);
     return errorPayload("unknown runtime tool '" + std::string(name) + "'");
 }
 
@@ -357,7 +394,7 @@ Poco::JSON::Object::Ptr crashLogSummary() {
 }
 
 std::string_view mcpRuntimeToolSchemas() {
-    return R"json({"name":"eve_console_read","description":"Read retained runtime console lines: Squirrel print/error, engine stderr (level engine), eve.dev.console.* and agent markers. Lines carry a monotonic seq; pass the returned cursor back as sinceSeq for an incremental read (sinceSeq=0 reads the newest lines). truncated=true means lines were dropped before sinceSeq.","inputSchema":{"type":"object","properties":{"limit":{"type":"integer","minimum":1,"maximum":1000},"sinceSeq":{"type":"integer","minimum":0},"level":{"type":"string","enum":["debug","info","warn","error","print","cmd","result","engine"]}}}},{"name":"eve_console_write","description":"Append one agent marker line to the runtime console so it shares the game's ordered diagnosis stream.","inputSchema":{"type":"object","properties":{"text":{"type":"string"},"level":{"type":"string","enum":["debug","info","warn","error"]}},"required":["text"]}},{"name":"eve_console_clear","description":"Drop retained console lines. The sequence cursor keeps advancing, so an existing sinceSeq never re-reads or stalls.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_screenshot_image","description":"Capture the presented frame and return it as an MCP image content item, so a client without filesystem access can look at the game. After readback is enabled the first call reports ok=false with retryable=true; wait one rendered frame and call again.","inputSchema":{"type":"object","properties":{"maxBytes":{"type":"integer","minimum":1024,"maximum":33554432,"description":"base64 payload budget (default 2097152)"}}}},{"name":"eve_crash_report","description":"Explain why a previous run ended: reads the persistent eve.log written by common/CrashLog.h and returns session/crash counts (window-scoped), the last crash timestamp, whether the session before the current one ended cleanly or crashed, and a bounded tail. Use it after reconnecting to a restarted game, since the MCP server dies with the process it served.","inputSchema":{"type":"object","properties":{"lines":{"type":"integer","minimum":1,"maximum":2000,"description":"tail lines to return (default 200)"}}}})json";
+    return R"json({"name":"eve_console_read","description":"Read retained runtime console lines: Squirrel print/error, engine stderr (level engine), eve.dev.console.* and agent markers. Lines carry a monotonic seq; pass the returned cursor back as sinceSeq for an incremental read (sinceSeq=0 reads the newest lines). truncated=true means lines were dropped before sinceSeq.","inputSchema":{"type":"object","properties":{"limit":{"type":"integer","minimum":1,"maximum":1000},"sinceSeq":{"type":"integer","minimum":0},"level":{"type":"string","enum":["debug","info","warn","error","print","cmd","result","engine"]}}}},{"name":"eve_console_write","description":"Append one agent marker line to the runtime console so it shares the game's ordered diagnosis stream.","inputSchema":{"type":"object","properties":{"text":{"type":"string"},"level":{"type":"string","enum":["debug","info","warn","error"]}},"required":["text"]}},{"name":"eve_console_clear","description":"Drop retained console lines. The sequence cursor keeps advancing, so an existing sinceSeq never re-reads or stalls.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_screenshot_image","description":"Capture the presented frame and return it as an MCP image content item, so a client without filesystem access can look at the game. After readback is enabled the first call reports ok=false with retryable=true; wait one rendered frame and call again.","inputSchema":{"type":"object","properties":{"maxBytes":{"type":"integer","minimum":1024,"maximum":33554432,"description":"base64 payload budget (default 2097152)"}}}},{"name":"eve_crash_report","description":"Explain why a previous run ended: reads the persistent eve.log written by common/CrashLog.h and returns session/crash counts (window-scoped), the last crash timestamp, whether the session before the current one ended cleanly or crashed, and a bounded tail. Use it after reconnecting to a restarted game, since the MCP server dies with the process it served.","inputSchema":{"type":"object","properties":{"lines":{"type":"integer","minimum":1,"maximum":2000,"description":"tail lines to return (default 200)"}}}},{"name":"eve_restart","description":"Soft-restart the running game without unloading cached resources or killing the process (keeps Vulkan/MCP/ResourceManager). Optional args become eve.restartArgs for eve_init / eve_before_restart / eve_after_restart. Prefer this over relaunching eve when iterating on gameplay.","inputSchema":{"type":"object","properties":{"args":{"type":"object","description":"Game restart parameters (seed, scene, level, ...)"},"reloadScripts":{"type":"boolean","description":"Re-dofile tracked scripts and clear persist roots before eve_init (default true). When false, only reset native providers and call eve_restart(args) if present else eve_init()."}}}})json";
 }
 
 }  // namespace eve::dev

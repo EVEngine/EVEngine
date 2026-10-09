@@ -31,6 +31,7 @@
 #include "graphics/GlobalIllumination.h"
 #include "graphics/GrassWind.h"
 #include "graphics/Light.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/MapFog.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -507,10 +508,16 @@ void Graphics::expose(ssq::Table& table) {
     light3d.addFunc("setColor", &Light3D::setColor);
     light3d.addFunc("setRadius", &Light3D::setRadius);
     light3d.addFunc("getRadius", &Light3D::getRadius);
+    light3d.addFunc("setSpotAngle", &Light3D::setSpotAngle);
+    light3d.addFunc("getSpotAngle", &Light3D::getSpotAngle);
+    light3d.addFunc("setSpotSoftness", &Light3D::setSpotSoftness);
+    light3d.addFunc("getSpotSoftness", &Light3D::getSpotSoftness);
     light3d.addFunc("setEnabled", &Light3D::setEnabled);
     light3d.addFunc("isEnabled", &Light3D::isEnabled);
     light3d.addFunc("setCastShadow", &Light3D::setCastShadow);
     light3d.addFunc("getCastShadow", &Light3D::getCastShadow);
+    light3d.addFunc("setShadowMethod", &Light3D::setShadowMethod);
+    light3d.addFunc("getShadowMethod", &Light3D::getShadowMethod);
     light3d.addFunc("setShadowBias", &Light3D::setShadowBias);
     light3d.addFunc("getShadowBias", &Light3D::getShadowBias);
     light3d.addFunc("setShadowStrength", &Light3D::setShadowStrength);
@@ -527,7 +534,6 @@ void Graphics::expose(ssq::Table& table) {
                          float radius) {
                           return Light3D::createEmissiveProxy(x, y, z, r, g, b, intensity, radius);
                       }));
-
     detail::exposeRenderable3DBindings(table);
 
     auto sprite2d = table.addClass<Renderable2D>(
@@ -1408,6 +1414,32 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getWidth", &Graphics::getWidth);
     cls.addFunc("getHeight", &Graphics::getHeight);
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
+    // Process-wide shadow scheme toggles (dir CSM / spot perspective / point cube).
+    cls.addFunc("setShadowSchemeDirectionalEnabled", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enableDirectionalCsm = enabled;
+    });
+    cls.addFunc("setShadowSchemeSpotEnabled", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enableSpotPerspective = enabled;
+    });
+    cls.addFunc("setShadowSchemePointEnabled", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enablePointCube = enabled;
+    });
+    cls.addFunc("setShadowSchemeMaxSpotCasters", [](Graphics*, int count) {
+        ShadowSchemeSettings::current().maxSpotShadowCasters = count;
+    });
+    cls.addFunc("getShadowSchemeMaxSpotCasters",
+                [](Graphics*) { return ShadowSchemeSettings::current().maxSpotShadowCasters; });
+    cls.addFunc("setShadowSchemePagingEnabled", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enableLocalPaging = enabled;
+    });
+    cls.addFunc("setShadowSchemeMaxLocalUpdates", [](Graphics*, int count) {
+        ShadowSchemeSettings::current().maxLocalUpdatesPerFrame = count;
+    });
+    cls.addFunc("getShadowSchemeMaxLocalUpdates",
+                [](Graphics*) { return ShadowSchemeSettings::current().maxLocalUpdatesPerFrame; });
+    cls.addFunc("setShadowSchemeHysteresisBonus", [](Graphics*, float bonus) {
+        ShadowSchemeSettings::current().hysteresisBonus = bonus;
+    });
     cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);

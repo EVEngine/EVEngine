@@ -1,6 +1,7 @@
 #version 450
 
 #extension GL_GOOGLE_include_directive : enable
+#include "light3d_spot.glsl"
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
 #include "virtual_texture.glsl"
@@ -34,8 +35,9 @@ layout(set = 0, binding = 0, std140) uniform Frame {
 } ubo;
 
 struct Light3D {
-    vec4 posRadius;
-    vec4 color;
+    vec4 posRadius; // xyz = point/spot OR dir; w = radius (0 => directional)
+    vec4 color;     // rgb * intensity; a = spotBias when spot
+    vec4 spot;      // xyz = beam dir; w = spotScale (<=0 => not a spot)
 };
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
@@ -63,6 +65,11 @@ layout(set = 0, binding = 7, std140) uniform ShadowFrame {
     vec4 bias;
     vec4 cascadeBias;
     vec4 cascadeTexel;
+    mat4 localVP[4];
+    vec4 localSlot01;
+    vec4 localSlot23;
+    vec4 localBias;
+    vec4 localMeta;
 } shadow;
 
 layout(set = 0, binding = 8) uniform sampler2DArrayShadow shadowMap;
@@ -378,6 +385,18 @@ void main() {
         vec3 L = toL / max(dist, 1e-4);
         float atten = clamp(1.0 - dist / max(Lgt.posRadius.w, 1e-3), 0.0, 1.0);
         atten *= atten;
+        atten *= spotAttenuation3D(-L, Lgt.spot, Lgt.color.a);
+        int si = spotLocalShadowSlot(Lgt.spot);
+        if (si >= 0 && shadow.bias.z > 0.5) {
+            vec4 lc = shadow.localVP[si] * vec4(vWorldPos, 1.0);
+            vec3 proj = lc.xyz / max(lc.w, 1e-4);
+            vec2 uv = proj.xy * 0.5 + 0.5;
+            float zref = proj.z - shadow.localBias[si];
+            float vis = 1.0;
+            if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0 && lc.w > 0.0)
+                vis = texture(shadowMap, vec4(uv, float(3 + si), zref));
+            atten *= mix(1.0 - shadow.splits.w, 1.0, vis);
+        }
         radiance *= atten;
         Lo += shadeLight(N, V, albedo, metallic, roughness, L, radiance);
     }

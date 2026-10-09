@@ -3285,3 +3285,19 @@ v1 无前驱迁移，不恢复 placement；调用成本随 JSON/连接器大小�
 `getPlacementCount()`、`getPlacementModule(index)`、`getPlacementX(index)`、
 `getPlacementY(index)`、`getPlacementZ(index)`、`getPlacementYawDegrees(index)`
 读取已提交的布局及米制变换。所有方法由调用者线程独占使用，不执行回调、不持锁。
+
+# House generation grid and points
+
+房屋生成已归入 procgen，`eve.HouseGen()` 保留为兼容构造器。它提供
+`loadComponentsFromJson`、`loadComponentsFromFile`、`clearComponents`、
+`getComponentCount`、`newRequest` 与 `newLayout`；请求可通过 `setPlot`、
+`setFloors`、`setModuleSize`、`setFloorHeight`、`setStyle`、`setFootprint`、
+`setRoof`、`setEntrance`、`setRequiredRooms` 与 `setPerimeter` 配置。
+布局提供 `toJson`、`fromJson`、`getInstanceCount`、`getInstanceComponentId`、
+`getInstanceX`、`getInstanceY`、`getInstanceZ`、`getInstanceRotationDeg`、
+`getFloorHeight`、`getFootprintStyle`、`getRoofStyle`、`getRoomCount`、
+`getDiagnosticCount`、`writeFootprintGrid` 与 `writeComponentPoints`。
+
+房屋不定义专用图类型。`writeFootprintGrid` 输出 `Grid2D`，供现有 `GridGraph.grid.input` 使用；
+`writeComponentPoints` 输出 `PointSet`，供现有 `PointGraph.input` 使用。后续筛选、变换、合并、
+缓存与序列化全部由既有 graph 系统处理。

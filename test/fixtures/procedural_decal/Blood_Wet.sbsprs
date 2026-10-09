@@ -1,0 +1,29 @@
+<sbspresets formatversion="1.0" count="1"><sbspreset pkgurl="pkg://EV_ProceduralDecalV1_Standard" label="" >
+<presetinput identifier="$outputsize" uid="3539185287" type="8" value="11,11" />
+<presetinput identifier="$randomseed" uid="2239871189" type="4" value="15870" />
+<presetinput identifier="quality" uid="3168543074" type="4" value="1" />
+<presetinput identifier="ab_height_masking" uid="3168543080" type="0" value="0.501" />
+<presetinput identifier="a_amount" uid="3168543092" type="0" value="0.697" />
+<presetinput identifier="a_pattern" uid="3168543090" type="4" value="14" />
+<presetinput identifier="a_tweak" uid="3168543088" type="0" value="0.16" />
+<presetinput identifier="a_blur" uid="3168543100" type="0" value="0.791" />
+<presetinput identifier="a_contrast" uid="3168543098" type="0" value="0.82" />
+<presetinput identifier="a_color" uid="3168543096" type="2" value="0.584079,0.000910581,0.000303527" />
+<presetinput identifier="a_color_value_variation" uid="3168542982" type="0" value="0.414" />
+<presetinput identifier="a_color_variation_type" uid="3168542978" type="0" value="0.145" />
+<presetinput identifier="a_roughness" uid="3168542976" type="0" value="0.033" />
+<presetinput identifier="a_rough_variation" uid="3168542990" type="0" value="0.082" />
+<presetinput identifier="a_rough_variation_type" uid="3168542988" type="0" value="0.469" />
+<presetinput identifier="a_normal" uid="3168542986" type="0" value="1.759" />
+<presetinput identifier="b_amount" uid="3168543004" type="0" value="0.645" />
+<presetinput identifier="b_pattern" uid="3168543002" type="4" value="3" />
+<presetinput identifier="b_tweak" uid="3168543000" type="0" value="0.792" />
+<presetinput identifier="b_color" uid="3168543008" type="2" value="0.645833,0.0981178,0.0975478" />
+<presetinput identifier="b_color_opacity" uid="3168543022" type="0" value="0.266" />
+<presetinput identifier="b_color_blurbelow" uid="3168543020" type="0" value="1.012" />
+<presetinput identifier="b_color_value_variation" uid="3168543018" type="0" value="0.518" />
+<presetinput identifier="b_color_variation_type" uid="3168543030" type="0" value="0.508" />
+<presetinput identifier="b_roughness" uid="3168543028" type="0" value="0.049" />
+<presetinput identifier="b_normal" uid="3168543038" type="0" value="0.5" />
+</sbspreset>
+</sbspresets>

@@ -110,7 +110,7 @@ Light3D *Light3D::createEmissiveProxy(float x, float y, float z, float r, float 
 
 void Light3D::setType(const std::string &type) {
     auto d = data();
-    if (type == "dir" || type == "point")
+    if (type == "dir" || type == "point" || type == "spot")
         d->type = type;
     else
         d->type = "point";
@@ -151,11 +151,63 @@ void Light3D::setColor(float r, float g, float b, float intensity) {
 void Light3D::setRadius(float radius) { data()->radius = radius > 0.f ? radius : 0.f; }
 float Light3D::getRadius() { return data()->radius; }
 
+void Light3D::setSpotAngle(float degrees) {
+    data()->spotAngleDeg = std::clamp(degrees, 0.1f, 89.f);
+}
+float Light3D::getSpotAngle() { return data()->spotAngleDeg; }
+
+void Light3D::setSpotSoftness(float softness) {
+    data()->spotSoftness = std::clamp(softness, 0.f, 1.f);
+}
+float Light3D::getSpotSoftness() { return data()->spotSoftness; }
+
 void Light3D::setEnabled(bool enabled) { data()->enabled = enabled; }
 bool Light3D::isEnabled() { return data()->enabled; }
 
 void Light3D::setCastShadow(bool cast) { data()->castShadow = cast; }
 bool Light3D::getCastShadow() { return data()->castShadow; }
+
+void Light3D::setShadowMethod(const std::string &method) {
+    // Keep parse logic local so Light.cpp does not depend on ShadowScheme at link for
+    // every translation unit that only needs Light3D; names match parseShadowMethod.
+    auto equals = [](std::string_view a, std::string_view b) {
+        if (a.size() != b.size()) return false;
+        for (size_t i = 0; i < a.size(); ++i) {
+            const char ca = (a[i] >= 'A' && a[i] <= 'Z') ? char(a[i] - 'A' + 'a') : a[i];
+            const char cb = (b[i] >= 'A' && b[i] <= 'Z') ? char(b[i] - 'A' + 'a') : b[i];
+            if (ca != cb) return false;
+        }
+        return true;
+    };
+    std::uint8_t value = data()->shadowMethod;
+    if (equals(method, "auto")) value = 0;
+    else if (equals(method, "none") || equals(method, "off"))
+        value = 1;
+    else if (equals(method, "csm") || equals(method, "cascaded") || equals(method, "directional"))
+        value = 2;
+    else if (equals(method, "perspective") || equals(method, "spot"))
+        value = 3;
+    else if (equals(method, "cube") || equals(method, "cubemap") || equals(method, "point"))
+        value = 4;
+    else
+        return;
+    data()->shadowMethod = value;
+}
+
+std::string Light3D::getShadowMethod() {
+    switch (data()->shadowMethod) {
+    case 1:
+        return "none";
+    case 2:
+        return "csm";
+    case 3:
+        return "perspective";
+    case 4:
+        return "cube";
+    default:
+        return "auto";
+    }
+}
 
 void Light3D::setShadowBias(float bias) { data()->shadowBias = bias < 0.f ? 0.f : bias; }
 float Light3D::getShadowBias() { return data()->shadowBias; }

@@ -655,6 +655,40 @@
       "failure_injection": "prepare, commit, rollback, restore and capability-loss failures are injected and assert no partial publication."
     },
     {
+      "id": "devtools-soft-restart-module-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/**",
+      "owner": "devtools::SoftRestart",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Soft restart walks every registered IStateProvider via forEach so game state resets without clearing ResourceManager.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/SoftRestart.cpp",
+        "src/engine/common/IStateProvider.h",
+        "docs/dev/AI与MCP支持.md"
+      ],
+      "tests": [
+        "test/mcp_soft_restart.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IStateProvider",
+          "required": false,
+          "fallback": "empty forEach set: soft restart still reloads scripts / calls eve_init; no native providers reset"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "devtools soft-restart remains available; IStateProvider listeners may be empty when modules are trimmed"
+      },
+      "thread_affinity": "main / MCP poll thread that owns the VM; forEach is not cross-thread",
+      "hot_path": []
+    },
+    {
       "id": "graphics-import-surface",
       "rule": "module-interface",
       "scope": "src/modules/graphics/**",

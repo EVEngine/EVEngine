@@ -363,7 +363,7 @@ void Graphics::createDefaultTextures() {
         flatDepthTexture3D = gpu;
     }
 
-    // 1x1x3 depth-array placeholder for the mesh3d shadow bindings (5/8).
+    // 1x1xN depth-array placeholder for the mesh3d shadow bindings (5/8).
     // sampleShadowPCF() early-outs (bias.y < 0.5) when shadows are disabled,
     // so the texture is never actually sampled.
     {
@@ -371,7 +371,7 @@ void Graphics::createDefaultTextures() {
         WGPUTextureDescriptor td{};
         td.label         = sv("eve_default_shadow_depth");
         td.dimension     = WGPUTextureDimension_2D;
-        td.size          = {1, 1, 3};
+        td.size          = {1, 1, static_cast<uint32_t>(ShadowConfig::kTotalLayers)};
         td.sampleCount   = 1;
         td.format        = WGPUTextureFormat_Depth32Float;
         td.mipLevelCount = 1;
@@ -383,7 +383,7 @@ void Graphics::createDefaultTextures() {
         vd.baseMipLevel    = 0;
         vd.mipLevelCount   = 1;
         vd.baseArrayLayer  = 0;
-        vd.arrayLayerCount = 3;
+        vd.arrayLayerCount = static_cast<uint32_t>(ShadowConfig::kTotalLayers);
         gpu->view          = gpu->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor*>(&vd));
         WGPUSamplerDescriptor sd{};
         sd.label         = sv("eve_default_shadow_sampler");
@@ -527,7 +527,7 @@ wgpu::BindGroupLayout Graphics::makeGbufferBindGroupLayout() {
 
 wgpu::BindGroupLayout Graphics::makeDecalBindGroupLayout() {
     BindGroupLayoutBuilder b;
-    b.buffer(0, wgpu::ShaderStage::Fragment, wgpu::BufferBindingType::Uniform, true, 240);
+    b.buffer(0, wgpu::ShaderStage::Fragment, wgpu::BufferBindingType::Uniform, true, 256);
     for (uint32_t i = 1; i <= 3; ++i) {
         b.texture(i, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float, wgpu::TextureViewDimension::e2D);
     }
@@ -3732,7 +3732,7 @@ void Graphics::drawMeshShadowAlpha(Mesh* mesh, const glm::mat4& lightMVP, Textur
 }
 
 void Graphics::endShadowPass() {
-    if (shadowPassCascade < 0 || shadowPassCascade >= ShadowConfig::kCascades) {
+    if (shadowPassCascade < 0 || shadowPassCascade >= ShadowConfig::kTotalLayers) {
         shadowPassCascade = -1;
         shadowPassDraws.clear();
         return;
@@ -3831,7 +3831,8 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
                          Texture *params, const float uvRect[4], float fade,
                          float normalStrength, float roughnessStrength, float metalStrength,
                          float emissiveStrength, int blendMode, int projectionMode,
-                         float blendSharpness) {
+                         float blendSharpness, float parallaxScale, float parallaxMinLayers,
+                         float parallaxMaxLayers, float edgeFadeWidth) {
     if (!decalPassActive) return;
     DecalDraw draw;
     draw.model  = model;
@@ -3840,9 +3841,13 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
     draw.params = params ? params : decalFlatParams;
     if (uvRect) draw.uvRect = glm::vec4(uvRect[0], uvRect[1], uvRect[2], uvRect[3]);
     draw.fadeParams = glm::vec4(fade, normalStrength, roughnessStrength, metalStrength);
-    draw.extraParams =
-        glm::vec4(emissiveStrength, float(blendMode == 1), float(projectionMode == 1),
-                  blendSharpness > 0.f ? blendSharpness : 4.f);
+    draw.extraParams = glm::vec4(emissiveStrength, float(blendMode == 1),
+                                 float(std::clamp(projectionMode, 0, 3)),
+                                 blendSharpness > 0.f ? blendSharpness : 4.f);
+    const float minLayers = std::clamp(parallaxMinLayers, 1.f, 64.f);
+    draw.surfaceParams = glm::vec4(std::clamp(parallaxScale, 0.f, 1.f), minLayers,
+                                   std::clamp(parallaxMaxLayers, minLayers, 64.f),
+                                   std::clamp(edgeFadeWidth, 0.f, 0.49f));
     decalPassDraws.push_back(draw);
 }
 
@@ -3988,7 +3993,8 @@ void Graphics::createShadowResources() {
     WGPUTextureDescriptor td{};
     td.label         = sv("eve_shadow_depth");
     td.dimension     = WGPUTextureDimension_2D;
-    td.size          = {static_cast<uint32_t>(shadowMapSize), static_cast<uint32_t>(shadowMapSize), 3};
+    td.size          = {static_cast<uint32_t>(shadowMapSize), static_cast<uint32_t>(shadowMapSize),
+                        static_cast<uint32_t>(ShadowConfig::kTotalLayers)};
     td.sampleCount   = 1;
     td.format        = WGPUTextureFormat_Depth32Float;
     td.mipLevelCount = 1;
@@ -4371,7 +4377,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
 
 void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto& uboArena = currentUboArena();
-    if (cascade < 0 || cascade >= ShadowConfig::kCascades) return;
+    if (cascade < 0 || cascade >= ShadowConfig::kTotalLayers) return;
     if (!mesh3dShadowPipeline) createShadowPipelines();
     ensureUboArena(uboArena, uboArena.used + shadowCascadeDraws[cascade].size() * 256);
     for (auto& d : shadowCascadeDraws[cascade]) {
@@ -4511,9 +4517,10 @@ void Graphics::flushDecalPass(wgpu::RenderPassEncoder pass) {
         glm::vec4 uvRect;
         glm::vec4 fadeParams;
         glm::vec4 extraParams;
+        glm::vec4 surfaceParams;
         glm::vec4 texel;
     };
-    static_assert(sizeof(DecalUniforms) == 240);
+    static_assert(sizeof(DecalUniforms) == 256);
     for (const auto& draw : decalPassDraws) {
         DecalUniforms uniforms{};
         uniforms.invViewProj = glm::inverse(decalViewProj);
@@ -4524,6 +4531,7 @@ void Graphics::flushDecalPass(wgpu::RenderPassEncoder pass) {
         uniforms.uvRect      = draw.uvRect;
         uniforms.fadeParams  = draw.fadeParams;
         uniforms.extraParams = draw.extraParams;
+        uniforms.surfaceParams = draw.surfaceParams;
         uniforms.texel       = glm::vec4(1.f / float(decalWidth), 1.f / float(decalHeight), 0.f, 0.f);
         uint32_t offset      = uboArena.alloc(256, 256);
         queue.WriteBuffer(uboArena.buffer, offset, &uniforms, sizeof(uniforms));

@@ -76,7 +76,7 @@ struct Mesh3DUBO {
     glm::vec4 diffuseVolumeInfo{0.f};  // x = probe count
     glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f}; // coverage, complementary pattern, enabled
 };
-static_assert(sizeof(Mesh3DUBO) == 2368, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 2496, "Mesh3DUBO layout must match the WGSL Frame block");
 
 /** @brief MeshVertex public API. */
 struct MeshVertex {
@@ -699,7 +699,9 @@ public:
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
                    float metalStrength, float emissiveStrength, int blendMode = 0,
-                   int projectionMode = 0, float blendSharpness = 4.f) override;
+                   int projectionMode = 0, float blendSharpness = 4.f,
+                   float parallaxScale = 0.f, float parallaxMinLayers = 8.f,
+                   float parallaxMaxLayers = 24.f, float edgeFadeWidth = 0.06f) override;
     /** @brief Ends decal pass. */
     void endDecalPass() override;
     /** @brief Reads decal layer to image data. */
@@ -868,6 +870,7 @@ private:
         glm::vec4 uvRect{0.f, 0.f, 1.f, 1.f};
         glm::vec4 fadeParams{1.f, 0.f, 0.f, 0.f};
         glm::vec4 extraParams{0.f};
+        glm::vec4 surfaceParams{0.f, 8.f, 24.f, 0.06f};
     };
 
     void configureSurface(int width, int height);
@@ -1295,7 +1298,7 @@ private:
     // Shadow pass state.
     int shadowPassCascade = -1;
     std::vector<ShadowDraw> shadowPassDraws;
-    std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];
+    std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kTotalLayers];
 
     // GBuffer pass state.
     bool gbufferPassActive = false;
