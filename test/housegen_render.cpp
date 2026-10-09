@@ -500,8 +500,8 @@ TEST_CASE("housegen.materialPreview") {
 
     auto *window = eve::window::Window::create();
     auto *gfx = Graphics::create();
-    auto* filesystem = eve::filesystem::Filesystem::create();
-    auto* models     = eve::model3d::Model3D::create();
+    auto *filesystem = eve::filesystem::Filesystem::create();
+    auto *models     = eve::model3d::Model3D::create();
     REQUIRE(window != nullptr);
     REQUIRE(gfx != nullptr);
     REQUIRE(filesystem != nullptr);
@@ -516,7 +516,7 @@ TEST_CASE("housegen.materialPreview") {
 
     gfx->setScreenReadbackEnabled(true);
     gfx->setBackgroundColor(Color(0.56f, 0.72f, 0.86f, 1.f));
-    Mesh* cube = previewCube(gfx);
+    Mesh *cube = previewCube(gfx);
     REQUIRE(cube != nullptr);
     box(cube, 2.1f, -0.12f, 0.f, 7.2f, 0.18f, 3.2f, 0.22f, 0.38f, 0.18f);
 
@@ -536,7 +536,7 @@ TEST_CASE("housegen.materialPreview") {
     REQUIRE(instantiated.ok());
     auto entities = std::move(instantiated).takeValue();
     REQUIRE(entities.size() >= layout.instances.size());
-    auto* first = static_cast<Renderable3D*>(ecs::try_get(entities.front()));
+    auto *first = static_cast<Renderable3D *>(ecs::try_get(entities.front()));
     REQUIRE(first != nullptr);
     REQUIRE(first->meshRenderer()->texture != nullptr);
     REQUIRE(first->meshRenderer()->normalTexture != nullptr);

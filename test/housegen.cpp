@@ -23,7 +23,7 @@ static const char *kKit = R"({"components":[
  {"id":"roof","model":"fixtures/roof.glb","category":"roof"}
 ]})";
 
-static const char* kInteriorKit = R"({"components":[
+static const char *kInteriorKit = R"({"components":[
  {"id":"foundation","model":"foundation.glb","category":"foundation"},
  {"id":"floor","model":"floor.glb","category":"floor"},
  {"id":"wall","model":"wall.glb","category":"wall"},
@@ -100,9 +100,9 @@ TEST_CASE("procgen.housegen.exportsCanonicalGridAndPointGraphValues") {
     HouseComponentLibrary library;
     REQUIRE(library.loadFromJson(kKit).ok());
     HouseRequest request;
-    request.seed = 42;
-    request.width = 5;
-    request.depth = 4;
+    request.seed   = 42;
+    request.width  = 5;
+    request.depth  = 4;
     request.floors = 2;
 
     HouseLayout layout;
@@ -314,7 +314,7 @@ TEST_CASE("housegen.emitsEveryRequiredRoomInsideTheActiveFootprint") {
         REQUIRE(generator.generate(request, layout).ok());
         REQUIRE_EQ(layout.rooms.size(), size_t(3));
         std::set<std::string> roomTypes;
-        for (const HouseRoom& room : layout.rooms) {
+        for (const HouseRoom &room : layout.rooms) {
             roomTypes.insert(room.type);
             for (int y = room.y; y < room.y + room.depth; ++y)
                 for (int x = room.x; x < room.x + room.width; ++x)
@@ -366,12 +366,12 @@ TEST_CASE("housegen.respectsComponentRotationConstraints") {
 
     REQUIRE(lib.loadFromJson(kKit).ok());
     REQUIRE(HouseGenerator(lib).generate(HouseRequest{}, layout).ok());
-    const auto roof = std::find_if(layout.instances.begin(), layout.instances.end(), [&](const HouseInstance& value) {
+    const auto roof = std::find_if(layout.instances.begin(), layout.instances.end(), [&](const HouseInstance &value) {
         const auto component = lib.find(value.componentId);
         return component && component->get().category == "roof";
     });
     REQUIRE(roof != layout.instances.end());
-    const_cast<HouseInstance&>(*roof).rotationDeg = 45;
+    const_cast<HouseInstance &>(*roof).rotationDeg = 45;
     CHECK(!layout.validate(lib).ok());
 }
 
