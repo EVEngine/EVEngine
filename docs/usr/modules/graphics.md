@@ -4,6 +4,23 @@
 
 清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。Camera2D/Camera3D 提供屏幕与世界坐标换算，供 2D/3D 拾取使用；形状命中测试见 [Math](math.md)，物理体查询见 [Physics](physics.md)。
 
+高级光照 / AO / GI / AA / 体积雾等见 [高级渲染与屏幕空间效果](graphics/rendering-effects.md)。实时雾气专册见 [graphics_fog](graphics_fog.md)。
+
+## 0.6 已知边界
+
+下列能力在 0.6 **可以宣称并写进游戏**；未完成项保持显式 Unsupported / 文档边界，不得静默假实现。
+
+| 主题 | 0.6 已支持 | 已知边界（勿当作完成） |
+|------|------------|------------------------|
+| 光照模式 | `RenderControl.setLightingMode("forwardPlus"\|"hybrid")`；桌面 preset 可切 Hybrid；半透明仍 Forward+ | ClassicScenes 像素对比与 FrameGraph 录制仍待补；Lavapipe/CI 默认 ForwardPlus |
+| 体积雾 / 体积光 | `Volumetric`、[实时雾气](graphics_fog.md)（MAC / ray march / froxel） | 可选：Froxel 绑真实 CSM shadow map、物体空间 AO / RTAO |
+| 显示器 HDR | Vulkan `setDisplayOutputMode`（`sdr`/`auto`/`hdr10`/`scrgb`）；无 HDR 表面软回退 SDR | WebGPU 仅 `sdr`/`auto`；真 HDR 显示器端到端验收仍待做 |
+| 反射探针 | 采集、Registry 调度、sky backup、发布后 `applyToCamera` | **逐像素天空/大气 capture pass**未完成；Vulkan GGX/irradiance **compute filter** 在缺嵌入 SPIR-V 时返回 Unsupported，且**不得**把未 filter 的 staging 当已发布反射 |
+| 抗锯齿 | FXAA 等经 `AntiAliasing` / RenderControl `"aa"` | 硬件 MSAA + 完整多 Pass SMAA LUT + TAA 仍为可选后期 |
+| 其他后端 | 部分资源 Shader / 实例绘制路径仅 Vulkan | 非 Vulkan 返回结构化 `Unsupported`，无静默 CPU 假路径 |
+
+API 细节：光照模式见 [rendering-effects](graphics/rendering-effects.md)；HDR present 与探针绑定见下文「显示器 HDR」「HDR、景深与反射探针绑定」。设计进度见 [`HDR与反射链AAA升级.md`](../../dev/HDR与反射链AAA升级.md)。
+
 ## 基本用法
 
 ```squirrel
@@ -354,9 +371,9 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 - `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getSpotAngle()`、`getSpotSoftness()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowMethod()`、`getShadowSchemeMaxLocalUpdates()`、`getShadowSchemeMaxSpotCasters()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
 - `getTargetX()`、`getTargetY()`、`getTargetZ()`、`getVolumetric()`、`getVolumetricIntensity()`、`getVolumetricOnly()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
-- `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newGroomInstance()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
+- `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newGroomInstance()`、`newHairShader()`、`newMeshCube()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
 - `GroomInstance`：`setForcedLod`、`getForcedLod`、`setScreenSize`、`getScreenSize`、`setWidthScale`、`getWidthScale`、`setSideHint`、`setClusterCullingEnabled`、`isClusterCullingEnabled`、`getActiveLodIndex`、`getActiveRepresentation`、`getClusterCount`、`getVisibleCurveCount`、`setMarschnerLobes`、`getMarschnerR`、`getMarschnerTT`、`getMarschnerTRT`、`setSelfShadow`、`getSelfShadowStrength`、`getSelfShadowBias`、`getRootAoStrength`、`getCurveCount`、`getPointCount`、`getGroupCount`、`isGuideSimulationEnabled`
-- `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureWithSampler()`、`setRenderableTextureFromImageData()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureFromFile()`、`newTextureWithSampler()`、`setRenderableTextureFromImageData()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setCloudShadows()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`getMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPackedNormalMask()`、`setHeightTexture()`、`setPosition()`、`setRadius()`

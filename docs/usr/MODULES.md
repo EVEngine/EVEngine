@@ -35,6 +35,10 @@
 - [网络](modules/network.md)：提供 HTTP 请求、TCP 客户端/服务端和基础网络状态。
 - [数据库](modules/database.md)：SQLite 连接、JSON 行接口与轻量 ORM，用于存档与配置表。
 
+## 存档
+
+- [跨模块存档用法](SAVE.md)：用 `RPGSaveSession` / `InventorySaveSession` / tactics 快照拼玩家存档（0.6 推荐编排）。
+
 ## 游戏玩法
 
 - [脚本 ECS](modules/entity.md)：通过 Component、Entity 和 System 声明数据组合与批量更新逻辑。

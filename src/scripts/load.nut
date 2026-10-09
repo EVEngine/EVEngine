@@ -791,6 +791,12 @@ function handle_dev_key(key, scancode) {
     if (key == "F4") {
         eve.dev.console.toggleVisible();
         print("dev: console " + (eve.dev.console.isVisible() ? "shown" : "hidden") + "\n");
+        return;
+    }
+    // F3 = toggle DevTools FPS / frame-time overlay.
+    if (key == "F3") {
+        eve.dev.stats.toggleVisible();
+        print("dev: frame stats " + (eve.dev.stats.isVisible() ? "shown" : "hidden") + "\n");
     }
 }
 
@@ -802,6 +808,16 @@ function dev_draw_ai() {
 function dev_draw_console() {
     if (has_dev())
         eve.dev.console.draw();
+}
+
+function dev_draw_stats() {
+    if (has_dev())
+        eve.dev.stats.draw();
+}
+
+function dev_sample_stats(dt) {
+    if (has_dev())
+        eve.dev.stats.sample(dt);
 }
 
 // ---------------------------------------------------------------------------
@@ -879,9 +895,11 @@ eve_frame <- function() {
         if ("eve_ui_flush_components" in getroottable())
             eve_ui_flush_components();
         eve_render();
-        // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
+        // ImGui AI/MCP / console / frame-stats panels (need ui.beginFrameAndRender).
+        dev_sample_stats(dt);
         dev_draw_ai();
         dev_draw_console();
+        dev_draw_stats();
         clear_loop_error("frame");
     } catch (e) {
         emit_loop_error("frame", "frame error: ", e);
