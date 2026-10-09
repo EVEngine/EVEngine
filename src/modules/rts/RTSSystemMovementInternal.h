@@ -9,8 +9,8 @@ namespace eve::rts::systems_internal {
 
 // Conservative swept-radius query against the canonical navigation grid.
 // Oversized/invalid queries return false and retain ordinary path steering.
-bool isFormationSegmentClear(const map::Pathfinder& pathfinder, const NavigationGrid& grid, WorldPosition from,
-                             WorldPosition to, float radius);
+EVENGINE_API_DOMAINS bool isFormationSegmentClear(const map::Pathfinder& pathfinder, const NavigationGrid& grid,
+                                                  WorldPosition from, WorldPosition to, float radius);
 
 inline bool isFinitePosition(WorldPosition position) { return std::isfinite(position.x) && std::isfinite(position.y); }
 

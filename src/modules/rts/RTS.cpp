@@ -1922,6 +1922,7 @@ Result<void> RTS::configureScriptWorld(int width, int height, float cellSize, fl
     if (!scriptRuntime_) scriptRuntime_ = std::make_unique<ScriptRuntime>();
     scriptRuntime_->pathfinder.setSize(width, height);
     scriptRuntime_->crowd.resizeField(width, height, cellSize, originX, originY);
+    scriptRuntime_->crowd.setClampToField(false);
     // RTS uses navigation-cell world units; legacy flocking defaults use pixel-scale distances.
     // Predictive avoidance and contact resolution supply clearance without long-range repulsion.
     scriptRuntime_->crowd.setArriveRadius(cellSize);

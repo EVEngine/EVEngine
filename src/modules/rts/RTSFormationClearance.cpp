@@ -6,8 +6,8 @@
 #include <limits>
 
 namespace eve::rts::systems_internal {
-bool isFormationSegmentClear(const map::Pathfinder& pathfinder, const NavigationGrid& grid, WorldPosition from,
-                             WorldPosition to, float radius) {
+EVENGINE_API_DOMAINS bool isFormationSegmentClear(const map::Pathfinder& pathfinder, const NavigationGrid& grid,
+                                                  WorldPosition from, WorldPosition to, float radius) {
     if (!isFinitePosition(from) || !isFinitePosition(to) || !std::isfinite(radius) || radius <= 0.f ||
         !std::isfinite(grid.cellSize) || grid.cellSize <= 0.f || !std::isfinite(grid.originX) ||
         !std::isfinite(grid.originY))

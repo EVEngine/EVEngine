@@ -38,7 +38,7 @@ struct FormationSpec {
     float rotationRadians = 0.f;  ///< Counterclockwise rotation around the anchor; zero preserves legacy layouts.
 
     /** @brief Validate layout kind, spacing, grid columns and finite rotation. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> validate() const;
 };
 
 /** @brief Caller-built admission batch for an immediate coordinated Move command. */
