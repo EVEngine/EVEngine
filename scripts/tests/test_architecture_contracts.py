@@ -16,18 +16,19 @@ import check_architecture_contracts as contracts  # noqa: E402
 
 class ArchitectureContractTests(unittest.TestCase):
     def test_repository_catalogue_covers_all_rules(self):
+        self.assertEqual(len(contracts.RULES), len(set(contracts.RULES)))
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
         self.assertEqual([], contracts.validate_catalogue(metadata, today=date(2026, 8, 26)))
         self.assertIn("module-interface", contracts.RULES)
 
-    def test_module_interface_requires_six_faces_and_cost_contract(self):
+    def test_module_interface_requires_bindings_and_absent_profile(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
         entry = next(item for item in metadata["entries"] if item["rule"] == "module-interface")
         del entry["binds"]
-        del entry["cost_notes"]
+        del entry["trim"]["absent_profile"]
         errors = contracts.validate_catalogue(metadata, today=date(2026, 9, 22))
         self.assertTrue(any("missing binds" in error for error in errors))
-        self.assertTrue(any("missing cost_notes" in error for error in errors))
+        self.assertTrue(any("trim.absent_profile" in error for error in errors))
 
     def test_missing_required_contract_field_is_rejected(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
