@@ -110,15 +110,6 @@ RULE_REQUIRED = {
         "shared_contract_tests",
         "failure_injection",
     },
-    "module-interface": {
-        "provides",
-        "requires",
-        "emits",
-        "observes",
-        "binds",
-        "trim",
-        "thread_affinity",
-    },
     "debt-metadata": {
         "removal_condition",
         "max_net_growth",
