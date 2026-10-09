@@ -5,7 +5,11 @@ layout(location=2) in vec4 vTint;
 layout(location=3) in vec3 vWorldPos;
 layout(location=4) in vec3 vCameraPos;
 layout(location=5) in vec3 vViewPos;
-struct Light3D { vec4 posRadius; vec4 color; };
+struct Light3D {
+    vec4 posRadius;
+    vec4 color;
+    vec4 spot;
+};
 layout(set=0,binding=0,std140) uniform Frame {
     mat4 mvp; mat4 model; vec4 lightDirIntensity; vec4 lightColor;
     vec4 tint; vec4 cameraPos; vec4 ambient; Light3D lights[8];

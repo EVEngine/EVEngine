@@ -11,6 +11,7 @@ layout(location = 2) in vec2 inUV;
 struct Light3D {
     vec4 posRadius;
     vec4 color;
+    vec4 spot;
 };
 
 layout(set = 0, binding = 0, std140) uniform Frame {

@@ -86,6 +86,8 @@ layer.setReceiveLight(true);
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
 
+`Light3D` 支持 `point` / `dir` / `spot`。聚光用 `setType("spot")`、`setSpotAngle` / `setSpotSoftness`（与 2D 锥体语义相同）。实时阴影通过 `setCastShadow(true)` 与 `setShadowMethod("auto"|"none"|"csm"|"perspective"|"cube")` / `getShadowMethod()` 选择技术；有向光走 CSM，聚光走 perspective 本地 atlas。进程级方案用 `gfx.setShadowSchemeDirectionalEnabled` / `setShadowSchemeSpotEnabled` / `setShadowSchemePointEnabled`、`setShadowSchemeMaxSpotCasters` / `getShadowSchemeMaxSpotCasters`，以及本地分页 `setShadowSchemePagingEnabled`、`setShadowSchemeMaxLocalUpdates` / `getShadowSchemeMaxLocalUpdates`、`setShadowSchemeHysteresisBonus`（固定 atlas 槽位按重要性租用，更新预算可时间切片重绘）。
+
 `Camera3D` 默认使用透视投影。等距视图可调用 `setOrthographic(height)`，其中
 `height` 是世界空间中的垂直可视范围；`setPerspective()` 恢复透视投影。
 `setClipPlanes(near, far)` 配置两种投影共用的近、远裁剪面，并要求
@@ -367,7 +369,7 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 - `bakeMeshMorph()`、`newMeshFromArrays()`、`updateMeshVertices()`、`clear()`、`clearMorphWeights()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`
 - `drawSolidRect()`、`drawTexturedRect()`、`drawTexturedRectRotated()`、`drawOcclusionSolid()`、`drawOcclusionTexture()`、`getCastShadow()`、`getCastOcclusion()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getEyeX()`、`getEyeY()`、`getEyeZ()`、`getFov()`、`getHeight()`、`getMorphCount()`
 - `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getSpotAngle()`、`getSpotSoftness()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
-- `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
+- `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowMethod()`、`getShadowSchemeMaxLocalUpdates()`、`getShadowSchemeMaxSpotCasters()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
 - `getTargetX()`、`getTargetY()`、`getTargetZ()`、`getVolumetric()`、`getVolumetricIntensity()`、`getVolumetricOnly()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newGroomInstance()`、`newHairShader()`、`newMeshCube()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
 - `GroomInstance`：`setForcedLod`、`getForcedLod`、`setScreenSize`、`getScreenSize`、`setWidthScale`、`getWidthScale`、`setSideHint`、`setClusterCullingEnabled`、`isClusterCullingEnabled`、`getActiveLodIndex`、`getActiveRepresentation`、`getClusterCount`、`getVisibleCurveCount`、`setMarschnerLobes`、`getMarschnerR`、`getMarschnerTT`、`getMarschnerTRT`、`setSelfShadow`、`getSelfShadowStrength`、`getSelfShadowBias`、`getRootAoStrength`、`getCurveCount`、`getPointCount`、`getGroupCount`、`isGuideSimulationEnabled`
@@ -375,7 +377,7 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setCloudShadows()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`getMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPackedNormalMask()`、`setHeightTexture()`、`setPosition()`、`setRadius()`
-- `setReceiveLight()`、`setCustomLightProbe()`、`setCustomLightProbeCoefficient()`、`clearCustomLightProbe()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setHair()`、`getHair()`、`setShadowBias()`、`setShadowStrength()`
+- `setReceiveLight()`、`setCustomLightProbe()`、`setCustomLightProbeCoefficient()`、`clearCustomLightProbe()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setHair()`、`getHair()`、`setShadowBias()`、`setShadowMethod()`、`setShadowSchemeDirectionalEnabled()`、`setShadowSchemeHysteresisBonus()`、`setShadowSchemeMaxLocalUpdates()`、`setShadowSchemeMaxSpotCasters()`、`setShadowSchemePagingEnabled()`、`setShadowSchemePointEnabled()`、`setShadowSchemeSpotEnabled()`、`setShadowStrength()`
 - `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setParallax()`、`getParallaxScale()`、`getParallaxMinLayers()`、`getParallaxMaxLayers()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setVolumetricOnly()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
 - 字体：`newFont()`、`setFont()`、`getFont()`、`drawText()`、`print()`、`getAscent()`、`getBaseline()`、`hasGlyph()`

@@ -179,7 +179,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [particle-playback-lab](particle-playback-lab/README.md) | 粒子回放实验室：确定性播放、版本化多发射器与视觉验证 |
 | [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
-| [lighting-showcase](lighting-showcase/README.md) | 光照展示：环境光、有向光阴影、彩色发光体，以及可选硬件光追 / 便携反射链 |
+| [lighting-showcase](lighting-showcase/README.md) | 光照展示：环境光、有向光 CSM、聚光灯 perspective 阴影、彩色发光体，以及可选硬件光追 / 便携反射链 |
 | [shader-live-preview](shader-live-preview/README.md) | 实时 GLSL 预览：编辑 `shaders/preview.frag` 保存即热重载 |
 | [virtual-texture-blending](virtual-texture-blending/README.md) | 虚拟纹理材质混合：常驻虚拟页 + fallback 槽与无缝 gutter |
 | [ink-arena](ink-arena/README.md) | GPU 表面喷墨：片元着色器向持久 RGBA8 画布绘制 |

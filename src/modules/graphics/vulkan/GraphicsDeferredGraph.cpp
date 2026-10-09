@@ -37,7 +37,7 @@ void Graphics::buildDeferredFrameGraphs() {
     const vk::Format depthFmt     = vk::Format::eD32Sfloat;
     const vk::Format colorFmt     = pickGBufferColorFormat(device);
     const uint32_t   mapSize      = uint32_t(ShadowConfig::kMapSize);
-    const uint32_t   shadowLayers = uint32_t(ShadowConfig::kCascades);
+    const uint32_t   shadowLayers = uint32_t(ShadowConfig::kTotalLayers);
     const uint32_t   w            = gbufferWidth > 0 ? uint32_t(gbufferWidth) : 1u;
     const uint32_t   h            = gbufferHeight > 0 ? uint32_t(gbufferHeight) : 1u;
 
