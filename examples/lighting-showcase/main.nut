@@ -1,20 +1,23 @@
-// Lighting showcase: ambient, shadow-casting directional, spot, glowing emitters,
-// and optional ray-tracing / portable reflection chain.
-// Keys: 1 ambient  2 directional  3 emitters  4 spot  Space RT  R reset camera
+// Lighting showcase: ambient, shadow-casting directional, rotating volumetric
+// spots, glowing emitters, and optional ray-tracing / portable reflection chain.
+// Keys: 1 ambient  2 directional  3 emitters  4 spots  5 volumetric
+//       Space RT  R reset camera
 
 if (!("litCamera" in getroottable())) litCamera <- null;
 if (!("litSun" in getroottable())) litSun <- null;
-if (!("litSpot" in getroottable())) litSpot <- null;
+if (!("litSpots" in getroottable())) litSpots <- [];
 if (!("litObjects" in getroottable())) litObjects <- [];
 if (!("litEmitters" in getroottable())) litEmitters <- [];
 if (!("litEmitterLights" in getroottable())) litEmitterLights <- [];
 if (!("litEmitterColors" in getroottable())) litEmitterColors <- [];
+if (!("litVolume" in getroottable())) litVolume <- null;
 if (!("litTime" in getroottable())) litTime <- 0.0;
 if (!("litUiBuilt" in getroottable())) litUiBuilt <- false;
 if (!("litAmbientOn" in getroottable())) litAmbientOn <- true;
 if (!("litDirectionalOn" in getroottable())) litDirectionalOn <- true;
 if (!("litEmittersOn" in getroottable())) litEmittersOn <- true;
 if (!("litSpotOn" in getroottable())) litSpotOn <- true;
+if (!("litVolumetricOn" in getroottable())) litVolumetricOn <- true;
 if (!("litRayTracingOn" in getroottable())) litRayTracingOn <- false;
 if (!("litHwRtAvailable" in getroottable())) litHwRtAvailable <- false;
 if (!("litRtModeLabel" in getroottable())) litRtModeLabel <- "off";
@@ -51,8 +54,7 @@ function makeSphere(x, y, z, scale, r, g, b, metallic, roughness, castShadow, re
 
 function makeEmitter(x, y, z, r, g, b, intensity, radius) {
     // Colored mesh keeps its base material when the glow is off; a point light +
-    // bloom provide the emissive look when on (createEmissiveLight3D is
-    // volumetricOnly and skips surface lighting).
+    // bloom provide the emissive look when on.
     local glow = makeSphere(x, y, z, 0.42, r, g, b, 0.12, 0.35, false, true);
     litEmitters.append(glow);
     litEmitterColors.append([r, g, b]);
@@ -66,6 +68,23 @@ function makeEmitter(x, y, z, r, g, b, intensity, radius) {
     light.setEnabled(true);
     litEmitterLights.append(light);
     return light;
+}
+
+function makeRotatingSpot(r, g, b, intensity, angleDeg, soft, radius) {
+    local spot = eve.Light3D();
+    spot.setType("spot");
+    spot.setColor(r, g, b, intensity);
+    spot.setRadius(radius);
+    spot.setSpotAngle(angleDeg);
+    spot.setSpotSoftness(soft);
+    spot.setCastShadow(true);
+    spot.setShadowMethod("perspective");
+    spot.setShadowStrength(0.90);
+    spot.setVolumetric(true);
+    spot.setVolumetricIntensity(1.35);
+    spot.setEnabled(true);
+    litSpots.append(spot);
+    return spot;
 }
 
 function resetCamera() {
@@ -100,7 +119,6 @@ function applyEmitters() {
         // a near-black stub mesh when the toggle is off.
         mesh.setTint(c[0], c[1], c[2], 1.0);
         if (litEmittersOn) {
-            // Hotter response so bloom reads as emission while shading remains.
             mesh.setMetallic(0.05);
             mesh.setRoughness(0.18);
             mesh.setReceiveShadow(true);
@@ -114,18 +132,74 @@ function applyEmitters() {
     }
 }
 
-function applySpot() {
-    if (litSpot == null) return;
-    litSpot.setEnabled(litSpotOn);
+function applySpots() {
+    foreach (spot in litSpots)
+        spot.setEnabled(litSpotOn);
 }
 
-function configureRayTracing(enabled) {
-    litRayTracingOn = enabled;
+function syncVolumeCamera() {
+    if (litVolume == null || litCamera == null) return;
+    litVolume.setCamera(
+        litCamera.getEyeX(), litCamera.getEyeY(), litCamera.getEyeZ(),
+        litCamera.getTargetX(), litCamera.getTargetY(), litCamera.getTargetZ(),
+        0.0, 1.0, 0.0,
+        litCamera.getFov(), 1280.0 / 720.0, 0.1, 80.0);
+}
+
+function rebuildVolumetricMedia() {
+    if (litVolume == null) return;
+    syncVolumeCamera();
+    litVolume.configureFroxelGrid(72, 40, 28, 0.1, 64.0);
+    litVolume.clearFroxelGrid();
+    // Thin dusty medium so rotating spot shafts read as volumetric beams.
+    litVolume.injectFroxelHeightFog(
+        litVolumetricOn ? 0.018 : 0.0,
+        0.78, 0.84, 0.95,
+        -0.5, 0.12,
+        -1.0, 8.0);
+    local integ = litVolume.integrateFroxelFromSceneLights(
+        0.18, 0.20, 0.26,
+        -10.0, -1.0, -8.0,
+        10.0, 8.0, 10.0,
+        8);
+    if (!integ.ok)
+        print("lighting-showcase: integrateFroxelFromSceneLights failed: " + integ.error + "\n");
+    litVolume.uploadFroxel(gfx);
+}
+
+function updateRotatingSpots() {
+    if (!litSpotOn || litSpots.len() == 0) return;
+
+    // Warm spot: orbit + yaw so the perspective cone and volumetric shaft sweep.
+    local a0 = litTime * 0.55;
+    local x0 = cos(a0) * 3.6;
+    local z0 = sin(a0) * 3.6;
+    local y0 = 4.6;
+    litSpots[0].setPosition(x0, y0, z0);
+    litSpots[0].setDirection(-x0 * 0.35, -1.0, -z0 * 0.35);
+
+    if (litSpots.len() >= 2) {
+        // Cool spot: counter-rotate on a tighter radius / lower height.
+        local a1 = -litTime * 0.72 + 1.8;
+        local x1 = cos(a1) * 2.4;
+        local z1 = sin(a1) * 2.4;
+        local y1 = 3.8;
+        litSpots[1].setPosition(x1, y1, z1);
+        litSpots[1].setDirection(-x1 * 0.25, -1.0, -z1 * 0.25);
+    }
+}
+
+function configureRenderFeatures() {
     local rc = gfx.getRenderControl();
     rc.enable("shadow");
+    rc.enable("gbuffer"); // linear depth for froxel composite
+    if (litVolumetricOn)
+        rc.enable("volumetricFog");
+    else
+        rc.disable("volumetricFog");
     rc.setPostProcessQuality("high");
 
-    if (enabled) {
+    if (litRayTracingOn) {
         if (litHwRtAvailable) {
             rc.enable("rtx");
             rc.disable("reflectionChain");
@@ -136,19 +210,27 @@ function configureRayTracing(enabled) {
             rc.enable("reflectionChain");
             litRtModeLabel = "reflectionChain (portable)";
         }
-        // GI / SSR add a lot of energy on Lavapipe; pull exposure/bloom down so
-        // materials and contact shadows stay readable.
-        litCamera.setExposure(0.28);
+        litCamera.setExposure(litVolumetricOn ? 0.24 : 0.28);
         litCamera.setBloom(0.10, 1.35);
     } else {
         rc.disable("rtx");
         rc.disable("reflectionChain");
         litRtModeLabel = "off";
-        litCamera.setExposure(0.90);
+        litCamera.setExposure(litVolumetricOn ? 0.78 : 0.90);
         litCamera.setBloom(0.28, 1.05);
     }
     rc.compile();
     refreshHud();
+}
+
+function configureRayTracing(enabled) {
+    litRayTracingOn = enabled;
+    configureRenderFeatures();
+}
+
+function applyVolumetric() {
+    configureRenderFeatures();
+    rebuildVolumetricMedia();
 }
 
 function refreshHud() {
@@ -157,7 +239,8 @@ function refreshHud() {
     ui.setText("ambient", litAmbientOn ? "Ambient: ON  (1)" : "Ambient: OFF (1)");
     ui.setText("dir", litDirectionalOn ? "Directional CSM: ON  (2)" : "Directional: OFF (2)");
     ui.setText("emit", litEmittersOn ? "Emitters: ON  (3)" : "Emitters: OFF (3)");
-    ui.setText("spot", litSpotOn ? "Spot + perspective shadow: ON  (4)" : "Spot: OFF (4)");
+    ui.setText("spot", litSpotOn ? "Rotating spots + shadow: ON  (4)" : "Spots: OFF (4)");
+    ui.setText("vol", litVolumetricOn ? "Volumetric shafts: ON  (5)" : "Volumetric: OFF (5)");
     ui.setText("rt", "Ray tracing: " + litRtModeLabel + "  (Space)");
     local hw = litHwRtAvailable ? "device RT available" : "no hardware RT — Space uses portable chain";
     ui.setText("hint", hw + "    R: reset camera");
@@ -200,7 +283,7 @@ eve_init = function() {
     litCamera = eve.Camera3D();
     litCamera.setUp(0.0, 1.0, 0.0);
     litCamera.setFov(46.0);
-    litCamera.setExposure(0.90);
+    litCamera.setExposure(0.78);
     litCamera.setBloom(0.28, 1.05);
     litCamera.setActive(true);
     resetCamera();
@@ -212,7 +295,7 @@ eve_init = function() {
     gfx.setShadowSchemePointEnabled(false);
     gfx.setShadowSchemeMaxSpotCasters(4);
     gfx.setShadowSchemePagingEnabled(true);
-    gfx.setShadowSchemeMaxLocalUpdates(2);  // time-slice redraws within the 4-slot atlas
+    gfx.setShadowSchemeMaxLocalUpdates(2);
     gfx.setShadowSchemeHysteresisBonus(0.35);
 
     // Shadow-casting directional (gfx.setDirectionalLight alone does not cast shadows).
@@ -223,21 +306,20 @@ eve_init = function() {
     litSun.setCastShadow(true);
     litSun.setShadowMethod("csm");
     litSun.setShadowStrength(0.88);
+    litSun.setVolumetric(true);
+    litSun.setVolumetricIntensity(0.55);
     applyDirectional();
 
-    // Spot cone with perspective local shadow (atlas layer after CSM cascades).
-    litSpot = eve.Light3D();
-    litSpot.setType("spot");
-    litSpot.setPosition(2.4, 4.8, 3.2);
-    litSpot.setDirection(-0.35, -1.0, -0.55);
-    litSpot.setColor(1.0, 0.92, 0.75, 6.5);
-    litSpot.setRadius(14.0);
-    litSpot.setSpotAngle(32.0);
-    litSpot.setSpotSoftness(0.35);
-    litSpot.setCastShadow(true);
-    litSpot.setShadowMethod("perspective");
-    litSpot.setShadowStrength(0.92);
-    applySpot();
+    litSpots.clear();
+    // Warm + cool rotating spots with perspective shadows and volumetric shafts.
+    makeRotatingSpot(1.0, 0.88, 0.62, 7.5, 28.0, 0.30, 16.0);
+    makeRotatingSpot(0.45, 0.75, 1.0, 6.0, 24.0, 0.40, 14.0);
+    updateRotatingSpots();
+    applySpots();
+
+    litVolume = gfx.newVolumetric();
+    litVolume.setMode("froxel");
+    litVolume.setQuality("medium");
 
     buildScene();
     applyEmitters();
@@ -250,6 +332,7 @@ eve_init = function() {
         ui.text("", "dir");
         ui.text("", "emit");
         ui.text("", "spot");
+        ui.text("", "vol");
         ui.text("", "rt");
         ui.text("", "hint");
         ui.end();
@@ -260,9 +343,9 @@ eve_init = function() {
         litUiBuilt = true;
     }
 
-    // Shadows on by default; ray tracing starts off and is optional via Space.
-    configureRayTracing(false);
-    print("lighting-showcase: ambient/dir/spot/emitters on, shadows on, RT optional (Space)\n");
+    configureRenderFeatures();
+    rebuildVolumetricMedia();
+    print("lighting-showcase: ambient/dir/rotating volumetric spots/emitters on; Space=RT\n");
 };
 
 eve_update = function(dt) {
@@ -279,13 +362,11 @@ eve_update = function(dt) {
         litEmitters[2].setYaw(litTime * 0.7);
     }
 
-    // Slow spot sweep so the perspective cone shadow reads clearly.
-    if (litSpotOn && litSpot != null) {
-        local sx = 2.4 + sin(litTime * 0.4) * 1.2;
-        local sz = 3.2 + cos(litTime * 0.35) * 0.8;
-        litSpot.setPosition(sx, 4.8, sz);
-        litSpot.setDirection(-sx * 0.15, -1.0, -0.55);
-    }
+    updateRotatingSpots();
+
+    // Keep froxel lighting in sync with moving volumetric spots.
+    if (litVolumetricOn)
+        rebuildVolumetricMedia();
 
     if (key_just_pressed("1")) {
         litAmbientOn = !litAmbientOn;
@@ -304,8 +385,13 @@ eve_update = function(dt) {
     }
     if (key_just_pressed("4")) {
         litSpotOn = !litSpotOn;
-        applySpot();
+        applySpots();
+        if (litVolumetricOn) rebuildVolumetricMedia();
         refreshHud();
+    }
+    if (key_just_pressed("5")) {
+        litVolumetricOn = !litVolumetricOn;
+        applyVolumetric();
     }
     if (key_just_pressed("space")) configureRayTracing(!litRayTracingOn);
     if (key_just_pressed("r") || key_just_pressed("R")) resetCamera();
@@ -314,9 +400,20 @@ eve_update = function(dt) {
 eve_render = function() {
     gfx.clear();
     gfx.render3D();
+
+    if (litVolumetricOn && litVolume != null) {
+        local rc = gfx.getRenderControl();
+        local gb = rc.getGBuffer();
+        if (gb != null && gb.isValid()) {
+            local depth = gb.getDepthTexture();
+            if (depth != null)
+                litVolume.applyFroxel(gfx, depth);
+        }
+    }
+
     ui.beginFrameAndRender();
     litFrame += 1;
-    if (!litScreenshotSaved && litFrame > 36 && gfx.saveFramePng("lighting-showcase.png")) {
+    if (!litScreenshotSaved && litFrame > 48 && gfx.saveFramePng("lighting-showcase.png")) {
         litScreenshotSaved = true;
         print("lighting-showcase: saved lighting-showcase.png\n");
     }
