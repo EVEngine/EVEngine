@@ -40,6 +40,7 @@
 | Profiler | line hook 计时：`eve.dev.profileReport()` / `profileClear()`（按函数统计调用次数、行数、耗时） |
 | MCP / AI | `--mcp-port` 嵌入 MCP；`AiPanel` 会话日志；F9 切换 ImGui「AI / MCP」面板 |
 | 运行时控制台 | `ConsolePanel`: print 捕获 + 级别化日志 + Squirrel REPL; F4 切换 ImGui「Console」面板 |
+| 帧统计叠加 | `FrameStatsPanel`: EMA FPS + 帧时间 + 可选实体数; F3 切换 ImGui「Frame stats」面板 |
 
 ### 状态驱动 bug 复现（基线快照 + 步骤回放）
 
@@ -64,6 +65,7 @@
 - `eve::dev::McpServer`：MCP JSON-RPC TCP（AI Agent 测试 / 辅助开发）
 - `eve::dev::AiPanel`: AI 会话日志；ImGui 绘制由 `ImGuiHostPanels.cpp` 注册（避免 EVDevTools 拉入 imgui.h）
 - `eve::dev::ConsolePanel`: 运行时控制台环形缓冲（线程安全）+ Squirrel `print` 捕获 + REPL 求值；ImGui 绘制同样由 `ImGuiHostPanels.cpp` 注册
+- `eve::dev::FrameStatsPanel`: FPS / 帧时间 EMA + 可选实体数；`load.nut` 每帧 `sample(dt)`；ImGui 由宿主注册
 - `eve::dev::DevTool`：`attach` + `exposeScriptApi` + 可选 `startDap` / `startMcp`
 
 ### 脚本 API（`eve.dev`，仅 `--debug`）
@@ -103,6 +105,13 @@ eve.dev.console.recent(64);         // recent log entries
 eve.dev.console.format(64);         // recent log text
 eve.dev.console.clear();
 eve.dev.console.toggleVisible();    // F4
+// Frame stats overlay (FPS / frame ms / optional entity count)
+eve.dev.stats.sample(dt);           // load.nut does this each frame
+eve.dev.stats.setEntityCount(128);  // optional; clearEntityCount() to hide
+eve.dev.stats.fps();
+eve.dev.stats.frameMs();
+eve.dev.stats.format();
+eve.dev.stats.toggleVisible();      // F3
 ```
 
 ### 使用方式

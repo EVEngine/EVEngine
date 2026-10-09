@@ -221,6 +221,21 @@ eve::Result<void> MeshBuild::setVertexColors(std::vector<float> colors) {
     colors_ = std::move(colors);
     return eve::Result<void>::success();
 }
+eve::Result<void> MeshBuild::setColor(int vertexIndex, float r, float g, float b, float a) {
+    if (vertexIndex < 0 || vertexIndex >= getVertexCount())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+            "mesh vertex index is out of range", "vertexIndex", {}, "procgen.mesh"));
+    if (!std::isfinite(r) || !std::isfinite(g) || !std::isfinite(b) || !std::isfinite(a))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+            "mesh vertex color components must be finite", "color", {}, "procgen.mesh"));
+    if (!hasVertexColors()) colors_.assign(std::size_t(getVertexCount()) * 4u, 1.f);
+    const auto base                 = std::size_t(vertexIndex) * 4u;
+    colors_[base]                   = r;
+    colors_[base + 1u]              = g;
+    colors_[base + 2u]              = b;
+    colors_[base + 3u]              = a;
+    return eve::Result<void>::success();
+}
 int MeshBuild::getIndex(int i) const {
     if (i < 0 || i >= getIndexCount()) return 0;
     return int(indices_[size_t(i)]);

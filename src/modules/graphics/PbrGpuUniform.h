@@ -55,7 +55,8 @@ struct alignas(16) PbrUniformGpu {
 };
 
 static_assert(sizeof(PbrUvInfoGpu) == 16);
-static_assert(sizeof(PbrUniformGpu) == 1952);
+static_assert(sizeof(Light3DGpu) == 48);
+static_assert(sizeof(PbrUniformGpu) == 2080);  // +16 bytes/light for Light3DGpu.spot
 
 /** @brief Backend-neutral state needed to build one immutable PBR uniform snapshot. */
 struct PbrUniformBuildInputs {

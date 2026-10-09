@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <glm/glm.hpp>
 
 namespace eve::graphics {
@@ -18,12 +19,13 @@ class Canvas;
 
 /**
  * @brief Convert spot angle/softness into GPU cosines (outer < inner).
+ * Shared by Light2D and Light3D flashlight cones.
  * @param angleDeg Outer half-angle in degrees.
  * @param softness Penumbra in [0, 1].
  * @param[out] cosOuter Cosine of the outer half-angle.
  * @param[out] cosInner Cosine of the softened inner half-angle.
  */
-inline void light2dSpotCosines(float angleDeg, float softness, float &cosOuter, float &cosInner) {
+inline void lightSpotCosines(float angleDeg, float softness, float &cosOuter, float &cosInner) {
     constexpr float kPi = 3.14159265358979323846f;
     const float outerDeg = std::clamp(angleDeg, 0.1f, 89.f);
     const float soft = std::clamp(softness, 0.f, 1.f);
@@ -32,6 +34,11 @@ inline void light2dSpotCosines(float angleDeg, float softness, float &cosOuter, 
     cosOuter = std::cos(outerRad);
     cosInner = std::cos(innerRad);
     if (cosInner < cosOuter + 1e-4f) cosInner = cosOuter + 1e-4f;
+}
+
+/** @brief Backward-compatible alias for @ref lightSpotCosines. */
+inline void light2dSpotCosines(float angleDeg, float softness, float &cosOuter, float &cosInner) {
+    lightSpotCosines(angleDeg, softness, cosOuter, cosInner);
 }
 
 /** @brief GPU light packing for lit2d (std140-friendly). */
@@ -152,8 +159,13 @@ public:
 
 /** @brief GPU light packing for mesh3d / PBR (std140-friendly). */
 struct Light3DGpu {
-    glm::vec4 posRadius{0.f};  // xyz = point pos or direction; w = radius (0 => directional)
-    glm::vec4 color{0.f};      // rgb * intensity
+    glm::vec4 posRadius{0.f};  // xyz = point/spot pos or dir; w = radius (0 => directional)
+    glm::vec4 color{0.f};      // rgb * intensity; a = spotBias when spot else 1
+    /**
+     * @brief Spot cone: xyz = world beam direction; w = spotScale (1/(cosInner-cosOuter)).
+     * w <= 0 means the light is not a spot (point or directional).
+     */
+    glm::vec4 spot{0.f, 0.f, 0.f, -1.f};
 };
 
 /** @brief Lighting3DPack public API. */
@@ -174,7 +186,7 @@ struct Lighting3DPack {
 
 /**
  * @brief Declarative 3D light. Collected by RenderSystem3D (max 8 per frame).
- * type: "point" | "dir" (≤15 chars).
+ * type: "point" | "dir" | "spot" (≤15 chars).
  */
 class EVENGINE_API_BACKENDS Light3D : public ecs::Entity {
 public:
@@ -192,8 +204,24 @@ public:
         float r = 1.f, g = 1.f, b = 1.f;
         float intensity = 1.f;
         float radius = 8.f;
+        /** @brief Spot outer half-angle in degrees (ignored for point/dir). */
+        float spotAngleDeg = 30.f;
+        /** @brief Spot penumbra in [0, 1] (ignored for point/dir). */
+        float spotSoftness = 0.35f;
         bool enabled = true;
-        bool castShadow = false;       // only dir lights; at most one active caster per frame
+        bool castShadow = false;
+        /**
+         * @brief Shadow technique request. Stored as uint8_t to avoid pulling
+         * Shadow.h into every Light consumer; values match ShadowMethod.
+         * 0 = Auto, 1 = None, 2 = CascadedDirectional, 3 = PerspectiveSpot, 4 = CubePoint.
+         */
+        std::uint8_t shadowMethod = 0;
+        /**
+         * @brief Frame-transient local shadow atlas slot (0..kLocalSlots-1), or -1.
+         * Written by selectShadowCasters; packed into Light3DGpu beam length for shaders.
+         * Not authored / serialized.
+         */
+        int shadowLocalSlot = -1;
         float shadowBias = 0.f;  // 0 = auto NDC from cascade texel / Z range
         float shadowStrength = 1.f;
         bool volumetric = false;
@@ -236,11 +264,33 @@ public:
     void setRadius(float radius);
     float getRadius();
 
+    /**
+     * @brief Outer half-angle of a 3D spot cone in degrees (clamped to (0, 89]).
+     * @param degrees Half-angle; full cone aperture is 2× this value.
+     */
+    void setSpotAngle(float degrees);
+    /** @brief Current spot outer half-angle in degrees. */
+    float getSpotAngle();
+    /**
+     * @brief Softness of the spot penumbra in [0, 1].
+     * @param softness 0 keeps a hard rim; 1 widens the inner falloff to the axis.
+     */
+    void setSpotSoftness(float softness);
+    /** @brief Current spot softness in [0, 1]. */
+    float getSpotSoftness();
+
     void setEnabled(bool enabled);
     bool isEnabled();
 
     void setCastShadow(bool cast);
     bool getCastShadow();
+    /**
+     * @brief Request a shadow technique: `auto`, `none`, `csm`, `perspective`, `cube`.
+     * Invalid names leave the previous method unchanged.
+     */
+    void setShadowMethod(const std::string &method);
+    /** @brief Current shadow method name (`auto` / `none` / `csm` / `perspective` / `cube`). */
+    std::string getShadowMethod();
     void setShadowBias(float bias);
     float getShadowBias();
     void setShadowStrength(float strength);

@@ -2,12 +2,14 @@
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/ConsolePanel.hpp"
+#include "devtools/FrameStatsPanel.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpScriptTools.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/ReloadSession.h"
 #include "devtools/RenderVision.hpp"
 #include "devtools/ScenarioRecorder.h"
+#include "devtools/SoftRestart.hpp"
 
 #include "common/Module.h"
 #include "common/GameplayControlJson.h"
@@ -16,6 +18,7 @@
 #include "common/ScriptError.h"
 #include "platform_event/PlatformEvent.h"
 
+#include <Poco/JSON/Parser.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -249,6 +252,8 @@ AiPanel& DevTool::ai() { return AiPanel::instance(); }
 
 ConsolePanel& DevTool::console() { return ConsolePanel::instance(); }
 
+FrameStatsPanel& DevTool::frameStats() { return FrameStatsPanel::instance(); }
+
 void DevTool::poll() {
     DebugAdapter::instance().poll();
     McpServer::instance().poll();
@@ -257,6 +262,8 @@ void DevTool::poll() {
 void DevTool::drawAiPanel() { AiPanel::instance().drawImGui(); }
 
 void DevTool::drawConsolePanel() { ConsolePanel::instance().drawImGui(); }
+
+void DevTool::drawFrameStatsPanel() { FrameStatsPanel::instance().drawImGui(); }
 
 void DevTool::exposeScriptApi(ssq::VM& vm) {
     try {
@@ -409,6 +416,43 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
             if (!ReloadSession::instance().abort(vm_, &err)) return std::string("error:") + err;
             return std::string("");
         });
+        // Soft restart: reset native providers / re-run init without dropping
+        // ResourceManager. MCP eve_restart is the agent-facing entry; scripts
+        // can also call these helpers from eve_before_restart hooks.
+        dev.addFunc("resetNativeState", []() {
+            return static_cast<int>(resetNativeStateProviders());
+        });
+        dev.addFunc("resourceCacheCount", []() {
+            return static_cast<int>(resourceCacheCount());
+        });
+        // Parameter must not be named args*/argN — binding-contract codegen
+        // treats those as unresolved placeholders and fails the build.
+        dev.addFunc("softRestart", [this](std::string requestJson, bool reloadScripts) {
+            SoftRestartRequest request;
+            request.reloadScripts = reloadScripts;
+            if (!requestJson.empty()) {
+                try {
+                    Poco::JSON::Parser parser;
+                    auto               parsed = parser.parse(requestJson);
+                    request.args              = parsed.extract<Poco::JSON::Object::Ptr>();
+                } catch (const std::exception& e) {
+                    return std::string("error: invalid request JSON: ") + e.what();
+                } catch (...) {
+                    return std::string("error: invalid request JSON");
+                }
+            }
+            auto result = executeSoftRestart(vm_, std::move(request));
+            if (!result) {
+                const auto& status = result.status();
+                const auto* diag   = status.primaryDiagnostic();
+                return std::string("error:") +
+                       (diag && !diag->message().empty() ? diag->message()
+                                                         : std::string(statusCodeName(status.code())));
+            }
+            const SoftRestartReport& report = result.value();
+            return std::string("ok:resources=") + std::to_string(report.resourceCountAfter) +
+                   ":scripts=" + (report.scriptsReloaded ? "1" : "0");
+        });
 
         // ---- state-driven bug reproduction (baseline snapshot + step replay) ----
         dev.addFunc("beginScenario", [this]() {
@@ -502,6 +546,30 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         consoleTbl.addFunc("setVisible", [](bool on) { ConsolePanel::instance().setVisible(on); });
         consoleTbl.addFunc("toggleVisible", []() { ConsolePanel::instance().toggleVisible(); });
         consoleTbl.addFunc("draw", [this]() { drawConsolePanel(); });
+
+        // FPS / frame-time overlay (sampled from load.nut each frame).
+        ssq::Table statsTbl = dev.addTable("stats");
+        statsTbl.addFunc("sample", [](float dt) {
+            FrameStatsPanel::instance().sample(dt);
+            return std::string("ok");
+        });
+        statsTbl.addFunc("setEntityCount", [](int n) {
+            FrameStatsPanel::instance().setEntityCount(n);
+            return std::string("ok");
+        });
+        statsTbl.addFunc("clearEntityCount", []() {
+            FrameStatsPanel::instance().clearEntityCount();
+            return std::string("ok");
+        });
+        statsTbl.addFunc("fps", []() { return FrameStatsPanel::instance().fps(); });
+        statsTbl.addFunc("frameMs", []() { return FrameStatsPanel::instance().frameMs(); });
+        statsTbl.addFunc("entityCount", []() { return FrameStatsPanel::instance().entityCount(); });
+        statsTbl.addFunc("hasEntityCount", []() { return FrameStatsPanel::instance().hasEntityCount(); });
+        statsTbl.addFunc("format", []() { return FrameStatsPanel::instance().format(); });
+        statsTbl.addFunc("isVisible", []() { return FrameStatsPanel::instance().isVisible(); });
+        statsTbl.addFunc("setVisible", [](bool on) { FrameStatsPanel::instance().setVisible(on); });
+        statsTbl.addFunc("toggleVisible", []() { FrameStatsPanel::instance().toggleVisible(); });
+        statsTbl.addFunc("draw", [this]() { drawFrameStatsPanel(); });
 
         // Native binding is arity-3; keep `setBreakpoint(file, line)` working.
         ssq::Script bpWrap = vm.compileSource(

@@ -363,7 +363,7 @@ void Graphics::createDefaultTextures() {
         flatDepthTexture3D = gpu;
     }
 
-    // 1x1x3 depth-array placeholder for the mesh3d shadow bindings (5/8).
+    // 1x1xN depth-array placeholder for the mesh3d shadow bindings (5/8).
     // sampleShadowPCF() early-outs (bias.y < 0.5) when shadows are disabled,
     // so the texture is never actually sampled.
     {
@@ -371,7 +371,7 @@ void Graphics::createDefaultTextures() {
         WGPUTextureDescriptor td{};
         td.label         = sv("eve_default_shadow_depth");
         td.dimension     = WGPUTextureDimension_2D;
-        td.size          = {1, 1, 3};
+        td.size          = {1, 1, static_cast<uint32_t>(ShadowConfig::kTotalLayers)};
         td.sampleCount   = 1;
         td.format        = WGPUTextureFormat_Depth32Float;
         td.mipLevelCount = 1;
@@ -383,7 +383,7 @@ void Graphics::createDefaultTextures() {
         vd.baseMipLevel    = 0;
         vd.mipLevelCount   = 1;
         vd.baseArrayLayer  = 0;
-        vd.arrayLayerCount = 3;
+        vd.arrayLayerCount = static_cast<uint32_t>(ShadowConfig::kTotalLayers);
         gpu->view          = gpu->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor*>(&vd));
         WGPUSamplerDescriptor sd{};
         sd.label         = sv("eve_default_shadow_sampler");
@@ -3702,7 +3702,7 @@ void Graphics::drawMeshShadowAlpha(Mesh* mesh, const glm::mat4& lightMVP, Textur
 }
 
 void Graphics::endShadowPass() {
-    if (shadowPassCascade < 0 || shadowPassCascade >= ShadowConfig::kCascades) {
+    if (shadowPassCascade < 0 || shadowPassCascade >= ShadowConfig::kTotalLayers) {
         shadowPassCascade = -1;
         shadowPassDraws.clear();
         return;
@@ -3963,7 +3963,8 @@ void Graphics::createShadowResources() {
     WGPUTextureDescriptor td{};
     td.label         = sv("eve_shadow_depth");
     td.dimension     = WGPUTextureDimension_2D;
-    td.size          = {static_cast<uint32_t>(shadowMapSize), static_cast<uint32_t>(shadowMapSize), 3};
+    td.size          = {static_cast<uint32_t>(shadowMapSize), static_cast<uint32_t>(shadowMapSize),
+                        static_cast<uint32_t>(ShadowConfig::kTotalLayers)};
     td.sampleCount   = 1;
     td.format        = WGPUTextureFormat_Depth32Float;
     td.mipLevelCount = 1;
@@ -4346,7 +4347,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
 
 void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto& uboArena = currentUboArena();
-    if (cascade < 0 || cascade >= ShadowConfig::kCascades) return;
+    if (cascade < 0 || cascade >= ShadowConfig::kTotalLayers) return;
     if (!mesh3dShadowPipeline) createShadowPipelines();
     ensureUboArena(uboArena, uboArena.used + shadowCascadeDraws[cascade].size() * 256);
     for (auto& d : shadowCascadeDraws[cascade]) {

@@ -2,8 +2,11 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Capability.h"
+#include "common/CapabilityOwned.h"
 
+#include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace {
@@ -279,4 +282,42 @@ TEST_CASE("capability.nestedDispatchUsesCurrentRegistry") {
     CHECK_EQ(nested[0], "early");
     CHECK_EQ(nested[1], "a");
     CHECK_EQ(nested[2], "b");
+}
+
+TEST_CASE("capability.providerRefBindsOnceAndIsNonCopyable") {
+    Reset reset;
+    static_assert(!std::is_copy_constructible_v<eve::cap::ProviderRef<IGreeter>>);
+    static_assert(!std::is_copy_assignable_v<eve::cap::ProviderRef<IGreeter>>);
+
+    Hello hello;
+    eve::cap::provide<IGreeter>(&hello);
+    eve::cap::ProviderRef<IGreeter> greeter = eve::cap::ProviderRef<IGreeter>::bind();
+    // Avoid REQUIRE(greeter): zeroerr pretty-printing would copy the non-copyable ref.
+    REQUIRE(greeter.get() != nullptr);
+    CHECK_EQ(greeter->greet(), "hello");
+
+    // Revoke does not auto-clear a cached ProviderRef; lifetime is the caller's.
+    eve::cap::revoke<IGreeter>(&hello);
+    CHECK(greeter.get() == &hello);
+}
+
+TEST_CASE("capability.ownedProvideAcquireAndStaleUnload") {
+    Reset reset;
+    auto hello = std::make_shared<Hello>();
+    auto handleResult =
+        eve::cap::OwnedProviderRegistry<IGreeter>::provide("greeter.main", hello);
+    REQUIRE(handleResult.ok());
+    const auto handle = std::move(handleResult).takeValue();
+    auto       leaseResult = eve::cap::OwnedProviderRegistry<IGreeter>::acquire(handle);
+    REQUIRE(leaseResult.ok());
+    CHECK_EQ(leaseResult.value()->greet(), "hello");
+    // Borrowed query slot mirrors the owned publication.
+    REQUIRE(eve::cap::query<IGreeter>() != nullptr);
+    CHECK_EQ(eve::cap::query<IGreeter>()->greet(), "hello");
+
+    auto unloaded = eve::cap::OwnedProviderRegistry<IGreeter>::unload(handle);
+    REQUIRE(unloaded.ok());
+    auto stale = eve::cap::OwnedProviderRegistry<IGreeter>::acquire(handle);
+    CHECK(!stale.ok());
+    CHECK(eve::cap::query<IGreeter>() == nullptr);
 }

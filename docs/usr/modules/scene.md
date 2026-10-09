@@ -51,15 +51,24 @@ local e = scene.attachEntity("player", Bouncer)   // 返回实例
 scene.hasEntity("player", Bouncer)                // true
 scene.getEntity("player", Bouncer)                // 按类查找
 scene.entitiesOf("player")                        // 该节点全部实例
-scene.detachEntity("player", e)                   // 卸载（触发 onDetach + destroy）
+scene.collectIdsWith(Bouncer)                     // 当前 host 上挂了该类的节点 id
+scene.detachEntity("player", e)                   // 立刻卸载（触发 onDetach + destroy）
+// update(dt) 内请用延迟队列，帧末统一卸载：
+//   scene.scheduleDetachEntity("player", e)
+//   scene.scheduleDetachEntityAt(hostName, "player", e)
+
+e.disable()                                       // 跳过 update；触发 onDisable
+e.enable()                                        // 恢复；触发 onEnable
+e.isEnabled()                                     // true/false
 
 local ref = scene.getNodeRef("player")            // 节点句柄
 local p = ref.getPosition()                       // [x, y, z]
 ref.getWorldPosition()                            // world 位置（需先 updateTransforms/update）
 ref.setPosition(0.0, 0.0, 0.0)
+ref.scheduleDetachEntity(e)                       // 等价于 scene.scheduleDetachEntityAt(...)
 ```
 
-生命周期：reconcile / 全量 rebuild 按节点 id 保留绑定；节点被移除时自动调用 `onDetach()` 并销毁实例。同一节点重复 attach 同 class 会先卸载旧实例。
+生命周期：reconcile / 全量 rebuild 按节点 id 保留绑定；节点被移除时自动调用 `onDetach()` 并销毁实例。同一节点重复 attach 同 class 会先卸载旧实例。`update(dt)` 中同步 `detachEntity` 不安全——请用 `scheduleDetachEntity` / `scheduleDetachEntityAt`，它们在当次 `scene.update` 的全部脚本 `update` 结束后再卸载。
 
 ### 通用 link 系统（节点 ↔ 渲染/物理/相机/音频）
 
@@ -184,7 +193,7 @@ for (local i = 0; i < octree.getResultCount(); ++i) {
 
 - `addNode()`、`beginBuild()`、`beginGroup()`、`beginNode()`、`bindOwner()`、`collectChildIds()`、`collectIds()`、`collectIdsByName()`
 - `collectIdsFrom()`、`collectIdsVisible()`、`end()`、`findIdByName()`、`findIdByPath()`、`getChildCount()`、`getChildIdAt()`、`getName()`
-- `attachEntity()`、`attachEntityAt()`、`detachEntity()`、`detachEntityAt()`、`getEntity()`、`getEntityAt()`、`hasEntity()`、`hasEntityAt()`、`entitiesOf()`、`entitiesOfAt()`、`update()`、`currentHostName()`、`getNodeRef()`、`getNodeRefAt()`、`getNodeRefByPath()`
+- `attachEntity()`、`attachEntityAt()`、`detachEntity()`、`detachEntityAt()`、`scheduleDetachEntity()`、`scheduleDetachEntityAt()`、`collectIdsWith()`、`getEntity()`、`getEntityAt()`、`hasEntity()`、`hasEntityAt()`、`entitiesOf()`、`entitiesOfAt()`、`update()`、`currentHostName()`、`getNodeRef()`、`getNodeRefAt()`、`getNodeRefByPath()`
 - `linkRenderable2D()`、`linkRenderable3D()`、`linkPhysics2D()`、`linkPhysics3D()`、`linkCamera3D()`、`linkAudio3D()`、`unlinkNodeKind()`、`linkCount()`（及 host-scoped `*At` 变体）
 - `getNodePosition()`、`getNodeRotation()`、`getNodeScale()`、`getNodeVisible()`、`getNodeWorldPosition()`、`getNodeWorldRotation()`、`getNodeWorldScale()`、`localToWorld()`、`worldToLocal()`、`setNodeParent()`、`removeNode()`、`addNodeChild()`、`removeNodeChild()`、`setNodeQuaternion()`、`getNodeQuaternion()`、`setNodeLookAt()`、`addNodeTag()`、`removeNodeTag()`、`hasNodeTag()`、`getNodeTags()`、`collectIdsByTag()`、`setNodeLayer()`、`getNodeLayer()`（及 host-scoped `*At` 变体）
 - `setNodeBounds()`、`hasNodeBounds()`、`getNodeBounds()`、`serializeHost()`、`deserializeHost()`、`pickRay()`、`pickScreen()`、`collectFrustumIds()`、`syncSpatialIndex()`、`nodeIdFromSpatialId()`（及 host-scoped `*At` 变体）
@@ -197,8 +206,8 @@ Pcg `Growth` 由 `eve.PcgGrowth()` 承接。`configure(startScale,endScale,varia
 
 辅助对象：
 
-- `eve.SceneEntity`：`scene()` / `node()` / `onAttach()` / `onDetach()` / `update(dt)`，组件槽字段与 `eve.Entity` 一致。
-- `eve.SceneNodeRef`（节点句柄）：`getNodeId()`、`getPersistentId()`、`getHostName()`、`isValid()`、`getScene()`、`setPosition()` / `getPosition()`、`setRotation()` / `getRotation()`、`setScale()` / `getScale()`、`setVisible()` / `isVisible()`、`getWorldPosition*()`、`getWorldMatrix()`、`getForward()/getRight()/getUp()`、`getParentId()`、`getChildCount()`、`getChildIdAt()`、`getPath()`、`attachEntity()`、`detachEntity()`、`getEntity()`、`hasEntity()`、`entitiesOf()`、`linkRenderable2D/3D()`、`linkPhysics2D/3D()`、`linkCamera3D()`、`linkAudio3D()`、`unlinkNode()`、`unlinkNodeKind()`、`linkCount()`、`localToWorld()`、`worldToLocal()`、`setParent()`、`removeNode()`、`setQuaternion()`、`getQuaternion()`、`lookAt()`、`addTag()`、`removeTag()`、`hasTag()`、`getTags()`、`setLayer()`、`getLayer()`、`setBounds()`、`hasBounds()`、`getBounds()`。
+- `eve.SceneEntity`：`scene()` / `node()` / `onAttach()` / `onDetach()` / `onEnable()` / `onDisable()` / `enable()` / `disable()` / `setEnabled()` / `isEnabled()` / `update(dt)`，组件槽字段与 `eve.Entity` 一致。
+- `eve.SceneNodeRef`（节点句柄）：`getNodeId()`、`getPersistentId()`、`getHostName()`、`isValid()`、`getScene()`、`setPosition()` / `getPosition()`、`setRotation()` / `getRotation()`、`setScale()` / `getScale()`、`setVisible()` / `isVisible()`、`getWorldPositionX()`、`getWorldPositionY()`、`getWorldPositionZ()`、`getWorldMatrix()`、`getForward()/getRight()/getUp()`、`getParentId()`、`getChildCount()`、`getChildIdAt()`、`getPath()`、`attachEntity()`、`detachEntity()`、`scheduleDetachEntity()`、`getEntity()`、`hasEntity()`、`entitiesOf()`、`linkRenderable2D/3D()`、`linkPhysics2D/3D()`、`linkCamera3D()`、`linkAudio3D()`、`unlinkNode()`、`unlinkNodeKind()`、`linkCount()`、`localToWorld()`、`worldToLocal()`、`setParent()`、`removeNode()`、`setQuaternion()`、`getQuaternion()`、`lookAt()`、`addTag()`、`removeTag()`、`hasTag()`、`getTags()`、`setLayer()`、`getLayer()`、`setBounds()`、`hasBounds()`、`getBounds()`。
 
 ## 跟随玩家的环境对象
 

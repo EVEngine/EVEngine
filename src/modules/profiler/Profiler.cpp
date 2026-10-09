@@ -44,7 +44,17 @@ void Profiler::reset() {
     captureSequence_ = 0;
 }
 
-void Profiler::beginFrame() { frameBeginNs_ = nowNs(); }
+void Profiler::ensureGpuTimer() const {
+    // Retry only while unbound so a late graphics provider can still attach; once
+    // resolved (including to nullptr after a successful provide/revoke cycle is
+    // not re-probed from hot paths — callers rebind by constructing a new module).
+    if (!gpuTimer_) gpuTimer_ = eve::cap::ProviderRef<eve::service::IGpuTimer>::bind();
+}
+
+void Profiler::beginFrame() {
+    frameBeginNs_ = nowNs();
+    ensureGpuTimer();
+}
 
 void Profiler::endFrame() {
     if (!enabled()) return;
@@ -83,8 +93,8 @@ bool Profiler::hasFrame() const { return eve::prof::Profiler::hasFrame(); }
 float Profiler::frameMs() const { return frameMs_; }
 
 float Profiler::gpuFrameMs() const {
-    auto* t = eve::cap::query<eve::service::IGpuTimer>();
-    return t ? t->gpuFrameMs() : 0.f;
+    ensureGpuTimer();
+    return gpuTimer_ ? gpuTimer_->gpuFrameMs() : 0.f;
 }
 
 eve::Result<ProfilerFrameSnapshot> Profiler::captureFrame() const {
@@ -96,9 +106,10 @@ eve::Result<ProfilerFrameSnapshot> Profiler::captureFrame() const {
     ProfilerFrameSnapshot snapshot;
     snapshot.sequence   = captureSequence_;
     snapshot.cpuFrameMs = frameMs_;
-    if (auto* timer = eve::cap::query<eve::service::IGpuTimer>()) {
-        snapshot.gpuTimingAvailable = timer->gpuTimingAvailable();
-        if (snapshot.gpuTimingAvailable) snapshot.gpuFrameMs = timer->gpuFrameMs();
+    ensureGpuTimer();
+    if (gpuTimer_) {
+        snapshot.gpuTimingAvailable = gpuTimer_->gpuTimingAvailable();
+        if (snapshot.gpuTimingAvailable) snapshot.gpuFrameMs = gpuTimer_->gpuFrameMs();
     }
     const auto& samples = eve::prof::Profiler::lastFrame();
     snapshot.zones.reserve(samples.size());
@@ -111,10 +122,10 @@ eve::Result<ProfilerFrameSnapshot> Profiler::captureFrame() const {
 
 std::string Profiler::textReport() const {
     std::string report = eve::prof::Profiler::textReport();
-    auto* t            = eve::cap::query<eve::service::IGpuTimer>();
-    if (t && t->gpuTimingAvailable()) {
+    ensureGpuTimer();
+    if (gpuTimer_ && gpuTimer_->gpuTimingAvailable()) {
         char buf[64];
-        std::snprintf(buf, sizeof(buf), "  GPU frame: %.2f ms\n", t->gpuFrameMs());
+        std::snprintf(buf, sizeof(buf), "  GPU frame: %.2f ms\n", gpuTimer_->gpuFrameMs());
         report += buf;
     }
     return report;

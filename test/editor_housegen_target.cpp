@@ -1,6 +1,6 @@
-#include "housegen/editing/HouseGenTarget.h"
+#include "procgen/editing/HouseGenTarget.h"
 
-#include "housegen/HouseLayout.h"
+#include "procgen/house/HouseLayout.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

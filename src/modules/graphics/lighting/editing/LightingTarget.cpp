@@ -31,7 +31,7 @@ PropertySchema lightSchema() {
     PropertySchema schema;
     schema.typeId  = "graphics.light3d";
     auto type      = property("light.type", "editor.light.type", "light", PropertyType::Enum, "point");
-    type.enumItems = {"point", "dir"};
+    type.enumItems = {"point", "dir", "spot"};
     schema.properties.push_back(std::move(type));
     schema.properties.push_back(property("light.enabled", "editor.light.enabled", "light", PropertyType::Bool, true));
     schema.properties.push_back(property("transform.position", "editor.light.position", "transform", PropertyType::Vec3,
@@ -42,8 +42,14 @@ PropertySchema lightSchema() {
                                          EditorValue::Array{1.0, 1.0, 1.0, 1.0}));
     numeric(schema, "light.intensity", "editor.light.intensity", "light", 1.0, 0.0, 100000.0);
     numeric(schema, "light.radius", "editor.light.radius", "light", 8.0, 0.001, 100000.0);
+    numeric(schema, "light.spot-angle", "editor.light.spot-angle", "light", 30.0, 0.1, 89.0);
+    numeric(schema, "light.spot-softness", "editor.light.spot-softness", "light", 0.35, 0.0, 1.0);
     schema.properties.push_back(
         property("shadow.cast", "editor.light.cast-shadow", "shadow", PropertyType::Bool, false));
+    auto shadowMethod =
+        property("shadow.method", "editor.light.shadow-method", "shadow", PropertyType::Enum, "auto");
+    shadowMethod.enumItems = {"auto", "none", "csm", "perspective", "cube"};
+    schema.properties.push_back(std::move(shadowMethod));
     numeric(schema, "shadow.bias", "editor.light.shadow-bias", "shadow", 0.0, 0.0, 1.0, 0.0001);
     numeric(schema, "shadow.strength", "editor.light.shadow-strength", "shadow", 1.0, 0.0, 1.0);
     schema.properties.push_back(
@@ -249,6 +255,8 @@ std::vector<EditorDiagnostic> Light3DDocumentTarget::validate() const {
     const auto*                   type       = value("light.type")->getIf<std::string>();
     const auto*                   direction  = value("transform.direction")->getIf<EditorValue::Array>();
     const auto*                   castShadow = value("shadow.cast")->getIf<bool>();
+    const auto*                   methodName = value("shadow.method") ? value("shadow.method")->getIf<std::string>()
+                                                                      : nullptr;
     if (direction && direction->size() == 3) {
         double lengthSquared = 0.0;
         for (const EditorValue& component : *direction) {
@@ -259,10 +267,25 @@ std::vector<EditorDiagnostic> Light3DDocumentTarget::validate() const {
             diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument,
                 RuleId("editor.light.zero-direction"), DiagnosticSeverity::Error, "Light direction cannot be zero"));
     }
-    if (type && *type == "point" && castShadow && *castShadow)
-        diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
-            RuleId("editor.light.point-shadow-unsupported"), DiagnosticSeverity::Warning,
-            "The current renderer only selects directional shadow casters"));
+    const std::string method = methodName ? *methodName : "auto";
+    if (type && castShadow && *castShadow) {
+        if (*type == "point" && (method == "auto" || method == "cube"))
+            diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
+                RuleId("editor.light.point-shadow-reserved"), DiagnosticSeverity::Warning,
+                "Point cube shadows are reserved; enable via gfx.setShadowSchemePointEnabled when the atlas path ships"));
+        if (*type == "dir" && method != "auto" && method != "none" && method != "csm")
+            diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
+                RuleId("editor.light.dir-shadow-method"), DiagnosticSeverity::Warning,
+                "Directional lights only support csm (or auto/none) shadow methods"));
+        if (*type == "spot" && method != "auto" && method != "none" && method != "perspective")
+            diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
+                RuleId("editor.light.spot-shadow-method"), DiagnosticSeverity::Warning,
+                "Spot lights only support perspective (or auto/none) shadow methods"));
+        if (*type == "point" && method != "auto" && method != "none" && method != "cube")
+            diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
+                RuleId("editor.light.point-shadow-method"), DiagnosticSeverity::Warning,
+                "Point lights only support cube (or auto/none) shadow methods"));
+    }
     return diagnostics;
 }
 

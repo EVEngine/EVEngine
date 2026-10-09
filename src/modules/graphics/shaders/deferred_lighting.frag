@@ -1,11 +1,14 @@
 #version 450
+#extension GL_GOOGLE_include_directive : enable
+#include "light3d_spot.glsl"
 // Phase C: clustered deferred lighting for Hybrid opaque. Samples the Phase B
 // GBuffer MRT and evaluates core metallic-roughness PBR with the same clustered
 // light list / primary directional / CSM contract as mesh3d_clustered.frag.
 
 struct Light3D {
-    vec4 posRadius;
-    vec4 color;
+    vec4 posRadius; // xyz = point/spot OR dir; w = radius (0 => directional)
+    vec4 color;     // rgb * intensity; a = spotBias when spot
+    vec4 spot;      // xyz = beam dir; w = spotScale (<=0 => not a spot)
 };
 
 layout(set = 0, binding = 0, std140) uniform DeferredFrame {
@@ -42,6 +45,11 @@ layout(set = 0, binding = 10, std140) uniform ShadowFrame {
     vec4 bias;
     vec4 cascadeBias;
     vec4 cascadeTexel;
+    mat4 localVP[4];
+    vec4 localSlot01;
+    vec4 localSlot23;
+    vec4 localBias;
+    vec4 localMeta;
 } shadow;
 
 layout(set = 0, binding = 11) uniform sampler2DArrayShadow shadowMap;
@@ -179,6 +187,18 @@ void main() {
         vec3 L = toLight / max(dist, 1e-4);
         float atten = 1.0 - smoothstep(radius * 0.8, radius, dist);
         atten /= max(dist * dist, 1e-4);
+        atten *= spotAttenuation3D(-L, light.spot, light.color.a);
+        int si = spotLocalShadowSlot(light.spot);
+        if (si >= 0) {
+            vec4 lc = shadow.localVP[si] * vec4(worldPos, 1.0);
+            vec3 proj = lc.xyz / max(lc.w, 1e-4);
+            vec2 uv = proj.xy * 0.5 + 0.5;
+            float zref = proj.z - shadow.localBias[si];
+            float vis = 1.0;
+            if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0 && lc.w > 0.0)
+                vis = texture(shadowMap, vec4(uv, float(3 + si), zref));
+            atten *= mix(1.0 - shadow.splits.w, 1.0, vis);
+        }
         Lo += shadeLight(N, V, L, light.color.rgb * atten, albedo, metallic, roughness,
                          specularFactor);
     }

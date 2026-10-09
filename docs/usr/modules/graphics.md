@@ -4,6 +4,23 @@
 
 清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。Camera2D/Camera3D 提供屏幕与世界坐标换算，供 2D/3D 拾取使用；形状命中测试见 [Math](math.md)，物理体查询见 [Physics](physics.md)。
 
+高级光照 / AO / GI / AA / 体积雾等见 [高级渲染与屏幕空间效果](graphics/rendering-effects.md)。实时雾气专册见 [graphics_fog](graphics_fog.md)。
+
+## 0.6 已知边界
+
+下列能力在 0.6 **可以宣称并写进游戏**；未完成项保持显式 Unsupported / 文档边界，不得静默假实现。
+
+| 主题 | 0.6 已支持 | 已知边界（勿当作完成） |
+|------|------------|------------------------|
+| 光照模式 | `RenderControl.setLightingMode("forwardPlus"\|"hybrid")`；桌面 preset 可切 Hybrid；半透明仍 Forward+ | ClassicScenes 像素对比与 FrameGraph 录制仍待补；Lavapipe/CI 默认 ForwardPlus |
+| 体积雾 / 体积光 | `Volumetric`、[实时雾气](graphics_fog.md)（MAC / ray march / froxel） | 可选：Froxel 绑真实 CSM shadow map、物体空间 AO / RTAO |
+| 显示器 HDR | Vulkan `setDisplayOutputMode`（`sdr`/`auto`/`hdr10`/`scrgb`）；无 HDR 表面软回退 SDR | WebGPU 仅 `sdr`/`auto`；真 HDR 显示器端到端验收仍待做 |
+| 反射探针 | 采集、Registry 调度、sky backup、发布后 `applyToCamera` | **逐像素天空/大气 capture pass**未完成；Vulkan GGX/irradiance **compute filter** 在缺嵌入 SPIR-V 时返回 Unsupported，且**不得**把未 filter 的 staging 当已发布反射 |
+| 抗锯齿 | FXAA 等经 `AntiAliasing` / RenderControl `"aa"` | 硬件 MSAA + 完整多 Pass SMAA LUT + TAA 仍为可选后期 |
+| 其他后端 | 部分资源 Shader / 实例绘制路径仅 Vulkan | 非 Vulkan 返回结构化 `Unsupported`，无静默 CPU 假路径 |
+
+API 细节：光照模式见 [rendering-effects](graphics/rendering-effects.md)；HDR present 与探针绑定见下文「显示器 HDR」「HDR、景深与反射探针绑定」。设计进度见 [`HDR与反射链AAA升级.md`](../../dev/HDR与反射链AAA升级.md)。
+
 ## 基本用法
 
 ```squirrel
@@ -68,6 +85,8 @@ layer.setReceiveLight(true);
 ### 渲染带光照的 3D 对象
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
+
+`Light3D` 支持 `point` / `dir` / `spot`。聚光用 `setType("spot")`、`setSpotAngle` / `setSpotSoftness`（与 2D 锥体语义相同）。实时阴影通过 `setCastShadow(true)` 与 `setShadowMethod("auto"|"none"|"csm"|"perspective"|"cube")` / `getShadowMethod()` 选择技术；有向光走 CSM，聚光走 perspective 本地 atlas。进程级方案用 `gfx.setShadowSchemeDirectionalEnabled` / `setShadowSchemeSpotEnabled` / `setShadowSchemePointEnabled`、`setShadowSchemeMaxSpotCasters` / `getShadowSchemeMaxSpotCasters`，以及本地分页 `setShadowSchemePagingEnabled`、`setShadowSchemeMaxLocalUpdates` / `getShadowSchemeMaxLocalUpdates`、`setShadowSchemeHysteresisBonus`（固定 atlas 槽位按重要性租用，更新预算可时间切片重绘）。
 
 `Camera3D` 默认使用透视投影。等距视图可调用 `setOrthographic(height)`，其中
 `height` 是世界空间中的垂直可视范围；`setPerspective()` 恢复透视投影。
@@ -350,15 +369,15 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 - `bakeMeshMorph()`、`newMeshFromArrays()`、`updateMeshVertices()`、`clear()`、`clearMorphWeights()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`
 - `drawSolidRect()`、`drawTexturedRect()`、`drawTexturedRectRotated()`、`drawOcclusionSolid()`、`drawOcclusionTexture()`、`getCastShadow()`、`getCastOcclusion()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getEyeX()`、`getEyeY()`、`getEyeZ()`、`getFov()`、`getHeight()`、`getMorphCount()`
 - `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getSpotAngle()`、`getSpotSoftness()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
-- `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
+- `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowMethod()`、`getShadowSchemeMaxLocalUpdates()`、`getShadowSchemeMaxSpotCasters()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
 - `getTargetX()`、`getTargetY()`、`getTargetZ()`、`getVolumetric()`、`getVolumetricIntensity()`、`getVolumetricOnly()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
-- `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newGroomInstance()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
+- `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newGroomInstance()`、`newHairShader()`、`newMeshCube()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
 - `GroomInstance`：`setForcedLod`、`getForcedLod`、`setScreenSize`、`getScreenSize`、`setWidthScale`、`getWidthScale`、`setSideHint`、`setClusterCullingEnabled`、`isClusterCullingEnabled`、`getActiveLodIndex`、`getActiveRepresentation`、`getClusterCount`、`getVisibleCurveCount`、`setMarschnerLobes`、`getMarschnerR`、`getMarschnerTT`、`getMarschnerTRT`、`setSelfShadow`、`getSelfShadowStrength`、`getSelfShadowBias`、`getRootAoStrength`、`getCurveCount`、`getPointCount`、`getGroupCount`、`isGuideSimulationEnabled`
-- `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureWithSampler()`、`setRenderableTextureFromImageData()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureFromFile()`、`newTextureWithSampler()`、`setRenderableTextureFromImageData()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setCloudShadows()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`getMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPackedNormalMask()`、`setHeightTexture()`、`setPosition()`、`setRadius()`
-- `setReceiveLight()`、`setCustomLightProbe()`、`setCustomLightProbeCoefficient()`、`clearCustomLightProbe()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setHair()`、`getHair()`、`setShadowBias()`、`setShadowStrength()`
+- `setReceiveLight()`、`setCustomLightProbe()`、`setCustomLightProbeCoefficient()`、`clearCustomLightProbe()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setHair()`、`getHair()`、`setShadowBias()`、`setShadowMethod()`、`setShadowSchemeDirectionalEnabled()`、`setShadowSchemeHysteresisBonus()`、`setShadowSchemeMaxLocalUpdates()`、`setShadowSchemeMaxSpotCasters()`、`setShadowSchemePagingEnabled()`、`setShadowSchemePointEnabled()`、`setShadowSchemeSpotEnabled()`、`setShadowStrength()`
 - `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setParallax()`、`getParallaxScale()`、`getParallaxMinLayers()`、`getParallaxMaxLayers()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setVolumetricOnly()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
 - 字体：`newFont()`、`setFont()`、`getFont()`、`drawText()`、`print()`、`getAscent()`、`getBaseline()`、`hasGlyph()`

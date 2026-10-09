@@ -1722,7 +1722,7 @@ private:
     // CSM shadow map (3 cascade layers), one array per in-flight slot.
     struct ShadowMapSlot {
         vkb::DepthArrayImage image;
-        vk::Framebuffer      framebuffers[ShadowConfig::kCascades]{};
+        vk::Framebuffer      framebuffers[ShadowConfig::kTotalLayers]{};
     };
     std::vector<ShadowMapSlot> shadowMaps;
     vkb::DepthSampler shadowSampler{};
@@ -1757,7 +1757,7 @@ private:
         glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f};
     };
     std::vector<ShadowDraw> shadowPassDraws;
-    std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];
+    std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kTotalLayers];
     uint32_t shadowPendingMask = 0;
     ShadowMapSlot &currentShadowMap();
     vk::ImageView currentShadowArrayView();

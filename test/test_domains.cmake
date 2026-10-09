@@ -172,8 +172,10 @@ set(EVE_TEST_MODULE_DOMAIN
     "sensing;npc_ai"
 
     # --- construction
+    # house generation lives under the procgen package (src/modules/procgen/house)
+    # and its tests include procgen/... headers, so they classify with `procgen`
+    # through the include rule above rather than through a root of their own.
     "building;building"
-    "housegen;building"
     "archspace;building"
 
     # --- narrative, assets, media, platform, weather
@@ -276,6 +278,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "agent_development_session;devtools"
     "callgraph;devtools"
     "console;devtools"
+    "frame_stats;devtools"
     "dap;devtools"
     "debugger;devtools"
     "language_;devtools"
