@@ -23,6 +23,7 @@ if (!("litHwRtAvailable" in getroottable())) litHwRtAvailable <- false;
 if (!("litRtModeLabel" in getroottable())) litRtModeLabel <- "off";
 if (!("litFrame" in getroottable())) litFrame <- 0;
 if (!("litScreenshotSaved" in getroottable())) litScreenshotSaved <- false;
+if (!("litVolRebuildAccum" in getroottable())) litVolRebuildAccum <- 0.0;
 
 function makeBox(x, y, z, sx, sy, sz, r, g, b, metallic, roughness, castShadow, receiveShadow) {
     local o = eve.Renderable3D();
@@ -81,7 +82,8 @@ function makeRotatingSpot(r, g, b, intensity, angleDeg, soft, radius) {
     spot.setShadowMethod("perspective");
     spot.setShadowStrength(0.90);
     spot.setVolumetric(true);
-    spot.setVolumetricIntensity(1.35);
+    // Strong shaft contribution so warm/cool cones read through the froxel medium.
+    spot.setVolumetricIntensity(2.2);
     spot.setEnabled(true);
     litSpots.append(spot);
     return spot;
@@ -149,16 +151,16 @@ function syncVolumeCamera() {
 function rebuildVolumetricMedia() {
     if (litVolume == null) return;
     syncVolumeCamera();
-    litVolume.configureFroxelGrid(72, 40, 28, 0.1, 64.0);
+    litVolume.configureFroxelGrid(64, 36, 24, 0.1, 48.0);
     litVolume.clearFroxelGrid();
-    // Thin dusty medium so rotating spot shafts read as volumetric beams.
+    // Dusty medium: dense enough for colored spot shafts without washing the stage.
     litVolume.injectFroxelHeightFog(
-        litVolumetricOn ? 0.018 : 0.0,
-        0.78, 0.84, 0.95,
-        -0.5, 0.12,
-        -1.0, 8.0);
+        litVolumetricOn ? 0.032 : 0.0,
+        0.62, 0.70, 0.82,
+        -0.5, 0.10,
+        -1.0, 7.0);
     local integ = litVolume.integrateFroxelFromSceneLights(
-        0.18, 0.20, 0.26,
+        0.06, 0.07, 0.09,
         -10.0, -1.0, -8.0,
         10.0, 8.0, 10.0,
         8);
@@ -210,14 +212,15 @@ function configureRenderFeatures() {
             rc.enable("reflectionChain");
             litRtModeLabel = "reflectionChain (portable)";
         }
-        litCamera.setExposure(litVolumetricOn ? 0.24 : 0.28);
-        litCamera.setBloom(0.10, 1.35);
+        litCamera.setExposure(litVolumetricOn ? 0.20 : 0.28);
+        litCamera.setBloom(0.08, 1.25);
     } else {
         rc.disable("rtx");
         rc.disable("reflectionChain");
         litRtModeLabel = "off";
-        litCamera.setExposure(litVolumetricOn ? 0.78 : 0.90);
-        litCamera.setBloom(0.28, 1.05);
+        // Volumetric shafts add in-scatter; keep exposure lower so cones stay readable.
+        litCamera.setExposure(litVolumetricOn ? 0.58 : 0.90);
+        litCamera.setBloom(litVolumetricOn ? 0.22 : 0.28, 1.05);
     }
     rc.compile();
     refreshHud();
@@ -252,9 +255,9 @@ function buildScene() {
     litEmitterLights.clear();
     litEmitterColors.clear();
 
-    // Shadow-receiving ground and a slight rear wall for contact shadows / GI.
-    makeBox(0.0, -0.12, -0.4, 16.0, 0.16, 12.0, 0.18, 0.19, 0.22, 0.08, 0.90, false, true);
-    makeBox(0.0, 2.4, -5.6, 16.0, 5.0, 0.22, 0.22, 0.24, 0.28, 0.05, 0.78, true, true);
+    // Slightly darker stage so warm/cool spot cones and froxel shafts read clearly.
+    makeBox(0.0, -0.12, -0.4, 16.0, 0.16, 12.0, 0.12, 0.13, 0.15, 0.06, 0.92, false, true);
+    makeBox(0.0, 2.4, -5.6, 16.0, 5.0, 0.22, 0.14, 0.15, 0.18, 0.04, 0.82, true, true);
 
     // Occluders that cast crisp directional + spot shadows onto the ground.
     makeBox(-3.6, 1.15, -1.2, 0.9, 2.3, 0.9, 0.55, 0.42, 0.32, 0.10, 0.65, true, true);
@@ -307,13 +310,14 @@ eve_init = function() {
     litSun.setShadowMethod("csm");
     litSun.setShadowStrength(0.88);
     litSun.setVolumetric(true);
-    litSun.setVolumetricIntensity(0.55);
+    // Soft god-ray fill; spot shafts carry the readable color cones.
+    litSun.setVolumetricIntensity(0.28);
     applyDirectional();
 
     litSpots.clear();
     // Warm + cool rotating spots with perspective shadows and volumetric shafts.
-    makeRotatingSpot(1.0, 0.88, 0.62, 7.5, 28.0, 0.30, 16.0);
-    makeRotatingSpot(0.45, 0.75, 1.0, 6.0, 24.0, 0.40, 14.0);
+    makeRotatingSpot(1.0, 0.82, 0.48, 8.5, 26.0, 0.28, 18.0);
+    makeRotatingSpot(0.40, 0.72, 1.0, 7.2, 22.0, 0.35, 16.0);
     updateRotatingSpots();
     applySpots();
 
@@ -364,9 +368,14 @@ eve_update = function(dt) {
 
     updateRotatingSpots();
 
-    // Keep froxel lighting in sync with moving volumetric spots.
-    if (litVolumetricOn)
-        rebuildVolumetricMedia();
+    // Rebuild froxels on a short cadence (Lavapipe cannot afford every-frame integrate).
+    if (litVolumetricOn) {
+        litVolRebuildAccum += dt;
+        if (litVolRebuildAccum >= 0.08) {
+            litVolRebuildAccum = 0.0;
+            rebuildVolumetricMedia();
+        }
+    }
 
     if (key_just_pressed("1")) {
         litAmbientOn = !litAmbientOn;
