@@ -26,7 +26,8 @@ Windows 上引擎可执行文件为 `build/win32-debug/src/engine/eve.exe`。
   按 `2` 开关。
 - **聚光灯 + perspective 阴影**：`setType("spot")` + `setSpotAngle` / `setSpotSoftness` +
   `setShadowMethod("perspective")`。锥体在场景上缓慢扫动。按 `4` 开关。
-- **发光体**：暖 / 冷 / 品红点光源 + bloom 网格。按 `3` 开关。
+- **发光体**：暖 / 冷 / 品红球体保留原始 tint 材质；按 `3` 开关点光源与 bloom 发光，
+  关闭时球体仍以普通材质受场景光照（不再涂成近黑 stub）。
 - **阴影方案**（进程级）：`gfx.setShadowSchemeDirectionalEnabled` /
   `setShadowSchemeSpotEnabled` / `setShadowSchemePointEnabled` /
   `setShadowSchemeMaxSpotCasters`。本地阴影 atlas 固定 4 槽，候选更多时按屏幕重要性分页；
@@ -40,7 +41,7 @@ Windows 上引擎可执行文件为 `build/win32-debug/src/engine/eve.exe`。
 |---|---|
 | `1` | 开关环境光 |
 | `2` | 开关有向光（CSM 阴影） |
-| `3` | 开关发光体点光源与发光网格 |
+| `3` | 开关发光体点光源与 bloom（网格始终保留原始材质） |
 | `4` | 开关聚光灯（perspective 阴影） |
 | `Space` | 开关光追（硬件 RTX，或 portable `reflectionChain`） |
 | `R` / `r` | 复位相机 |

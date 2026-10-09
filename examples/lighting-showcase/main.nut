@@ -50,9 +50,10 @@ function makeSphere(x, y, z, scale, r, g, b, metallic, roughness, castShadow, re
 }
 
 function makeEmitter(x, y, z, r, g, b, intensity, radius) {
-    // Bright mesh + bloom reads as a glowing body; a normal point light lights
-    // nearby surfaces (createEmissiveLight3D is volumetricOnly and skips them).
-    local glow = makeSphere(x, y, z, 0.42, r, g, b, 0.05, 0.18, false, false);
+    // Colored mesh keeps its base material when the glow is off; a point light +
+    // bloom provide the emissive look when on (createEmissiveLight3D is
+    // volumetricOnly and skips surface lighting).
+    local glow = makeSphere(x, y, z, 0.42, r, g, b, 0.12, 0.35, false, true);
     litEmitters.append(glow);
     litEmitterColors.append([r, g, b]);
 
@@ -94,11 +95,21 @@ function applyEmitters() {
         light.setEnabled(litEmittersOn);
     for (local i = 0; i < litEmitters.len(); ++i) {
         local mesh = litEmitters[i];
+        local c = litEmitterColors[i];
+        // Always keep the authored albedo. Glow is the point light + bloom, not
+        // a near-black stub mesh when the toggle is off.
+        mesh.setTint(c[0], c[1], c[2], 1.0);
         if (litEmittersOn) {
-            local c = litEmitterColors[i];
-            mesh.setTint(c[0], c[1], c[2], 1.0);
+            // Hotter response so bloom reads as emission while shading remains.
+            mesh.setMetallic(0.05);
+            mesh.setRoughness(0.18);
+            mesh.setReceiveShadow(true);
+            mesh.setCastShadow(false);
         } else {
-            mesh.setTint(0.08, 0.08, 0.09, 1.0);
+            mesh.setMetallic(0.12);
+            mesh.setRoughness(0.45);
+            mesh.setReceiveShadow(true);
+            mesh.setCastShadow(true);
         }
     }
 }
@@ -125,14 +136,16 @@ function configureRayTracing(enabled) {
             rc.enable("reflectionChain");
             litRtModeLabel = "reflectionChain (portable)";
         }
-        // GI / SSR add a lot of energy on Lavapipe; pull exposure down so
-        // emitter colors and contact shadows stay readable.
-        litCamera.setExposure(0.62);
+        // GI / SSR add a lot of energy on Lavapipe; pull exposure/bloom down so
+        // materials and contact shadows stay readable.
+        litCamera.setExposure(0.42);
+        litCamera.setBloom(0.16, 1.20);
     } else {
         rc.disable("rtx");
         rc.disable("reflectionChain");
         litRtModeLabel = "off";
         litCamera.setExposure(0.90);
+        litCamera.setBloom(0.28, 1.05);
     }
     rc.compile();
     refreshHud();
