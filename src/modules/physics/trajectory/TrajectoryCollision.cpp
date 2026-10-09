@@ -5,7 +5,6 @@
 #include "physics/Shape3D.h"
 #include "physics/World3D.h"
 
-#include <algorithm>
 #include <cmath>
 #include <utility>
 
