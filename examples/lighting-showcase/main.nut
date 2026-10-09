@@ -138,8 +138,8 @@ function configureRayTracing(enabled) {
         }
         // GI / SSR add a lot of energy on Lavapipe; pull exposure/bloom down so
         // materials and contact shadows stay readable.
-        litCamera.setExposure(0.42);
-        litCamera.setBloom(0.16, 1.20);
+        litCamera.setExposure(0.28);
+        litCamera.setBloom(0.10, 1.35);
     } else {
         rc.disable("rtx");
         rc.disable("reflectionChain");
