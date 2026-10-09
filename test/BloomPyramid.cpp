@@ -52,7 +52,7 @@ TEST_CASE("graphics.bloom photographic pyramid preserves weighted DC and thresho
     constexpr float energy = 1 + .675f * (.3465f + .138f + .1176f + .066f + .066f + .061f) / 6;
     const auto      center = bright->getPixel(32, 16);
     REQUIRE(std::abs(center.r - energy) < .004f);
-    for (const auto point : {std::pair{0, 0}, std::pair{63, 31}}) {
+    for (const auto& point : {std::pair{0, 0}, std::pair{63, 31}}) {
         const auto pixel = bright->getPixel(point.first, point.second);
         // The reference blur uses a black border, not edge replication.
         REQUIRE(pixel.r > 1);
