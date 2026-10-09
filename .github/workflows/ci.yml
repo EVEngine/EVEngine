@@ -243,8 +243,11 @@ jobs:
     runs-on: windows-latest
     # This lane builds and tests both Vulkan and native Dawn configurations.
     # A cold Windows runner needs more than 90 minutes for the two independent
-    # unit_test builds; keep the per-step limits below as the hang guards.
-    timeout-minutes: 180
+    # unit_test builds; the Dawn lane reached 3739/3740 compile steps at the
+    # former 180-minute job guard with 0% sccache hits on 2026-10-08. Keep the
+    # per-step limits below as the hang guards and give the job enough room to
+    # finish the final link plus parity checks on a cold PR merge ref.
+    timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
