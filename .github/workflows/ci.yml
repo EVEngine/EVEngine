@@ -242,9 +242,10 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     # This lane builds and tests both Vulkan and native Dawn configurations.
-    # A cold Windows runner needs more than 90 minutes for the two independent
-    # unit_test builds; keep the per-step limits below as the hang guards.
-    timeout-minutes: 180
+    # Run 37790882507 exhausted 180 minutes during the second build after the
+    # Vulkan build/tests passed. Budget for the 105-minute Dawn build plus its
+    # 40/30-minute test steps; retain every per-step limit as a hang guard.
+    timeout-minutes: 300
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
