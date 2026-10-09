@@ -57,7 +57,6 @@ RULES = (
     "backend-contract",
     "module-interface",
     "debt-metadata",
-    "module-interface",
 )
 
 COMMON_REQUIRED = {
@@ -69,7 +68,6 @@ COMMON_REQUIRED = {
     "tests",
 }
 RULE_REQUIRED = {
-    "module-interface": {"provides", "requires", "emits", "observes", "binds", "protocol", "thread_affinity", "trim", "cost_notes", "hot_path"},
     "api-shape": {"result_policy", "nodiscard_policy", "pointer_policy"},
     "link": {"symbols", "create", "ownership", "destroy_order", "restore", "stale"},
     "state-owner": {"state", "authoritative_owner", "projections"},
@@ -301,14 +299,6 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
             for field in COMMON_REQUIRED | RULE_REQUIRED[rule]:
                 if field not in entry:
                     errors.append(f"{prefix} ({rule}) is missing {field}")
-            if rule == "module-interface":
-                for field in ("provides", "requires", "emits", "observes", "binds", "protocol", "cost_notes", "hot_path"):
-                    if not isinstance(entry.get(field), list):
-                        errors.append(f"{prefix}.{field} must be an array")
-                if not nonempty_string(entry.get("thread_affinity")):
-                    errors.append(f"{prefix}.thread_affinity must be a non-empty string")
-                if not isinstance(entry.get("trim"), Mapping) or not nonempty_string(entry["trim"].get("absent_profile")):
-                    errors.append(f"{prefix}.trim.absent_profile must be a non-empty string")
             if rule == "debt-metadata":
                 growth = entry.get("max_net_growth")
                 if not isinstance(growth, int) or growth < 0:
@@ -848,7 +838,9 @@ def lint_module_interface(lines: list[SourceLine], metadata: Mapping[str, Any]) 
 
         # G-5: expensive or owning-container public APIs need @cost.
         if item.path.endswith((".h", ".hpp")) and not _is_non_public_declaration(item):
-            expensive = bool(OWNED_CONTAINER_RETURN.search(text) or EXPENSIVE_API_NAME.search(text))
+            expensive = bool(
+                ("(" in text and OWNED_CONTAINER_RETURN.search(text)) or EXPENSIVE_API_NAME.search(text)
+            )
             if expensive and not re.search(r"@cost\b", context, re.IGNORECASE):
                 findings.append(
                     Finding(

@@ -196,6 +196,15 @@ class ArchitectureContractTests(unittest.TestCase):
         codes = {finding.code for finding in contracts.lint_module_interface(lines, {"entries": []})}
         self.assertNotIn("missing-cost-annotation", codes)
 
+    def test_container_data_member_is_not_an_owned_return_api(self):
+        lines = [contracts.SourceLine("fixture.h", 1, "std::vector<ModuleConnector> connectors;")]
+        self.assertEqual([], contracts.lint_module_interface(lines, {"entries": []}))
+
+    def test_owned_container_method_still_requires_cost(self):
+        lines = [contracts.SourceLine("fixture.h", 1, "std::vector<ModuleConnector> connectors();")]
+        codes = {finding.code for finding in contracts.lint_module_interface(lines, {"entries": []})}
+        self.assertIn("missing-cost-annotation", codes)
+
     def test_module_interface_gates_capability_hot_path_and_runtime_lookup(self):
         metadata = {
             "entries": [
