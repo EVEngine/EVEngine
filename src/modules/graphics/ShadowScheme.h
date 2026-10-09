@@ -142,6 +142,8 @@ struct LocalShadowSlot {
  * @param view Camera used for paging scores (optional when paging disabled).
  * @param[out] directionalCaster Dir light chosen for CSM, or nullptr.
  * @param[out] localSlots Allocated spot slots (cached VP when needsUpdate is false).
+ * @cost Linear in `lights.size()` for scoring, plus sort of spot candidates; clears
+ *       and rewrites `localSlots` (up to `maxSpotShadowCasters` / atlas capacity).
  */
 EVENGINE_API_BACKENDS void selectShadowCasters(const std::vector<Light3D::Data*>& lights,
                                                const std::vector<bool>& isPointFlags,
