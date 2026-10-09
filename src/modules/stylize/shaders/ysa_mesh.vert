@@ -18,6 +18,7 @@ layout(location = 5) in vec4 inColor;
 struct Light3D {
     vec4 posRadius;
     vec4 color;
+    vec4 spot;
 };
 
 layout(set = 0, binding = 0, std140) uniform Frame {
