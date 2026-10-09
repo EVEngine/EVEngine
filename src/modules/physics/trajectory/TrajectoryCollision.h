@@ -61,9 +61,13 @@ struct EVENGINE_API_DOMAINS TrajectoryHit {
     float              fraction = 1.f;
 };
 
-/** @brief Owning result of one deterministic trajectory advance. */
+/**
+ * @brief Owning result of one deterministic trajectory advance.
+ * @cost Linear in the number of unique World3D cast hits emitted this frame.
+ */
 struct EVENGINE_API_DOMAINS TrajectoryFrame {
     SimulationTick             tick = SimulationTick::zero();
+    /** @brief Unique contacts produced by armed collider sweeps this tick. */
     std::vector<TrajectoryHit> hits;
 };
 
