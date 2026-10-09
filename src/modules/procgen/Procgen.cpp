@@ -14,6 +14,8 @@
 #include "procgen/ShapeGrammarScript.h"
 #include "procgen/algorithms/HexTerrainBindings.h"
 #include "procgen/mesh/DynamicMeshUvPaintSession.h"
+#include "procgen/mesh/MeshAdhereLive.h"
+#include "procgen/mesh/MeshMerge.h"
 #include "procgen/mesh/MeshModifierGraphScript.h"
 
 #include "image/ImageData.h"
@@ -3687,6 +3689,14 @@ void Procgen::expose(ssq::Table& table) {
     mesh.addFunc("getColor", [](const MeshBuild* self,int vertex,int component) {
         return self ? self->getColor(vertex,component) : 1.f;
     });
+    mesh.addFunc("setColor", [vm](MeshBuild* self, int vertex, float r, float g, float b, float a) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshBuild is required", "color", {},
+                                                                      "procgen.squirrel")));
+        return eve::script::projectResult(vm, self->setColor(vertex, r, g, b, a));
+    });
     mesh.addFunc("getIndex", &MeshBuild::getIndex);
     mesh.addFunc("setMeta", &MeshBuild::setMeta);
     mesh.addFunc("getMeta", &MeshBuild::getMeta);
@@ -3749,6 +3759,182 @@ void Procgen::expose(ssq::Table& table) {
                 [](int value) { return Value(static_cast<std::int64_t>(value)); });
         return eve::script::projectResult(vm,combinePcgStaticMeshesInto(*output,*plan),
                                           [](int value){return Value(static_cast<std::int64_t>(value));});
+    });
+
+    auto meshMergePlan = table.addClass("MeshMergePlan", ssq::Class::Ctor<MeshMergePlan()>());
+    meshMergePlan.addFunc("appendSource",
+                          [vm](MeshMergePlan* self, const MeshBuild* source, float tx, float ty, float tz, float yaw,
+                               float sx, float sy, float sz, const std::string& materialId) {
+                              if (!self || !source)
+                                  return eve::script::projectResult(
+                                      vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                              DiagnosticCode::InvalidArgument,
+                                              "MeshMergePlan and source mesh are required", "merge", {},
+                                              "procgen.squirrel")));
+                              return eve::script::projectResult(
+                                  vm, self->appendSource(*source, tx, ty, tz, yaw, sx, sy, sz, materialId));
+                          });
+    meshMergePlan.addFunc("clear", [](MeshMergePlan* self) {
+        if (self) self->clear();
+    });
+    meshMergePlan.addFunc("getSourceCount",
+                          [](const MeshMergePlan* self) { return self ? self->getSourceCount() : 0; });
+    meshMergePlan.addFunc("setEnableContactBlend", [vm](MeshMergePlan* self, bool enabled) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshMergePlan is required", "merge", {},
+                                                                      "procgen.squirrel")));
+        return eve::script::projectResult(vm, self->setEnableContactBlend(enabled));
+    });
+    meshMergePlan.addFunc("getEnableContactBlend",
+                          [](const MeshMergePlan* self) { return self && self->getEnableContactBlend(); });
+    meshMergePlan.addFunc("setContactBlend", [vm](MeshMergePlan* self, float edgeRadius, float materialRadius,
+                                                  float strength, float normalsBlend, float materialBlend,
+                                                  float surfaceOffset, bool softSnap, const std::string& falloff) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshMergePlan is required", "merge", {},
+                                                                      "procgen.squirrel")));
+        MeshContactBlendParams params;
+        params.edgeRadius        = edgeRadius;
+        params.materialRadius    = materialRadius;
+        params.strength          = strength;
+        params.normalsBlend      = normalsBlend;
+        params.materialBlend     = materialBlend;
+        params.surfaceOffset     = surfaceOffset;
+        params.softSnapPositions = softSnap;
+        params.falloff           = falloff;
+        return eve::script::projectResult(vm, self->setContactBlendParams(params));
+    });
+    meshMergePlan.addFunc("setWeldTolerance", [vm](MeshMergePlan* self, float tolerance) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshMergePlan is required", "merge", {},
+                                                                      "procgen.squirrel")));
+        return eve::script::projectResult(vm, self->setWeldTolerance(tolerance));
+    });
+    meshMergePlan.addFunc("setSimplifyQuality", [vm](MeshMergePlan* self, float quality) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshMergePlan is required", "merge", {},
+                                                                      "procgen.squirrel")));
+        return eve::script::projectResult(vm, self->setSimplifyQuality(quality));
+    });
+    meshMergePlan.addFunc("setPivotMode", [vm](MeshMergePlan* self, int mode) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshMergePlan is required", "merge", {},
+                                                                      "procgen.squirrel")));
+        return eve::script::projectResult(
+            vm, self->setPivotMode(mode == 1 ? MeshMergePlan::PivotMode::WorldOrigin
+                                             : MeshMergePlan::PivotMode::FirstSource));
+    });
+    table.addFunc("mergeStaticMeshes", [vm](const MeshMergePlan* plan) {
+        if (!plan) {
+            auto failed = eve::Result<MeshBuild>::failure(eve::Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "MeshMergePlan is required", "merge", {}, "procgen.squirrel"));
+            return eve::script::projectStatusResult(vm, failed.status());
+        }
+        auto result = mergeStaticMeshes(*plan);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
+        auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
+            vm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
+    });
+
+    auto meshAdhereLive = table.addClass("MeshAdhereLive", ssq::Class::Ctor<MeshAdhereLive()>());
+    meshAdhereLive.addFunc("activate", [vm](MeshAdhereLive* self, const MeshBuild* source, const MeshBuild* surface) {
+        if (!self || !source || !surface)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "MeshAdhereLive, source and surface are required", "adhere",
+                        {}, "procgen.squirrel")));
+        return eve::script::projectResult(vm, self->activateResult(*source, *surface));
+    });
+    meshAdhereLive.addFunc("isActive", [](const MeshAdhereLive* self) { return self && self->isActive(); });
+    meshAdhereLive.addFunc("getRevision",
+                           [](const MeshAdhereLive* self) { return self ? static_cast<int>(self->revision()) : 0; });
+    meshAdhereLive.addFunc("setParams", [vm](MeshAdhereLive* self, float edgeRadius, float materialRadius,
+                                             float strength, float normalsBlend, float materialBlend,
+                                             float surfaceOffset, bool softSnap, const std::string& falloff) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshAdhereLive is required", "adhere", {},
+                                                                      "procgen.squirrel")));
+        MeshContactBlendParams params;
+        params.edgeRadius        = edgeRadius;
+        params.materialRadius    = materialRadius;
+        params.strength          = strength;
+        params.normalsBlend      = normalsBlend;
+        params.materialBlend     = materialBlend;
+        params.surfaceOffset     = surfaceOffset;
+        params.softSnapPositions = softSnap;
+        params.falloff           = falloff;
+        return eve::script::projectResult(vm, self->setParamsResult(params));
+    });
+    meshAdhereLive.addFunc("setSurface", [vm](MeshAdhereLive* self, const MeshBuild* surface) {
+        if (!self || !surface)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshAdhereLive and surface are required",
+                                                                      "adhere", {}, "procgen.squirrel")));
+        return eve::script::projectResult(vm, self->setSurfaceResult(*surface));
+    });
+    meshAdhereLive.addFunc("setSource", [vm](MeshAdhereLive* self, const MeshBuild* source) {
+        if (!self || !source)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "MeshAdhereLive and source are required",
+                                                                      "adhere", {}, "procgen.squirrel")));
+        return eve::script::projectResult(vm, self->setSourceResult(*source));
+    });
+    meshAdhereLive.addFunc("evaluate", [vm](MeshAdhereLive* self, bool force) {
+        if (!self)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "MeshAdhereLive is required", "adhere", {},
+                                                                           "procgen.squirrel")),
+                [](std::uint64_t value) { return Value(static_cast<std::int64_t>(value)); });
+        return eve::script::projectResult(vm, self->evaluateResult(force),
+                                          [](std::uint64_t value) { return Value(static_cast<std::int64_t>(value)); });
+    });
+    meshAdhereLive.addFunc("isDirty", [](const MeshAdhereLive* self) { return self && self->isDirty(); });
+    meshAdhereLive.addFunc("removeSetup", [](MeshAdhereLive* self) {
+        if (self) self->removeSetup();
+    });
+    meshAdhereLive.addFunc("derivedMeshResult", [vm](const MeshAdhereLive* self) {
+        if (!self) {
+            auto failed = eve::Result<MeshBuild>::failure(eve::Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "MeshAdhereLive is required", "adhere", {}, "procgen.squirrel"));
+            return eve::script::projectStatusResult(vm, failed.status());
+        }
+        auto result = self->derivedMeshResult();
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
+        auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
+            vm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
+    });
+    meshAdhereLive.addFunc("bakeToMesh", [vm](MeshAdhereLive* self) {
+        if (!self) {
+            auto failed = eve::Result<MeshBuild>::failure(eve::Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "MeshAdhereLive is required", "adhere", {}, "procgen.squirrel"));
+            return eve::script::projectStatusResult(vm, failed.status());
+        }
+        auto result = self->bakeToMeshResult();
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
+        auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
+            vm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
 
     auto pcgMeshLodBackup=table.addClass("PcgMeshLodBackup",ssq::Class::Ctor<PcgMeshLodBackup()>());
