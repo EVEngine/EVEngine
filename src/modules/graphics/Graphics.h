@@ -1320,7 +1320,8 @@ public:
     virtual void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) = 0;
     /** @brief Upload the two dominant local reflection probes for subsequent mesh draws. */
     virtual void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) = 0;
-    /** @brief Final display mapping; None preserves linear color, Aces uses the fitted curve, and Filmic uses Rec.709/AP1. */
+    /** @brief Final display mapping; None preserves linear color, Aces uses the fitted curve, and Filmic uses
+     * Rec.709/AP1. */
     enum class SceneToneMapping { None, Aces, Filmic };
     /** @brief Requested swapchain present preference. */
     enum class DisplayOutputMode { Sdr, Auto, Hdr10, ScRgb };

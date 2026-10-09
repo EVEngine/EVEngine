@@ -8,6 +8,7 @@
 #include <string_view>
 #include "Fixtures.h"
 #include "graphics/Canvas.h"
+#include "graphics/DisplayOutputEncoding.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ViewPreparation.h"
 #include "graphics/sky/SkyAtmosphereLuts.h"
@@ -191,13 +192,14 @@ TEST_CASE("graphics.sky filmic display preserves middle grey and keeps prior mod
     REQUIRE(input != nullptr);
     REQUIRE(output != nullptr);
     REQUIRE(shader != nullptr);
-    const auto sample = [&](float linear, float mode) {
+    const auto sample = [&](float linear, float mode, float displayMode = 0) {
         gfx->setCanvas(input);
         gfx->clear(Color(linear, linear, linear, 1), std::nullopt, std::nullopt);
         gfx->drawSolidRect(0, 0, 16, 16, Color(linear, linear, linear, 1));
         gfx->setCanvas();
         gfx->setCanvas(output);
-        gfx->drawTexturedRectShader(input->getTexture(), shader, 0, 0, 16, 16, Color(mode, 0, 1, 0));
+        gfx->drawTexturedRectShader(input->getTexture(), shader, 0, 0, 16, 16,
+                                    Color(mode, displayMode, display::packNits(200, 1000), 0));
         gfx->setCanvas();
         std::unique_ptr<eve::image::ImageData> pixels(output->newHDRImageData());
         REQUIRE(pixels != nullptr);
@@ -216,6 +218,15 @@ TEST_CASE("graphics.sky filmic display preserves middle grey and keeps prior mod
     REQUIRE(std::isfinite(bright.r));
     REQUIRE(bright.r > .99f);
     REQUIRE(bright.r <= 1);
+    // Filmic participates in the dev HDR output contract without replacing its encoding.
+    const auto compose = sample(.9f, 2, 3), scRgb = sample(.9f, 2, 1);
+    REQUIRE(std::abs(compose.r - film.r * 5.f) < .005f);
+    REQUIRE(std::abs(scRgb.r - compose.r * 2.5f) < .01f);
+    const auto pq = sample(.9f, 2, 2), pqBright = sample(9.f, 2, 2);
+    REQUIRE(std::isfinite(pq.r));
+    REQUIRE(pq.r > 0);
+    REQUIRE(pqBright.r > pq.r);
+    REQUIRE(pqBright.r <= 1);
     REQUIRE(gfx->getScenePhotographicVignette() == 0);
     REQUIRE(gfx->setScenePhotographicVignette(.4f).ok());
     REQUIRE(!gfx->setScenePhotographicVignette(-1).ok());

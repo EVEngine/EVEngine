@@ -8,7 +8,9 @@ namespace detail {
 /** @brief Internal owning RGBA32F table candidates, never partially published. */
 struct SkyAtmosphereLuts {
     static constexpr unsigned TransmittanceWidth = 256, TransmittanceHeight = 64, MultiWidth = 32, MultiHeight = 32;
-    std::vector<float>        transmittance, multiScattering;
+    /** @brief Owned table pixels, allocated during the explicit bake.
+     * @cost Copies scale with the fixed LUT texel count; move candidates during preparation. */
+    std::vector<float> transmittance, multiScattering;
 };
 /** @brief Bake coefficients using UE's default 10/15-sample, two-direction approximation.
  * @return Owning table data or a structured validation/baking failure.

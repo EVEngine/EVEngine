@@ -853,7 +853,7 @@ public:
     /** @brief Set the render-thread photographic vignette; inherited validation and ownership contract. */
     [[nodiscard]] Result<void> setScenePhotographicVignette(float intensity) override;
     /** @brief Read the current render-thread photographic vignette. */
-    float                      getScenePhotographicVignette() const override { return scenePhotographicVignette_; }
+    float getScenePhotographicVignette() const override { return scenePhotographicVignette_; }
     /** @brief Sets the scene exposure. */
     void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
     /** @brief Returns the scene exposure. */

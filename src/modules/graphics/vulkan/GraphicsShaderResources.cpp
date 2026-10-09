@@ -81,9 +81,11 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
     if (!initialized || found == ownedGpuShaders.end() || !(*found)->isMesh3D || (*found)->isHair3D ||
         shader.isXray() || swapchainPassOpen || offscreen3DPassOpen)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Expected an owned, ordinary mesh shader outside frame submission", "shader.resources"));
-    if ((inputs.images.empty() && inputs.constants.empty() && inputs.instanceMatrices.empty()) || inputs.images.size() > 16 || inputs.constants.size() > 65536 ||
-        inputs.constants.size() % 16 != 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Expected resource inputs, at most 16 images and 64 KiB of aligned uniform bytes", "shader.resources"));
+    if ((inputs.images.empty() && inputs.constants.empty() && inputs.instanceMatrices.empty()) ||
+        inputs.images.size() > 16 || inputs.constants.size() > 65536 || inputs.constants.size() % 16 != 0)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument,
+            "Expected resource inputs, at most 16 images and 64 KiB of aligned uniform bytes", "shader.resources"));
     std::set<uint32_t>                          bindings;
     std::vector<std::vector<ShaderImageRegion>> regions;
     const auto&                                 limits        = device.physical_device.properties.limits;

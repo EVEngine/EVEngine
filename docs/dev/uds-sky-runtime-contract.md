@@ -991,10 +991,22 @@ Applicable architecture rules: structured Result/nodiscard, immutable owned stor
 strict version migration/unknown-field rejection, explicit preparation cost, one simulation clock,
 provider-present/absent paths, no new module boundary or ECS authority. No exception requested.
 
-Verification for the external-pack/procedural change: native MSVC build passed; all 28 focused sky
+Verification before the PR rebase for the external-pack/procedural change: native MSVC build passed; all 28 focused sky
 cases passed with Vulkan validation enabled; default asset-free example survived the 10-second smoke.
 Seven fixed-view captures (procedural 00/06/12/18 and moon, external noon and moon) repeated pixel-exactly.
 External noon and moon are byte-identical to their pre-migration screenshots. Existing unused-vertex
 attribute performance warnings and the Optimus layer version warning remain; no validation errors were
 reported. HEAD-relative architecture contracts passed. Full `make check` against `origin/dev` still
 fails on pre-existing cross-module API/lifetime/ECS catalogue findings; it is not a full green gate.
+
+
+PR integration with current dev preserves HDR10/scRGB/linear-compose output. The integer resolve
+green channel remains the display mode; a fractional quarter carries photographic vignette. Filmic
+uses the existing paper-white/peak mapping before the selected display encoding. GPU contract
+coverage checks SDR middle grey, linear-compose scaling, scRGB scaling, monotonic PQ output and
+vignette corners. SkyScriptBindings belongs to the weather test domain introduced on dev.
+
+The local prebuilt SDL library predates dev's DLL-entry correction, so fresh local verification uses
+the supported OBJECT module-linkage configuration and split graphics/weather test domains. Shared
+DLL linking remains the responsibility of the normal CI dependency build; no private dependency
+files or local linker workaround are included in this change.
