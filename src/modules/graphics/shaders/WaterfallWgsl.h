@@ -8,7 +8,7 @@ namespace eve::graphics::shaders {
  * @thread Safe for concurrent reads.
  */
 inline constexpr const char* kWaterfallFragWgsl = R"wgsl(
-struct Light3D { posRadius: vec4f, color: vec4f };
+struct Light3D { posRadius: vec4f, color: vec4f, spot: vec4f };
 struct Frame {
     mvp: mat4x4f, model: mat4x4f, lightDir: vec4f, lightColor: vec4f,
     tint: vec4f, cameraPos: vec4f, ambient: vec4f,

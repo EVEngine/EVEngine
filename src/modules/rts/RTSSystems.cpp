@@ -157,88 +157,6 @@ Result<std::size_t> advanceEffects(RTSEffectComponent& effects, const Simulation
 
 }  // namespace
 
-Result<int> VeterancySystem::award(Unit& unit, float experience) {
-    auto veterancy = unit.veterancy();
-    auto durability = unit.durability();
-    auto combatPolicy = unit.combat();
-    if (!durability->alive || !std::isfinite(experience) || experience <= 0.0f)
-        return Result<int>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument,
-                              "RTS veterancy award requires a live unit and positive finite experience", "experience"));
-    if (veterancy->veteranThreshold <= 0.0f)
-        return Result<int>::success(0, Status::success(StatusCode::NoOp));
-    if (!std::isfinite(veterancy->experience) || veterancy->experience < 0.0f ||
-        !std::isfinite(veterancy->veteranThreshold) || !std::isfinite(veterancy->eliteThreshold) ||
-        veterancy->eliteThreshold <= veterancy->veteranThreshold ||
-        !std::isfinite(veterancy->veteranDamageFactor) ||
-        !std::isfinite(veterancy->eliteDamageFactor) ||
-        !std::isfinite(veterancy->veteranHealthFactor) ||
-        !std::isfinite(veterancy->eliteHealthFactor) ||
-        veterancy->veteranDamageFactor < 1.0f ||
-        veterancy->eliteDamageFactor < veterancy->veteranDamageFactor ||
-        veterancy->veteranHealthFactor < 1.0f ||
-        veterancy->eliteHealthFactor < veterancy->veteranHealthFactor ||
-        veterancy->level < 0 || veterancy->level > 2)
-        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                      "RTS veterancy thresholds and factors are inconsistent",
-                                                      "unit.veterancy"));
-    veterancy->experience += experience;
-    const int oldLevel = veterancy->level;
-    if (veterancy->eliteThreshold > 0.0f && veterancy->experience >= veterancy->eliteThreshold)
-        veterancy->level = 2;
-    else if (veterancy->experience >= veterancy->veteranThreshold)
-        veterancy->level = 1;
-    if (veterancy->level == oldLevel)
-        return Result<int>::success(0, Status::success(StatusCode::Applied));
-    const auto damageAt = [&](int level) {
-        return level >= 2 ? veterancy->eliteDamageFactor
-                          : level >= 1 ? veterancy->veteranDamageFactor : 1.0f;
-    };
-    const auto healthAt = [&](int level) {
-        return level >= 2 ? veterancy->eliteHealthFactor
-                          : level >= 1 ? veterancy->veteranHealthFactor : 1.0f;
-    };
-    combatPolicy->upgradeDamageFactor *= damageAt(veterancy->level) / damageAt(oldLevel);
-    const double healthRatio = static_cast<double>(healthAt(veterancy->level) / healthAt(oldLevel));
-    durability->state.maxHealth *= healthRatio;
-    durability->state.health = std::min(durability->state.maxHealth,
-                                        durability->state.health * healthRatio);
-    return Result<int>::success(veterancy->level - oldLevel, Status::success(StatusCode::Applied));
-}
-
-bool FactionRelationSystem::isAllied(Faction* left, Faction* right) noexcept {
-    if (left == nullptr || right == nullptr) return false;
-    if (left == right) return true;
-    auto matches = ecs::View<Match, Match::Participants>();
-    for (auto it = matches.begin(); it != matches.end(); ++it) {
-        auto [participants] = *it;
-        const Match::Participants::Entry* leftEntry = nullptr;
-        const Match::Participants::Entry* rightEntry = nullptr;
-        for (const auto& entry : participants->entries) {
-            if (entry.eliminated) continue;
-            if (entry.faction.resolve() == left) leftEntry = &entry;
-            if (entry.faction.resolve() == right) rightEntry = &entry;
-        }
-        if (leftEntry != nullptr && rightEntry != nullptr)
-            return leftEntry->team == rightEntry->team;
-    }
-    return false;
-}
-
-bool FactionRelationSystem::isAllied(const FactionLink& left, const FactionLink& right) noexcept {
-    return isAllied(dynamic_cast<Faction*>(left.resolve()), dynamic_cast<Faction*>(right.resolve()));
-}
-
-bool FactionIntelSystem::isTargetable(Faction* viewer, SubjectRef subject) noexcept {
-    if (viewer == nullptr || !subject.isValid()) return false;
-    const auto intel = viewer->intel();
-    if (!intel->enabled) return true;
-    const auto found = std::find_if(intel->contacts.begin(), intel->contacts.end(),
-                                    [&](const auto& contact) { return contact.subject == subject; });
-    return found != intel->contacts.end() && found->subject == subject &&
-           found->visible && found->detected;
-}
-
 std::span<const SystemContract> systemContracts() noexcept {
     static constexpr SystemContract contracts[] = {
         {"rts.movement_groups", "ecs::View<Unit, Unit::Navigation>; generation-checked owned group members",
@@ -388,6 +306,110 @@ Result<void> BuildInfluenceSystem::validate(Faction& faction, WorldPosition posi
                 "placement.influence"));
     }
     return placement(position, std::move(definition));
+}
+
+Result<FanOutReceipt> CommandFanOutSystem::fanOut(std::span<const ecs::EntityHandle> unitHandles,
+                                                  const CommandSpec& command, const FormationSpec& formation) {
+    if (unitHandles.empty())
+        return Result<FanOutReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS command fan-out requires at least one Unit", "selection.units"));
+    auto commandValid = command.validate();
+    if (!commandValid) return Result<FanOutReceipt>::failure(commandValid.status());
+
+    auto formationValid = formation.validate();
+    if (!formationValid) return Result<FanOutReceipt>::failure(formationValid.status());
+    auto targets = FormationPlanner::plan(unitHandles.size(), command.target, formation);
+    if (!targets) return Result<FanOutReceipt>::failure(targets.status());
+    auto plannedTargets = std::move(targets).takeValue();
+
+    // The explicit View is the closure proof for this command boundary: a
+    // Unit subclass is accepted by the Unit registry, while a Building root
+    // cannot enter the selected set merely because it has an Identity field.
+    std::vector<ecs::EntityHandle> visibleUnits;
+    {
+        auto view = ecs::View<Unit, Unit::Identity, Unit::Orders>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [identity, orders] = *it;
+            (void)orders;
+            Unit* unit = identity == nullptr ? nullptr : dynamic_cast<Unit*>(ecs::try_get(identity->self));
+            if (unit != nullptr) visibleUnits.push_back(ecs::handle_of(unit));
+        }
+    }
+
+    std::vector<Unit*> selected;
+    selected.reserve(unitHandles.size());
+    for (const auto& handle : unitHandles) {
+        auto* entity = ecs::try_get(handle);
+        auto* unit   = entity == nullptr ? nullptr : dynamic_cast<Unit*>(entity);
+        if (unit == nullptr)
+            return Result<FanOutReceipt>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle,
+                                  "RTS fan-out selection contains a stale or non-Unit handle", "selection.units"));
+        const auto liveHandle = ecs::handle_of(unit);
+        const bool inView = std::any_of(visibleUnits.begin(), visibleUnits.end(), [&liveHandle](const auto& candidate) {
+            return sameHandle(candidate, liveHandle);
+        });
+        if (!inView)
+            return Result<FanOutReceipt>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                  "RTS Unit selection is outside the declared View closure", "selection.units"));
+        selected.push_back(unit);
+    }
+
+    struct AvailableSlot { WorldPosition position{}; int index = -1; };
+    std::vector<AvailableSlot> available;
+    available.reserve(plannedTargets.size());
+    for (std::size_t index = 0; index < plannedTargets.size(); ++index)
+        available.push_back({plannedTargets[index], static_cast<int>(index)});
+    std::vector<std::size_t> assignmentOrder(selected.size());
+    for (std::size_t index = 0; index < selected.size(); ++index) assignmentOrder[index] = index;
+    std::sort(assignmentOrder.begin(), assignmentOrder.end(), [&](std::size_t left, std::size_t right) {
+        const auto leftMotion = selected[left]->motion();
+        const auto rightMotion = selected[right]->motion();
+        const float leftDistance = distanceSquared(leftMotion->x, leftMotion->y, command.target.x, command.target.y);
+        const float rightDistance = distanceSquared(rightMotion->x, rightMotion->y, command.target.x, command.target.y);
+        if (leftDistance != rightDistance) return leftDistance > rightDistance;
+        return selected[left]->identity()->self.id < selected[right]->identity()->self.id;
+    });
+    std::vector<AvailableSlot> assignedSlots(selected.size());
+    for (const std::size_t selectedIndex : assignmentOrder) {
+        const auto motion = selected[selectedIndex]->motion();
+        auto best = std::min_element(available.begin(), available.end(), [&](const auto& left, const auto& right) {
+            const float leftDistance = distanceSquared(motion->x, motion->y, left.position.x, left.position.y);
+            const float rightDistance = distanceSquared(motion->x, motion->y, right.position.x, right.position.y);
+            return leftDistance != rightDistance ? leftDistance < rightDistance : left.index < right.index;
+        });
+        assignedSlots[selectedIndex] = *best;
+        available.erase(best);
+    }
+
+    FanOutReceipt receipt;
+    receipt.requested = selected.size();
+    receipt.orderIds.reserve(selected.size());
+    std::vector<OrderComponent::Snapshot> previous;
+    previous.reserve(selected.size());
+    for (Unit* unit : selected) {
+        auto snapshot = unit->orders()->values.snapshotState();
+        if (!snapshot) return Result<FanOutReceipt>::failure(snapshot.status());
+        previous.push_back(std::move(snapshot).takeValue());
+    }
+    for (std::size_t index = 0; index < selected.size(); ++index) {
+        CommandSpec assigned = command;
+        assigned.target = assignedSlots[index].position;
+        auto order = assigned.append
+                         ? selected[index]->orders()->values.enqueue(assigned, assignedSlots[index].index)
+                         : selected[index]->orders()->values.replace(assigned, assignedSlots[index].index);
+        if (!order) {
+            const Status status = order.status();
+            for (std::size_t rollback = 0; rollback < selected.size(); ++rollback)
+                selected[rollback]->orders()->values.restoreState(previous[rollback])
+                    .ignore("best-effort atomic fan-out rollback");
+            return Result<FanOutReceipt>::failure(status);
+        }
+        receipt.orderIds.push_back(std::move(order).takeValue());
+    }
+    receipt.accepted = receipt.orderIds.size();
+    return Result<FanOutReceipt>::success(std::move(receipt), Status::success(StatusCode::Applied));
 }
 
 Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, const SimulationStep& step) {

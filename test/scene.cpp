@@ -1245,6 +1245,54 @@ function testSceneEntityViewCacheAfterDetach() {
     return true
 }
 
+function testSceneEntityEnableAndDelayedDetach() {
+    class ToggleAI extends eve.SceneEntity {
+        ticks = 0
+        enables = 0
+        disables = 0
+        detached = false
+        function onEnable() { enables += 1 }
+        function onDisable() { disables += 1 }
+        function update(dt) {
+            ticks += 1
+            if (ticks == 1) scene().scheduleDetachEntity(nodeId, this)
+        }
+        function onDetach() { detached = true }
+    }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root")
+    scene.addNode("npc")
+    scene.addNode("prop")
+    scene.end()
+    scene.mountBuildAs("life")
+
+    local e = scene.attachEntity("npc", ToggleAI)
+    if (e == null) return false
+    local other = scene.attachEntity("prop", ToggleAI)
+    if (other == null) return false
+
+    e.disable()
+    if (e.disables != 1 || e.isEnabled()) return false
+    scene.update(0.1)
+    if (e.ticks != 0) return false  // disabled skips update
+    if (other.ticks != 1) return false
+    if (!other.detached) return false  // delayed detach flushed at end of update
+    if (eve.view(ToggleAI).len() != 1) return false
+
+    e.enable()
+    if (e.enables != 1 || !e.isEnabled()) return false
+    scene.update(0.1)
+    if (e.ticks != 1) return false
+    if (!e.detached) return false
+    if (eve.view(ToggleAI).len() != 0) return false
+
+    local ids = scene.collectIdsWith(ToggleAI)
+    if (ids.len() != 0) return false
+    return true
+}
+
 function testSceneLinkPhysics2D() {
     local scene = eve.Scene()
     scene.beginBuild()
@@ -1462,6 +1510,10 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityLifecycle") {
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityViewCacheAfterDetach") {
     CHECK(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityEnableAndDelayedDetach") {
+    CHECK(vm.callFunc(vm.findFunc("testSceneEntityEnableAndDelayedDetach"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.linkPhysics2D") {

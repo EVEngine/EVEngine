@@ -9,7 +9,7 @@
 namespace eve::procgen_editor {
 
 /**
- * @brief UI-neutral composition controller for modifier graph, spline, sculpt, and UV-paint tools.
+ * @brief UI-neutral composition controller for modifier graph, spline, sculpt, UV-paint, merge, and adhere tools.
  *
  * The controller owns only stable target ids and observed revisions. Graph, spline, mesh, and image
  * documents remain authoritative in their respective sessions. Owner-thread only; no callbacks.
@@ -20,7 +20,7 @@ public:
     explicit MeshModifierEditor(std::string targetId);
     /** @brief Atomically install the complete mesh-modifier panel composition. */
     [[nodiscard]] procgen_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
-    /** @brief Activate graph, spline, sculpt, or uvPaint and update semantic focus. */
+    /** @brief Activate graph, spline, sculpt, uvPaint, merge, or adhere and update semantic focus. */
     [[nodiscard]] procgen_editing::Result<void> activateTool(editor::EditorWorkspace& workspace,
                                                                    std::string tool);
     /** @brief Observe an externally owned document revision without copying its state. */

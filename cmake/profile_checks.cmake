@@ -85,13 +85,15 @@ set_target_properties(eve_public_header_checks PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     EXCLUDE_FROM_ALL FALSE)
 
-set(_eve_capability_source "${CMAKE_SOURCE_DIR}/src/engine/common/Capability.cpp")
+set(_eve_capability_sources
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Capability.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/CapabilityOwned.cpp")
 add_executable(eve_capability_present_check
     "${CMAKE_SOURCE_DIR}/test/profile/capability_present.cpp"
-    ${_eve_capability_source})
+    ${_eve_capability_sources})
 add_executable(eve_capability_absent_check
     "${CMAKE_SOURCE_DIR}/test/profile/capability_absent.cpp"
-    ${_eve_capability_source})
+    ${_eve_capability_sources})
 foreach(_eve_capability_target IN ITEMS
         eve_capability_present_check eve_capability_absent_check)
     target_compile_features(${_eve_capability_target} PRIVATE cxx_std_20)

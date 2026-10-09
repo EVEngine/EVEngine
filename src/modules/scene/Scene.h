@@ -53,8 +53,8 @@ public:
     Module_REG(Scene);
     /** @brief Scene. */
     Scene();
-    /** @brief Scene. */
-    ~Scene() override = default;
+    /** @brief Tears down script bindings and delayed-detach state. */
+    ~Scene() override;
 
     /**
      * @brief Creates/replaces a named host from a NodeDesc tree and selects it.
@@ -372,6 +372,23 @@ public:
     /** @brief updateTransformsAll() + call update(dt) on every rooted instance. */
     void updateScripts(float dt);
 
+    /**
+     * @brief Queue a script instance for detach at the end of the current/next updateScripts.
+     *
+     * Safe to call from inside `update(dt)` / `onEnable` / `onDisable`. Immediate
+     * `detachEntityAt` remains available for composition roots outside update.
+     * @param hostName Host name; empty uses the selected host.
+     * @param nodeId Stable node id.
+     * @param instance Rooted `eve.SceneEntity` instance to detach.
+     * @return Applied when queued (or already pending); NotFound / InvalidArgument on miss.
+     * @cost O(bindings on the node) to locate the instance; flush is O(queued).
+     */
+    [[nodiscard]] eve::Result<void> scheduleDetachEntityAt(const std::string &hostName,
+                                                           const std::string &nodeId,
+                                                           ssq::Object instance);
+    /** @brief Drain the delayed-detach queue (called automatically by updateScripts). */
+    void flushDelayedDetaches();
+
     /** @brief Current host name. */
     std::string currentHostName() const;
     /** @brief Returns the node ref at. */
@@ -380,6 +397,11 @@ public:
     [[nodiscard]] SceneNodeRef *getNodeRefByPathAt(const std::string &hostName, const std::string &path) const;
 
 private:
+    struct DelayedDetach {
+        std::string hostName;
+        std::string nodeId;
+        HSQOBJECT instance{};
+    };
     [[nodiscard]] SceneHost *ensureSelected(const std::string &preferredName = "");
     NodeDesc &currentParent();
     void pushOpen(NodeDesc d);
@@ -404,6 +426,8 @@ private:
     SceneHost *selected_ = nullptr;
     HSQUIRRELVM vm_ = nullptr;
     std::unordered_map<std::string, HSQOBJECT> eventCbs_;
+    std::vector<DelayedDetach> delayedDetaches_;
+    bool flushingDelayedDetaches_ = false;
 
     std::vector<NodeDesc> openStack_;
     NodeDesc builtRoot_;

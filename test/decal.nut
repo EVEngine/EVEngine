@@ -15,5 +15,14 @@ function basic() {
     }
     decal.setLimit("blood", 2);
     decal.update(0.016);
+    local missingProjection = decal.setProjection(99999, "spherical", 4.0);
+    local missingWorldProjection = decal.setProjection(99999, "world", 4.0);
+    local missingParallax = decal.setParallax(99999, 0.05, 8.0, 24.0);
+    local missingEdgeFade = decal.setEdgeFade(99999, 0.08);
+    if (missingProjection == null || missingWorldProjection == null || missingParallax == null || missingEdgeFade == null) return false;
+    if (decal.proceduralPresets() != "blood-wet,blood-dried,damage,dirt,rust,puddle,paint,moss,mold,lichen") {
+        print("Procedural Decal preset catalogue mismatch\n");
+        return false;
+    }
     return decal.count() == 0;
 }
