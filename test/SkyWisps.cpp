@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 #include "Fixtures.h"
+#include "SkyPreparationSupport.h"
 #include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/RenderSystem3D.h"
@@ -48,6 +49,13 @@ TEST_CASE("graphics.sky authored wisps composite into the shared capture path") 
     camera->setFov(50);
     auto* canvas = gfx->newHDRCanvas(32, 32);
     REQUIRE(canvas != nullptr);
+    // Always prove the base atmosphere works, including on a descriptor-limited device.
+    auto atmosphere = SkyAtmospherePass::prepare(*gfx, {});
+    REQUIRE(atmosphere.ok());
+    auto cloudPreparation = SkyAtmospherePass::prepare(*gfx, {}, &layer);
+    if (!skyPreparationAvailable(cloudPreparation)) return;
+    std::move(cloudPreparation).takeValue().reset();
+    std::move(atmosphere).takeValue().reset();
     const auto render = [&](const SkyWispsLayer* input, bool mainView = false) {
         auto prepared = SkyAtmospherePass::prepare(*gfx, {}, input);
         REQUIRE(prepared.ok());

@@ -10,9 +10,14 @@ TEST_CASE("daynight.sky script prepares an owned profile runtime and checks time
     ssq::VM    vm(2048, ssq::Libs::ALL);
     eve::ModuleManager::expose(vm);
 #ifdef EVENGINE_WEBGPU
-    vm.set("skySupported", false);
+    vm.set("vulkanSupported", false);
 #else
+    vm.set("vulkanSupported", true);
+#endif
+#if !defined(EVENGINE_WEBGPU) && defined(EVE_TEST_RESOURCE_VALIDATION)
     vm.set("skySupported", true);
+#else
+    vm.set("skySupported", false);
 #endif
     std::ifstream file(std::string(EVENGINE_SOURCE_DIR) + "/examples/uds-sky/sky.json");
     REQUIRE(file.good());
@@ -28,10 +33,16 @@ TEST_CASE("daynight.sky script prepares an owned profile runtime and checks time
         local made = module.prepareSky(graphics, profileJson);
         if (!skySupported) {
             assert(!made.ok);
-            assert(!graphics.setSceneToneMapping("filmic").ok);
-            assert(!graphics.setScenePhotographicVignette(0.4).ok);
+            assert(made.code == "unsupported");
+            assert(made.diagnostics.len() == 1);
+            assert(made.diagnostics[0].message == (vulkanSupported
+                ? "SPIR-V validation provider is unavailable"
+                : "Atmosphere resource program requires Vulkan"));
+            assert(graphics.setSceneToneMapping("filmic").ok == vulkanSupported);
+            assert(graphics.setScenePhotographicVignette(0.4).ok == vulkanSupported);
             return;
         }
+        if (!made.ok) foreach (diagnostic in made.diagnostics) print(diagnostic.message + "\n");
         assert(made.ok && made.hasValue && made.ownership == "owned");
         assert(graphics.setSceneToneMapping("filmic").ok);
         assert(graphics.getSceneToneMapping() == "filmic");

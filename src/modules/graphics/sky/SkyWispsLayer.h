@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <span>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::graphics {
@@ -41,7 +42,7 @@ struct SkyDaylightLayer {
     /** @brief Glow intensity, angular projection scale and two reserved zeros. */
     std::array<float, 4> moonDiskGlow{.05f, .20212766f, 0, 0};
     /** @brief Reject nonfinite, out-of-range or unordered authored data without mutation. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_BACKENDS Result<void> validate() const;
 };
 /** @brief Borrowed authored thin-cloud layer, consumed synchronously by sky preparation.
  * @details Triangle-list corners are x,y,z,u,v,r,g,b,a in Unreal local centimetres.

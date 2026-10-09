@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <array>
 #include "common/Result.h"
@@ -38,7 +39,7 @@ struct BloomFilterSettings {
  * The returned texture remains owned by Graphics and is valid until the source
  * dimensions change or Graphics is destroyed.
  */
-class Bloom {
+class EVENGINE_API_BACKENDS Bloom {
 public:
     /** @brief Create the cross-backend bloom shaders. */
     explicit Bloom(Graphics *gfx);

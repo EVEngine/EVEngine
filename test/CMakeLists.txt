@@ -26,7 +26,7 @@ file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 # Resource sharing must test the same optional validation provider as EVGraphics.
 get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
 if("EVENGINE_SPIRV_ASSET_VALIDATION=1" IN_LIST _eve_graphics_definitions)
-  set_property(SOURCE ShaderResourceSharing.cpp SkyTextureGpu.cpp SkyAtmospherePass.cpp SkyRuntime.cpp SkyWisps.cpp BloomPyramid.cpp APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
+  set_property(SOURCE ShaderResourceSharing.cpp SkyTextureGpu.cpp SkyAtmospherePass.cpp SkyRuntime.cpp SkyWisps.cpp SkyScriptBindings.cpp BloomPyramid.cpp APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
 endif()
 # The legacy RNG oracle uses the same pinned DTL compatibility headers as procgen.
 set_source_files_properties(procgen_rng_contract.cpp PROPERTIES INCLUDE_DIRECTORIES
