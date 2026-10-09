@@ -824,10 +824,11 @@ jobs:
           fi
 
       - name: Configure native Dawn Metal lane
-        # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil (and friends)
+        # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil/glfw3 (and friends)
         # from chromium.googlesource.com. That clone can land an empty
-        # directory without CMakeLists.txt (run 34850493956 / job 103997514884),
-        # so retry after wiping incomplete third_party checkouts.
+        # directory without CMakeLists.txt (run 34850493956 / job 103997514884;
+        # glfw3 empty tree: run 37870280409 / job 113637632268), so retry after
+        # wiping incomplete third_party checkouts.
         timeout-minutes: 30
         run: |
           set -euo pipefail
@@ -840,14 +841,18 @@ jobs:
               -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
               -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
           }
-          abseil_cmake=build/webgpu-macos/_deps/dawn-src/third_party/abseil-cpp/CMakeLists.txt
+          dawn_tp=build/webgpu-macos/_deps/dawn-src/third_party
+          dawn_deps_ok() {
+            [[ -f "$dawn_tp/abseil-cpp/CMakeLists.txt" ]] &&
+              [[ -f "$dawn_tp/glfw3/CMakeLists.txt" || -f "$dawn_tp/glfw3/src/CMakeLists.txt" ]]
+          }
           for attempt in 1 2 3; do
             echo "Dawn Metal configure attempt ${attempt}/3"
-            if configure_dawn && [[ -f "$abseil_cmake" ]]; then
+            if configure_dawn && dawn_deps_ok; then
               exit 0
             fi
             echo "Dawn dependency checkout incomplete; clearing for retry" >&2
-            rm -rf build/webgpu-macos/_deps/dawn-src/third_party/abseil-cpp
+            rm -rf "$dawn_tp/abseil-cpp" "$dawn_tp/glfw3"
             rm -f build/webgpu-macos/CMakeCache.txt
             sleep $((attempt * 10))
           done

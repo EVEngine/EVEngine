@@ -1,8 +1,9 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Module.h"
-#include "tags/TagStore.h"
 #include "tags/GameplayTag.h"
+#include "tags/TagStore.h"
 
 #include <memory>
 #include <string>
@@ -12,7 +13,7 @@ namespace eve::tags {
 class TagStoreStateAdapter;
 
 /** @brief Script-facing module for generic tags and capabilities. */
-class Tags : public Module {
+class EVENGINE_API_FOUNDATION Tags : public Module {
 public:
     Module_REG(Tags);
     /** @brief Constructs a Tags and publishes its store as world-state listeners. */
