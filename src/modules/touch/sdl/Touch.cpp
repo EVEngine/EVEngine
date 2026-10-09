@@ -1,6 +1,8 @@
 
 #include "touch/sdl/Touch.h"
 
+#include "touch/sdl/EventSinkOwner.h"
+
 #include <SDL2/SDL_events.h>
 
 #include <algorithm>
@@ -10,6 +12,10 @@
 using TouchInfo = eve::touch::Touch::TouchInfo;
 
 namespace eve::touch::sdl {
+
+Touch::Touch() { bindTouchEventSinkOwner(this); }
+
+Touch::~Touch() { bindTouchEventSinkOwner(nullptr); }
 
 const std::vector<TouchInfo> &Touch::getTouches() const { return touches; }
 

@@ -1,21 +1,22 @@
 #include "ui/UI.h"
 #include "ui/DatabasePanel.h"
-#include "ui/ObjectRegistry.h"
+#include "ui/EditorHostCapabilities.h"
 #include "ui/EditorShell.h"
+#include "ui/EventSinkOwner.h"
+#include "ui/ObjectRegistry.h"
 #include "ui/PcgColorPreviewSync.h"
 #include "ui/PcgControllerSelection.h"
 #include "ui/PcgDraggableWindow.h"
-#include "ui/PcgPhotoModeApplyPlan.h"
-#include "ui/PcgPhotoModePanels.h"
-#include "ui/PcgPhotoModeRuntimeUI.h"
-#include "ui/PcgPhotoModeValues.h"
-#include "ui/PcgPhotoModeSession.h"
-#include "ui/PcgPhotoModeRanges.h"
-#include "ui/PcgPhotoModeColorPicker.h"
-#include "ui/PcgScreenshotSavedNotice.h"
 #include "ui/PcgLoadingScreen.h"
+#include "ui/PcgPhotoModeApplyPlan.h"
+#include "ui/PcgPhotoModeColorPicker.h"
+#include "ui/PcgPhotoModePanels.h"
+#include "ui/PcgPhotoModeRanges.h"
+#include "ui/PcgPhotoModeRuntimeUI.h"
+#include "ui/PcgPhotoModeSession.h"
+#include "ui/PcgPhotoModeValues.h"
+#include "ui/PcgScreenshotSavedNotice.h"
 #include "ui/PcgTooltip.h"
-#include "ui/EditorHostCapabilities.h"
 #include "ui/UIAutomationCapabilities.h"
 
 #include "ui/Inspector.h"
@@ -530,8 +531,12 @@ Module_IMPL(UI, new UI());
 UI::UI() : backend_(createImGuiBackend()) {
     registerEditorHostCapabilities();
     registerUIAutomationCapabilities();
+    bindUIEventSinkOwner(this);
 }
-UI::~UI() { shutdownBackend(); }
+UI::~UI() {
+    bindUIEventSinkOwner(nullptr);
+    shutdownBackend();
+}
 
 void UI::releaseSquirrelRoots() noexcept {
     databasePanel_.reset();

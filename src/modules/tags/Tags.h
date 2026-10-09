@@ -4,18 +4,21 @@
 #include "tags/TagStore.h"
 #include "tags/GameplayTag.h"
 
+#include <memory>
 #include <string>
 
 namespace eve::tags {
+
+class TagStoreStateAdapter;
 
 /** @brief Script-facing module for generic tags and capabilities. */
 class Tags : public Module {
 public:
     Module_REG(Tags);
-    /** @brief Constructs a Tags. */
-    Tags()           = default;
-    /** @brief Releases Tags resources. */
-    ~Tags() override = default;
+    /** @brief Constructs a Tags and publishes its store as world-state listeners. */
+    Tags();
+    /** @brief Withdraws world-state listeners and releases Tags resources. */
+    ~Tags() override;
 
     /** @brief Adds a tag to a subject. */
     bool add(const std::string& subject, const std::string& tag);
@@ -79,8 +82,9 @@ public:
     const GameplayTagRegistry& registry() const { return registry_; }
 
 private:
-    TagStore store_;
-    GameplayTagRegistry registry_;
+    TagStore                              store_;
+    GameplayTagRegistry                   registry_;
+    std::unique_ptr<TagStoreStateAdapter> worldAdapter_;
 };
 
 }  // namespace eve::tags
