@@ -9,6 +9,7 @@
 #include "devtools/ReloadSession.h"
 #include "devtools/RenderVision.hpp"
 #include "devtools/ScenarioRecorder.h"
+#include "devtools/SoftRestart.hpp"
 
 #include "common/Module.h"
 #include "common/GameplayControlJson.h"
@@ -17,6 +18,7 @@
 #include "common/ScriptError.h"
 #include "platform_event/PlatformEvent.h"
 
+#include <Poco/JSON/Parser.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -413,6 +415,41 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
             std::string err;
             if (!ReloadSession::instance().abort(vm_, &err)) return std::string("error:") + err;
             return std::string("");
+        });
+        // Soft restart: reset native providers / re-run init without dropping
+        // ResourceManager. MCP eve_restart is the agent-facing entry; scripts
+        // can also call these helpers from eve_before_restart hooks.
+        dev.addFunc("resetNativeState", []() {
+            return static_cast<int>(resetNativeStateProviders());
+        });
+        dev.addFunc("resourceCacheCount", []() {
+            return static_cast<int>(resourceCacheCount());
+        });
+        dev.addFunc("softRestart", [this](std::string argsJson, bool reloadScripts) {
+            SoftRestartRequest request;
+            request.reloadScripts = reloadScripts;
+            if (!argsJson.empty()) {
+                try {
+                    Poco::JSON::Parser parser;
+                    auto               parsed = parser.parse(argsJson);
+                    request.args              = parsed.extract<Poco::JSON::Object::Ptr>();
+                } catch (const std::exception& e) {
+                    return std::string("error: invalid args JSON: ") + e.what();
+                } catch (...) {
+                    return std::string("error: invalid args JSON");
+                }
+            }
+            auto result = executeSoftRestart(vm_, std::move(request));
+            if (!result) {
+                const auto& status = result.status();
+                const auto* diag   = status.primaryDiagnostic();
+                return std::string("error:") +
+                       (diag && !diag->message().empty() ? diag->message()
+                                                         : std::string(statusCodeName(status.code())));
+            }
+            const SoftRestartReport& report = result.value();
+            return std::string("ok:resources=") + std::to_string(report.resourceCountAfter) +
+                   ":scripts=" + (report.scriptsReloaded ? "1" : "0");
         });
 
         // ---- state-driven bug reproduction (baseline snapshot + step replay) ----

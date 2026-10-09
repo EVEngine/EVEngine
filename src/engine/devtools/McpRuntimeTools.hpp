@@ -16,6 +16,7 @@
 //   eve_console_write  append an agent marker to the same ordered stream
 //   eve_console_clear  drop retained lines without rewinding the cursor
 //   eve_screenshot_image  capture the presented frame as an MCP image item
+//   eve_restart        soft-restart the game without unloading the resource cache
 //
 // Console lines carry a process-lifetime sequence number so a caller can read
 // incrementally and tell "nothing new happened" apart from "lines were dropped

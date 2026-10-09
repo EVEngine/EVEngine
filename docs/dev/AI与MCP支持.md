@@ -72,6 +72,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_snapshot_*` | 脚本状态快照（AI 测试可复位） |
 | `eve_error_slice` | 最近错误后向切片 |
 | `eve_run_script` | 在活 VM 上跑短片段 |
+| `eve_restart` | **软重启**：不杀掉进程、不卸载 `ResourceManager` 缓存，重新跑 `eve_init`（可选 `args` → `eve.restartArgs`）；AI 调试时优先用它而不是反复 `eve run` |
 | `eve_ai_note` / `eve_ai_log` | 写入 / 读取 DevTools AI 日志 |
 | `eve_scene_status` / `eve_scene_nodes` / `eve_scene_node_get` / `eve_scene_node_set` | 运行时场景 / 实体查询与变换 |
 | `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_info` / `eve_camera_generate` | AI 场景导演：搭台 kit 安装 / 状态 / 清场 / 摆物调光摄像机 / 场景真值 / 生成机位（见 [AI 场景导演](AI场景导演.md)） |
@@ -152,6 +153,32 @@ eve_console_read { "sinceSeq": 0, "limit": 200, "level": "error" }
 等一帧后重试即可——这是可重试状态而不是失败，无人值守循环应继续轮询。`eve_screenshot`
 的相对路径按项目根解析，响应返回绝对路径、字节数、像素尺寸；`eve_screenshot_image` 直接
 返回 MCP image content（`maxBytes` 默认 2 MiB，超出时返回 `image-too-large` 而不截断图片）。
+
+### 软重启（AI 调试不要反复杀进程）
+
+反复 `eve run` 会重新解码贴图/模型等资源，冷启动很慢。`eve_restart` 在**同一进程**里把游戏
+状态复位并重新进入 `eve_init`，**不**调用 `ResourceManager::clear()`，也不关掉 MCP / Vulkan：
+
+```text
+eve_restart { "args": { "seed": 7, "scene": "boss" }, "reloadScripts": true }
+→ {"ok":true,"keptResources":true,"resourceCountBefore":42,"resourceCountAfter":42,
+   "scriptsReloaded":true,"initCalled":true,"args":{"seed":7,"scene":"boss"}}
+```
+
+| 字段 | 含义 |
+|------|------|
+| `args` | 可选 JSON 对象，安装为 `eve.restartArgs`，供 `eve_init` / `eve_before_restart` / `eve_after_restart` / `eve_restart` 读取 |
+| `reloadScripts` | 默认 `true`：清掉已登记的 persist/state roots、重置全部 `IStateProvider`、重新 dofile 已跟踪脚本再调 `eve_init`。`false` 时只重置原生 provider，并优先调用脚本 `eve_restart(args)`（没有则 `eve_init()`），适合只改参数的快速重试 |
+
+与热重载的区别：`soft_reload_scripts`（文件保存触发）是 **保留状态** 换定义；`eve_restart` 是
+**丢掉状态** 重新开局，但资源缓存仍在。脚本侧也可调用 `eve.dev.softRestart(argsJson, reloadScripts)` /
+`eve.dev.resetNativeState()` / `eve.dev.resourceCacheCount()`。
+
+游戏作者约定：
+
+- 在 `eve_init` 里读 `eve.restartArgs`（缺省当空表）；
+- 需要拆场景 / 卸 UI 时实现 `eve_before_restart(args)`；
+- `reloadScripts=false` 路径下若要用参数重开，实现 `eve_restart(args)` 自行复位 persist 根。
 
 ### 崩溃取证（重启后的第一手证据）
 
