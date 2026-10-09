@@ -171,7 +171,7 @@ eve_restart { "args": { "seed": 7, "scene": "boss" }, "reloadScripts": true }
 | `reloadScripts` | 默认 `true`：清掉已登记的 persist/state roots、重置全部 `IStateProvider`、重新 dofile 已跟踪脚本再调 `eve_init`。`false` 时只重置原生 provider，并优先调用脚本 `eve_restart(args)`（没有则 `eve_init()`），适合只改参数的快速重试 |
 
 与热重载的区别：`soft_reload_scripts`（文件保存触发）是 **保留状态** 换定义；`eve_restart` 是
-**丢掉状态** 重新开局，但资源缓存仍在。脚本侧也可调用 `eve.dev.softRestart(argsJson, reloadScripts)` /
+**丢掉状态** 重新开局，但资源缓存仍在。脚本侧也可调用 `eve.dev.softRestart(requestJson, reloadScripts)` /
 `eve.dev.resetNativeState()` / `eve.dev.resourceCacheCount()`。
 
 游戏作者约定：
