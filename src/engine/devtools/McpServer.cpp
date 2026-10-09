@@ -1641,8 +1641,10 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
         "seq cursor, eve_error_slice returns the last script/render error slice, and eve_render_status with "
         "eve_screenshot/eve_screenshot_image capture engine-owned frames. Drive a run with eve_pause/eve_step_* or "
         "eve_play (clock/step/observe/capture/checkpoint/act), assert with eve_eval/eve_run_script and snapshot "
-        "tools, and inspect live state with eve_editor_*/eve_scene_*/eve_ui_*. eve_host_* tools create JSON-defined "
-        "editor windows bound to Squirrel ViewModels (MVVM) for AI-crafted terrain/material/event editors.\"}";
+        "tools, and inspect live state with eve_editor_*/eve_scene_*/eve_ui_*. Use eve_restart (optional args) to "
+        "soft-restart the game without reloading the resource cache — do not kill the process between AI debug "
+        "iterations. eve_host_* tools create JSON-defined editor windows bound to Squirrel ViewModels (MVVM) for "
+        "AI-crafted terrain/material/event editors.\"}";
     return makeResult(idJson, resultJson);
 }
 
