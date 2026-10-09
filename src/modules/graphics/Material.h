@@ -62,6 +62,49 @@ public:
     }
     /** @brief Whether full PBR texture/extension rendering is requested. */
     bool hasPbrSurface() const { return pbrEnabled_; }
+
+    /**
+     * @brief Enable validated two-sided foliage translucency while preserving imported PBR textures and
+     * factors.
+     * @param red Linear transmitted-light red multiplier.
+     * @param green Linear transmitted-light
+     * green multiplier.
+     * @param blue Linear transmitted-light blue multiplier.
+     * @param intensity Normalized
+     * translucency contribution in [0,1].
+     * @param strength Nonnegative transmitted-light strength in [0,50].
+
+     * * @param normalDistortion Normalized light-direction distortion in [0,1].
+     * @param scattering Back-light
+     * lobe exponent in [1,50].
+     * @param direct Normalized direct-light contribution in [0,1].
+     * @param
+     * ambient Normalized ambient-light contribution in [0,1].
+     * @param shadow Normalized shadow transmission in
+     * [0,1].
+     * @return Success after atomic publication, or validation failure with the material unchanged.
+     *
+     * @thread Render-thread affine; no callbacks or borrowed arguments survive the call.
+     */
+    [[nodiscard]] Result<void> setFoliageTranslucency(float red, float green, float blue, float intensity,
+                                                      float strength, float normalDistortion, float scattering,
+                                                      float direct, float ambient, float shadow);
+    /** @brief Publish object-space foliage wind while preserving the current PBR material snapshot.
+     * @param motionTexture Borrowed nine-layer motion field owned by Graphics.
+     * @param noiseTexture Borrowed repeat-addressed noise owned by Graphics.
+     * @return InvalidArgument without mutation, or a validated material snapshot.
+     * @ownership Texture pointers are borrowed and must outlive this material.
+     * @thread Render thread only; synchronous and callback-free.
+     */
+    [[nodiscard]] Result<void> setFoliageWind(Texture* motionTexture, Texture* noiseTexture, float directionX,
+                                              float directionZ, float strength, float bending, float bendingSpeed,
+                                              float branch, float branchSpeed, float flutter, float flutterSpeed,
+                                              float fadeDistance, float bendFactor);
+    /** @brief Replace only the explicit foliage-motion time in the current material snapshot.
+     * @return InvalidArgument without mutation, including when object wind is not configured.
+     * @thread Render thread only; synchronous and callback-free.
+     */
+    [[nodiscard]] Result<void> setFoliageWindTime(float seconds);
     /** @brief Set the borrowed material texture.
      * @ownership Graphics factory owns the resource.
      * @lifetime Keep alive through the material and every submitted draw; invalid after factory release.
@@ -117,7 +160,7 @@ public:
      * @brief Set an optional Mesh3D / hair shader; nullptr selects the built-in shading path.
      * @param shader Borrowed shader owned by the creating Graphics instance; it must outlive this material.
      */
-    void    setShader(Shader* shader) { shader_ = shader; }
+    void setShader(Shader* shader) { shader_ = shader; }
     /** @brief Return the borrowed shader, or nullptr when the built-in path is active.
      * @lifetime The pointer remains valid only while its creating Graphics instance owns the shader. */
     Shader* getShader() const { return shader_; }
