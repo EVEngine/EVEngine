@@ -57,7 +57,6 @@ RULES = (
     "backend-contract",
     "module-interface",
     "debt-metadata",
-    "module-interface",
 )
 
 COMMON_REQUIRED = {
@@ -848,7 +847,9 @@ def lint_module_interface(lines: list[SourceLine], metadata: Mapping[str, Any]) 
 
         # G-5: expensive or owning-container public APIs need @cost.
         if item.path.endswith((".h", ".hpp")) and not _is_non_public_declaration(item):
-            expensive = bool(OWNED_CONTAINER_RETURN.search(text) or EXPENSIVE_API_NAME.search(text))
+            expensive = bool(
+                ("(" in text and OWNED_CONTAINER_RETURN.search(text)) or EXPENSIVE_API_NAME.search(text)
+            )
             if expensive and not re.search(r"@cost\b", context, re.IGNORECASE):
                 findings.append(
                     Finding(

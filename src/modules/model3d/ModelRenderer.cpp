@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -45,9 +46,44 @@ Texture *textureFromImageData(IResourceFactory *gfx, image::ImageData *img) {
     }
 }
 
+std::string importedTextureContentKey(const image::ImageData &image) {
+    // Two independently seeded FNV-1a lanes make accidental aliasing of imported
+    // pixels negligible while keeping model3d independent of the data module.
+    constexpr uint64_t prime = 1099511628211ull;
+    uint64_t           a     = 14695981039346656037ull;
+    uint64_t           b     = 7809847782465536322ull;
+    const auto         mix   = [&](uint64_t &hash, uint8_t byte) {
+        hash ^= byte;
+        hash *= prime;
+    };
+    const auto feed32 = [&](uint64_t &hash, uint32_t value) {
+        for (unsigned shift = 0; shift < 32; shift += 8) mix(hash, uint8_t(value >> shift));
+    };
+    feed32(a, uint32_t(image.getWidth()));
+    feed32(a, uint32_t(image.getHeight()));
+    feed32(b, uint32_t(image.getHeight()));
+    feed32(b, uint32_t(image.getWidth()));
+    const auto  *bytes = static_cast<const uint8_t *>(image.getData());
+    const size_t count = size_t(image.getWidth()) * size_t(image.getHeight()) * 4;
+    for (size_t i = 0; i < count; ++i) {
+        mix(a, bytes[i]);
+        mix(b, bytes[count - i - 1]);
+    }
+    return "model3d-rgba8:" + std::to_string(image.getWidth()) + "x" + std::to_string(image.getHeight()) + ":" +
+           std::to_string(a) + ":" + std::to_string(b);
+}
+
 Texture *loadEmbeddedTexture(IResourceFactory *gfx, ModelData *model, int idx) {
     image::ImageData *img = model->getEmbeddedTextureImageData(idx);
-    Texture *tex = textureFromImageData(gfx, img);
+    Texture          *tex = nullptr;
+    try {
+        if (img) {
+            auto shared = gfx->newSharedTexture(img, importedTextureContentKey(*img));
+            if (!shared) throw eve::Exception("%s", shared.status().describe().c_str());
+            tex = &shared.value().get();
+        }
+    } catch (...) {
+    }
     delete img;
     return tex;
 }
@@ -382,6 +418,55 @@ std::vector<Renderable3D *> buildRenderables(IResourceFactory &gfx, ModelData *m
     std::unordered_map<int, TextureLook> cache;
     walkNodes(scene->mRootNode, aiMatrix4x4(), &gfx, model, options, out, cache);
     return out;
+}
+
+Result<void> prepareFoliageDeformation(ModelData &model, int meshIndex, Renderable3D &renderable) {
+    const aiScene *scene   = model.getScene();
+    Mesh          *mesh    = renderable.getMesh();
+    auto           invalid = [](const char *message) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, message, "model3d.foliage-deformation"));
+    };
+    if (!scene || !scene->mRootNode || meshIndex < 0 || unsigned(meshIndex) >= scene->mNumMeshes || !mesh)
+        return invalid("model, mesh index, and matching renderable are required");
+    const aiMesh *source = scene->mMeshes[meshIndex];
+    if (!source || !source->mVertices || source->mNumVertices == 0 || mesh->gpuVertexCount != int(source->mNumVertices))
+        return invalid("source and render mesh vertex counts must match");
+    if (source->HasBones() || mesh->hasGpuSkinning())
+        return invalid("foliage deformation requires an unskinned static mesh");
+
+    aiMatrix4x4 world;
+    if (!findMeshTransform(scene->mRootNode, aiMatrix4x4(), unsigned(meshIndex), world)) world = aiMatrix4x4();
+    std::vector<aiVector3D> positions;
+    positions.reserve(source->mNumVertices);
+    float minY = std::numeric_limits<float>::infinity();
+    float maxY = -std::numeric_limits<float>::infinity();
+    for (unsigned i = 0; i < source->mNumVertices; ++i) {
+        const aiVector3D p = world * source->mVertices[i];
+        if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
+            return invalid("foliage source positions must be finite");
+        positions.push_back(p);
+        minY = std::min(minY, p.y);
+        maxY = std::max(maxY, p.y);
+    }
+    const float height = maxY - minY;
+    if (!std::isfinite(height) || height <= 1e-6f) return invalid("foliage mesh must have positive height");
+    float radius = 0.f;
+    for (const auto &p : positions) radius = std::max(radius, std::hypot(p.x, p.z));
+    radius = std::max(radius, 1e-6f);
+
+    std::vector<float> factors;
+    factors.reserve(size_t(source->mNumVertices) * 9u);
+    for (unsigned i = 0; i < source->mNumVertices; ++i) {
+        const auto    &p                = positions[i];
+        const float    normalizedHeight = std::clamp((p.y - minY) / height, 0.f, 1.f);
+        const float    radial           = std::clamp(std::hypot(p.x, p.z) / radius, 0.f, 1.f);
+        const uint32_t hash             = (i + 1u) * 747796405u + 2891336453u;
+        const float    variation        = float((hash >> 8u) & 0xffffu) / 65535.f;
+        factors.insert(factors.end(), {0.f, minY, 0.f, normalizedHeight * normalizedHeight, normalizedHeight * radial,
+                                       normalizedHeight, variation, height, radius});
+    }
+    return mesh->adoptVegetationDeformationFactors(std::move(factors));
 }
 
 }  // namespace eve::model3d

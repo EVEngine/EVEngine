@@ -936,6 +936,29 @@ TEST_CASE("model3d.buildRenderable.objMtl") {
         CHECK(ent->meshRenderer()->roughness == md->getMaterialRoughnessFactor(mi));
     }
 
+    auto prepared = mod->prepareFoliageDeformation(md, 0, ent);
+    REQUIRE(prepared.ok());
+    const auto deformation = ent->getMesh()->vegetationDeformationFactors();
+    REQUIRE_EQ(deformation.size(), size_t(ent->getMesh()->gpuVertexCount) * 9u);
+    std::vector<float> first(deformation.begin(), deformation.end());
+    for (size_t i = 0; i < first.size(); i += 9) {
+        CHECK(first[i + 3] >= 0.f);
+        CHECK(first[i + 3] <= 1.f);
+        CHECK(first[i + 4] >= 0.f);
+        CHECK(first[i + 4] <= 1.f);
+        CHECK(first[i + 5] >= 0.f);
+        CHECK(first[i + 5] <= 1.f);
+        CHECK(first[i + 7] > 0.f);
+        CHECK(first[i + 8] > 0.f);
+    }
+    REQUIRE(mod->prepareFoliageDeformation(md, 0, ent).ok());
+    CHECK(std::equal(first.begin(), first.end(), ent->getMesh()->vegetationDeformationFactors().begin()));
+    const auto beforeInvalid = std::vector<float>(ent->getMesh()->vegetationDeformationFactors().begin(),
+                                                  ent->getMesh()->vegetationDeformationFactors().end());
+    CHECK(!mod->prepareFoliageDeformation(md, 999, ent).ok());
+    CHECK(
+        std::equal(beforeInvalid.begin(), beforeInvalid.end(), ent->getMesh()->vegetationDeformationFactors().begin()));
+
     // Invalid indices return nullptr without throwing.
     CHECK(mod->createRenderable(gfx, md, 999) == nullptr);
     CHECK(eve::model3d::buildRenderable(*gfx, md, 999) == nullptr);
