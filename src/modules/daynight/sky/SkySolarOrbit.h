@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::daynight {
@@ -8,7 +9,7 @@ namespace eve::daynight {
  * EVEngine's Y-up coordinates, with Unreal (X,Y,Z) mapped to (X,Z,Y).
  * No clock, weather, renderer, intensity curve or persistence state is owned here.
  * @thread Concurrent evaluation is safe; there are no callbacks or borrowed objects. */
-class SkySolarOrbit {
+class EVENGINE_API_WORLD SkySolarOrbit {
 public:
     /** @brief Prepare a daily orbit with pitch [-90,90] and yaw [-360,360] degrees.
      * @param pitchDegrees Tilt from an overhead noon sun; reference default is 30.

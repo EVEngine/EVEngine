@@ -3,6 +3,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include "common/Export.h"
 #include "common/Result.h"
 namespace eve {
 class Value;
@@ -25,7 +26,7 @@ struct SkyRuntimeSettings;
  * @thread Concurrent
  * immutable reads are safe. No callbacks or provider pointers.
  */
-class SkyProfile {
+class EVENGINE_API_WORLD SkyProfile {
 public:
     /** @brief Validate a complete profile without creating GPU resources or changing any runtime.
      * @return Owned immutable profile, or InvalidArgument with no observable partial import. */
@@ -36,7 +37,8 @@ public:
     [[nodiscard]] const graphics::SkyAtmosphereParameters& atmosphere() const noexcept;
     /** @brief Explicit procedural-v1 seed when version 6 selects a null asset; absent for loaded/legacy profiles. */
     [[nodiscard]] std::optional<uint32_t> proceduralSeed() const noexcept;
-    /** @brief Borrow optional VFS wisps manifest path; empty for versions 1/2 or explicitly selected procedural assets. */
+    /** @brief Borrow optional VFS wisps manifest path; empty for versions 1/2 or explicitly selected procedural assets.
+     */
     [[nodiscard]] const std::string& wispsAsset() const noexcept;
 
 private:

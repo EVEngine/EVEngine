@@ -3,6 +3,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <memory>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::graphics {
@@ -29,7 +30,7 @@ struct SkyHeightFogParameters {
     float                atmosphereContribution         = 2.3f;
     float                skyDistanceMetres              = 100000;
     /** @brief Validate finite bounded fog coefficients without mutation. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_BACKENDS Result<void> validate() const;
 };
 
 /** @brief Spherical atmospheric coefficients in inverse kilometres and kilometre heights.
@@ -51,7 +52,7 @@ struct SkyAtmosphereParameters {
     float                  multiScatteringFactor = 1;
     SkyHeightFogParameters heightFog;
     /** @brief Validate finite optical coefficients, bounded geometry and energy controls without mutation. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_BACKENDS Result<void> validate() const;
 };
 
 /** @brief Explicit celestial lighting snapshot; unit direction points towards the light. */
@@ -82,7 +83,7 @@ struct SkyAtmosphereFrame {
  * Pass-first destruction unregisters callbacks and releases mesh/shader allocations.
  * The fixed-size view Canvas follows the existing Graphics-owned Canvas lifetime.
  */
-class SkyAtmospherePass {
+class EVENGINE_API_BACKENDS SkyAtmospherePass {
 public:
     /** @brief Prepare an independent atmospheric program and immutable coefficient buffer.
      * @param wisps Optional authored thin-cloud inputs, borrowed only until preparation returns.

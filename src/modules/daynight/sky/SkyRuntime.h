@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <memory>
+#include "common/Export.h"
 #include "daynight/sky/SkyTimeline.h"
 
 namespace eve::graphics {
@@ -14,7 +15,7 @@ namespace eve::daynight {
 struct SkyCloudMotion {
     double phase = 0, speed = 0, timeScale = 1, windMultiplier = 1;
     /** @brief Reject nonfinite values, phase outside +/-1e6 and multipliers outside [0,1000]. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_WORLD Result<void> validate() const;
 };
 /** @brief Independent runtime settings; not a serialized profile or a legacy DayNight override. */
 struct SkyRuntimeSettings {
@@ -42,7 +43,7 @@ struct SkyRuntimeFrame {
  * @lifetime Owns all state and the render pass; provider-first retirement is detected
  * through its weak lifetime token, and pass-first destruction unregisters contributors.
  * @reentrancy No script callbacks, locks or retained caller configuration pointers. */
-class SkyRuntime {
+class EVENGINE_API_WORLD SkyRuntime {
 public:
     /** @brief Validate settings and prepare all atmospheric resources before publication.
      * @return Detached owning runtime or failure without published contributors.

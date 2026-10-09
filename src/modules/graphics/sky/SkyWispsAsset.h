@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::graphics {
@@ -11,7 +12,7 @@ struct SkyWispsLayer;
  * Unknown fields, unsupported versions and malformed resources fail without publication.
  * No GPU resources, callbacks or provider references are retained.
  * @thread Load on the game thread with an initialized filesystem; immutable reads may be shared. */
-class SkyWispsAsset {
+class EVENGINE_API_BACKENDS SkyWispsAsset {
 public:
     /** @brief Read and decode the complete asset before publishing owned data.
      * @param manifestPath VFS manifest path; resource paths resolve relative to it.

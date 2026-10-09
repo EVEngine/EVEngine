@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <array>
 #include "common/Result.h"
@@ -38,7 +39,7 @@ struct SkyFrame {
  * @thread One simulation thread owns mutations. Copy frame() for render consumers.
  * @reentrancy No callbacks, services, locks or borrowed objects are retained.
  */
-class SkyTimeline {
+class EVENGINE_API_WORLD SkyTimeline {
 public:
     /** @brief Construct validated state. Clock hours are [0,24), speed [0,24] hours/second.
      * @return Owning timeline, or InvalidArgument without publishing any state. */
