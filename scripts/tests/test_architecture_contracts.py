@@ -187,6 +187,24 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertEqual("HEAD", captured["changed"])
         self.assertEqual("HEAD", captured["lint"])
 
+    def test_owned_container_members_are_not_returning_apis(self):
+        declarations = [
+            "std::vector<std::uint8_t> albedo;",
+            "std::vector<std::uint8_t> normal{};",
+            "std::vector<std::uint8_t> params = {};",
+            "std::map<int, std::vector<int>> values;",
+            "std::vector<std::string> collectIds();",
+            "std::map<int, std::vector<int>> values();",
+        ]
+        lines = [
+            contracts.SourceLine("fixture.h", number, text)
+            for number, text in enumerate(declarations, 1)
+        ]
+        findings = contracts.lint_module_interface(lines, {"entries": []})
+        self.assertEqual(
+            [5, 6], [item.line for item in findings if item.code == "missing-cost-annotation"]
+        )
+
     def test_valid_module_interface_fixture_has_cost(self):
         path = ROOT / "scripts/tests/fixtures_architecture_contracts/valid_module_interface.h"
         lines = [
