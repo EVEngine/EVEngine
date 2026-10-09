@@ -18,9 +18,36 @@
 #ifndef EVENGINE_WEBGPU
 #include "SkyWispsSpv.h"
 #include "graphics/shaders/scene_tonemap_frag_spv.inc"
+#include "graphics/sky/SkyWispsAsset.h"
+#include "graphics/vulkan/Graphics.h"
 #endif
 
 #if !defined(EVENGINE_WEBGPU) && defined(EVE_TEST_RESOURCE_VALIDATION)
+TEST_CASE("graphics.sky descriptor limit rejects clouds and leaves atmosphere preparation usable") {
+    using namespace eve::graphics;
+    GfxFixture fixture(32, 32, true);
+    auto*      gfx   = static_cast<vulkan::Graphics*>(fixture.gfx);
+    auto&      limit = gfx->getDevice().physical_device.properties.limits.maxPerStageDescriptorSamplers;
+    struct RestoreLimit {
+        uint32_t& value;
+        uint32_t  previous;
+        ~RestoreLimit() { value = previous; }
+    } restore{limit, limit};
+    // Exercise the actual admission path at Vulkan's minimum sampler budget.
+    limit      = 16;
+    auto asset = SkyWispsAsset::generate(2026);
+    REQUIRE(asset.ok());
+    auto layer                = asset.value().layer();
+    layer.opticalCycleEnabled = false;
+    auto clouds               = SkyAtmospherePass::prepare(*gfx, {}, &layer);
+    REQUIRE(!clouds.ok());
+    REQUIRE(!skyPreparationAvailable(clouds));
+    auto atmosphere = SkyAtmospherePass::prepare(*gfx, {});
+    REQUIRE(atmosphere.ok());
+    REQUIRE(atmosphere.value()->attach().ok());
+    atmosphere.value()->detach();
+}
+
 TEST_CASE("graphics.sky authored wisps composite into the shared capture path") {
     using namespace eve::graphics;
     REQUIRE(eve::image::Image::create() != nullptr);
