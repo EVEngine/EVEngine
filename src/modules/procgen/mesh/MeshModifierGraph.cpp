@@ -1,5 +1,6 @@
 #include "procgen/mesh/MeshModifierGraph.h"
 #include "procgen/mesh/MeshBoolean.h"
+#include "procgen/mesh/MeshContactBlend.h"
 #include "procgen/mesh/MeshUvProjection.h"
 
 #include <algorithm>
@@ -135,6 +136,18 @@ const std::vector<OperationSpec>& operationSpecs() {
               {"maxDistance", "float", "10"},
               {"surfaceOffset", "float", "0"},
               {"bidirectional", "int", "0"}}},
+            {"deform.meshAdhere",
+             2,
+             false,
+             {{"strength", "float", "1"},
+              {"edgeRadius", "float", "0.5"},
+              {"materialRadius", "float", "0.5"},
+              {"normalsBlend", "float", "1"},
+              {"materialBlend", "float", "1"},
+              {"surfaceOffset", "float", "0"},
+              {"maxQueryDistance", "float", "0"},
+              {"softSnapPositions", "int", "1"},
+              {"falloff", "string", "smooth"}}},
             {"deform.spline",
              1,
              false,
@@ -466,7 +479,8 @@ Result<MeshBuild> smoothMesh(const MeshBuild& input, float strength, int iterati
         }
         output.positions() = next;
     }
-    recalculateNormals(output);
+    // Geometry normals + 1-ring average so post-fusion relax does not reintroduce neck creases.
+    rebuildSoftSnapContactNormals(output);
     return Result<MeshBuild>::success(std::move(output));
 }
 
@@ -1375,8 +1389,18 @@ Result<MeshBuild> weldMesh(const MeshBuild& input, float tolerance) {
     for (int i = 0; i < input.getGroupCount(); ++i) names.push_back(input.getGroupName(i));
     auto restored = output.restoreGroupData(std::move(names), std::move(assignments), -1);
     if (!restored.ok()) return Result<MeshBuild>::failure(restored.status());
+    if (input.hasVertexColors()) {
+        std::vector<float> colors(static_cast<std::size_t>(output.getVertexCount()) * 4u, 1.f);
+        for (int i = 0; i < input.getVertexCount(); ++i) {
+            const auto dst = remap[static_cast<std::size_t>(i)];
+            for (int c = 0; c < 4; ++c)
+                colors[static_cast<std::size_t>(dst) * 4u + static_cast<std::size_t>(c)] = input.getColor(i, c);
+        }
+        auto set = output.setVertexColors(std::move(colors));
+        if (!set.ok()) return Result<MeshBuild>::failure(set.status());
+    }
     for (const auto& [key, value] : input.metadata()) output.setMeta(key, value);
-    recalculateNormals(output);
+    rebuildSoftSnapContactNormals(output);
     return Result<MeshBuild>::success(std::move(output));
 }
 
@@ -1841,6 +1865,29 @@ Result<MeshBuild> MeshModifierGraph::executeNode(const Node&                    
                                                                 "deform.meshFit surface input was not evaluated",
                                                                 node.id, {}, "procgen.meshModifierGraph"));
         return meshFitMesh(first->second, second->second, node);
+    }
+    if (node.operation == "deform.meshAdhere") {
+        const auto second = outputs.find(node.inputs[1]);
+        if (second == outputs.end())
+            return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                "deform.meshAdhere surface input was not evaluated",
+                                                                node.id, {}, "procgen.meshModifierGraph"));
+        MeshContactBlendParams params;
+        const std::string      falloff = stringParameter(node, "falloff", "smooth");
+        params.strength                = parameter(node, "strength", 1.f);
+        params.edgeRadius              = parameter(node, "edgeRadius", 0.5f);
+        params.materialRadius          = parameter(node, "materialRadius", 0.5f);
+        params.normalsBlend            = parameter(node, "normalsBlend", 1.f);
+        params.materialBlend           = parameter(node, "materialBlend", 1.f);
+        params.surfaceOffset           = parameter(node, "surfaceOffset", 0.f);
+        params.maxQueryDistance        = parameter(node, "maxQueryDistance", 0.f);
+        params.softSnapPositions       = intParameter(node, "softSnapPositions", 1) != 0;
+        params.falloff                 = falloff;
+        auto adhered = meshContactBlendAgainstSurfaceResult(first->second, second->second, params);
+        if (!adhered.ok()) return adhered;
+        MeshBuild output = std::move(adhered).takeValue();
+        output.setMeta("deformer", "deform.meshAdhere");
+        return Result<MeshBuild>::success(std::move(output));
     }
     if (node.operation == "deform.smooth")
         return smoothMesh(first->second, parameter(node, "strength", 0.5f), intParameter(node, "iterations", 1));

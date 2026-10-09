@@ -90,7 +90,12 @@ void* listenerAtRaw(const char* name, size_t index) {
     return it->second.listeners[index].impl;
 }
 
-void clearAllRaw() { slots().clear(); }
+void clearOwnedRaw();  // CapabilityOwned.cpp
+
+void clearAllRaw() {
+    slots().clear();
+    clearOwnedRaw();
+}
 
 }  // namespace eve::cap::detail
 

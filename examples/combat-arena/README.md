@@ -38,6 +38,12 @@ MIN_RUN_SECONDS=2 RUN_SECONDS=4 bash scripts/smoke_examples.sh combat-arena
 - `Space` jump
 - `Shift` dodge
 - `J` light attack (scripted pulse)
+
+## Persistence note
+
+This slice proves combat runtimes compose; it does **not** ship a player save format.
+Wire HP/cooldowns into `rpg` / your own authority and follow
+[docs/usr/SAVE.md](../../docs/usr/SAVE.md) when you need slots.
 - `K` cycle lock-on
 
 The first few seconds auto-run a scripted duel so CI smoke does not require input.
