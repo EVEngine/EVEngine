@@ -2,6 +2,8 @@
 #include "common/Export.h"
 
 
+#include "common/Capability.h"
+#include "common/GpuTimer.h"
 #include "common/Module.h"
 #include "common/Profile.h"
 #include "common/RenderTrace.h"
@@ -127,10 +129,14 @@ public:
     void draw(const char* api, const char* detail) override {}
 
 private:
+    /** @brief Resolve IGpuTimer once (retries while absent); never re-query once bound. */
+    void ensureGpuTimer() const;
+
     int64_t frameBeginNs_ = 0;
     float   frameMs_      = 0.f;
     uint64_t captureSequence_ = 0;
     HSQUIRRELVM vm_       = nullptr;
+    mutable eve::cap::ProviderRef<eve::service::IGpuTimer> gpuTimer_;
 };
 
 /**
