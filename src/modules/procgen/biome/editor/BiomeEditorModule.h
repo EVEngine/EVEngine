@@ -17,7 +17,9 @@ namespace eve::biome_editor {
 class EVENGINE_API_EDITORS BiomeEditorModule final : public Module {
 public:
     Module_REG(BiomeEditorModule);
+    /** @brief Biome editor module. */
     BiomeEditorModule();
+    /** @brief Biome editor module. */
     ~BiomeEditorModule() override;
 
 private:

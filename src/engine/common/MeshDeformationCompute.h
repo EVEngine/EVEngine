@@ -39,6 +39,7 @@ struct MeshDeformationComputeRequest {
 class IMeshDeformationCompute {
 public:
     static constexpr const char* capabilityName = "eve.mesh-deformation-compute.v1";
+    /** @brief Releases IMeshDeformationCompute resources. */
     virtual ~IMeshDeformationCompute() = default;
     /** @brief Execute one request and return tightly packed xyz positions. */
     [[nodiscard]] virtual Result<std::vector<float>> deform(MeshDeformationComputeRequest request) = 0;

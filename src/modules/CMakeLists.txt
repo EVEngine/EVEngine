@@ -608,6 +608,9 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/MeshBuild.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshContactBlend.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshMerge.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshAdhereLive.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.cpp
@@ -625,6 +628,9 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshContactBlend.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshMerge.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshAdhereLive.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.h

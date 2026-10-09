@@ -22,6 +22,7 @@ namespace eve::virtualgeometry {
  */
 class EVENGINE_API_DOMAINS VirtualGeometryBuilder {
 public:
+    /** @brief MeshInput public API. */
     struct MeshInput {
         int vertexCount = 0;
         const float *positions = nullptr;  // xyz packed

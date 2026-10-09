@@ -37,9 +37,11 @@ public:
     void step(float dt, const SurfaceWetnessParams& params = {});
 
     /** @return interpolated wetness at a surface location. */
+    /** @brief Sample. */
     float sample(const SurfaceLocation& location) const;
 
     /** @return per-vertex wetness values for rendering or debugging. */
+    /** @brief Values. */
     const std::vector<float>& values() const { return values_; }
 
     /** @brief Reset all wetness to zero. */

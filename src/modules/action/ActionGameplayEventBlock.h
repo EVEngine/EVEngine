@@ -33,6 +33,7 @@ struct EVENGINE_API_PLATFORM ActionGameplayEventBinding {
 class IActionGameplayEventSink {
 public:
     static constexpr const char* capabilityName = "eve.action.gameplay-event-sink";
+    /** @brief Releases IActionGameplayEventSink resources. */
     virtual ~IActionGameplayEventSink() = default;
 
     /** @brief Emit one validated event or return a structured domain failure. */

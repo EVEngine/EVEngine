@@ -32,18 +32,24 @@ struct Lighting2DUBO;
 /** @brief 2D immediate-mode drawing surface (screen or offscreen Canvas). */
 class IGraphics2D {
 public:
+    /** @brief Releases IGraphics2D resources. */
     virtual ~IGraphics2D() = default;
 
     /** @brief Clears the current draw target to the background color. */
     virtual void clearScreen() = 0;
+    /** @brief Sets the background color rgba. */
     virtual void setBackgroundColorRGBA(float r, float g, float b, float a = 1.f) = 0;
+    /** @brief Draws solid rect rgba. */
     virtual void drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b,
                                    float a = 1.f) = 0;
+    /** @brief Draws textured rect rgba. */
     virtual void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h,
                                       float r, float g, float b, float a = 1.f) = 0;
 
+    /** @brief Draws solid rect. */
     virtual void drawSolidRect(float x, float y, float w, float h, const Color &color,
                                BlendMode blend = BlendMode::Alpha) = 0;
+    /** @brief Draws solid rect rotated. */
     virtual void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                                       const Color &color,
                                       BlendMode blend = BlendMode::Alpha) = 0;
@@ -54,21 +60,27 @@ public:
      */
     virtual void drawPrimitiveCanvas(const PrimitiveCanvas2D &canvas) = 0;
 
+    /** @brief Draws textured rect. */
     virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                                   const Color &color) = 0;
+    /** @brief Draws textured rect shader. */
     virtual void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w,
                                         float h, const Color &color) = 0;
+    /** @brief Draws textured rect uv. */
     virtual void drawTexturedRectUV(Texture *texture, float x, float y, float w, float h, float u0,
                                     float v0, float u1, float v1, const Color &color) = 0;
+    /** @brief Draws textured rect shader uv. */
     virtual void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y,
                                           float w, float h, float u0, float v0, float u1, float v1,
                                           const Color &color, bool rotatedUV = false,
                                           BlendMode blend = BlendMode::Alpha) = 0;
+    /** @brief Draws textured rect shader uv rotated. */
     virtual void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx,
                                                  float cy, float w, float h, float degrees,
                                                  float u0, float v0, float u1, float v1,
                                                  const Color &color, bool rotatedUV = false,
                                                  BlendMode blend = BlendMode::Alpha) = 0;
+    /** @brief Draws textured rect shader depth. */
     virtual void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader,
                                              float x, float y, float w, float h,
                                              const Color &tint) = 0;
@@ -91,16 +103,21 @@ public:
 
     /** @brief Draw target; nullptr → screen. */
     virtual void setCanvas(Canvas *canvas) = 0;
+    /** @brief True when canvas active. */
     virtual bool isCanvasActive() const = 0;
+    /** @brief Returns the canvas. */
     virtual Canvas *getCanvas() const = 0;
 
     /** @brief Custom fragment pipeline for subsequent textured 2D draws. */
     virtual void setShader(Shader *shader) = 0;
+    /** @brief Sets the shader. */
     virtual void setShader() = 0;
+    /** @brief Returns the shader. */
     virtual Shader *getShader() const = 0;
 
     /** @brief Optional shared font used by legacy consumers; nullptr = none set. */
     virtual void setFont(Font *font) = 0;
+    /** @brief Returns the font. */
     virtual Font *getFont() const = 0;
     /**
      * @brief Draws UTF-8 text with the font selected by setFont().
@@ -129,13 +146,18 @@ public:
     virtual void drawText(Font *font, const std::string &text, float x, float y,
                           const Color &color = Color(1.f, 1.f, 1.f, 1.f), float scale = 1.f) = 0;
 
+    /** @brief Draws . */
     virtual void draw(Drawable *drawable, const glm::mat4 &m) = 0;
+    /** @brief Draws occlusion. */
     virtual void drawOcclusion(Drawable *drawable, const glm::mat4 &m) = 0;
+    /** @brief Draws occlusion solid. */
     virtual void drawOcclusionSolid(float x, float y, float w, float h) = 0;
+    /** @brief Draws occlusion texture. */
     virtual void drawOcclusionTexture(Texture *texture, float x, float y, float w, float h) = 0;
 
     /** @brief Backend GPU validation scopes (WebGPU). */
     virtual void pushValidationScope() = 0;
+    /** @brief Pops validation scope. */
     virtual void popValidationScope() = 0;
 };
 

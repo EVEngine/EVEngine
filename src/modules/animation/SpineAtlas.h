@@ -15,34 +15,56 @@ namespace eve::animation {
  */
 class EVENGINE_API_WORLD SpineAtlas {
 public:
+    /** @brief Spine atlas. */
     SpineAtlas() = default;
+    /** @brief Spine atlas. */
     ~SpineAtlas() = default;
 
     SpineAtlas(const SpineAtlas &)            = delete;
     SpineAtlas &operator=(const SpineAtlas &) = delete;
 
+    /** @brief Loads from text. */
     bool loadFromText(const std::string &text, std::string *error = nullptr);
+    /** @brief Loads from file. */
     bool loadFromFile(const std::string &path, std::string *error = nullptr);
 
+    /** @brief Clears . */
     void clear();
 
+    /** @brief Returns the page count. */
     int         getPageCount() const { return static_cast<int>(pages_.size()); }
+    /** @brief Returns the page name. */
     std::string getPageName(int pageIndex) const;
+    /** @brief Returns the page width. */
     int         getPageWidth(int pageIndex) const;
+    /** @brief Returns the page height. */
     int         getPageHeight(int pageIndex) const;
 
+    /** @brief Returns the region count. */
     int         getRegionCount() const { return static_cast<int>(regions_.size()); }
+    /** @brief Finds region. */
     int         findRegion(const std::string &name) const;
+    /** @brief Returns the region name. */
     std::string getRegionName(int index) const;
+    /** @brief Returns the region page. */
     int         getRegionPage(int index) const;
+    /** @brief Returns the region x. */
     int         getRegionX(int index) const;
+    /** @brief Returns the region y. */
     int         getRegionY(int index) const;
+    /** @brief Returns the region width. */
     int         getRegionWidth(int index) const;
+    /** @brief Returns the region height. */
     int         getRegionHeight(int index) const;
+    /** @brief Returns the region original width. */
     int         getRegionOriginalWidth(int index) const;
+    /** @brief Returns the region original height. */
     int         getRegionOriginalHeight(int index) const;
+    /** @brief Returns the region offset x. */
     int         getRegionOffsetX(int index) const;
+    /** @brief Returns the region offset y. */
     int         getRegionOffsetY(int index) const;
+    /** @brief Returns the region rotate. */
     bool        getRegionRotate(int index) const;
 
     /** @brief Normalized UVs for a texture of texW×texH (usually page size). */

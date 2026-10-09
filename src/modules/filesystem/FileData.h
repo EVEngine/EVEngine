@@ -18,16 +18,21 @@ public:
     /** @brief Deep-copies another FileData. */
     FileData(const FileData &c);
 
+    /** @brief File data. */
     virtual ~FileData();
 
     /** @brief Implements eve::Data. */
     FileData *clone() const;
+    /** @brief Pointer to the owned byte buffer. */
     void *    getData() const { return data; }
+    /** @brief Byte length of the owned buffer. */
     size_t    getSize() const { return size; }
 
     /** @brief Filename, extension (without dot) and base name. */
     const std::string &getFilename() const { return filename; }
+    /** @brief File extension without the leading dot. */
     const std::string &getExtension() const { return extension; }
+    /** @brief Basename without extension. */
     const std::string &getName() const { return name; }
 
 private:

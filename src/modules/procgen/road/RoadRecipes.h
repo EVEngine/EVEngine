@@ -27,7 +27,9 @@ bool generateRoadNetworkMesh(const Params& params, MeshBuild& out, std::string& 
 /** @brief Pure-function road marking atlas (asphalt + edge + dashed center + zebra). */
 std::unique_ptr<image::ImageData> generateRoadMarkingsTexture(const Params& params, std::string& error);
 
+/** @brief Registers road mesh recipes. */
 void registerRoadMeshRecipes(MeshRecipeRegistry& registry);
+/** @brief Registers road texture recipes. */
 void registerRoadTextureRecipes(TextureRecipeRegistry& registry);
 
 }  // namespace road

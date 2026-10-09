@@ -79,6 +79,7 @@ public:
 
     /** @brief Enable or disable pose mutation. Disabled apply calls still recompute the target. */
     void setEnabled(bool enabled);
+    /** @brief True when enabled. */
     bool isEnabled() const;
 
     /** @brief Clear smoothed yaw so the next apply starts from zero. */
@@ -110,8 +111,11 @@ public:
      * @lifetime Valid until the next successful configure or destruction.
      */
     AnimSkeleton* getSkeleton() const;
+    /** @brief Returns the root bone. */
     int           getRootBone() const;
+    /** @brief Returns the spine bone count. */
     int           getSpineBoneCount() const;
+    /** @brief Returns the ik bone count. */
     int           getIkBoneCount() const;
 
 private:

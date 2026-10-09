@@ -71,6 +71,7 @@ struct AttackVfxVec3 {
     float y = 0.f;
     float z = 0.f;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const AttackVfxVec3&) const = default;
 };
 
@@ -89,6 +90,7 @@ struct EVENGINE_API_WORLD AttackVfxSpatial {
     AttackVfxVec3              rotationOffsetDegrees;
     AttackVfxVec3              scale{1.f, 1.f, 1.f};
 
+    /** @brief Operator <=>. */
     auto operator<=>(const AttackVfxSpatial&) const = default;
 
     /** @brief Validate finite offsets and strictly positive scale. */
@@ -137,6 +139,7 @@ struct AttackVfxPalette {
     AttackVfxVec3 secondary{1.f, 1.f, 1.f};
     AttackVfxVec3 emissive{1.f, 1.f, 1.f};
 
+    /** @brief Operator <=>. */
     auto operator<=>(const AttackVfxPalette&) const = default;
 };
 
@@ -173,6 +176,7 @@ struct AttackVfxBudget {
     int  maxParticles     = 0; /**< 0 means unlimited. */
     bool allowDistortion  = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const AttackVfxBudget&) const = default;
 };
 

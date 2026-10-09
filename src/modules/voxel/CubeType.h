@@ -11,6 +11,7 @@
 
 namespace eve::voxel {
 
+/** @brief CubeType public API. */
 struct CubeType {
     std::string name;
     /** @brief 0 保留为空气；1..255 类型索引（含方向变体）。 */

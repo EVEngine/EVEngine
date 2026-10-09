@@ -51,11 +51,16 @@ struct EVENGINE_API_DOMAINS FractureRecipe {
     /** @brief Soft cap on produced leaf bones. */
     int          maximumBones = 256;
 
+    /** @brief Validate. */
     [[nodiscard("check fracture recipe validation")]] eve::Result<void> validate() const;
+    /** @brief To value. */
     [[nodiscard("check fracture recipe encoding")]] eve::Result<eve::Value> toValue() const;
+    /** @brief Schema definition. */
     [[nodiscard]] static eve::schema::SchemaDefinition schemaDefinition();
+    /** @brief Ensure schema registered. */
     [[nodiscard("check fracture recipe schema registration")]] static eve::Result<void> ensureSchemaRegistered();
     [[nodiscard("check fracture recipe decoding")]]
+    /** @brief From value. */
     static eve::Result<FractureRecipe> fromValue(const eve::Value& value);
 };
 

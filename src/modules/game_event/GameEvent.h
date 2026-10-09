@@ -48,6 +48,7 @@ using CommandId = eve::CommandId;
  */
 class CorrelationId {
 public:
+    /** @brief Kind public API. */
     enum class Kind : uint8_t { None, Id, Legacy };
 
     /** @brief Constructs an absent correlation reference. */
@@ -94,6 +95,7 @@ private:
  */
 class CausationRef {
 public:
+    /** @brief Kind public API. */
     enum class Kind : uint8_t { None, Event, Command, Legacy };
 
     /** @brief Constructs an absent causation reference. */
@@ -210,6 +212,7 @@ struct GameEvent {
  * @tparam Payload Domain-owned payload type; it is never replaced by a JSON map.
  */
 template <class Payload>
+/** @brief TypedEventEnvelope public API. */
 struct TypedEventEnvelope {
     GameEvent metadata;
     Payload   payload;
@@ -263,7 +266,9 @@ public:
     // the defaulted moves keep the previous implicit behaviour.
     GameEventLog(const GameEventLog&)            = delete;
     GameEventLog& operator=(const GameEventLog&) = delete;
+    /** @brief Game event log. */
     GameEventLog(GameEventLog&&)                 = default;
+    /** @brief Operator =. */
     GameEventLog& operator=(GameEventLog&&)      = default;
 
     /** @brief Creates a stream without an implicit entropy source. */
@@ -298,16 +303,19 @@ public:
      * @return The assigned stream-local sequence, or the encoder/append failure.
      */
     template <class Payload>
+    /** @brief Append typed. */
     [[nodiscard]] eve::Result<EventSequence> appendTyped(
         GameEvent envelope, const Payload& payload,
         const std::function<eve::Result<std::string>(const Payload&)>& encode) {
         if (!encode) {
+            /** @brief Failure. */
             return eve::Result<EventSequence>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "event payload encoder must not be empty"));
         }
         auto encoded = encode(payload);
         if (!encoded) return eve::Result<EventSequence>::failure(encoded.status());
         envelope.payload = std::move(encoded).takeValue();
+        /** @brief Append. */
         return append(std::move(envelope));
     }
 
@@ -401,7 +409,9 @@ private:
 class GameEventModule : public Module {
 public:
     Module_REG(GameEventModule);
+    /** @brief Constructs a GameEventModule. */
     GameEventModule()           = default;
+    /** @brief Releases GameEventModule resources. */
     ~GameEventModule() override = default;
 
     /**

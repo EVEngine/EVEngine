@@ -82,9 +82,13 @@ struct GtsPackedLayerSettings {
 /** @brief Owning ordered GTS packed albedo/height and normal/AO/smoothness texture layers. */
 class EVENGINE_API_DOMAINS GtsPackedLayerSet {
 public:
+    /** @brief Gts packed layer set. */
     GtsPackedLayerSet();
+    /** @brief Gts packed layer set. */
     ~GtsPackedLayerSet();
+    /** @brief Gts packed layer set. */
     GtsPackedLayerSet(GtsPackedLayerSet&&) noexcept;
+    /** @brief Operator =. */
     GtsPackedLayerSet& operator=(GtsPackedLayerSet&&) noexcept;
     GtsPackedLayerSet(const GtsPackedLayerSet&) = delete;
     GtsPackedLayerSet& operator=(const GtsPackedLayerSet&) = delete;

@@ -78,6 +78,7 @@ struct DamageAmounts {
  */
 class IDamageRule {
 public:
+    /** @brief Releases IDamageRule resources. */
     virtual ~IDamageRule() = default;
     /** @brief Resolve final non-negative amounts without mutating target state. */
     [[nodiscard]] virtual Result<DamageAmounts> evaluate(const DamageRequest& request,
@@ -125,6 +126,7 @@ class EVENGINE_API_BACKENDS DamageRuntime {
 public:
     /** @brief Construct with an optional borrowed rule provider and owning policy copy. */
     explicit DamageRuntime(const IDamageRule* rule = nullptr, HitReactionPolicy policy = {})
+        /** @brief Rule. */
         : rule_(rule), policy_(policy) {}
 
     /**

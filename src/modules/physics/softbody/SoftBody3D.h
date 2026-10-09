@@ -51,6 +51,7 @@ public:
     static eve::Result<std::unique_ptr<SoftBody3D>> create(int cols, int rows, int layers, float spacing, float originX,
                                                            float originY, float originZ);
 
+    /** @brief Soft body 3 d. */
     ~SoftBody3D() override;
     SoftBody3D(const SoftBody3D&)            = delete;
     SoftBody3D& operator=(const SoftBody3D&) = delete;
@@ -72,39 +73,72 @@ public:
     [[nodiscard("check soft-body observation restore")]]
     eve::Result<void> restoreObservation(const SimulationObservation& observation) override;
 
+    /** @brief Sets the gravity. */
     void                setGravity(float x, float y, float z);
+    /** @brief Returns the gravity x. */
     [[nodiscard]] float getGravityX() const { return gravityX_; }
+    /** @brief Returns the gravity y. */
     [[nodiscard]] float getGravityY() const { return gravityY_; }
+    /** @brief Returns the gravity z. */
     [[nodiscard]] float getGravityZ() const { return gravityZ_; }
+    /** @brief Sets the deformation resistance. */
     void                setDeformationResistance(float value);
+    /** @brief Returns the deformation resistance. */
     [[nodiscard]] float getDeformationResistance() const;
+    /** @brief Sets the iterations. */
     void                setIterations(int value);
+    /** @brief Returns the iterations. */
     [[nodiscard]] int   getIterations() const { return iterations_; }
+    /** @brief Sets the damping. */
     void                setDamping(float value);
+    /** @brief Returns the damping. */
     [[nodiscard]] float getDamping() const { return damping_; }
+    /** @brief Sets the particle radius. */
     void                setParticleRadius(float value);
+    /** @brief Returns the particle radius. */
     [[nodiscard]] float getParticleRadius() const;
+    /** @brief Sets the particle mass. */
     void                setParticleMass(float value);
+    /** @brief Returns the particle mass. */
     [[nodiscard]] float getParticleMass() const { return particleMass_; }
+    /** @brief Sets the plasticity. */
     void                setPlasticity(float yield, float creep, float recovery, float maxDeformation);
+    /** @brief Returns the plastic yield. */
     [[nodiscard]] float getPlasticYield() const;
+    /** @brief Returns the plastic creep. */
     [[nodiscard]] float getPlasticCreep() const;
+    /** @brief Returns the plastic recovery. */
     [[nodiscard]] float getPlasticRecovery() const;
+    /** @brief Returns the max deformation. */
     [[nodiscard]] float getMaxDeformation() const;
+    /** @brief Sets the self collision. */
     void                setSelfCollision(bool enabled) { selfCollision_ = enabled; }
+    /** @brief Returns the self collision. */
     [[nodiscard]] bool  getSelfCollision() const { return selfCollision_; }
+    /** @brief Sets the bounds. */
     void                setBounds(float x, float y, float z, float width, float height, float depth);
+    /** @brief Clears bounds. */
     void                clearBounds() { hasBounds_ = false; }
 
+    /** @brief Pin. */
     void               pin(int index);
+    /** @brief Unpin. */
     void               unpin(int index);
+    /** @brief True when pinned. */
     [[nodiscard]] bool isPinned(int index) const;
+    /** @brief Grab at. */
     [[nodiscard]] int  grabAt(float x, float y, float z, float radius);
+    /** @brief Moves grab. */
     void               moveGrab(float x, float y, float z);
+    /** @brief Release grab. */
     void               releaseGrab() { grabIndex_ = -1; }
+    /** @brief True when grabbing. */
     [[nodiscard]] bool isGrabbing() const { return grabIndex_ >= 0; }
+    /** @brief Returns the grab index. */
     [[nodiscard]] int  getGrabIndex() const { return grabIndex_; }
+    /** @brief Applies force. */
     void               applyForce(float x, float y, float z);
+    /** @brief Interact at. */
     void               interactAt(float x, float y, float z, float radius, float strength);
 
     /**
@@ -114,6 +148,7 @@ public:
      * @lifetime The world must outlive this object or be cleared before destruction.
      */
     void                   setCollideWorld(World3D* world);
+    /** @brief Returns the collide world. */
     [[nodiscard]] World3D* getCollideWorld() const;
 
     /**
@@ -126,7 +161,9 @@ public:
         collisionWorld_ = world;
     }
 
+    /** @brief Resets . */
     void reset();
+    /** @brief Destroys . */
     void destroy();
     /** @brief Whether destroy() has disabled this runtime instance. */
     [[nodiscard]] bool isDestroyed() const noexcept { return destroyed_; }

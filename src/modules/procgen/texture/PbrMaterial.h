@@ -51,6 +51,7 @@ struct EVENGINE_API_DOMAINS PbrTextureSet {
 /** @brief Recipe returns a newly owned full PBR set, or null on failure. */
 using PbrRecipeFn = std::function<std::unique_ptr<PbrTextureSet>(const Params &params, std::string &error)>;
 
+/** @brief EVENGINE_API_DOMAINS public API. */
 class EVENGINE_API_DOMAINS PbrRecipeRegistry {
 public:
     /** @brief Access the process-wide PBR registry. @return Registry instance. */

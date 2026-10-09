@@ -13,6 +13,7 @@ namespace eve::graphics {
 /** @brief Compact acyclic program that evaluates procedural volume density. */
 class EVENGINE_API_BACKENDS VolumeDensityGraph {
 public:
+    /** @brief Op public API. */
     enum class Op { constant, height, sphere, box, noise, add, multiply, subtract, clamp };
 
     struct Node {

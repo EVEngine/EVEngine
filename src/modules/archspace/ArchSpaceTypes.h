@@ -80,10 +80,13 @@ struct MeshArrays {
     std::vector<float>         uvs;
     std::vector<std::uint32_t> indices;
 
+    /** @brief Vertex count. */
     [[nodiscard]] int vertexCount() const noexcept {
         return static_cast<int>(positions.size() / 3);
     }
+    /** @brief Index count. */
     [[nodiscard]] int indexCount() const noexcept { return static_cast<int>(indices.size()); }
+    /** @brief Triangle count. */
     [[nodiscard]] int triangleCount() const noexcept { return indexCount() / 3; }
 };
 
@@ -162,6 +165,7 @@ struct MeshArrays {
     if (text == "zone") return eve::Result<NodeKind>::success(NodeKind::Zone);
     if (text == "item") return eve::Result<NodeKind>::success(NodeKind::Item);
     if (text == "opening") return eve::Result<NodeKind>::success(NodeKind::Opening);
+    /** @brief Failure. */
     return eve::Result<NodeKind>::failure(eve::Diagnostic::error(
         eve::DiagnosticCode::InvalidArgument, "unknown ArchSpace node kind", "kind", {}, "archspace.kind"));
 }
@@ -182,6 +186,7 @@ struct MeshArrays {
 [[nodiscard]] inline eve::Result<OpeningKind> parseOpeningKind(const std::string& text) noexcept {
     if (text == "door") return eve::Result<OpeningKind>::success(OpeningKind::Door);
     if (text == "window") return eve::Result<OpeningKind>::success(OpeningKind::Window);
+    /** @brief Failure. */
     return eve::Result<OpeningKind>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                     "unknown ArchSpace opening kind", "openingKind", {},
                                                                     "archspace.opening"));

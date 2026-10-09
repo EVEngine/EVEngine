@@ -27,6 +27,7 @@ class EVENGINE_API_PLATFORM UdpSocket {
 public:
     /** @brief Creates an unbound socket owned by the given module. */
     explicit UdpSocket(Network* net);
+    /** @brief Udp socket. */
     ~UdpSocket();
 
     /** @brief Binds to a local port; true on success. */

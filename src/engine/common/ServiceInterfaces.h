@@ -23,6 +23,7 @@ namespace eve::service {
 class IFileSystem {
 public:
     static constexpr const char *capabilityName = "IFileSystem";
+    /** @brief Releases IFileSystem resources. */
     virtual ~IFileSystem() = default;
 
     /** @brief Reads an entire file. @return false when missing or unreadable. */
@@ -41,6 +42,7 @@ public:
 class INetwork {
 public:
     static constexpr const char *capabilityName = "INetwork";
+    /** @brief Releases INetwork resources. */
     virtual ~INetwork() = default;
 
     /**
@@ -66,6 +68,7 @@ public:
 class ITimer {
 public:
     static constexpr const char *capabilityName = "ITimer";
+    /** @brief Releases ITimer resources. */
     virtual ~ITimer() = default;
 
     /** @brief Seconds since the provider was created (monotonic, non-decreasing). */

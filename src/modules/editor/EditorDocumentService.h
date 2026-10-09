@@ -34,6 +34,7 @@ struct DocumentKey {
     DocumentKind kind = DocumentKind::Generic;
     AssetGuid    asset;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const DocumentKey&) const = default;
 };
 
@@ -83,6 +84,7 @@ struct StoredDocument {
 /** @brief Compare-and-swap persistence boundary used by DocumentService. */
 class IAtomicDocumentStore {
 public:
+    /** @brief Releases IAtomicDocumentStore resources. */
     virtual ~IAtomicDocumentStore() = default;
     /** @brief Read the latest value for a resource URI. */
     virtual Result<StoredDocument> read(const std::string& resourceUri) const = 0;
@@ -95,7 +97,9 @@ public:
 /** @brief Deterministic in-memory CAS store suitable for tests and transient tools. */
 class EVENGINE_API_ORCHESTRATION MemoryAtomicDocumentStore final : public IAtomicDocumentStore {
 public:
+    /** @brief Reads . */
     Result<StoredDocument> read(const std::string& resourceUri) const override;
+    /** @brief Compare and swap. */
     Result<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,
                                                 const std::string& expectedContentHash,
                                                 const EditorValue& content) override;
@@ -116,6 +120,7 @@ public:
     /** @brief Synchronous content validator borrowed only for one external reconciliation call. */
     using ContentValidator = std::function<Result<void>(const EditorValue&)>;
 
+    /** @brief Document service. */
     explicit DocumentService(IAtomicDocumentStore* store) : store_(store) {}
 
     /** @brief Open an asset-backed document, loading existing persisted content when present. */

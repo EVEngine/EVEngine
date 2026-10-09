@@ -35,14 +35,17 @@ public:
 
     /** @brief Write cell-centered density; indices are clamped. */
     void setDensity(int x, int y, int z, float density);
+    /** @brief Density at. */
     [[nodiscard]] float densityAt(int x, int y, int z) const noexcept;
 
     /** @brief Write curl-assist velocity (m/s) at a cell center. */
     void setCurlVelocity(int x, int y, int z, const glm::vec3& velocity);
+    /** @brief Curl velocity at. */
     [[nodiscard]] glm::vec3 curlVelocityAt(int x, int y, int z) const noexcept;
 
     /** @brief Accumulated lighting assist (pre-multiplied irradiance hint). */
     void setLightAssist(int x, int y, int z, const glm::vec3& assist);
+    /** @brief Light assist at. */
     [[nodiscard]] glm::vec3 lightAssistAt(int x, int y, int z) const noexcept;
 
     /** @brief Trilinear world-space density sample. */

@@ -49,6 +49,7 @@ public:
      * transactionally without changing this layout.
      */
     std::string toJson() const;
+    /** @brief From json. */
     [[nodiscard]] eve::Result<void> fromJson(std::string_view json);
     /** @brief 校验布局是否满足组件库规则。 */
     [[nodiscard]] eve::Result<void> validate(const HouseComponentLibrary &library) const;

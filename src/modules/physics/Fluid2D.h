@@ -18,43 +18,57 @@ namespace eve::physics {
  */
 class EVENGINE_API_WORLD Fluid2D {
 public:
+    /** @brief Fluid 2 d. */
     explicit Fluid2D(int capacity = 512);
+    /** @brief Fluid 2 d. */
     ~Fluid2D();
 
     Fluid2D(const Fluid2D &)            = delete;
     Fluid2D &operator=(const Fluid2D &) = delete;
 
+    /** @brief Updates . */
     void update(float dt);
 
+    /** @brief Sets the gravity. */
     void  setGravity(float gx, float gy);
+    /** @brief Returns the gravity x. */
     float getGravityX() const { return gravityX_; }
+    /** @brief Returns the gravity y. */
     float getGravityY() const { return gravityY_; }
 
     /** @brief Interaction / neighbor radius in pixels (default 18). */
     void  setSmoothingRadius(float radius);
+    /** @brief Returns the smoothing radius. */
     float getSmoothingRadius() const { return h_; }
 
     /** @brief Target rest density for the relaxation solver (default 4). */
     void  setRestDensity(float density);
+    /** @brief Returns the rest density. */
     float getRestDensity() const { return restDensity_; }
 
     /** @brief Pressure stiffness (default 0.5). */
     void  setPressureStiffness(float k);
+    /** @brief Returns the pressure stiffness. */
     float getPressureStiffness() const { return pressureK_; }
 
     /** @brief Near-pressure (anti-clustering) stiffness (default 0.5). */
     void  setNearPressureStiffness(float k);
+    /** @brief Returns the near pressure stiffness. */
     float getNearPressureStiffness() const { return nearPressureK_; }
 
+    /** @brief Sets the viscosity. */
     void  setViscosity(float viscosity);
+    /** @brief Returns the viscosity. */
     float getViscosity() const { return viscosity_; }
 
     /** @brief Solver iterations per frame (default 3). */
     void setIterations(int iterations);
+    /** @brief Returns the iterations. */
     int  getIterations() const { return iterations_; }
 
     /** @brief Axis-aligned container; particles bounce inside. */
     void setBounds(float x, float y, float w, float h);
+    /** @brief Clears bounds. */
     void clearBounds();
 
     /**
@@ -72,25 +86,39 @@ public:
      */
     void interactAt(float x, float y, float radius, float strength);
 
+    /** @brief Sets the color. */
     void  setColor(float r, float g, float b, float a = 1.f);
+    /** @brief Returns the color r. */
     float getColorR() const { return colorR_; }
+    /** @brief Returns the color g. */
     float getColorG() const { return colorG_; }
+    /** @brief Returns the color b. */
     float getColorB() const { return colorB_; }
+    /** @brief Returns the color a. */
     float getColorA() const { return colorA_; }
 
     /** @brief Particle draw size in pixels (default 5). */
     void  setParticleSize(float size);
+    /** @brief Returns the particle size. */
     float getParticleSize() const { return particleSize_; }
 
+    /** @brief Draws . */
     void draw(graphics::Graphics *gfx);
 
+    /** @brief Returns the capacity. */
     int   getCapacity() const { return capacity_; }
+    /** @brief Returns the particle count. */
     int   getParticleCount() const { return static_cast<int>(particles_.size()); }
+    /** @brief Returns the particle x. */
     float getParticleX(int index) const;
+    /** @brief Returns the particle y. */
     float getParticleY(int index) const;
+    /** @brief Returns the particle vx. */
     float getParticleVx(int index) const;
+    /** @brief Returns the particle vy. */
     float getParticleVy(int index) const;
 
+    /** @brief Destroys . */
     void destroy();
 
 private:

@@ -18,12 +18,17 @@ namespace thread {
  */
 class EVENGINE_API_FOUNDATION Channel {
 public:
+    /** @brief Channel. */
     Channel();
+    /** @brief Channel. */
     explicit Channel(std::string name);
+    /** @brief Channel. */
     ~Channel();
 
+    /** @brief Returns the name. */
     std::string getName() const;
 
+    /** @brief Pushes . */
     void push(std::string value);
     /** @brief Non-blocking pop; returns "" if empty. */
     std::string pop();
@@ -32,12 +37,16 @@ public:
     /** @brief Block up to timeoutMs; returns "" on timeout. */
     std::string supply(int timeoutMs);
 
+    /** @brief True when data. */
     bool hasData() const;
+    /** @brief Returns the count. */
     int getCount() const;
+    /** @brief Clears . */
     void clear();
 
 private:
     struct State {
+        /** @brief Constructs a State. */
         explicit State(std::string channelName = {}) : name(std::move(channelName)) {}
 
         std::string name;

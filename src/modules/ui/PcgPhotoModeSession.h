@@ -7,6 +7,7 @@
 #include "ui/PcgPhotoModeValues.h"
 namespace ssq { class Table; }
 namespace eve::ui {
+/** @brief PcgPhotoModeLoadDecision public API. */
 enum class PcgPhotoModeLoadDecision { Current=0, Saved=1, SaveCurrent=2 };
 /** @brief Transactional lifecycle state for Pcg PhotoMode setup, disable and destroy. */
 class EVENGINE_API_WORLD PcgPhotoModeSession {
@@ -17,9 +18,13 @@ public:
  /** @brief End the session; restore captured settings only when both flags are true. */ [[nodiscard]] Result<void> end(bool resetOnDisable,bool applicationPlaying);
  /** @brief Encode the currently selected working profile. */ [[nodiscard]] Result<std::string> workingJson()const;
  /** @brief Encode values that the caller must apply after end. */ [[nodiscard]] Result<std::string> outputJson()const;
+ /** @brief Returns the active. */
  bool getActive()const noexcept{return active_;} bool getRestoreRequested()const noexcept{return restoreRequested_;}
+ /** @brief Returns the remove photo camera requested. */
  bool getRemovePhotoCameraRequested()const noexcept{return removePhotoCameraRequested_;}
+ /** @brief Returns the unfreeze player requested. */
  bool getUnfreezePlayerRequested()const noexcept{return unfreezePlayerRequested_;}
+ /** @brief Returns the load decision. */
  int getLoadDecision()const noexcept{return static_cast<int>(loadDecision_);} uint64_t getRevision()const noexcept{return revision_;}
 private: PcgPhotoModeValues captured_,working_,output_;bool active_=false,restoreRequested_=false,removePhotoCameraRequested_=false,unfreezePlayerRequested_=false;PcgPhotoModeLoadDecision loadDecision_=PcgPhotoModeLoadDecision::Current;uint64_t revision_=0;
 };

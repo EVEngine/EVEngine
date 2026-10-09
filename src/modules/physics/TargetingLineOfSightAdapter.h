@@ -46,6 +46,7 @@ public:
     [[nodiscard]] Result<void> removeWorld(World3D* world);
 
     /** @copydoc sensing::ILineOfSightQuery::query */
+    /** @brief Queries . */
     [[nodiscard]] Result<sensing::LineOfSightResult> query(const sensing::TargetLocation& from,
                                                            const sensing::TargetLocation& to) const override;
 

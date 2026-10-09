@@ -32,7 +32,9 @@ struct SequenceParameter {
     int                   sourceLine   = 0;
     int                   sourceColumn = 0;
 
+    /** @brief Constructs a SequenceParameter. */
     SequenceParameter() = default;
+    /** @brief Constructs a SequenceParameter. */
     explicit SequenceParameter(std::string parameterName) : name(std::move(parameterName)) {}
 };
 

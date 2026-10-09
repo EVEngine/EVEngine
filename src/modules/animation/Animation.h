@@ -85,7 +85,9 @@ public:
     // every member -- and `SpriteSheet` is only forward-declared here (line 47), so an
     // in-class `= default` is C2027 "can't delete an incomplete type". Defined in
     // Animation.cpp, which includes animation/SpriteSheet.h.
+    /** @brief Animation. */
     Animation();
+    /** @brief Animation. */
     ~Animation() override;
     // `spriteSequenceCache_` is a container of `unique_ptr`: dllexport instantiates
     // every member, so the implicitly-defined copy operations would instantiate the
@@ -113,7 +115,9 @@ public:
     SpriteSheet *newSpriteSheetFromAtlasJson(eve::graphics::Graphics *gfx,
                                               const std::string &texturePath,
                                               const std::string &jsonPath);
+    /** @brief Creates a sprite clip. @ownership Caller deletes unless documented otherwise. */
     SpriteClip  *newSpriteClip(const std::string &name = "");
+    /** @brief Creates a sprite anim. @ownership Caller deletes unless documented otherwise. */
     SpriteAnim  *newSpriteAnim();
     /** @brief Number of decoded runtime sequence atlases retained for reuse. */
     int getSpriteSequenceCacheCount() const;
@@ -124,19 +128,27 @@ public:
 
     /** @brief Spine (region attachment subset) factories. */
     SpineAtlas        *newSpineAtlas();
+    /** @brief Creates a spine skeleton data. @ownership Caller deletes unless documented otherwise. */
     SpineSkeletonData *newSpineSkeletonData();
+    /** @brief Creates a spine skeleton. @ownership Caller deletes unless documented otherwise. */
     SpineSkeleton     *newSpineSkeleton(SpineSkeletonData *data);
+    /** @brief Creates a spine anim. @ownership Caller deletes unless documented otherwise. */
     SpineAnim         *newSpineAnim(SpineSkeleton *skeleton);
 
     /** @brief Load helpers (allocate + parse; false → empty object still returned? prefer nullable). */
     SpineAtlas        *newSpineAtlasFromFile(const std::string &path);
+    /** @brief Creates a spine atlas from text. @ownership Caller deletes unless documented otherwise. */
     SpineAtlas        *newSpineAtlasFromText(const std::string &text);
+    /** @brief Creates a spine skeleton data from file. @ownership Caller deletes unless documented otherwise. */
     SpineSkeletonData *newSpineSkeletonDataFromFile(const std::string &path);
+    /** @brief Creates a spine skeleton data from json. @ownership Caller deletes unless documented otherwise. */
     SpineSkeletonData *newSpineSkeletonDataFromJson(const std::string &json);
 
     /** @brief 3D skeletal animation factories (script GC owns returned objects). */
     AnimSkeleton     *newSkeleton();
+    /** @brief Creates a clip. @ownership Caller deletes unless documented otherwise. */
     AnimClip         *newClip(const std::string &name = "");
+    /** @brief Creates a pose. @ownership Caller deletes unless documented otherwise. */
     AnimPose         *newPose(int boneCount = 0);
     /** @brief Create a parallel batch clip evaluator. */
     AnimBatch        *newBatch();
@@ -173,6 +185,7 @@ public:
     FootIKSolver *newFootIKSolver(AnimSkeleton *skeleton);
     /** @brief Create a normalized-time player synchronization group. */
     AnimSyncGroup* newSyncGroup();
+    /** @brief Creates a player. @ownership Caller deletes unless documented otherwise. */
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
     /** @brief Create a composable pose graph for the skeleton. */
     AnimGraph        *newGraph(AnimSkeleton *skeleton);
@@ -180,8 +193,11 @@ public:
     AnimBoneMask* newBoneMask(AnimSkeleton* skeleton);
     /** @brief Create an override/additive animation layer mixer. */
     AnimLayerMixer*   newLayerMixer(AnimSkeleton* skeleton);
+    /** @brief Creates a state machine. @ownership Caller deletes unless documented otherwise. */
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
+    /** @brief Creates a motion database. @ownership Caller deletes unless documented otherwise. */
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
+    /** @brief Creates a motion matcher. @ownership Caller deletes unless documented otherwise. */
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);
 
     /**
@@ -190,6 +206,7 @@ public:
      */
     ControlAnim *newControlAnim(float frequencyHz = 3.f, float dampingZeta = 1.f,
                                 float response = 1.f);
+    /** @brief Creates a control pose. @ownership Caller deletes unless documented otherwise. */
     ControlPose *newControlPose(AnimSkeleton *skeleton);
     /**
      * @brief Impulse-driven balance overlay that wobbles then recovers toward the authored pose.
@@ -209,6 +226,7 @@ public:
      *          model3d is trimmed.
      */
     AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
+    /** @brief Creates a clip from model. @ownership Caller deletes unless documented otherwise. */
     AnimClip     *newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
                                    int animIndex = 0);
     /**
@@ -307,7 +325,9 @@ public:
     /** @brief Legacy seconds facade; invalid input is explicitly consumed and ignored. */
     void update(float dt);
 
+    /** @brief Returns the tween count. */
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
+    /** @brief Returns the motion count. */
     int getMotionCount() const { return motions_.activeCount(); }
 
     /**
@@ -315,14 +335,19 @@ public:
      * @param floatCount Target number of float slots (Inactive + free-list).
      */
     void ensureMotionCapacity(std::size_t floatCount) { motions_.ensureCapacity(floatCount); }
+    /** @brief Returns the motion float capacity. */
     [[nodiscard]] std::size_t getMotionFloatCapacity() const noexcept {
         return motions_.floatCapacity();
     }
+    /** @brief Returns the motion float free count. */
     [[nodiscard]] std::size_t getMotionFloatFreeCount() const noexcept {
         return motions_.floatFreeCount();
     }
+    /** @brief Returns the sprite anim count. */
     int getSpriteAnimCount() const { return static_cast<int>(spriteAnims_.size()); }
+    /** @brief Returns the spine anim count. */
     int getSpineAnimCount() const { return static_cast<int>(spineAnims_.size()); }
+    /** @brief Returns the active count. */
     int getActiveCount() const;
 
     /** @brief Drop finished/stopped entries from the registry (does not delete Tween objects). */

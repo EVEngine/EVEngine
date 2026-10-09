@@ -21,7 +21,9 @@ namespace eve::action_editor {
 class EVENGINE_API_EDITORS ActionEditorModule final : public Module {
 public:
     Module_REG(ActionEditorModule);
+    /** @brief Action editor module. */
     ActionEditorModule();
+    /** @brief Action editor module. */
     ~ActionEditorModule() override;
 
 private:

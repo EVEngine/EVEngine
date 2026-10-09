@@ -28,9 +28,12 @@ class ParticleEffect;
 class EVENGINE_API_DOMAINS Particles : public Module {
 public:
     Module_REG(Particles);
+    /** @brief Particles. */
     Particles();
+    /** @brief Particles. */
     ~Particles() override;
 
+    /** @brief Creates a emitter. @ownership Caller deletes unless documented otherwise. */
     ParticleEmitter *newEmitter(int bufferSize = 1000);
     /** @brief Create emitter from JSON config file (reads optional "buffer"). */
     ParticleEmitter *newEmitterFromFile(const std::string &path);
@@ -45,10 +48,12 @@ public:
     [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
     /** @brief Legacy seconds facade; invalid conversion/step is explicitly consumed. */
     void update(float dt);
+    /** @brief Renders . */
     void render(graphics::Graphics *gfx);
     /** @brief Explicit hot-reload poll; also invoked from update(). */
     int pollConfigs();
 
+    /** @brief Returns the emitter count. */
     int getEmitterCount() const;
 
     /** @brief Set global soft particle and simulated-emitter budgets; zero is unlimited. */

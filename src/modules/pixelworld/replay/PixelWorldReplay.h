@@ -25,6 +25,7 @@ struct PixelChunkDigest {
     int x = 0;
     int y = 0;
     std::uint64_t digest = 0;
+    /** @brief Operator ==. */
     friend bool operator==(const PixelChunkDigest&, const PixelChunkDigest&) = default;
 };
 

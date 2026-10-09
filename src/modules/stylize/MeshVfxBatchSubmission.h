@@ -43,6 +43,7 @@ struct MeshVfxSubmissionReport {
  */
 class IMeshVfxBatchSink {
 public:
+    /** @brief Releases IMeshVfxBatchSink resources. */
     virtual ~IMeshVfxBatchSink() = default;
 
     /**

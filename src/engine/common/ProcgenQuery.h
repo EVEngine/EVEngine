@@ -14,11 +14,16 @@ class EVENGINE_API_FOUNDATION_INLINE IProcgenQuery {
 public:
     static constexpr const char* capabilityName = "IProcgenQuery";
 
+    /** @brief I procgen query. */
     virtual ~IProcgenQuery() = default;
 
+    /** @brief Algorithms. */
     virtual std::vector<std::string> algorithms() = 0;
+    /** @brief Mesh recipes. */
     virtual std::vector<std::string> meshRecipes() = 0;
+    /** @brief Texture recipes. */
     virtual std::vector<std::string> textureRecipes() = 0;
+    /** @brief Pbr recipes. */
     virtual std::vector<std::string> pbrRecipes() = 0;
 
     /** @brief Generate a grid; returns grid JSON ("" + err on failure). */

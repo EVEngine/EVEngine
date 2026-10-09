@@ -51,6 +51,7 @@ struct VirtualGeometryAsset {
     // Precomputed projection-dependent constant cache (recomputed on setCamera).
     float lastErrorScale = 1.f;
 
+    /** @brief Total triangles. */
     int totalTriangles() const { return static_cast<int>(triangles.size() / 3); }
 };
 

@@ -47,14 +47,20 @@ public:
     explicit ModelData(medialoader::ModelScene scene, std::string uri = "", bool uvFlipped = false);
     /** @brief Whether the loader applied the UV-flip postprocess to this owned scene. */
     bool hasFlippedUvs() const noexcept { return uvFlipped_; }
+    /** @brief Model data. */
     ~ModelData() override;
 
+    /** @brief Empty. */
     bool empty() const;
+    /** @brief Returns the mesh count. */
     int getMeshCount() const;
+    /** @brief Returns the material count. */
     int getMaterialCount() const;
     /** @throws eve::Exception when meshIndex is out of range. */
+    /** @brief Returns the vertex count. */
     int getVertexCount(int meshIndex) const;
     /** @throws eve::Exception when meshIndex is out of range. */
+    /** @brief Returns the face count. */
     int getFaceCount(int meshIndex) const;
     /** @brief Source position component for one vertex (component 0=x, 1=y, 2=z). */
     float getVertexPosition(int meshIndex, int vertexIndex, int component) const;
@@ -123,8 +129,10 @@ public:
     /** @brief Source vertex index for one triangle corner (corner 0..2). */
     int getFaceVertexIndex(int meshIndex, int triangleIndex, int corner) const;
     /** @throws eve::Exception when meshIndex is out of range. */
+    /** @brief True when normals. */
     bool hasNormals(int meshIndex) const;
     /** @throws eve::Exception when meshIndex is out of range. */
+    /** @brief True when tex coords. */
     bool hasTexCoords(int meshIndex) const;
     /** @brief Number of populated UV channels (0..AI_MAX_NUMBER_OF_TEXTURECOORDS). */
     int getTexCoordChannelCount(int meshIndex) const;
@@ -163,19 +171,27 @@ public:
     // ---- material accessors ----
     /** @brief Assimp material slot referenced by a mesh; -1 when invalid. */
     int getMaterialIndex(int meshIndex) const;
+    /** @brief Returns the material name. */
     std::string getMaterialName(int matIndex) const;
     /** @brief Base color: glTF BASE_COLOR, falling back to OBJ/legacy DIFFUSE. */
     float getMaterialBaseColorR(int matIndex) const;
+    /** @brief Returns the material base color g. */
     float getMaterialBaseColorG(int matIndex) const;
+    /** @brief Returns the material base color b. */
     float getMaterialBaseColorB(int matIndex) const;
+    /** @brief Returns the material base color a. */
     float getMaterialBaseColorA(int matIndex) const;
     /** @brief PBR factors; defaults 0 (metallic) / 0.45 (roughness) when absent. */
     float getMaterialMetallicFactor(int matIndex) const;
+    /** @brief Returns the material roughness factor. */
     float getMaterialRoughnessFactor(int matIndex) const;
+    /** @brief Returns the material opacity. */
     float getMaterialOpacity(int matIndex) const;
+    /** @brief Returns the material two sided. */
     bool getMaterialTwoSided(int matIndex) const;
     /** @brief glTF alpha mode normalized to "OPAQUE", "MASK", or "BLEND". */
     std::string getMaterialAlphaMode(int matIndex) const;
+    /** @brief Returns the material alpha cutoff. */
     float getMaterialAlphaCutoff(int matIndex) const;
 
     /**
@@ -190,8 +206,11 @@ public:
     int getMaterialTextureEmbeddedIndex(int matIndex, const std::string &type, int slot = 0) const;
 
     // ---- embedded textures (glTF / FBX can embed PNG/JPEG blobs) ----
+    /** @brief Returns the embedded texture count. */
     int getEmbeddedTextureCount() const;
+    /** @brief Returns the embedded texture name. */
     std::string getEmbeddedTextureName(int idx) const;
+    /** @brief Returns the embedded texture width. */
     int getEmbeddedTextureWidth(int idx) const;
     /** @brief 0 means a compressed blob (use getEmbeddedTextureImageData to decode). */
     int getEmbeddedTextureHeight(int idx) const;
@@ -200,26 +219,35 @@ public:
      * Compressed blobs (PNG/JPEG/...) go through the image module; raw BGRA
      * texels (mHeight > 0) are converted in place. Returns nullptr on failure.
      */
+    /** @brief Returns the embedded texture image data. */
     image::ImageData *getEmbeddedTextureImageData(int idx) const;
 
     /** @brief Assimp morph / blend-shape targets on a mesh (aiAnimMesh). */
     int getMorphTargetCount(int meshIndex) const;
+    /** @brief Returns the morph target name. */
     std::string getMorphTargetName(int meshIndex, int morphIndex) const;
 
     /** @brief Assimp skeletal skin data (aiBone / vertex weights) on a mesh. */
     bool hasBones(int meshIndex) const;
+    /** @brief Returns the bone count. */
     int getBoneCount(int meshIndex) const;
+    /** @brief Returns the bone name. */
     std::string getBoneName(int meshIndex, int boneIndex) const;
     /** @brief Inverse-bind (offset) matrix element, column-major, elementIndex in [0,15]. */
     float getInverseBindMatrixElement(int meshIndex, int boneIndex, int elementIndex) const;
+    /** @brief Returns the bone weight count. */
     int getBoneWeightCount(int meshIndex, int boneIndex) const;
+    /** @brief Returns the bone weight vertex. */
     int getBoneWeightVertex(int meshIndex, int boneIndex, int weightIndex) const;
+    /** @brief Returns the bone weight value. */
     float getBoneWeightValue(int meshIndex, int boneIndex, int weightIndex) const;
 
     /** @brief Scene-level animation clips (aiAnimation). */
     int getAnimationCount() const;
+    /** @brief Returns the animation name. */
     std::string getAnimationName(int animIndex) const;
 
+    /** @brief Returns the scene. */
     const aiScene *getScene() const;
     /** @brief Raw Assimp mesh at meshIndex; returns nullptr when out of range. */
     const aiMesh *getMesh(int meshIndex) const;

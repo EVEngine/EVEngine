@@ -39,7 +39,9 @@ namespace hair {
  */
 class EVENGINE_API_BACKENDS GroomInstance {
 public:
+    /** @brief Groom instance. */
     explicit GroomInstance(Graphics *gfx);
+    /** @brief Groom instance. */
     ~GroomInstance();
 
     GroomInstance(const GroomInstance &) = delete;
@@ -63,15 +65,20 @@ public:
 
     /** @brief Force LOD index; -1 restores automatic selection. */
     void setForcedLod(int lod);
+    /** @brief Returns the forced lod. */
     [[nodiscard]] int getForcedLod() const;
 
     /** @brief Screen-size hint in [0,1] used when forced LOD is disabled. */
     void setScreenSize(float screenSize);
+    /** @brief Returns the screen size. */
     [[nodiscard]] float getScreenSize() const;
 
+    /** @brief Sets the width scale. */
     void setWidthScale(float scale);
+    /** @brief Returns the width scale. */
     [[nodiscard]] float getWidthScale() const;
 
+    /** @brief Sets the side hint. */
     void setSideHint(float x, float y, float z);
 
     /**
@@ -79,6 +86,7 @@ public:
      * When enabled, call `updateVisibility` with the current view-projection.
      */
     void setClusterCullingEnabled(bool enabled);
+    /** @brief True when cluster culling enabled. */
     [[nodiscard]] bool isClusterCullingEnabled() const;
 
     /**
@@ -92,8 +100,11 @@ public:
      * Defaults: 1 / 0.45 / 0.25. Values are clamped to >= 0.
      */
     void setMarschnerLobes(float r, float tt, float trt);
+    /** @brief Returns the marschner r. */
     [[nodiscard]] float getMarschnerR() const;
+    /** @brief Returns the marschner tt. */
     [[nodiscard]] float getMarschnerTT() const;
+    /** @brief Returns the marschner trt. */
     [[nodiscard]] float getMarschnerTRT() const;
 
     /**
@@ -104,8 +115,11 @@ public:
      * Defaults: 0.35 / 0.25 / 0.3. Set strength to 0 to disable.
      */
     void setSelfShadow(float strength, float bias, float rootAo);
+    /** @brief Returns the self shadow strength. */
     [[nodiscard]] float getSelfShadowStrength() const;
+    /** @brief Returns the self shadow bias. */
     [[nodiscard]] float getSelfShadowBias() const;
+    /** @brief Returns the root ao strength. */
     [[nodiscard]] float getRootAoStrength() const;
 
     /** @brief Rebuild GPU mesh from all groups (LOD + optional visibility). */
@@ -128,6 +142,7 @@ public:
 
     [[nodiscard]] bool isGuideSimulationEnabled() const;
     void setGuideSimParams(const GuideSimParams &params);
+    /** @brief Returns the guide sim params. */
     [[nodiscard]] const GuideSimParams &getGuideSimParams() const;
 
     /**
@@ -137,17 +152,28 @@ public:
     [[nodiscard]] Result<void> update(float dt);
 
     void draw(const glm::mat4 &model);
+    /** @brief Draws . */
     void draw();
 
+    /** @brief Returns the mesh. */
     [[nodiscard]] Mesh *getMesh() const;
+    /** @brief Returns the shader. */
     [[nodiscard]] Shader *getShader() const;
+    /** @brief Returns the texture. */
     [[nodiscard]] Texture *getTexture() const;
+    /** @brief Returns the curve count. */
     [[nodiscard]] int getCurveCount() const;
+    /** @brief Returns the point count. */
     [[nodiscard]] int getPointCount() const;
+    /** @brief Returns the group count. */
     [[nodiscard]] size_t getGroupCount() const;
+    /** @brief Returns the active lod index. */
     [[nodiscard]] int getActiveLodIndex() const;
+    /** @brief Returns the active representation. */
     [[nodiscard]] int getActiveRepresentation() const;
+    /** @brief Returns the cluster count. */
     [[nodiscard]] size_t getClusterCount() const;
+    /** @brief Returns the visible curve count. */
     [[nodiscard]] int getVisibleCurveCount() const;
 
 private:

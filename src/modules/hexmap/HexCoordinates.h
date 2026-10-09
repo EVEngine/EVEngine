@@ -23,7 +23,9 @@ struct EVENGINE_API_WORLD HexCoordinates {
     std::int32_t x = 0;
     std::int32_t z = 0;
 
+    /** @brief Hex coordinates. */
     constexpr HexCoordinates() noexcept = default;
+    /** @brief Hex coordinates. */
     constexpr HexCoordinates(std::int32_t xValue, std::int32_t zValue) noexcept : x(xValue), z(zValue) {}
 
     /** @brief Cube Y component (`-x - z`). */
@@ -32,6 +34,7 @@ struct EVENGINE_API_WORLD HexCoordinates {
     [[nodiscard]] constexpr bool operator==(const HexCoordinates& other) const noexcept {
         return x == other.x && z == other.z;
     }
+    /** @brief Operator !=. */
     [[nodiscard]] constexpr bool operator!=(const HexCoordinates& other) const noexcept { return !(*this == other); }
 
     /**

@@ -34,8 +34,11 @@ struct BuildLayerRegion {
 /** @brief Immutable-by-convention result of one complete build-stack execution. */
 class EVENGINE_API_DOMAINS BuildLayerExecution {
 public:
+    /** @brief Returns the count. */
     [[nodiscard]] int         getCount() const noexcept;
+    /** @brief Returns the id. */
     [[nodiscard]] std::string getId(int index) const;
+    /** @brief Returns the type. */
     [[nodiscard]] std::string getType(int index) const;
     /** @brief Copy a mesh artifact, or return a typed failure for a bad index/type. */
     [[nodiscard]] Result<MeshBuild> getMesh(int index) const;
@@ -63,9 +66,13 @@ public:
     [[nodiscard]] Result<void> addObjectLayer(std::string id, bool enabled, const ObjectBuildLayer& layer);
     [[nodiscard]] Result<void> setEnabled(std::string_view id, bool enabled);
     void                       clear();
+    /** @brief Returns the layer count. */
     [[nodiscard]] int          getLayerCount() const noexcept;
+    /** @brief Returns the layer id. */
     [[nodiscard]] std::string  getLayerId(int index) const;
+    /** @brief Returns the layer type. */
     [[nodiscard]] std::string  getLayerType(int index) const;
+    /** @brief True when layer enabled. */
     [[nodiscard]] bool         isLayerEnabled(int index) const noexcept;
 
     /**

@@ -19,7 +19,9 @@ namespace eve::archspace_editor {
 class EVENGINE_API_EDITORS ArchSpaceEditorModule final : public Module {
 public:
     Module_REG(ArchSpaceEditorModule);
+    /** @brief Arch space editor module. */
     ArchSpaceEditorModule();
+    /** @brief Arch space editor module. */
     ~ArchSpaceEditorModule() override;
 
 private:

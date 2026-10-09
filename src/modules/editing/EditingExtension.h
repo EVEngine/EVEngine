@@ -11,8 +11,10 @@
 
 namespace eve::editing {
 
+/** @brief ThreadAffinity public API. */
 enum class ThreadAffinity { Main, Render, Worker, Any };
 
+/** @brief ExtensionDescriptor public API. */
 struct ExtensionDescriptor {
     std::string id;
     std::uint32_t schemaVersion = 1;
@@ -22,14 +24,18 @@ struct ExtensionDescriptor {
     bool callbacksReentrant = false;
 };
 
+/** @brief ProviderHandle public API. */
 struct ProviderHandle {
     std::string id;
     std::uint64_t generation = 0;
+    /** @brief Operator ==. */
     friend bool operator==(const ProviderHandle&, const ProviderHandle&) = default;
 };
 
+/** @brief IEditingExtensionProvider public API. */
 class IEditingExtensionProvider {
 public:
+    /** @brief Releases IEditingExtensionProvider resources. */
     virtual ~IEditingExtensionProvider() = default;
     /** @brief Activate after publication. No registry lock is held. */
     [[nodiscard]] virtual Result<void> activate() = 0;
@@ -44,10 +50,14 @@ public:
     virtual void* query(const CapabilityId& capability) noexcept = 0;
 };
 
+/** @brief ProviderLease public API. */
 class ProviderLease {
 public:
+    /** @brief Constructs a ProviderLease. */
     ProviderLease() = default;
+    /** @brief Handle. */
     const ProviderHandle& handle() const { return handle_; }
+    /** @brief Bool. */
     explicit operator bool() const { return provider_ != nullptr; }
     /** @brief Query a capability.
      * @return Borrowed provider-owned capability, or null when unsupported.
@@ -67,7 +77,9 @@ private:
 /** @brief Thread-safe generation-qualified registry for editing extension providers. */
 class EVENGINE_API_PLATFORM ExtensionProviderRegistry {
 public:
+    /** @brief Extension provider registry. */
     ExtensionProviderRegistry();
+    /** @brief Extension provider registry. */
     ~ExtensionProviderRegistry();
     ExtensionProviderRegistry(const ExtensionProviderRegistry&) = delete;
     ExtensionProviderRegistry& operator=(const ExtensionProviderRegistry&) = delete;

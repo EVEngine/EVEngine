@@ -40,7 +40,9 @@ EVENGINE_API_ORCHESTRATION void applySnowToHeightmap(const SnowField &field, con
 class Snow : public Module {
 public:
     Module_REG(Snow);
+    /** @brief Constructs a Snow. */
     Snow();
+    /** @brief Releases Snow resources. */
     ~Snow() override = default;
 
     /**

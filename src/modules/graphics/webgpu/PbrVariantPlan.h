@@ -9,6 +9,7 @@
 
 namespace eve::graphics::webgpu {
 
+/** @brief PbrFragmentResourceFlag public API. */
 enum PbrFragmentResourceFlag : std::uint32_t {
     PbrEnvironment = 1u << 0,
     PbrShadows     = 1u << 1,
@@ -17,6 +18,7 @@ enum PbrFragmentResourceFlag : std::uint32_t {
     PbrFadeNoise   = 1u << 4,
 };
 
+/** @brief PbrVertexResourceFlag public API. */
 enum PbrVertexResourceFlag : std::uint32_t {
     PbrVertexField = 1u << 0,
     PbrMotionField = 1u << 1,
@@ -47,6 +49,7 @@ struct PbrVariantPlan {
         NoSampler, NoSampler, NoSampler, NoSampler, NoSampler};
     std::array<std::uint32_t, 3> detailSamplerRepresentatives{NoSampler, NoSampler, NoSampler};
 
+    /** @brief Operator ==. */
     bool operator==(const PbrVariantPlan&) const = default;
 };
 

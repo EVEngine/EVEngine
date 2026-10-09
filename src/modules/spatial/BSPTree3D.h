@@ -17,34 +17,55 @@ namespace eve::spatial {
  */
 class EVENGINE_API_FOUNDATION BSPTree3D {
 public:
+    /** @brief Creates a 3D BSP/kd tree covering the given bounds. */
     BSPTree3D(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
               int maxDepth = 12, int maxPerNode = 8);
+    /** @brief Releases tree nodes. */
     ~BSPTree3D() = default;
 
     BSPTree3D(const BSPTree3D &)            = delete;
     BSPTree3D &operator=(const BSPTree3D &) = delete;
 
+    /** @brief Removes all stored entries. */
     void clear();
+    /** @brief Inserts an item AABB; false if out of bounds or id already present. */
     bool insert(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    /** @brief Removes an item by id; false if unknown. */
     bool remove(int id);
+    /** @brief Moves an existing item to a new AABB; false if unknown or out of bounds. */
     bool update(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    /** @brief True if the id is currently stored. */
     bool contains(int id) const;
+    /** @brief Number of stored ids. */
     int  getCount() const { return static_cast<int>(items_.size()); }
 
+    /** @brief Finds items overlapping a point; fills the result buffer. @return Hit count. */
     int queryPoint(float x, float y, float z);
+    /** @brief Finds items overlapping an AABB; fills the result buffer. @return Hit count. */
     int queryAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    /** @brief Finds items overlapping a sphere; fills the result buffer. @return Hit count. */
     int querySphere(float cx, float cy, float cz, float radius);
 
+    /** @brief Number of hits from the last query*. */
     int getResultCount() const { return results_.getCount(); }
+    /** @brief Hit id at dense index from the last query*, or -1. */
     int getResultId(int index) const { return results_.getId(index); }
 
+    /** @brief Root/world minimum X. */
     float getMinX() const { return rootBounds_.minX; }
+    /** @brief Root/world minimum Y. */
     float getMinY() const { return rootBounds_.minY; }
+    /** @brief Root/world minimum Z. */
     float getMinZ() const { return rootBounds_.minZ; }
+    /** @brief Root/world maximum X. */
     float getMaxX() const { return rootBounds_.maxX; }
+    /** @brief Root/world maximum Y. */
     float getMaxY() const { return rootBounds_.maxY; }
+    /** @brief Root/world maximum Z. */
     float getMaxZ() const { return rootBounds_.maxZ; }
+    /** @brief Maximum subdivision depth. */
     int   getMaxDepth() const { return maxDepth_; }
+    /** @brief Item capacity before a node splits. */
     int   getMaxPerNode() const { return maxPerNode_; }
 
 private:

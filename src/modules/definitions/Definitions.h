@@ -199,7 +199,9 @@ private:
 class Definitions : public Module {
 public:
     Module_REG(Definitions);
+    /** @brief Constructs a Definitions. */
     Definitions()           = default;
+    /** @brief Releases Definitions resources. */
     ~Definitions() override = default;
 
     /** @brief Allocates a module-owned definition registry. */

@@ -36,6 +36,7 @@ public:
                                                 model3d::Model3D &models) const;
     /** @brief 组件库（可直接访问）。 */
     HouseComponentLibrary &library() { return library_; }
+    /** @brief Library. */
     const HouseComponentLibrary &library() const { return library_; }
 
 private:

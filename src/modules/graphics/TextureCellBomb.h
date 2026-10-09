@@ -15,6 +15,7 @@ struct TexCellBombParams {
     float rotAmount = 1.f;  // 0..1 rotation scale
 };
 
+/** @brief Tex bomb hash 22. */
 inline void texBombHash22(float x, float y, float &ox, float &oy) {
     float px = x * 0.1031f;
     float py = y * 0.1030f;
@@ -44,8 +45,10 @@ inline void texCellBombSampleUV(float u, float v, const TexCellBombParams &p, fl
     const float cx = std::floor(u * scale);
     const float cy = std::floor(v * scale);
     float rndx = 0.f, rndy = 0.f;
+    /** @brief Tex bomb hash 22. */
     texBombHash22(cx, cy, rndx, rndy);
     float rndBx = 0.f, rndBy = 0.f;
+    /** @brief Tex bomb hash 22. */
     texBombHash22(cx + 19.f, cy + 47.f, rndBx, rndBy);
     const float ox = (rndx * 2.f - 1.f) * (p.strength / scale);
     const float oy = (rndy * 2.f - 1.f) * (p.strength / scale);

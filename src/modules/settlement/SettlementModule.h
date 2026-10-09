@@ -18,7 +18,9 @@ namespace eve::settlement {
 class EVENGINE_API_FOUNDATION Settlement final : public Module {
 public:
     Module_REG(Settlement);
+    /** @brief Settlement. */
     Settlement()           = default;
+    /** @brief Settlement. */
     ~Settlement() override = default;
 };
 

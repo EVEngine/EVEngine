@@ -143,7 +143,9 @@ public:
     const Value& details() const noexcept { return details_; }
 
 private:
+    /** @brief Condition result. */
     ConditionResult(bool passed, ConditionReasonCode reason, Value evidence, Value details)
+        /** @brief Passed. */
         : passed_(passed), reason_(reason), evidence_(std::move(evidence)), details_(std::move(details)) {}
 
     bool                passed_ = false;
@@ -163,6 +165,7 @@ private:
  */
 class EvaluationContext {
 public:
+    /** @brief Releases EvaluationContext resources. */
     virtual ~EvaluationContext() = default;
 
     /** @brief Query a named scalar or structured value for Compare nodes. */

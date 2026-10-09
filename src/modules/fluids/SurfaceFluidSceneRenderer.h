@@ -23,6 +23,7 @@ namespace eve::fluids {
 class EVENGINE_API_DOMAINS SurfaceFluidSceneRenderer {
 public:
     /** @param graphics initialized graphics backend; it must outlive this object. */
+    /** @brief Surface fluid scene renderer. */
     explicit SurfaceFluidSceneRenderer(graphics::Graphics* graphics);
 
     /**
@@ -34,6 +35,7 @@ public:
               const glm::vec4& tint = glm::vec4(0.72f, 0.88f, 0.96f, 0.78f));
 
     /** @return number of caps submitted by the most recent draw call. */
+    /** @brief Returns the draw count. */
     int getDrawCount() const { return drawCount_; }
 
     /** @brief Build a unit-sphere model matrix whose lower pole touches the surface. */

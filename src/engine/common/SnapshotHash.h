@@ -56,6 +56,7 @@ public:
     /** @brief Capability name a provider registers under. */
     static constexpr const char* capabilityName = "eve.ISnapshotContentHasher";
 
+    /** @brief Releases ISnapshotContentHasher resources. */
     virtual ~ISnapshotContentHasher() = default;
 
     /** @brief Stable algorithm id, persisted or logged next to the data it hashed. */

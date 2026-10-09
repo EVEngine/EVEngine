@@ -230,7 +230,9 @@ EVENGINE_API_FOUNDATION std::string stateName(OrderState state);
 class Orders : public Module {
 public:
     Module_REG(Orders);
+    /** @brief Constructs a Orders. */
     Orders()           = default;
+    /** @brief Releases Orders resources. */
     ~Orders() override = default;
 
     /**

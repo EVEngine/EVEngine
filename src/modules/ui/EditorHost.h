@@ -33,34 +33,47 @@ namespace eve::ui {
  */
 class EVENGINE_API_WORLD EditorHost {
 public:
+    /** @brief Instance. */
     static EditorHost& instance();
 
     EditorHost(const EditorHost&)            = delete;
     EditorHost& operator=(const EditorHost&) = delete;
+    /** @brief Editor host. */
     ~EditorHost();
 
     /** @brief Attach to the host VM. gameRoot is the project dir for editors/. */
     void start(ssq::VM& vm, const std::string& gameRoot = {}, bool allowWindow = true);
+    /** @brief Stops . */
     void stop();
+    /** @brief Running. */
     bool running() const { return running_; }
+    /** @brief Window allowed. */
     bool windowAllowed() const { return allowWindow_; }
+    /** @brief Game root. */
     const std::string& gameRoot() const { return gameRoot_; }
 
     // ---- OS window -------------------------------------------------------
+    /** @brief Opens window. */
     std::string openWindow(const std::string& title, int width, int height);
+    /** @brief Closes window. */
     std::string closeWindow();
+    /** @brief True when window open. */
     bool        isWindowOpen() const;
+    /** @brief Window state. */
     std::string windowState() const;
 
     // ---- editors (View) --------------------------------------------------
     /** @brief JSON object/string: {id,title,vm,x,y,width,height,theme,children[]}. */
     std::string applyEditor(const std::string& json);
+    /** @brief Removes editor. */
     std::string removeEditor(const std::string& id);
+    /** @brief List editors. */
     std::string listEditors() const;
     /** @brief Full state JSON: editors + values + (non-destructive) events. */
     std::string editorState(const std::string& id) const;
     /** @brief Pull bound ViewModel values into widget state (per-frame + on read). */
     void syncBindings();
+    /** @brief Sets the editor value. */
     std::string setEditorValue(const std::string& editorId, const std::string& widgetId,
                                const std::string& jsonValue);
     /** @brief Restore a widget and its binding without emitting events or onChange. */
@@ -78,6 +91,7 @@ public:
      */
     std::string registerVM(const std::string& name, const std::string& source,
                            const std::string& sourceName = {});
+    /** @brief Unregisters vm. */
     std::string unregisterVM(const std::string& name);
 
     // ---- persistence -------------------------------------------------------
@@ -94,6 +108,7 @@ public:
      * @param sourceName Canonical script URI for `import` resolution. Empty uses `host_snippet.nut`.
      */
     std::string runScript(const std::string& source, const std::string& sourceName = {});
+    /** @brief Capture. */
     std::string capture(const std::string& path);
     /** @brief Reload mcp.nut, scripts under mcp, or editor VM and manifest files. */
     std::string reloadResource(const std::string& path);
@@ -101,8 +116,11 @@ public:
     std::string hotReloadStatus() const;
     /** @brief Set active project watch count reported by hotReloadStatus(). */
     void setHotReloadWatchCount(int count);
+    /** @brief Status. */
     std::string status() const;
+    /** @brief Request exit. */
     void        requestExit() { exitRequested_ = true; }
+    /** @brief Exit requested. */
     bool        exitRequested() const { return exitRequested_; }
 
     /** @brief Pump events + update/render hooks + present (no-op without window). */

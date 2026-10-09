@@ -67,18 +67,21 @@ struct UnityExpandedPrefab {
 
 namespace eve::asset_import::unity_detail {
 
+/** @brief Fold ascii. */
 inline std::string foldAscii(std::string value) {
     for (char& c : value)
         if (c >= 'A' && c <= 'Z') c += 'a' - 'A';
     return value;
 }
 
+/** @brief Valid guid. */
 inline bool validGuid(std::string_view value) {
     return value.size() == 32 && std::all_of(value.begin(), value.end(), [](char c) {
                return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
            });
 }
 
+/** @brief Valid path. */
 inline bool validPath(std::string_view path, const AssetImportLimits& limits) {
     if (path.empty() || path.size() > limits.maximumStringBytes || path.front() == '/' ||
         path.find_first_of("\\:<>\"|?*") != std::string_view::npos || !isValidUtf8(path, Utf8NullPolicy::Reject))

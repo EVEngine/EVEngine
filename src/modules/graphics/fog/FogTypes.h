@@ -97,8 +97,11 @@ struct FogWorldBounds {
     glm::vec3 minimum{-8.f, 0.f, -8.f};
     glm::vec3 maximum{8.f, 6.f, 8.f};
 
+    /** @brief Returns the size of . */
     [[nodiscard]] glm::vec3 size() const noexcept { return maximum - minimum; }
+    /** @brief Center. */
     [[nodiscard]] glm::vec3 center() const noexcept { return 0.5f * (minimum + maximum); }
+    /** @brief True if active. */
     [[nodiscard]] bool contains(const glm::vec3& p) const noexcept {
         return p.x >= minimum.x && p.y >= minimum.y && p.z >= minimum.z && p.x <= maximum.x &&
                p.y <= maximum.y && p.z <= maximum.z;
@@ -109,7 +112,9 @@ struct FogWorldBounds {
 struct FogRayInterval {
     float tEnter = 0.f;
     float tExit = 0.f;
+    /** @brief Valid. */
     [[nodiscard]] bool valid() const noexcept { return tExit > tEnter; }
+    /** @brief Length. */
     [[nodiscard]] float length() const noexcept { return tExit - tEnter; }
 };
 

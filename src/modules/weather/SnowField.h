@@ -20,11 +20,16 @@ namespace eve::weather {
  */
 class EVENGINE_API_ORCHESTRATION SnowField {
 public:
+    /** @brief Snow field. */
     SnowField() = default;
+    /** @brief Snow field. */
     SnowField(int width, int height);
 
+    /** @brief Resize. */
     void resize(int width, int height);
+    /** @brief Returns the width. */
     int  getWidth() const { return width_; }
+    /** @brief Returns the height. */
     int  getHeight() const { return height_; }
     /** @brief Compatibility predicate returning whether a cell is inside the field. */
     bool inBounds(int x, int y) const;
@@ -38,6 +43,7 @@ public:
 
     /** @brief True when any cell changed since the last clearDirty(). */
     bool isDirty() const { return dirty_; }
+    /** @brief Clears dirty. */
     void clearDirty() { dirty_ = false; }
 
     /**
