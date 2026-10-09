@@ -97,7 +97,7 @@ make run/win32-debug GAME=examples/rpg-classic
 | 世界交互事务 | `rpg.collectWorldLoot` 将一次性世界对象、任务通知、金币和物品作为一个提交单元，失败不留下半开宝箱 |
 | 产品启动闭环 | 标题页检查三个存档槽；继续游戏只读取通过完整事务预检的主档或备份 |
 | 会话与设置 | `Esc` 暂停、确认返回标题、确认删除槽位；主音量和语言使用独立 v2 偏好文件，兼容读取 v1 音量设置；语言切换验证、写入、UI 重建作为一个可回滚操作 |
-| 版本化存档 | `RPGSaveSession` schema v2 聚合 `GameState`、`Tracker`、主角＋游侠全队安全检查点、背包与装备，再通过 `filesystem.writeTextAtomic` / `readText` 落盘；全部权威参与者先统一校验、再原子恢复 |
+| 版本化存档 | `RPGSaveSession` schema v2 聚合 `GameState`、`Tracker`、主角＋游侠全队安全检查点、背包与装备，再通过 `filesystem.writeTextAtomic` / `readText` 落盘；全部权威参与者先统一校验、再原子恢复（跨模块拼法见 [SAVE.md](../../docs/usr/SAVE.md)） |
 
 存档通过 `writeTextAtomic` 原子替换到引擎配置的用户写目录，三个槽位分别使用
 `rpg-classic-slot1.json` 至 `rpg-classic-slot3.json`。当前契约为 `rpg-classic.content.v10`：

@@ -55,6 +55,7 @@ RULES = (
     "persistence",
     "optional-capability",
     "backend-contract",
+    "module-interface",
     "debt-metadata",
     "module-interface",
 )
@@ -110,11 +111,44 @@ RULE_REQUIRED = {
         "shared_contract_tests",
         "failure_injection",
     },
+    "module-interface": {
+        "provides",
+        "requires",
+        "emits",
+        "observes",
+        "binds",
+        "trim",
+        "thread_affinity",
+    },
     "debt-metadata": {
         "removal_condition",
         "max_net_growth",
     },
 }
+
+# Broad scopes used only by policy envelopes; concrete modules must be narrower.
+_POLICY_SCOPES = frozenset({"src/**", "src/*", "src/**/*"})
+
+CAP_CALL = re.compile(
+    r"\b(?:eve::)?cap::(provide|addListener|removeListener|query|forEach|forEachUntil)"
+    r"\s*<\s*((?:[A-Za-z_]\w*::)*[A-Za-z_]\w*)\s*>"
+)
+PROVIDER_REF_BIND = re.compile(
+    r"\b(?:eve::)?cap::ProviderRef\s*<\s*((?:[A-Za-z_]\w*::)*[A-Za-z_]\w*)\s*>::\s*bind\s*\("
+)
+HOT_PATH_PRIMITIVE = re.compile(
+    r"\b(?:getModInst|requireModInst)\s*\(|ModuleManager::getInstance|"
+    r"\b(?:eve::)?cap::(?:query|forEach|forEachUntil)\s*<"
+)
+RUNTIME_LOOKUP = re.compile(r"\b(?:getModInst|requireModInst)\s*\(|ModuleManager::getInstance")
+EXPENSIVE_API_NAME = re.compile(
+    r"\b(?:Readback|ReadAll|Load|Save|Build|Compile|Bake|Upload|Capture|Materialize|Collect)\w*\s*\("
+)
+OWNED_CONTAINER_RETURN = re.compile(
+    r"^\s*(?:(?:\[\[(?:nodiscard|deprecated)(?:\([^]]*\))?\]\]\s*)*"
+    r"(?:(?:static|virtual|inline|constexpr|explicit)\s+)*)"
+    r"(?:std::)?(?:vector|string|map|unordered_map|set|unordered_set)\s*<"
+)
 
 
 @dataclass(frozen=True)
@@ -279,11 +313,107 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
                 growth = entry.get("max_net_growth")
                 if not isinstance(growth, int) or growth < 0:
                     errors.append(f"{prefix}.max_net_growth must be a non-negative integer")
+            if rule == "module-interface":
+                errors.extend(_validate_module_interface_fields(prefix, entry))
 
     missing = sorted(set(RULES) - covered)
     if missing:
         errors.append("catalogue has no entry for rule(s): " + ", ".join(missing))
     return errors
+
+
+def _capability_names(field_value: Any) -> list[str]:
+    """Normalize provides/requires entries to capability type names."""
+
+    if not isinstance(field_value, list):
+        return []
+    names: list[str] = []
+    for item in field_value:
+        if isinstance(item, str) and item.strip():
+            names.append(item.strip())
+        elif isinstance(item, Mapping):
+            capability = item.get("capability")
+            if isinstance(capability, str) and capability.strip():
+                names.append(capability.strip())
+    return names
+
+
+def _capability_matches(declared: str, mentioned: str) -> bool:
+    left = declared.split("::")[-1]
+    right = mentioned.split("::")[-1]
+    return declared == mentioned or left == right
+
+
+def _validate_module_interface_fields(prefix: str, entry: Mapping[str, Any]) -> list[str]:
+    errors: list[str] = []
+    for field in ("provides", "requires", "emits", "observes", "binds"):
+        value = entry.get(field)
+        if not isinstance(value, list):
+            errors.append(f"{prefix}.{field} must be an array")
+            continue
+        if field in {"provides", "requires"}:
+            for index, item in enumerate(value):
+                if isinstance(item, str):
+                    if not item.strip():
+                        errors.append(f"{prefix}.{field}[{index}] must be non-empty")
+                elif isinstance(item, Mapping):
+                    if not nonempty_string(item.get("capability")):
+                        errors.append(f"{prefix}.{field}[{index}].capability must be a non-empty string")
+                else:
+                    errors.append(f"{prefix}.{field}[{index}] must be a string or object")
+        elif field == "binds":
+            for index, item in enumerate(value):
+                if isinstance(item, str):
+                    if not item.strip():
+                        errors.append(f"{prefix}.{field}[{index}] must be non-empty")
+                elif isinstance(item, Mapping):
+                    if not nonempty_string(item.get("script_class")):
+                        errors.append(f"{prefix}.{field}[{index}].script_class must be a non-empty string")
+                else:
+                    errors.append(f"{prefix}.{field}[{index}] must be a string or object")
+        else:
+            if not all(isinstance(item, str) and item.strip() for item in value):
+                errors.append(f"{prefix}.{field} must be an array of non-empty strings")
+    trim = entry.get("trim")
+    if not isinstance(trim, Mapping) or not nonempty_string(trim.get("absent_profile")):
+        errors.append(f"{prefix}.trim.absent_profile must be a non-empty string")
+    if not nonempty_string(entry.get("thread_affinity")):
+        errors.append(f"{prefix}.thread_affinity must be a non-empty string")
+    hot_path = entry.get("hot_path", [])
+    if hot_path is None:
+        hot_path = []
+    if not isinstance(hot_path, list) or not all(isinstance(item, str) and item.strip() for item in hot_path):
+        errors.append(f"{prefix}.hot_path must be an array of non-empty path globs when present")
+    return errors
+
+
+def _module_interface_entries(metadata: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    return [
+        entry
+        for entry in metadata.get("entries", [])
+        if isinstance(entry, Mapping) and entry.get("rule") == "module-interface"
+    ]
+
+
+def _specific_module_interfaces(metadata: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    return [
+        entry
+        for entry in _module_interface_entries(metadata)
+        if nonempty_string(entry.get("scope")) and entry.get("scope") not in _POLICY_SCOPES
+    ]
+
+
+def _is_runtime_module_path(path: str) -> bool:
+    """True for module code that must not grow new getModInst/requireModInst uses."""
+
+    normalized = path.replace("\\", "/")
+    if not normalized.startswith("src/modules/"):
+        return False
+    parts = normalized.split("/")
+    # Authoring / tool satellites remain free to use convenience lookups.
+    if any(part in {"editing", "editor", "devtools", "graphics_editing"} for part in parts):
+        return False
+    return True
 
 
 def _git(args: list[str]) -> str:
@@ -639,6 +769,100 @@ def _declared_surface(text: str) -> str | None:
     return match.group(1) if match else None
 
 
+def lint_module_interface(lines: list[SourceLine], metadata: Mapping[str, Any]) -> list[Finding]:
+    """Enforce G-2/G-3/G-4/G-5 on changed lines against module-interface entries."""
+
+    findings: list[Finding] = []
+    specific = _specific_module_interfaces(metadata)
+    hot_globs: list[str] = []
+    for entry in specific:
+        for glob in entry.get("hot_path") or []:
+            if isinstance(glob, str) and glob.strip():
+                hot_globs.append(glob.strip())
+
+    for index, item in enumerate(lines):
+        text = item.text
+        context = _context(lines, index)
+
+        # G-2: capability surface → module-interface provides/requires.
+        mentioned: list[tuple[str, str]] = []
+        for match in CAP_CALL.finditer(text):
+            kind = match.group(1)
+            type_name = match.group(2)
+            field = "provides" if kind in {"provide", "addListener", "removeListener"} else "requires"
+            mentioned.append((field, type_name))
+        for match in PROVIDER_REF_BIND.finditer(text):
+            mentioned.append(("requires", match.group(1)))
+        for field, type_name in mentioned:
+            matches = [entry for entry in specific if path_matches(item.path, entry.get("scope", ""))]
+            if not matches:
+                findings.append(
+                    Finding(
+                        "module-interface",
+                        "missing-module-interface",
+                        item.path,
+                        item.line,
+                        f"{field} use of {type_name} has no path-scoped module-interface entry",
+                    )
+                )
+                continue
+            declared: list[str] = []
+            for entry in matches:
+                declared.extend(_capability_names(entry.get(field)))
+            if not any(_capability_matches(name, type_name) for name in declared):
+                findings.append(
+                    Finding(
+                        "module-interface",
+                        "capability-not-declared",
+                        item.path,
+                        item.line,
+                        f"{type_name} must appear in module-interface.{field} for this scope",
+                    )
+                )
+
+        # G-4: no new convenience lookups in runtime module sources.
+        if _is_runtime_module_path(item.path) and RUNTIME_LOOKUP.search(text):
+            findings.append(
+                Finding(
+                    "module-interface",
+                    "runtime-convenience-lookup",
+                    item.path,
+                    item.line,
+                    "getModInst/requireModInst/ModuleManager::getInstance belong only to "
+                    "non-runtime (editing/editor/devtools) code",
+                )
+            )
+
+        # G-3: hot_path files may not grow forbidden primitives.
+        if hot_globs and any(path_matches(item.path, glob) for glob in hot_globs):
+            if HOT_PATH_PRIMITIVE.search(text):
+                findings.append(
+                    Finding(
+                        "module-interface",
+                        "hot-path-forbidden-primitive",
+                        item.path,
+                        item.line,
+                        "hot_path files must not add getModInst/requireModInst/cap::query|forEach*",
+                    )
+                )
+
+        # G-5: expensive or owning-container public APIs need @cost.
+        if item.path.endswith((".h", ".hpp")) and not _is_non_public_declaration(item):
+            expensive = bool(OWNED_CONTAINER_RETURN.search(text) or EXPENSIVE_API_NAME.search(text))
+            if expensive and not re.search(r"@cost\b", context, re.IGNORECASE):
+                findings.append(
+                    Finding(
+                        "module-interface",
+                        "missing-cost-annotation",
+                        item.path,
+                        item.line,
+                        "public owned-container or expensive-named API needs a Doxygen @cost contract",
+                    )
+                )
+
+    return findings
+
+
 def lint_contract_coverage(
     lines: list[SourceLine], metadata: Mapping[str, Any], base: str | None = None
 ) -> list[Finding]:
@@ -747,7 +971,11 @@ def main(argv: list[str] | None = None) -> int:
         # export-only edit looked like newly introduced contract surface.
         lint_base = base or "HEAD"
         lines = _changed_lines(lint_base)
-    findings = lint_api_shapes(lines) + lint_contract_coverage(lines, metadata, lint_base)
+    findings = (
+        lint_api_shapes(lines)
+        + lint_contract_coverage(lines, metadata, lint_base)
+        + lint_module_interface(lines, metadata)
+    )
     return render(findings, catalogue_errors, args.json)
 
 

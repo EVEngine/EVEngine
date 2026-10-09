@@ -64,7 +64,7 @@ endif()
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
   foreach(_eve_devtool_test IN ITEMS
-      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp play_host.cpp play_trace.cpp mcp.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp mcp_domain_tools.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp language_index.cpp language_server.cpp language_text.cpp)
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp play_host.cpp play_trace.cpp mcp.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp mcp_domain_tools.cpp console.cpp frame_stats.cpp runtime_error_sink.cpp scenario_recorder.cpp language_index.cpp language_server.cpp language_text.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")
