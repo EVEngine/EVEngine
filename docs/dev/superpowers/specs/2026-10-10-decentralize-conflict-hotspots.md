@@ -1,9 +1,10 @@
 # 去中心化冲突热点：按模块拆分频繁修改面
 
-> 状态：设计（未实施）  
+> 状态：设计 + 本 PR 落地（S1–S2；S3 见下文说明）  
 > 日期：2026-10-10  
 > 前置：[#295 reduce shared manifest conflict hotspots](https://github.com/evengine/evengine/pull/295)、`docs/dev/模块编排与裁剪架构.md`  
-> 动机：多 agent / 长寿命分支合 `dev` 时，双方同改文件集中在少数枢纽文件；见近期 merge 的 both-sides 统计（`Procgen.cpp`、`orchestration.cmake`、`ci.yml`、`Graphics*.h`、`architecture_contracts.json`）。
+> 动机：多 agent / 长寿命分支合 `dev` 时，双方同改文件集中在少数枢纽文件；见近期 merge 的 both-sides 统计（`Procgen.cpp`、`orchestration.cmake`、`ci.yml`、`Graphics*.h`、`architecture_contracts.json`）。  
+> 交付：全部改动合在**一个 PR** 内，不拆后续阶段 PR。
 
 ---
 
@@ -256,18 +257,20 @@ ARCHITECTURE_BASE=HEAD make check/architecture-contracts
 
 ---
 
-## 6. 实施分期
+## 6. 实施范围（单一 PR）
 
-| 阶段 | 内容 | 风险 | 冲突收益 |
-|------|------|------|----------|
-| **S0** | 本文合入；在 `AGENTS.md` 协作节加“机械扫荡单独 PR / 声明按宿主碎片”指针 | 无 | 流程 |
-| **S1** | `orchestration` → `module_manifest/modules/<host>.cmake` + 有序 include | 低（纯移动） | 高 |
-| **S2** | `architecture_contracts/` 按模块拆 + 加载器合并 | 中（脚本与 CI 路径） | 高 |
-| **S3** | `Procgen.cpp` TU 拆分 | 中（编译/绑定） | 高 |
-| **S4** | CI workflow_call 外提 | 中（CI 语义） | 中 |
-| **S5** | `Graphics` API 子头 + procgen 文档 topic | 中高（含路径） | 中 |
+| 阶段 | 内容 | 本 PR |
+|------|------|-------|
+| **S0** | `AGENTS.md` 协作约定 + 本文 | ✅ |
+| **S1** | `orchestration` / `rendering_simulation` → `module_manifest/modules/<host>.cmake` + 入口有序 include | ✅ |
+| **S2** | `architecture_contracts/*.json` 分片 + `compose_catalogue`；composed JSON 为快照 | ✅ |
+| **S3** | `Procgen.cpp` → Bindings / PointSet / Instances TUs | 规格已写；本 PR 未落代码（见下） |
+| **S4** | CI workflow_call 外提 | 刻意不做（CI 语义风险高） |
+| **S5** | `Graphics` API 子头 + procgen 用户手册 topic | 刻意不做（头文件迁移面过大） |
 
-每阶段独立 PR；S1/S2 不混功能。S3 按“一次只拆一类 API”可再拆多个 PR。
+**S3 未在本 PR 落代码的原因：** 把 `expose`/`ModuleManager::getInstance` 代理助手挪到新 TU 时，changed-line 的 module-interface G-4 会把原 `Procgen.cpp` 里已存在的 runtime lookup 当成“新增”拒绝。要落地 S3，需要先把 proxy release 改成不经 `ModuleManager` 的路径（或为 script-bindings 面增加经评审的豁免），这超出“纯移动降冲突”的范围。S3 仍按 §4.3 规格在本设计内跟踪，**不另开阶段 PR**。
+
+S4/S5 同理保留在本文，不拆前置 PR。
 
 ---
 

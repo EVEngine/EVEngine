@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "scene-link-contract",
+      "rule": "link",
+      "scope": "src/modules/scene/SceneLink.h",
+      "owner": "scene node owner plus target-module provider",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Scene link dispatch stays module-neutral and drops dead targets through provider-owned liveness checks.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/SceneLink.h",
+        "docs/dev/模块编排与裁剪架构.md"
+      ],
+      "tests": [
+        "test/scene.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "LinkOps",
+        "SceneLink"
+      ],
+      "create": "The target module registers LinkOps and the scene stores a typed-kind projection.",
+      "ownership": "Scene owns link records; the provider owns the target object and callback table.",
+      "destroy_order": "Target teardown unregisters or reports dead before scene link dispatch; scene teardown drops records.",
+      "restore": "Provider re-registers operations and scene rebuilds link records from persistent node identity.",
+      "stale": "alive callback is consulted before push/pull; an absent operation id is not dereferenced."
+    },
+    {
+      "id": "scene-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/scene/**",
+      "owner": "scene::Scene",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Scene publishes ISceneQuery/IProcgenSceneSink/spatial listeners and hosts per-frame TransformSystem work.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/SceneCapabilities.cpp",
+        "docs/dev/场景对象模型使用指南.md"
+      ],
+      "tests": [
+        "test/scene.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "ISceneQuery",
+          "impl": "SceneCapabilities",
+          "absent_behavior": "query returns null when scene is trimmed"
+        },
+        {
+          "capability": "IProcgenSceneSink",
+          "impl": "SceneCapabilities",
+          "absent_behavior": "procgen scene sink absent when scene is trimmed"
+        },
+        {
+          "capability": "IEntitySpatialProvider",
+          "impl": "SceneEntitySpatialProvider",
+          "absent_behavior": "listener removed with the module"
+        },
+        {
+          "capability": "ISceneArtifactAdapter",
+          "impl": "ArtifactProvider",
+          "absent_behavior": "artifact adapter absent when scene is trimmed"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "ISceneCameraProjection",
+          "required": false,
+          "fallback": "camera query helpers return empty/default when projection provider is absent"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Scene",
+          "methods": [
+            "mount",
+            "update",
+            "scheduleDetachEntityAt",
+            "collectIds"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "runtime-3d without scene drops ISceneQuery and script eve.Scene"
+      },
+      "thread_affinity": "main thread for mount/update/script; spatial resolve follows ECS current world",
+      "hot_path": [
+        "src/modules/scene/TransformSystem.cpp"
+      ]
+    }
+  ]
+}

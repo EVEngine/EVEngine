@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "tags-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/tags/**",
+      "owner": "tags::Tags",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Tags module store publishes IStateQuery/IStateMutation listeners for dialogue world reads.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/tags/StateAccessAdapter.h",
+        "src/modules/tags/Tags.cpp"
+      ],
+      "tests": [
+        "test/tags.cpp",
+        "test/dialogue_state_integration.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IStateQuery",
+          "impl": "TagStoreStateAdapter",
+          "absent_behavior": "listener removed with Tags module"
+        },
+        {
+          "capability": "IStateMutation",
+          "impl": "TagStoreStateAdapter",
+          "absent_behavior": "listener removed with Tags module"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Tags",
+          "methods": [
+            "add",
+            "has"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without tags drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": []
+    }
+  ]
+}

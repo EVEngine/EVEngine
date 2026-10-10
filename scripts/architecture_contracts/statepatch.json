@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "statepatch-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/statepatch/**",
+      "owner": "statepatch::StatePatchModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Each live StatePatch store registers IStateQuery/IStateMutation listeners so DialogueState and other consumers resolve world state.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/statepatch/StatePatch.cpp",
+        "src/modules/statepatch/StateAccessAdapter.h"
+      ],
+      "tests": [
+        "test/statepatch.cpp",
+        "test/dialogue_state_integration.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IStateQuery",
+          "impl": "StatePatchStateAdapter",
+          "absent_behavior": "listener removed with the store; forEach sees remaining adapters"
+        },
+        {
+          "capability": "IStateMutation",
+          "impl": "StatePatchStateAdapter",
+          "absent_behavior": "same lifecycle as IStateQuery"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.StatePatch",
+          "methods": [
+            "create",
+            "destroy",
+            "apply"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without statepatch leave IStateQuery/IStateMutation listener sets empty"
+      },
+      "thread_affinity": "main thread; capability listener register/remove is not thread-safe",
+      "hot_path": []
+    }
+  ]
+}

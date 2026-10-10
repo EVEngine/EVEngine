@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "keyboard-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/keyboard/**",
+      "owner": "keyboard::Keyboard",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Keyboard SDL sink caches the module owner for key-repeat checks.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/keyboard/sdl/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "KeyboardEventSink",
+          "absent_behavior": "key messages absent when sink unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Keyboard",
+          "methods": [
+            "isDown"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without keyboard drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": [
+        "src/modules/keyboard/sdl/EventSink.cpp"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "audio-eventsink-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/audio/EventSink.cpp",
+      "owner": "audio::Audio",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Audio pump sink caches the Audio module owner across onPumpFinished.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/audio/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "AudioPumpSink",
+          "absent_behavior": "Audio::pump not called when unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "profiles without audio drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": [
+        "src/modules/audio/EventSink.cpp"
+      ]
+    }
+  ]
+}

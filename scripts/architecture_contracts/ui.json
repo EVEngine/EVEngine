@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "ui-eventsink-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/EventSink.cpp",
+      "owner": "ui::UI",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "UI observer sink caches the UI module owner across platform events.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/ui/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "UIEventSink",
+          "absent_behavior": "ImGui processEvent skipped when unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "profiles without ui drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": [
+        "src/modules/ui/EventSink.cpp"
+      ]
+    }
+  ]
+}

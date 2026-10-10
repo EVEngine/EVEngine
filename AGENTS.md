@@ -336,7 +336,9 @@ composed dependency contract, see
   multiple TUs (pure moves, no behavior change) instead of appending more
   methods. The same ownership rule applies to shared catalogues: put
   module-scoped architecture-contract entries and user-manual topics in
-  module-owned fragments, and keep only order/composition in the hub file.
+  module-owned fragments (`cmake/module_manifest/modules/<host>.cmake`,
+  `scripts/architecture_contracts/<host>.json`), and keep only
+  order/composition in the hub file.
 - **Mechanical cross-module sweeps are their own PR.** Repo-wide renames,
   export-macro annotation, and Doxygen sweeps must not ride along inside a
   feature branch; land them alone (preferably batched by host package) so
@@ -452,7 +454,8 @@ make check
 
 That includes architecture contracts against `CI_BASE` (default `origin/dev`).
 Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA.
-`scripts/architecture_contracts.json` is the single catalogue for contract
+`scripts/architecture_contracts/` (per-module shards; composed snapshot at
+`scripts/architecture_contracts.json`) is the single catalogue for contract
 evidence; do not silence a finding with a new baseline, allowlist, or broad
 scope. A compatibility facade may retain a legacy shape only when the public
 documentation states that it is compatibility-only and the canonical

@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "graphics-fog-state-owner",
+      "rule": "state-owner",
+      "scope": "src/modules/graphics/fog/**",
+      "owner": "graphics::fog::FogSystem",
+      "issue": "EVENGINE-GRAPHICS-FOG",
+      "reason": "Realtime fog splits density/velocity, optical profile, derived caches and art so each mutable fact has one writer.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/fog/FogSystem.h",
+        "src/modules/graphics/fog/ContinuousArt.h",
+        "docs/dev/realtime-fog-system.md"
+      ],
+      "tests": [
+        "test/graphics_fog.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "state": "FogDensityField and MacFluidGrid own media; FogProfile owns optical constants; BeerLightCache is a derived cache; ContinuousArtParams are presentation-only.",
+      "authoritative_owner": "FogSystem orchestrates writes; ContinuousArt never writes density, velocity, extinction or transmittance.",
+      "projections": "Froxel AtmosphereVolume, BeerLightCache, FogRayResult and ContinuousArtOutput are invalidatable projections of the density/optics owners."
+    },
+    {
+      "id": "graphics-fog-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/graphics/fog/**",
+      "owner": "graphics::fog::FogSystem",
+      "issue": "EVENGINE-GRAPHICS-FOG",
+      "reason": "FogSystem is a domain orchestrator, not an ECS view walker; this contract records its lattice access, injected time and deferred cache invalidation.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/fog/FogSystem.h",
+        "src/modules/graphics/fog/MacFluidGrid.h",
+        "docs/dev/realtime-fog-system.md"
+      ],
+      "tests": [
+        "test/graphics_fog.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "FogSystem"
+      ],
+      "entity_scope": "MAC lattice cells and analytic FogSolidProxy records owned by FogSystem; no ECS entity traversal",
+      "view": "cell-centered density plus face-centered MAC velocity; interactor rasterization completes before advection",
+      "read_set": "FogDensityField, FogProfile, SceneWind targets, FogSolidProxy geometry and AtmosphereVolume froxel dimensions",
+      "write_set": "MAC velocity/pressure/density, FogDensityField bands, BeerLightCache and AtmosphereVolume media during inject/integrate",
+      "structural_changes": "none while marching or integrating; domain resize and proxy replacement are explicit caller-owned Result operations",
+      "events": "CFL reports and cache version bumps after a successful step; art stylize emits no simulation events",
+      "services": "injected wall-clock dt accumulated into a fixed substep, named dust seed, and borrowed AtmosphereVolume for display mapping",
+      "phase": "simulation step before rendering; froxel inject/integrate and ContinuousArt run after physics transport"
+    },
+    {
+      "id": "graphics-import-surface",
+      "rule": "module-interface",
+      "scope": "src/modules/graphics/**",
+      "owner": "graphics-maintainers",
+      "issue": "EVENGINE-MODULAR-ASSET-IMPORT",
+      "reason": "Changed import faces retain backend-owned shared textures and explicit foliage material state; existing faces are unchanged.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/IResourceFactory.h",
+        "src/modules/graphics/Graphics.h",
+        "docs/usr/modules/graphics.md"
+      ],
+      "tests": [
+        "test/resource_lifetime.cpp",
+        "test/graphics_vegetation_translucency.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IResourceFactory",
+          "impl": "vulkan::Graphics and webgpu::Graphics",
+          "absent_behavior": "Default newSharedTexture reports Unsupported; no implicit uncached allocation."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "image::ImageData",
+          "required": true,
+          "fallback": "Borrowed only during upload; invalid input returns InvalidArgument."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "graphics.Material",
+          "methods": [
+            "setFoliageTranslucency"
+          ]
+        },
+        {
+          "script_class": "graphics",
+          "methods": [
+            "configureFoliageWind",
+            "setFoliageWindTime"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Graphics owner thread; upload and material preparation do not invoke callbacks.",
+      "trim": {
+        "absent_profile": "No new trim claim: graphics is required by this visual project; reduced backend profiles require separate builds."
+      },
+      "cost_notes": [
+        {
+          "api": "newSharedTexture",
+          "shape": "owned-result",
+          "why": "ResultRef borrows backend cache ownership; upload cost is paid on first model preparation, never in a frame loop."
+        },
+        {
+          "api": "configureFoliageWind",
+          "shape": "two-step",
+          "why": "Prepare once, then explicit setFoliageWindTime updates per frame."
+        }
+      ],
+      "hot_path": [
+        "src/modules/graphics/RenderSystem3D.cpp"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "gts-terrain-collider-link-contract",
+      "rule": "link",
+      "scope": "src/modules/procgen/physics/GtsTerrainColliderRuntime.cpp",
+      "owner": "procgen_physics::GtsTerrainColliderRuntime and physics::World3D",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Optional generated terrain colliders retain only owner-qualified runtime handles across frame and teardown boundaries.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/physics/GtsTerrainColliderRuntime.h",
+        "docs/usr/modules/procgen_physics.md"
+      ],
+      "tests": [
+        "test/gts_terrain_collider.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "ColliderLink"
+      ],
+      "create": "replace creates World3D-owned static bodies and publishes world/body handles only after every tile collider succeeds.",
+      "ownership": "World3D solely owns bodies and shapes; the runtime owns only typed process-local links.",
+      "destroy_order": "Runtime-first destroys resolved bodies; world-first removes the world registry entry and all later resolutions return stale null.",
+      "restore": "Links are never persisted; callers rebuild them by replacing from the restored GtsTerrainLodSet.",
+      "stale": "World and body generation-qualified handles are both resolved before any access or destruction."
+    },
+    {
+      "id": "procgen-editor-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/editor/**",
+      "owner": "procgen_editor::ProcgenEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The authoring-only procgen adapter registers domain commands with the editor host and publishes automation targets without adding runtime dependencies.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/editor/ProcgenEditorModule.h",
+        "src/modules/procgen/editor/procgen_editor.cpp"
+      ],
+      "tests": [
+        "test/editor_procgen_script_editor.cpp",
+        "test/procgen_road_editing.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "ProcgenEditorModule::TargetFactory",
+          "absent_behavior": "procgen-script and road-network automation targets are unavailable when the editor satellite is trimmed"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IEditingCommandRegistry",
+          "required": true,
+          "fallback": "module construction fails explicitly when the editor command registry is absent or rejects road command registration"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.ProcgenEditorModule",
+          "methods": [
+            "create",
+            "createMeshModifier"
+          ]
+        },
+        {
+          "script_class": "eve.ProcgenScriptEditor",
+          "methods": [
+            "loadModule",
+            "commit",
+            "undo",
+            "redo"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf; no procgen editing commands or automation target factory are registered"
+      },
+      "thread_affinity": "owner/editor composition thread; construction, command registration and teardown must not race command execution",
+      "hot_path": []
+    },
+    {
+      "id": "procgen-module-assembly-surface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/ModuleAssembly*",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-MODULAR-ASSET-IMPORT",
+      "reason": "New assembly value owner validates declarative constraints before publishing placements; it has no scene, graphics or physics dependency.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/ModuleAssembly.h",
+        "docs/usr/modules/procgen.md"
+      ],
+      "tests": [
+        "test/procgen_module_assembly.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.ProcgenModuleAssemblyPlan",
+          "methods": [
+            "configure",
+            "applyConfigJson",
+            "setAllowedQuarterTurns",
+            "setMinimumSupportRatio",
+            "registerModule",
+            "registerVolumeModule",
+            "addConnector",
+            "addVolumeConnector",
+            "place",
+            "getPlacementCount",
+            "getPlacementModule",
+            "getPlacementX",
+            "getPlacementY",
+            "getPlacementZ",
+            "getPlacementYawDegrees"
+          ]
+        }
+      ],
+      "protocol": [
+        {
+          "method": "applyConfigJson",
+          "shape": "eve.procgen.module-assembly version 1; strict unknown fields; candidate validation before atomic replacement; placements not persisted."
+        }
+      ],
+      "thread_affinity": "Caller-affine; script binding runs on VM owner thread; no callbacks or locks.",
+      "trim": {
+        "absent_profile": "No trim claim until a procgen-core-only build exercises the new TU; all constraints are graphics-independent value data."
+      },
+      "cost_notes": [
+        {
+          "api": "applyConfigJson then place",
+          "shape": "two-step",
+          "why": "One-time configuration precedes candidate placement; accepted placements are exposed by borrowed read-only view."
+        }
+      ],
+      "hot_path": []
+    }
+  ]
+}

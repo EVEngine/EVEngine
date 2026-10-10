@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "profiler-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/profiler/**",
+      "owner": "profiler::Profiler",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Profiler caches IGpuTimer via ProviderRef and publishes IProfilerQuery; beginFrame/gpu timing are hot paths.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/profiler/Profiler.h",
+        "src/modules/profiler/ProfilerCapabilities.cpp"
+      ],
+      "tests": [
+        "test/profiler.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IProfilerQuery",
+          "impl": "ProfilerCapabilities",
+          "absent_behavior": "cap::query returns null when the module is trimmed"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IGpuTimer",
+          "required": false,
+          "fallback": "gpu timing fields stay zero / unavailable when the provider is absent"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Profiler",
+          "methods": [
+            "beginFrame",
+            "endFrame",
+            "snapshot"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "runtime profiles may omit profiler; GPU timing consumers must tolerate absence"
+      },
+      "thread_affinity": "main / render thread that owns beginFrame; ProviderRef is not cross-thread",
+      "hot_path": [
+        "src/modules/profiler/Profiler.cpp"
+      ]
+    }
+  ]
+}

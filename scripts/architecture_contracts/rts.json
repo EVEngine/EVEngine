@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "rts-link-contract",
+      "rule": "link",
+      "scope": "src/modules/rts/RTSTypes.h",
+      "owner": "RTS ECS world and registered RTS services",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "RTS cross-domain links distinguish ECS generation handles from service keys and rebuild after restore.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSTypes.h",
+        "docs/dev/领域短根继承与跨域组合架构.md"
+      ],
+      "tests": [
+        "test/rts_composition.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "EntityLink",
+        "ServiceLink",
+        "FactionLink",
+        "WeaponLink"
+      ],
+      "create": "EntityLink::bind and ServiceLink::bind return checked links.",
+      "ownership": "The ECS world or capability registry owns the target; a link never claims target ownership.",
+      "destroy_order": "Target destruction invalidates generation links; service unregister invalidates key links.",
+      "restore": "Entity links rebuild from entity identity and service links rebind by stable logical key.",
+      "stale": "Entity generation and service presence are checked before use."
+    },
+    {
+      "id": "rts-ecs-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/rts/*.h",
+      "owner": "rts::RTSSystems",
+      "issue": "EVENGINE-ARCH-ECS-SYSTEM-METADATA",
+      "reason": "RTS systems publish machine-readable access contracts before view iteration and deferred structural changes.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSSystems.h",
+        "src/modules/rts/RTSSystems.cpp",
+        "src/modules/rts/RTSMatch.h",
+        "src/modules/rts/RTSMatch.cpp",
+        "src/modules/rts/RTSTech.h",
+        "src/modules/rts/RTSTech.cpp"
+      ],
+      "tests": [
+        "test/rts_composition.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "CommandFanOutSystem",
+        "MotionSystem",
+        "OrderActionSystem",
+        "BuildingProductionSystem",
+        "EffectSystem",
+        "MatchSystem",
+        "TechnologySystem"
+      ],
+      "entity_scope": "live Unit, Building, ResourceNode, Faction and Match ECS roots in the current world",
+      "view": "typed generation-checked RTS views; each view closes before deferred creation, destruction or relationship repair",
+      "read_set": "identity, faction links, motion, orders, production, effects, research definitions, match rules and economy queries as applicable",
+      "write_set": "motion, orders, lifecycle projections, production queues, faction research state, match participant/state/event components and affected surrender roots",
+      "structural_changes": "unit production and surrender collect stable handles during traversal, then create or destroy only after the relevant view closes",
+      "events": "ordered command, production, effect, technology unlock, surrender and victory lifecycle facts are emitted after authoritative mutation",
+      "services": "injected SimulationStep, definition registry, action executor, resource query and capability services; callbacks are synchronous and not retained",
+      "phase": "owner-thread deterministic simulation after command ingestion and before presentation; match evaluation follows authoritative economy settlement"
+    }
+  ]
+}

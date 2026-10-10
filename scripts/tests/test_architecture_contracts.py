@@ -16,12 +16,13 @@ import check_architecture_contracts as contracts  # noqa: E402
 
 class ArchitectureContractTests(unittest.TestCase):
     def test_repository_catalogue_covers_all_rules(self):
-        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
         self.assertEqual([], contracts.validate_catalogue(metadata, today=date(2026, 8, 26)))
+        self.assertEqual([], contracts.composed_snapshot_matches())
         self.assertIn("module-interface", contracts.RULES)
 
     def test_module_interface_requires_typed_faces(self):
-        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
         reduced = copy.deepcopy(metadata)
         entry = next(item for item in reduced["entries"] if item["rule"] == "module-interface")
         entry["binds"] = "undocumented"
@@ -31,7 +32,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertTrue(any("missing trim" in error for error in errors))
 
     def test_missing_required_contract_field_is_rejected(self):
-        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
         reduced = copy.deepcopy(metadata)
         entry = next(item for item in reduced["entries"] if item["rule"] == "link")
         del entry["stale"]
@@ -39,7 +40,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertTrue(any("stale" in error for error in errors))
 
     def test_noncanonical_catalogue_order_is_rejected(self):
-        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
         reordered = copy.deepcopy(metadata)
         reordered["entries"].reverse()
         errors = contracts.validate_catalogue(reordered, today=date(2026, 8, 26))
