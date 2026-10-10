@@ -1,5 +1,8 @@
 #include "procgen/PointSet.h"
 
+#include "common/Diagnostic.h"
+#include "procgen/Grid2D.h"
+
 #include <algorithm>
 #include <bit>
 #include <cmath>
@@ -674,6 +677,48 @@ PointSet excludePointRadius(const PointSet& input, float x, float z, float radiu
         if (dx * dx + dz * dz > radiusSquared) appendPointRow(output, input, index);
     }
     return output;
+}
+
+Result<PointSet> excludePointsByGridMask(const PointSet& input, const Grid2D& mask, float originX, float originZ,
+                                         float cellSize, int semantic, float clearance, std::size_t maximumChecks) {
+    if (mask.getWidth() <= 0 || mask.getHeight() <= 0 || !std::isfinite(originX) || !std::isfinite(originZ) ||
+        !std::isfinite(cellSize) || cellSize <= 0.f || semantic < 0 || !std::isfinite(clearance) || clearance < 0.f ||
+        maximumChecks == 0u)
+        return Result<PointSet>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "grid point exclusion settings are invalid", "mask"));
+    const float radiusCellsFloat = clearance / cellSize;
+    if (radiusCellsFloat > 256.f)
+        return Result<PointSet>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "grid point exclusion clearance exceeds 256 cells",
+                                                           "clearance"));
+    const int radiusCells = static_cast<int>(std::ceil(radiusCellsFloat));
+    const float radiusSquared = radiusCellsFloat * radiusCellsFloat;
+    std::size_t checks = 0u;
+    PointSet   output;
+    output.reserve(input.points().size());
+    for (std::size_t index = 0; index < input.points().size(); ++index) {
+        const auto& point = input.points()[index];
+        const int gridX = static_cast<int>(std::floor((point.x - originX) / cellSize));
+        const int gridZ = static_cast<int>(std::floor((point.z - originZ) / cellSize));
+        bool excluded = false;
+        for (int dz = -radiusCells; dz <= radiusCells && !excluded; ++dz) {
+            for (int dx = -radiusCells; dx <= radiusCells; ++dx) {
+                if (radiusCells > 0 && static_cast<float>(dx * dx + dz * dz) > radiusSquared) continue;
+                const int x = gridX + dx, z = gridZ + dz;
+                if (x < 0 || z < 0 || x >= mask.getWidth() || z >= mask.getHeight()) continue;
+                if (++checks > maximumChecks)
+                    return Result<PointSet>::failure(Diagnostic::error(
+                        DiagnosticCode::PreconditionViolation, "grid point exclusion exceeds the work budget",
+                        "maximumChecks"));
+                if (mask.getCell(x, z) == semantic) {
+                    excluded = true;
+                    break;
+                }
+            }
+        }
+        if (!excluded) appendPointRow(output, input, index);
+    }
+    return Result<PointSet>::success(std::move(output));
 }
 
 PointSet jitterPointPositions(const PointSet& input, uint32_t seed, float amountX, float amountZ) {

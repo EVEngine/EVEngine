@@ -30,7 +30,21 @@ struct RoadStyle {
     float markingWidth   = 0.22f;
     float dashLength     = 3.5f;
     float dashGap        = 3.f;
-    float uvMeters       = 8.f;
+    float uvMeters       = 8.f;  ///< World-space metres per texture repeat.
+    float speedLimitMps  = 13.8889f;  ///< Navigation speed limit in metres per second.
+    int   trafficPriority = 0;        ///< Higher incoming-road values win uncontrolled junction priority.
+    float sideObjectStartOffset = 0.f;  ///< Empty distance before the first side-object anchor.
+    float sideObjectEndOffset   = 0.f;  ///< Empty distance after the last side-object anchor.
+    bool  sideObjectsLeft       = true;  ///< Emit anchors on the authored centerline's left side.
+    bool  sideObjectsRight      = true;  ///< Emit anchors on the authored centerline's right side.
+};
+
+/** @brief Authoritative traffic-control policy applied to every approach of one junction node. */
+enum class RoadJunctionControl : std::uint8_t {
+    Uncontrolled = 0,  ///< Edge trafficPriority resolves right-of-way without a mandatory stop.
+    Yield,             ///< Lower-priority approaches yield; equal-priority approaches all yield.
+    Stop,              ///< Every incoming approach receives a stop control.
+    Signal,            ///< Every incoming approach is controlled by a traffic signal.
 };
 
 /** @brief Junction node owned by a road network. */
@@ -40,6 +54,7 @@ struct RoadNode {
     float         y              = 0.f;
     float         z              = 0.f;
     float         junctionRadius = 6.f;
+    RoadJunctionControl junctionControl = RoadJunctionControl::Uncontrolled;
 };
 
 /** @brief Directed centerline edge with optional reverse lanes. */
@@ -53,6 +68,19 @@ struct RoadEdge {
     RoadStyle                    style;
 };
 
+/** @brief Stable identities produced by one atomic edge split. */
+struct RoadEdgeSplitResult {
+    std::uint32_t nodeId       = 0;
+    std::uint32_t firstEdgeId  = 0;  ///< Original edge identity retained by the first half.
+    std::uint32_t secondEdgeId = 0;  ///< Newly allocated continuation edge.
+};
+
+/** @brief Travel direction of a lane relative to the authored edge centerline. */
+enum class RoadLaneDirection : std::uint8_t {
+    Forward = 0,  ///< Travels from RoadEdge::from to RoadEdge::to.
+    Backward,     ///< Travels from RoadEdge::to to RoadEdge::from.
+};
+
 /**
  * @brief One legal lane-to-lane connection inside a junction.
  *
@@ -64,6 +92,8 @@ struct RoadLaneConnection {
     int           inLane   = 0;
     std::uint32_t outEdge  = 0;
     int           outLane  = 0;
+    RoadLaneDirection inDirection  = RoadLaneDirection::Forward;
+    RoadLaneDirection outDirection = RoadLaneDirection::Forward;
 };
 
 /** @brief One renderer-neutral polyline chunk for navigation / marking overlays. */
@@ -72,6 +102,14 @@ struct RoadPolyline {
     float              r = 0.2f, g = 0.85f, b = 1.f, a = 1.f;
     float              width = 0.08f;
     bool               closed = false;
+    std::uint32_t      inEdge = 0;
+    std::uint32_t      outEdge = 0;
+    int                inLane = -1;
+    int                outLane = -1;
+    RoadLaneDirection  inDirection = RoadLaneDirection::Forward;
+    RoadLaneDirection  outDirection = RoadLaneDirection::Forward;
+    float              speedLimitMps = 0.f;
+    int                trafficPriority = 0;
 };
 
 /** @brief Owning bake-time overlay snapshot (no pointers into the network). */
@@ -108,8 +146,9 @@ struct RoadProfile {
 /**
  * @brief Build a mathematical road cross-section for the given lane counts.
  * @param style Geometric style; widths must be finite and non-negative.
- * @param lanesForward Forward driving lanes (>= 1).
+ * @param lanesForward Forward driving lanes (>= 0).
  * @param lanesBackward Optional opposite lanes (>= 0).
+ * @note At least one direction must contain a lane.
  * @return Owning profile, or a structured validation diagnostic.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward,

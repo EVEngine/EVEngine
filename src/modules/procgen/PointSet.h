@@ -1,7 +1,6 @@
 #pragma once
 #include "common/Export.h"
 
-
 #include "procgen/AttributeTable.h"
 
 #include <cstdint>
@@ -11,6 +10,7 @@
 
 namespace eve::procgen {
 
+class Grid2D;
 class Heightmap;
 
 /** @brief One deterministic sample used by script-first procedural pipelines. */
@@ -271,6 +271,22 @@ PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& con
                                       float maxDistance);
 /** @brief Exclude point radius. */
 PointSet excludePointRadius(const PointSet& input, float x, float z, float radius);
+/**
+ * @brief Remove points covered by a semantic grid mask plus optional world-space clearance.
+ * @param input Immutable attributed input points.
+ * @param mask Immutable semantic grid.
+ * @param originX World X coordinate of mask cell (0,0).
+ * @param originZ World Z coordinate of mask cell (0,0).
+ * @param cellSize Positive square-cell size in world units.
+ * @param semantic Non-negative cell value treated as occupied.
+ * @param clearance Non-negative world-space expansion around occupied cells.
+ * @param maximumChecks Hard upper bound on examined mask cells.
+ * @return Filtered owning set, or a structured validation/budget diagnostic.
+ * @cost Linear in point count times the clearance-radius cell area, bounded by maximumChecks.
+ */
+[[nodiscard]] EVENGINE_API_DOMAINS Result<PointSet>
+excludePointsByGridMask(const PointSet& input, const Grid2D& mask, float originX, float originZ, float cellSize,
+                        int semantic, float clearance, std::size_t maximumChecks);
 /** @brief Jitter point positions. */
 EVENGINE_API_DOMAINS PointSet jitterPointPositions(const PointSet& input, uint32_t seed, float amountX, float amountZ);
 /** @brief Self prune points. */

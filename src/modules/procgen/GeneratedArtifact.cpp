@@ -1593,6 +1593,7 @@ eve::Result<GeneratedArtifact> generateCastleArtifact(const Params &params, Arti
 eve::Result<GeneratedArtifact> generateMeshArtifact(std::string_view recipeId, const Params &params, ArtifactId id) {
     if (recipeId == "mesh.hexterrain") return generateHexTerrainArtifact(params, id);
     if (recipeId == "mesh.castle") return generateCastleArtifact(params, id);
+    if (recipeId == "mesh.roadNetwork") return generateRoadNetworkArtifact(params, id);
     if (id.isNil())
         return rejectedArtifact(eve::DiagnosticCode::InvalidArgument, "top-level artifact identity must not be nil");
     const auto key = BuildKey::forRecipe(recipeId, params);
