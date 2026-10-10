@@ -78,9 +78,11 @@ if [ "$PLAT" = "android" ]; then
   mkdir -p "$JNI"
   [ -f "$SDK/lib/libmain.so" ] || fail "missing lib/libmain.so"
   cp "$SDK/lib/libmain.so" "$JNI/"
-  for lib in libSDL2.so libhidapi.so libc++_shared.so; do
-    [ -f "$SDK/lib/$lib" ] && cp "$SDK/lib/$lib" "$JNI/"
+  for lib in libSDL2.so libc++_shared.so; do
+    [ -f "$SDK/lib/$lib" ] || fail "missing lib/$lib"
+    cp "$SDK/lib/$lib" "$JNI/"
   done
+  [ ! -f "$SDK/lib/libhidapi.so" ] || cp "$SDK/lib/libhidapi.so" "$JNI/"
 
   GAME="$TEMPLATE/app/src/main/assets/game"
   mkdir -p "$GAME"

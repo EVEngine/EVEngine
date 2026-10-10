@@ -2,10 +2,12 @@
 set -euo pipefail
 
 apk_dir="${1:-apk}"
+expected_count="${2:-3}"
+success_marker="${3:-EVE_CI_GAME_OK}"
 mapfile -t apk_files < <(find "$apk_dir" -maxdepth 1 -type f -name '*.apk' -print | sort)
 
-if [[ "${#apk_files[@]}" -ne 3 ]]; then
-  echo "ERROR: expected 3 consumer APKs, found ${#apk_files[@]}" >&2
+if [[ "${#apk_files[@]}" -ne "$expected_count" ]]; then
+  echo "ERROR: expected $expected_count APKs, found ${#apk_files[@]}" >&2
   exit 1
 fi
 
@@ -56,14 +58,14 @@ for apk_file in "${apk_files[@]}"; do
 
   ok=0
   for _ in $(seq 1 90); do
-    if adb logcat -d | grep -F EVE_CI_GAME_OK >/dev/null; then
+    if adb logcat -d | grep -F "$success_marker" >/dev/null; then
       ok=1
       break
     fi
     sleep 1
   done
   if [[ "$ok" -ne 1 ]]; then
-    echo "ERROR: $apk_name did not print EVE_CI_GAME_OK" >&2
+    echo "ERROR: $apk_name did not print $success_marker" >&2
     echo "Application process state:" >&2
     adb shell ps -A | grep -E 'com\.evengine\.example|PID' >&2 || true
     echo "Relevant logcat entries:" >&2
@@ -72,5 +74,5 @@ for apk_file in "${apk_files[@]}"; do
       | tail -n 300 >&2 || true
     exit 1
   fi
-  echo "OK: $apk_name printed EVE_CI_GAME_OK on the emulator"
+  echo "OK: $apk_name printed $success_marker on the emulator"
 done

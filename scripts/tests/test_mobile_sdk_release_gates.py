@@ -8,6 +8,8 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github" / "workflows" / "sdk-release.yml"
 SDK_TEST = ROOT / ".github" / "scripts" / "test-sdk.sh"
 APK_RUNNER = ROOT / ".github" / "scripts" / "run-consumer-apks.sh"
+CONSUMER_TEST = ROOT / ".github" / "scripts" / "consumer-test.sh"
+SDK_INSTALL = ROOT / "cmake" / "install_sdk.cmake"
 
 
 def job_block(workflow: str, job: str, next_job: str | None = None) -> str:
@@ -24,6 +26,8 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         cls.workflow = WORKFLOW.read_text(encoding="utf-8")
         cls.sdk_test = SDK_TEST.read_text(encoding="utf-8")
         cls.apk_runner = APK_RUNNER.read_text(encoding="utf-8")
+        cls.consumer_test = CONSUMER_TEST.read_text(encoding="utf-8")
+        cls.sdk_install = SDK_INSTALL.read_text(encoding="utf-8")
 
     def test_android_emulator_is_a_hard_gate_for_every_consumer_host(self) -> None:
         block = job_block(self.workflow, "run-android", "ios-sim")
@@ -44,7 +48,7 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn("^lib/arm64-v8a/", self.apk_runner)
         self.assertIn("^lib/(x86|x86_64)/", self.apk_runner)
         self.assertIn("EVE_CI_GAME_OK", self.apk_runner)
-        self.assertIn('"${#apk_files[@]}" -ne 3', self.apk_runner)
+        self.assertIn('expected_count="${2:-3}"', self.apk_runner)
         self.assertIn('"$apksigner" sign', self.apk_runner)
         self.assertIn('adb install -r "$signed_apk"', self.apk_runner)
         self.assertEqual(3, self.workflow.count("name: android-apk-${{ env.HOST }}"))
@@ -62,6 +66,12 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn('fail "android APK smoke needs', self.sdk_test)
         self.assertIn('if [ "$PLAT" = "ios" ]', self.sdk_test)
         self.assertIn("lipo -archs", self.sdk_test)
+
+    def test_android_sdk_requires_sdl_runtime_at_install_and_consume_time(self) -> None:
+        self.assertIn('foreach(_eve_required_lib IN ITEMS libSDL2.so)', self.sdk_install)
+        self.assertIn('message(FATAL_ERROR', self.sdk_install)
+        self.assertIn('missing lib/$lib', self.sdk_test)
+        self.assertIn('lib/arm64-v8a/libSDL2.so', self.consumer_test)
 
 
 if __name__ == "__main__":

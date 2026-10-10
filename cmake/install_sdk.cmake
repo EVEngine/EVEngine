@@ -228,12 +228,24 @@ if(BUILD_PLATFORM STREQUAL "android")
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(_eve_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
     endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libSDL2.so")
-        install(FILES "${_eve_tp_lib}/lib/libSDL2.so" DESTINATION lib)
-    endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libhidapi.so")
-        install(FILES "${_eve_tp_lib}/lib/libhidapi.so" DESTINATION lib)
-    endif()
+    # `deps` is built after the first configure on clean CI runners, so these
+    # files do not exist while install rules are being generated. Resolve them
+    # at install time and fail instead of publishing an unusable Android SDK.
+    install(CODE "
+        set(_eve_android_tp_lib \"${_eve_tp_lib}/lib\")
+        foreach(_eve_required_lib IN ITEMS libSDL2.so)
+            if(NOT EXISTS \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+                message(FATAL_ERROR
+                    \"Android SDK runtime library missing: \${_eve_android_tp_lib}/\${_eve_required_lib}\")
+            endif()
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+        endforeach()
+        if(EXISTS \"\${_eve_android_tp_lib}/libhidapi.so\")
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/libhidapi.so\")
+        endif()
+    ")
     # libc++_shared.so from NDK (best-effort; packaging docs note NDK fallback)
     if(DEFINED ANDROID_NDK AND EXISTS "${ANDROID_NDK}")
         file(GLOB _eve_cxx_shared

@@ -1,29 +1,84 @@
-name: Diagnostic ARM64 APK gate
+name: Diagnostic Android SDK runtime gate
 
 on:
   workflow_dispatch:
 
 permissions:
-  actions: read
   contents: read
 
+env:
+  CMAKE_EXTRA_ARGS: -DBUILD_TESTING=OFF
+  ANDROID_NDK_VERSION: "27.3.13750724"
+  ANDROID_API: "34"
+
 jobs:
+  build-apk:
+    name: Build only the Android SDK and diagnostic APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout diagnostic branch
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v4.2.2
+        with:
+          submodules: recursive
+
+      - name: Setup Java
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        with:
+          packages: >-
+            platform-tools
+            platforms;android-${{ env.ANDROID_API }}
+            build-tools;${{ env.ANDROID_API }}.0.0
+            ndk;${{ env.ANDROID_NDK_VERSION }}
+
+      - name: Resolve Android SDK and NDK paths
+        run: bash .github/scripts/setup-android-sdk.sh
+
+      - name: Build and install only the Android SDK
+        run: |
+          make sdk/android \
+            ANDROID_SDK="$ANDROID_SDK" \
+            ANDROID_NDK="$ANDROID_NDK" \
+            JAVA_HOME="$JAVA_HOME" \
+            CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" \
+            ANDROID_JOBS=4
+
+      - name: Assemble diagnostic APK from the installed SDK
+        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/android android 0.5.2
+
+      - name: Stage diagnostic APK
+        run: |
+          mkdir apk
+          cp dist/eve-sdk/android/platform/apk/app/build/outputs/apk/debug/app-debug.apk \
+            apk/eve-android-sdk-diagnostic.apk
+
+      - name: Upload diagnostic APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: android-sdk-diagnostic-apk
+          path: apk/*.apk
+          if-no-files-found: error
+
   apk-gate:
-    name: Reuse release APKs and run only the emulator gate
+    name: Run only the rebuilt Android SDK APK on API 35
+    needs: build-apk
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - name: Checkout diagnostic branch
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v4.2.2
 
-      - name: Download the three APKs from release run 38050935949
+      - name: Download diagnostic APK
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          pattern: android-apk-*
+          name: android-sdk-diagnostic-apk
           path: apk
-          merge-multiple: true
-          run-id: 38050935949
-          github-token: ${{ github.token }}
 
       - name: Enable KVM access
         run: |
@@ -32,7 +87,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Boot API 35 emulator and run every ARM64 APK
+      - name: Boot API 35 emulator and run the diagnostic APK
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 35
@@ -48,4 +103,4 @@ jobs:
             -accel on
           disable-linux-hw-accel: false
           disable-animations: true
-          script: bash .github/scripts/run-consumer-apks.sh apk
+          script: bash .github/scripts/run-consumer-apks.sh apk 1 SDK_TEST_GAME_OK

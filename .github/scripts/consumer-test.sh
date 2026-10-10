@@ -128,7 +128,8 @@ APK="$(find "$WORK/apk-out" -name '*.apk' | head -1)"
 import sys, zipfile
 z = zipfile.ZipFile(sys.argv[1])
 names = set(z.namelist())
-need = {"lib/arm64-v8a/libmain.so", "lib/arm64-v8a/libc++_shared.so",
+need = {"lib/arm64-v8a/libmain.so", "lib/arm64-v8a/libSDL2.so",
+        "lib/arm64-v8a/libc++_shared.so",
         "assets/game/main.nut", "assets/game/config.nut"}
 missing = need - names
 if missing:
