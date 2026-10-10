@@ -1,0 +1,395 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/destruction/GeometryCollectionInstance.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_753f4e9b1c9b357f6e302b80627231b1.html">destruction</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GeometryCollectionInstance.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GeometryCollectionInstance_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="PhysicsLink_8h.html">physics/PhysicsLink.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="DestructionField_8h.html">physics/destruction/DestructionField.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="GeometryCollectionAsset_8h.html">physics/destruction/GeometryCollectionAsset.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="GeometryCollectionSnapshot_8h.html">physics/destruction/GeometryCollectionSnapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a166716ea7db45e888f81b52ce91a716f">World3D</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22">   20</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22">BoneRuntimeState</a> : std::uint8_t {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22a41f0e4643baa1a38c319cb96c9deaa99">Attached</a> = 0,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22a41cc07ca5bb4a5988322245a665a16f8">Detached</a> = 1,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22abddd4f44136f466c065a2c7a4c53e75b">Sleeping</a> = 2,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BoneDetachEvent.html">   27</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_struct" href="structeve_1_1physics_1_1BoneDetachEvent.html">BoneDetachEvent</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BoneDetachEvent.html#abfa1dce2e95f4c5be771a8bf604e94a8">   28</a></span>    <span class="keywordtype">int</span> boneA = -1;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BoneDetachEvent.html#a53a6bdfed1e49cf665d9fd78048529d5">   29</a></span>    <span class="keywordtype">int</span> boneB = -1;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BoneDetachEvent.html#a78c246b3c64c08eae70687e56be9f125">   30</a></span>    std::int64_t <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a> = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1ClusterBreakEvent.html">   39</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_struct" href="structeve_1_1physics_1_1ClusterBreakEvent.html">ClusterBreakEvent</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1ClusterBreakEvent.html#a3db8c9e17399135659098b9609339501">   40</a></span>    <span class="keywordtype">int</span> clusterA = -1;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1ClusterBreakEvent.html#ab352149da8beee09ce943e13dc6f1352">   41</a></span>    <span class="keywordtype">int</span> clusterB = -1;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1ClusterBreakEvent.html#a917a8cefd3bc42476430f20061bacadc">   42</a></span>    <span class="keywordtype">int</span> boneA = -1;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1ClusterBreakEvent.html#a81b2e8d9fc4c5406ea6197d45c0e4b65">   43</a></span>    <span class="keywordtype">int</span> boneB = -1;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1ClusterBreakEvent.html#a0ffe31de2d8f1dbddcfcac139c9a6d18">   44</a></span>    std::int64_t <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a> = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DestructionStepBudget.html">   53</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_struct" href="structeve_1_1physics_1_1DestructionStepBudget.html">DestructionStepBudget</a> {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DestructionStepBudget.html#a6d6ff0454ca7a67e7ab39d86e8c5f631">   54</a></span>    <span class="keywordtype">int</span> maxEdgeBreaksPerStep = 0;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DestructionStepBudget.html#afe5b2569cacc7cc607029fe26cae0b46">   55</a></span>    <span class="keywordtype">int</span> maxSleepsPerStep = 0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DestructionStepReceipt.html">   59</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_struct" href="structeve_1_1physics_1_1DestructionStepReceipt.html">DestructionStepReceipt</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DestructionStepReceipt.html#ab04b7d53af6fe703837afca4ca9fadc9">   60</a></span>    <span class="keywordtype">int</span> edgesBroken = 0;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DestructionStepReceipt.html#aa881b84c75ad16f4a4bc17b56828ed17">   61</a></span>    <span class="keywordtype">int</span> edgesDeferred = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DestructionStepReceipt.html#a39b3c031f597cb4c09d039d98cff6c1f">   62</a></span>    <span class="keywordtype">int</span> clusterBreaks = 0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="};">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html">   71</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_struct" href="structeve_1_1physics_1_1BonePresentation.html">BonePresentation</a> {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#abb9394ae7d388a6095f9bad40dcf0e5e">   72</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22">BoneRuntimeState</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = BoneRuntimeState::Attached;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#acceb0962f52a38bcd6776b09e5803196">   73</a></span>    <span class="keywordtype">float</span> halfExtentX = 0.5f;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#a484deb4a0f49d833ed721bfc597039ce">   74</a></span>    <span class="keywordtype">float</span> halfExtentY = 0.5f;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#a749f69fd7a715fbe15ddc5137facc70e">   75</a></span>    <span class="keywordtype">float</span> halfExtentZ = 0.5f;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#adfe24a5850a074642d26461ae9c42f70">   76</a></span>    <span class="keywordtype">float</span> worldX = 0.f;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#a0b44c5ba446f90a54b568e1cd80046dc">   77</a></span>    <span class="keywordtype">float</span> worldY = 0.f;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#a639e21fcf2fe95af62b18283da1e0e75">   78</a></span>    <span class="keywordtype">float</span> worldZ = 0.f;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#ace70e66a78ef8d3679485b7ba23bb829">   79</a></span>    <span class="keywordtype">float</span> rotX = 0.f;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#aec00ced1d1fd67f3f889cfe18ebf2bb0">   80</a></span>    <span class="keywordtype">float</span> rotY = 0.f;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#ad9bc0671744f573fe4df35f0aa5c0130">   81</a></span>    <span class="keywordtype">float</span> rotZ = 0.f;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#a84a088ebff074fbb2423405adb7df0a1">   82</a></span>    <span class="keywordtype">float</span> rotW = 1.f;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#a31608bd2d43866869d8bb9686cb9bfd0">   83</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="GeometryCollectionCooker_8cpp.html#a2ac6570d99498b04ae1e723bcd101c04">clusterId</a> = 0;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1BonePresentation.html#a61b7c338dd0c668a97c348947b31a3d7">   84</a></span>    <span class="keywordtype">int</span> fractureLevel = 0;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00096" data-start="{" data-end="};">
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">   96</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a> {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a4af4aed0230af8f63c4652acb9e93072">   98</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a4af4aed0230af8f63c4652acb9e93072">GeometryCollectionInstance</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7d8127228f09ac963745bf618525e7a3">   99</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a>&amp; <a class="code hl_function" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7d8127228f09ac963745bf618525e7a3">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_class" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">~GeometryCollectionInstance</a>();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard(<span class="stringliteral">&quot;check geometry-collection instantiation&quot;</span>)]]</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;GeometryCollectionInstance&gt;</a>&gt; create(<a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                                                                            <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1GeometryCollectionAsset.html">GeometryCollectionAsset</a>&amp; asset,</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                                                                            <span class="keywordtype">float</span> originX, <span class="keywordtype">float</span> originY,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                                                                            <span class="keywordtype">float</span> originZ);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    [[nodiscard]] <span class="keywordtype">bool</span> hasLiveWorld() const noexcept;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a40be65716ba4d25d77b7aae759c38522">  125</a></span>    <span class="keywordtype">void</span> setStepBudget(<a class="code hl_struct" href="structeve_1_1physics_1_1DestructionStepBudget.html">DestructionStepBudget</a> budget) noexcept { budget_ = budget; }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7bfd09cedf87b0b976348de39038f7ad">  127</a></span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1physics_1_1DestructionStepBudget.html">DestructionStepBudget</a> <a class="code hl_function" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7bfd09cedf87b0b976348de39038f7ad">stepBudget</a>() const noexcept { <span class="keywordflow">return</span> budget_; }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    [[nodiscard(<span class="stringliteral">&quot;check field application&quot;</span>)]]</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;FieldApplicationReceipt&gt;</a> applyField(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1DestructionField.html">DestructionField</a>&amp; field);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    [[nodiscard(<span class="stringliteral">&quot;check geometry-collection step&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;DestructionStepReceipt&gt;</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>(<a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a8978819e3db84505da878e29f4574f34">  141</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a8978819e3db84505da878e29f4574f34">boneCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(bones_.size()); }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a5a1a8fa94fc15e3ebf00d5a24db32404">  142</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a5a1a8fa94fc15e3ebf00d5a24db32404">edgeCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(edges_.size()); }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22">BoneRuntimeState</a> boneState(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    [[nodiscard]] <span class="keywordtype">int</span> boneClusterId(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    [[nodiscard]] <span class="keywordtype">float</span> edgeStrain(<span class="keywordtype">int</span> edgeIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    [[nodiscard]] <span class="keywordtype">bool</span> isEdgeBroken(<span class="keywordtype">int</span> edgeIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a3e869205d80765375c1d2a619e5c5d93">  148</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a3e869205d80765375c1d2a619e5c5d93">detachEventCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(detachEvents_.size()); }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1physics_1_1BoneDetachEvent.html">BoneDetachEvent</a> detachEventAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="foldopen" id="foldopen00150" data-start="{" data-end="}">
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a70970d803555592b935b859acdf13379">  150</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a70970d803555592b935b859acdf13379">clusterBreakEventCount</a>() const noexcept {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(clusterBreakEvents_.size());</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    }</div>
+</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1physics_1_1ClusterBreakEvent.html">ClusterBreakEvent</a> clusterBreakEventAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a567c7cb9af00e3271913340967a61ec0">  156</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a567c7cb9af00e3271913340967a61ec0">pendingEdgeBreakCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(pendingEdgeBreaks_.size()); }</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    [[nodiscard(<span class="stringliteral">&quot;check bone physics-link resolution&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsLink&gt;</a> boneLink(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    [[nodiscard(<span class="stringliteral">&quot;check bone presentation sampling&quot;</span>)]]</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;BonePresentation&gt;</a> bonePresentation(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a4442d1d555e30b063e2b6326fedff875">  169</a></span>    [[nodiscard]] std::uint64_t <a class="code hl_function" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a4442d1d555e30b063e2b6326fedff875">sleepBatchRevision</a>() const noexcept { <span class="keywordflow">return</span> sleepBatchRevision_; }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    [[nodiscard(<span class="stringliteral">&quot;check geometry-collection snapshot capture&quot;</span>)]]</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;GeometryCollectionInstanceSnapshot&gt;</a> captureSnapshot() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    [[nodiscard(<span class="stringliteral">&quot;check geometry-collection snapshot restore&quot;</span>)]]</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> restoreSnapshot(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html">GeometryCollectionInstanceSnapshot</a>&amp; snapshot);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordtype">void</span> releaseBodies();</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keyword">struct </span>BoneRuntime {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22">BoneRuntimeState</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = BoneRuntimeState::Attached;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keywordtype">bool</span>             anchored = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <a class="code hl_struct" href="structeve_1_1physics_1_1PhysicsLink.html">PhysicsLink</a>      link;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="keywordtype">float</span>            halfExtentX = 0.5f;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordtype">float</span>            halfExtentY = 0.5f;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="keywordtype">float</span>            halfExtentZ = 0.5f;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keywordtype">int</span>              <a class="code hl_variable" href="GeometryCollectionCooker_8cpp.html#a2ac6570d99498b04ae1e723bcd101c04">clusterId</a> = 0;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keywordtype">int</span>              fractureLevel = 0;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    };</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">struct </span>EdgeRuntime {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordtype">int</span>   boneA = 0;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keywordtype">int</span>   boneB = 0;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordtype">float</span> strainThreshold = 1.f;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordtype">float</span> accumulatedStrain = 0.f;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordtype">bool</span>  broken = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    };</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    GeometryCollectionInstance(PhysicsWorldHandle worldHandle, <span class="keywordtype">float</span> originX, <span class="keywordtype">float</span> originY, <span class="keywordtype">float</span> originZ);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    [[nodiscard]] World3D* resolveWorld() const noexcept;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::Result&lt;Body3D*&gt; resolveBoneBody(<span class="keywordtype">int</span> boneIndex) const;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    [[nodiscard]] <span class="keywordtype">float</span> falloffAt(const DestructionField&amp; field, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordtype">void</span> breakEdge(<span class="keywordtype">int</span> edgeIndex, <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, DestructionStepReceipt&amp; receipt);</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordtype">void</span> syncBoneActivationFromGraph();</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordtype">void</span> destroyOwnedBodies(World3D&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    PhysicsWorldHandle worldHandle_ = PhysicsWorldHandle::invalid();</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordtype">float</span> originX_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordtype">float</span> originY_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keywordtype">float</span> originZ_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t lastTick_ = 0;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t sleepBatchRevision_ = 0;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keywordtype">bool</span> orphanedPhysics_ = false;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    DestructionStepBudget budget_{};</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    std::vector&lt;BoneRuntime&gt; bones_;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    std::vector&lt;EdgeRuntime&gt; edges_;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    std::vector&lt;BoneDetachEvent&gt; detachEvents_;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    std::vector&lt;ClusterBreakEvent&gt; clusterBreakEvents_;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    std::vector&lt;int&gt; pendingEdgeBreaks_;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>};</div>
+</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aDestructionField_8h_html"><div class="ttname"><a href="DestructionField_8h.html">DestructionField.h</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aGeometryCollectionAsset_8h_html"><div class="ttname"><a href="GeometryCollectionAsset_8h.html">GeometryCollectionAsset.h</a></div></div>
+<div class="ttc" id="aGeometryCollectionCooker_8cpp_html_a2ac6570d99498b04ae1e723bcd101c04"><div class="ttname"><a href="GeometryCollectionCooker_8cpp.html#a2ac6570d99498b04ae1e723bcd101c04">clusterId</a></div><div class="ttdeci">int clusterId</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionCooker_8cpp_source.html#l00050">GeometryCollectionCooker.cpp:50</a></div></div>
+<div class="ttc" id="aGeometryCollectionSnapshot_8h_html"><div class="ttname"><a href="GeometryCollectionSnapshot_8h.html">GeometryCollectionSnapshot.h</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_af900396d7b72ff2a7002e8befe8cf8f1"><div class="ttname"><a href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></div><div class="ttdeci">float f</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00335">Pathfinder.cpp:335</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00116">PhysicsCapabilities.cpp:116</a></div></div>
+<div class="ttc" id="aPhysicsLink_8h_html"><div class="ttname"><a href="PhysicsLink_8h.html">PhysicsLink.h</a></div><div class="ttdoc">Typed composition link from a gameplay entity to a physics body.</div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00158">TacticsPersistence.cpp:158</a></div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00314">TreeMesh.cpp:314</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html">eve::physics::GeometryCollectionInstance</a></div><div class="ttdoc">Runtime owner of bone state, connection strain, and PhysicsLink bindings.</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00096">GeometryCollectionInstance.h:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html_a3e869205d80765375c1d2a619e5c5d93"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a3e869205d80765375c1d2a619e5c5d93">eve::physics::GeometryCollectionInstance::detachEventCount</a></div><div class="ttdeci">int detachEventCount() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00148">GeometryCollectionInstance.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html_a4442d1d555e30b063e2b6326fedff875"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a4442d1d555e30b063e2b6326fedff875">eve::physics::GeometryCollectionInstance::sleepBatchRevision</a></div><div class="ttdeci">std::uint64_t sleepBatchRevision() const noexcept</div><div class="ttdoc">Monotonic revision bumped when any bone enters Sleeping (for batch rebuild).</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00169">GeometryCollectionInstance.h:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html_a4af4aed0230af8f63c4652acb9e93072"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a4af4aed0230af8f63c4652acb9e93072">eve::physics::GeometryCollectionInstance::GeometryCollectionInstance</a></div><div class="ttdeci">GeometryCollectionInstance(const GeometryCollectionInstance &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html_a567c7cb9af00e3271913340967a61ec0"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a567c7cb9af00e3271913340967a61ec0">eve::physics::GeometryCollectionInstance::pendingEdgeBreakCount</a></div><div class="ttdeci">int pendingEdgeBreakCount() const noexcept</div><div class="ttdoc">Edges still waiting because of the break budget.</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00156">GeometryCollectionInstance.h:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html_a5a1a8fa94fc15e3ebf00d5a24db32404"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a5a1a8fa94fc15e3ebf00d5a24db32404">eve::physics::GeometryCollectionInstance::edgeCount</a></div><div class="ttdeci">int edgeCount() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00142">GeometryCollectionInstance.h:142</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html_a70970d803555592b935b859acdf13379"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a70970d803555592b935b859acdf13379">eve::physics::GeometryCollectionInstance::clusterBreakEventCount</a></div><div class="ttdeci">int clusterBreakEventCount() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00150">GeometryCollectionInstance.h:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html_a7bfd09cedf87b0b976348de39038f7ad"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7bfd09cedf87b0b976348de39038f7ad">eve::physics::GeometryCollectionInstance::stepBudget</a></div><div class="ttdeci">DestructionStepBudget stepBudget() const noexcept</div><div class="ttdoc">Return the active per-step budgets.</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00127">GeometryCollectionInstance.h:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html_a7d8127228f09ac963745bf618525e7a3"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7d8127228f09ac963745bf618525e7a3">eve::physics::GeometryCollectionInstance::operator=</a></div><div class="ttdeci">GeometryCollectionInstance &amp; operator=(const GeometryCollectionInstance &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1GeometryCollectionInstance_html_a8978819e3db84505da878e29f4574f34"><div class="ttname"><a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a8978819e3db84505da878e29f4574f34">eve::physics::GeometryCollectionInstance::boneCount</a></div><div class="ttdeci">int boneCount() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00141">GeometryCollectionInstance.h:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00063">World3D.h:63</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00036">Climbing.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a7d8538622ecace62d228f842ec9c31f9a166716ea7db45e888f81b52ce91a716f"><div class="ttname"><a href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a166716ea7db45e888f81b52ce91a716f">eve::physics::SimulationBackendDomain::World3D</a></div><div class="ttdeci">@ World3D</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_ab0fc5d86c5b7c2c28b953d69d8085b22"><div class="ttname"><a href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22">eve::physics::BoneRuntimeState</a></div><div class="ttdeci">BoneRuntimeState</div><div class="ttdoc">Runtime lifecycle for one bone inside a geometry-collection instance.</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00020">GeometryCollectionInstance.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_ab0fc5d86c5b7c2c28b953d69d8085b22a41cc07ca5bb4a5988322245a665a16f8"><div class="ttname"><a href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22a41cc07ca5bb4a5988322245a665a16f8">eve::physics::BoneRuntimeState::Detached</a></div><div class="ttdeci">@ Detached</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_ab0fc5d86c5b7c2c28b953d69d8085b22a41f0e4643baa1a38c319cb96c9deaa99"><div class="ttname"><a href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22a41f0e4643baa1a38c319cb96c9deaa99">eve::physics::BoneRuntimeState::Attached</a></div><div class="ttdeci">@ Attached</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_ab0fc5d86c5b7c2c28b953d69d8085b22abddd4f44136f466c065a2c7a4c53e75b"><div class="ttname"><a href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22abddd4f44136f466c065a2c7a4c53e75b">eve::physics::BoneRuntimeState::Sleeping</a></div><div class="ttdeci">@ Sleeping</div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00158">Time.h:158</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1BoneDetachEvent_html"><div class="ttname"><a href="structeve_1_1physics_1_1BoneDetachEvent.html">eve::physics::BoneDetachEvent</a></div><div class="ttdoc">One ordered detach event emitted during step.</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00027">GeometryCollectionInstance.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1BonePresentation_html"><div class="ttname"><a href="structeve_1_1physics_1_1BonePresentation.html">eve::physics::BonePresentation</a></div><div class="ttdoc">Presentation snapshot for one bone (world pose + proxy extents).</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00071">GeometryCollectionInstance.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1ClusterBreakEvent_html"><div class="ttname"><a href="structeve_1_1physics_1_1ClusterBreakEvent.html">eve::physics::ClusterBreakEvent</a></div><div class="ttdoc">Emitted when a broken edge separates two different cook clusters.</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00039">GeometryCollectionInstance.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DestructionField_html"><div class="ttname"><a href="structeve_1_1physics_1_1DestructionField.html">eve::physics::DestructionField</a></div><div class="ttdoc">One volumetric influence applied to a geometry-collection instance.</div><div class="ttdef"><b>Definition</b> <a href="DestructionField_8h_source.html#l00028">DestructionField.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DestructionStepBudget_html"><div class="ttname"><a href="structeve_1_1physics_1_1DestructionStepBudget.html">eve::physics::DestructionStepBudget</a></div><div class="ttdoc">Per-step production budgets (0 = unlimited).</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00053">GeometryCollectionInstance.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DestructionStepReceipt_html"><div class="ttname"><a href="structeve_1_1physics_1_1DestructionStepReceipt.html">eve::physics::DestructionStepReceipt</a></div><div class="ttdoc">Observable outcome of one checked step.</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionInstance_8h_source.html#l00059">GeometryCollectionInstance.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1GeometryCollectionAsset_html"><div class="ttname"><a href="structeve_1_1physics_1_1GeometryCollectionAsset.html">eve::physics::GeometryCollectionAsset</a></div><div class="ttdoc">Immutable cooked/authored geometry-collection asset.</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionAsset_8h_source.html#l00048">GeometryCollectionAsset.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_html"><div class="ttname"><a href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html">eve::physics::GeometryCollectionInstanceSnapshot</a></div><div class="ttdoc">Persistent runtime snapshot for one geometry-collection instance.</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionSnapshot_8h_source.html#l00028">GeometryCollectionSnapshot.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PhysicsLink_html"><div class="ttname"><a href="structeve_1_1physics_1_1PhysicsLink.html">eve::physics::PhysicsLink</a></div><div class="ttdoc">Generation-qualified relationship between one world and one body.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsLink_8h_source.html#l00033">PhysicsLink.h:33</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

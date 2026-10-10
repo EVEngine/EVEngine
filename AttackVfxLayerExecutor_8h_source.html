@@ -1,0 +1,256 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/AttackVfxLayerExecutor.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AttackVfxLayerExecutor.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AttackVfxLayerExecutor_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="AttackVfxRecipe_8h.html">stylize/AttackVfxRecipe.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="AttackVfxRuntime_8h.html">stylize/AttackVfxRuntime.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html">AttackVfxLayerHandle</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html#a839bf954e48c4094901f4c4ac91bf80d">   23</a></span>    std::uint64_t <span class="keywordtype">id</span> = 0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html#ad40f67d4da8dd8f5a98676e6cc84c582">   26</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html#ad40f67d4da8dd8f5a98676e6cc84c582">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html">AttackVfxLayerHandle</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html">AttackVfxLayerHandle</a>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html#a10c19d34ba0420c7e65053edac798a36">   28</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html#a10c19d34ba0420c7e65053edac798a36">valid</a>() const noexcept { <span class="keywordflow">return</span> <span class="keywordtype">id</span> != 0; }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html">   37</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html">AttackVfxLayerStartRequest</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#ac49d6552aedd3bede2669682cedf6e43">   38</a></span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a>          <a class="code hl_variable" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#ac49d6552aedd3bede2669682cedf6e43">instance</a>{};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a8669fd63b0361ece708957259880444e">   39</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a22cb679f271c73efdd577a279eff5189">AttackVfxPhaseKind</a>       <a class="code hl_variable" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a8669fd63b0361ece708957259880444e">phase</a>      = <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a22cb679f271c73efdd577a279eff5189ab8e7b465df7c5979dc731d06e84ce2cf">AttackVfxPhaseKind::Release</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#ad14e3d830be911ea997b5bf3a65c65ac">   40</a></span>    std::size_t              <a class="code hl_variable" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#ad14e3d830be911ea997b5bf3a65c65ac">phaseIndex</a> = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a645ae8ecc18dc518ef11674fc1b7c9ef">   41</a></span>    std::size_t              <a class="code hl_variable" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a645ae8ecc18dc518ef11674fc1b7c9ef">layerIndex</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a473bda54394fe7fb41ec0cc4370ae895">   42</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayer.html">AttackVfxLayer</a>*    <a class="code hl_variable" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a473bda54394fe7fb41ec0cc4370ae895">layer</a>      = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#acb85bd3655ad82370d4a6c8a53df23e5">   43</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a>*     <a class="code hl_variable" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#acb85bd3655ad82370d4a6c8a53df23e5">skin</a>       = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a834b3d766c6e9354d4d238111acc6a8c">   44</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxRequest.html">AttackVfxRequest</a>*  <a class="code hl_variable" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a834b3d766c6e9354d4d238111acc6a8c">playRequest</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a3c685eb1db8c1f0707f52120a9d5bcf4">   46</a></span>    std::uint64_t            <a class="code hl_variable" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a3c685eb1db8c1f0707f52120a9d5bcf4">tickSerial</a> = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html">   56</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html">IAttackVfxLayerExecutor</a> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a355908d5aecc0a69181b471a6b1aaf80">   58</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a355908d5aecc0a69181b471a6b1aaf80">capabilityName</a> = <span class="stringliteral">&quot;eve.stylize.attack-vfx-layer-executor&quot;</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#ac725c375e9fc00294f602a2027614038">   60</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#ac725c375e9fc00294f602a2027614038">~IAttackVfxLayerExecutor</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a0e80790f96a02796087805b8a71ae75f">   63</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a186b7634514f8edd20a52c87610e4b6a">AttackVfxLayerRole</a> <a class="code hl_function" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a0e80790f96a02796087805b8a71ae75f">role</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a6c597cd8851f51aa20154dea256e43b0">   69</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html">AttackVfxLayerHandle</a>&gt; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>(const <a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html">AttackVfxLayerStartRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>) = 0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a723867045e068f923ef591f940585a5c">   75</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a723867045e068f923ef591f940585a5c">update</a>(<a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html">AttackVfxLayerHandle</a> <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <span class="keywordtype">double</span> dtSeconds,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                                              const <a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html">AttackVfxLayerStartRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>) = 0;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a8b106d520902def27bb02426d2403279">   79</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a8b106d520902def27bb02426d2403279">stop</a>(<a class="code hl_struct" href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html">AttackVfxLayerHandle</a> <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">AttackVfxStopBehavior</a> behavior) = 0;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>};</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00030">ActionTimelineWidget.cpp:30</a></div></div>
+<div class="ttc" id="aAttackVfxRecipe_8h_html"><div class="ttname"><a href="AttackVfxRecipe_8h.html">AttackVfxRecipe.h</a></div><div class="ttdoc">Data-driven layered attack VFX recipe and element skin (Phase 1 schema).</div></div>
+<div class="ttc" id="aAttackVfxRuntime_8h_html"><div class="ttname"><a href="AttackVfxRuntime_8h.html">AttackVfxRuntime.h</a></div><div class="ttdoc">Pooled AttackVfx orchestration with optional layer executors.</div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aPrimitiveScriptBindings_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveScriptBindings_8cpp_source.html#l00021">PrimitiveScriptBindings.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IAttackVfxLayerExecutor_html"><div class="ttname"><a href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html">eve::stylize::IAttackVfxLayerExecutor</a></div><div class="ttdoc">Optional open backend for one AttackVfxLayerRole.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00056">AttackVfxLayerExecutor.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IAttackVfxLayerExecutor_html_a0e80790f96a02796087805b8a71ae75f"><div class="ttname"><a href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a0e80790f96a02796087805b8a71ae75f">eve::stylize::IAttackVfxLayerExecutor::role</a></div><div class="ttdeci">virtual AttackVfxLayerRole role() const noexcept=0</div><div class="ttdoc">Role this executor owns. One listener should own one role.</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IAttackVfxLayerExecutor_html_a355908d5aecc0a69181b471a6b1aaf80"><div class="ttname"><a href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a355908d5aecc0a69181b471a6b1aaf80">eve::stylize::IAttackVfxLayerExecutor::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00058">AttackVfxLayerExecutor.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IAttackVfxLayerExecutor_html_a723867045e068f923ef591f940585a5c"><div class="ttname"><a href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a723867045e068f923ef591f940585a5c">eve::stylize::IAttackVfxLayerExecutor::update</a></div><div class="ttdeci">virtual Result&lt; void &gt; update(AttackVfxLayerHandle handle, double dtSeconds, const AttackVfxLayerStartRequest &amp;request)=0</div><div class="ttdoc">Advance one live layer with injected simulation seconds.</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IAttackVfxLayerExecutor_html_a8b106d520902def27bb02426d2403279"><div class="ttname"><a href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#a8b106d520902def27bb02426d2403279">eve::stylize::IAttackVfxLayerExecutor::stop</a></div><div class="ttdeci">virtual Result&lt; void &gt; stop(AttackVfxLayerHandle handle, AttackVfxStopBehavior behavior)=0</div><div class="ttdoc">Tear down one layer using the authored stop behavior.</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IAttackVfxLayerExecutor_html_ac725c375e9fc00294f602a2027614038"><div class="ttname"><a href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html#ac725c375e9fc00294f602a2027614038">eve::stylize::IAttackVfxLayerExecutor::~IAttackVfxLayerExecutor</a></div><div class="ttdeci">virtual ~IAttackVfxLayerExecutor()=default</div><div class="ttdoc">Releases IAttackVfxLayerExecutor resources.</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="MeshVfxPackage_8h_source.html#l00010">MeshVfxPackage.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a186b7634514f8edd20a52c87610e4b6a"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a186b7634514f8edd20a52c87610e4b6a">eve::stylize::AttackVfxLayerRole</a></div><div class="ttdeci">AttackVfxLayerRole</div><div class="ttdoc">Which existing presentation backend a layer binds to.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxRecipe_8h_source.html#l00040">AttackVfxRecipe.h:40</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a22cb679f271c73efdd577a279eff5189"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a22cb679f271c73efdd577a279eff5189">eve::stylize::AttackVfxPhaseKind</a></div><div class="ttdeci">AttackVfxPhaseKind</div><div class="ttdoc">Attack presentation phase along the cast → hit → linger timeline.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxRecipe_8h_source.html#l00030">AttackVfxRecipe.h:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a22cb679f271c73efdd577a279eff5189ab8e7b465df7c5979dc731d06e84ce2cf"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a22cb679f271c73efdd577a279eff5189ab8e7b465df7c5979dc731d06e84ce2cf">eve::stylize::AttackVfxPhaseKind::Release</a></div><div class="ttdeci">@ Release</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a459a7cf4472fa6e5e9dd4c5375f2f740"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">eve::stylize::AttackVfxStopBehavior</a></div><div class="ttdeci">AttackVfxStopBehavior</div><div class="ttdoc">Exit policy when a phase or instance stops.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxRecipe_8h_source.html#l00053">AttackVfxRecipe.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxHandle_html"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxHandle.html">eve::stylize::AttackVfxHandle</a></div><div class="ttdoc">Generation-qualified reference to one pooled attack VFX instance.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxRuntime_8h_source.html#l00027">AttackVfxRuntime.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerHandle_html"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html">eve::stylize::AttackVfxLayerHandle</a></div><div class="ttdoc">Opaque executor-owned layer instance identity.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00022">AttackVfxLayerExecutor.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerHandle_html_a10c19d34ba0420c7e65053edac798a36"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html#a10c19d34ba0420c7e65053edac798a36">eve::stylize::AttackVfxLayerHandle::valid</a></div><div class="ttdeci">bool valid() const noexcept</div><div class="ttdoc">Valid.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00028">AttackVfxLayerExecutor.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerHandle_html_ad40f67d4da8dd8f5a98676e6cc84c582"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerHandle.html#ad40f67d4da8dd8f5a98676e6cc84c582">eve::stylize::AttackVfxLayerHandle::operator==</a></div><div class="ttdeci">friend bool operator==(const AttackVfxLayerHandle &amp;, const AttackVfxLayerHandle &amp;)=default</div><div class="ttdoc">Operator ==.</div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerStartRequest_html"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html">eve::stylize::AttackVfxLayerStartRequest</a></div><div class="ttdoc">Borrowed start context for one layer inside an entering phase.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00037">AttackVfxLayerExecutor.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerStartRequest_html_a3c685eb1db8c1f0707f52120a9d5bcf4"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a3c685eb1db8c1f0707f52120a9d5bcf4">eve::stylize::AttackVfxLayerStartRequest::tickSerial</a></div><div class="ttdeci">std::uint64_t tickSerial</div><div class="ttdoc">Monotonic serial from AttackVfxRuntime::advance; executors coalesce once-per-tick work.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00046">AttackVfxLayerExecutor.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerStartRequest_html_a473bda54394fe7fb41ec0cc4370ae895"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a473bda54394fe7fb41ec0cc4370ae895">eve::stylize::AttackVfxLayerStartRequest::layer</a></div><div class="ttdeci">const AttackVfxLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00042">AttackVfxLayerExecutor.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerStartRequest_html_a645ae8ecc18dc518ef11674fc1b7c9ef"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a645ae8ecc18dc518ef11674fc1b7c9ef">eve::stylize::AttackVfxLayerStartRequest::layerIndex</a></div><div class="ttdeci">std::size_t layerIndex</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00041">AttackVfxLayerExecutor.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerStartRequest_html_a834b3d766c6e9354d4d238111acc6a8c"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a834b3d766c6e9354d4d238111acc6a8c">eve::stylize::AttackVfxLayerStartRequest::playRequest</a></div><div class="ttdeci">const AttackVfxRequest * playRequest</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00044">AttackVfxLayerExecutor.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerStartRequest_html_a8669fd63b0361ece708957259880444e"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#a8669fd63b0361ece708957259880444e">eve::stylize::AttackVfxLayerStartRequest::phase</a></div><div class="ttdeci">AttackVfxPhaseKind phase</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00039">AttackVfxLayerExecutor.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerStartRequest_html_ac49d6552aedd3bede2669682cedf6e43"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#ac49d6552aedd3bede2669682cedf6e43">eve::stylize::AttackVfxLayerStartRequest::instance</a></div><div class="ttdeci">AttackVfxHandle instance</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00038">AttackVfxLayerExecutor.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerStartRequest_html_acb85bd3655ad82370d4a6c8a53df23e5"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#acb85bd3655ad82370d4a6c8a53df23e5">eve::stylize::AttackVfxLayerStartRequest::skin</a></div><div class="ttdeci">const AttackVfxSkin * skin</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00043">AttackVfxLayerExecutor.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayerStartRequest_html_ad14e3d830be911ea997b5bf3a65c65ac"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html#ad14e3d830be911ea997b5bf3a65c65ac">eve::stylize::AttackVfxLayerStartRequest::phaseIndex</a></div><div class="ttdeci">std::size_t phaseIndex</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxLayerExecutor_8h_source.html#l00040">AttackVfxLayerExecutor.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxLayer_html"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxLayer.html">eve::stylize::AttackVfxLayer</a></div><div class="ttdoc">One presentation layer slot inside a phase.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxRecipe_8h_source.html#l00106">AttackVfxRecipe.h:106</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxRequest_html"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxRequest.html">eve::stylize::AttackVfxRequest</a></div><div class="ttdoc">Owning play request.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxRuntime_8h_source.html#l00048">AttackVfxRuntime.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1AttackVfxSkin_html"><div class="ttname"><a href="structeve_1_1stylize_1_1AttackVfxSkin.html">eve::stylize::AttackVfxSkin</a></div><div class="ttdoc">Reusable elemental / style skin applied at play time.</div><div class="ttdef"><b>Definition</b> <a href="AttackVfxRecipe_8h_source.html#l00152">AttackVfxRecipe.h:152</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::fog 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html">fog</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::fog 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1AnalyticalVolLight.html">AnalyticalVolLight</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analytic volumetric light: ray ∩ capped frustum, depth-clipped short integral.  <a href="classeve_1_1graphics_1_1fog_1_1AnalyticalVolLight.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1AnalyticBeam.html">AnalyticBeam</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analytic beam volume: capped cone frustum or pyramidal spot.  <a href="structeve_1_1graphics_1_1fog_1_1AnalyticBeam.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1BeerLightCache.html">BeerLightCache</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cached light-path transmittance used by Fast / Enhanced quality tiers.  <a href="classeve_1_1graphics_1_1fog_1_1BeerLightCache.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1ContinuousArt.html">ContinuousArt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post-physics stylization layer.  <a href="classeve_1_1graphics_1_1fog_1_1ContinuousArt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1ContinuousArtOutput.html">ContinuousArtOutput</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stylized fog presentation derived from a physical <a class="el" href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html" title="Optical result of integrating one view ray through fog.">FogRayResult</a>.  <a href="structeve_1_1graphics_1_1fog_1_1ContinuousArtOutput.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1ContinuousArtParams.html">ContinuousArtParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continuous-art stylization that never mutates density or optics.  <a href="structeve_1_1graphics_1_1fog_1_1ContinuousArtParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1DustParticle.html">DustParticle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic dust mote spawned inside an analytic volume.  <a href="structeve_1_1graphics_1_1fog_1_1DustParticle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1FogCflReport.html">FogCflReport</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CFL stability snapshot for the MAC fluid solver.  <a href="structeve_1_1graphics_1_1fog_1_1FogCflReport.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html">FogDensityField</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space density bands, curl assist velocity, and lighting helpers.  <a href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogFroxelBridge.html">FogFroxelBridge</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps world-space density into a camera froxel volume and integrates it.  <a href="classeve_1_1graphics_1_1fog_1_1FogFroxelBridge.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogInteractor.html">FogInteractor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analytic solid proxies that carve fog and inject wake into the MAC field.  <a href="classeve_1_1graphics_1_1fog_1_1FogInteractor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogProfile.html">FogProfile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit-density optical profile for participating media.  <a href="classeve_1_1graphics_1_1fog_1_1FogProfile.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1FogQualityBudget.html">FogQualityBudget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...">Resource</a> / sample budget derived from a quality preset.  <a href="structeve_1_1graphics_1_1fog_1_1FogQualityBudget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1FogRayInterval.html">FogRayInterval</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interval along a ray where media is present (t in world units).  <a href="structeve_1_1graphics_1_1fog_1_1FogRayInterval.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogRayMarch.html">FogRayMarch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space fog ray marcher with Beer–Lambert extinction and HG phase.  <a href="classeve_1_1graphics_1_1fog_1_1FogRayMarch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html">FogRayResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optical result of integrating one view ray through fog.  <a href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1FogSolidProxy.html">FogSolidProxy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One analytic solid that carves / wakes the fog domain.  <a href="structeve_1_1graphics_1_1fog_1_1FogSolidProxy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogSystem.html">FogSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orchestrates density, MAC transport, optics, froxel mapping, and art.  <a href="classeve_1_1graphics_1_1fog_1_1FogSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html">FogVolumeBound</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analytic volume used to bound a camera ray before sampling.  <a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1fog_1_1FogWorldBounds.html">FogWorldBounds</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis-aligned world bounds for a fog simulation domain.  <a href="structeve_1_1graphics_1_1fog_1_1FogWorldBounds.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1MacFluidGrid.html">MacFluidGrid</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">MAC (Marker-And-Cell) staggered-grid Eulerian fog fluid.  <a href="classeve_1_1graphics_1_1fog_1_1MacFluidGrid.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1ProceduralDust.html">ProceduralDust</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Procedural dust that does not use persistent particle buffers or screen trails.  <a href="classeve_1_1graphics_1_1fog_1_1ProceduralDust.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1RealtimeFog.html">RealtimeFog</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional graphics satellite for realtime fog (MAC + raymarch + froxel + analytic lights).  <a href="classeve_1_1graphics_1_1fog_1_1RealtimeFog.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1SceneWind.html">SceneWind</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space wind provider for MAC fog transport.  <a href="classeve_1_1graphics_1_1fog_1_1SceneWind.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a3f6e66e81942cf57c69986817b9a491b" id="r_a3f6e66e81942cf57c69986817b9a491b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491b">FogQuality</a> : uint8_t { <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491bae16b5b7f26f54214445cbe38d72c2828">Fast</a> = 0
+, <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491ba53123044b4b65d0ad1b7ed0cfa4c3480">Enhanced</a> = 1
+, <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491bac83ffede0ac4626902a983c262c7a474">PhysicalReference</a> = 2
+ }</td></tr>
+<tr class="memdesc:a3f6e66e81942cf57c69986817b9a491b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tracking / cache / skip budget for the realtime fog pipeline.  <a href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491b">更多...</a><br /></td></tr>
+<tr class="separator:a3f6e66e81942cf57c69986817b9a491b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54bcdbac6adc1568eb1f260455536f68" id="r_a54bcdbac6adc1568eb1f260455536f68"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a54bcdbac6adc1568eb1f260455536f68">FogProxyShape</a> : uint8_t { <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a54bcdbac6adc1568eb1f260455536f68ab7095f057db3fefa7325ad93a04e14fd">Sphere</a> = 0
+, <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a54bcdbac6adc1568eb1f260455536f68a4880c0f12c06dd6d142e7a40b041bf1a">Capsule</a> = 1
+, <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a54bcdbac6adc1568eb1f260455536f68a7a0d970e032aaceb39c4da7736d2dcf8">Obb</a> = 2
+ }</td></tr>
+<tr class="memdesc:a54bcdbac6adc1568eb1f260455536f68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solid proxy kinds accepted by the realtime fog interactor.  <a href="namespaceeve_1_1graphics_1_1fog.html#a54bcdbac6adc1568eb1f260455536f68">更多...</a><br /></td></tr>
+<tr class="separator:a54bcdbac6adc1568eb1f260455536f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aaaaac42f9ffae83ff2d7d3dfef4f5015" id="r_aaaaac42f9ffae83ff2d7d3dfef4f5015"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#aaaaac42f9ffae83ff2d7d3dfef4f5015">fogQualityName</a> (<a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491b">FogQuality</a> quality) noexcept</td></tr>
+<tr class="memdesc:aaaaac42f9ffae83ff2d7d3dfef4f5015"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable spelling of a quality preset.  <br /></td></tr>
+<tr class="separator:aaaaac42f9ffae83ff2d7d3dfef4f5015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa68efe5384660947ef6f6374ed00f204" id="r_aa68efe5384660947ef6f6374ed00f204"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491b">FogQuality</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#aa68efe5384660947ef6f6374ed00f204">fogQualityFromName</a> (std::string_view <a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) noexcept</td></tr>
+<tr class="memdesc:aa68efe5384660947ef6f6374ed00f204"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a quality spelling; unknown values yield Enhanced.  <br /></td></tr>
+<tr class="separator:aa68efe5384660947ef6f6374ed00f204"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f4b4b7dbae81ea5694dcf933b12d010" id="r_a3f4b4b7dbae81ea5694dcf933b12d010"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1fog_1_1FogQualityBudget.html">FogQualityBudget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f4b4b7dbae81ea5694dcf933b12d010">budgetFor</a> (<a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491b">FogQuality</a> quality) noexcept</td></tr>
+<tr class="memdesc:a3f4b4b7dbae81ea5694dcf933b12d010"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve the budget for a quality preset.  <br /></td></tr>
+<tr class="separator:a3f4b4b7dbae81ea5694dcf933b12d010"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab94f4aa9d7964f2f9501afaa0f3da19c" id="r_ab94f4aa9d7964f2f9501afaa0f3da19c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#ab94f4aa9d7964f2f9501afaa0f3da19c">Module_IMPL</a> (<a class="el" href="classeve_1_1graphics_1_1fog_1_1RealtimeFog.html">RealtimeFog</a>, new <a class="el" href="classeve_1_1graphics_1_1fog_1_1RealtimeFog.html">RealtimeFog</a>())</td></tr>
+<tr class="separator:ab94f4aa9d7964f2f9501afaa0f3da19c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a54bcdbac6adc1568eb1f260455536f68" name="a54bcdbac6adc1568eb1f260455536f68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54bcdbac6adc1568eb1f260455536f68">&#9670;&#160;</a></span>FogProxyShape</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a54bcdbac6adc1568eb1f260455536f68">eve::graphics::fog::FogProxyShape</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Solid proxy kinds accepted by the realtime fog interactor. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a54bcdbac6adc1568eb1f260455536f68ab7095f057db3fefa7325ad93a04e14fd" name="a54bcdbac6adc1568eb1f260455536f68ab7095f057db3fefa7325ad93a04e14fd"></a>Sphere&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a54bcdbac6adc1568eb1f260455536f68a4880c0f12c06dd6d142e7a40b041bf1a" name="a54bcdbac6adc1568eb1f260455536f68a4880c0f12c06dd6d142e7a40b041bf1a"></a>Capsule&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a54bcdbac6adc1568eb1f260455536f68a7a0d970e032aaceb39c4da7736d2dcf8" name="a54bcdbac6adc1568eb1f260455536f68a7a0d970e032aaceb39c4da7736d2dcf8"></a>Obb&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="FogTypes_8h_source.html">FogTypes.h</a> 第 <a class="el" href="FogTypes_8h_source.html#l00139">139</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f6e66e81942cf57c69986817b9a491b" name="a3f6e66e81942cf57c69986817b9a491b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f6e66e81942cf57c69986817b9a491b">&#9670;&#160;</a></span>FogQuality</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491b">eve::graphics::fog::FogQuality</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tracking / cache / skip budget for the realtime fog pipeline. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a3f6e66e81942cf57c69986817b9a491bae16b5b7f26f54214445cbe38d72c2828" name="a3f6e66e81942cf57c69986817b9a491bae16b5b7f26f54214445cbe38d72c2828"></a>Fast&#160;</td><td class="fielddoc"><p>Low sample count, Beer cache, occupancy skip. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a3f6e66e81942cf57c69986817b9a491ba53123044b4b65d0ad1b7ed0cfa4c3480" name="a3f6e66e81942cf57c69986817b9a491ba53123044b4b65d0ad1b7ed0cfa4c3480"></a>Enhanced&#160;</td><td class="fielddoc"><p>Temporal + spatial reconstruction, Beer cache. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a3f6e66e81942cf57c69986817b9a491bac83ffede0ac4626902a983c262c7a474" name="a3f6e66e81942cf57c69986817b9a491bac83ffede0ac4626902a983c262c7a474"></a>PhysicalReference&#160;</td><td class="fielddoc"><p>Dense tracking, no skip shortcuts. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="FogTypes_8h_source.html">FogTypes.h</a> 第 <a class="el" href="FogTypes_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a3f4b4b7dbae81ea5694dcf933b12d010" name="a3f4b4b7dbae81ea5694dcf933b12d010"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f4b4b7dbae81ea5694dcf933b12d010">&#9670;&#160;</a></span>budgetFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1fog_1_1FogQualityBudget.html">FogQualityBudget</a> eve::graphics::fog::budgetFor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491b">FogQuality</a>&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolve the budget for a quality preset. </p>
+
+<p class="definition">在文件 <a class="el" href="FogTypes_8h_source.html">FogTypes.h</a> 第 <a class="el" href="FogTypes_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FogTypes_8h_source.html#l00044">eve::graphics::fog::FogQualityBudget::beerLightCache</a>, <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491ba53123044b4b65d0ad1b7ed0cfa4c3480">Enhanced</a>, <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491bae16b5b7f26f54214445cbe38d72c2828">Fast</a>, <a class="el" href="FogTypes_8h_source.html#l00043">eve::graphics::fog::FogQualityBudget::froxelDepth</a>, <a class="el" href="FogTypes_8h_source.html#l00042">eve::graphics::fog::FogQualityBudget::froxelHeight</a>, <a class="el" href="FogTypes_8h_source.html#l00041">eve::graphics::fog::FogQualityBudget::froxelWidth</a>, <a class="el" href="FogTypes_8h_source.html#l00048">eve::graphics::fog::FogQualityBudget::historyWeight</a>, <a class="el" href="FogTypes_8h_source.html#l00045">eve::graphics::fog::FogQualityBudget::occupancySkip</a>, <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491bac83ffede0ac4626902a983c262c7a474">PhysicalReference</a>, <a class="el" href="FogTypes_8h_source.html#l00039">eve::graphics::fog::FogQualityBudget::raySamples</a>, <a class="el" href="FogTypes_8h_source.html#l00047">eve::graphics::fog::FogQualityBudget::spatialReconstruct</a>, <a class="el" href="FogTypes_8h_source.html#l00046">eve::graphics::fog::FogQualityBudget::temporalHistory</a> , 以及 <a class="el" href="FogTypes_8h_source.html#l00040">eve::graphics::fog::FogQualityBudget::volLightSegments</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogSystem_8h_source.html#l00051">eve::graphics::fog::FogSystem::budget()</a>, <a class="el" href="FogSystem_8cpp_source.html#l00052">eve::graphics::fog::FogSystem::ensureBeerCache()</a>, <a class="el" href="FogSystem_8cpp_source.html#l00113">eve::graphics::fog::FogSystem::injectToFroxel()</a>, <a class="el" href="FogSystem_8cpp_source.html#l00184">eve::graphics::fog::FogSystem::integrateBeam()</a>, <a class="el" href="FogSystem_8cpp_source.html#l00067">eve::graphics::fog::FogSystem::marchRay()</a>, <a class="el" href="FogSystem_8cpp_source.html#l00080">eve::graphics::fog::FogSystem::renderToFroxel()</a> , 以及 <a class="el" href="FogSystem_8cpp_source.html#l00137">eve::graphics::fog::FogSystem::syncToVolumetric()</a>.</p>
+
+</div>
+</div>
+<a id="aa68efe5384660947ef6f6374ed00f204" name="aa68efe5384660947ef6f6374ed00f204"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa68efe5384660947ef6f6374ed00f204">&#9670;&#160;</a></span>fogQualityFromName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491b">FogQuality</a> eve::graphics::fog::fogQualityFromName </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse a quality spelling; unknown values yield Enhanced. </p>
+
+<p class="definition">在文件 <a class="el" href="FogTypes_8h_source.html">FogTypes.h</a> 第 <a class="el" href="FogTypes_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491ba53123044b4b65d0ad1b7ed0cfa4c3480">Enhanced</a>, <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491bae16b5b7f26f54214445cbe38d72c2828">Fast</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a> , 以及 <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491bac83ffede0ac4626902a983c262c7a474">PhysicalReference</a>.</p>
+
+</div>
+</div>
+<a id="aaaaac42f9ffae83ff2d7d3dfef4f5015" name="aaaaac42f9ffae83ff2d7d3dfef4f5015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaaac42f9ffae83ff2d7d3dfef4f5015">&#9670;&#160;</a></span>fogQualityName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::graphics::fog::fogQualityName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491b">FogQuality</a>&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable spelling of a quality preset. </p>
+
+<p class="definition">在文件 <a class="el" href="FogTypes_8h_source.html">FogTypes.h</a> 第 <a class="el" href="FogTypes_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491ba53123044b4b65d0ad1b7ed0cfa4c3480">Enhanced</a>, <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491bae16b5b7f26f54214445cbe38d72c2828">Fast</a> , 以及 <a class="el" href="namespaceeve_1_1graphics_1_1fog.html#a3f6e66e81942cf57c69986817b9a491bac83ffede0ac4626902a983c262c7a474">PhysicalReference</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RealtimeFog_8cpp_source.html#l00053">eve::graphics::fog::RealtimeFog::qualityName()</a>.</p>
+
+</div>
+</div>
+<a id="ab94f4aa9d7964f2f9501afaa0f3da19c" name="ab94f4aa9d7964f2f9501afaa0f3da19c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab94f4aa9d7964f2f9501afaa0f3da19c">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::fog::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1fog_1_1RealtimeFog.html">RealtimeFog</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>RealtimeFog</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

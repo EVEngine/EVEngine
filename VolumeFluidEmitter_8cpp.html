@@ -1,0 +1,241 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/VolumeFluidEmitter.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">VolumeFluidEmitter.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="VolumeFluidEmitter_8h_source.html">fluids/VolumeFluidEmitter.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;glm/geometric.hpp&gt;</code><br />
+<code>#include &lt;glm/gtc/quaternion.hpp&gt;</code><br />
+<code>#include &lt;iomanip&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;locale&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
+</div>
+<p><a href="VolumeFluidEmitter_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1fluids" id="r_namespaceeve_1_1fluids"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html">eve::fluids</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1fluids"><td class="mdescLeft">&#160;</td><td class="mdescRight">GLSL compute kernels for the GPU surface-flow solver. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:acb54ba9e7e1e49b59df8f7e6f0600e58" id="r_acb54ba9e7e1e49b59df8f7e6f0600e58"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterBlueprintMetrics.html">VolumeFluidEmitterBlueprintMetrics</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#acb54ba9e7e1e49b59df8f7e6f0600e58">eve::fluids::evaluateVolumeFluidEmitterBlueprint3D</a> (float resolution, float restDensity, float smoothing)</td></tr>
+<tr class="memdesc:acb54ba9e7e1e49b59df8f7e6f0600e58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates Fluid3DEmitterBlueprintBase/Fluid3DEmitterBlueprint formulas in 3D.  <br /></td></tr>
+<tr class="separator:acb54ba9e7e1e49b59df8f7e6f0600e58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8f63209fb8fb7f3f75be002c0c2c3c6" id="r_ad8f63209fb8fb7f3f75be002c0c2c3c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterBlueprintApplication3D.html">VolumeFluidEmitterBlueprintApplication3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ad8f63209fb8fb7f3f75be002c0c2c3c6">eve::fluids::prepareVolumeFluidEmitterBlueprint3D</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterBlueprint3D.html">VolumeFluidEmitterBlueprint3D</a> &amp;blueprint)</td></tr>
+<tr class="memdesc:ad8f63209fb8fb7f3f75be002c0c2c3c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically maps every Fluid3DEmitterBlueprint field to native 3D setup values.  <br /></td></tr>
+<tr class="separator:ad8f63209fb8fb7f3f75be002c0c2c3c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae153f50e30adb519a65f8283e5844625" id="r_ae153f50e30adb519a65f8283e5844625"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterBlueprintApplication3D.html">VolumeFluidEmitterBlueprintApplication3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#ae153f50e30adb519a65f8283e5844625">eve::fluids::prepareVolumeGranularEmitterBlueprint3D</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeGranularEmitterBlueprint3D.html">VolumeGranularEmitterBlueprint3D</a> &amp;blueprint)</td></tr>
+<tr class="memdesc:ae153f50e30adb519a65f8283e5844625"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically maps an Fluid3DGranularEmitterBlueprint to owned native 3D setup values.  <br /></td></tr>
+<tr class="separator:ae153f50e30adb519a65f8283e5844625"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7f1a809a6986586de714aa3d6fda3a5" id="r_af7f1a809a6986586de714aa3d6fda3a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; unsigned &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#af7f1a809a6986586de714aa3d6fda3a5">eve::fluids::emitVolumeFluidBurst</a> (<a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;solver, const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;emission, unsigned <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:af7f1a809a6986586de714aa3d6fda3a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates at most 4096 particles and admits the entire burst atomically.  <br /></td></tr>
+<tr class="separator:af7f1a809a6986586de714aa3d6fda3a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dec3eeb58f5a7144eafed8a3ccb265f" id="r_a9dec3eeb58f5a7144eafed8a3ccb265f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidDistributionPoint.html">VolumeFluidDistributionPoint</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a9dec3eeb58f5a7144eafed8a3ccb265f">eve::fluids::buildVolumeFluidSphereDistribution</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, bool surface)</td></tr>
+<tr class="memdesc:a9dec3eeb58f5a7144eafed8a3ccb265f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds an Fluid3D-compatible spherical surface or volume lattice during setup.  <br /></td></tr>
+<tr class="separator:a9dec3eeb58f5a7144eafed8a3ccb265f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d2e9f96e1ea00e13db95ad9890047b7" id="r_a0d2e9f96e1ea00e13db95ad9890047b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidDistributionPoint.html">VolumeFluidDistributionPoint</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a0d2e9f96e1ea00e13db95ad9890047b7">eve::fluids::buildVolumeFluidCubeDistribution</a> (glm::vec3 <a class="el" href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a>, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, bool surface)</td></tr>
+<tr class="memdesc:a0d2e9f96e1ea00e13db95ad9890047b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds an Fluid3D-compatible box surface or volume lattice during setup.  <br /></td></tr>
+<tr class="separator:a0d2e9f96e1ea00e13db95ad9890047b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a034ec7d1e95e994b7bc14b36c6e90afd" id="r_a034ec7d1e95e994b7bc14b36c6e90afd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidDistributionPoint.html">VolumeFluidDistributionPoint</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a034ec7d1e95e994b7bc14b36c6e90afd">eve::fluids::buildVolumeFluidEdgeDistribution</a> (float <a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, float radialVelocityDegrees)</td></tr>
+<tr class="memdesc:a034ec7d1e95e994b7bc14b36c6e90afd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds Fluid3D's edge lattice with per-sample radial velocity directions.  <br /></td></tr>
+<tr class="separator:a034ec7d1e95e994b7bc14b36c6e90afd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b10cf49080fc9245181938642bc0807" id="r_a2b10cf49080fc9245181938642bc0807"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidDistributionPoint.html">VolumeFluidDistributionPoint</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a2b10cf49080fc9245181938642bc0807">eve::fluids::buildVolumeFluidDiskDistribution</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, bool edgeEmission)</td></tr>
+<tr class="memdesc:a2b10cf49080fc9245181938642bc0807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds Fluid3D's concentric disk or circumference-only distribution.  <br /></td></tr>
+<tr class="separator:a2b10cf49080fc9245181938642bc0807"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a676981ae45914c160e9e29800a177bba" id="r_a676981ae45914c160e9e29800a177bba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a676981ae45914c160e9e29800a177bba">eve::fluids::composeVolumeFluidEmitterShapes</a> (const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;base, std::span&lt; const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &gt; shapes)</td></tr>
+<tr class="memdesc:a676981ae45914c160e9e29800a177bba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds one emitter distribution from an ordered set of Fluid3D emitter shapes.  <br /></td></tr>
+<tr class="separator:a676981ae45914c160e9e29800a177bba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba089f66c95aca8089e3b719ca439d39" id="r_aba089f66c95aca8089e3b719ca439d39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1fluids_1_1VolumeFluidDistributionPoint.html">VolumeFluidDistributionPoint</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#aba089f66c95aca8089e3b719ca439d39">eve::fluids::buildVolumeFluidImageDistribution</a> (std::span&lt; const glm::vec4 &gt; <a class="el" href="PrototypeTextures_8cpp.html#a5e97f2110c1b66c571902dda9b85ab54">pixels</a>, unsigned <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, unsigned <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float pixelScale, float maximumSize, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, float alphaThreshold)</td></tr>
+<tr class="memdesc:aba089f66c95aca8089e3b719ca439d39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Precomputes a bilinear alpha-masked image distribution on a spacing lattice.  <br /></td></tr>
+<tr class="separator:aba089f66c95aca8089e3b719ca439d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d7bbb8aa8941592adc2c9a6162c581f" id="r_a1d7bbb8aa8941592adc2c9a6162c581f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterCheckpoint.html">VolumeFluidEmitterCheckpoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a1d7bbb8aa8941592adc2c9a6162c581f">eve::fluids::captureVolumeFluidEmitterCheckpoint</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;solver, const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;emission, const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidEmitter.html">VolumeFluidEmitter</a> &amp;controller)</td></tr>
+<tr class="memdesc:a1d7bbb8aa8941592adc2c9a6162c581f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures one completed-step rate-emitter checkpoint without retaining references.  <br /></td></tr>
+<tr class="separator:a1d7bbb8aa8941592adc2c9a6162c581f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf85e65111b1b31b5399e07074ace97d" id="r_aaf85e65111b1b31b5399e07074ace97d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterCheckpoint.html">VolumeFluidEmitterCheckpoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#aaf85e65111b1b31b5399e07074ace97d">eve::fluids::captureVolumeFluidEmitterCheckpoint</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;solver, const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmission.html">VolumeFluidEmission</a> &amp;emission, const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidJetEmitter.html">VolumeFluidJetEmitter</a> &amp;controller)</td></tr>
+<tr class="memdesc:aaf85e65111b1b31b5399e07074ace97d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures one completed-step moving-jet checkpoint without retaining references.  <br /></td></tr>
+<tr class="separator:aaf85e65111b1b31b5399e07074ace97d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dd88b1955ce577d992ae0c4340b80a8" id="r_a1dd88b1955ce577d992ae0c4340b80a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a1dd88b1955ce577d992ae0c4340b80a8">eve::fluids::restoreVolumeFluidEmitterCheckpoint</a> (<a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;solver, <a class="el" href="classeve_1_1fluids_1_1VolumeFluidEmitter.html">VolumeFluidEmitter</a> &amp;controller, const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterCheckpoint.html">VolumeFluidEmitterCheckpoint</a> &amp;checkpoint)</td></tr>
+<tr class="memdesc:a1dd88b1955ce577d992ae0c4340b80a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically restores solver and rate controller after validating the complete owning candidate.  <br /></td></tr>
+<tr class="separator:a1dd88b1955ce577d992ae0c4340b80a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0306e8d307a50ba8e9810cff78398b8d" id="r_a0306e8d307a50ba8e9810cff78398b8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a0306e8d307a50ba8e9810cff78398b8d">eve::fluids::restoreVolumeFluidEmitterCheckpoint</a> (<a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;solver, <a class="el" href="classeve_1_1fluids_1_1VolumeFluidJetEmitter.html">VolumeFluidJetEmitter</a> &amp;controller, const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidEmitterCheckpoint.html">VolumeFluidEmitterCheckpoint</a> &amp;checkpoint)</td></tr>
+<tr class="memdesc:a0306e8d307a50ba8e9810cff78398b8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically restores solver and moving-jet controller under the same checkpoint contract.  <br /></td></tr>
+<tr class="separator:a0306e8d307a50ba8e9810cff78398b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

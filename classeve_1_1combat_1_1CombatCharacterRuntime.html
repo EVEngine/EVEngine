@@ -1,0 +1,974 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::combat::CombatCharacterRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1combat.html">combat</a></li><li class="navelem"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">CombatCharacterRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1combat_1_1CombatCharacterRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::combat::CombatCharacterRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread 3D character authority for action combat.  
+ <a href="classeve_1_1combat_1_1CombatCharacterRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CombatCharacter_8h_source.html">CombatCharacter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab476b96b366ec8aa369703f0941d310e" id="r_ab476b96b366ec8aa369703f0941d310e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#ab476b96b366ec8aa369703f0941d310e">registerSubject</a> (<a class="el" href="structeve_1_1combat_1_1CombatCharacterDefinition.html">CombatCharacterDefinition</a> definition)</td></tr>
+<tr class="memdesc:ab476b96b366ec8aa369703f0941d310e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register one unique character from validated owning definition data.  <br /></td></tr>
+<tr class="separator:ab476b96b366ec8aa369703f0941d310e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3cac13161cd455cfca37ff0880cd582" id="r_ab3cac13161cd455cfca37ff0880cd582"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#ab3cac13161cd455cfca37ff0880cd582">unregisterSubject</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>)</td></tr>
+<tr class="memdesc:ab3cac13161cd455cfca37ff0880cd582"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one character; missing subjects are rejected.  <br /></td></tr>
+<tr class="separator:ab3cac13161cd455cfca37ff0880cd582"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c0046ebc4d98b00dc613acc69e50d7f" id="r_a8c0046ebc4d98b00dc613acc69e50d7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1CombatCharacterState.html">CombatCharacterState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a8c0046ebc4d98b00dc613acc69e50d7f">state</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>) const</td></tr>
+<tr class="memdesc:a8c0046ebc4d98b00dc613acc69e50d7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning state snapshot, or NotFound for a stale subject.  <br /></td></tr>
+<tr class="separator:a8c0046ebc4d98b00dc613acc69e50d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa984a5a7c3917eb2ac1e706f28dc7e57" id="r_aa984a5a7c3917eb2ac1e706f28dc7e57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#aa984a5a7c3917eb2ac1e706f28dc7e57">setMoveIntent</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, <a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a> <a class="el" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>, double speedFraction)</td></tr>
+<tr class="memdesc:aa984a5a7c3917eb2ac1e706f28dc7e57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set normalized planar movement intent.  <br /></td></tr>
+<tr class="separator:aa984a5a7c3917eb2ac1e706f28dc7e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a17a1739e98841987a9bea6e575e31" id="r_ae4a17a1739e98841987a9bea6e575e31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#ae4a17a1739e98841987a9bea6e575e31">jump</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>)</td></tr>
+<tr class="memdesc:ae4a17a1739e98841987a9bea6e575e31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request a jump or air jump when the current mode allows it.  <br /></td></tr>
+<tr class="separator:ae4a17a1739e98841987a9bea6e575e31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf926223f552fef0ad9566cd71d32cef" id="r_aaf926223f552fef0ad9566cd71d32cef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#aaf926223f552fef0ad9566cd71d32cef">dodge</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::optional&lt; <a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a> &gt; <a class="el" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>=std::nullopt)</td></tr>
+<tr class="memdesc:aaf926223f552fef0ad9566cd71d32cef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin a dodge that grants invulnerability for dodgeDuration.  <br /></td></tr>
+<tr class="separator:aaf926223f552fef0ad9566cd71d32cef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee18cf3cfe3778dbd3c0fc802a4cb358" id="r_aee18cf3cfe3778dbd3c0fc802a4cb358"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#aee18cf3cfe3778dbd3c0fc802a4cb358">dodgeRelative</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, <a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a> lockTarget, <a class="el" href="namespaceeve_1_1combat.html#a73578ec3293468002c6bb1efd56d8de4">CombatDodgeRelative</a> <a class="el" href="AnimSmr_8cpp.html#a7078437dd00bf5eac56c91fdcd3a50e9">relative</a>)</td></tr>
+<tr class="memdesc:aee18cf3cfe3778dbd3c0fc802a4cb358"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dodge relative to a lock-on target on the XZ plane.  <br /></td></tr>
+<tr class="separator:aee18cf3cfe3778dbd3c0fc802a4cb358"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf5a33bdacbe867c952d6aabb3beb712" id="r_aaf5a33bdacbe867c952d6aabb3beb712"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#aaf5a33bdacbe867c952d6aabb3beb712">beginAttack</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>)</td></tr>
+<tr class="memdesc:aaf5a33bdacbe867c952d6aabb3beb712"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enter attacking mode; root motion may replace horizontal intent.  <br /></td></tr>
+<tr class="separator:aaf5a33bdacbe867c952d6aabb3beb712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83ddf59ed65f863274225187559e5030" id="r_a83ddf59ed65f863274225187559e5030"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a83ddf59ed65f863274225187559e5030">endAttack</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>)</td></tr>
+<tr class="memdesc:a83ddf59ed65f863274225187559e5030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leave attacking mode when recover completes.  <br /></td></tr>
+<tr class="separator:a83ddf59ed65f863274225187559e5030"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a151a8f6a822bcd69c6e1a3a00dfb3d0c" id="r_a151a8f6a822bcd69c6e1a3a00dfb3d0c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a151a8f6a822bcd69c6e1a3a00dfb3d0c">applyStun</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, <a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>)</td></tr>
+<tr class="memdesc:a151a8f6a822bcd69c6e1a3a00dfb3d0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a stun that blocks jump/dodge/attack for the supplied duration.  <br /></td></tr>
+<tr class="separator:a151a8f6a822bcd69c6e1a3a00dfb3d0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe563741324c27e0a514ab78a946c7a4" id="r_abe563741324c27e0a514ab78a946c7a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#abe563741324c27e0a514ab78a946c7a4">applyImpulse</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, <a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a> impulse)</td></tr>
+<tr class="memdesc:abe563741324c27e0a514ab78a946c7a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an instantaneous velocity impulse (knockback / launch).  <br /></td></tr>
+<tr class="separator:abe563741324c27e0a514ab78a946c7a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3facaae406e26cffa945352bd29e43d5" id="r_a3facaae406e26cffa945352bd29e43d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a3facaae406e26cffa945352bd29e43d5">applyDamageReaction</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12e">HitReaction</a> reaction, <a class="el" href="classeve_1_1Duration.html">Duration</a> stunDuration, <a class="el" href="structeve_1_1combat_1_1Impulse3.html">Impulse3</a> knockback)</td></tr>
+<tr class="memdesc:a3facaae406e26cffa945352bd29e43d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply death/stun and knockback from one damage outcome.  <br /></td></tr>
+<tr class="separator:a3facaae406e26cffa945352bd29e43d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b1c76bf5b44e88d1bcb6716394ad329" id="r_a6b1c76bf5b44e88d1bcb6716394ad329"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a6b1c76bf5b44e88d1bcb6716394ad329">kill</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>)</td></tr>
+<tr class="memdesc:a6b1c76bf5b44e88d1bcb6716394ad329"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark the character dead; further locomotion intents become NoOp.  <br /></td></tr>
+<tr class="separator:a6b1c76bf5b44e88d1bcb6716394ad329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71f9ca09e01e95657f3a6334c533200b" id="r_a71f9ca09e01e95657f3a6334c533200b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a71f9ca09e01e95657f3a6334c533200b">setRootMotionDelta</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, <a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a> delta)</td></tr>
+<tr class="memdesc:a71f9ca09e01e95657f3a6334c533200b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue one frame of authored root-motion delta consumed by the next advance.  <br /></td></tr>
+<tr class="separator:a71f9ca09e01e95657f3a6334c533200b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a426bf3e523ae63525f7672b9286ad5b6" id="r_a426bf3e523ae63525f7672b9286ad5b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a426bf3e523ae63525f7672b9286ad5b6">setFacing</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, <a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a> <a class="el" href="ModuleAssembly_8cpp.html#abc188cec62ba9cb38e9495e86a835bce">facing</a>)</td></tr>
+<tr class="memdesc:a426bf3e523ae63525f7672b9286ad5b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace planar facing from a finite XZ vector; Y is ignored.  <br /></td></tr>
+<tr class="separator:a426bf3e523ae63525f7672b9286ad5b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48aab1c15e441291c91ea866977ab202" id="r_a48aab1c15e441291c91ea866977ab202"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a48aab1c15e441291c91ea866977ab202">setTimeFrozen</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, bool frozen)</td></tr>
+<tr class="memdesc:a48aab1c15e441291c91ea866977ab202"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pause integration for hitstop while retaining the committed pose.  <br /></td></tr>
+<tr class="separator:a48aab1c15e441291c91ea866977ab202"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f979a02f39117dd2780769a8d0abc07" id="r_a6f979a02f39117dd2780769a8d0abc07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a6f979a02f39117dd2780769a8d0abc07">setGroundProvider</a> (<a class="el" href="classeve_1_1combat_1_1ICombatGroundProvider.html">ICombatGroundProvider</a> &amp;provider) noexcept</td></tr>
+<tr class="memdesc:a6f979a02f39117dd2780769a8d0abc07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a ground sampler; must outlive this runtime or be cleared.  <br /></td></tr>
+<tr class="separator:a6f979a02f39117dd2780769a8d0abc07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0d02dd445d0b71d65bd63d2fbd25a1c" id="r_ab0d02dd445d0b71d65bd63d2fbd25a1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#ab0d02dd445d0b71d65bd63d2fbd25a1c">clearGroundProvider</a> () noexcept</td></tr>
+<tr class="memdesc:ab0d02dd445d0b71d65bd63d2fbd25a1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears ground provider.  <br /></td></tr>
+<tr class="separator:ab0d02dd445d0b71d65bd63d2fbd25a1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3abdc96f4c77190e047a512581331d2" id="r_af3abdc96f4c77190e047a512581331d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#af3abdc96f4c77190e047a512581331d2">setMoveProbe</a> (<a class="el" href="classeve_1_1combat_1_1ICombatMoveProbe.html">ICombatMoveProbe</a> &amp;probe) noexcept</td></tr>
+<tr class="memdesc:af3abdc96f4c77190e047a512581331d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a capsule move probe; must outlive this runtime or be cleared.  <br /></td></tr>
+<tr class="separator:af3abdc96f4c77190e047a512581331d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24732e667d7b962e4dcd7c5d805dabf3" id="r_a24732e667d7b962e4dcd7c5d805dabf3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a24732e667d7b962e4dcd7c5d805dabf3">clearMoveProbe</a> () noexcept</td></tr>
+<tr class="memdesc:a24732e667d7b962e4dcd7c5d805dabf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears move probe.  <br /></td></tr>
+<tr class="separator:a24732e667d7b962e4dcd7c5d805dabf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7837f89cd35687ee15c5d67801055a0d" id="r_a7837f89cd35687ee15c5d67801055a0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1CombatCharacterAdvance.html">CombatCharacterAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a7837f89cd35687ee15c5d67801055a0d">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:a7837f89cd35687ee15c5d67801055a0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically advance every character using only the supplied deterministic step.  <br /></td></tr>
+<tr class="separator:a7837f89cd35687ee15c5d67801055a0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a800d43af28f1b274977969991da4db0a" id="r_a800d43af28f1b274977969991da4db0a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1combat_1_1CombatCharacterState.html">CombatCharacterState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a800d43af28f1b274977969991da4db0a">states</a> () const</td></tr>
+<tr class="memdesc:a800d43af28f1b274977969991da4db0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return owning states in stable subject-id order.  <br /></td></tr>
+<tr class="separator:a800d43af28f1b274977969991da4db0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread 3D character authority for action combat. </p>
+<p>Horizontal intent, jump, dodge i-frames and optional root-motion deltas are owned here. Ground is the plane y = 0 unless an <code><a class="el" href="classeve_1_1combat_1_1ICombatGroundProvider.html" title="Optional ground-height sampler consumed by the character controller.">ICombatGroundProvider</a></code> is borrowed; capsule collisions are optional via <code><a class="el" href="classeve_1_1combat_1_1ICombatMoveProbe.html" title="Optional capsule move resolver for walls and overlapping bodies.">ICombatMoveProbe</a></code>. Projects project the resulting pose into Scene/Physics after each advance. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8h_source.html">CombatCharacter.h</a> 第 <a class="el" href="CombatCharacter_8h_source.html#l00134">134</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a7837f89cd35687ee15c5d67801055a0d" name="a7837f89cd35687ee15c5d67801055a0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7837f89cd35687ee15c5d67801055a0d">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1CombatCharacterAdvance.html">CombatCharacterAdvance</a> &gt; eve::combat::CombatCharacterRuntime::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically advance every character using only the supplied deterministic step. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CombatCharacter_8cpp_source.html#l00290">advance()</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a5c1be1cc479d7bd224548b4ce08c8ea6">eve::combat::Airborne</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a8abd002ea36128383f3269de7e74039b">eve::combat::Attacking</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a183b62c7f067711f9c5a54913c054617">eve::combat::Dead</a>, <a class="el" href="namespaceeve_1_1combat.html#a4fe3b256b3ce883af5443d26f85b5109ae1a5c865b72aa705ac71a9ef0741338a">eve::combat::DodgeEnded</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a73f1b5d852b4cc961dc54a5c0934dc1d">eve::combat::Dodging</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a8b9e1171c0b9070fc1c598025755f949">eve::combat::Grounded</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="namespaceeve_1_1combat.html#a4fe3b256b3ce883af5443d26f85b5109ad686e9ef2eb30c76874d445ae35bccc2">eve::combat::Landed</a>, <a class="el" href="namespaceeve_1_1combat.html#a4fe3b256b3ce883af5443d26f85b5109ae564c1d218ad158d1bac6217fecafdad">eve::combat::ModeChanged</a>, <a class="el" href="namespaceeve_1_1combat.html#a4fe3b256b3ce883af5443d26f85b5109a95bfdefaaf01553cbf21ccd942855c69">eve::combat::Moved</a>, <a class="el" href="classeve_1_1combat_1_1ICombatMoveProbe.html#aef1447c0ea358343ad73738e67545de4">eve::combat::ICombatMoveProbe::resolve()</a>, <a class="el" href="classeve_1_1combat_1_1ICombatGroundProvider.html#adbb491e03d4cbb7af5c0b1bcf4b46cb4">eve::combat::ICombatGroundProvider::sampleHeight()</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00074">state()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26aeb8ab7d98634514cc61c2b0a0c8d93a2">eve::combat::Stunned</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CombatCharacter_8h_source.html#l00089">eve::combat::CombatCharacterAdvance::tick</a>, <a class="el" href="StrongUint64_8h_source.html#l00026">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>, <a class="el" href="CombatCharacter_8h_source.html#l00021">eve::combat::CombatVector3::x</a>, <a class="el" href="CombatCharacter_8h_source.html#l00022">eve::combat::CombatVector3::y</a>, <a class="el" href="CombatCharacter_8h_source.html#l00023">eve::combat::CombatVector3::z</a> , 以及 <a class="el" href="Time_8h_source.html#l00060">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCharacter_8cpp_source.html#l00290">advance()</a> , 以及 <a class="el" href="CombatLoop_8cpp_source.html#l00025">eve::combat::CombatLoopRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a3facaae406e26cffa945352bd29e43d5" name="a3facaae406e26cffa945352bd29e43d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3facaae406e26cffa945352bd29e43d5">&#9670;&#160;</a></span>applyDamageReaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::applyDamageReaction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12e">HitReaction</a>&#160;</td>
+          <td class="paramname"><em>reaction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>stunDuration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1Impulse3.html">Impulse3</a>&#160;</td>
+          <td class="paramname"><em>knockback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply death/stun and knockback from one damage outcome. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stunDuration</td><td>Hitstun remaining from <a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html" title="Owner-thread hitstop/hitstun coordinator.">HitFeelRuntime</a>; ignored for Death. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CombatCharacter_8cpp_source.html#l00213">applyImpulse()</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00195">applyStun()</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6097f89e3092d4ccd249c9d479785c1f">eve::combat::Death</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea16d1bfa931066fc5c7876947e11295af">eve::combat::Flinch</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00242">kill()</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12eae085600d13d0c185ec1e3c4efd913601">eve::combat::Knockdown</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea9c953a2c37f8c641deeb996cf8924232">eve::combat::Stagger</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Damage_8h_source.html#l00020">eve::combat::Impulse3::x</a>, <a class="el" href="Damage_8h_source.html#l00021">eve::combat::Impulse3::y</a> , 以及 <a class="el" href="Damage_8h_source.html#l00022">eve::combat::Impulse3::z</a>.</p>
+
+</div>
+</div>
+<a id="abe563741324c27e0a514ab78a946c7a4" name="abe563741324c27e0a514ab78a946c7a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe563741324c27e0a514ab78a946c7a4">&#9670;&#160;</a></span>applyImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::applyImpulse </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a>&#160;</td>
+          <td class="paramname"><em>impulse</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add an instantaneous velocity impulse (knockback / launch). </p>
+<dl class="section remark"><dt>备注</dt><dd>Dead subjects are NoOp. Positive Y leaves the subject airborne after stun ends. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a5c1be1cc479d7bd224548b4ce08c8ea6">eve::combat::Airborne</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a183b62c7f067711f9c5a54913c054617">eve::combat::Dead</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a8b9e1171c0b9070fc1c598025755f949">eve::combat::Grounded</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CombatCharacter_8h_source.html#l00021">eve::combat::CombatVector3::x</a>, <a class="el" href="CombatCharacter_8h_source.html#l00022">eve::combat::CombatVector3::y</a> , 以及 <a class="el" href="CombatCharacter_8h_source.html#l00023">eve::combat::CombatVector3::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCharacter_8cpp_source.html#l00230">applyDamageReaction()</a>.</p>
+
+</div>
+</div>
+<a id="a151a8f6a822bcd69c6e1a3a00dfb3d0c" name="a151a8f6a822bcd69c6e1a3a00dfb3d0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a151a8f6a822bcd69c6e1a3a00dfb3d0c">&#9670;&#160;</a></span>applyStun()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::applyStun </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>duration</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply a stun that blocks jump/dodge/attack for the supplied duration. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a183b62c7f067711f9c5a54913c054617">eve::combat::Dead</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00018">duration</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26aeb8ab7d98634514cc61c2b0a0c8d93a2">eve::combat::Stunned</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Time_8h_source.html#l00060">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCharacter_8cpp_source.html#l00230">applyDamageReaction()</a>.</p>
+
+</div>
+</div>
+<a id="aaf5a33bdacbe867c952d6aabb3beb712" name="aaf5a33bdacbe867c952d6aabb3beb712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf5a33bdacbe867c952d6aabb3beb712">&#9670;&#160;</a></span>beginAttack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::beginAttack </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enter attacking mode; root motion may replace horizontal intent. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a8abd002ea36128383f3269de7e74039b">eve::combat::Attacking</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a183b62c7f067711f9c5a54913c054617">eve::combat::Dead</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a73f1b5d852b4cc961dc54a5c0934dc1d">eve::combat::Dodging</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26aeb8ab7d98634514cc61c2b0a0c8d93a2">eve::combat::Stunned</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab0d02dd445d0b71d65bd63d2fbd25a1c" name="ab0d02dd445d0b71d65bd63d2fbd25a1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0d02dd445d0b71d65bd63d2fbd25a1c">&#9670;&#160;</a></span>clearGroundProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::combat::CombatCharacterRuntime::clearGroundProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears ground provider. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8h_source.html">CombatCharacter.h</a> 第 <a class="el" href="CombatCharacter_8h_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a24732e667d7b962e4dcd7c5d805dabf3" name="a24732e667d7b962e4dcd7c5d805dabf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24732e667d7b962e4dcd7c5d805dabf3">&#9670;&#160;</a></span>clearMoveProbe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::combat::CombatCharacterRuntime::clearMoveProbe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears move probe. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8h_source.html">CombatCharacter.h</a> 第 <a class="el" href="CombatCharacter_8h_source.html#l00204">204</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf926223f552fef0ad9566cd71d32cef" name="aaf926223f552fef0ad9566cd71d32cef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf926223f552fef0ad9566cd71d32cef">&#9670;&#160;</a></span>dodge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::dodge </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a> &gt;&#160;</td>
+          <td class="paramname"><em>direction</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begin a dodge that grants invulnerability for dodgeDuration. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">direction</td><td>Optional dodge direction; empty uses current facing. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a183b62c7f067711f9c5a54913c054617">eve::combat::Dead</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00020">direction</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a73f1b5d852b4cc961dc54a5c0934dc1d">eve::combat::Dodging</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00074">state()</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26aeb8ab7d98634514cc61c2b0a0c8d93a2">eve::combat::Stunned</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CombatCharacter_8h_source.html#l00021">eve::combat::CombatVector3::x</a> , 以及 <a class="el" href="CombatCharacter_8h_source.html#l00023">eve::combat::CombatVector3::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCharacter_8cpp_source.html#l00149">dodgeRelative()</a>.</p>
+
+</div>
+</div>
+<a id="aee18cf3cfe3778dbd3c0fc802a4cb358" name="aee18cf3cfe3778dbd3c0fc802a4cb358"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee18cf3cfe3778dbd3c0fc802a4cb358">&#9670;&#160;</a></span>dodgeRelative()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::dodgeRelative </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a>&#160;</td>
+          <td class="paramname"><em>lockTarget</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1combat.html#a73578ec3293468002c6bb1efd56d8de4">CombatDodgeRelative</a>&#160;</td>
+          <td class="paramname"><em>relative</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dodge relative to a lock-on target on the XZ plane. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lockTarget</td><td>Finite world position of the locked subject. </td></tr>
+    <tr><td class="paramname">relative</td><td>Forward = toward target, Back = away, Left/Right = strafe. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1combat.html#a73578ec3293468002c6bb1efd56d8de4a0557fa923dcee4d0f86b1409f5c2167f">eve::combat::Back</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00020">direction</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00124">dodge()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1combat.html#a73578ec3293468002c6bb1efd56d8de4a67d2f6740a8eaebf4d5c6f79be8da481">eve::combat::Forward</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1combat.html#a73578ec3293468002c6bb1efd56d8de4a945d5e233cf7d6240f6b783b36a374ff">eve::combat::Left</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00164">relative</a>, <a class="el" href="namespaceeve_1_1combat.html#a73578ec3293468002c6bb1efd56d8de4a92b09c7c48c520c3c55e497875da437c">eve::combat::Right</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="CombatCharacter_8h_source.html#l00021">eve::combat::CombatVector3::x</a> , 以及 <a class="el" href="CombatCharacter_8h_source.html#l00023">eve::combat::CombatVector3::z</a>.</p>
+
+</div>
+</div>
+<a id="a83ddf59ed65f863274225187559e5030" name="a83ddf59ed65f863274225187559e5030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83ddf59ed65f863274225187559e5030">&#9670;&#160;</a></span>endAttack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::endAttack </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Leave attacking mode when recover completes. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a5c1be1cc479d7bd224548b4ce08c8ea6">eve::combat::Airborne</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a8abd002ea36128383f3269de7e74039b">eve::combat::Attacking</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a8b9e1171c0b9070fc1c598025755f949">eve::combat::Grounded</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ae4a17a1739e98841987a9bea6e575e31" name="ae4a17a1739e98841987a9bea6e575e31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a17a1739e98841987a9bea6e575e31">&#9670;&#160;</a></span>jump()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::jump </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Request a jump or air jump when the current mode allows it. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a5c1be1cc479d7bd224548b4ce08c8ea6">eve::combat::Airborne</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a8abd002ea36128383f3269de7e74039b">eve::combat::Attacking</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a183b62c7f067711f9c5a54913c054617">eve::combat::Dead</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a73f1b5d852b4cc961dc54a5c0934dc1d">eve::combat::Dodging</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a8b9e1171c0b9070fc1c598025755f949">eve::combat::Grounded</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00074">state()</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26aeb8ab7d98634514cc61c2b0a0c8d93a2">eve::combat::Stunned</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a6b1c76bf5b44e88d1bcb6716394ad329" name="a6b1c76bf5b44e88d1bcb6716394ad329"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b1c76bf5b44e88d1bcb6716394ad329">&#9670;&#160;</a></span>kill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::kill </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark the character dead; further locomotion intents become NoOp. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00242">242</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a183b62c7f067711f9c5a54913c054617">eve::combat::Dead</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCharacter_8cpp_source.html#l00230">applyDamageReaction()</a>.</p>
+
+</div>
+</div>
+<a id="ab476b96b366ec8aa369703f0941d310e" name="ab476b96b366ec8aa369703f0941d310e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab476b96b366ec8aa369703f0941d310e">&#9670;&#160;</a></span>registerSubject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::registerSubject </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1CombatCharacterDefinition.html">CombatCharacterDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register one unique character from validated owning definition data. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a8b9e1171c0b9070fc1c598025755f949">eve::combat::Grounded</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00074">state()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>.</p>
+
+</div>
+</div>
+<a id="a426bf3e523ae63525f7672b9286ad5b6" name="a426bf3e523ae63525f7672b9286ad5b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a426bf3e523ae63525f7672b9286ad5b6">&#9670;&#160;</a></span>setFacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::setFacing </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a>&#160;</td>
+          <td class="paramname"><em>facing</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace planar facing from a finite XZ vector; Y is ignored. </p>
+<dl class="section remark"><dt>备注</dt><dd>Zero-length input is rejected. Frozen and dead subjects still accept facing. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00082">facing</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatLoop_8cpp_source.html#l00025">eve::combat::CombatLoopRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a6f979a02f39117dd2780769a8d0abc07" name="a6f979a02f39117dd2780769a8d0abc07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f979a02f39117dd2780769a8d0abc07">&#9670;&#160;</a></span>setGroundProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::combat::CombatCharacterRuntime::setGroundProvider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1combat_1_1ICombatGroundProvider.html">ICombatGroundProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>provider</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow a ground sampler; must outlive this runtime or be cleared. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8h_source.html">CombatCharacter.h</a> 第 <a class="el" href="CombatCharacter_8h_source.html#l00198">198</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa984a5a7c3917eb2ac1e706f28dc7e57" name="aa984a5a7c3917eb2ac1e706f28dc7e57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa984a5a7c3917eb2ac1e706f28dc7e57">&#9670;&#160;</a></span>setMoveIntent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::setMoveIntent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a>&#160;</td>
+          <td class="paramname"><em>direction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>speedFraction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set normalized planar movement intent. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">direction</td><td>Finite XZ direction; non-unit input is normalized. Y is ignored. </td></tr>
+    <tr><td class="paramname">speedFraction</td><td>Requested fraction in [0,1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26a183b62c7f067711f9c5a54913c054617">eve::combat::Dead</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00020">direction</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1combat.html#a285754be38ff2805f85bf9f3706a4b26aeb8ab7d98634514cc61c2b0a0c8d93a2">eve::combat::Stunned</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatLoop_8cpp_source.html#l00025">eve::combat::CombatLoopRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="af3abdc96f4c77190e047a512581331d2" name="af3abdc96f4c77190e047a512581331d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3abdc96f4c77190e047a512581331d2">&#9670;&#160;</a></span>setMoveProbe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::combat::CombatCharacterRuntime::setMoveProbe </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1combat_1_1ICombatMoveProbe.html">ICombatMoveProbe</a> &amp;&#160;</td>
+          <td class="paramname"><em>probe</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow a capsule move probe; must outlive this runtime or be cleared. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8h_source.html">CombatCharacter.h</a> 第 <a class="el" href="CombatCharacter_8h_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71f9ca09e01e95657f3a6334c533200b" name="a71f9ca09e01e95657f3a6334c533200b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71f9ca09e01e95657f3a6334c533200b">&#9670;&#160;</a></span>setRootMotionDelta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::setRootMotionDelta </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1CombatVector3.html">CombatVector3</a>&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queue one frame of authored root-motion delta consumed by the next advance. </p>
+<dl class="section remark"><dt>备注</dt><dd>Only applied while mode is Attacking. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00256">256</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatLoop_8cpp_source.html#l00025">eve::combat::CombatLoopRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a48aab1c15e441291c91ea866977ab202" name="a48aab1c15e441291c91ea866977ab202"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48aab1c15e441291c91ea866977ab202">&#9670;&#160;</a></span>setTimeFrozen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::setTimeFrozen </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>frozen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pause integration for hitstop while retaining the committed pose. </p>
+<dl class="section remark"><dt>备注</dt><dd><a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html" title="Owner-thread hitstop/hitstun coordinator.">HitFeelRuntime</a> remains the duration authority; this flag is only the locomotion gate. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatLoop_8cpp_source.html#l00025">eve::combat::CombatLoopRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a8c0046ebc4d98b00dc613acc69e50d7f" name="a8c0046ebc4d98b00dc613acc69e50d7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c0046ebc4d98b00dc613acc69e50d7f">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1CombatCharacterState.html">CombatCharacterState</a> &gt; eve::combat::CombatCharacterRuntime::state </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning state snapshot, or NotFound for a stale subject. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatCharacter_8cpp_source.html#l00290">advance()</a>, <a class="el" href="CombatLoop_8cpp_source.html#l00025">eve::combat::CombatLoopRuntime::advance()</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00124">dodge()</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00099">jump()</a>, <a class="el" href="CombatCharacterPose_8cpp_source.html#l00007">eve::combat::CombatCharacterPoseSource::pose()</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00040">registerSubject()</a> , 以及 <a class="el" href="CombatCharacter_8cpp_source.html#l00406">states()</a>.</p>
+
+</div>
+</div>
+<a id="a800d43af28f1b274977969991da4db0a" name="a800d43af28f1b274977969991da4db0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a800d43af28f1b274977969991da4db0a">&#9670;&#160;</a></span>states()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1combat_1_1CombatCharacterState.html">CombatCharacterState</a> &gt; eve::combat::CombatCharacterRuntime::states </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return owning states in stable subject-id order. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a> , 以及 <a class="el" href="CombatCharacter_8cpp_source.html#l00074">state()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatLoop_8cpp_source.html#l00025">eve::combat::CombatLoopRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="ab3cac13161cd455cfca37ff0880cd582" name="ab3cac13161cd455cfca37ff0880cd582"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3cac13161cd455cfca37ff0880cd582">&#9670;&#160;</a></span>unregisterSubject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatCharacterRuntime::unregisterSubject </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one character; missing subjects are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a> 第 <a class="el" href="CombatCharacter_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/combat/<a class="el" href="CombatCharacter_8h_source.html">CombatCharacter.h</a></li>
+<li>src/modules/combat/<a class="el" href="CombatCharacter_8cpp_source.html">CombatCharacter.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

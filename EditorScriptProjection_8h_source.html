@@ -1,0 +1,411 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorScriptProjection.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorScriptProjection.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorScriptProjection_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBindContext_8h.html">common/SquirrelBindContext.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelOwnership_8h.html">common/SquirrelOwnership.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="EditorWorkspace_8h.html">editor/EditorWorkspace.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#adb46b223982dbffd7273c1d89e31eb5d">   28</a></span>[[nodiscard]] <span class="keyword">inline</span> ssq::Table <a class="code hl_function" href="namespaceeve_1_1editor.html#adb46b223982dbffd7273c1d89e31eb5d">project</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a>&amp; result) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, result.<a class="code hl_function" href="classeve_1_1Result.html#aeae13d24477887a325e83f30886d05c7">status</a>());</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a3180c4b912279447d526ec112ce807d0">   42</a></span>[[nodiscard]] <span class="keyword">inline</span> ssq::Table <a class="code hl_function" href="namespaceeve_1_1editor.html#adb46b223982dbffd7273c1d89e31eb5d">project</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;T&gt;</a>&amp; result, <a class="code hl_class" href="classeve_1_1Value.html">Value</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (!result.<a class="code hl_function" href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">ok</a>()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, result.<a class="code hl_function" href="classeve_1_1Result.html#aeae13d24477887a325e83f30886d05c7">status</a>());</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, result.<a class="code hl_function" href="classeve_1_1Result.html#aeae13d24477887a325e83f30886d05c7">status</a>(), std::move(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>));</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#af1b349e51a1611eea062ba7d52b513f1">   57</a></span>[[nodiscard]] <span class="keyword">inline</span> ssq::Table <a class="code hl_function" href="namespaceeve_1_1editor.html#af1b349e51a1611eea062ba7d52b513f1">bindingFailure</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                                               std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {}) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Status.html#a606ebe2230c2ff7baf0615318b918884">Status::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>), std::move(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), {}, <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a> ? <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a> : <span class="stringliteral">&quot;&quot;</span>)));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a6aa5e5a25a6546b688f93ed6b4777d46">   72</a></span>[[nodiscard]] <span class="keyword">inline</span> ssq::Table <a class="code hl_function" href="namespaceeve_1_1editor.html#a6aa5e5a25a6546b688f93ed6b4777d46">projectHistoryRevision</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;T&gt;</a>&amp; result) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#adb46b223982dbffd7273c1d89e31eb5d">project</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, result, <a class="code hl_class" href="classeve_1_1Value.html">Value</a>(result.<a class="code hl_function" href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">ok</a>() ? <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(result.<a class="code hl_function" href="classeve_1_1Result.html#a4185a5624803a273bf2b753b7a7c658c">value</a>().afterRevision) : 0));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a9ce7d435abe0abb2a4b5fa951eca10e8">   86</a></span>[[nodiscard]] <span class="keyword">inline</span> ssq::Table <a class="code hl_function" href="namespaceeve_1_1editor.html#a9ce7d435abe0abb2a4b5fa951eca10e8">projectOwnedInstance</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::unique_ptr&lt;T&gt; instance) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">auto</span> <span class="keywordtype">object</span> = script::makeOwnedSquirrelInstance&lt;T&gt;(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::move(instance));</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">if</span> (!<span class="keywordtype">object</span>) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keywordtype">object</span>.<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>());</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    ssq::Object <a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a>  = std::move(<span class="keywordtype">object</span>).takeValue();</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">auto</span>        result = <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    result.set(<span class="stringliteral">&quot;value&quot;</span>, <a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    result.set(<span class="stringliteral">&quot;ownership&quot;</span>, std::string(<span class="stringliteral">&quot;owned&quot;</span>));</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#ad46155292fb9cf674e754998150df5c5">  107</a></span>[[nodiscard]] <span class="keyword">inline</span> ssq::Table <a class="code hl_function" href="namespaceeve_1_1editor.html#ad46155292fb9cf674e754998150df5c5">projectOwnedCreate</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, std::string emptyIdMessage,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                                                   <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PrefabAttackVfx_8cpp.html#a60525233dee63f097b8685c39c476e06">targetId</a>) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrefabAttackVfx_8cpp.html#a60525233dee63f097b8685c39c476e06">targetId</a>.empty())</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#af1b349e51a1611eea062ba7d52b513f1">bindingFailure</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, std::move(emptyIdMessage), <span class="stringliteral">&quot;targetId&quot;</span>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">return</span> projectOwnedInstance&lt;T&gt;(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::make_unique&lt;T&gt;(<a class="code hl_variable" href="PrefabAttackVfx_8cpp.html#a60525233dee63f097b8685c39c476e06">targetId</a>));</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
+</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00124" data-start="{" data-end="}">
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#aec76b7634656075adce36e2d5e679a2f">  124</a></span>[[nodiscard]] <span class="keyword">inline</span> <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#aec76b7634656075adce36e2d5e679a2f">addScriptClass</a>(ssq::Table&amp; table, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">return</span> table.addClass&lt;T&gt;(<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::function&lt;T*()&gt;([]() -&gt; T* { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }), <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}</div>
+</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="foldopen" id="foldopen00135" data-start="{" data-end="};">
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html">  135</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1ScriptBind.html">ScriptBind</a> {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#af6af8cb168bd63b76ea306f06a3b4c56">  144</a></span>    <span class="keyword">constexpr</span> <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#af6af8cb168bd63b76ea306f06a3b4c56">ScriptBind</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#aaefb7e2d2ab647f27f240d48c6f6789b">vm</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#abb7102c11d12d607d4be44cdaa2ab016">source</a>) noexcept : ctx_(<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#aaefb7e2d2ab647f27f240d48c6f6789b">vm</a>, <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#abb7102c11d12d607d4be44cdaa2ab016">source</a>) {}</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#a9080f313c3bdc7c675415f7747086cd8">  152</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1script_1_1BindContext.html">script::BindContext</a>&amp; <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#a9080f313c3bdc7c675415f7747086cd8">context</a>() const noexcept { <span class="keywordflow">return</span> ctx_; }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#aaefb7e2d2ab647f27f240d48c6f6789b">  163</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#aaefb7e2d2ab647f27f240d48c6f6789b">vm</a>() const noexcept { <span class="keywordflow">return</span> ctx_.<a class="code hl_function" href="classeve_1_1script_1_1BindContext.html#aa38bed53354eb4a9938597619f0a312a">vm</a>(); }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#abb7102c11d12d607d4be44cdaa2ab016">  174</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#abb7102c11d12d607d4be44cdaa2ab016">source</a>() const noexcept { <span class="keywordflow">return</span> ctx_.<a class="code hl_function" href="classeve_1_1script_1_1BindContext.html#a5ba2de2532b76a841f81e7afd3cfc5b8">source</a>(); }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="foldopen" id="foldopen00183" data-start="{" data-end="}">
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#ac55e1c65b8ac81259b5b53333acfb48c">  183</a></span>    [[nodiscard]] ssq::Table <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#ac55e1c65b8ac81259b5b53333acfb48c">fail</a>(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {}) <span class="keyword">const</span> {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordflow">return</span> ctx_.<a class="code hl_function" href="classeve_1_1script_1_1BindContext.html#a3ebe3f7fb4639521e72ed4e1e58148c5">fail</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>), std::move(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>));</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    }</div>
+</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> Fn&gt;</div>
+<div class="foldopen" id="foldopen00197" data-start="{" data-end="}">
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#acf4ace896c4220bb18279ef1ba4cb4b6">  197</a></span>    [[nodiscard]] ssq::Table <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#acf4ace896c4220bb18279ef1ba4cb4b6">checked</a>(<span class="keywordtype">bool</span> ready, std::string nullMessage, Fn&amp;&amp; <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>, std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {}) <span class="keyword">const</span> {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keywordflow">if</span> (!ready) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#ac55e1c65b8ac81259b5b53333acfb48c">fail</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, std::move(nullMessage), std::move(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>));</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#adb46b223982dbffd7273c1d89e31eb5d">project</a>(<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#aaefb7e2d2ab647f27f240d48c6f6789b">vm</a>(), std::forward&lt;Fn&gt;(<a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)());</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    }</div>
+</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> Fn&gt;</div>
+<div class="foldopen" id="foldopen00214" data-start="{" data-end="}">
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#acee8bc62b04a282fb9d8383ed52ce069">  214</a></span>    [[nodiscard]] ssq::Table <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#acee8bc62b04a282fb9d8383ed52ce069">checked</a>(T* self, std::string nullMessage, Fn&amp;&amp; <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>, std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {}) <span class="keyword">const</span> {</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#acf4ace896c4220bb18279ef1ba4cb4b6">checked</a>(self != <span class="keyword">nullptr</span>, std::move(nullMessage), std::forward&lt;Fn&gt;(<a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>), std::move(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>));</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    }</div>
+</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> Fn&gt;</div>
+<div class="foldopen" id="foldopen00229" data-start="{" data-end="}">
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#a87c49d794683def7a99f163ce794b58d">  229</a></span>    [[nodiscard]] ssq::Table <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#a87c49d794683def7a99f163ce794b58d">history</a>(T* self, std::string nullMessage, Fn&amp;&amp; <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">if</span> (!self) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#ac55e1c65b8ac81259b5b53333acfb48c">fail</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, std::move(nullMessage));</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#a6aa5e5a25a6546b688f93ed6b4777d46">projectHistoryRevision</a>(<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#aaefb7e2d2ab647f27f240d48c6f6789b">vm</a>(), std::forward&lt;Fn&gt;(<a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)());</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    }</div>
+</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00244" data-start="{" data-end="}">
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#a909bb68d17b3cdf125deb22886f4ab22">  244</a></span>    [[nodiscard]] ssq::Table <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#a909bb68d17b3cdf125deb22886f4ab22">ownedCreate</a>(std::string emptyIdMessage, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PrefabAttackVfx_8cpp.html#a60525233dee63f097b8685c39c476e06">targetId</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        <span class="keywordflow">return</span> projectOwnedCreate&lt;T&gt;(<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#aaefb7e2d2ab647f27f240d48c6f6789b">vm</a>(), <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#abb7102c11d12d607d4be44cdaa2ab016">source</a>(), std::move(emptyIdMessage), <a class="code hl_variable" href="PrefabAttackVfx_8cpp.html#a60525233dee63f097b8685c39c476e06">targetId</a>);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    }</div>
+</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00256" data-start="{" data-end="}">
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ScriptBind.html#a993ee56b7a7a305e03a9ad04bc552a74">  256</a></span>    [[nodiscard]] ssq::Table <a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#a993ee56b7a7a305e03a9ad04bc552a74">ownedInstance</a>(std::unique_ptr&lt;T&gt; instance)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="keywordflow">return</span> projectOwnedInstance&lt;T&gt;(<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#aaefb7e2d2ab647f27f240d48c6f6789b">vm</a>(), std::move(instance));</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    }</div>
+</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <a class="code hl_class" href="classeve_1_1script_1_1BindContext.html">script::BindContext</a> ctx_;</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>};</div>
+</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> ScriptT&gt;</div>
+<div class="foldopen" id="foldopen00274" data-start="{" data-end="}">
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#aaa29f53704859bdac92181ac8169025b">  274</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#aaa29f53704859bdac92181ac8169025b">registerEditorWorkspace</a>(ssq::Class&amp; <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1ScriptBind.html">ScriptBind</a>&amp; bind, <span class="keyword">const</span> <span class="keywordtype">char</span>* nullMessage) {</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;configureWorkspace&quot;</span>, [bind, nullMessage](ScriptT* self, <a class="code hl_class" href="classeve_1_1editor_1_1EditorWorkspace.html">EditorWorkspace</a>* workspace) {</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <span class="keywordflow">return</span> bind.<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#acf4ace896c4220bb18279ef1ba4cb4b6">checked</a>(</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            self &amp;&amp; workspace, nullMessage, [&amp;] { <span class="keywordflow">return</span> self-&gt;editor().configureWorkspace(*workspace); }, <span class="stringliteral">&quot;workspace&quot;</span>);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    });</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>}</div>
+</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> EditorT&gt;</div>
+<div class="foldopen" id="foldopen00290" data-start="{" data-end="}">
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a3662273bdd4b50525d0cfd16f75927d4">  290</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#a3662273bdd4b50525d0cfd16f75927d4">registerDirectEditorWorkspace</a>(ssq::Class&amp; <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1ScriptBind.html">ScriptBind</a>&amp; bind, <span class="keyword">const</span> <span class="keywordtype">char</span>* nullMessage) {</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;configureWorkspace&quot;</span>, [bind, nullMessage](EditorT* self, <a class="code hl_class" href="classeve_1_1editor_1_1EditorWorkspace.html">EditorWorkspace</a>* workspace) {</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        <span class="keywordflow">return</span> bind.<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#acf4ace896c4220bb18279ef1ba4cb4b6">checked</a>(self &amp;&amp; workspace, nullMessage, [&amp;] { <span class="keywordflow">return</span> self-&gt;configureWorkspace(*workspace); });</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    });</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>}</div>
+</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> ScriptT&gt;</div>
+<div class="foldopen" id="foldopen00306" data-start="{" data-end="}">
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#abc53f21db5b35a86fb3c7c1814738c44">  306</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#abc53f21db5b35a86fb3c7c1814738c44">registerEditorHistory</a>(ssq::Class&amp; <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1ScriptBind.html">ScriptBind</a>&amp; bind, <span class="keyword">const</span> <span class="keywordtype">char</span>* nullMessage) {</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;undo&quot;</span>, [bind, nullMessage](ScriptT* self) {</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keywordflow">return</span> bind.<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#a87c49d794683def7a99f163ce794b58d">history</a>(self, nullMessage, [&amp;] { <span class="keywordflow">return</span> self-&gt;editor().undo(); });</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    });</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;redo&quot;</span>, [bind, nullMessage](ScriptT* self) {</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <span class="keywordflow">return</span> bind.<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#a87c49d794683def7a99f163ce794b58d">history</a>(self, nullMessage, [&amp;] { <span class="keywordflow">return</span> self-&gt;editor().redo(); });</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    });</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;canUndo&quot;</span>, [](ScriptT* self) { <span class="keywordflow">return</span> self &amp;&amp; self-&gt;editor().canUndo(); });</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;canRedo&quot;</span>, [](ScriptT* self) { <span class="keywordflow">return</span> self &amp;&amp; self-&gt;editor().canRedo(); });</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getRevision&quot;</span>, [](ScriptT* self) { <span class="keywordflow">return</span> self ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(self-&gt;editor().<a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>()) : 0; });</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>}</div>
+</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span> </div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> ScriptT, <span class="keyword">class</span> ModuleT&gt;</div>
+<div class="foldopen" id="foldopen00328" data-start="{" data-end="}">
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a42622ec086f58d3fa3ce3e274634fc16">  328</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#a42622ec086f58d3fa3ce3e274634fc16">registerEditorOwnedCreate</a>(ssq::Class&amp; moduleClass, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1ScriptBind.html">ScriptBind</a>&amp; bind, <span class="keyword">const</span> <span class="keywordtype">char</span>* emptyIdMessage) {</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    moduleClass.addFunc(<span class="stringliteral">&quot;create&quot;</span>, [bind, emptyIdMessage](ModuleT*, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PrefabAttackVfx_8cpp.html#a60525233dee63f097b8685c39c476e06">targetId</a>) {</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keywordflow">return</span> bind.<a class="code hl_function" href="classeve_1_1editor_1_1ScriptBind.html#a909bb68d17b3cdf125deb22886f4ab22">ownedCreate</a>&lt;ScriptT&gt;(emptyIdMessage, <a class="code hl_variable" href="PrefabAttackVfx_8cpp.html#a60525233dee63f097b8685c39c476e06">targetId</a>);</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    });</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>}</div>
+</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00153">ActionNotifyRegistry.cpp:153</a></div></div>
+<div class="ttc" id="aAudioCapabilities_8cpp_html_a374e8573581fe9b64dadaf512dc7ddda"><div class="ttname"><a href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a></div><div class="ttdeci">ActiveSource owned</div><div class="ttdef"><b>Definition</b> <a href="AudioCapabilities_8cpp_source.html#l00387">AudioCapabilities.cpp:387</a></div></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a091d9c8332bbc20675859af3713a8283"><div class="ttname"><a href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a></div><div class="ttdeci">HSQOBJECT cls</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00021">ECS.cpp:21</a></div></div>
+<div class="ttc" id="aEditorWorkspace_8h_html"><div class="ttname"><a href="EditorWorkspace_8h.html">EditorWorkspace.h</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aGraphicsTextureMips_8cpp_html_ae2ee633a7768658281259907a29fc401"><div class="ttname"><a href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a></div><div class="ttdeci">wgpu::PopErrorScopeStatus status</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTextureMips_8cpp_source.html#l00013">GraphicsTextureMips.cpp:13</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00040">McpScriptTools.cpp:40</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00062">PixelWorld.cpp:62</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00110">PlayHost.cpp:110</a></div></div>
+<div class="ttc" id="aPrefabAttackVfx_8cpp_html_a60525233dee63f097b8685c39c476e06"><div class="ttname"><a href="PrefabAttackVfx_8cpp.html#a60525233dee63f097b8685c39c476e06">targetId</a></div><div class="ttdeci">std::uint32_t targetId</div><div class="ttdef"><b>Definition</b> <a href="PrefabAttackVfx_8cpp_source.html#l00065">PrefabAttackVfx.cpp:65</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSquirrelBindContext_8h_html"><div class="ttname"><a href="SquirrelBindContext_8h.html">SquirrelBindContext.h</a></div><div class="ttdoc">Per-translation-unit VM + diagnostic-source helper for Squirrel bindings.</div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aSquirrelOwnership_8h_html"><div class="ttname"><a href="SquirrelOwnership_8h.html">SquirrelOwnership.h</a></div><div class="ttdoc">Explicit Value/Owned/Borrowed semantics at the Squirrel boundary.</div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a176f5b9d50679b93425278a1a59e3eaa"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a></div><div class="ttdeci">const UnitySourceAsset &amp; source</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00029">UnityVegetationPreset.cpp:29</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00125">Diagnostic.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a4185a5624803a273bf2b753b7a7c658c"><div class="ttname"><a href="classeve_1_1Result.html#a4185a5624803a273bf2b753b7a7c658c">eve::Result::value</a></div><div class="ttdeci">const T &amp; value() const &amp;</div><div class="ttdoc">Borrow the value from a const lvalue after checking success.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00308">Result.h:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_ad6cb7f2de48f0622ee88b180f7fc2c7f"><div class="ttname"><a href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">eve::Result::ok</a></div><div class="ttdeci">bool ok() const noexcept</div><div class="ttdoc">Whether this result represents a non-failure outcome.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00255">Result.h:255</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_aeae13d24477887a325e83f30886d05c7"><div class="ttname"><a href="classeve_1_1Result.html#aeae13d24477887a325e83f30886d05c7">eve::Result::status</a></div><div class="ttdeci">const Status &amp; status() const noexcept</div><div class="ttdoc">Inspect the structured operation status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00269">Result.h:269</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_a606ebe2230c2ff7baf0615318b918884"><div class="ttname"><a href="classeve_1_1Status.html#a606ebe2230c2ff7baf0615318b918884">eve::Status::failure</a></div><div class="ttdeci">static Status failure(StatusCode code, Diagnostic diagnostic)</div><div class="ttdoc">Construct a failed status with one diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00084">Status.h:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html">eve::editor::EditorWorkspace</a></div><div class="ttdoc">Composition model shared by project-specific developer and runtime editors.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8h_source.html#l00043">EditorWorkspace.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html">eve::editor::ScriptBind</a></div><div class="ttdoc">Editor facade binder: common script::BindContext plus history/owned-create helpers.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00135">EditorScriptProjection.h:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_a87c49d794683def7a99f163ce794b58d"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#a87c49d794683def7a99f163ce794b58d">eve::editor::ScriptBind::history</a></div><div class="ttdeci">ssq::Table history(T *self, std::string nullMessage, Fn &amp;&amp;fn) const</div><div class="ttdoc">Null-self guard then project a history mutation that exposes afterRevision.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00229">EditorScriptProjection.h:229</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_a9080f313c3bdc7c675415f7747086cd8"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#a9080f313c3bdc7c675415f7747086cd8">eve::editor::ScriptBind::context</a></div><div class="ttdeci">constexpr const script::BindContext &amp; context() const noexcept</div><div class="ttdoc">Underlying common binder (VM + source + fail/checked).</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00152">EditorScriptProjection.h:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_a909bb68d17b3cdf125deb22886f4ab22"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#a909bb68d17b3cdf125deb22886f4ab22">eve::editor::ScriptBind::ownedCreate</a></div><div class="ttdeci">ssq::Table ownedCreate(std::string emptyIdMessage, const std::string &amp;targetId) const</div><div class="ttdoc">Create T(targetId) and project it as an owned script Result.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00244">EditorScriptProjection.h:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_a993ee56b7a7a305e03a9ad04bc552a74"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#a993ee56b7a7a305e03a9ad04bc552a74">eve::editor::ScriptBind::ownedInstance</a></div><div class="ttdeci">ssq::Table ownedInstance(std::unique_ptr&lt; T &gt; instance) const</div><div class="ttdoc">Project an already-built instance as an owned script Result.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00256">EditorScriptProjection.h:256</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_aaefb7e2d2ab647f27f240d48c6f6789b"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#aaefb7e2d2ab647f27f240d48c6f6789b">eve::editor::ScriptBind::vm</a></div><div class="ttdeci">constexpr HSQUIRRELVM vm() const noexcept</div><div class="ttdoc">Active Squirrel VM handle.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00163">EditorScriptProjection.h:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_abb7102c11d12d607d4be44cdaa2ab016"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#abb7102c11d12d607d4be44cdaa2ab016">eve::editor::ScriptBind::source</a></div><div class="ttdeci">constexpr const char * source() const noexcept</div><div class="ttdoc">Diagnostic source tag for this binder.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00174">EditorScriptProjection.h:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_ac55e1c65b8ac81259b5b53333acfb48c"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#ac55e1c65b8ac81259b5b53333acfb48c">eve::editor::ScriptBind::fail</a></div><div class="ttdeci">ssq::Table fail(DiagnosticCode code, std::string message, std::string path={}) const</div><div class="ttdoc">Project a binding-layer argument failure.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00183">EditorScriptProjection.h:183</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_acee8bc62b04a282fb9d8383ed52ce069"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#acee8bc62b04a282fb9d8383ed52ce069">eve::editor::ScriptBind::checked</a></div><div class="ttdeci">ssq::Table checked(T *self, std::string nullMessage, Fn &amp;&amp;fn, std::string path={}) const</div><div class="ttdoc">Null-self guard then project a void/Result&lt;void&gt; editor call.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00214">EditorScriptProjection.h:214</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_acf4ace896c4220bb18279ef1ba4cb4b6"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#acf4ace896c4220bb18279ef1ba4cb4b6">eve::editor::ScriptBind::checked</a></div><div class="ttdeci">ssq::Table checked(bool ready, std::string nullMessage, Fn &amp;&amp;fn, std::string path={}) const</div><div class="ttdoc">Run fn and project its Result when ready; otherwise emit InvalidArgument.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00197">EditorScriptProjection.h:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ScriptBind_html_af6af8cb168bd63b76ea306f06a3b4c56"><div class="ttname"><a href="classeve_1_1editor_1_1ScriptBind.html#af6af8cb168bd63b76ea306f06a3b4c56">eve::editor::ScriptBind::ScriptBind</a></div><div class="ttdeci">constexpr ScriptBind(HSQUIRRELVM vm, const char *source) noexcept</div><div class="ttdoc">Construct a binder for one expose() translation unit.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00144">EditorScriptProjection.h:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1BindContext_html"><div class="ttname"><a href="classeve_1_1script_1_1BindContext.html">eve::script::BindContext</a></div><div class="ttdoc">Pins the active VM and a stable diagnostic source for one expose() TU.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBindContext_8h_source.html#l00032">SquirrelBindContext.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1BindContext_html_a3ebe3f7fb4639521e72ed4e1e58148c5"><div class="ttname"><a href="classeve_1_1script_1_1BindContext.html#a3ebe3f7fb4639521e72ed4e1e58148c5">eve::script::BindContext::fail</a></div><div class="ttdeci">ssq::Table fail(DiagnosticCode code, std::string message, std::string path={}) const</div><div class="ttdoc">Project a binding-layer argument failure.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBindContext_8h_source.html#l00067">SquirrelBindContext.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1BindContext_html_a5ba2de2532b76a841f81e7afd3cfc5b8"><div class="ttname"><a href="classeve_1_1script_1_1BindContext.html#a5ba2de2532b76a841f81e7afd3cfc5b8">eve::script::BindContext::source</a></div><div class="ttdeci">constexpr const char * source() const noexcept</div><div class="ttdoc">Diagnostic source tag for this binder.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBindContext_8h_source.html#l00058">SquirrelBindContext.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1BindContext_html_aa38bed53354eb4a9938597619f0a312a"><div class="ttname"><a href="classeve_1_1script_1_1BindContext.html#aa38bed53354eb4a9938597619f0a312a">eve::script::BindContext::vm</a></div><div class="ttdeci">constexpr HSQUIRRELVM vm() const noexcept</div><div class="ttdoc">Active Squirrel VM handle.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBindContext_8h_source.html#l00049">SquirrelBindContext.h:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a3662273bdd4b50525d0cfd16f75927d4"><div class="ttname"><a href="namespaceeve_1_1editor.html#a3662273bdd4b50525d0cfd16f75927d4">eve::editor::registerDirectEditorWorkspace</a></div><div class="ttdeci">void registerDirectEditorWorkspace(ssq::Class &amp;cls, const ScriptBind &amp;bind, const char *nullMessage)</div><div class="ttdoc">Register configureWorkspace when the script class is the editor (no .editor()).</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00290">EditorScriptProjection.h:290</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a42622ec086f58d3fa3ce3e274634fc16"><div class="ttname"><a href="namespaceeve_1_1editor.html#a42622ec086f58d3fa3ce3e274634fc16">eve::editor::registerEditorOwnedCreate</a></div><div class="ttdeci">void registerEditorOwnedCreate(ssq::Class &amp;moduleClass, const ScriptBind &amp;bind, const char *emptyIdMessage)</div><div class="ttdoc">Register module create(targetId) that builds an owned Script* wrapper.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00328">EditorScriptProjection.h:328</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6aa5e5a25a6546b688f93ed6b4777d46"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6aa5e5a25a6546b688f93ed6b4777d46">eve::editor::projectHistoryRevision</a></div><div class="ttdeci">ssq::Table projectHistoryRevision(HSQUIRRELVM vm, const eve::Result&lt; T &gt; &amp;result)</div><div class="ttdoc">Project an undo/redo (or similar) result whose payload exposes afterRevision.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00072">EditorScriptProjection.h:72</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a9ce7d435abe0abb2a4b5fa951eca10e8"><div class="ttname"><a href="namespaceeve_1_1editor.html#a9ce7d435abe0abb2a4b5fa951eca10e8">eve::editor::projectOwnedInstance</a></div><div class="ttdeci">ssq::Table projectOwnedInstance(HSQUIRRELVM vm, std::unique_ptr&lt; T &gt; instance)</div><div class="ttdoc">Wrap an already-built owned C++ instance as a script Result {value, ownership}.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00086">EditorScriptProjection.h:86</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_aaa29f53704859bdac92181ac8169025b"><div class="ttname"><a href="namespaceeve_1_1editor.html#aaa29f53704859bdac92181ac8169025b">eve::editor::registerEditorWorkspace</a></div><div class="ttdeci">void registerEditorWorkspace(ssq::Class &amp;cls, const ScriptBind &amp;bind, const char *nullMessage)</div><div class="ttdoc">Register configureWorkspace for a Script* wrapper that exposes editor().</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00274">EditorScriptProjection.h:274</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_abc53f21db5b35a86fb3c7c1814738c44"><div class="ttname"><a href="namespaceeve_1_1editor.html#abc53f21db5b35a86fb3c7c1814738c44">eve::editor::registerEditorHistory</a></div><div class="ttdeci">void registerEditorHistory(ssq::Class &amp;cls, const ScriptBind &amp;bind, const char *nullMessage)</div><div class="ttdoc">Register shared undo, redo, canUndo, canRedo, and getRevision methods.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00306">EditorScriptProjection.h:306</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ad46155292fb9cf674e754998150df5c5"><div class="ttname"><a href="namespaceeve_1_1editor.html#ad46155292fb9cf674e754998150df5c5">eve::editor::projectOwnedCreate</a></div><div class="ttdeci">ssq::Table projectOwnedCreate(HSQUIRRELVM vm, const char *source, std::string emptyIdMessage, const std::string &amp;targetId)</div><div class="ttdoc">Create a target-id editor wrapper and project it as an owned script Result.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00107">EditorScriptProjection.h:107</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_adb46b223982dbffd7273c1d89e31eb5d"><div class="ttname"><a href="namespaceeve_1_1editor.html#adb46b223982dbffd7273c1d89e31eb5d">eve::editor::project</a></div><div class="ttdeci">ssq::Table project(HSQUIRRELVM vm, const eve::Result&lt; void &gt; &amp;result)</div><div class="ttdoc">Project a completed editing result that has no payload.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00028">EditorScriptProjection.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_aec76b7634656075adce36e2d5e679a2f"><div class="ttname"><a href="namespaceeve_1_1editor.html#aec76b7634656075adce36e2d5e679a2f">eve::editor::addScriptClass</a></div><div class="ttdeci">auto addScriptClass(ssq::Table &amp;table, const char *name)</div><div class="ttdoc">Register a script class whose default constructor returns null (factory-only types).</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00124">EditorScriptProjection.h:124</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_af1b349e51a1611eea062ba7d52b513f1"><div class="ttname"><a href="namespaceeve_1_1editor.html#af1b349e51a1611eea062ba7d52b513f1">eve::editor::bindingFailure</a></div><div class="ttdeci">ssq::Table bindingFailure(HSQUIRRELVM vm, const char *source, DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Project a binding-layer argument failure with a stable diagnostic source.</div><div class="ttdef"><b>Definition</b> <a href="EditorScriptProjection_8h_source.html#l00057">EditorScriptProjection.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_aac755328623c2aea760607fc3d6c7c23"><div class="ttname"><a href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">eve::script::projectStatusResult</a></div><div class="ttdeci">ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status &amp;status)</div><div class="ttdoc">Project a checked native status that carries no payload.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00454">SquirrelBinding.cpp:454</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00032">Settlement.cpp:32</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

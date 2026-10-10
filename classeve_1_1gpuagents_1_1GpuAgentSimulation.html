@@ -1,0 +1,662 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpuagents::GpuAgentSimulation类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpuagents.html">gpuagents</a></li><li class="navelem"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html">GpuAgentSimulation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1gpuagents_1_1GpuAgentSimulation-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpuagents::GpuAgentSimulation类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Fixed-step, double-buffered agent simulation owner.  
+ <a href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3d73b0cffcd8d0c81fa2b43a2036c8a3" id="r_a3d73b0cffcd8d0c81fa2b43a2036c8a3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#a3d73b0cffcd8d0c81fa2b43a2036c8a3">GpuAgentSimulation</a> ()=default</td></tr>
+<tr class="memdesc:a3d73b0cffcd8d0c81fa2b43a2036c8a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gpu agent simulation.  <br /></td></tr>
+<tr class="separator:a3d73b0cffcd8d0c81fa2b43a2036c8a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa2c1278b8522e0ec7c1dd83e6aa11cc" id="r_aaa2c1278b8522e0ec7c1dd83e6aa11cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#aaa2c1278b8522e0ec7c1dd83e6aa11cc">configure</a> (const <a class="el" href="structeve_1_1gpuagents_1_1EffectProfile.html">EffectProfile</a> &amp;<a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#a1a57c63ea5f37d575b7db59defa95427">profile</a>)</td></tr>
+<tr class="memdesc:aaa2c1278b8522e0ec7c1dd83e6aa11cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure capacity and bind a solver for the profile kind.  <br /></td></tr>
+<tr class="separator:aaa2c1278b8522e0ec7c1dd83e6aa11cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41d724c5e6d381af9d360b285880f25f" id="r_a41d724c5e6d381af9d360b285880f25f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#a41d724c5e6d381af9d360b285880f25f">setSolver</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1gpuagents_1_1IAgentSolver.html">IAgentSolver</a> &gt; solver)</td></tr>
+<tr class="memdesc:a41d724c5e6d381af9d360b285880f25f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the solver instance (tests / custom kernels). @ownership Simulation takes ownership.  <br /></td></tr>
+<tr class="separator:a41d724c5e6d381af9d360b285880f25f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e388206acd09cae9a8ee33623f3f42a" id="r_a6e388206acd09cae9a8ee33623f3f42a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#a6e388206acd09cae9a8ee33623f3f42a">initialize</a> (int <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, const std::function&lt; <a class="el" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a>(int)&gt; &amp;spawnFn)</td></tr>
+<tr class="memdesc:a6e388206acd09cae9a8ee33623f3f42a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn <code>count</code> alive agents using <code>spawnFn(index) -&gt; <a class="el" href="structeve_1_1gpuagents_1_1AgentState.html" title="Standardized per-agent simulation output shared by all effect kinds.">AgentState</a></code>.  <br /></td></tr>
+<tr class="separator:a6e388206acd09cae9a8ee33623f3f42a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a892eb327b6404fa5f08959921d7a3ffe" id="r_a892eb327b6404fa5f08959921d7a3ffe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#a892eb327b6404fa5f08959921d7a3ffe">reset</a> ()</td></tr>
+<tr class="memdesc:a892eb327b6404fa5f08959921d7a3ffe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all agents and the time accumulator.  <br /></td></tr>
+<tr class="separator:a892eb327b6404fa5f08959921d7a3ffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc31b379760260891c61938c3f669853" id="r_adc31b379760260891c61938c3f669853"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#adc31b379760260891c61938c3f669853">step</a> (float dt, const <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">EnvironmentSnapshot</a> &amp;env)</td></tr>
+<tr class="memdesc:adc31b379760260891c61938c3f669853"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance wall-clock <code>dt</code> via fixed substeps.  <br /></td></tr>
+<tr class="separator:adc31b379760260891c61938c3f669853"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9caf759eac8893a78464b525b08cc425" id="r_a9caf759eac8893a78464b525b08cc425"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#a9caf759eac8893a78464b525b08cc425">capacity</a> () const</td></tr>
+<tr class="memdesc:a9caf759eac8893a78464b525b08cc425"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active agent capacity.  <br /></td></tr>
+<tr class="separator:a9caf759eac8893a78464b525b08cc425"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b6536d4241f6a56fe804a02b98bb9de" id="r_a9b6536d4241f6a56fe804a02b98bb9de"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#a9b6536d4241f6a56fe804a02b98bb9de">aliveCount</a> () const</td></tr>
+<tr class="memdesc:a9b6536d4241f6a56fe804a02b98bb9de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of alive agents.  <br /></td></tr>
+<tr class="separator:a9b6536d4241f6a56fe804a02b98bb9de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba759c641a7f4e383b1ee0a3d7adda5e" id="r_aba759c641a7f4e383b1ee0a3d7adda5e"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#aba759c641a7f4e383b1ee0a3d7adda5e">states</a> () const</td></tr>
+<tr class="memdesc:aba759c641a7f4e383b1ee0a3d7adda5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current front-buffer states (read-only).  <br /></td></tr>
+<tr class="separator:aba759c641a7f4e383b1ee0a3d7adda5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd21ba66e0dc5d240e981d2392d66f3c" id="r_acd21ba66e0dc5d240e981d2392d66f3c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#acd21ba66e0dc5d240e981d2392d66f3c">states</a> ()</td></tr>
+<tr class="memdesc:acd21ba66e0dc5d240e981d2392d66f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutable front buffer (editor preview / tests).  <br /></td></tr>
+<tr class="separator:acd21ba66e0dc5d240e981d2392d66f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a57c63ea5f37d575b7db59defa95427" id="r_a1a57c63ea5f37d575b7db59defa95427"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1gpuagents_1_1EffectProfile.html">EffectProfile</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#a1a57c63ea5f37d575b7db59defa95427">profile</a> () const</td></tr>
+<tr class="memdesc:a1a57c63ea5f37d575b7db59defa95427"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bound profile.  <br /></td></tr>
+<tr class="separator:a1a57c63ea5f37d575b7db59defa95427"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5faee1224080b2cf07cb3bbef209eee" id="r_ab5faee1224080b2cf07cb3bbef209eee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#ab5faee1224080b2cf07cb3bbef209eee">isConfigured</a> () const</td></tr>
+<tr class="memdesc:ab5faee1224080b2cf07cb3bbef209eee"><td class="mdescLeft">&#160;</td><td class="mdescRight">True after successful configure.  <br /></td></tr>
+<tr class="separator:ab5faee1224080b2cf07cb3bbef209eee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98851181841c6d62a9facdaf401f7ae4" id="r_a98851181841c6d62a9facdaf401f7ae4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#a98851181841c6d62a9facdaf401f7ae4">simTime</a> () const</td></tr>
+<tr class="memdesc:a98851181841c6d62a9facdaf401f7ae4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulated simulation time in seconds.  <br /></td></tr>
+<tr class="separator:a98851181841c6d62a9facdaf401f7ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3287b813789671f798b2c79ce4eaa74" id="r_ad3287b813789671f798b2c79ce4eaa74"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentSimulation.html#ad3287b813789671f798b2c79ce4eaa74">stepCount</a> () const</td></tr>
+<tr class="memdesc:ad3287b813789671f798b2c79ce4eaa74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completed fixed substeps.  <br /></td></tr>
+<tr class="separator:ad3287b813789671f798b2c79ce4eaa74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Fixed-step, double-buffered agent simulation owner. </p>
+<p>Owns agent capacity, ping/pong state buffers, accumulator, and the active solver. Does not own World environment data — callers pass an <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html" title="Read-only environment semantics prepared by GpuAgentWorld each tick.">EnvironmentSnapshot</a> each step. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a> 第 <a class="el" href="GpuAgentSimulation_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a3d73b0cffcd8d0c81fa2b43a2036c8a3" name="a3d73b0cffcd8d0c81fa2b43a2036c8a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d73b0cffcd8d0c81fa2b43a2036c8a3">&#9670;&#160;</a></span>GpuAgentSimulation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpuagents::GpuAgentSimulation::GpuAgentSimulation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gpu agent simulation. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9b6536d4241f6a56fe804a02b98bb9de" name="a9b6536d4241f6a56fe804a02b98bb9de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b6536d4241f6a56fe804a02b98bb9de">&#9670;&#160;</a></span>aliveCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpuagents::GpuAgentSimulation::aliveCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of alive agents. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8cpp_source.html">GpuAgentSimulation.cpp</a> 第 <a class="el" href="GpuAgentSimulation_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00063">n</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+</div>
+</div>
+<a id="a9caf759eac8893a78464b525b08cc425" name="a9caf759eac8893a78464b525b08cc425"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9caf759eac8893a78464b525b08cc425">&#9670;&#160;</a></span>capacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpuagents::GpuAgentSimulation::capacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Active agent capacity. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a> 第 <a class="el" href="GpuAgentSimulation_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa2c1278b8522e0ec7c1dd83e6aa11cc" name="aaa2c1278b8522e0ec7c1dd83e6aa11cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa2c1278b8522e0ec7c1dd83e6aa11cc">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::gpuagents::GpuAgentSimulation::configure </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1gpuagents_1_1EffectProfile.html">EffectProfile</a> &amp;&#160;</td>
+          <td class="paramname"><em>profile</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure capacity and bind a solver for the profile kind. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">profile</td><td>Effect parameters (copied). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Ok or InvalidArgument when capacity / kind is illegal. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8cpp_source.html">GpuAgentSimulation.cpp</a> 第 <a class="el" href="GpuAgentSimulation_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectProfile_8h_source.html#l00138">eve::gpuagents::EffectProfile::base()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EffectProfile_8h_source.html#l00014">eve::gpuagents::EffectProfileBase::fixedDt</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="EffectProfile_8h_source.html#l00013">eve::gpuagents::EffectProfileBase::maxAgents</a>, <a class="el" href="GpuAgentSimulation_8h_source.html#l00069">profile()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectBackend_8cpp_source.html#l00007">eve::gpuagents::EffectBackend::configure()</a>.</p>
+
+</div>
+</div>
+<a id="a6e388206acd09cae9a8ee33623f3f42a" name="a6e388206acd09cae9a8ee33623f3f42a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e388206acd09cae9a8ee33623f3f42a">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::gpuagents::GpuAgentSimulation::initialize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; <a class="el" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a>(int)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>spawnFn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn <code>count</code> alive agents using <code>spawnFn(index) -&gt; <a class="el" href="structeve_1_1gpuagents_1_1AgentState.html" title="Standardized per-agent simulation output shared by all effect kinds.">AgentState</a></code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">count</td><td>Number of agents to activate (≤ capacity). </td></tr>
+    <tr><td class="paramname">spawnFn</td><td>Per-index initializer; age/alive filled if left zero. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8cpp_source.html">GpuAgentSimulation.cpp</a> 第 <a class="el" href="GpuAgentSimulation_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgents_8cpp_source.html#l00051">eve::gpuagents::GpuAgents::spawnCloud()</a>.</p>
+
+</div>
+</div>
+<a id="ab5faee1224080b2cf07cb3bbef209eee" name="ab5faee1224080b2cf07cb3bbef209eee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5faee1224080b2cf07cb3bbef209eee">&#9670;&#160;</a></span>isConfigured()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::gpuagents::GpuAgentSimulation::isConfigured </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True after successful configure. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a> 第 <a class="el" href="GpuAgentSimulation_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgents_8cpp_source.html#l00051">eve::gpuagents::GpuAgents::spawnCloud()</a>.</p>
+
+</div>
+</div>
+<a id="a1a57c63ea5f37d575b7db59defa95427" name="a1a57c63ea5f37d575b7db59defa95427"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a57c63ea5f37d575b7db59defa95427">&#9670;&#160;</a></span>profile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1gpuagents_1_1EffectProfile.html">EffectProfile</a> &amp; eve::gpuagents::GpuAgentSimulation::profile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bound profile. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a> 第 <a class="el" href="GpuAgentSimulation_8h_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgentSimulation_8cpp_source.html#l00036">configure()</a> , 以及 <a class="el" href="GpuAgents_8cpp_source.html#l00051">eve::gpuagents::GpuAgents::spawnCloud()</a>.</p>
+
+</div>
+</div>
+<a id="a892eb327b6404fa5f08959921d7a3ffe" name="a892eb327b6404fa5f08959921d7a3ffe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a892eb327b6404fa5f08959921d7a3ffe">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpuagents::GpuAgentSimulation::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear all agents and the time accumulator. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8cpp_source.html">GpuAgentSimulation.cpp</a> 第 <a class="el" href="GpuAgentSimulation_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+</div>
+</div>
+<a id="a41d724c5e6d381af9d360b285880f25f" name="a41d724c5e6d381af9d360b285880f25f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41d724c5e6d381af9d360b285880f25f">&#9670;&#160;</a></span>setSolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::gpuagents::GpuAgentSimulation::setSolver </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1gpuagents_1_1IAgentSolver.html">IAgentSolver</a> &gt;&#160;</td>
+          <td class="paramname"><em>solver</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the solver instance (tests / custom kernels). @ownership Simulation takes ownership. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8cpp_source.html">GpuAgentSimulation.cpp</a> 第 <a class="el" href="GpuAgentSimulation_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="EffectProfile_8h_source.html#l00131">eve::gpuagents::EffectProfile::kind</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a98851181841c6d62a9facdaf401f7ae4" name="a98851181841c6d62a9facdaf401f7ae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98851181841c6d62a9facdaf401f7ae4">&#9670;&#160;</a></span>simTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::GpuAgentSimulation::simTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Accumulated simulation time in seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a> 第 <a class="el" href="GpuAgentSimulation_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd21ba66e0dc5d240e981d2392d66f3c" name="acd21ba66e0dc5d240e981d2392d66f3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd21ba66e0dc5d240e981d2392d66f3c">&#9670;&#160;</a></span>states() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a> &gt; &amp; eve::gpuagents::GpuAgentSimulation::states </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mutable front buffer (editor preview / tests). </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a> 第 <a class="el" href="GpuAgentSimulation_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba759c641a7f4e383b1ee0a3d7adda5e" name="aba759c641a7f4e383b1ee0a3d7adda5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba759c641a7f4e383b1ee0a3d7adda5e">&#9670;&#160;</a></span>states() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a> &gt; &amp; eve::gpuagents::GpuAgentSimulation::states </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current front-buffer states (read-only). </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a> 第 <a class="el" href="GpuAgentSimulation_8h_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectBackend_8cpp_source.html#l00007">eve::gpuagents::EffectBackend::configure()</a> , 以及 <a class="el" href="EffectBackend_8cpp_source.html#l00015">eve::gpuagents::EffectBackend::step()</a>.</p>
+
+</div>
+</div>
+<a id="adc31b379760260891c61938c3f669853" name="adc31b379760260891c61938c3f669853"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc31b379760260891c61938c3f669853">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::gpuagents::GpuAgentSimulation::step </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">EnvironmentSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>env</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance wall-clock <code>dt</code> via fixed substeps. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>Non-negative frame delta seconds. </td></tr>
+    <tr><td class="paramname">env</td><td>Environment snapshot for this tick. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Ok, or FailedPrecondition when unconfigured. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8cpp_source.html">GpuAgentSimulation.cpp</a> 第 <a class="el" href="GpuAgentSimulation_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectProfile_8h_source.html#l00138">eve::gpuagents::EffectProfile::base()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EffectProfile_8h_source.html#l00014">eve::gpuagents::EffectProfileBase::fixedDt</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectBackend_8cpp_source.html#l00015">eve::gpuagents::EffectBackend::step()</a>.</p>
+
+</div>
+</div>
+<a id="ad3287b813789671f798b2c79ce4eaa74" name="ad3287b813789671f798b2c79ce4eaa74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3287b813789671f798b2c79ce4eaa74">&#9670;&#160;</a></span>stepCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::gpuagents::GpuAgentSimulation::stepCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Completed fixed substeps. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a> 第 <a class="el" href="GpuAgentSimulation_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/gpuagents/<a class="el" href="GpuAgentSimulation_8h_source.html">GpuAgentSimulation.h</a></li>
+<li>src/modules/gpuagents/<a class="el" href="GpuAgentSimulation_8cpp_source.html">GpuAgentSimulation.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

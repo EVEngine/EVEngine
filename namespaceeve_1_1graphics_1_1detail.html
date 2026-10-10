@@ -1,0 +1,642 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html">detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformBuildInputs.html">PbrUniformBuildInputs</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral state needed to build one immutable PBR uniform snapshot.  <a href="structeve_1_1graphics_1_1detail_1_1PbrUniformBuildInputs.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">PbrUniformGpu</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical std140 payload consumed by both generated PBR shader stages.  <a href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUvInfoGpu.html">PbrUvInfoGpu</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">std140 texture-coordinate metadata shared by Vulkan and WebGPU PBR shaders.  <a href="structeve_1_1graphics_1_1detail_1_1PbrUvInfoGpu.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1SkyAtmosphereLuts.html">SkyAtmosphereLuts</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal owning RGBA32F table candidates, never partially published.  <a href="structeve_1_1graphics_1_1detail_1_1SkyAtmosphereLuts.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ab0d3c8e3c8b4e592008cbd5c6774d384" id="r_ab0d3c8e3c8b4e592008cbd5c6774d384"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">PbrUniformGpu</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#ab0d3c8e3c8b4e592008cbd5c6774d384">buildPbrUniformGpu</a> (const <a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformBuildInputs.html">PbrUniformBuildInputs</a> &amp;<a class="el" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>)</td></tr>
+<tr class="memdesc:ab0d3c8e3c8b4e592008cbd5c6774d384"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build all material and scene fields; mesh stream offsets remain disabled for the backend to fill.  <br /></td></tr>
+<tr class="separator:ab0d3c8e3c8b4e592008cbd5c6774d384"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1e774955d8d81a1e29da02faf9e5c1e" id="r_ab1e774955d8d81a1e29da02faf9e5c1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#ab1e774955d8d81a1e29da02faf9e5c1e">exposeRenderable3DBindings</a> (ssq::Table &amp;table)</td></tr>
+<tr class="memdesc:ab1e774955d8d81a1e29da02faf9e5c1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose renderable 3 d bindings.  <br /></td></tr>
+<tr class="separator:ab1e774955d8d81a1e29da02faf9e5c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57685818e214e6b3dc2684b414564b2a" id="r_a57685818e214e6b3dc2684b414564b2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a57685818e214e6b3dc2684b414564b2a">validateInstancedRenderable</a> (const <a class="el" href="structeve_1_1graphics_1_1Renderable3D_1_1MeshRenderer.html">Renderable3D::MeshRenderer</a> &amp;renderer)</td></tr>
+<tr class="memdesc:a57685818e214e6b3dc2684b414564b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate instanced renderable.  <br /></td></tr>
+<tr class="separator:a57685818e214e6b3dc2684b414564b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49838c666df3abd7bb20374e1021bb7f" id="r_a49838c666df3abd7bb20374e1021bb7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a49838c666df3abd7bb20374e1021bb7f">exposeShaderResourceBindings</a> (ssq::Table &amp;table, ssq::Class &amp;<a class="el" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>)</td></tr>
+<tr class="memdesc:a49838c666df3abd7bb20374e1021bb7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose shader resource bindings.  <br /></td></tr>
+<tr class="separator:a49838c666df3abd7bb20374e1021bb7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53c41d5386c6afee555b2b98a9632536" id="r_a53c41d5386c6afee555b2b98a9632536"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a53c41d5386c6afee555b2b98a9632536">validateResourceShaderStages</a> (std::span&lt; const uint32_t &gt; vertex, std::span&lt; const uint32_t &gt; fragment, const <a class="el" href="structeve_1_1graphics_1_1ShaderResourceInputs.html">ShaderResourceInputs</a> &amp;<a class="el" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>)</td></tr>
+<tr class="memdesc:a53c41d5386c6afee555b2b98a9632536"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate resource shader stages.  <br /></td></tr>
+<tr class="separator:a53c41d5386c6afee555b2b98a9632536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99931b03c06555c8f818f673a4aa7c66" id="r_a99931b03c06555c8f818f673a4aa7c66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint32_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a99931b03c06555c8f818f673a4aa7c66">readShaderStageFile</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a99931b03c06555c8f818f673a4aa7c66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads shader stage file.  <br /></td></tr>
+<tr class="separator:a99931b03c06555c8f818f673a4aa7c66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bbbfbb1204b1afa1d0eb21f6cb142f6" id="r_a5bbbfbb1204b1afa1d0eb21f6cb142f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1detail_1_1SkyAtmosphereLuts.html">SkyAtmosphereLuts</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a5bbbfbb1204b1afa1d0eb21f6cb142f6">bakeSkyAtmosphereLuts</a> (const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a> &amp;parameters)</td></tr>
+<tr class="memdesc:a5bbbfbb1204b1afa1d0eb21f6cb142f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake coefficients using UE's default 10/15-sample, two-direction approximation.  <br /></td></tr>
+<tr class="separator:a5bbbfbb1204b1afa1d0eb21f6cb142f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94acef474fae49ec6d5d226935955a5f" id="r_a94acef474fae49ec6d5d226935955a5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::array&lt; float, 3 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a94acef474fae49ec6d5d226935955a5f">bakeDistantSkyAmbient</a> (const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a> &amp;parameters, const <a class="el" href="structeve_1_1graphics_1_1detail_1_1SkyAtmosphereLuts.html">SkyAtmosphereLuts</a> &amp;tables, const std::array&lt; float, 3 &gt; &amp;lightDirection)</td></tr>
+<tr class="memdesc:a94acef474fae49ec6d5d226935955a5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integrate distant-sky ambient radiance per unit incident RGB irradiance at six kilometres.  <br /></td></tr>
+<tr class="separator:a94acef474fae49ec6d5d226935955a5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addcef299a50ca3bd6086aaec4939d19e" id="r_addcef299a50ca3bd6086aaec4939d19e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#addcef299a50ca3bd6086aaec4939d19e">opticalSample</a> (<a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a> <a class="el" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, const <a class="el" href="structeve_1_1graphics_1_1SkyDaylightLayer.html">SkyDaylightLayer</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, float sunY)</td></tr>
+<tr class="memdesc:addcef299a50ca3bd6086aaec4939d19e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure clear/manual optical projection. Inputs are validated authored values and sun Y in [-1,1].  <br /></td></tr>
+<tr class="separator:addcef299a50ca3bd6086aaec4939d19e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0028ea1972e69be8a3480d1991ba0682" id="r_a0028ea1972e69be8a3480d1991ba0682"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a0028ea1972e69be8a3480d1991ba0682">prepareViewResources</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;graphics, const glm::mat4 &amp;viewProjection, const glm::vec3 &amp;<a class="el" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>)</td></tr>
+<tr class="memdesc:a0028ea1972e69be8a3480d1991ba0682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch preparers before opening the destination; no callbacks means success. @thread <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> thread, non-reentrant. No locks are held while invoking callbacks. @lifetime Borrowed graphics and camera values are valid only through this call.  <br /></td></tr>
+<tr class="separator:a0028ea1972e69be8a3480d1991ba0682"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:ab99275b95548c7bcabc160a93903f399" id="r_ab99275b95548c7bcabc160a93903f399"><td class="memItemLeft" align="right" valign="top">constexpr unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#ab99275b95548c7bcabc160a93903f399">OpticalLayers</a> = 81</td></tr>
+<tr class="separator:ab99275b95548c7bcabc160a93903f399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98a2490c7fd7df74082a1ca48cf4c256" id="r_a98a2490c7fd7df74082a1ca48cf4c256"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#a98a2490c7fd7df74082a1ca48cf4c256">OpticalMinimum</a> = -.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a98a2490c7fd7df74082a1ca48cf4c256"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af95508716e6d7775c1af8355fc4e6bd9" id="r_af95508716e6d7775c1af8355fc4e6bd9"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html#af95508716e6d7775c1af8355fc4e6bd9">OpticalMaximum</a> = .32<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af95508716e6d7775c1af8355fc4e6bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a94acef474fae49ec6d5d226935955a5f" name="a94acef474fae49ec6d5d226935955a5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94acef474fae49ec6d5d226935955a5f">&#9670;&#160;</a></span>bakeDistantSkyAmbient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::array&lt; float, 3 &gt; &gt; eve::graphics::detail::bakeDistantSkyAmbient </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>parameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1detail_1_1SkyAtmosphereLuts.html">SkyAtmosphereLuts</a> &amp;&#160;</td>
+          <td class="paramname"><em>tables</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; float, 3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lightDirection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Integrate distant-sky ambient radiance per unit incident RGB irradiance at six kilometres. </p>
+<p>Uses 64 fixed stratified directions, ten samples per ray, isotropic phase and no ground bounce. The caller must supply tables baked from the same immutable parameters. Direction is Y-up towards the light. </p><dl class="section return"><dt>返回</dt><dd>Linear RGB radiance, or a structured invalid-input/numerical failure. @thread CPU-only; no global RNG, provider access or retained references. @cost Hundreds of medium evaluations; run during lighting preparation, never per pixel or draw. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmosphereLuts_8cpp_source.html">SkyAtmosphereLuts.cpp</a> 第 <a class="el" href="SkyAtmosphereLuts_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">bottom</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00020">direction</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00019">end</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00016">light</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00011">eve::graphics::detail::SkyAtmosphereLuts::MultiHeight</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00014">eve::graphics::detail::SkyAtmosphereLuts::multiScattering</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00011">eve::graphics::detail::SkyAtmosphereLuts::MultiWidth</a>, <a class="el" href="RoadBake_8cpp_source.html#l00138">origin</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">point</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="PointSet_8cpp_source.html#l00807">seed</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="AgentBindings_8cpp_source.html#l00012">top</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00014">eve::graphics::detail::SkyAtmosphereLuts::transmittance</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00011">eve::graphics::detail::SkyAtmosphereLuts::TransmittanceHeight</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00011">eve::graphics::detail::SkyAtmosphereLuts::TransmittanceWidth</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>, <a class="el" href="EditorHost_8cpp_source.html#l00490">values</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="a5bbbfbb1204b1afa1d0eb21f6cb142f6" name="a5bbbfbb1204b1afa1d0eb21f6cb142f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bbbfbb1204b1afa1d0eb21f6cb142f6">&#9670;&#160;</a></span>bakeSkyAtmosphereLuts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1detail_1_1SkyAtmosphereLuts.html">detail::SkyAtmosphereLuts</a> &gt; eve::graphics::detail::bakeSkyAtmosphereLuts </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>parameters</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake coefficients using UE's default 10/15-sample, two-direction approximation. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning table data or a structured validation/baking failure. @thread CPU-only, with no global state or callbacks. Input is borrowed only for this call. @cost Hundreds of thousands of medium evaluations, amortized over a configuration lifetime. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmosphereLuts_8cpp_source.html">SkyAtmosphereLuts.cpp</a> 第 <a class="el" href="SkyAtmosphereLuts_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">bottom</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00020">direction</a>, <a class="el" href="MeshContactBlend_8cpp_source.html#l00043">distance</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00016">light</a>, <a class="el" href="SkyAtmosphereLuts_8cpp_source.html#l00069">luminance</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">minimum</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00011">eve::graphics::detail::SkyAtmosphereLuts::MultiHeight</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00014">eve::graphics::detail::SkyAtmosphereLuts::multiScattering</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00011">eve::graphics::detail::SkyAtmosphereLuts::MultiWidth</a>, <a class="el" href="RoadBake_8cpp_source.html#l00138">origin</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="AgentBindings_8cpp_source.html#l00012">top</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00014">eve::graphics::detail::SkyAtmosphereLuts::transmittance</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00011">eve::graphics::detail::SkyAtmosphereLuts::TransmittanceHeight</a>, <a class="el" href="SkyAtmosphereLuts_8h_source.html#l00011">eve::graphics::detail::SkyAtmosphereLuts::TransmittanceWidth</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00218">up</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="ab0d3c8e3c8b4e592008cbd5c6774d384" name="ab0d3c8e3c8b4e592008cbd5c6774d384"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0d3c8e3c8b4e592008cbd5c6774d384">&#9670;&#160;</a></span>buildPbrUniformGpu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">PbrUniformGpu</a> eve::graphics::detail::buildPbrUniformGpu </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformBuildInputs.html">PbrUniformBuildInputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>inputs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build all material and scene fields; mesh stream offsets remain disabled for the backend to fill. </p>
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8cpp_source.html">PbrGpuUniform.cpp</a> 第 <a class="el" href="PbrGpuUniform_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00171">binding</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00050">color</a>, <a class="el" href="RoadArtifact_8cpp_source.html#l00093">colors</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="GridGraph_8cpp_source.html#l00023">inputs</a>, <a class="el" href="PbrGpuUniform_8h_source.html#l00023">eve::graphics::detail::PbrUniformGpu::mvp</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<a id="ab1e774955d8d81a1e29da02faf9e5c1e" name="ab1e774955d8d81a1e29da02faf9e5c1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1e774955d8d81a1e29da02faf9e5c1e">&#9670;&#160;</a></span>exposeRenderable3DBindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::detail::exposeRenderable3DBindings </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Table &amp;&#160;</td>
+          <td class="paramname"><em>table</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expose renderable 3 d bindings. </p>
+
+<p class="definition">在文件 <a class="el" href="Renderable3DBindings_8cpp_source.html">Renderable3DBindings.cpp</a> 第 <a class="el" href="Renderable3DBindings_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderableInstances_8cpp_source.html#l00028">eve::graphics::Renderable3D::clearInstanceRange()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00237">eve::graphics::Renderable3D::clearMeshLod()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00095">eve::graphics::Renderable3D::clearParts()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00080">eve::graphics::Renderable3D::clearPartSortPriority()</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="MeshContactBlend_8cpp_source.html#l00043">distance</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="MeshInstanceRange_8h_source.html#l00016">eve::graphics::MeshInstanceRange::first</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00080">first</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00184">eve::graphics::Renderable3D::getCastOcclusion()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00349">eve::graphics::Renderable3D::getEntityGeneration()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00347">eve::graphics::Renderable3D::getEntityId()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00125">eve::graphics::Renderable3D::getHair()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00340">eve::graphics::Renderable3D::getLayer()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00050">eve::graphics::Renderable3D::getMaterial()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00036">eve::graphics::Renderable3D::getMesh()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00243">eve::graphics::Renderable3D::getMeshLodCount()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00245">eve::graphics::Renderable3D::getMeshLodLevelAtDistance()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00166">eve::graphics::Renderable3D::getParallaxMaxLayers()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00164">eve::graphics::Renderable3D::getParallaxMinLayers()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00162">eve::graphics::Renderable3D::getParallaxScale()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00103">eve::graphics::Renderable3D::getPartCount()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00117">eve::graphics::Renderable3D::getPartMaterial()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00111">eve::graphics::Renderable3D::getPartMesh()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00105">eve::graphics::Renderable3D::getPartName()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00087">eve::graphics::Renderable3D::getPartSortPriority()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00174">eve::graphics::Renderable3D::getReflectionCaptureMask()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00420">eve::graphics::Renderable3D::getRoughness()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00150">eve::graphics::Renderable3D::getTexCellBombRotation()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00146">eve::graphics::Renderable3D::getTexCellBombScale()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00148">eve::graphics::Renderable3D::getTexCellBombStrength()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00418">eve::graphics::Renderable3D::getTintB()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00416">eve::graphics::Renderable3D::getTintG()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00414">eve::graphics::Renderable3D::getTintR()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00441">eve::graphics::Renderable3D::getVisible()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00025">eve::graphics::Renderable3D::getYaw()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00027">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">minimum</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00470">eve::script::projectResult()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00186">eve::graphics::Renderable3D::setCamera()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00182">eve::graphics::Renderable3D::setCastOcclusion()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00178">eve::graphics::Renderable3D::setCastShadow()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00123">eve::graphics::Renderable3D::setHair()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00044">eve::graphics::Renderable3D::setHeightTexture()</a>, <a class="el" href="RenderableInstances_8cpp_source.html#l00019">eve::graphics::Renderable3D::setInstanceRange()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00334">eve::graphics::Renderable3D::setLayer()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00048">eve::graphics::Renderable3D::setMaterial()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00034">eve::graphics::Renderable3D::setMesh()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00188">eve::graphics::Renderable3D::setMeshLod()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00135">eve::graphics::Renderable3D::setMetallic()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00040">eve::graphics::Renderable3D::setNormalTexture()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00042">eve::graphics::Renderable3D::setPackedNormalMask()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00152">eve::graphics::Renderable3D::setParallax()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00060">eve::graphics::Renderable3D::setPart()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00073">eve::graphics::Renderable3D::setPartSortPriority()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00009">eve::graphics::Renderable3D::setPosition()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00176">eve::graphics::Renderable3D::setReceiveLight()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00180">eve::graphics::Renderable3D::setReceiveShadow()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00170">eve::graphics::Renderable3D::setReflectionCaptureMask()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00016">eve::graphics::Renderable3D::setRotation()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00137">eve::graphics::Renderable3D::setRoughness()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00027">eve::graphics::Renderable3D::setScale()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00046">eve::graphics::Renderable3D::setShader()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00139">eve::graphics::Renderable3D::setTexCellBomb()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00038">eve::graphics::Renderable3D::setTexture()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00127">eve::graphics::Renderable3D::setTint()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00168">eve::graphics::Renderable3D::setVisible()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00023">eve::graphics::Renderable3D::setYaw()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a49838c666df3abd7bb20374e1021bb7f" name="a49838c666df3abd7bb20374e1021bb7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49838c666df3abd7bb20374e1021bb7f">&#9670;&#160;</a></span>exposeShaderResourceBindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::detail::exposeShaderResourceBindings </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Table &amp;&#160;</td>
+          <td class="paramname"><em>table</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Class &amp;&#160;</td>
+          <td class="paramname"><em>cls</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expose shader resource bindings. </p>
+
+<p class="definition">在文件 <a class="el" href="ShaderResourceScriptBindings_8cpp_source.html">ShaderResourceScriptBindings.cpp</a> 第 <a class="el" href="ShaderResourceScriptBindings_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a8a63df313532fa1e0e9a9727141f8120adfdc5ea2a7a33aa4bde76e09aecd8d07">eve::graphics::Graphics::Aces</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a671e512d786143edcb6f1e22323f81fba06b9281e396db002010bde1de57262eb">eve::graphics::Graphics::Auto</a>, <a class="el" href="ECS_8cpp_source.html#l00021">cls</a>, <a class="el" href="BloomGaussian_8cpp_source.html#l00027">eve::graphics::Bloom::configureFilter()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a8a63df313532fa1e0e9a9727141f8120a54a029401a59d2e99c39c91c8a645fd7">eve::graphics::Graphics::Filmic</a>, <a class="el" href="Bloom_8h_source.html#l00022">eve::graphics::BloomFilterSettings::filter</a>, <a class="el" href="Bloom_8h_source.html#l00056">eve::graphics::Bloom::filterSettings()</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1e6e43509a54ede476ec9c0422fb0e27a857bd16f4f1b99f98540e6cc46bbf584">eve::graphics::GaussianPyramid</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1e6e43509a54ede476ec9c0422fb0e27aefa1c471a4c8ac492b3c087c4e3ef2dc">eve::graphics::GaussianScatter</a>, <a class="el" href="DisplayOutput_8cpp_source.html#l00042">eve::graphics::Graphics::getActiveDisplayColorSpace()</a>, <a class="el" href="DisplayOutput_8cpp_source.html#l00039">eve::graphics::Graphics::getDisplayOutputMode()</a>, <a class="el" href="DisplayOutput_8cpp_source.html#l00040">eve::graphics::Graphics::getDisplayPaperWhiteNits()</a>, <a class="el" href="DisplayOutput_8cpp_source.html#l00041">eve::graphics::Graphics::getDisplayPeakNits()</a>, <a class="el" href="Graphics_8h_source.html#l01387">eve::graphics::Graphics::getScenePhotographicVignette()</a>, <a class="el" href="Graphics_8h_source.html#l01347">eve::graphics::Graphics::getSceneToneMapping()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a671e512d786143edcb6f1e22323f81fbaddf9c15aeea6aa8388890e87b892cf17">eve::graphics::Graphics::Hdr10</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="DisplayOutput_8cpp_source.html#l00045">eve::graphics::Graphics::isDisplayHdrActive()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00311">iterations</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1e6e43509a54ede476ec9c0422fb0e27a4339be88a732fef356b8a85472d7b153">eve::graphics::KarisTent</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a8a63df313532fa1e0e9a9727141f8120a6adf97f83acf6453d4a6a4b1070f3754">eve::graphics::Graphics::None</a>, <a class="el" href="Graphics_8cpp_source.html#l01517">eve::graphics::Graphics::pipelineBloom()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00470">eve::script::projectResult()</a>, <a class="el" href="DisplayOutput_8cpp_source.html#l00034">eve::graphics::Graphics::queryDisplayOutputSupport()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a671e512d786143edcb6f1e22323f81fbadd4c2a8418ab27d7ef3100411899b790">eve::graphics::Graphics::ScRgb</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a671e512d786143edcb6f1e22323f81fba5e8b4e08625f665f0ef915c49bb45162">eve::graphics::Graphics::Sdr</a>, <a class="el" href="DisplayOutput_8cpp_source.html#l00023">eve::graphics::Graphics::setDisplayHdrCalibration()</a>, <a class="el" href="DisplayOutput_8cpp_source.html#l00008">eve::graphics::Graphics::setDisplayOutputMode()</a>, <a class="el" href="SceneToneMapping_8cpp_source.html#l00015">eve::graphics::Graphics::setScenePhotographicVignette()</a>, <a class="el" href="SceneToneMapping_8cpp_source.html#l00006">eve::graphics::Graphics::setSceneToneMapping()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>, <a class="el" href="BloomGaussian_8cpp_source.html#l00017">eve::graphics::validateBloomFilterSettings()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00153">value</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShaderScriptBindings_8cpp_source.html#l00086">eve::graphics::exposeShaderScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="addcef299a50ca3bd6086aaec4939d19e" name="addcef299a50ca3bd6086aaec4939d19e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addcef299a50ca3bd6086aaec4939d19e">&#9670;&#160;</a></span>opticalSample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a> eve::graphics::detail::opticalSample </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a>&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1SkyDaylightLayer.html">SkyDaylightLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sunY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pure clear/manual optical projection. Inputs are validated authored values and sun Y in [-1,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyOpticalCycle_8h_source.html">SkyOpticalCycle.h</a> 第 <a class="el" href="SkyOpticalCycle_8h_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a0028ea1972e69be8a3480d1991ba0682" name="a0028ea1972e69be8a3480d1991ba0682"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0028ea1972e69be8a3480d1991ba0682">&#9670;&#160;</a></span>prepareViewResources()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::detail::prepareViewResources </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>viewProjection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>eye</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dispatch preparers before opening the destination; no callbacks means success. @thread <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> thread, non-reentrant. No locks are held while invoking callbacks. @lifetime Borrowed graphics and camera values are valid only through this call. </p>
+<dl class="section return"><dt>返回</dt><dd>First failure; no remaining preparers or destination draw are executed. @cost Sum of registered preparation costs; unchanged inputs may use provider caches. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ViewPreparation_8cpp_source.html">ViewPreparation.cpp</a> 第 <a class="el" href="ViewPreparation_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00629">eye</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00713">eve::graphics::RenderSystem3D::render()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l01728">eve::graphics::RenderSystem3D::renderToCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a99931b03c06555c8f818f673a4aa7c66" name="a99931b03c06555c8f818f673a4aa7c66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99931b03c06555c8f818f673a4aa7c66">&#9670;&#160;</a></span>readShaderStageFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint32_t &gt; &gt; eve::graphics::detail::readShaderStageFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads shader stage file. </p>
+
+<p class="definition">在文件 <a class="el" href="ShaderScriptBindings_8cpp_source.html">ShaderScriptBindings.cpp</a> 第 <a class="el" href="ShaderScriptBindings_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRuntimeTools_8cpp_source.html#l00154">bytes</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a> , 以及 <a class="el" href="PlayHost_8cpp_source.html#l00110">path</a>.</p>
+
+</div>
+</div>
+<a id="a57685818e214e6b3dc2684b414564b2a" name="a57685818e214e6b3dc2684b414564b2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57685818e214e6b3dc2684b414564b2a">&#9670;&#160;</a></span>validateInstancedRenderable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::detail::validateInstancedRenderable </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1Renderable3D_1_1MeshRenderer.html">Renderable3D::MeshRenderer</a> &amp;&#160;</td>
+          <td class="paramname"><em>mr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate instanced renderable. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderableInstances_8cpp_source.html">RenderableInstances.cpp</a> 第 <a class="el" href="RenderableInstances_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Shader.html#a325f44434c2b5e57b6a86354433df519a106d01e1fa7f0585e524e6a0e3baf866">eve::graphics::Shader::eMesh3D</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00676">mr</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00679">shader</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00713">eve::graphics::RenderSystem3D::render()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l01728">eve::graphics::RenderSystem3D::renderToCanvas()</a> , 以及 <a class="el" href="RenderableInstances_8cpp_source.html#l00019">eve::graphics::Renderable3D::setInstanceRange()</a>.</p>
+
+</div>
+</div>
+<a id="a53c41d5386c6afee555b2b98a9632536" name="a53c41d5386c6afee555b2b98a9632536"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53c41d5386c6afee555b2b98a9632536">&#9670;&#160;</a></span>validateResourceShaderStages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::detail::validateResourceShaderStages </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const uint32_t &gt;&#160;</td>
+          <td class="paramname"><em>vertex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const uint32_t &gt;&#160;</td>
+          <td class="paramname"><em>fragment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1ShaderResourceInputs.html">ShaderResourceInputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>inputs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate resource shader stages. </p>
+
+<p class="definition">在文件 <a class="el" href="ShaderResourceValidation_8cpp_source.html">ShaderResourceValidation.cpp</a> 第 <a class="el" href="ShaderResourceValidation_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GridGraph_8cpp_source.html#l00023">inputs</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00076">eve::graphics::vulkan::Graphics::replaceMeshShaderResources()</a> , 以及 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00063">eve::graphics::vulkan::validateMeshResourceShaderReload()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="ab99275b95548c7bcabc160a93903f399" name="ab99275b95548c7bcabc160a93903f399"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab99275b95548c7bcabc160a93903f399">&#9670;&#160;</a></span>OpticalLayers</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr unsigned eve::graphics::detail::OpticalLayers = 81</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyOpticalCycle_8h_source.html">SkyOpticalCycle.h</a> 第 <a class="el" href="SkyOpticalCycle_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="af95508716e6d7775c1af8355fc4e6bd9" name="af95508716e6d7775c1af8355fc4e6bd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af95508716e6d7775c1af8355fc4e6bd9">&#9670;&#160;</a></span>OpticalMaximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::graphics::detail::OpticalMaximum = .32<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyOpticalCycle_8h_source.html">SkyOpticalCycle.h</a> 第 <a class="el" href="SkyOpticalCycle_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a98a2490c7fd7df74082a1ca48cf4c256" name="a98a2490c7fd7df74082a1ca48cf4c256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98a2490c7fd7df74082a1ca48cf4c256">&#9670;&#160;</a></span>OpticalMinimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::graphics::detail::OpticalMinimum = -.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyOpticalCycle_8h_source.html">SkyOpticalCycle.h</a> 第 <a class="el" href="SkyOpticalCycle_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

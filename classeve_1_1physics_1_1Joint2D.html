@@ -1,0 +1,1794 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::Joint2D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1physics_1_1Joint2D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::Joint2D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Script-facing Box2D joint owned by a <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>.  
+ <a href="classeve_1_1physics_1_1Joint2D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Joint2D_8h_source.html">Joint2D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a76f2ce88c598631cc03c60e3fa619b35" id="r_a76f2ce88c598631cc03c60e3fa619b35"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35">Kind</a> { <br />
+&#160;&#160;<a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a0aa6f4210bf373c95eda00232e93cd98">Distance</a>
+, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a358561ac4d41f41d479b7c54b19b639e">Revolute</a>
+, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>
+, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a768bf199aed2d6ea5cd5d27017978530">Weld</a>
+, <br />
+&#160;&#160;<a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35aa5df60ef4fc4447353769d66661d2229">Wheel</a>
+, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199">Motor</a>
+, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35afb845762a66c26782f477febab5344dc">Gear</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a76f2ce88c598631cc03c60e3fa619b35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported joint geometry.  <a href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35">更多...</a><br /></td></tr>
+<tr class="separator:a76f2ce88c598631cc03c60e3fa619b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab50df0b4390d4495a804515a349f50c5" id="r_ab50df0b4390d4495a804515a349f50c5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#ab50df0b4390d4495a804515a349f50c5">Joint2D</a> (<a class="el" href="classeve_1_1physics_1_1World.html">World</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *bodyA, <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *bodyB, b2Joint *joint, <a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">PhysicsJointHandle</a> <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a97ef95e4fa8d684daf1856ca12731112">runtimeHandle</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35">Kind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, int <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:ab50df0b4390d4495a804515a349f50c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal wrapper constructor; use World::new*Joint.  <br /></td></tr>
+<tr class="separator:ab50df0b4390d4495a804515a349f50c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8250e179b79e10b9123fdddbf17d97e6" id="r_a8250e179b79e10b9123fdddbf17d97e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a8250e179b79e10b9123fdddbf17d97e6">~Joint2D</a> ()</td></tr>
+<tr class="separator:a8250e179b79e10b9123fdddbf17d97e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac827a0d7eef5be18d9541f2b422b8165" id="r_ac827a0d7eef5be18d9541f2b422b8165"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#ac827a0d7eef5be18d9541f2b422b8165">Joint2D</a> (const <a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> &amp;)=delete</td></tr>
+<tr class="separator:ac827a0d7eef5be18d9541f2b422b8165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93187af458a3e18453aa99d1327e68a6" id="r_a93187af458a3e18453aa99d1327e68a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a93187af458a3e18453aa99d1327e68a6">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> &amp;)=delete</td></tr>
+<tr class="separator:a93187af458a3e18453aa99d1327e68a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c20abb00c88068e80ecf08e1a771b8c" id="r_a9c20abb00c88068e80ecf08e1a771b8c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a9c20abb00c88068e80ecf08e1a771b8c">getId</a> () const</td></tr>
+<tr class="memdesc:a9c20abb00c88068e80ecf08e1a771b8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable world-local identifier.  <br /></td></tr>
+<tr class="separator:a9c20abb00c88068e80ecf08e1a771b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97ef95e4fa8d684daf1856ca12731112" id="r_a97ef95e4fa8d684daf1856ca12731112"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">PhysicsJointHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a97ef95e4fa8d684daf1856ca12731112">runtimeHandle</a> () const</td></tr>
+<tr class="memdesc:a97ef95e4fa8d684daf1856ca12731112"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process-local generation-qualified handle owned by <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>.  <br /></td></tr>
+<tr class="separator:a97ef95e4fa8d684daf1856ca12731112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c3df36964e61017ff1d3a1a7010d477" id="r_a1c3df36964e61017ff1d3a1a7010d477"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a1c3df36964e61017ff1d3a1a7010d477">getKind</a> () const</td></tr>
+<tr class="memdesc:a1c3df36964e61017ff1d3a1a7010d477"><td class="mdescLeft">&#160;</td><td class="mdescRight">Joint kind string for script/debug.  <br /></td></tr>
+<tr class="separator:a1c3df36964e61017ff1d3a1a7010d477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9af46d4e5addca01da484773c6a6fcee" id="r_a9af46d4e5addca01da484773c6a6fcee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a9af46d4e5addca01da484773c6a6fcee">getBodyAId</a> () const</td></tr>
+<tr class="memdesc:a9af46d4e5addca01da484773c6a6fcee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable ID of attached body A, or -1 after invalidation.  <br /></td></tr>
+<tr class="separator:a9af46d4e5addca01da484773c6a6fcee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f722b6e2d3f5baf6c67bfd34a706c34" id="r_a6f722b6e2d3f5baf6c67bfd34a706c34"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a6f722b6e2d3f5baf6c67bfd34a706c34">getBodyBId</a> () const</td></tr>
+<tr class="memdesc:a6f722b6e2d3f5baf6c67bfd34a706c34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable ID of attached body B, or -1 after invalidation.  <br /></td></tr>
+<tr class="separator:a6f722b6e2d3f5baf6c67bfd34a706c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a7d729fb4c112251a1b5429d08075ab" id="r_a8a7d729fb4c112251a1b5429d08075ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1World.html">World</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a8a7d729fb4c112251a1b5429d08075ab">getWorld</a> () const</td></tr>
+<tr class="memdesc:a8a7d729fb4c112251a1b5429d08075ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning world, or null after joint destruction.  <br /></td></tr>
+<tr class="separator:a8a7d729fb4c112251a1b5429d08075ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52b47b73df128b7d9996001161a4173a" id="r_a52b47b73df128b7d9996001161a4173a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a52b47b73df128b7d9996001161a4173a">setCollideConnected</a> (bool collide)</td></tr>
+<tr class="memdesc:a52b47b73df128b7d9996001161a4173a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables collision between the attached bodies.  <br /></td></tr>
+<tr class="separator:a52b47b73df128b7d9996001161a4173a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a77490b6b50fadd362f56bd78437c25" id="r_a7a77490b6b50fadd362f56bd78437c25"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a7a77490b6b50fadd362f56bd78437c25">getCollideConnected</a> () const</td></tr>
+<tr class="memdesc:a7a77490b6b50fadd362f56bd78437c25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether attached bodies may collide.  <br /></td></tr>
+<tr class="separator:a7a77490b6b50fadd362f56bd78437c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5aa45af842ab06eaf8a080781d0e63a" id="r_ad5aa45af842ab06eaf8a080781d0e63a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#ad5aa45af842ab06eaf8a080781d0e63a">setDistanceLength</a> (float lengthPixels)</td></tr>
+<tr class="memdesc:ad5aa45af842ab06eaf8a080781d0e63a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes distance-joint rest length in pixels.  <br /></td></tr>
+<tr class="separator:ad5aa45af842ab06eaf8a080781d0e63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ab19cad6c85412bc920bcbcfbdd823d" id="r_a2ab19cad6c85412bc920bcbcfbdd823d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a2ab19cad6c85412bc920bcbcfbdd823d">getDistanceLength</a> () const</td></tr>
+<tr class="memdesc:a2ab19cad6c85412bc920bcbcfbdd823d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance-joint rest length in pixels.  <br /></td></tr>
+<tr class="separator:a2ab19cad6c85412bc920bcbcfbdd823d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7538514b4a854dee718ec1fe4f678129" id="r_a7538514b4a854dee718ec1fe4f678129"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a7538514b4a854dee718ec1fe4f678129">setDistanceSpring</a> (float frequencyHz, float dampingRatio)</td></tr>
+<tr class="memdesc:a7538514b4a854dee718ec1fe4f678129"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures distance spring frequency (Hz) and damping ratio.  <br /></td></tr>
+<tr class="separator:a7538514b4a854dee718ec1fe4f678129"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a9d231767697350c58dd000713a9e23" id="r_a7a9d231767697350c58dd000713a9e23"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a7a9d231767697350c58dd000713a9e23">getDistanceFrequency</a> () const</td></tr>
+<tr class="memdesc:a7a9d231767697350c58dd000713a9e23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance spring frequency in Hertz.  <br /></td></tr>
+<tr class="separator:a7a9d231767697350c58dd000713a9e23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0e9de2af7dad2b1bfc96de88a6bffff" id="r_af0e9de2af7dad2b1bfc96de88a6bffff"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#af0e9de2af7dad2b1bfc96de88a6bffff">getDistanceDampingRatio</a> () const</td></tr>
+<tr class="memdesc:af0e9de2af7dad2b1bfc96de88a6bffff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance spring damping ratio.  <br /></td></tr>
+<tr class="separator:af0e9de2af7dad2b1bfc96de88a6bffff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab08bfb84ae04f663e2b4be78797f6ee" id="r_aab08bfb84ae04f663e2b4be78797f6ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#aab08bfb84ae04f663e2b4be78797f6ee">setRevoluteLimits</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float lower, float upper)</td></tr>
+<tr class="memdesc:aab08bfb84ae04f663e2b4be78797f6ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures revolute angular limits in radians.  <br /></td></tr>
+<tr class="separator:aab08bfb84ae04f663e2b4be78797f6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e58e149627f67a27405fca3f9f4ed15" id="r_a9e58e149627f67a27405fca3f9f4ed15"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a9e58e149627f67a27405fca3f9f4ed15">setRevoluteMotor</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float speed, float maxTorque)</td></tr>
+<tr class="memdesc:a9e58e149627f67a27405fca3f9f4ed15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the revolute motor in radians/second and newton-metres.  <br /></td></tr>
+<tr class="separator:a9e58e149627f67a27405fca3f9f4ed15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa05b258ce955566fbac96706d382a2fb" id="r_aa05b258ce955566fbac96706d382a2fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#aa05b258ce955566fbac96706d382a2fb">getRevoluteAngle</a> () const</td></tr>
+<tr class="memdesc:aa05b258ce955566fbac96706d382a2fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current revolute angle in radians.  <br /></td></tr>
+<tr class="separator:aa05b258ce955566fbac96706d382a2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fe53c23df282399c8622de74a7b8e82" id="r_a1fe53c23df282399c8622de74a7b8e82"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a1fe53c23df282399c8622de74a7b8e82">getRevoluteSpeed</a> () const</td></tr>
+<tr class="memdesc:a1fe53c23df282399c8622de74a7b8e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current revolute speed in radians/second.  <br /></td></tr>
+<tr class="separator:a1fe53c23df282399c8622de74a7b8e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9adb3ac717c1ec39db5d1076fa76ecf" id="r_af9adb3ac717c1ec39db5d1076fa76ecf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#af9adb3ac717c1ec39db5d1076fa76ecf">getRevoluteMotorTorque</a> () const</td></tr>
+<tr class="memdesc:af9adb3ac717c1ec39db5d1076fa76ecf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current revolute motor torque in newton-metres.  <br /></td></tr>
+<tr class="separator:af9adb3ac717c1ec39db5d1076fa76ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f3e792407ff96eed4921ac603fd31dc" id="r_a4f3e792407ff96eed4921ac603fd31dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a4f3e792407ff96eed4921ac603fd31dc">setPrismaticLimits</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float lowerPixels, float upperPixels)</td></tr>
+<tr class="memdesc:a4f3e792407ff96eed4921ac603fd31dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures prismatic translation limits in pixels.  <br /></td></tr>
+<tr class="separator:a4f3e792407ff96eed4921ac603fd31dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a208c4374860ee360bcc8737cb56cd2b2" id="r_a208c4374860ee360bcc8737cb56cd2b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a208c4374860ee360bcc8737cb56cd2b2">setPrismaticMotor</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float speedPixels, float maxForcePixels)</td></tr>
+<tr class="memdesc:a208c4374860ee360bcc8737cb56cd2b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures a prismatic motor in pixels/second and pixel-force units.  <br /></td></tr>
+<tr class="separator:a208c4374860ee360bcc8737cb56cd2b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbff0af16abccc1642ada34dc0a6cde8" id="r_acbff0af16abccc1642ada34dc0a6cde8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#acbff0af16abccc1642ada34dc0a6cde8">getPrismaticTranslation</a> () const</td></tr>
+<tr class="memdesc:acbff0af16abccc1642ada34dc0a6cde8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current prismatic translation in pixels.  <br /></td></tr>
+<tr class="separator:acbff0af16abccc1642ada34dc0a6cde8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67210245c6022329d7e2bd9e331e6d3b" id="r_a67210245c6022329d7e2bd9e331e6d3b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a67210245c6022329d7e2bd9e331e6d3b">getPrismaticSpeed</a> () const</td></tr>
+<tr class="memdesc:a67210245c6022329d7e2bd9e331e6d3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current prismatic speed in pixels/second.  <br /></td></tr>
+<tr class="separator:a67210245c6022329d7e2bd9e331e6d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4113c1f217a9dbd2b760407040aaab13" id="r_a4113c1f217a9dbd2b760407040aaab13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a4113c1f217a9dbd2b760407040aaab13">setWeldSpring</a> (float frequencyHz, float dampingRatio)</td></tr>
+<tr class="memdesc:a4113c1f217a9dbd2b760407040aaab13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures weld rotational spring frequency and damping.  <br /></td></tr>
+<tr class="separator:a4113c1f217a9dbd2b760407040aaab13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a246bcce246917948bd7b0ac6f7de77f4" id="r_a246bcce246917948bd7b0ac6f7de77f4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a246bcce246917948bd7b0ac6f7de77f4">getWeldFrequency</a> () const</td></tr>
+<tr class="memdesc:a246bcce246917948bd7b0ac6f7de77f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weld spring frequency in Hertz.  <br /></td></tr>
+<tr class="separator:a246bcce246917948bd7b0ac6f7de77f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3b4a4ca7763423907ceeed63e7dfef2" id="r_ac3b4a4ca7763423907ceeed63e7dfef2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#ac3b4a4ca7763423907ceeed63e7dfef2">getWeldDampingRatio</a> () const</td></tr>
+<tr class="memdesc:ac3b4a4ca7763423907ceeed63e7dfef2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weld spring damping ratio.  <br /></td></tr>
+<tr class="separator:ac3b4a4ca7763423907ceeed63e7dfef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a016ec89b9f52b2a51b8dc7b125e5a5d4" id="r_a016ec89b9f52b2a51b8dc7b125e5a5d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a016ec89b9f52b2a51b8dc7b125e5a5d4">setWheelSpring</a> (float frequencyHz, float dampingRatio)</td></tr>
+<tr class="memdesc:a016ec89b9f52b2a51b8dc7b125e5a5d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures wheel suspension spring.  <br /></td></tr>
+<tr class="separator:a016ec89b9f52b2a51b8dc7b125e5a5d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65ea8da09a7dfc53e1283f8a0f5274c0" id="r_a65ea8da09a7dfc53e1283f8a0f5274c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a65ea8da09a7dfc53e1283f8a0f5274c0">setWheelMotor</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float speed, float maxTorque)</td></tr>
+<tr class="memdesc:a65ea8da09a7dfc53e1283f8a0f5274c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures wheel spin motor in radians/second and newton-metres.  <br /></td></tr>
+<tr class="separator:a65ea8da09a7dfc53e1283f8a0f5274c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a935f0aedb56e5f8e84d2953e8b145f2f" id="r_a935f0aedb56e5f8e84d2953e8b145f2f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a935f0aedb56e5f8e84d2953e8b145f2f">getWheelTranslation</a> () const</td></tr>
+<tr class="memdesc:a935f0aedb56e5f8e84d2953e8b145f2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current wheel translation along the suspension axis in pixels.  <br /></td></tr>
+<tr class="separator:a935f0aedb56e5f8e84d2953e8b145f2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8ef209250b9a879a8b200b7fe9c09b0" id="r_ad8ef209250b9a879a8b200b7fe9c09b0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#ad8ef209250b9a879a8b200b7fe9c09b0">getWheelSpeed</a> () const</td></tr>
+<tr class="memdesc:ad8ef209250b9a879a8b200b7fe9c09b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current wheel spin speed in radians/second.  <br /></td></tr>
+<tr class="separator:ad8ef209250b9a879a8b200b7fe9c09b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af72948d139bc8ef07349e3c5f75534be" id="r_af72948d139bc8ef07349e3c5f75534be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#af72948d139bc8ef07349e3c5f75534be">setMotorLinearOffset</a> (float xPixels, float yPixels)</td></tr>
+<tr class="memdesc:af72948d139bc8ef07349e3c5f75534be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets motor-joint linear offset in pixels (bodyA frame).  <br /></td></tr>
+<tr class="separator:af72948d139bc8ef07349e3c5f75534be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27a9541c975649f697568f1e69fa7455" id="r_a27a9541c975649f697568f1e69fa7455"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a27a9541c975649f697568f1e69fa7455">setMotorAngularOffset</a> (float radians)</td></tr>
+<tr class="memdesc:a27a9541c975649f697568f1e69fa7455"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets motor-joint angular offset in radians.  <br /></td></tr>
+<tr class="separator:a27a9541c975649f697568f1e69fa7455"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a540ffec38a8bc369b90bbc03fde29225" id="r_a540ffec38a8bc369b90bbc03fde29225"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a540ffec38a8bc369b90bbc03fde29225">setMotorLimits</a> (float maxForcePixels, float maxTorque)</td></tr>
+<tr class="memdesc:a540ffec38a8bc369b90bbc03fde29225"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets motor max force (pixel-force) and torque (N·m).  <br /></td></tr>
+<tr class="separator:a540ffec38a8bc369b90bbc03fde29225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4671a1a91dcad5c041e6a46eea1f17ff" id="r_a4671a1a91dcad5c041e6a46eea1f17ff"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a4671a1a91dcad5c041e6a46eea1f17ff">getMotorLinearOffsetX</a> () const</td></tr>
+<tr class="memdesc:a4671a1a91dcad5c041e6a46eea1f17ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Motor linear offset X in pixels.  <br /></td></tr>
+<tr class="separator:a4671a1a91dcad5c041e6a46eea1f17ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4b829c54069d104c41cf79d68106aba" id="r_aa4b829c54069d104c41cf79d68106aba"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#aa4b829c54069d104c41cf79d68106aba">getMotorLinearOffsetY</a> () const</td></tr>
+<tr class="memdesc:aa4b829c54069d104c41cf79d68106aba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Motor linear offset Y in pixels.  <br /></td></tr>
+<tr class="separator:aa4b829c54069d104c41cf79d68106aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a147056699aa7d877271445ee871e4a1f" id="r_a147056699aa7d877271445ee871e4a1f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a147056699aa7d877271445ee871e4a1f">getMotorAngularOffset</a> () const</td></tr>
+<tr class="memdesc:a147056699aa7d877271445ee871e4a1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Motor angular offset in radians.  <br /></td></tr>
+<tr class="separator:a147056699aa7d877271445ee871e4a1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a133ea745fd083ce6fc6f5defbf7f0022" id="r_a133ea745fd083ce6fc6f5defbf7f0022"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a133ea745fd083ce6fc6f5defbf7f0022">setGearRatio</a> (float ratio)</td></tr>
+<tr class="memdesc:a133ea745fd083ce6fc6f5defbf7f0022"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes gear ratio.  <br /></td></tr>
+<tr class="separator:a133ea745fd083ce6fc6f5defbf7f0022"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48fba7dcb82da137e8d7d5036816c91" id="r_ab48fba7dcb82da137e8d7d5036816c91"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#ab48fba7dcb82da137e8d7d5036816c91">getGearRatio</a> () const</td></tr>
+<tr class="memdesc:ab48fba7dcb82da137e8d7d5036816c91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current gear ratio.  <br /></td></tr>
+<tr class="separator:ab48fba7dcb82da137e8d7d5036816c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a164aef1a98ef61a7aa27ff898072d7a5" id="r_a164aef1a98ef61a7aa27ff898072d7a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a164aef1a98ef61a7aa27ff898072d7a5">getGearJoint1</a> () const</td></tr>
+<tr class="memdesc:a164aef1a98ef61a7aa27ff898072d7a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">First joint linked by a gear, or null.  <br /></td></tr>
+<tr class="separator:a164aef1a98ef61a7aa27ff898072d7a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ed7e8dc8b3789c2c885c76f5b50bede" id="r_a3ed7e8dc8b3789c2c885c76f5b50bede"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a3ed7e8dc8b3789c2c885c76f5b50bede">getGearJoint2</a> () const</td></tr>
+<tr class="memdesc:a3ed7e8dc8b3789c2c885c76f5b50bede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second joint linked by a gear, or null.  <br /></td></tr>
+<tr class="separator:a3ed7e8dc8b3789c2c885c76f5b50bede"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c892e3972ef2dbd9d2a11251ec0d357" id="r_a2c892e3972ef2dbd9d2a11251ec0d357"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a2c892e3972ef2dbd9d2a11251ec0d357">destroy</a> ()</td></tr>
+<tr class="memdesc:a2c892e3972ef2dbd9d2a11251ec0d357"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the backend joint and invalidates this wrapper.  <br /></td></tr>
+<tr class="separator:a2c892e3972ef2dbd9d2a11251ec0d357"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78fee661d802ab5ee83df9187ad67385" id="r_a78fee661d802ab5ee83df9187ad67385"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a78fee661d802ab5ee83df9187ad67385">isValid</a> () const</td></tr>
+<tr class="memdesc:a78fee661d802ab5ee83df9187ad67385"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the backend joint still exists.  <br /></td></tr>
+<tr class="separator:a78fee661d802ab5ee83df9187ad67385"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a528866cec06d1b8bd1cf20feb2d4a0ba" id="r_a528866cec06d1b8bd1cf20feb2d4a0ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a528866cec06d1b8bd1cf20feb2d4a0ba">invalidate</a> ()</td></tr>
+<tr class="memdesc:a528866cec06d1b8bd1cf20feb2d4a0ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal invalidation used by body/world destruction.  <br /></td></tr>
+<tr class="separator:a528866cec06d1b8bd1cf20feb2d4a0ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a258745721e20299058e1ddf086b30cf7" id="r_a258745721e20299058e1ddf086b30cf7"><td class="memItemLeft" align="right" valign="top">b2Joint *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a258745721e20299058e1ddf086b30cf7">raw</a> () const</td></tr>
+<tr class="memdesc:a258745721e20299058e1ddf086b30cf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal raw Box2D joint.  <br /></td></tr>
+<tr class="separator:a258745721e20299058e1ddf086b30cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a8858f397a273114ddc1443880bb5540e" id="r_a8858f397a273114ddc1443880bb5540e"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a8858f397a273114ddc1443880bb5540e">Body</a></td></tr>
+<tr class="separator:a8858f397a273114ddc1443880bb5540e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b4bcdf992c21ae83363f25df05b1d25" id="r_a7b4bcdf992c21ae83363f25df05b1d25"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a7b4bcdf992c21ae83363f25df05b1d25">World</a></td></tr>
+<tr class="separator:a7b4bcdf992c21ae83363f25df05b1d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5dfbbdcc1b1c036ba0384168234ab2b" id="r_ab5dfbbdcc1b1c036ba0384168234ab2b"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#ab5dfbbdcc1b1c036ba0384168234ab2b">Mechanism2D</a></td></tr>
+<tr class="separator:ab5dfbbdcc1b1c036ba0384168234ab2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Script-facing Box2D joint owned by a <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>. </p>
+<p>Anchors, lengths and linear motor quantities use pixel space (same as <a class="el" href="classeve_1_1physics_1_1Body.html" title="2D rigid body (Box2D) in pixel-space coordinates. Owned by a World; create shapes with newRectangleFi...">Body</a>). Angles and angular motors use radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a76f2ce88c598631cc03c60e3fa619b35" name="a76f2ce88c598631cc03c60e3fa619b35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76f2ce88c598631cc03c60e3fa619b35">&#9670;&#160;</a></span>Kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35">eve::physics::Joint2D::Kind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Supported joint geometry. </p>
+<dl class="section remark"><dt>备注</dt><dd>Kind codes: 0 Distance, 1 Revolute, 2 Prismatic, 3 Weld, 4 Wheel, 5 Motor, 6 Gear. </dd></dl>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a76f2ce88c598631cc03c60e3fa619b35a0aa6f4210bf373c95eda00232e93cd98" name="a76f2ce88c598631cc03c60e3fa619b35a0aa6f4210bf373c95eda00232e93cd98"></a>Distance&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76f2ce88c598631cc03c60e3fa619b35a358561ac4d41f41d479b7c54b19b639e" name="a76f2ce88c598631cc03c60e3fa619b35a358561ac4d41f41d479b7c54b19b639e"></a>Revolute&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76f2ce88c598631cc03c60e3fa619b35a35fa8acd1b8b1beb23e6c2e24313570c" name="a76f2ce88c598631cc03c60e3fa619b35a35fa8acd1b8b1beb23e6c2e24313570c"></a>Prismatic&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76f2ce88c598631cc03c60e3fa619b35a768bf199aed2d6ea5cd5d27017978530" name="a76f2ce88c598631cc03c60e3fa619b35a768bf199aed2d6ea5cd5d27017978530"></a>Weld&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76f2ce88c598631cc03c60e3fa619b35aa5df60ef4fc4447353769d66661d2229" name="a76f2ce88c598631cc03c60e3fa619b35aa5df60ef4fc4447353769d66661d2229"></a>Wheel&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199" name="a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199"></a>Motor&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76f2ce88c598631cc03c60e3fa619b35afb845762a66c26782f477febab5344dc" name="a76f2ce88c598631cc03c60e3fa619b35afb845762a66c26782f477febab5344dc"></a>Gear&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab50df0b4390d4495a804515a349f50c5" name="ab50df0b4390d4495a804515a349f50c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab50df0b4390d4495a804515a349f50c5">&#9670;&#160;</a></span>Joint2D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Joint2D::Joint2D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World.html">World</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *&#160;</td>
+          <td class="paramname"><em>bodyA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> *&#160;</td>
+          <td class="paramname"><em>bodyB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">b2Joint *&#160;</td>
+          <td class="paramname"><em>joint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">PhysicsJointHandle</a>&#160;</td>
+          <td class="paramname"><em>runtimeHandle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35">Kind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal wrapper constructor; use World::new*Joint. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8250e179b79e10b9123fdddbf17d97e6" name="a8250e179b79e10b9123fdddbf17d97e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8250e179b79e10b9123fdddbf17d97e6">&#9670;&#160;</a></span>~Joint2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Joint2D::~Joint2D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint2D_8cpp_source.html#l00051">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="ac827a0d7eef5be18d9541f2b422b8165" name="ac827a0d7eef5be18d9541f2b422b8165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac827a0d7eef5be18d9541f2b422b8165">&#9670;&#160;</a></span>Joint2D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Joint2D::Joint2D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2c892e3972ef2dbd9d2a11251ec0d357" name="a2c892e3972ef2dbd9d2a11251ec0d357"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c892e3972ef2dbd9d2a11251ec0d357">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys the backend joint and invalidates this wrapper. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldJoints2D_8cpp_source.html#l00045">eve::physics::World::forgetJoint()</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35afb845762a66c26782f477febab5344dc">Gear</a>, <a class="el" href="Joint2D_8cpp_source.html#l00040">invalidate()</a>, <a class="el" href="Joint2D_8cpp_source.html#l00038">isValid()</a> , 以及 <a class="el" href="World_8h_source.html#l00378">eve::physics::World::raw()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Joint2D_8cpp_source.html#l00036">~Joint2D()</a>.</p>
+
+</div>
+</div>
+<a id="a9af46d4e5addca01da484773c6a6fcee" name="a9af46d4e5addca01da484773c6a6fcee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9af46d4e5addca01da484773c6a6fcee">&#9670;&#160;</a></span>getBodyAId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Joint2D::getBodyAId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable ID of attached body A, or -1 after invalidation. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Body_8h_source.html#l00032">eve::physics::Body::getId()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldJoints2D_8cpp_source.html#l00151">eve::physics::World::newGearJoint()</a>.</p>
+
+</div>
+</div>
+<a id="a6f722b6e2d3f5baf6c67bfd34a706c34" name="a6f722b6e2d3f5baf6c67bfd34a706c34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f722b6e2d3f5baf6c67bfd34a706c34">&#9670;&#160;</a></span>getBodyBId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Joint2D::getBodyBId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable ID of attached body B, or -1 after invalidation. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Body_8h_source.html#l00032">eve::physics::Body::getId()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldJoints2D_8cpp_source.html#l00151">eve::physics::World::newGearJoint()</a>.</p>
+
+</div>
+</div>
+<a id="a7a77490b6b50fadd362f56bd78437c25" name="a7a77490b6b50fadd362f56bd78437c25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a77490b6b50fadd362f56bd78437c25">&#9670;&#160;</a></span>getCollideConnected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Joint2D::getCollideConnected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether attached bodies may collide. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint2D_8cpp_source.html#l00038">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="af0e9de2af7dad2b1bfc96de88a6bffff" name="af0e9de2af7dad2b1bfc96de88a6bffff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0e9de2af7dad2b1bfc96de88a6bffff">&#9670;&#160;</a></span>getDistanceDampingRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getDistanceDampingRatio </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distance spring damping ratio. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a0aa6f4210bf373c95eda00232e93cd98">Distance</a>.</p>
+
+</div>
+</div>
+<a id="a7a9d231767697350c58dd000713a9e23" name="a7a9d231767697350c58dd000713a9e23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a9d231767697350c58dd000713a9e23">&#9670;&#160;</a></span>getDistanceFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getDistanceFrequency </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distance spring frequency in Hertz. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a0aa6f4210bf373c95eda00232e93cd98">Distance</a>.</p>
+
+</div>
+</div>
+<a id="a2ab19cad6c85412bc920bcbcfbdd823d" name="a2ab19cad6c85412bc920bcbcfbdd823d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ab19cad6c85412bc920bcbcfbdd823d">&#9670;&#160;</a></span>getDistanceLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getDistanceLength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distance-joint rest length in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a0aa6f4210bf373c95eda00232e93cd98">Distance</a> , 以及 <a class="el" href="World_8cpp_source.html#l00421">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="a164aef1a98ef61a7aa27ff898072d7a5" name="a164aef1a98ef61a7aa27ff898072d7a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a164aef1a98ef61a7aa27ff898072d7a5">&#9670;&#160;</a></span>getGearJoint1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> * eve::physics::Joint2D::getGearJoint1 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>First joint linked by a gear, or null. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed joint owned by <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>. @ownership <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> owns the joint; this wrapper only borrows it. @lifetime Valid until that joint or this gear is destroyed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00129">129</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ed7e8dc8b3789c2c885c76f5b50bede" name="a3ed7e8dc8b3789c2c885c76f5b50bede"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ed7e8dc8b3789c2c885c76f5b50bede">&#9670;&#160;</a></span>getGearJoint2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> * eve::physics::Joint2D::getGearJoint2 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Second joint linked by a gear, or null. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed joint owned by <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>. @ownership <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> owns the joint; this wrapper only borrows it. @lifetime Valid until that joint or this gear is destroyed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00136">136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab48fba7dcb82da137e8d7d5036816c91" name="ab48fba7dcb82da137e8d7d5036816c91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab48fba7dcb82da137e8d7d5036816c91">&#9670;&#160;</a></span>getGearRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getGearRatio </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current gear ratio. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35afb845762a66c26782f477febab5344dc">Gear</a>.</p>
+
+</div>
+</div>
+<a id="a9c20abb00c88068e80ecf08e1a771b8c" name="a9c20abb00c88068e80ecf08e1a771b8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c20abb00c88068e80ecf08e1a771b8c">&#9670;&#160;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Joint2D::getId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable world-local identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1c3df36964e61017ff1d3a1a7010d477" name="a1c3df36964e61017ff1d3a1a7010d477"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c3df36964e61017ff1d3a1a7010d477">&#9670;&#160;</a></span>getKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::Joint2D::getKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Joint kind string for script/debug. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a0aa6f4210bf373c95eda00232e93cd98">Distance</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35afb845762a66c26782f477febab5344dc">Gear</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199">Motor</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a358561ac4d41f41d479b7c54b19b639e">Revolute</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a768bf199aed2d6ea5cd5d27017978530">Weld</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldJoints2D_8cpp_source.html#l00151">eve::physics::World::newGearJoint()</a>.</p>
+
+</div>
+</div>
+<a id="a147056699aa7d877271445ee871e4a1f" name="a147056699aa7d877271445ee871e4a1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a147056699aa7d877271445ee871e4a1f">&#9670;&#160;</a></span>getMotorAngularOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getMotorAngularOffset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Motor angular offset in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199">Motor</a>.</p>
+
+</div>
+</div>
+<a id="a4671a1a91dcad5c041e6a46eea1f17ff" name="a4671a1a91dcad5c041e6a46eea1f17ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4671a1a91dcad5c041e6a46eea1f17ff">&#9670;&#160;</a></span>getMotorLinearOffsetX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getMotorLinearOffsetX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Motor linear offset X in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199">Motor</a>, <a class="el" href="World_8cpp_source.html#l00421">eve::physics::World::toPixels()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>.</p>
+
+</div>
+</div>
+<a id="aa4b829c54069d104c41cf79d68106aba" name="aa4b829c54069d104c41cf79d68106aba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4b829c54069d104c41cf79d68106aba">&#9670;&#160;</a></span>getMotorLinearOffsetY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getMotorLinearOffsetY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Motor linear offset Y in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199">Motor</a>, <a class="el" href="World_8cpp_source.html#l00421">eve::physics::World::toPixels()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="a67210245c6022329d7e2bd9e331e6d3b" name="a67210245c6022329d7e2bd9e331e6d3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67210245c6022329d7e2bd9e331e6d3b">&#9670;&#160;</a></span>getPrismaticSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getPrismaticSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current prismatic speed in pixels/second. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a> , 以及 <a class="el" href="World_8cpp_source.html#l00421">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="acbff0af16abccc1642ada34dc0a6cde8" name="acbff0af16abccc1642ada34dc0a6cde8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbff0af16abccc1642ada34dc0a6cde8">&#9670;&#160;</a></span>getPrismaticTranslation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getPrismaticTranslation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current prismatic translation in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a> , 以及 <a class="el" href="World_8cpp_source.html#l00421">eve::physics::World::toPixels()</a>.</p>
+
+</div>
+</div>
+<a id="aa05b258ce955566fbac96706d382a2fb" name="aa05b258ce955566fbac96706d382a2fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa05b258ce955566fbac96706d382a2fb">&#9670;&#160;</a></span>getRevoluteAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getRevoluteAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current revolute angle in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="af9adb3ac717c1ec39db5d1076fa76ecf" name="af9adb3ac717c1ec39db5d1076fa76ecf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9adb3ac717c1ec39db5d1076fa76ecf">&#9670;&#160;</a></span>getRevoluteMotorTorque()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getRevoluteMotorTorque </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current revolute motor torque in newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="a1fe53c23df282399c8622de74a7b8e82" name="a1fe53c23df282399c8622de74a7b8e82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fe53c23df282399c8622de74a7b8e82">&#9670;&#160;</a></span>getRevoluteSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getRevoluteSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current revolute speed in radians/second. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="ac3b4a4ca7763423907ceeed63e7dfef2" name="ac3b4a4ca7763423907ceeed63e7dfef2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3b4a4ca7763423907ceeed63e7dfef2">&#9670;&#160;</a></span>getWeldDampingRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getWeldDampingRatio </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Weld spring damping ratio. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a768bf199aed2d6ea5cd5d27017978530">Weld</a>.</p>
+
+</div>
+</div>
+<a id="a246bcce246917948bd7b0ac6f7de77f4" name="a246bcce246917948bd7b0ac6f7de77f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a246bcce246917948bd7b0ac6f7de77f4">&#9670;&#160;</a></span>getWeldFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getWeldFrequency </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Weld spring frequency in Hertz. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a768bf199aed2d6ea5cd5d27017978530">Weld</a>.</p>
+
+</div>
+</div>
+<a id="ad8ef209250b9a879a8b200b7fe9c09b0" name="ad8ef209250b9a879a8b200b7fe9c09b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8ef209250b9a879a8b200b7fe9c09b0">&#9670;&#160;</a></span>getWheelSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getWheelSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current wheel spin speed in radians/second. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="a935f0aedb56e5f8e84d2953e8b145f2f" name="a935f0aedb56e5f8e84d2953e8b145f2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a935f0aedb56e5f8e84d2953e8b145f2f">&#9670;&#160;</a></span>getWheelTranslation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint2D::getWheelTranslation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current wheel translation along the suspension axis in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8cpp_source.html#l00421">eve::physics::World::toPixels()</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="a8a7d729fb4c112251a1b5429d08075ab" name="a8a7d729fb4c112251a1b5429d08075ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a7d729fb4c112251a1b5429d08075ab">&#9670;&#160;</a></span>getWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1World.html">World</a> * eve::physics::Joint2D::getWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Owning world, or null after joint destruction. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed world pointer. @ownership <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> owns this joint; the returned world pointer is borrowed. @lifetime Valid until <a class="el" href="classeve_1_1physics_1_1World.html#a5c8b33b3439c1ce480770a1d38ce4788" title="Destroys the underlying Box2D world and resets event buffers.">World::destroy()</a> or this joint's invalidation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldJoints2D_8cpp_source.html#l00151">eve::physics::World::newGearJoint()</a>.</p>
+
+</div>
+</div>
+<a id="a528866cec06d1b8bd1cf20feb2d4a0ba" name="a528866cec06d1b8bd1cf20feb2d4a0ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a528866cec06d1b8bd1cf20feb2d4a0ba">&#9670;&#160;</a></span>invalidate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::invalidate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal invalidation used by body/world destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldJoints2D_8cpp_source.html#l00045">eve::physics::World::forgetJoint()</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00143">eve::RuntimeHandle&lt; PhysicsJointHandleTag &gt;::invalid()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Joint2D_8cpp_source.html#l00051">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="a78fee661d802ab5ee83df9187ad67385" name="a78fee661d802ab5ee83df9187ad67385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78fee661d802ab5ee83df9187ad67385">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Joint2D::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether the backend joint still exists. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World_8h_source.html#l00378">eve::physics::World::raw()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Joint2D_8cpp_source.html#l00051">destroy()</a>, <a class="el" href="Joint2D_8cpp_source.html#l00101">getCollideConnected()</a>, <a class="el" href="WorldJoints2D_8cpp_source.html#l00151">eve::physics::World::newGearJoint()</a> , 以及 <a class="el" href="Joint2D_8cpp_source.html#l00092">setCollideConnected()</a>.</p>
+
+</div>
+</div>
+<a id="a93187af458a3e18453aa99d1327e68a6" name="a93187af458a3e18453aa99d1327e68a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93187af458a3e18453aa99d1327e68a6">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> &amp; eve::physics::Joint2D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a258745721e20299058e1ddf086b30cf7" name="a258745721e20299058e1ddf086b30cf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a258745721e20299058e1ddf086b30cf7">&#9670;&#160;</a></span>raw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">b2Joint * eve::physics::Joint2D::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Internal raw Box2D joint. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldJoints2D_8cpp_source.html#l00151">eve::physics::World::newGearJoint()</a>.</p>
+
+</div>
+</div>
+<a id="a97ef95e4fa8d684daf1856ca12731112" name="a97ef95e4fa8d684daf1856ca12731112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ef95e4fa8d684daf1856ca12731112">&#9670;&#160;</a></span>runtimeHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">PhysicsJointHandle</a> eve::physics::Joint2D::runtimeHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Process-local generation-qualified handle owned by <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldJoints2D_8cpp_source.html#l00045">eve::physics::World::forgetJoint()</a>.</p>
+
+</div>
+</div>
+<a id="a52b47b73df128b7d9996001161a4173a" name="a52b47b73df128b7d9996001161a4173a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52b47b73df128b7d9996001161a4173a">&#9670;&#160;</a></span>setCollideConnected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setCollideConnected </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>collide</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables or disables collision between the attached bodies. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint2D_8cpp_source.html#l00038">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="ad5aa45af842ab06eaf8a080781d0e63a" name="ad5aa45af842ab06eaf8a080781d0e63a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5aa45af842ab06eaf8a080781d0e63a">&#9670;&#160;</a></span>setDistanceLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setDistanceLength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lengthPixels</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes distance-joint rest length in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a0aa6f4210bf373c95eda00232e93cd98">Distance</a> , 以及 <a class="el" href="World_8cpp_source.html#l00420">eve::physics::World::toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="a7538514b4a854dee718ec1fe4f678129" name="a7538514b4a854dee718ec1fe4f678129"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7538514b4a854dee718ec1fe4f678129">&#9670;&#160;</a></span>setDistanceSpring()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setDistanceSpring </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequencyHz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingRatio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures distance spring frequency (Hz) and damping ratio. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a0aa6f4210bf373c95eda00232e93cd98">Distance</a> , 以及 <a class="el" href="MeshContactBlend_8cpp_source.html#l00043">distance</a>.</p>
+
+</div>
+</div>
+<a id="a133ea745fd083ce6fc6f5defbf7f0022" name="a133ea745fd083ce6fc6f5defbf7f0022"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a133ea745fd083ce6fc6f5defbf7f0022">&#9670;&#160;</a></span>setGearRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setGearRatio </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ratio</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes gear ratio. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35afb845762a66c26782f477febab5344dc">Gear</a>.</p>
+
+</div>
+</div>
+<a id="a27a9541c975649f697568f1e69fa7455" name="a27a9541c975649f697568f1e69fa7455"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27a9541c975649f697568f1e69fa7455">&#9670;&#160;</a></span>setMotorAngularOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setMotorAngularOffset </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets motor-joint angular offset in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199">Motor</a>.</p>
+
+</div>
+</div>
+<a id="a540ffec38a8bc369b90bbc03fde29225" name="a540ffec38a8bc369b90bbc03fde29225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a540ffec38a8bc369b90bbc03fde29225">&#9670;&#160;</a></span>setMotorLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setMotorLimits </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxForcePixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxTorque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets motor max force (pixel-force) and torque (N·m). </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199">Motor</a> , 以及 <a class="el" href="World_8cpp_source.html#l00420">eve::physics::World::toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="af72948d139bc8ef07349e3c5f75534be" name="af72948d139bc8ef07349e3c5f75534be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af72948d139bc8ef07349e3c5f75534be">&#9670;&#160;</a></span>setMotorLinearOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setMotorLinearOffset </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>xPixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yPixels</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets motor-joint linear offset in pixels (bodyA frame). </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35ab33538179f5661a86cbe327a1793e199">Motor</a> , 以及 <a class="el" href="World_8cpp_source.html#l00420">eve::physics::World::toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="a4f3e792407ff96eed4921ac603fd31dc" name="a4f3e792407ff96eed4921ac603fd31dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f3e792407ff96eed4921ac603fd31dc">&#9670;&#160;</a></span>setPrismaticLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setPrismaticLimits </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lowerPixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upperPixels</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures prismatic translation limits in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a> , 以及 <a class="el" href="World_8cpp_source.html#l00420">eve::physics::World::toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="a208c4374860ee360bcc8737cb56cd2b2" name="a208c4374860ee360bcc8737cb56cd2b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a208c4374860ee360bcc8737cb56cd2b2">&#9670;&#160;</a></span>setPrismaticMotor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setPrismaticMotor </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speedPixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxForcePixels</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures a prismatic motor in pixels/second and pixel-force units. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a> , 以及 <a class="el" href="World_8cpp_source.html#l00420">eve::physics::World::toMeters()</a>.</p>
+
+</div>
+</div>
+<a id="aab08bfb84ae04f663e2b4be78797f6ee" name="aab08bfb84ae04f663e2b4be78797f6ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab08bfb84ae04f663e2b4be78797f6ee">&#9670;&#160;</a></span>setRevoluteLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setRevoluteLimits </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lower</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upper</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures revolute angular limits in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="a9e58e149627f67a27405fca3f9f4ed15" name="a9e58e149627f67a27405fca3f9f4ed15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e58e149627f67a27405fca3f9f4ed15">&#9670;&#160;</a></span>setRevoluteMotor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setRevoluteMotor </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxTorque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures the revolute motor in radians/second and newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="a4113c1f217a9dbd2b760407040aaab13" name="a4113c1f217a9dbd2b760407040aaab13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4113c1f217a9dbd2b760407040aaab13">&#9670;&#160;</a></span>setWeldSpring()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setWeldSpring </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequencyHz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingRatio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures weld rotational spring frequency and damping. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35a768bf199aed2d6ea5cd5d27017978530">Weld</a>.</p>
+
+</div>
+</div>
+<a id="a65ea8da09a7dfc53e1283f8a0f5274c0" name="a65ea8da09a7dfc53e1283f8a0f5274c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65ea8da09a7dfc53e1283f8a0f5274c0">&#9670;&#160;</a></span>setWheelMotor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setWheelMotor </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxTorque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures wheel spin motor in radians/second and newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="a016ec89b9f52b2a51b8dc7b125e5a5d4" name="a016ec89b9f52b2a51b8dc7b125e5a5d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a016ec89b9f52b2a51b8dc7b125e5a5d4">&#9670;&#160;</a></span>setWheelSpring()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint2D::setWheelSpring </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequencyHz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingRatio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures wheel suspension spring. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a> 第 <a class="el" href="Joint2D_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint2D.html#a76f2ce88c598631cc03c60e3fa619b35aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a8858f397a273114ddc1443880bb5540e" name="a8858f397a273114ddc1443880bb5540e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8858f397a273114ddc1443880bb5540e">&#9670;&#160;</a></span>Body</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00148">148</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5dfbbdcc1b1c036ba0384168234ab2b" name="ab5dfbbdcc1b1c036ba0384168234ab2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5dfbbdcc1b1c036ba0384168234ab2b">&#9670;&#160;</a></span>Mechanism2D</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1Mechanism2D.html">Mechanism2D</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00150">150</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b4bcdf992c21ae83363f25df05b1d25" name="a7b4bcdf992c21ae83363f25df05b1d25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4bcdf992c21ae83363f25df05b1d25">&#9670;&#160;</a></span>World</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1World.html">World</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2D_8h_source.html">Joint2D.h</a> 第 <a class="el" href="Joint2D_8h_source.html#l00149">149</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="Joint2D_8h_source.html">Joint2D.h</a></li>
+<li>src/modules/physics/<a class="el" href="Joint2D_8cpp_source.html">Joint2D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

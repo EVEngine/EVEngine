@@ -1,0 +1,687 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::trajectory::TrajectoryCollisionRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1trajectory.html">trajectory</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html">TrajectoryCollisionRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::trajectory::TrajectoryCollisionRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread authority for bone-bound collider catalogs and continuous sweeps.  
+ <a href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TrajectoryCollision_8h_source.html">TrajectoryCollision.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3053a53654f073edb6c596ac534ff48d" id="r_a3053a53654f073edb6c596ac534ff48d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#a3053a53654f073edb6c596ac534ff48d">TrajectoryCollisionRuntime</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:a3053a53654f073edb6c596ac534ff48d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a runtime bound to one borrowed <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>.  <br /></td></tr>
+<tr class="separator:a3053a53654f073edb6c596ac534ff48d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4dae8bacf0bc5073b7cef31633a3f79" id="r_ab4dae8bacf0bc5073b7cef31633a3f79"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#ab4dae8bacf0bc5073b7cef31633a3f79">~TrajectoryCollisionRuntime</a> ()</td></tr>
+<tr class="memdesc:ab4dae8bacf0bc5073b7cef31633a3f79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases <a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html" title="Owner-thread authority for bone-bound collider catalogs and continuous sweeps.">TrajectoryCollisionRuntime</a> resources.  <br /></td></tr>
+<tr class="separator:ab4dae8bacf0bc5073b7cef31633a3f79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaead272a032a0fbba9a34abc365d3d02" id="r_aaead272a032a0fbba9a34abc365d3d02"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#aaead272a032a0fbba9a34abc365d3d02">TrajectoryCollisionRuntime</a> (const <a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html">TrajectoryCollisionRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:aaead272a032a0fbba9a34abc365d3d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7880a77894f9351cffe7bba6d79a225" id="r_ab7880a77894f9351cffe7bba6d79a225"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html">TrajectoryCollisionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#ab7880a77894f9351cffe7bba6d79a225">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html">TrajectoryCollisionRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:ab7880a77894f9351cffe7bba6d79a225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b520b93613b97863de81b17c52792d7" id="r_a5b520b93613b97863de81b17c52792d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#a5b520b93613b97863de81b17c52792d7">registerCollider</a> (<a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html">BoneColliderDefinition</a> definition)</td></tr>
+<tr class="memdesc:a5b520b93613b97863de81b17c52792d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register or replace one collider catalog entry after full validation.  <br /></td></tr>
+<tr class="separator:a5b520b93613b97863de81b17c52792d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1fa5508608c4322052ed3c6447f18b" id="r_a2b1fa5508608c4322052ed3c6447f18b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#a2b1fa5508608c4322052ed3c6447f18b">unregisterCollider</a> (std::string_view colliderId)</td></tr>
+<tr class="memdesc:a2b1fa5508608c4322052ed3c6447f18b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one catalog entry and disarm every matching armed window.  <br /></td></tr>
+<tr class="separator:a2b1fa5508608c4322052ed3c6447f18b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab07a230e9d21460dd89dcf1b272de20a" id="r_ab07a230e9d21460dd89dcf1b272de20a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#ab07a230e9d21460dd89dcf1b272de20a">bindPoseSource</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, <a class="el" href="classeve_1_1IAttachmentPointSource.html">IAttachmentPointSource</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)</td></tr>
+<tr class="memdesc:ab07a230e9d21460dd89dcf1b272de20a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a subject's attachment pose source.  <br /></td></tr>
+<tr class="separator:ab07a230e9d21460dd89dcf1b272de20a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a128630a4d701e8f1e2722ed55eae900d" id="r_a128630a4d701e8f1e2722ed55eae900d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#a128630a4d701e8f1e2722ed55eae900d">clearPoseSource</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>)</td></tr>
+<tr class="memdesc:a128630a4d701e8f1e2722ed55eae900d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one subject's pose source and disarm its armed colliders.  <br /></td></tr>
+<tr class="separator:a128630a4d701e8f1e2722ed55eae900d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14afbb920a374b0ebfb76ff51cbbfee6" id="r_a14afbb920a374b0ebfb76ff51cbbfee6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#a14afbb920a374b0ebfb76ff51cbbfee6">arm</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::string_view colliderId)</td></tr>
+<tr class="memdesc:a14afbb920a374b0ebfb76ff51cbbfee6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arm one collider for continuous sweeps while an attack window is open.  <br /></td></tr>
+<tr class="separator:a14afbb920a374b0ebfb76ff51cbbfee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabcad40c22499cbbbc144cc616a10822" id="r_aabcad40c22499cbbbc144cc616a10822"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#aabcad40c22499cbbbc144cc616a10822">disarm</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::string_view colliderId)</td></tr>
+<tr class="memdesc:aabcad40c22499cbbbc144cc616a10822"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disarm one collider and forget its per-target hit memory.  <br /></td></tr>
+<tr class="separator:aabcad40c22499cbbbc144cc616a10822"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4149b0b86609a869777df2a038416cf8" id="r_a4149b0b86609a869777df2a038416cf8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1trajectory_1_1TrajectoryFrame.html">TrajectoryFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#a4149b0b86609a869777df2a038416cf8">advance</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a4149b0b86609a869777df2a038416cf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample poses for armed colliders, sweep previous→current through <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>, emit unique hits.  <br /></td></tr>
+<tr class="separator:a4149b0b86609a869777df2a038416cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a199739262b20d6dcf231f1d92c221416" id="r_a199739262b20d6dcf231f1d92c221416"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1trajectory_1_1TrajectorySample.html">TrajectorySample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#a199739262b20d6dcf231f1d92c221416">sampleArmed</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::string_view colliderId) const</td></tr>
+<tr class="memdesc:a199739262b20d6dcf231f1d92c221416"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current world-space sample for one armed collider, or NotFound.  <br /></td></tr>
+<tr class="separator:a199739262b20d6dcf231f1d92c221416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cce3d4da1e2b99e1d2f664d48847a9c" id="r_a7cce3d4da1e2b99e1d2f664d48847a9c"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#a7cce3d4da1e2b99e1d2f664d48847a9c">colliderCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a7cce3d4da1e2b99e1d2f664d48847a9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of registered catalog entries.  <br /></td></tr>
+<tr class="separator:a7cce3d4da1e2b99e1d2f664d48847a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafe0f8b703d2a05058aa1206e37eb951" id="r_aafe0f8b703d2a05058aa1206e37eb951"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#aafe0f8b703d2a05058aa1206e37eb951">armedCount</a> () const noexcept</td></tr>
+<tr class="memdesc:aafe0f8b703d2a05058aa1206e37eb951"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of armed collider windows.  <br /></td></tr>
+<tr class="separator:aafe0f8b703d2a05058aa1206e37eb951"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70c1bf91b6be76847f8589b7b13ceb70" id="r_a70c1bf91b6be76847f8589b7b13ceb70"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html#a70c1bf91b6be76847f8589b7b13ceb70">poseSourceCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a70c1bf91b6be76847f8589b7b13ceb70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of subjects with a bound pose source.  <br /></td></tr>
+<tr class="separator:a70c1bf91b6be76847f8589b7b13ceb70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread authority for bone-bound collider catalogs and continuous sweeps. </p>
+<p>Pose sources are borrowed and must outlive the binding or be cleared first. The <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> is observed through its weak lifetime token, so destroying the world first safely invalidates later advances without retaining body pointers.</p>
+<p>@ownership Catalog and armed state are owned by this runtime. <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> owns all solver bodies/shapes. Hits publish process-local handles only. @thread Affine to the physics owner thread; callbacks are never invoked. @reentrancy Methods must not re-enter this runtime or mutate <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> topology from an attachment source during sampling. </p>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8h_source.html">TrajectoryCollision.h</a> 第 <a class="el" href="TrajectoryCollision_8h_source.html#l00087">87</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a3053a53654f073edb6c596ac534ff48d" name="a3053a53654f073edb6c596ac534ff48d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3053a53654f073edb6c596ac534ff48d">&#9670;&#160;</a></span>TrajectoryCollisionRuntime() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::trajectory::TrajectoryCollisionRuntime::TrajectoryCollisionRuntime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a runtime bound to one borrowed <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td><a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> observed through its weak lifetime token; it may be destroyed first. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a> 第 <a class="el" href="TrajectoryCollision_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab4dae8bacf0bc5073b7cef31633a3f79" name="ab4dae8bacf0bc5073b7cef31633a3f79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4dae8bacf0bc5073b7cef31633a3f79">&#9670;&#160;</a></span>~TrajectoryCollisionRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::trajectory::TrajectoryCollisionRuntime::~TrajectoryCollisionRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases <a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html" title="Owner-thread authority for bone-bound collider catalogs and continuous sweeps.">TrajectoryCollisionRuntime</a> resources. </p>
+
+</div>
+</div>
+<a id="aaead272a032a0fbba9a34abc365d3d02" name="aaead272a032a0fbba9a34abc365d3d02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaead272a032a0fbba9a34abc365d3d02">&#9670;&#160;</a></span>TrajectoryCollisionRuntime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::trajectory::TrajectoryCollisionRuntime::TrajectoryCollisionRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html">TrajectoryCollisionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4149b0b86609a869777df2a038416cf8" name="a4149b0b86609a869777df2a038416cf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4149b0b86609a869777df2a038416cf8">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1trajectory_1_1TrajectoryFrame.html">TrajectoryFrame</a> &gt; eve::physics::trajectory::TrajectoryCollisionRuntime::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample poses for armed colliders, sweep previous→current through <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>, emit unique hits. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tick</td><td>Deterministic simulation tick; must be non-decreasing. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a> 第 <a class="el" href="TrajectoryCollision_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="TrajectoryCollision_8h_source.html#l00071">eve::physics::trajectory::TrajectoryFrame::hits</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TrajectoryCollision_8h_source.html#l00069">eve::physics::trajectory::TrajectoryFrame::tick</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>, <a class="el" href="StrongUint64_8h_source.html#l00026">eve::detail::StrongUint64&lt; Tag &gt;::value()</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+</div>
+</div>
+<a id="a14afbb920a374b0ebfb76ff51cbbfee6" name="a14afbb920a374b0ebfb76ff51cbbfee6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14afbb920a374b0ebfb76ff51cbbfee6">&#9670;&#160;</a></span>arm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::trajectory::TrajectoryCollisionRuntime::arm </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>colliderId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Arm one collider for continuous sweeps while an attack window is open. </p>
+<dl class="section remark"><dt>备注</dt><dd>Requires a pose source. The first sample becomes both previous and current so the arming frame does not sweep from an uninitialized origin. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a> 第 <a class="el" href="TrajectoryCollision_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00108">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aafe0f8b703d2a05058aa1206e37eb951" name="aafe0f8b703d2a05058aa1206e37eb951"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafe0f8b703d2a05058aa1206e37eb951">&#9670;&#160;</a></span>armedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::physics::trajectory::TrajectoryCollisionRuntime::armedCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of armed collider windows. </p>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8h_source.html">TrajectoryCollision.h</a> 第 <a class="el" href="TrajectoryCollision_8h_source.html#l00136">136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab07a230e9d21460dd89dcf1b272de20a" name="ab07a230e9d21460dd89dcf1b272de20a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab07a230e9d21460dd89dcf1b272de20a">&#9670;&#160;</a></span>bindPoseSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::trajectory::TrajectoryCollisionRuntime::bindPoseSource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1IAttachmentPointSource.html">IAttachmentPointSource</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind a subject's attachment pose source. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">subject</td><td>Non-nil subject that owns the animated skeleton. </td></tr>
+    <tr><td class="paramname">source</td><td>Borrowed pose source; must outlive this binding or be cleared. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a> 第 <a class="el" href="TrajectoryCollision_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a128630a4d701e8f1e2722ed55eae900d" name="a128630a4d701e8f1e2722ed55eae900d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a128630a4d701e8f1e2722ed55eae900d">&#9670;&#160;</a></span>clearPoseSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::trajectory::TrajectoryCollisionRuntime::clearPoseSource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one subject's pose source and disarm its armed colliders. </p>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a> 第 <a class="el" href="TrajectoryCollision_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7cce3d4da1e2b99e1d2f664d48847a9c" name="a7cce3d4da1e2b99e1d2f664d48847a9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cce3d4da1e2b99e1d2f664d48847a9c">&#9670;&#160;</a></span>colliderCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::physics::trajectory::TrajectoryCollisionRuntime::colliderCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of registered catalog entries. </p>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8h_source.html">TrajectoryCollision.h</a> 第 <a class="el" href="TrajectoryCollision_8h_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aabcad40c22499cbbbc144cc616a10822" name="aabcad40c22499cbbbc144cc616a10822"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabcad40c22499cbbbc144cc616a10822">&#9670;&#160;</a></span>disarm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::trajectory::TrajectoryCollisionRuntime::disarm </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>colliderId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disarm one collider and forget its per-target hit memory. </p>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a> 第 <a class="el" href="TrajectoryCollision_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="PlayHost_8cpp_source.html#l00108">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab7880a77894f9351cffe7bba6d79a225" name="ab7880a77894f9351cffe7bba6d79a225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7880a77894f9351cffe7bba6d79a225">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html">TrajectoryCollisionRuntime</a> &amp; eve::physics::trajectory::TrajectoryCollisionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1trajectory_1_1TrajectoryCollisionRuntime.html">TrajectoryCollisionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a70c1bf91b6be76847f8589b7b13ceb70" name="a70c1bf91b6be76847f8589b7b13ceb70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70c1bf91b6be76847f8589b7b13ceb70">&#9670;&#160;</a></span>poseSourceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::physics::trajectory::TrajectoryCollisionRuntime::poseSourceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of subjects with a bound pose source. </p>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8h_source.html">TrajectoryCollision.h</a> 第 <a class="el" href="TrajectoryCollision_8h_source.html#l00138">138</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b520b93613b97863de81b17c52792d7" name="a5b520b93613b97863de81b17c52792d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b520b93613b97863de81b17c52792d7">&#9670;&#160;</a></span>registerCollider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::trajectory::TrajectoryCollisionRuntime::registerCollider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html">BoneColliderDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register or replace one collider catalog entry after full validation. </p>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a> 第 <a class="el" href="TrajectoryCollision_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>.</p>
+
+</div>
+</div>
+<a id="a199739262b20d6dcf231f1d92c221416" name="a199739262b20d6dcf231f1d92c221416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a199739262b20d6dcf231f1d92c221416">&#9670;&#160;</a></span>sampleArmed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1trajectory_1_1TrajectorySample.html">TrajectorySample</a> &gt; eve::physics::trajectory::TrajectoryCollisionRuntime::sampleArmed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>colliderId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current world-space sample for one armed collider, or NotFound. </p>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a> 第 <a class="el" href="TrajectoryCollision_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a2b1fa5508608c4322052ed3c6447f18b" name="a2b1fa5508608c4322052ed3c6447f18b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b1fa5508608c4322052ed3c6447f18b">&#9670;&#160;</a></span>unregisterCollider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::trajectory::TrajectoryCollisionRuntime::unregisterCollider </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>colliderId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one catalog entry and disarm every matching armed window. </p>
+
+<p class="definition">在文件 <a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a> 第 <a class="el" href="TrajectoryCollision_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="PlayHost_8cpp_source.html#l00108">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/trajectory/<a class="el" href="TrajectoryCollision_8h_source.html">TrajectoryCollision.h</a></li>
+<li>src/modules/physics/trajectory/<a class="el" href="TrajectoryCollision_8cpp_source.html">TrajectoryCollision.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

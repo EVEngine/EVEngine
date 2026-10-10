@@ -1,0 +1,278 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/gpuagents/GpuAgentWorld.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_bf63b7e9ed1d28c1335dd36e5b0f5062.html">gpuagents</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GpuAgentWorld.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GpuAgentWorld_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="GpuAgentWorld_8h.html">gpuagents/GpuAgentWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1gpuagents.html">eve::gpuagents</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#abb8ae04027efd69dd2f08f2b64dee26d">    7</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#abb8ae04027efd69dd2f08f2b64dee26d">GpuAgentWorld::registerBackend</a>(std::string <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_class" href="classeve_1_1gpuagents_1_1EffectBackend.html">EffectBackend</a>* backend) {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>.empty()) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;backend name is empty&quot;</span>, <span class="stringliteral">&quot;name&quot;</span>, {}, <span class="stringliteral">&quot;gpuagents&quot;</span>));</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    }</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (!backend) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;backend is null&quot;</span>, <span class="stringliteral">&quot;backend&quot;</span>, {}, <span class="stringliteral">&quot;gpuagents&quot;</span>));</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    }</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">if</span> (backends_.count(<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) != 0) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">DiagnosticCode::AlreadyExists</a>, <span class="stringliteral">&quot;backend name already registered&quot;</span>, <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, {}, <span class="stringliteral">&quot;gpuagents&quot;</span>));</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    backends_.emplace(std::move(<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>), backend);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a2477e152688390717e38726694a6baf6">   24</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a2477e152688390717e38726694a6baf6">GpuAgentWorld::unregisterBackend</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (backends_.erase(<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) == 0) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;backend not registered&quot;</span>, <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, {}, <span class="stringliteral">&quot;gpuagents&quot;</span>));</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a1386033cb8e3803ae7776a25e83bcdbc">   32</a></span><a class="code hl_class" href="classeve_1_1gpuagents_1_1EffectBackend.html">EffectBackend</a>* <a class="code hl_function" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a1386033cb8e3803ae7776a25e83bcdbc">GpuAgentWorld::find</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">const</span> <span class="keyword">auto</span> it = backends_.find(<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> it == backends_.end() ? nullptr : it-&gt;second;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#aa5bb0be55067fc9660804a8570a0b7a5">   37</a></span><a class="code hl_struct" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">EnvironmentSnapshot</a> <a class="code hl_function" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#aa5bb0be55067fc9660804a8570a0b7a5">GpuAgentWorld::makeSnapshot</a>(<span class="keywordtype">bool</span> includeSurface)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_struct" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">EnvironmentSnapshot</a> snap;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    snap.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#ab289803570a1c20ca557b94c176de0c8">waterCurrent</a> = waterCurrent_;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    snap.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#ab9ad71b6c933c39aed851b249430b4a9">windVelocity</a> = wind_;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    snap.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a1f7aa308443426d29a9f0e560097bb80">groundY</a>      = groundY_;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    snap.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#af38d3ed81083434647b97f982d7edc4c">ceilingY</a>     = ceilingY_;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    snap.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa5308fb6bb632b4a28c33805f705fefc">goals</a>        = goals_;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    snap.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa8234192374fc6d1974b737704a8f62f">dangers</a>      = dangers_;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    snap.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a5dbc94c98eaaa04a1612b79ff5cf56d1">nutrients</a>    = nutrients_;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    snap.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a0aa96ca00fe4e05750d6c19734bef9c2">obstacles</a>    = &amp;obstacles_;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    snap.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a67e9c1931b473314e921787559104a9c">surface</a>      = includeSurface ? <span class="keyword">const_cast&lt;</span><a class="code hl_class" href="classeve_1_1gpuagents_1_1SurfaceField.html">SurfaceField</a>*<span class="keyword">&gt;</span>(&amp;surface_) : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> snap;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#adbf089c5eff26518d8906d9b47d5d08b">   51</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#adbf089c5eff26518d8906d9b47d5d08b">GpuAgentWorld::stepAll</a>(<span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, backend] : backends_) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        (void)<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">if</span> (!backend) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>, <span class="stringliteral">&quot;registered backend is null&quot;</span>, <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, {},</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                                  <span class="stringliteral">&quot;gpuagents&quot;</span>));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> needSurface = backend-&gt;kind() == <a class="code hl_enumvalue" href="namespaceeve_1_1gpuagents.html#a8b53456dc4abbf12c3762d95f331368fa0b37c82ec5468c8e02f5dde04eb8bbb4">EffectKind::LifeNetwork</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <a class="code hl_struct" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">EnvironmentSnapshot</a> snap = <a class="code hl_function" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#aa5bb0be55067fc9660804a8570a0b7a5">makeSnapshot</a>(needSurface);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keyword">auto</span> stepped = backend-&gt;step(dt, snap);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">if</span> (!stepped.ok()) <span class="keywordflow">return</span> stepped;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}  <span class="comment">// namespace eve::gpuagents</span></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aGpuAgentWorld_8h_html"><div class="ttname"><a href="GpuAgentWorld_8h.html">GpuAgentWorld.h</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00040">McpScriptTools.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00125">Diagnostic.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00164">Result.h:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1EffectBackend_html"><div class="ttname"><a href="classeve_1_1gpuagents_1_1EffectBackend.html">eve::gpuagents::EffectBackend</a></div><div class="ttdoc">Binds an EffectProfile to a GpuAgentSimulation and optional renderer.</div><div class="ttdef"><b>Definition</b> <a href="EffectBackend_8h_source.html#l00019">EffectBackend.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1GpuAgentWorld_html_a1386033cb8e3803ae7776a25e83bcdbc"><div class="ttname"><a href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a1386033cb8e3803ae7776a25e83bcdbc">eve::gpuagents::GpuAgentWorld::find</a></div><div class="ttdeci">EffectBackend * find(const std::string &amp;name) const</div><div class="ttdoc">Look up a registered backend by name. @ownership Borrowed; World does not own the returned pointer....</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentWorld_8cpp_source.html#l00032">GpuAgentWorld.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1GpuAgentWorld_html_a2477e152688390717e38726694a6baf6"><div class="ttname"><a href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a2477e152688390717e38726694a6baf6">eve::gpuagents::GpuAgentWorld::unregisterBackend</a></div><div class="ttdeci">Result&lt; void &gt; unregisterBackend(const std::string &amp;name)</div><div class="ttdoc">Remove a named backend registration without destroying the backend. @ownership Does not take or relea...</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentWorld_8cpp_source.html#l00024">GpuAgentWorld.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1GpuAgentWorld_html_aa5bb0be55067fc9660804a8570a0b7a5"><div class="ttname"><a href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#aa5bb0be55067fc9660804a8570a0b7a5">eve::gpuagents::GpuAgentWorld::makeSnapshot</a></div><div class="ttdeci">EnvironmentSnapshot makeSnapshot(bool includeSurface) const</div><div class="ttdoc">Build an environment snapshot for the current World state.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentWorld_8cpp_source.html#l00037">GpuAgentWorld.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1GpuAgentWorld_html_abb8ae04027efd69dd2f08f2b64dee26d"><div class="ttname"><a href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#abb8ae04027efd69dd2f08f2b64dee26d">eve::gpuagents::GpuAgentWorld::registerBackend</a></div><div class="ttdeci">Result&lt; void &gt; registerBackend(std::string name, EffectBackend *backend)</div><div class="ttdoc">Register a borrowed backend under a unique name.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentWorld_8cpp_source.html#l00007">GpuAgentWorld.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1GpuAgentWorld_html_adbf089c5eff26518d8906d9b47d5d08b"><div class="ttname"><a href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#adbf089c5eff26518d8906d9b47d5d08b">eve::gpuagents::GpuAgentWorld::stepAll</a></div><div class="ttdeci">Result&lt; void &gt; stepAll(float dt)</div><div class="ttdoc">Step every registered backend with a shared environment snapshot.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentWorld_8cpp_source.html#l00051">GpuAgentWorld.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1SurfaceField_html"><div class="ttname"><a href="classeve_1_1gpuagents_1_1SurfaceField.html">eve::gpuagents::SurfaceField</a></div><div class="ttdoc">2.5D surface + life-field textures for Life Network.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceField_8h_source.html#l00016">SurfaceField.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_html"><div class="ttname"><a href="namespaceeve_1_1gpuagents.html">eve::gpuagents</a></div><div class="ttdef"><b>Definition</b> <a href="AgentInstanceRenderer_8cpp_source.html#l00005">AgentInstanceRenderer.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_html_a8b53456dc4abbf12c3762d95f331368fa0b37c82ec5468c8e02f5dde04eb8bbb4"><div class="ttname"><a href="namespaceeve_1_1gpuagents.html#a8b53456dc4abbf12c3762d95f331368fa0b37c82ec5468c8e02f5dde04eb8bbb4">eve::gpuagents::EffectKind::LifeNetwork</a></div><div class="ttdeci">@ LifeNetwork</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::DiagnosticCode::AlreadyExists</a></div><div class="ttdeci">@ AlreadyExists</div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">eve::gpuagents::EnvironmentSnapshot</a></div><div class="ttdoc">Read-only environment semantics prepared by GpuAgentWorld each tick.</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00026">EnvironmentSnapshot.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_a0aa96ca00fe4e05750d6c19734bef9c2"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a0aa96ca00fe4e05750d6c19734bef9c2">eve::gpuagents::EnvironmentSnapshot::obstacles</a></div><div class="ttdeci">const ObstacleField * obstacles</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00036">EnvironmentSnapshot.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_a1f7aa308443426d29a9f0e560097bb80"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a1f7aa308443426d29a9f0e560097bb80">eve::gpuagents::EnvironmentSnapshot::groundY</a></div><div class="ttdeci">float groundY</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00029">EnvironmentSnapshot.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_a5dbc94c98eaaa04a1612b79ff5cf56d1"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a5dbc94c98eaaa04a1612b79ff5cf56d1">eve::gpuagents::EnvironmentSnapshot::nutrients</a></div><div class="ttdeci">std::vector&lt; EnvironmentMarker &gt; nutrients</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00034">EnvironmentSnapshot.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_a67e9c1931b473314e921787559104a9c"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a67e9c1931b473314e921787559104a9c">eve::gpuagents::EnvironmentSnapshot::surface</a></div><div class="ttdeci">SurfaceField * surface</div><div class="ttdoc">optional; Life Network writes trails here</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00037">EnvironmentSnapshot.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_aa5308fb6bb632b4a28c33805f705fefc"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa5308fb6bb632b4a28c33805f705fefc">eve::gpuagents::EnvironmentSnapshot::goals</a></div><div class="ttdeci">std::vector&lt; EnvironmentMarker &gt; goals</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00032">EnvironmentSnapshot.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_aa8234192374fc6d1974b737704a8f62f"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa8234192374fc6d1974b737704a8f62f">eve::gpuagents::EnvironmentSnapshot::dangers</a></div><div class="ttdeci">std::vector&lt; EnvironmentMarker &gt; dangers</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00033">EnvironmentSnapshot.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_ab289803570a1c20ca557b94c176de0c8"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#ab289803570a1c20ca557b94c176de0c8">eve::gpuagents::EnvironmentSnapshot::waterCurrent</a></div><div class="ttdeci">glm::vec3 waterCurrent</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00027">EnvironmentSnapshot.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_ab9ad71b6c933c39aed851b249430b4a9"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#ab9ad71b6c933c39aed851b249430b4a9">eve::gpuagents::EnvironmentSnapshot::windVelocity</a></div><div class="ttdeci">glm::vec3 windVelocity</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00028">EnvironmentSnapshot.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_af38d3ed81083434647b97f982d7edc4c"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#af38d3ed81083434647b97f982d7edc4c">eve::gpuagents::EnvironmentSnapshot::ceilingY</a></div><div class="ttdeci">float ceilingY</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00030">EnvironmentSnapshot.h:30</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

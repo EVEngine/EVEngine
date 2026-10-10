@@ -1,0 +1,692 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/Result.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Result.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Result_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Assert_8h.html">common/Assert.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Status_8h.html">common/Status.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html">   32</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1detail_1_1ResultObservation.html">ResultObservation</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#a9fdcd638bd7052743a2c4a7b5f91a7db">   35</a></span>    <a class="code hl_function" href="classeve_1_1detail_1_1ResultObservation.html#a9fdcd638bd7052743a2c4a7b5f91a7db">ResultObservation</a>() noexcept = default;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#a9d7ff21e79024b094d2148f425ef0105">   37</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1ResultObservation.html">ResultObservation</a>(const <a class="code hl_class" href="classeve_1_1detail_1_1ResultObservation.html">ResultObservation</a>&amp;)            = delete;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#a214cd12eb30547058328cb778172aa12">   38</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1ResultObservation.html">ResultObservation</a>&amp; operator=(const <a class="code hl_class" href="classeve_1_1detail_1_1ResultObservation.html">ResultObservation</a>&amp;) = delete;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1detail_1_1ResultObservation_1_1InactiveTag.html">   41</a></span>    struct <a class="code hl_struct" href="structeve_1_1detail_1_1ResultObservation_1_1InactiveTag.html">InactiveTag</a> {};</div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#af0a5e79162cf6c943c394dd59db9f126">   42</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1detail_1_1ResultObservation.html#af0a5e79162cf6c943c394dd59db9f126">ResultObservation</a>(<a class="code hl_struct" href="structeve_1_1detail_1_1ResultObservation_1_1InactiveTag.html">InactiveTag</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        mustObserve_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#if !defined(ZEROERR_NO_ASSERT)</span></div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#a6eaae351b4fa2c5fe751a8468c59d5a5">   47</a></span>    <a class="code hl_function" href="classeve_1_1detail_1_1ResultObservation.html#a6eaae351b4fa2c5fe751a8468c59d5a5">~ResultObservation</a>() noexcept(false) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> observationSatisfied = !mustObserve_ || observed_;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(observationSatisfied, <span class="stringliteral">&quot;Result destroyed without checking; inspect it or call ignore() explicitly&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_function" href="classeve_1_1detail_1_1ResultObservation.html#a6eaae351b4fa2c5fe751a8468c59d5a5">~ResultObservation</a>() noexcept = default;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">protected</span>:</div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#a9adeb8ada81331288f393ff34a543ebd">   57</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1detail_1_1ResultObservation.html#a9adeb8ada81331288f393ff34a543ebd">observe</a>() const noexcept {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">#if !defined(ZEROERR_NO_ASSERT)</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        observed_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    }</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#a288fd65a42bebfeda2119448bd9528ad">   64</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1detail_1_1ResultObservation.html#a288fd65a42bebfeda2119448bd9528ad">assertCanBeOverwritten</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">#if !defined(ZEROERR_NO_ASSERT)</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> observationSatisfied = !mustObserve_ || observed_;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(observationSatisfied, <span class="stringliteral">&quot;move assignment would overwrite an unchecked Result&quot;</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="}">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#aec65a8e0df02ef36856ed4608a7148a4">   73</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1detail_1_1ResultObservation.html#aec65a8e0df02ef36856ed4608a7148a4">adoptObservationFrom</a>(<a class="code hl_class" href="classeve_1_1detail_1_1ResultObservation.html">ResultObservation</a>&amp; other) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">#if !defined(ZEROERR_NO_ASSERT)</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        observed_          = other.observed_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        mustObserve_       = other.mustObserve_;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        other.mustObserve_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        (void)other;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#a5863304ee3c5b6f4a4f5c0dc34680f15">   84</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1detail_1_1ResultObservation.html#a5863304ee3c5b6f4a4f5c0dc34680f15">disarmObservation</a>() noexcept {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">#if !defined(ZEROERR_NO_ASSERT)</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        mustObserve_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    }</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1detail_1_1ResultObservation.html#af69d43d5a553d339a1ed3d992b248d6b">   91</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1detail_1_1ResultObservation.html#af69d43d5a553d339a1ed3d992b248d6b">requireObservation</a>() noexcept {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="preprocessor">#if !defined(ZEROERR_NO_ASSERT)</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        observed_    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        mustObserve_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="comment">// Do not condition these fields on ZEROERR_NO_ASSERT. Public Result&lt;T&gt;</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="comment">// values cross static/shared-library boundaries whose assertion policy may</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="comment">// intentionally differ from the consumer (notably Release unit tests).</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">mutable</span> <span class="keywordtype">bool</span> observed_    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordtype">bool</span>         mustObserve_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>};</div>
+</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="namespaceeve_1_1detail.html#a6b1ae1f87bf5cd26b47a45500a4d4a6d">  107</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1detail.html#a6b1ae1f87bf5cd26b47a45500a4d4a6d">ResultReturn</a> = std::invoke_result_t&lt;T&gt;;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> From, <span class="keyword">class</span> To&gt;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="concepteve_1_1detail_1_1ResultConstConversion.html">  117</a></span><span class="keyword">concept </span><a class="code hl_concept" href="concepteve_1_1detail_1_1ResultConstConversion.html">ResultConstConversion</a> =</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    std::is_same_v&lt;To, const From&gt; ||</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    (std::is_pointer_v&lt;From&gt; &amp;&amp; std::is_same_v&lt;To, const std::remove_pointer_t&lt;From&gt;*&gt;);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> U&gt;</div>
+<div class="foldopen" id="foldopen00129" data-start="{" data-end="}">
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="namespaceeve_1_1detail.html#a3040ff0d56a954427111562fe11cf303">  129</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1detail.html#a3040ff0d56a954427111562fe11cf303">moveAssignOptional</a>(std::optional&lt;T&gt;&amp; destination, std::optional&lt;U&gt;&amp;&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>) {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    destination.reset();</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>.has_value()) destination.emplace(std::move(*<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>));</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>}</div>
+</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}  <span class="comment">// namespace detail</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00155" data-start="{" data-end="};">
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html">  155</a></span><span class="keyword">class </span>[[nodiscard(<span class="stringliteral">&quot;Result must be checked or explicitly ignored&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a> : <span class="keyword">private</span> <a class="code hl_class" href="classeve_1_1detail_1_1ResultObservation.html">detail::ResultObservation</a> {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">static_assert</span>(!std::is_reference_v&lt;T&gt;, <span class="stringliteral">&quot;Result&lt;T&gt; cannot hold a reference; use a handle or value&quot;</span>);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">static_assert</span>(!std::is_void_v&lt;T&gt;, <span class="stringliteral">&quot;Result&lt;void&gt; has a dedicated specialization&quot;</span>);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> U&gt;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#ad45d529e81f21b12958357efc1796af4">  160</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1Result.html">Result</a>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">  164</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">success</a>(T <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>(Status::success(), std::optional&lt;T&gt;(std::move(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>))); }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="foldopen" id="foldopen00167" data-start="{" data-end="}">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#ae41a3e05c4e15dc4a8f9f1d87aef1d84">  167</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a> <a class="code hl_function" href="classeve_1_1Result.html#ae41a3e05c4e15dc4a8f9f1d87aef1d84">success</a>(T <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, <a class="code hl_class" href="classeve_1_1Status.html">Status</a> <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>) {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>.isSuccess(), <span class="stringliteral">&quot;Result::success requires a successful Status&quot;</span>);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>(std::move(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>), std::optional&lt;T&gt;(std::move(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)));</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    }</div>
+</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="foldopen" id="foldopen00175" data-start="{" data-end="}">
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">  175</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">failure</a>(<a class="code hl_class" href="classeve_1_1Status.html">Status</a> <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>) {</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>.isFailure(), <span class="stringliteral">&quot;Result::failure requires a failure Status&quot;</span>);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>(std::move(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>), std::nullopt);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    }</div>
+</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#af7f12ea62cb36fc0a43c9217d74de44e">  183</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a> <a class="code hl_function" href="classeve_1_1Result.html#af7f12ea62cb36fc0a43c9217d74de44e">failure</a>(<a class="code hl_class" href="classeve_1_1Diagnostic.html">Diagnostic</a> diagnostic) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af7f12ea62cb36fc0a43c9217d74de44e">failure</a>(Status::failure(std::move(diagnostic))); }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#ae25827fd7e818005b873e54bd664c5ba">  185</a></span>    <a class="code hl_function" href="classeve_1_1Result.html#ae25827fd7e818005b873e54bd664c5ba">Result</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a504f307ebf7b70739d15ac795055d8ed">  186</a></span>    <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp; <a class="code hl_function" href="classeve_1_1Result.html#a504f307ebf7b70739d15ac795055d8ed">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="foldopen" id="foldopen00189" data-start="{" data-end="}">
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#ad1b40c6118d669450a426dbb94e73002">  189</a></span>    <a class="code hl_function" href="classeve_1_1Result.html#ad1b40c6118d669450a426dbb94e73002">Result</a>(<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp;&amp; other)</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        : <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>::ResultObservation(<a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>::ResultObservation::<a class="code hl_struct" href="structeve_1_1detail_1_1ResultObservation_1_1InactiveTag.html">InactiveTag</a>{}),</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>          status_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(other.status_)),</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>          value_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(other.value_)) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        adoptObservationFrom(other);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    }</div>
+</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="foldopen" id="foldopen00205" data-start="{" data-end="}">
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#aa55e8a5f42dbf02ba74aa0cd3681c9ef">  205</a></span>    <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp; <a class="code hl_function" href="classeve_1_1Result.html#aa55e8a5f42dbf02ba74aa0cd3681c9ef">operator=</a>(<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp;&amp; other) {</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">if</span> (<span class="keyword">this</span> == &amp;other) <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        assertCanBeOverwritten();</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        status_ = std::move(other.status_);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        detail::moveAssignOptional(value_, std::move(other.value_));</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        adoptObservationFrom(other);</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    }</div>
+</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> U&gt;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keyword">requires</span> <a class="code hl_concept" href="concepteve_1_1detail_1_1ResultConstConversion.html">detail::ResultConstConversion&lt;U, T&gt;</a></div>
+<div class="foldopen" id="foldopen00225" data-start="{" data-end="}">
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a7fb2029b8a6f8b9d22576f28856672da">  225</a></span>    <a class="code hl_function" href="classeve_1_1Result.html#a7fb2029b8a6f8b9d22576f28856672da">Result</a>(<a class="code hl_class" href="classeve_1_1Result.html">Result&lt;U&gt;</a>&amp;&amp; other)</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        : <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>::ResultObservation(<a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>::ResultObservation::<a class="code hl_struct" href="structeve_1_1detail_1_1ResultObservation_1_1InactiveTag.html">InactiveTag</a>{}),</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>          status_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(other.status_)),</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>          value_(<a class="code hl_namespace" href="namespacestd.html">std</a>::optional&lt;T&gt;(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(other.value_))) {</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        adoptObservationFrom(other);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    }</div>
+</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> U&gt;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keyword">requires</span> <a class="code hl_concept" href="concepteve_1_1detail_1_1ResultConstConversion.html">detail::ResultConstConversion&lt;U, T&gt;</a></div>
+<div class="foldopen" id="foldopen00243" data-start="{" data-end="}">
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a6e3640fe6417634a4ac66a026d8996d8">  243</a></span>    <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp; <a class="code hl_function" href="classeve_1_1Result.html#a6e3640fe6417634a4ac66a026d8996d8">operator=</a>(<a class="code hl_class" href="classeve_1_1Result.html">Result&lt;U&gt;</a>&amp;&amp; other) {</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        assertCanBeOverwritten();</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        status_ = std::move(other.status_);</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        detail::moveAssignOptional(value_, std::move(other.value_));</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        adoptObservationFrom(other);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    }</div>
+</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="foldopen" id="foldopen00255" data-start="{" data-end="}">
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">  255</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">ok</a>() const noexcept {</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        observe();</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordflow">return</span> status_.isSuccess() &amp;&amp; value_.has_value();</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    }</div>
+</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="foldopen" id="foldopen00262" data-start="{" data-end="}">
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#aa2cfe47f1a0bb5bee22e65b125144d6e">  262</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1Result.html#aa2cfe47f1a0bb5bee22e65b125144d6e">hasValue</a>() const noexcept {</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        observe();</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        <span class="keywordflow">return</span> status_.isSuccess() &amp;&amp; value_.has_value();</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    }</div>
+</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span> </div>
+<div class="foldopen" id="foldopen00269" data-start="{" data-end="}">
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#aeae13d24477887a325e83f30886d05c7">  269</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Status.html">Status</a>&amp; <a class="code hl_function" href="classeve_1_1Result.html#aeae13d24477887a325e83f30886d05c7">status</a>() const noexcept {</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        observe();</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <span class="keywordflow">return</span> status_;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    }</div>
+</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
+<div class="foldopen" id="foldopen00276" data-start="{" data-end="}">
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#ad88804997d15386d2b160f8553fb7b71">  276</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">StatusCode</a> <a class="code hl_function" href="classeve_1_1Result.html#ad88804997d15386d2b160f8553fb7b71">code</a>() const noexcept {</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        observe();</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        <span class="keywordflow">return</span> status_.code();</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    }</div>
+</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
+<div class="foldopen" id="foldopen00283" data-start="{" data-end="}">
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#aceeec138f9f5d80f3b7d07d65f0c37e7">  283</a></span>    <span class="keyword">const</span> std::vector&lt;Diagnostic&gt;&amp; <a class="code hl_function" href="classeve_1_1Result.html#aceeec138f9f5d80f3b7d07d65f0c37e7">diagnostics</a>() const noexcept {</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        observe();</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        <span class="keywordflow">return</span> status_.diagnostics();</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    }</div>
+</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
+<div class="foldopen" id="foldopen00298" data-start="{" data-end="}">
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a020ae38287b56da74d23c696474f92bd">  298</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Diagnostic.html">Diagnostic</a>* <a class="code hl_function" href="classeve_1_1Result.html#a020ae38287b56da74d23c696474f92bd">error</a>() const noexcept {</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        observe();</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        <span class="keywordflow">return</span> status_.primaryDiagnostic();</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    }</div>
+</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a800b78da9cd026297de6bf5e75e21c7b">  305</a></span>    <span class="keyword">explicit</span> <span class="keyword">operator</span> bool() const noexcept { <span class="keywordflow">return</span> <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>(); }</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span> </div>
+<div class="foldopen" id="foldopen00308" data-start="{" data-end="}">
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a4185a5624803a273bf2b753b7a7c658c">  308</a></span>    <span class="keyword">const</span> T&amp; <a class="code hl_function" href="classeve_1_1Result.html#a4185a5624803a273bf2b753b7a7c658c">value</a>() const&amp; {</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        observe();</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> hasSuccessfulValue = status_.isSuccess() &amp;&amp; value_.has_value();</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(hasSuccessfulValue, <span class="stringliteral">&quot;Result::value requires a successful Result with a value&quot;</span>);</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        <span class="keywordflow">return</span> value_.value();</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    }</div>
+</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
+<div class="foldopen" id="foldopen00318" data-start="{" data-end="}">
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a5d1622b489ad9986258ff9b80fb80ccd">  318</a></span>    T&amp; <a class="code hl_function" href="classeve_1_1Result.html#a5d1622b489ad9986258ff9b80fb80ccd">value</a>() &amp; {</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        observe();</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> hasSuccessfulValue = status_.isSuccess() &amp;&amp; value_.has_value();</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(hasSuccessfulValue, <span class="stringliteral">&quot;Result::value requires a successful Result with a value&quot;</span>);</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        <span class="keywordflow">return</span> value_.value();</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    }</div>
+</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
+<div class="foldopen" id="foldopen00328" data-start="{" data-end="}">
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a53b74b1c9600ef79021cdcf4c3e3b306">  328</a></span>    T&amp;&amp; <a class="code hl_function" href="classeve_1_1Result.html#a53b74b1c9600ef79021cdcf4c3e3b306">value</a>() &amp;&amp; {</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        observe();</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> hasSuccessfulValue = status_.isSuccess() &amp;&amp; value_.has_value();</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(hasSuccessfulValue, <span class="stringliteral">&quot;Result::value requires a successful Result with a value&quot;</span>);</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keywordflow">return</span> std::move(value_.value());</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    }</div>
+</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
+<div class="foldopen" id="foldopen00339" data-start="{" data-end="}">
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a1a7447fa48f625dd70197f3c260617a4">  339</a></span>    T <a class="code hl_function" href="classeve_1_1Result.html#a1a7447fa48f625dd70197f3c260617a4">takeValue</a>() &amp;&amp; {</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        observe();</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> hasSuccessfulValue = status_.isSuccess() &amp;&amp; value_.has_value();</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(hasSuccessfulValue, <span class="stringliteral">&quot;Result::takeValue requires a successful Result with a value&quot;</span>);</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>        T result = std::move(value_.value());</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>        value_.reset();</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    }</div>
+</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
+<div class="foldopen" id="foldopen00351" data-start="{" data-end="}">
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a2f452ba04156ba9a127fd1a769277d6b">  351</a></span>    T <a class="code hl_function" href="classeve_1_1Result.html#a2f452ba04156ba9a127fd1a769277d6b">valueOr</a>(T fallback) &amp;&amp; {</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>        observe();</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>        <span class="keywordflow">if</span> (status_.isSuccess() &amp;&amp; value_.has_value()) <span class="keywordflow">return</span> std::move(value_.value());</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>        <span class="keywordflow">return</span> fallback;</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    }</div>
+</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> Function&gt;</div>
+<div class="foldopen" id="foldopen00365" data-start="{" data-end="}">
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a9cd01567436997dd082adb23216aa323">  365</a></span>    <span class="keyword">auto</span> <a class="code hl_function" href="classeve_1_1Result.html#a9cd01567436997dd082adb23216aa323">andThen</a>(Function&amp;&amp; <a class="code hl_variable" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>) &amp;&amp; -&gt; std::invoke_result_t&lt;Function, T&amp;&amp;&gt; {</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        observe();</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        <span class="keyword">using </span>Return = std::invoke_result_t&lt;Function, T&amp;&amp;&gt;;</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>        <span class="keywordflow">if</span> (!status_.isSuccess() || !value_.has_value()) <span class="keywordflow">return</span> Return::failure(status_);</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        <span class="keywordflow">return</span> std::invoke(std::forward&lt;Function&gt;(<a class="code hl_variable" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>), std::move(value_.value()));</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    }</div>
+</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span> </div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> Function&gt;</div>
+<div class="foldopen" id="foldopen00381" data-start="{" data-end="}">
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a12f818cf152cc6d52f57e6c3ca781719">  381</a></span>    <a class="code hl_class" href="classeve_1_1Result.html">Result</a> <a class="code hl_function" href="classeve_1_1Result.html#a12f818cf152cc6d52f57e6c3ca781719">orElse</a>(Function&amp;&amp; <a class="code hl_variable" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>) &amp;&amp; {</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        observe();</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>        <span class="keywordflow">if</span> (status_.isSuccess() &amp;&amp; value_.has_value()) <span class="keywordflow">return</span> std::move(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>        <span class="keywordflow">return</span> std::invoke(std::forward&lt;Function&gt;(<a class="code hl_variable" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>), status_);</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>    }</div>
+</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span> </div>
+<div class="foldopen" id="foldopen00393" data-start="{" data-end="}">
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a4fb1f4a5ca60ffd1096f37526724cf7d">  393</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1Result.html#a4fb1f4a5ca60ffd1096f37526724cf7d">ignore</a>(std::string_view reason = {}) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>        (void)reason;</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        observe();</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    }</div>
+</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span> </div>
+<div class="foldopen" id="foldopen00405" data-start="{" data-end="}">
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno"><a class="line" href="classeve_1_1Result.html#a169de4ed309ce0d97d48fc4949ececeb">  405</a></span>    T <a class="code hl_function" href="classeve_1_1Result.html#a169de4ed309ce0d97d48fc4949ececeb">expect</a>(std::string_view <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) &amp;&amp; {</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>        observe();</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>        <span class="keywordflow">if</span> (!status_.isSuccess() || !value_.has_value()) {</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>            <span class="keyword">const</span> std::string <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>);</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>            <span class="keyword">const</span> std::string <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a> = status_.describe();</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>            <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(<span class="keyword">false</span>, <span class="stringliteral">&quot;%s: %s&quot;</span>, <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>.c_str(), <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>.c_str());</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>            std::terminate();</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>        }</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>        <span class="keywordflow">return</span> std::move(value_.value());</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    }</div>
+</div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span> </div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>    <a class="code hl_class" href="classeve_1_1Result.html">Result</a>(<a class="code hl_class" href="classeve_1_1Status.html">Status</a> <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>, std::optional&lt;T&gt; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) : status_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>)), value_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)) {}</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span> </div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>    Status           status_;</div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>    std::optional&lt;T&gt; value_;</div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>};</div>
+</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span> </div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span><span class="keyword">template</span> &lt;&gt;</div>
+<div class="foldopen" id="foldopen00433" data-start="{" data-end="};">
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html">  433</a></span><span class="keyword">class </span>[[nodiscard(<span class="stringliteral">&quot;Result must be checked or explicitly ignored&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;void&gt; : <span class="keyword">private</span> <a class="code hl_class" href="classeve_1_1detail_1_1ResultObservation.html">detail::ResultObservation</a> {</div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00436" name="l00436"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a834fb6906c4453536ab0b30aeff15d9d">  436</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a834fb6906c4453536ab0b30aeff15d9d">success</a>() { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>(Status::success()); }</div>
+<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span> </div>
+<div class="foldopen" id="foldopen00439" data-start="{" data-end="}">
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a7d84fa75b6bdd36a78bee927dac9f3b2">  439</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a7d84fa75b6bdd36a78bee927dac9f3b2">success</a>(<a class="code hl_class" href="classeve_1_1Status.html">Status</a> <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>) {</div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>.isSuccess(), <span class="stringliteral">&quot;Result::success requires a successful Status&quot;</span>);</div>
+<div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>(std::move(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>));</div>
+<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span>    }</div>
+</div>
+<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span> </div>
+<div class="foldopen" id="foldopen00447" data-start="{" data-end="}">
+<div class="line"><a id="l00447" name="l00447"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a422ab87bf07cd9236515b95799efdc21">  447</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a422ab87bf07cd9236515b95799efdc21">failure</a>(<a class="code hl_class" href="classeve_1_1Status.html">Status</a> <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>) {</div>
+<div class="line"><a id="l00449" name="l00449"></a><span class="lineno">  449</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>.isFailure(), <span class="stringliteral">&quot;Result::failure requires a failure Status&quot;</span>);</div>
+<div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>(std::move(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>));</div>
+<div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span>    }</div>
+</div>
+<div class="line"><a id="l00453" name="l00453"></a><span class="lineno">  453</span> </div>
+<div class="line"><a id="l00455" name="l00455"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a813bf7411e4c20fb49afc45042a8d349">  455</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a813bf7411e4c20fb49afc45042a8d349">failure</a>(<a class="code hl_class" href="classeve_1_1Diagnostic.html">Diagnostic</a> diagnostic) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a813bf7411e4c20fb49afc45042a8d349">failure</a>(Status::failure(std::move(diagnostic))); }</div>
+<div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span> </div>
+<div class="line"><a id="l00457" name="l00457"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#ab3bb98981672c79b5842bed5c03dfe69">  457</a></span>    <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#ab3bb98981672c79b5842bed5c03dfe69">Result</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00458" name="l00458"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a1bc58b6a89fb2ffc052566927943cfc1">  458</a></span>    <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp; <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a1bc58b6a89fb2ffc052566927943cfc1">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span> </div>
+<div class="foldopen" id="foldopen00461" data-start="{" data-end="}">
+<div class="line"><a id="l00461" name="l00461"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a2dfe0b574259a25b83c21a4edde3f918">  461</a></span>    <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a2dfe0b574259a25b83c21a4edde3f918">Result</a>(<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp;&amp; other)</div>
+<div class="line"><a id="l00463" name="l00463"></a><span class="lineno">  463</span>        : <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>::ResultObservation(<a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>::ResultObservation::<a class="code hl_struct" href="structeve_1_1detail_1_1ResultObservation_1_1InactiveTag.html">InactiveTag</a>{}), status_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(other.status_)) {</div>
+<div class="line"><a id="l00465" name="l00465"></a><span class="lineno">  465</span>        adoptObservationFrom(other);</div>
+<div class="line"><a id="l00466" name="l00466"></a><span class="lineno">  466</span>    }</div>
+</div>
+<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span> </div>
+<div class="foldopen" id="foldopen00469" data-start="{" data-end="}">
+<div class="line"><a id="l00469" name="l00469"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#aa10947e9b645cdd754adcb1f7f414be4">  469</a></span>    <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp; <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#aa10947e9b645cdd754adcb1f7f414be4">operator=</a>(<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&amp;&amp; other) {</div>
+<div class="line"><a id="l00470" name="l00470"></a><span class="lineno">  470</span>        <span class="keywordflow">if</span> (<span class="keyword">this</span> == &amp;other) <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00472" name="l00472"></a><span class="lineno">  472</span>        assertCanBeOverwritten();</div>
+<div class="line"><a id="l00473" name="l00473"></a><span class="lineno">  473</span>        status_ = std::move(other.status_);</div>
+<div class="line"><a id="l00475" name="l00475"></a><span class="lineno">  475</span>        adoptObservationFrom(other);</div>
+<div class="line"><a id="l00476" name="l00476"></a><span class="lineno">  476</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00477" name="l00477"></a><span class="lineno">  477</span>    }</div>
+</div>
+<div class="line"><a id="l00478" name="l00478"></a><span class="lineno">  478</span> </div>
+<div class="foldopen" id="foldopen00480" data-start="{" data-end="}">
+<div class="line"><a id="l00480" name="l00480"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a18d816508fd802a87608171ce0c67354">  480</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a18d816508fd802a87608171ce0c67354">ok</a>() const noexcept {</div>
+<div class="line"><a id="l00482" name="l00482"></a><span class="lineno">  482</span>        observe();</div>
+<div class="line"><a id="l00483" name="l00483"></a><span class="lineno">  483</span>        <span class="keywordflow">return</span> status_.isSuccess();</div>
+<div class="line"><a id="l00484" name="l00484"></a><span class="lineno">  484</span>    }</div>
+</div>
+<div class="line"><a id="l00485" name="l00485"></a><span class="lineno">  485</span> </div>
+<div class="foldopen" id="foldopen00487" data-start="{" data-end="}">
+<div class="line"><a id="l00487" name="l00487"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#af856437b28bbe86ddc3f674ea09d3cc2">  487</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Status.html">Status</a>&amp; <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#af856437b28bbe86ddc3f674ea09d3cc2">status</a>() const noexcept {</div>
+<div class="line"><a id="l00489" name="l00489"></a><span class="lineno">  489</span>        observe();</div>
+<div class="line"><a id="l00490" name="l00490"></a><span class="lineno">  490</span>        <span class="keywordflow">return</span> status_;</div>
+<div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span>    }</div>
+</div>
+<div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span> </div>
+<div class="foldopen" id="foldopen00494" data-start="{" data-end="}">
+<div class="line"><a id="l00494" name="l00494"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#abff86252efa2e24c6481ed296921e3e7">  494</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">StatusCode</a> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#abff86252efa2e24c6481ed296921e3e7">code</a>() const noexcept {</div>
+<div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>        observe();</div>
+<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>        <span class="keywordflow">return</span> status_.code();</div>
+<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span>    }</div>
+</div>
+<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span> </div>
+<div class="foldopen" id="foldopen00501" data-start="{" data-end="}">
+<div class="line"><a id="l00501" name="l00501"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a9479293aca7bc92d6d4e2dc7b9e0b8cc">  501</a></span>    <span class="keyword">const</span> std::vector&lt;Diagnostic&gt;&amp; <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a9479293aca7bc92d6d4e2dc7b9e0b8cc">diagnostics</a>() const noexcept {</div>
+<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>        observe();</div>
+<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>        <span class="keywordflow">return</span> status_.diagnostics();</div>
+<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>    }</div>
+</div>
+<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span> </div>
+<div class="foldopen" id="foldopen00516" data-start="{" data-end="}">
+<div class="line"><a id="l00516" name="l00516"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a04ef24db25b4772ba964c4ae68a53942">  516</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Diagnostic.html">Diagnostic</a>* <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a04ef24db25b4772ba964c4ae68a53942">error</a>() const noexcept {</div>
+<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>        observe();</div>
+<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>        <span class="keywordflow">return</span> status_.primaryDiagnostic();</div>
+<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>    }</div>
+</div>
+<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span> </div>
+<div class="line"><a id="l00523" name="l00523"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#aea74d280032898ddcb6dd610c42f9508">  523</a></span>    <span class="keyword">explicit</span> <span class="keyword">operator</span> bool() const noexcept { <span class="keywordflow">return</span> <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>(); }</div>
+<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span> </div>
+<div class="foldopen" id="foldopen00526" data-start="{" data-end="}">
+<div class="line"><a id="l00526" name="l00526"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a76ad366b7c1159dfb21568c074d6fc58">  526</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a76ad366b7c1159dfb21568c074d6fc58">value</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>        observe();</div>
+<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>        <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(status_.isSuccess(), <span class="stringliteral">&quot;Result&lt;void&gt;::value requires a successful Result&quot;</span>);</div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>    }</div>
+</div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span> </div>
+<div class="foldopen" id="foldopen00537" data-start="{" data-end="}">
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">  537</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">ignore</a>(std::string_view reason = {}) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>        (void)reason;</div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>        observe();</div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>    }</div>
+</div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span> </div>
+<div class="foldopen" id="foldopen00548" data-start="{" data-end="}">
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno"><a class="line" href="classeve_1_1Result_3_01void_01_4.html#a5e811e57ee138f1572ff70a46029a485">  548</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a5e811e57ee138f1572ff70a46029a485">expect</a>(std::string_view <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>        observe();</div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>        <span class="keywordflow">if</span> (!status_.isSuccess()) {</div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>            <span class="keyword">const</span> std::string <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>);</div>
+<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>            <span class="keyword">const</span> std::string <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a> = status_.describe();</div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>            <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(<span class="keyword">false</span>, <span class="stringliteral">&quot;%s: %s&quot;</span>, <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>.c_str(), <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>.c_str());</div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>            std::terminate();</div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>        }</div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>    }</div>
+</div>
+<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span> </div>
+<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>(<a class="code hl_class" href="classeve_1_1Status.html">Status</a> <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>) : status_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>)) {}</div>
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span> </div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>    Status status_;</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>};</div>
+</div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span> </div>
+<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Results&gt;</div>
+<div class="foldopen" id="foldopen00586" data-start="{" data-end="}">
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno"><a class="line" href="namespaceeve.html#a895e561059e927cd14059e8e2920b718">  586</a></span>[[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve.html#a895e561059e927cd14059e8e2920b718">everyResultValid</a>(<span class="keyword">const</span> Results&amp;... results) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>    <span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>...(Results) &gt; 0, <span class="stringliteral">&quot;everyResultValid requires at least one Result&quot;</span>);</div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>    <span class="keywordflow">return</span> (results.ok() &amp; ...);</div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>}</div>
+</div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span> </div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00153">ActionNotifyRegistry.cpp:153</a></div></div>
+<div class="ttc" id="aAssert_8h_html"><div class="ttname"><a href="Assert_8h.html">Assert.h</a></div><div class="ttdoc">EVEngine assertion entry point, backed by zeroerr.</div></div>
+<div class="ttc" id="aAssert_8h_html_a0ad3d396c22796bba9b1656ce191b860"><div class="ttname"><a href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a></div><div class="ttdeci">#define EV_ASSERT(cond,...)</div><div class="ttdoc">Assert an internal engine invariant (state that must always hold).</div><div class="ttdef"><b>Definition</b> <a href="Assert_8h_source.html#l00037">Assert.h:37</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGraphicsTextureMips_8cpp_html_ae2ee633a7768658281259907a29fc401"><div class="ttname"><a href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a></div><div class="ttdeci">wgpu::PopErrorScopeStatus status</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTextureMips_8cpp_source.html#l00013">GraphicsTextureMips.cpp:13</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ac58d00c955de8df4981a75b37f466578"><div class="ttname"><a href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a></div><div class="ttdeci">int detail</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00111">PrototypeKit.cpp:111</a></div></div>
+<div class="ttc" id="aSchemaRegistry_8cpp_html_a2048e73eae4842e77700dd84f3aef92c"><div class="ttname"><a href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a></div><div class="ttdeci">MigrationFunction function</div><div class="ttdef"><b>Definition</b> <a href="SchemaRegistry_8cpp_source.html#l00034">SchemaRegistry.cpp:34</a></div></div>
+<div class="ttc" id="aStatus_8h_html"><div class="ttname"><a href="Status_8h.html">Status.h</a></div><div class="ttdoc">Structured operation status used by the common Result foundation.</div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a1d67bd6634a9002df97231d8c8dbc66c"><div class="ttname"><a href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00059">UdpLink.cpp:59</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a176f5b9d50679b93425278a1a59e3eaa"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a></div><div class="ttdeci">const UnitySourceAsset &amp; source</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00029">UnityVegetationPreset.cpp:29</a></div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_aa677a20ed09a5d6c839a3d7a4d53cb9c"><div class="ttname"><a href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a></div><div class="ttdeci">const VegetationPresetContext &amp; context</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00094">VegetationPreset.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a04ef24db25b4772ba964c4ae68a53942"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a04ef24db25b4772ba964c4ae68a53942">eve::Result&lt; void &gt;::error</a></div><div class="ttdeci">const Diagnostic * error() const noexcept</div><div class="ttdoc">Inspect the first diagnostic, or null when none was supplied.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00516">Result.h:516</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a18d816508fd802a87608171ce0c67354"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a18d816508fd802a87608171ce0c67354">eve::Result&lt; void &gt;::ok</a></div><div class="ttdeci">bool ok() const noexcept</div><div class="ttdoc">Whether this result represents a non-failure outcome.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00480">Result.h:480</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a1bc58b6a89fb2ffc052566927943cfc1"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a1bc58b6a89fb2ffc052566927943cfc1">eve::Result&lt; void &gt;::operator=</a></div><div class="ttdeci">Result &amp; operator=(const Result &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a2dfe0b574259a25b83c21a4edde3f918"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a2dfe0b574259a25b83c21a4edde3f918">eve::Result&lt; void &gt;::Result</a></div><div class="ttdeci">Result(Result &amp;&amp;other)</div><div class="ttdoc">Move a result and transfer its debug observation responsibility.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00461">Result.h:461</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a422ab87bf07cd9236515b95799efdc21"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a422ab87bf07cd9236515b95799efdc21">eve::Result&lt; void &gt;::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed void result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00447">Result.h:447</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a5e811e57ee138f1572ff70a46029a485"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a5e811e57ee138f1572ff70a46029a485">eve::Result&lt; void &gt;::expect</a></div><div class="ttdeci">void expect(std::string_view message) const</div><div class="ttdoc">Require success for a void operation.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00548">Result.h:548</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a76ad366b7c1159dfb21568c074d6fc58"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a76ad366b7c1159dfb21568c074d6fc58">eve::Result&lt; void &gt;::value</a></div><div class="ttdeci">void value() const</div><div class="ttdoc">Mark a successful void operation as checked.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00526">Result.h:526</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a7d84fa75b6bdd36a78bee927dac9f3b2"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a7d84fa75b6bdd36a78bee927dac9f3b2">eve::Result&lt; void &gt;::success</a></div><div class="ttdeci">static Result success(Status status)</div><div class="ttdoc">Construct a successful void result with an explicit status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00439">Result.h:439</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a813bf7411e4c20fb49afc45042a8d349"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a813bf7411e4c20fb49afc45042a8d349">eve::Result&lt; void &gt;::failure</a></div><div class="ttdeci">static Result failure(Diagnostic diagnostic)</div><div class="ttdoc">Construct a failed void result from one structured diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00455">Result.h:455</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a834fb6906c4453536ab0b30aeff15d9d"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a834fb6906c4453536ab0b30aeff15d9d">eve::Result&lt; void &gt;::success</a></div><div class="ttdeci">static Result success()</div><div class="ttdoc">Construct a successful void result.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00436">Result.h:436</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a9479293aca7bc92d6d4e2dc7b9e0b8cc"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a9479293aca7bc92d6d4e2dc7b9e0b8cc">eve::Result&lt; void &gt;::diagnostics</a></div><div class="ttdeci">const std::vector&lt; Diagnostic &gt; &amp; diagnostics() const noexcept</div><div class="ttdoc">Inspect all diagnostics; this counts as checking the Result.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00501">Result.h:501</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_aa10947e9b645cdd754adcb1f7f414be4"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#aa10947e9b645cdd754adcb1f7f414be4">eve::Result&lt; void &gt;::operator=</a></div><div class="ttdeci">Result &amp; operator=(Result &amp;&amp;other)</div><div class="ttdoc">Move-assign after checking the destination's old result.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00469">Result.h:469</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_aa25a474a0e9b02d286999f1e9a50e10a"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">eve::Result&lt; void &gt;::ignore</a></div><div class="ttdeci">void ignore(std::string_view reason={}) const noexcept</div><div class="ttdoc">Explicitly discard this result after documenting the reason.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00537">Result.h:537</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_ab3bb98981672c79b5842bed5c03dfe69"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#ab3bb98981672c79b5842bed5c03dfe69">eve::Result&lt; void &gt;::Result</a></div><div class="ttdeci">Result(const Result &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_abff86252efa2e24c6481ed296921e3e7"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#abff86252efa2e24c6481ed296921e3e7">eve::Result&lt; void &gt;::code</a></div><div class="ttdeci">StatusCode code() const noexcept</div><div class="ttdoc">Inspect the stable operation code.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00494">Result.h:494</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_af856437b28bbe86ddc3f674ea09d3cc2"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#af856437b28bbe86ddc3f674ea09d3cc2">eve::Result&lt; void &gt;::status</a></div><div class="ttdeci">const Status &amp; status() const noexcept</div><div class="ttdoc">Inspect the structured operation status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00487">Result.h:487</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a020ae38287b56da74d23c696474f92bd"><div class="ttname"><a href="classeve_1_1Result.html#a020ae38287b56da74d23c696474f92bd">eve::Result::error</a></div><div class="ttdeci">const Diagnostic * error() const noexcept</div><div class="ttdoc">Inspect the first diagnostic, or null when none was supplied.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00298">Result.h:298</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00164">Result.h:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a12f818cf152cc6d52f57e6c3ca781719"><div class="ttname"><a href="classeve_1_1Result.html#a12f818cf152cc6d52f57e6c3ca781719">eve::Result::orElse</a></div><div class="ttdeci">Result orElse(Function &amp;&amp;function) &amp;&amp;</div><div class="ttdoc">Recover a failure with a function receiving its Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00381">Result.h:381</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a169de4ed309ce0d97d48fc4949ececeb"><div class="ttname"><a href="classeve_1_1Result.html#a169de4ed309ce0d97d48fc4949ececeb">eve::Result::expect</a></div><div class="ttdeci">T expect(std::string_view message) &amp;&amp;</div><div class="ttdoc">Require success and move out the value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00405">Result.h:405</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a1a7447fa48f625dd70197f3c260617a4"><div class="ttname"><a href="classeve_1_1Result.html#a1a7447fa48f625dd70197f3c260617a4">eve::Result::takeValue</a></div><div class="ttdeci">T takeValue() &amp;&amp;</div><div class="ttdoc">Move the value out and remove it from this Result.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00339">Result.h:339</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a2f452ba04156ba9a127fd1a769277d6b"><div class="ttname"><a href="classeve_1_1Result.html#a2f452ba04156ba9a127fd1a769277d6b">eve::Result::valueOr</a></div><div class="ttdeci">T valueOr(T fallback) &amp;&amp;</div><div class="ttdoc">Return the value or an explicit alternate value, consuming this Result.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00351">Result.h:351</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a4185a5624803a273bf2b753b7a7c658c"><div class="ttname"><a href="classeve_1_1Result.html#a4185a5624803a273bf2b753b7a7c658c">eve::Result::value</a></div><div class="ttdeci">const T &amp; value() const &amp;</div><div class="ttdoc">Borrow the value from a const lvalue after checking success.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00308">Result.h:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a4fb1f4a5ca60ffd1096f37526724cf7d"><div class="ttname"><a href="classeve_1_1Result.html#a4fb1f4a5ca60ffd1096f37526724cf7d">eve::Result::ignore</a></div><div class="ttdeci">void ignore(std::string_view reason={}) const noexcept</div><div class="ttdoc">Explicitly discard this result after documenting the reason.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00393">Result.h:393</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a504f307ebf7b70739d15ac795055d8ed"><div class="ttname"><a href="classeve_1_1Result.html#a504f307ebf7b70739d15ac795055d8ed">eve::Result::operator=</a></div><div class="ttdeci">Result &amp; operator=(const Result &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a53b74b1c9600ef79021cdcf4c3e3b306"><div class="ttname"><a href="classeve_1_1Result.html#a53b74b1c9600ef79021cdcf4c3e3b306">eve::Result::value</a></div><div class="ttdeci">T &amp;&amp; value() &amp;&amp;</div><div class="ttdoc">Move the value out after checking success.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00328">Result.h:328</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a5d1622b489ad9986258ff9b80fb80ccd"><div class="ttname"><a href="classeve_1_1Result.html#a5d1622b489ad9986258ff9b80fb80ccd">eve::Result::value</a></div><div class="ttdeci">T &amp; value() &amp;</div><div class="ttdoc">Borrow the value from a mutable lvalue after checking success.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00318">Result.h:318</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a6e3640fe6417634a4ac66a026d8996d8"><div class="ttname"><a href="classeve_1_1Result.html#a6e3640fe6417634a4ac66a026d8996d8">eve::Result::operator=</a></div><div class="ttdeci">Result &amp; operator=(Result&lt; U &gt; &amp;&amp;other)</div><div class="ttdoc">Move-assign from a Result whose value converts to T by adding const.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00243">Result.h:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a7fb2029b8a6f8b9d22576f28856672da"><div class="ttname"><a href="classeve_1_1Result.html#a7fb2029b8a6f8b9d22576f28856672da">eve::Result::Result</a></div><div class="ttdeci">Result(Result&lt; U &gt; &amp;&amp;other)</div><div class="ttdoc">Convert a Result into a more const-qualified Result of the same outcome.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00225">Result.h:225</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a9cd01567436997dd082adb23216aa323"><div class="ttname"><a href="classeve_1_1Result.html#a9cd01567436997dd082adb23216aa323">eve::Result::andThen</a></div><div class="ttdeci">auto andThen(Function &amp;&amp;function) &amp;&amp;-&gt; std::invoke_result_t&lt; Function, T &amp;&amp; &gt;</div><div class="ttdoc">Compose a successful value with a function returning another Result.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00365">Result.h:365</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_aa2cfe47f1a0bb5bee22e65b125144d6e"><div class="ttname"><a href="classeve_1_1Result.html#aa2cfe47f1a0bb5bee22e65b125144d6e">eve::Result::hasValue</a></div><div class="ttdeci">bool hasValue() const noexcept</div><div class="ttdoc">Whether the result owns a value; observing this is a check.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00262">Result.h:262</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_aa55e8a5f42dbf02ba74aa0cd3681c9ef"><div class="ttname"><a href="classeve_1_1Result.html#aa55e8a5f42dbf02ba74aa0cd3681c9ef">eve::Result::operator=</a></div><div class="ttdeci">Result &amp; operator=(Result &amp;&amp;other)</div><div class="ttdoc">Move-assign a result after checking the destination's old result.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00205">Result.h:205</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_aceeec138f9f5d80f3b7d07d65f0c37e7"><div class="ttname"><a href="classeve_1_1Result.html#aceeec138f9f5d80f3b7d07d65f0c37e7">eve::Result::diagnostics</a></div><div class="ttdeci">const std::vector&lt; Diagnostic &gt; &amp; diagnostics() const noexcept</div><div class="ttdoc">Inspect all diagnostics; this counts as checking the Result.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00283">Result.h:283</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_ad1b40c6118d669450a426dbb94e73002"><div class="ttname"><a href="classeve_1_1Result.html#ad1b40c6118d669450a426dbb94e73002">eve::Result::Result</a></div><div class="ttdeci">Result(Result &amp;&amp;other)</div><div class="ttdoc">Move a result and transfer its debug observation responsibility.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00189">Result.h:189</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_ad6cb7f2de48f0622ee88b180f7fc2c7f"><div class="ttname"><a href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">eve::Result::ok</a></div><div class="ttdeci">bool ok() const noexcept</div><div class="ttdoc">Whether this result represents a non-failure outcome.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00255">Result.h:255</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_ad88804997d15386d2b160f8553fb7b71"><div class="ttname"><a href="classeve_1_1Result.html#ad88804997d15386d2b160f8553fb7b71">eve::Result::code</a></div><div class="ttdeci">StatusCode code() const noexcept</div><div class="ttdoc">Inspect the stable operation code.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00276">Result.h:276</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_ae25827fd7e818005b873e54bd664c5ba"><div class="ttname"><a href="classeve_1_1Result.html#ae25827fd7e818005b873e54bd664c5ba">eve::Result::Result</a></div><div class="ttdeci">Result(const Result &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_ae41a3e05c4e15dc4a8f9f1d87aef1d84"><div class="ttname"><a href="classeve_1_1Result.html#ae41a3e05c4e15dc4a8f9f1d87aef1d84">eve::Result::success</a></div><div class="ttdeci">static Result success(T value, Status status)</div><div class="ttdoc">Construct a successful result with an explicit non-error status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00167">Result.h:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_aeae13d24477887a325e83f30886d05c7"><div class="ttname"><a href="classeve_1_1Result.html#aeae13d24477887a325e83f30886d05c7">eve::Result::status</a></div><div class="ttdeci">const Status &amp; status() const noexcept</div><div class="ttdoc">Inspect the structured operation status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00269">Result.h:269</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af7f12ea62cb36fc0a43c9217d74de44e"><div class="ttname"><a href="classeve_1_1Result.html#af7f12ea62cb36fc0a43c9217d74de44e">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Diagnostic diagnostic)</div><div class="ttdoc">Construct a failed result from one structured diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00183">Result.h:183</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1ResultObservation_html"><div class="ttname"><a href="classeve_1_1detail_1_1ResultObservation.html">eve::detail::ResultObservation</a></div><div class="ttdoc">Debug-only observation token shared by Result&lt;T&gt; specializations.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00032">Result.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1ResultObservation_html_a288fd65a42bebfeda2119448bd9528ad"><div class="ttname"><a href="classeve_1_1detail_1_1ResultObservation.html#a288fd65a42bebfeda2119448bd9528ad">eve::detail::ResultObservation::assertCanBeOverwritten</a></div><div class="ttdeci">void assertCanBeOverwritten() const</div><div class="ttdoc">Assert can be overwritten.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00064">Result.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1ResultObservation_html_a5863304ee3c5b6f4a4f5c0dc34680f15"><div class="ttname"><a href="classeve_1_1detail_1_1ResultObservation.html#a5863304ee3c5b6f4a4f5c0dc34680f15">eve::detail::ResultObservation::disarmObservation</a></div><div class="ttdeci">void disarmObservation() noexcept</div><div class="ttdoc">Drop observation duty; used when a moved-from result is empty.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00084">Result.h:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1ResultObservation_html_a6eaae351b4fa2c5fe751a8468c59d5a5"><div class="ttname"><a href="classeve_1_1detail_1_1ResultObservation.html#a6eaae351b4fa2c5fe751a8468c59d5a5">eve::detail::ResultObservation::~ResultObservation</a></div><div class="ttdeci">~ResultObservation() noexcept(false)</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00047">Result.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1ResultObservation_html_a9adeb8ada81331288f393ff34a543ebd"><div class="ttname"><a href="classeve_1_1detail_1_1ResultObservation.html#a9adeb8ada81331288f393ff34a543ebd">eve::detail::ResultObservation::observe</a></div><div class="ttdeci">void observe() const noexcept</div><div class="ttdoc">Observe.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00057">Result.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1ResultObservation_html_a9fdcd638bd7052743a2c4a7b5f91a7db"><div class="ttname"><a href="classeve_1_1detail_1_1ResultObservation.html#a9fdcd638bd7052743a2c4a7b5f91a7db">eve::detail::ResultObservation::ResultObservation</a></div><div class="ttdeci">ResultObservation() noexcept=default</div><div class="ttdoc">Constructs a ResultObservation.</div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1ResultObservation_html_aec65a8e0df02ef36856ed4608a7148a4"><div class="ttname"><a href="classeve_1_1detail_1_1ResultObservation.html#aec65a8e0df02ef36856ed4608a7148a4">eve::detail::ResultObservation::adoptObservationFrom</a></div><div class="ttdeci">void adoptObservationFrom(ResultObservation &amp;other) noexcept</div><div class="ttdoc">Adopt observation from.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00073">Result.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1ResultObservation_html_af0a5e79162cf6c943c394dd59db9f126"><div class="ttname"><a href="classeve_1_1detail_1_1ResultObservation.html#af0a5e79162cf6c943c394dd59db9f126">eve::detail::ResultObservation::ResultObservation</a></div><div class="ttdeci">ResultObservation(InactiveTag) noexcept</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00042">Result.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1ResultObservation_html_af69d43d5a553d339a1ed3d992b248d6b"><div class="ttname"><a href="classeve_1_1detail_1_1ResultObservation.html#af69d43d5a553d339a1ed3d992b248d6b">eve::detail::ResultObservation::requireObservation</a></div><div class="ttdeci">void requireObservation() noexcept</div><div class="ttdoc">Require a fresh check after replacing the carried outcome.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00091">Result.h:91</a></div></div>
+<div class="ttc" id="aconcepteve_1_1detail_1_1ResultConstConversion_html"><div class="ttname"><a href="concepteve_1_1detail_1_1ResultConstConversion.html">eve::detail::ResultConstConversion</a></div><div class="ttdoc">True when From may convert into To only by adding const.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00117">Result.h:117</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1detail_html_a3040ff0d56a954427111562fe11cf303"><div class="ttname"><a href="namespaceeve_1_1detail.html#a3040ff0d56a954427111562fe11cf303">eve::detail::moveAssignOptional</a></div><div class="ttdeci">void moveAssignOptional(std::optional&lt; T &gt; &amp;destination, std::optional&lt; U &gt; &amp;&amp;source)</div><div class="ttdoc">Replace destination with source even when T is not assignable.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00129">Result.h:129</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1detail_html_a6b1ae1f87bf5cd26b47a45500a4d4a6d"><div class="ttname"><a href="namespaceeve_1_1detail.html#a6b1ae1f87bf5cd26b47a45500a4d4a6d">eve::detail::ResultReturn</a></div><div class="ttdeci">std::invoke_result_t&lt; T &gt; ResultReturn</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00107">Result.h:107</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a895e561059e927cd14059e8e2920b718"><div class="ttname"><a href="namespaceeve.html#a895e561059e927cd14059e8e2920b718">eve::everyResultValid</a></div><div class="ttdeci">bool everyResultValid(const Results &amp;... results) noexcept</div><div class="ttdoc">True only when every argument Result succeeded, observing all of them.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00586">Result.h:586</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1detail_1_1ResultObservation_1_1InactiveTag_html"><div class="ttname"><a href="structeve_1_1detail_1_1ResultObservation_1_1InactiveTag.html">eve::detail::ResultObservation::InactiveTag</a></div><div class="ttdoc">Start an inactive token used while a Result move is constructed.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00041">Result.h:41</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

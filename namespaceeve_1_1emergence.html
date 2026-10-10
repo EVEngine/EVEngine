@@ -1,0 +1,533 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::emergence 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1emergence.html">emergence</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::emergence 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1emergence_1_1Activation.html">Activation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One scheduled activation produced by drain().  <a href="structeve_1_1emergence_1_1Activation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1Emergence.html">Emergence</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-facing module that owns <a class="el" href="classeve_1_1emergence_1_1RuleEngine.html" title="Indexed, deferred rule evaluator for tens of thousands of conditions.">RuleEngine</a> instances.  <a href="classeve_1_1emergence_1_1Emergence.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1emergence_1_1EmergenceAction.html">EmergenceAction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One deferred side-effect descriptor; domains interpret <code>kind</code>.  <a href="structeve_1_1emergence_1_1EmergenceAction.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1FactStore.html">FactStore</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutable fact bag that doubles as a read-only Condition evaluation context.  <a href="classeve_1_1emergence_1_1FactStore.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1emergence_1_1RuleDefinition.html">RuleDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One immutable rule definition owned by the catalogue.  <a href="structeve_1_1emergence_1_1RuleDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indexed, deferred rule evaluator for tens of thousands of conditions.  <a href="classeve_1_1emergence_1_1RuleEngine.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1emergence_1_1RuleEngineHandleTag.html">RuleEngineHandleTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle domain for module-owned rule engines.  <a href="structeve_1_1emergence_1_1RuleEngineHandleTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1WatchIndex.html">WatchIndex</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dense, sorted multi-map used to wake O(watchers) rules on a fact change.  <a href="classeve_1_1emergence_1_1WatchIndex.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:aa505dd68a2fefa5dd475af3c43dfd885" id="r_aa505dd68a2fefa5dd475af3c43dfd885"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1emergence.html#aa505dd68a2fefa5dd475af3c43dfd885">RuleEngineHandleRef</a> = <a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef</a>&lt; <a class="el" href="structeve_1_1emergence_1_1RuleEngineHandleTag.html">RuleEngineHandleTag</a> &gt;</td></tr>
+<tr class="memdesc:aa505dd68a2fefa5dd475af3c43dfd885"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified reference to a module-owned <a class="el" href="classeve_1_1emergence_1_1RuleEngine.html" title="Indexed, deferred rule evaluator for tens of thousands of conditions.">RuleEngine</a>.  <br /></td></tr>
+<tr class="separator:aa505dd68a2fefa5dd475af3c43dfd885"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a8ba1dc4a393e763503929d88fc301c15" id="r_a8ba1dc4a393e763503929d88fc301c15"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15">FactDomain</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15a689202409e48743b914713f96d93947c">Value</a>
+, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15ac101058e7ea21bbbf2a5ac893088e90b">Tag</a>
+, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15af2bbdf9f72c085adc4d0404e370f0f4c">Attribute</a>
+, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15abe8545ae7ab0276e15898aae7acfbd7a">Resource</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15a46a2a41cc6e552044816a2d04634545d">State</a>
+, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15a60f1a22c0e577712dfd7ff055183e4ad">Authority</a>
+, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15a51359e8b51c63b87d50cb1bab73380e2">Policy</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a8ba1dc4a393e763503929d88fc301c15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Domain partition of a fact key used by the watch index.  <a href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15">更多...</a><br /></td></tr>
+<tr class="separator:a8ba1dc4a393e763503929d88fc301c15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1159a7093faf678482b2849a22992df6" id="r_a1159a7093faf678482b2849a22992df6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1emergence.html#a1159a7093faf678482b2849a22992df6">FactChange</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1emergence.html#a1159a7093faf678482b2849a22992df6a5ff3c6978f87d96febfdc8ed3899a97e">Unchanged</a> = 0
+, <a class="el" href="namespaceeve_1_1emergence.html#a1159a7093faf678482b2849a22992df6a820dbd2b8f606aff866c0bbfb6b737c1">Changed</a> = 1
+ }</td></tr>
+<tr class="memdesc:a1159a7093faf678482b2849a22992df6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a FactStore mutation changed stored state.  <a href="namespaceeve_1_1emergence.html#a1159a7093faf678482b2849a22992df6">更多...</a><br /></td></tr>
+<tr class="separator:a1159a7093faf678482b2849a22992df6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bdf047381ee6d0996c5ecfcb61745fd" id="r_a6bdf047381ee6d0996c5ecfcb61745fd"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1emergence.html#a6bdf047381ee6d0996c5ecfcb61745fd">FireMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1emergence.html#a6bdf047381ee6d0996c5ecfcb61745fda4475404a8e17049853e83d014a833ca1">Rising</a> = 0
+, <a class="el" href="namespaceeve_1_1emergence.html#a6bdf047381ee6d0996c5ecfcb61745fdaa0db49ba470c1c9ae2128c3470339153">Level</a> = 1
+ }</td></tr>
+<tr class="memdesc:a6bdf047381ee6d0996c5ecfcb61745fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">When a watched rule may emit an activation.  <a href="namespaceeve_1_1emergence.html#a6bdf047381ee6d0996c5ecfcb61745fd">更多...</a><br /></td></tr>
+<tr class="separator:a6bdf047381ee6d0996c5ecfcb61745fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:afd295fdb2719019dac21359fd6a10f96" id="r_afd295fdb2719019dac21359fd6a10f96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">decision::Condition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1emergence.html#afd295fdb2719019dac21359fd6a10f96">decodeCondition</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:afd295fdb2719019dac21359fd6a10f96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode one validated condition tree from an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>.  <br /></td></tr>
+<tr class="separator:afd295fdb2719019dac21359fd6a10f96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a132b5ff89c6839b8699079c2a8821ad1" id="r_a132b5ff89c6839b8699079c2a8821ad1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1emergence.html#a132b5ff89c6839b8699079c2a8821ad1">collectWatchKeys</a> (const <a class="el" href="classeve_1_1decision_1_1Condition.html">decision::Condition</a> &amp;<a class="el" href="DnutCompiler_8cpp.html#ad4c6a723381ba033447c592a25f1e50f">condition</a>)</td></tr>
+<tr class="memdesc:a132b5ff89c6839b8699079c2a8821ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect the canonical fact keys a condition depends on.  <br /></td></tr>
+<tr class="separator:a132b5ff89c6839b8699079c2a8821ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb291d8e3c729533030a26405d932545" id="r_afb291d8e3c729533030a26405d932545"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1emergence.html#afb291d8e3c729533030a26405d932545">Module_IMPL</a> (<a class="el" href="classeve_1_1emergence_1_1Emergence.html">Emergence</a>, new <a class="el" href="classeve_1_1emergence_1_1Emergence.html">Emergence</a>())</td></tr>
+<tr class="separator:afb291d8e3c729533030a26405d932545"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0e4f7c01b34720d4eff916d5cd4d14a" id="r_ad0e4f7c01b34720d4eff916d5cd4d14a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1emergence.html#ad0e4f7c01b34720d4eff916d5cd4d14a">makeFactKey</a> (<a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15">FactDomain</a> domain, std::string_view <a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:ad0e4f7c01b34720d4eff916d5cd4d14a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the canonical watch key for one fact domain.  <br /></td></tr>
+<tr class="separator:ad0e4f7c01b34720d4eff916d5cd4d14a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9135f7cb08260c9cb227302f24d3eb56" id="r_a9135f7cb08260c9cb227302f24d3eb56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::pair&lt; <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15">FactDomain</a>, std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1emergence.html#a9135f7cb08260c9cb227302f24d3eb56">parseFactKey</a> (std::string_view <a class="el" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>)</td></tr>
+<tr class="memdesc:a9135f7cb08260c9cb227302f24d3eb56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a canonical watch key into domain and leaf name.  <br /></td></tr>
+<tr class="separator:a9135f7cb08260c9cb227302f24d3eb56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="aa505dd68a2fefa5dd475af3c43dfd885" name="aa505dd68a2fefa5dd475af3c43dfd885"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa505dd68a2fefa5dd475af3c43dfd885">&#9670;&#160;</a></span>RuleEngineHandleRef</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1emergence.html#aa505dd68a2fefa5dd475af3c43dfd885">eve::emergence::RuleEngineHandleRef</a> = typedef <a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef</a>&lt;<a class="el" href="structeve_1_1emergence_1_1RuleEngineHandleTag.html">RuleEngineHandleTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation-qualified reference to a module-owned <a class="el" href="classeve_1_1emergence_1_1RuleEngine.html" title="Indexed, deferred rule evaluator for tens of thousands of conditions.">RuleEngine</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a> 第 <a class="el" href="RuleEngine_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a1159a7093faf678482b2849a22992df6" name="a1159a7093faf678482b2849a22992df6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1159a7093faf678482b2849a22992df6">&#9670;&#160;</a></span>FactChange</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1emergence.html#a1159a7093faf678482b2849a22992df6">eve::emergence::FactChange</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a <a class="el" href="classeve_1_1emergence_1_1FactStore.html" title="Mutable fact bag that doubles as a read-only Condition evaluation context.">FactStore</a> mutation changed stored state. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a1159a7093faf678482b2849a22992df6a5ff3c6978f87d96febfdc8ed3899a97e" name="a1159a7093faf678482b2849a22992df6a5ff3c6978f87d96febfdc8ed3899a97e"></a>Unchanged&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1159a7093faf678482b2849a22992df6a820dbd2b8f606aff866c0bbfb6b737c1" name="a1159a7093faf678482b2849a22992df6a820dbd2b8f606aff866c0bbfb6b737c1"></a>Changed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="FactStore_8h_source.html">FactStore.h</a> 第 <a class="el" href="FactStore_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ba1dc4a393e763503929d88fc301c15" name="a8ba1dc4a393e763503929d88fc301c15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ba1dc4a393e763503929d88fc301c15">&#9670;&#160;</a></span>FactDomain</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15">eve::emergence::FactDomain</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Domain partition of a fact key used by the watch index. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8ba1dc4a393e763503929d88fc301c15a689202409e48743b914713f96d93947c" name="a8ba1dc4a393e763503929d88fc301c15a689202409e48743b914713f96d93947c"></a>Value&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ba1dc4a393e763503929d88fc301c15ac101058e7ea21bbbf2a5ac893088e90b" name="a8ba1dc4a393e763503929d88fc301c15ac101058e7ea21bbbf2a5ac893088e90b"></a>Tag&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ba1dc4a393e763503929d88fc301c15af2bbdf9f72c085adc4d0404e370f0f4c" name="a8ba1dc4a393e763503929d88fc301c15af2bbdf9f72c085adc4d0404e370f0f4c"></a>Attribute&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ba1dc4a393e763503929d88fc301c15abe8545ae7ab0276e15898aae7acfbd7a" name="a8ba1dc4a393e763503929d88fc301c15abe8545ae7ab0276e15898aae7acfbd7a"></a>Resource&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ba1dc4a393e763503929d88fc301c15a46a2a41cc6e552044816a2d04634545d" name="a8ba1dc4a393e763503929d88fc301c15a46a2a41cc6e552044816a2d04634545d"></a>State&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ba1dc4a393e763503929d88fc301c15a60f1a22c0e577712dfd7ff055183e4ad" name="a8ba1dc4a393e763503929d88fc301c15a60f1a22c0e577712dfd7ff055183e4ad"></a>Authority&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ba1dc4a393e763503929d88fc301c15a51359e8b51c63b87d50cb1bab73380e2" name="a8ba1dc4a393e763503929d88fc301c15a51359e8b51c63b87d50cb1bab73380e2"></a>Policy&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="FactStore_8h_source.html">FactStore.h</a> 第 <a class="el" href="FactStore_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6bdf047381ee6d0996c5ecfcb61745fd" name="a6bdf047381ee6d0996c5ecfcb61745fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bdf047381ee6d0996c5ecfcb61745fd">&#9670;&#160;</a></span>FireMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1emergence.html#a6bdf047381ee6d0996c5ecfcb61745fd">eve::emergence::FireMode</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>When a watched rule may emit an activation. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a6bdf047381ee6d0996c5ecfcb61745fda4475404a8e17049853e83d014a833ca1" name="a6bdf047381ee6d0996c5ecfcb61745fda4475404a8e17049853e83d014a833ca1"></a>Rising&#160;</td><td class="fielddoc"><p>Fire only on false→true edges. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a6bdf047381ee6d0996c5ecfcb61745fdaa0db49ba470c1c9ae2128c3470339153" name="a6bdf047381ee6d0996c5ecfcb61745fdaa0db49ba470c1c9ae2128c3470339153"></a>Level&#160;</td><td class="fielddoc"><p>Fire whenever woken while the condition currently passes. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="RuleTypes_8h_source.html">RuleTypes.h</a> 第 <a class="el" href="RuleTypes_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a132b5ff89c6839b8699079c2a8821ad1" name="a132b5ff89c6839b8699079c2a8821ad1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a132b5ff89c6839b8699079c2a8821ad1">&#9670;&#160;</a></span>collectWatchKeys()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; std::string &gt; &gt; eve::emergence::collectWatchKeys </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1decision_1_1Condition.html">decision::Condition</a> &amp;&#160;</td>
+          <td class="paramname"><em>condition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collect the canonical fact keys a condition depends on. </p>
+<p>Leaf nodes contribute their domain key. PolicyCall nodes contribute <code>policy:&lt;name&gt;</code> plus every declared <code>scriptDeclaration.dependencies</code> entry (already expected to be canonical fact keys). All/Any/Not recurse into children.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">condition</td><td>Side-effect-free condition tree. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Sorted unique keys, or a structured failure when a PolicyCall lacks both a name and a dependency declaration that would make indexing safe. @thread Pure; reentrant; no callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ConditionWatch_8cpp_source.html">ConditionWatch.cpp</a> 第 <a class="el" href="ConditionWatch_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutCompiler_8cpp_source.html#l00030">condition</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>.</p>
+
+</div>
+</div>
+<a id="afd295fdb2719019dac21359fd6a10f96" name="afd295fdb2719019dac21359fd6a10f96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd295fdb2719019dac21359fd6a10f96">&#9670;&#160;</a></span>decodeCondition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">decision::Condition</a> &gt; eve::emergence::decodeCondition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode one validated condition tree from an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>Node-shaped <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> from an <code>eve.emergence.rules</code> document. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Validated condition tree, or a structured parse failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ConditionCodec_8cpp_source.html">ConditionCodec.cpp</a> 第 <a class="el" href="ConditionCodec_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00153">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuleEngine_8cpp_source.html#l00125">eve::emergence::RuleEngine::replaceCatalogueJson()</a>.</p>
+
+</div>
+</div>
+<a id="ad0e4f7c01b34720d4eff916d5cd4d14a" name="ad0e4f7c01b34720d4eff916d5cd4d14a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0e4f7c01b34720d4eff916d5cd4d14a">&#9670;&#160;</a></span>makeFactKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::string eve::emergence::makeFactKey </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15">FactDomain</a>&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build the canonical watch key for one fact domain. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">domain</td><td>Fact namespace. </td></tr>
+    <tr><td class="paramname">name</td><td>Non-empty leaf name. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning <code>domain:name</code> key, or empty when name is empty. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FactStore_8cpp_source.html">FactStore.cpp</a> 第 <a class="el" href="FactStore_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a> , 以及 <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuleEngine_8cpp_source.html#l00288">eve::emergence::RuleEngine::setAttribute()</a>, <a class="el" href="RuleEngine_8cpp_source.html#l00315">eve::emergence::RuleEngine::setAuthority()</a>, <a class="el" href="RuleEngine_8cpp_source.html#l00325">eve::emergence::RuleEngine::setPolicy()</a>, <a class="el" href="RuleEngine_8cpp_source.html#l00297">eve::emergence::RuleEngine::setResource()</a>, <a class="el" href="RuleEngine_8cpp_source.html#l00306">eve::emergence::RuleEngine::setState()</a>, <a class="el" href="RuleEngine_8cpp_source.html#l00279">eve::emergence::RuleEngine::setTag()</a> , 以及 <a class="el" href="RuleEngine_8cpp_source.html#l00270">eve::emergence::RuleEngine::setValue()</a>.</p>
+
+</div>
+</div>
+<a id="afb291d8e3c729533030a26405d932545" name="afb291d8e3c729533030a26405d932545"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb291d8e3c729533030a26405d932545">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::emergence::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1emergence_1_1Emergence.html">Emergence</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Emergence</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9135f7cb08260c9cb227302f24d3eb56" name="a9135f7cb08260c9cb227302f24d3eb56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9135f7cb08260c9cb227302f24d3eb56">&#9670;&#160;</a></span>parseFactKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::pair&lt; <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15">FactDomain</a>, std::string &gt; &gt; eve::emergence::parseFactKey </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse a canonical watch key into domain and leaf name. </p>
+<dl class="section return"><dt>返回</dt><dd>Structured failure when the key is empty or uses an unknown domain prefix. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FactStore_8cpp_source.html">FactStore.cpp</a> 第 <a class="el" href="FactStore_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15af2bbdf9f72c085adc4d0404e370f0f4c">Attribute</a>, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15a60f1a22c0e577712dfd7ff055183e4ad">Authority</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="GltfAnimation_8cpp_source.html#l00017">message</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15a51359e8b51c63b87d50cb1bab73380e2">Policy</a>, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15abe8545ae7ab0276e15898aae7acfbd7a">Resource</a>, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15a46a2a41cc6e552044816a2d04634545d">State</a>, <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15ac101058e7ea21bbbf2a5ac893088e90b">Tag</a> , 以及 <a class="el" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15a689202409e48743b914713f96d93947c">Value</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

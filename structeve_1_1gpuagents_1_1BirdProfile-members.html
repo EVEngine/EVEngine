@@ -1,0 +1,200 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpuagents.html">gpuagents</a></li><li class="navelem"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">BirdProfile</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::gpuagents::BirdProfile 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a9f7c8e257c9fc26a962cc4f864a5949e">airDrag</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a867c5255204e8793e92045147cb9c9b9">alignmentRadius</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#acbaa5eebd9540108cf35a99a5ccf0cae">alignmentWeight</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a4dda74330bdad2955c57b65e53dae201">base</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ad7ca80807ed8193d679d1800d23b07c1">ceilingClearance</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ae7f071ea3425ad119d37018d575bf13d">cohesionRadius</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a9a2fe24029b3c01f87db5b553423d47f">cohesionWeight</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a85dab8daff90254ba829f1dfb3e63ad7">cruiseSpeed</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a5e957e3b4d5d741fc99ce88a76ce96e7">goalWeight</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ab0e4301c7845bae48937a2bbc3023f5f">gravityScale</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a50ee698f39c6529cb70bd11b46450cc0">groundClearance</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ae979700100555c47c43a9c46487d9039">gustAcceleration</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a1564cfb0ecc047372c39d54f4b97b34f">liftCoefficient</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a90f40420e7af2280d8063b195a6f1897">maxBankAngle</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ad063bfc6700c72a523840e52eefe33d7">maxClimbSpeed</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a815bea7a6c9f80264c8f254358b718ba">maxDescentSpeed</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ab0c0747e49f972ec742cae3967c64ebb">maxNeighborSamples</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a7715e1835d2d6ab09a4477f8d9b79abf">maxSpeed</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#aca93654b13563a1d83f8ecc47cc15c3b">maxTurnRate</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a7cdf51a175418865d39292d9792ad5df">perceptionFovDegrees</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a45f56c6a15281d4b1cd49394fdacb45d">separationRadius</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#adf681748c087b79028eac07d8d45f546">separationWeight</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a69b2bd181766fd037a9c601dd04f605d">stallSpeed</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a05c22b5356800b3dc6fca256e3ea3697">timeToCollision</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#aafdc8cb1c4d1d2573131c5b68f434156">uniformWindLocal</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a40f1a4f905ba429acb723ccb614c243a">windResponseTime</a></td><td class="entry"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">eve::gpuagents::BirdProfile</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,673 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpuagents::BirdProfile结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpuagents.html">gpuagents</a></li><li class="navelem"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html">BirdProfile</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1gpuagents_1_1BirdProfile-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpuagents::BirdProfile结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Bird flock flight-dynamics parameters.  
+ <a href="structeve_1_1gpuagents_1_1BirdProfile.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a4dda74330bdad2955c57b65e53dae201" id="r_a4dda74330bdad2955c57b65e53dae201"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1gpuagents_1_1EffectProfileBase.html">EffectProfileBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a4dda74330bdad2955c57b65e53dae201">base</a> {}</td></tr>
+<tr class="separator:a4dda74330bdad2955c57b65e53dae201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45f56c6a15281d4b1cd49394fdacb45d" id="r_a45f56c6a15281d4b1cd49394fdacb45d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a45f56c6a15281d4b1cd49394fdacb45d">separationRadius</a> = 2.0f</td></tr>
+<tr class="separator:a45f56c6a15281d4b1cd49394fdacb45d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7f071ea3425ad119d37018d575bf13d" id="r_ae7f071ea3425ad119d37018d575bf13d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ae7f071ea3425ad119d37018d575bf13d">cohesionRadius</a> = 6.0f</td></tr>
+<tr class="separator:ae7f071ea3425ad119d37018d575bf13d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a867c5255204e8793e92045147cb9c9b9" id="r_a867c5255204e8793e92045147cb9c9b9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a867c5255204e8793e92045147cb9c9b9">alignmentRadius</a> = 5.0f</td></tr>
+<tr class="separator:a867c5255204e8793e92045147cb9c9b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cdf51a175418865d39292d9792ad5df" id="r_a7cdf51a175418865d39292d9792ad5df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a7cdf51a175418865d39292d9792ad5df">perceptionFovDegrees</a> = 300.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7cdf51a175418865d39292d9792ad5df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0c0747e49f972ec742cae3967c64ebb" id="r_ab0c0747e49f972ec742cae3967c64ebb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ab0c0747e49f972ec742cae3967c64ebb">maxNeighborSamples</a> = 20</td></tr>
+<tr class="separator:ab0c0747e49f972ec742cae3967c64ebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf681748c087b79028eac07d8d45f546" id="r_adf681748c087b79028eac07d8d45f546"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#adf681748c087b79028eac07d8d45f546">separationWeight</a> = 1.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:adf681748c087b79028eac07d8d45f546"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a2fe24029b3c01f87db5b553423d47f" id="r_a9a2fe24029b3c01f87db5b553423d47f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a9a2fe24029b3c01f87db5b553423d47f">cohesionWeight</a> = 0.7<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9a2fe24029b3c01f87db5b553423d47f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbaa5eebd9540108cf35a99a5ccf0cae" id="r_acbaa5eebd9540108cf35a99a5ccf0cae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#acbaa5eebd9540108cf35a99a5ccf0cae">alignmentWeight</a> = 1.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acbaa5eebd9540108cf35a99a5ccf0cae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e957e3b4d5d741fc99ce88a76ce96e7" id="r_a5e957e3b4d5d741fc99ce88a76ce96e7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a5e957e3b4d5d741fc99ce88a76ce96e7">goalWeight</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5e957e3b4d5d741fc99ce88a76ce96e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69b2bd181766fd037a9c601dd04f605d" id="r_a69b2bd181766fd037a9c601dd04f605d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a69b2bd181766fd037a9c601dd04f605d">stallSpeed</a> = 2.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a69b2bd181766fd037a9c601dd04f605d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85dab8daff90254ba829f1dfb3e63ad7" id="r_a85dab8daff90254ba829f1dfb3e63ad7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a85dab8daff90254ba829f1dfb3e63ad7">cruiseSpeed</a> = 6.0f</td></tr>
+<tr class="separator:a85dab8daff90254ba829f1dfb3e63ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7715e1835d2d6ab09a4477f8d9b79abf" id="r_a7715e1835d2d6ab09a4477f8d9b79abf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a7715e1835d2d6ab09a4477f8d9b79abf">maxSpeed</a> = 10.0f</td></tr>
+<tr class="separator:a7715e1835d2d6ab09a4477f8d9b79abf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1564cfb0ecc047372c39d54f4b97b34f" id="r_a1564cfb0ecc047372c39d54f4b97b34f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a1564cfb0ecc047372c39d54f4b97b34f">liftCoefficient</a> = 1.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1564cfb0ecc047372c39d54f4b97b34f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0e4301c7845bae48937a2bbc3023f5f" id="r_ab0e4301c7845bae48937a2bbc3023f5f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ab0e4301c7845bae48937a2bbc3023f5f">gravityScale</a> = 1.0f</td></tr>
+<tr class="separator:ab0e4301c7845bae48937a2bbc3023f5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f7c8e257c9fc26a962cc4f864a5949e" id="r_a9f7c8e257c9fc26a962cc4f864a5949e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a9f7c8e257c9fc26a962cc4f864a5949e">airDrag</a> = 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9f7c8e257c9fc26a962cc4f864a5949e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad063bfc6700c72a523840e52eefe33d7" id="r_ad063bfc6700c72a523840e52eefe33d7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ad063bfc6700c72a523840e52eefe33d7">maxClimbSpeed</a> = 3.0f</td></tr>
+<tr class="separator:ad063bfc6700c72a523840e52eefe33d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a815bea7a6c9f80264c8f254358b718ba" id="r_a815bea7a6c9f80264c8f254358b718ba"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a815bea7a6c9f80264c8f254358b718ba">maxDescentSpeed</a> = 5.0f</td></tr>
+<tr class="separator:a815bea7a6c9f80264c8f254358b718ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca93654b13563a1d83f8ecc47cc15c3b" id="r_aca93654b13563a1d83f8ecc47cc15c3b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#aca93654b13563a1d83f8ecc47cc15c3b">maxTurnRate</a> = 2.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aca93654b13563a1d83f8ecc47cc15c3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90f40420e7af2280d8063b195a6f1897" id="r_a90f40420e7af2280d8063b195a6f1897"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a90f40420e7af2280d8063b195a6f1897">maxBankAngle</a> = 0.85<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a90f40420e7af2280d8063b195a6f1897"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05c22b5356800b3dc6fca256e3ea3697" id="r_a05c22b5356800b3dc6fca256e3ea3697"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a05c22b5356800b3dc6fca256e3ea3697">timeToCollision</a> = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a05c22b5356800b3dc6fca256e3ea3697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50ee698f39c6529cb70bd11b46450cc0" id="r_a50ee698f39c6529cb70bd11b46450cc0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a50ee698f39c6529cb70bd11b46450cc0">groundClearance</a> = 1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a50ee698f39c6529cb70bd11b46450cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7ca80807ed8193d679d1800d23b07c1" id="r_ad7ca80807ed8193d679d1800d23b07c1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ad7ca80807ed8193d679d1800d23b07c1">ceilingClearance</a> = 2.0f</td></tr>
+<tr class="separator:ad7ca80807ed8193d679d1800d23b07c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40f1a4f905ba429acb723ccb614c243a" id="r_a40f1a4f905ba429acb723ccb614c243a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#a40f1a4f905ba429acb723ccb614c243a">windResponseTime</a> = 0.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a40f1a4f905ba429acb723ccb614c243a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae979700100555c47c43a9c46487d9039" id="r_ae979700100555c47c43a9c46487d9039"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#ae979700100555c47c43a9c46487d9039">gustAcceleration</a> = 2.0f</td></tr>
+<tr class="separator:ae979700100555c47c43a9c46487d9039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafdc8cb1c4d1d2573131c5b68f434156" id="r_aafdc8cb1c4d1d2573131c5b68f434156"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1BirdProfile.html#aafdc8cb1c4d1d2573131c5b68f434156">uniformWindLocal</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:aafdc8cb1c4d1d2573131c5b68f434156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Bird flock flight-dynamics parameters. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00070">70</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a9f7c8e257c9fc26a962cc4f864a5949e" name="a9f7c8e257c9fc26a962cc4f864a5949e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f7c8e257c9fc26a962cc4f864a5949e">&#9670;&#160;</a></span>airDrag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::airDrag = 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a867c5255204e8793e92045147cb9c9b9" name="a867c5255204e8793e92045147cb9c9b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a867c5255204e8793e92045147cb9c9b9">&#9670;&#160;</a></span>alignmentRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::alignmentRadius = 5.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgentsDocument_8cpp_source.html#l00212">eve::gpuagents_editing::toEffectProfile()</a>.</p>
+
+</div>
+</div>
+<a id="acbaa5eebd9540108cf35a99a5ccf0cae" name="acbaa5eebd9540108cf35a99a5ccf0cae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbaa5eebd9540108cf35a99a5ccf0cae">&#9670;&#160;</a></span>alignmentWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::alignmentWeight = 1.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgentsDocument_8cpp_source.html#l00212">eve::gpuagents_editing::toEffectProfile()</a>.</p>
+
+</div>
+</div>
+<a id="a4dda74330bdad2955c57b65e53dae201" name="a4dda74330bdad2955c57b65e53dae201"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dda74330bdad2955c57b65e53dae201">&#9670;&#160;</a></span>base</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1gpuagents_1_1EffectProfileBase.html">EffectProfileBase</a> eve::gpuagents::BirdProfile::base {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad7ca80807ed8193d679d1800d23b07c1" name="ad7ca80807ed8193d679d1800d23b07c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7ca80807ed8193d679d1800d23b07c1">&#9670;&#160;</a></span>ceilingClearance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::ceilingClearance = 2.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae7f071ea3425ad119d37018d575bf13d" name="ae7f071ea3425ad119d37018d575bf13d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7f071ea3425ad119d37018d575bf13d">&#9670;&#160;</a></span>cohesionRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::cohesionRadius = 6.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgentsDocument_8cpp_source.html#l00212">eve::gpuagents_editing::toEffectProfile()</a>.</p>
+
+</div>
+</div>
+<a id="a9a2fe24029b3c01f87db5b553423d47f" name="a9a2fe24029b3c01f87db5b553423d47f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a2fe24029b3c01f87db5b553423d47f">&#9670;&#160;</a></span>cohesionWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::cohesionWeight = 0.7<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgentsDocument_8cpp_source.html#l00212">eve::gpuagents_editing::toEffectProfile()</a>.</p>
+
+</div>
+</div>
+<a id="a85dab8daff90254ba829f1dfb3e63ad7" name="a85dab8daff90254ba829f1dfb3e63ad7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85dab8daff90254ba829f1dfb3e63ad7">&#9670;&#160;</a></span>cruiseSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::cruiseSpeed = 6.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e957e3b4d5d741fc99ce88a76ce96e7" name="a5e957e3b4d5d741fc99ce88a76ce96e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e957e3b4d5d741fc99ce88a76ce96e7">&#9670;&#160;</a></span>goalWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::goalWeight = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab0e4301c7845bae48937a2bbc3023f5f" name="ab0e4301c7845bae48937a2bbc3023f5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0e4301c7845bae48937a2bbc3023f5f">&#9670;&#160;</a></span>gravityScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::gravityScale = 1.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a50ee698f39c6529cb70bd11b46450cc0" name="a50ee698f39c6529cb70bd11b46450cc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50ee698f39c6529cb70bd11b46450cc0">&#9670;&#160;</a></span>groundClearance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::groundClearance = 1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae979700100555c47c43a9c46487d9039" name="ae979700100555c47c43a9c46487d9039"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae979700100555c47c43a9c46487d9039">&#9670;&#160;</a></span>gustAcceleration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::gustAcceleration = 2.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1564cfb0ecc047372c39d54f4b97b34f" name="a1564cfb0ecc047372c39d54f4b97b34f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1564cfb0ecc047372c39d54f4b97b34f">&#9670;&#160;</a></span>liftCoefficient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::liftCoefficient = 1.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a90f40420e7af2280d8063b195a6f1897" name="a90f40420e7af2280d8063b195a6f1897"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90f40420e7af2280d8063b195a6f1897">&#9670;&#160;</a></span>maxBankAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::maxBankAngle = 0.85<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad063bfc6700c72a523840e52eefe33d7" name="ad063bfc6700c72a523840e52eefe33d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad063bfc6700c72a523840e52eefe33d7">&#9670;&#160;</a></span>maxClimbSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::maxClimbSpeed = 3.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a815bea7a6c9f80264c8f254358b718ba" name="a815bea7a6c9f80264c8f254358b718ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a815bea7a6c9f80264c8f254358b718ba">&#9670;&#160;</a></span>maxDescentSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::maxDescentSpeed = 5.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab0c0747e49f972ec742cae3967c64ebb" name="ab0c0747e49f972ec742cae3967c64ebb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0c0747e49f972ec742cae3967c64ebb">&#9670;&#160;</a></span>maxNeighborSamples</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpuagents::BirdProfile::maxNeighborSamples = 20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7715e1835d2d6ab09a4477f8d9b79abf" name="a7715e1835d2d6ab09a4477f8d9b79abf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7715e1835d2d6ab09a4477f8d9b79abf">&#9670;&#160;</a></span>maxSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::maxSpeed = 10.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgentsDocument_8cpp_source.html#l00212">eve::gpuagents_editing::toEffectProfile()</a>.</p>
+
+</div>
+</div>
+<a id="aca93654b13563a1d83f8ecc47cc15c3b" name="aca93654b13563a1d83f8ecc47cc15c3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca93654b13563a1d83f8ecc47cc15c3b">&#9670;&#160;</a></span>maxTurnRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::maxTurnRate = 2.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7cdf51a175418865d39292d9792ad5df" name="a7cdf51a175418865d39292d9792ad5df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cdf51a175418865d39292d9792ad5df">&#9670;&#160;</a></span>perceptionFovDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::perceptionFovDegrees = 300.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45f56c6a15281d4b1cd49394fdacb45d" name="a45f56c6a15281d4b1cd49394fdacb45d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45f56c6a15281d4b1cd49394fdacb45d">&#9670;&#160;</a></span>separationRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::separationRadius = 2.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgentsDocument_8cpp_source.html#l00212">eve::gpuagents_editing::toEffectProfile()</a>.</p>
+
+</div>
+</div>
+<a id="adf681748c087b79028eac07d8d45f546" name="adf681748c087b79028eac07d8d45f546"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf681748c087b79028eac07d8d45f546">&#9670;&#160;</a></span>separationWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::separationWeight = 1.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgentsDocument_8cpp_source.html#l00212">eve::gpuagents_editing::toEffectProfile()</a>.</p>
+
+</div>
+</div>
+<a id="a69b2bd181766fd037a9c601dd04f605d" name="a69b2bd181766fd037a9c601dd04f605d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69b2bd181766fd037a9c601dd04f605d">&#9670;&#160;</a></span>stallSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::stallSpeed = 2.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05c22b5356800b3dc6fca256e3ea3697" name="a05c22b5356800b3dc6fca256e3ea3697"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05c22b5356800b3dc6fca256e3ea3697">&#9670;&#160;</a></span>timeToCollision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::timeToCollision = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafdc8cb1c4d1d2573131c5b68f434156" name="aafdc8cb1c4d1d2573131c5b68f434156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafdc8cb1c4d1d2573131c5b68f434156">&#9670;&#160;</a></span>uniformWindLocal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::gpuagents::BirdProfile::uniformWindLocal {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40f1a4f905ba429acb723ccb614c243a" name="a40f1a4f905ba429acb723ccb614c243a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40f1a4f905ba429acb723ccb614c243a">&#9670;&#160;</a></span>windResponseTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::BirdProfile::windResponseTime = 0.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/gpuagents/<a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

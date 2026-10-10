@@ -1,0 +1,296 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/ModuleAssembly.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a>  </div>
+  <div class="headertitle"><div class="title">ModuleAssembly.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="ModuleAssembly_8h_source.html">procgen/ModuleAssembly.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Value_8h_source.html">common/Value.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div>
+<p><a href="ModuleAssembly_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a0276099c77ab0e934113d9ca66428e80" name="a0276099c77ab0e934113d9ca66428e80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0276099c77ab0e934113d9ca66428e80">&#9670;&#160;</a></span>accepts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string* accepts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgLightingAmbientPhotoMode_8cpp_source.html#l00044">eve::daynight::PcgLightingAmbientPhotoMode::acceptsPhotoModeField()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00269">eve::procgen::ModuleAssemblyPlan::addConnector()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00274">eve::procgen::ModuleAssemblyPlan::addVolumeConnector()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">eve::procgen::ModuleAssemblyPlan::applyConfigJson()</a>, <a class="el" href="PcgLightingAmbientPhotoMode_8cpp_source.html#l00051">eve::daynight::PcgLightingAmbientPhotoMode::applyPhotoModeField()</a>, <a class="el" href="PcgTooltip_8cpp_source.html#l00010">eve::ui::PcgTooltipManager::enter()</a>, <a class="el" href="PcgTooltip_8cpp_source.html#l00011">eve::ui::PcgTooltipManager::enterText()</a>, <a class="el" href="PcgTooltip_8cpp_source.html#l00012">eve::ui::PcgTooltipManager::exit()</a>, <a class="el" href="ModuleAssemblyScript_8cpp_source.html#l00007">eve::procgen::exposeModuleAssembly()</a> , 以及 <a class="el" href="Sensing_8cpp_source.html#l00406">eve::sensing::SensingWorld::query()</a>.</p>
+
+</div>
+</div>
+<a id="abc188cec62ba9cb38e9495e86a835bce" name="abc188cec62ba9cb38e9495e86a835bce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc188cec62ba9cb38e9495e86a835bce">&#9670;&#160;</a></span>facing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ModuleFacing facing</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ModuleAssembly_8cpp_source.html#l00269">eve::procgen::ModuleAssemblyPlan::addConnector()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00274">eve::procgen::ModuleAssemblyPlan::addVolumeConnector()</a>, <a class="el" href="ClimbingAnimation_8cpp_source.html#l00067">eve::climbing::advanceClimbingAnimation()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">eve::procgen::ModuleAssemblyPlan::applyConfigJson()</a>, <a class="el" href="ModuleAssemblyScript_8cpp_source.html#l00007">eve::procgen::exposeModuleAssembly()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00627">eve::tactics::BattleSystem::faceUnit()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00631">eve::tactics::BattleSystem::faceUnit()</a>, <a class="el" href="Tactics_8cpp_source.html#l00890">eve::tactics::Tactics::faceUnit()</a>, <a class="el" href="TacticsAction_8cpp_source.html#l00215">eve::tactics::makeFaceRequest()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00310">eve::procgen::ModuleAssemblyPlan::place()</a>, <a class="el" href="TacticsAction_8cpp_source.html#l00126">eve::tactics::TacticsActionExecutor::prepare()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00656">eve::tactics::BattleSystem::previewFace()</a>, <a class="el" href="Tactics_8cpp_source.html#l00991">eve::tactics::Tactics::previewFace()</a>, <a class="el" href="CombatCharacter_8cpp_source.html#l00267">eve::combat::CombatCharacterRuntime::setFacing()</a> , 以及 <a class="el" href="Tactics_8cpp_source.html#l00600">eve::tactics::Tactics::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="acf4d33ee4cff36f69b924471174dcb11" name="acf4d33ee4cff36f69b924471174dcb11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf4d33ee4cff36f69b924471174dcb11">&#9670;&#160;</a></span>level</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int level</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ConsolePanel_8cpp_source.html#l00183">eve::dev::ConsolePanel::addLog()</a>, <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00372">eve::procgen::GtsTerrainExportSettings::appendImpostorPreset()</a>, <a class="el" href="PcgMeshLod_8cpp_source.html#l00119">eve::procgen::PcgMeshLodProfile::appendLevel()</a>, <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00365">eve::procgen::GtsTerrainExportSettings::appendSourcePreset()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00644">eve::procgen::RuntimeGeneration::applyCellUpdate()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">eve::procgen::ModuleAssemblyPlan::applyConfigJson()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00041">eve::procgen::applyTerrainStamp()</a>, <a class="el" href="RTSSystems__Faction_8cpp_source.html#l00009">eve::rts::VeterancySystem::award()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00399">eve::archspace::Document::bakeMesh()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00225">eve::archspace::Document::bootstrap()</a>, <a class="el" href="Builder_8cpp_source.html#l00337">eve::virtualgeometry::VirtualGeometryBuilder::build()</a>, <a class="el" href="DepthPyramid_8cpp_source.html#l00075">eve::graphics::DepthPyramid::build()</a>, <a class="el" href="CubemapPrefilter_8h_source.html#l00167">eve::graphics::buildGgxCubemapMipChain()</a>, <a class="el" href="PcgMeshLod_8cpp_source.html#l00255">eve::procgen::buildPcgCombinedMeshLodsInto()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01187">eve::building::PlacementSystem::canPlaceCorner()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01084">eve::building::PlacementSystem::canPlaceEdge()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00879">eve::building::PlacementSystem::canPlaceElev()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01286">eve::building::PlacementSystem::canPlaceFree()</a>, <a class="el" href="ScriptError_8cpp_source.html#l00080">eve::script::captureScriptError()</a>, <a class="el" href="HexMap_8cpp_source.html#l00170">eve::hexmap::HexMap::cellPosition()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00315">eve::building::PlacementWorld::channelOccupancy()</a>, <a class="el" href="ClassSystem_8cpp_source.html#l00040">eve::rpg::ClassSystem::checkLevelSkills()</a>, <a class="el" href="GtsTerrainLod_8cpp_source.html#l00142">eve::procgen::GtsTerrainMeshSettings::compileLevels()</a>, <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00414">eve::procgen::GtsTerrainExportSettings::compileSourceLevels()</a>, <a class="el" href="Compressor_8cpp_source.html#l00021">eve::data::LZ4Compressor::compress()</a>, <a class="el" href="Compressor_8cpp_source.html#l00241">eve::data::zlibCompressor::compress()</a>, <a class="el" href="DataModule_8cpp_source.html#l00158">eve::data::compress()</a>, <a class="el" href="AtmosphereClipmap_8cpp_source.html#l00010">eve::graphics::AtmosphereClipmap::configure()</a>, <a class="el" href="Procgen_8cpp_source.html#l02369">eve::procgen::Procgen::configureGtsTerrainTileLods()</a>, <a class="el" href="Procgen_8cpp_source.html#l02389">eve::procgen::Procgen::configurePcgMeshLods()</a>, <a class="el" href="LineOfSight_8cpp_source.html#l00122">eve::tactics::coverLevelName()</a>, <a class="el" href="archspace__editor_8cpp_source.html#l00032">eve::archspace_editor::ArchSpaceEditorModule::TargetFactory::create()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00261">eve::archspace::Document::createRoom()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00311">eve::archspace::Document::createWall()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l01022">eve::building_editing::BuildingPlacementTarget::edgeCubicBezierGizmo()</a>, <a class="el" href="Debugger_8cpp_source.html#l01106">eve::dev::Debugger::evaluate()</a>, <a class="el" href="ModuleAssemblyScript_8cpp_source.html#l00007">eve::procgen::exposeModuleAssembly()</a>, <a class="el" href="HexFeatures_8cpp_source.html#l00616">eve::hexmap::featureThreshold()</a>, <a class="el" href="UrbanGenerator_8cpp_source.html#l00479">eve::procgen::urban::UrbanGenerator::generate()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00159">eve::procgen::generateHexPlanetMesh()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00487">eve::procgen::generateTreeMesh()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00518">eve::building::PlacementWorld::getAnyCornerOccupantAtLevel()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00358">eve::building::PlacementWorld::getAnyOccupantAtLevel()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00698">eve::procgen::RuntimeGeneration::getCellDelta()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00632">eve::procgen::RuntimeGeneration::getCellOutput()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00639">eve::procgen::RuntimeGeneration::getCellRevision()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00507">eve::building::PlacementWorld::getCornerOccupantAtLevel()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00469">eve::building::PlacementWorld::getEdgeOccupantAtLevel()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00538">eve::building::PlacementWorld::getFreeOccupantAtLevel()</a>, <a class="el" href="AtmosphereClipmap_8cpp_source.html#l00031">eve::graphics::AtmosphereClipmap::getLevel()</a>, <a class="el" href="AtmosphereClipmap_8cpp_source.html#l00035">eve::graphics::AtmosphereClipmap::getLevel()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00087">eve::procgen::RuntimeGeneration::getLevelCellSize()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00095">eve::procgen::RuntimeGeneration::getLevelCleanupRadius()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00090">eve::procgen::RuntimeGeneration::getLevelGenerationRadius()</a>, <a class="el" href="PcgMeshLod_8cpp_source.html#l00166">eve::procgen::PcgMeshLodProfile::getLevelRendererState()</a>, <a class="el" href="GtsTerrainLod_8cpp_source.html#l00161">eve::procgen::GtsTerrainLodSet::getLevelSwitchDistance()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00336">eve::building::PlacementWorld::getOccupantAtLevel()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00418">eve::procgen::ModuleAssemblyPlan::getPlacementY()</a>, <a class="el" href="PcgMeshLod_8cpp_source.html#l00223">eve::procgen::PcgMeshLodSet::getSwitchDistance()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00627">eve::procgen::RuntimeGeneration::hasCell()</a>, <a class="el" href="AtmosphereClipmap_8cpp_source.html#l00039">eve::graphics::AtmosphereClipmap::levelForPosition()</a>, <a class="el" href="Debugger_8cpp_source.html#l01015">eve::dev::Debugger::locals()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00202">eve::graphics::Renderable3D::MeshRenderer::lodBlendForDistance()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00315">eve::graphics::Renderable3D::MeshRenderer::lodLevelForDistance()</a>, <a class="el" href="GeometryCollectionAsset_8cpp_source.html#l00349">eve::physics::GeometryCollectionAsset::makeClusterPillarFixture()</a>, <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00300">eve::procgen::makeGtsTerrainImpostorLod()</a>, <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00329">eve::procgen::makeGtsTerrainLowPolyLod()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00434">eve::procgen::measureTerrainHeightmap()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00305">eve::graphics::Renderable3D::MeshRenderer::meshForDistance()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00677">eve::procgen::RuntimeGeneration::migrateCellPointIds()</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00081">eve::graphics::webgpu::Graphics::newTextureMipChain()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00351">eve::archspace::Document::placeItem()</a>, <a class="el" href="GtsTerrainLod_8cpp_source.html#l00194">eve::procgen::planGtsTerrainLodAssets()</a>, <a class="el" href="UnityNativeTexture_8cpp_source.html#l00045">eve::asset_import::prepareUnityNativeTexture()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00252">eve::dev::ConsolePanel::read()</a>, <a class="el" href="CrashLog_8cpp_source.html#l00070">eve::recordLogEvent()</a>, <a class="el" href="ArchSpaceEditingCommands_8cpp_source.html#l00068">eve::archspace_editing::registerEditingCommands()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00713">eve::graphics::RenderSystem3D::render()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l01728">eve::graphics::RenderSystem3D::renderToCanvas()</a>, <a class="el" href="GtsTerrainColliderRuntime_8cpp_source.html#l00040">eve::procgen_physics::GtsTerrainColliderRuntime::replace()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00091">eve::ui::resolveWorldAnchorOverlaps()</a>, <a class="el" href="RPGActor_8cpp_source.html#l00241">eve::rpg::RPGActor::restoreProgression()</a>, <a class="el" href="LevelSystem_8cpp_source.html#l00038">eve::rpg::LevelSystem::restoreProgression()</a>, <a class="el" href="Run_8cpp_source.html#l00360">eve::cmd::Cmdline::Run()</a>, <a class="el" href="AtmosphereClipmap_8cpp_source.html#l00048">eve::graphics::AtmosphereClipmap::sample()</a>, <a class="el" href="Debugger_8cpp_source.html#l00592">eve::dev::Debugger::scriptStackDepth()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00011">eve::procgen::RuntimeGeneration::serializeCell()</a>, <a class="el" href="PlacementWorld_8h_source.html#l00074">eve::building::PlacementWorld::setActiveLevel()</a>, <a class="el" href="LevelSystem_8cpp_source.html#l00033">eve::rpg::LevelSystem::setLevel()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01243">eve::sceneloader::SceneLoader::setLod()</a>, <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00430">eve::procgen::GtsTerrainExportSettings::snapshotJson()</a>, <a class="el" href="Debugger_8cpp_source.html#l01170">eve::dev::Debugger::stackTrace()</a>, <a class="el" href="Procgen_8cpp_source.html#l01029">eve::procgen::Procgen::synchronizeCellInstances()</a>, <a class="el" href="Procgen_8cpp_source.html#l01072">eve::procgen::Procgen::synchronizeCellInstancesAtomic()</a>, <a class="el" href="AtmosphereClipmap_8cpp_source.html#l00025">eve::graphics::AtmosphereClipmap::updateCenter()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l00449">eve::buildingfx::BuildingFx::updateEdgeCurvePreview()</a>.</p>
+
+</div>
+</div>
+<a id="afdc4d55537832536f73f894f88509864" name="afdc4d55537832536f73f894f88509864"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdc4d55537832536f73f894f88509864">&#9670;&#160;</a></span>tag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string* tag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tags_8cpp_source.html#l00060">eve::tags::Tags::add()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00233">eve::rts::TagSet::add()</a>, <a class="el" href="Bag_8cpp_source.html#l00022">eve::inventory::Bag::addAcceptTag()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00269">eve::procgen::ModuleAssemblyPlan::addConnector()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00338">eve::scene::Scene::addNodeTagAt()</a>, <a class="el" href="Bag_8cpp_source.html#l00037">eve::inventory::Bag::addRejectTag()</a>, <a class="el" href="Equipment_8cpp_source.html#l00026">eve::inventory::EquipmentSet::addSlotAllowedTag()</a>, <a class="el" href="Bag_8cpp_source.html#l00152">eve::inventory::Bag::addSlotTag()</a>, <a class="el" href="EffectTypes_8cpp_source.html#l00075">eve::effects::EffectInstance::addTag()</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00018">eve::rpg::SettlementContext::addTag()</a>, <a class="el" href="TagStore_8cpp_source.html#l00050">eve::tags::TagStore::addTag()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00711">eve::scene::SceneHost::addTag()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00274">eve::procgen::ModuleAssemblyPlan::addVolumeConnector()</a>, <a class="el" href="CombatAttributes_8cpp_source.html#l00094">eve::combat::CombatAttributeRuntime::advance()</a>, <a class="el" href="tags_2StateAccessAdapter_8cpp_source.html#l00037">eve::tags::TagStoreStateAdapter::apply()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">eve::procgen::ModuleAssemblyPlan::applyConfigJson()</a>, <a class="el" href="SceneCameraQueries_8cpp_source.html#l00058">eve::scene::Scene::applyPcgTerrainCullingAt()</a>, <a class="el" href="Production_8cpp_source.html#l00125">eve::production::WorkQueue::blockReason()</a>, <a class="el" href="Building_8cpp_source.html#l00091">eve::building::Building::buildingHasTag()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00609">eve::building::PlacementWorld::buildingHasTag()</a>, <a class="el" href="SceneInspect_8cpp_source.html#l00115">eve::dev::SceneInspect::capture()</a>, <a class="el" href="Xml_8cpp_source.html#l00340">eve::xml::Element::children()</a>, <a class="el" href="FactStore_8cpp_source.html#l00214">eve::emergence::FactStore::clearTag()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00367">eve::scene::Scene::collectIdsByTagAt()</a>, <a class="el" href="HouseComponentLibrary_8cpp_source.html#l00236">eve::housegen::HouseComponentLibrary::completePacks()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00251">eve::rts::TagSet::contains()</a>, <a class="el" href="ClimbingRuntimeInternal_8h_source.html#l00207">eve::climbing::runtime_detail::containsAnyTag()</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00038">eve::pixelworld::MaterialCatalog::create()</a>, <a class="el" href="AbilityAsset_8cpp_source.html#l00493">eve::action::decodeAbilityAsset()</a>, <a class="el" href="PixelMaterialCatalogCodec_8cpp_source.html#l00172">eve::pixelworld::decodeMaterialCatalogJson()</a>, <a class="el" href="CombatAttributes_8cpp_source.html#l00126">eve::combat::CombatAttributeRuntime::definitions()</a>, <a class="el" href="Xml_8cpp_source.html#l00349">eve::xml::Element::elementsByTag()</a>, <a class="el" href="Production_8cpp_source.html#l00231">eve::production::WorkQueue::enqueue()</a>, <a class="el" href="ModuleAssemblyScript_8cpp_source.html#l00007">eve::procgen::exposeModuleAssembly()</a>, <a class="el" href="VoxelCatalogEditorScriptBindings_8cpp_source.html#l00030">eve::voxel_editor::exposeVoxelCatalogEditorScriptBindings()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00739">eve::scene::SceneHost::findAllByTag()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00832">eve::inventory::InventorySystem::findItemByTag()</a>, <a class="el" href="Bag_8cpp_source.html#l00095">eve::inventory::Bag::findItemByTag()</a>, <a class="el" href="World_8cpp_source.html#l00478">eve::physics::World::forgetFixture()</a>, <a class="el" href="Tags_8cpp_source.html#l00062">eve::tags::Tags::has()</a>, <a class="el" href="RPGActor_8cpp_source.html#l00172">eve::rpg::RPGActor::hasBuffTag()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00352">eve::scene::Scene::hasNodeTagAt()</a>, <a class="el" href="RPGActor_8cpp_source.html#l00129">eve::rpg::RPGActor::hasStatusTag()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00731">eve::scene::SceneHost::hasTag()</a>, <a class="el" href="Tracker_8cpp_source.html#l00177">eve::rpg::Tracker::hasTag()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00015">eve::building::BuildingDefinition::hasTag()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00050">eve::building::PlacedBuilding::hasTag()</a>, <a class="el" href="EffectTypes_8cpp_source.html#l00090">eve::effects::EffectInstance::hasTag()</a>, <a class="el" href="Item_8cpp_source.html#l00011">eve::inventory::ItemDefinition::hasTag()</a>, <a class="el" href="Item_8cpp_source.html#l00029">eve::inventory::ItemStack::hasTag()</a>, <a class="el" href="Class_8cpp_source.html#l00011">eve::rpg::ClassDefinition::hasTag()</a>, <a class="el" href="Effect_8cpp_source.html#l00011">eve::rpg::EffectDefinition::hasTag()</a>, <a class="el" href="Quest_8cpp_source.html#l00015">eve::rpg::QuestDefinition::hasTag()</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00022">eve::rpg::SettlementContext::hasTag()</a>, <a class="el" href="Skill_8cpp_source.html#l00061">eve::rpg::SkillDefinition::hasTag()</a>, <a class="el" href="Trait_8cpp_source.html#l00011">eve::rpg::TraitDefinition::hasTag()</a>, <a class="el" href="TagStore_8cpp_source.html#l00056">eve::tags::TagStore::hasTag()</a>, <a class="el" href="StatusSystem_8cpp_source.html#l00664">eve::rpg::StatusSystem::hasTag()</a>, <a class="el" href="Condition_8cpp_source.html#l00167">eve::decision::Condition::hasTag()</a>, <a class="el" href="statepatch_2StateAccessAdapter_8cpp_source.html#l00052">eve::statepatch::StatePatchStateAdapter::hasTag()</a>, <a class="el" href="tags_2StateAccessAdapter_8cpp_source.html#l00028">eve::tags::TagStoreStateAdapter::hasTag()</a>, <a class="el" href="DialogueState_8cpp_source.html#l00312">eve::dialogue::DialogueStateContext::hasTag()</a>, <a class="el" href="CardPlay_8cpp_source.html#l00035">eve::card::CardPlayConditionContext::hasTag()</a>, <a class="el" href="DialogueState_8cpp_source.html#l00257">eve::dialogue::StateEvaluationContext::hasTag()</a>, <a class="el" href="FactStore_8cpp_source.html#l00223">eve::emergence::FactStore::hasTag()</a>, <a class="el" href="SkillCondition_8cpp_source.html#l00038">eve::rpg::SkillConditionContext::hasTag()</a>, <a class="el" href="AnimImporter_8cpp_source.html#l00069">eve::animation::AnimImporter::importAnimationFixtureText()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00375">eve::cmd::sdk::installEveSdk()</a>, <a class="el" href="Inventory_8cpp_source.html#l00060">eve::inventory::Inventory::itemHasTag()</a>, <a class="el" href="VoxelCatalog_8cpp_source.html#l00406">eve::voxel_editing::VoxelCatalogTarget::makeSet()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00050">eve::rpg::makeStatusTickSettlementRequest()</a>, <a class="el" href="CombatAttributes_8cpp_source.html#l00083">eve::combat::CombatAttributeRuntime::modify()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00111">eve::editor::MemoryAssetDatabase::query()</a>, <a class="el" href="SmartObject_8cpp_source.html#l00121">eve::npc_ai::SmartObjectWorld::query()</a>, <a class="el" href="CombatAttributes_8cpp_source.html#l00035">eve::combat::CombatAttributeRuntime::registerAttribute()</a>, <a class="el" href="Tags_8cpp_source.html#l00061">eve::tags::Tags::remove()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00242">eve::rts::TagSet::remove()</a>, <a class="el" href="RPGActor_8cpp_source.html#l00168">eve::rpg::RPGActor::removeBuffByTag()</a>, <a class="el" href="StatusSystem_8cpp_source.html#l00653">eve::rpg::StatusSystem::removeByTag()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00345">eve::scene::Scene::removeNodeTagAt()</a>, <a class="el" href="RPGActor_8cpp_source.html#l00123">eve::rpg::RPGActor::removeStatusByTag()</a>, <a class="el" href="TagStore_8cpp_source.html#l00124">eve::tags::TagStore::removeSubject()</a>, <a class="el" href="EffectTypes_8cpp_source.html#l00083">eve::effects::EffectInstance::removeTag()</a>, <a class="el" href="TagStore_8cpp_source.html#l00053">eve::tags::TagStore::removeTag()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00720">eve::scene::SceneHost::removeTag()</a>, <a class="el" href="RTSRestore_8cpp_source.html#l00008">eve::rts::RTS::restoreState()</a>, <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00445">eve::voxel_editor::VoxelCatalogEditor::selectedSocketTag()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00321">eve::asset::serializeEvaManifest()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01243">eve::sceneloader::SceneLoader::setLod()</a>, <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00305">eve::voxel_editor::VoxelCatalogEditor::setSelectedSocket()</a>, <a class="el" href="Fixture_8h_source.html#l00049">eve::physics::Fixture::setTag()</a>, <a class="el" href="Shape3D_8cpp_source.html#l00383">eve::physics::Shape3D::setTag()</a>, <a class="el" href="FactStore_8cpp_source.html#l00171">eve::emergence::FactStore::setTag()</a>, <a class="el" href="RuleEngine_8cpp_source.html#l00279">eve::emergence::RuleEngine::setTag()</a>, <a class="el" href="ProductionAdvanced_8cpp_source.html#l00066">eve::production::WorkQueue::setTagAvailable()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00037">eve::rts::RTSEffectExecutor::settle()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00045">eve::vehicle::VehicleEffectExecutor::settle()</a>, <a class="el" href="CombatAttributes_8cpp_source.html#l00075">eve::combat::CombatAttributeRuntime::setValue()</a>, <a class="el" href="Bag_8cpp_source.html#l00147">eve::inventory::Bag::slotHasTag()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l01168">eve::tactics::TacticsPersistence::snapshot()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00311">eve::rts::TacticsSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03717">eve::rts::RTSProjectileSystem::step()</a>, <a class="el" href="Tags_8cpp_source.html#l00066">eve::tags::Tags::subjectAt()</a>, <a class="el" href="Tags_8cpp_source.html#l00065">eve::tags::Tags::subjectCount()</a>, <a class="el" href="TagStore_8cpp_source.html#l00070">eve::tags::TagStore::subjectsWithTag()</a>, <a class="el" href="TagStore_8cpp_source.html#l00075">eve::tags::TagStore::subjectsWithTagMatching()</a>, <a class="el" href="ProductionAdvanced_8cpp_source.html#l00046">eve::production::WorkQueue::tagAvailable()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00597">eve::effects::EffectContainer::taggedAt()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00604">eve::effects::EffectContainer::taggedAt()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00591">eve::effects::EffectContainer::taggedCount()</a>, <a class="el" href="Targeting_8cpp_source.html#l00356">eve::sensing::SensingCandidateProvider::upsert()</a>, <a class="el" href="Sensing_8cpp_source.html#l00161">eve::sensing::QuerySpec::validate()</a>, <a class="el" href="Targeting_8cpp_source.html#l00240">eve::sensing::TargetingSpec::validate()</a>, <a class="el" href="inventory_2ContainerAdapters_8cpp_source.html#l00176">eve::inventory::InventoryContainerAdapter::validateInsert()</a> , 以及 <a class="el" href="CombatAttributes_8cpp_source.html#l00047">eve::combat::CombatAttributeRuntime::value()</a>.</p>
+
+</div>
+</div>
+<a id="a6150e0515f7202e2fb518f7206ed97dc" name="a6150e0515f7202e2fb518f7206ed97dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6150e0515f7202e2fb518f7206ed97dc">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int x</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a14f94e529dff0b8bfba8e16fbe9755d6" name="a14f94e529dff0b8bfba8e16fbe9755d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14f94e529dff0b8bfba8e16fbe9755d6">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int z</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

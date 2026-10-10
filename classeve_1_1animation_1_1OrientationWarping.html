@@ -1,0 +1,921 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::OrientationWarping类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html">OrientationWarping</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1OrientationWarping-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::OrientationWarping类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Planar orientation warp applied after motion matching, never fed back into search.  
+ <a href="classeve_1_1animation_1_1OrientationWarping.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="OrientationWarping_8h_source.html">OrientationWarping.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1OrientationWarping_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac528704da0f6eab508716fafe8ac835c" id="r_ac528704da0f6eab508716fafe8ac835c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#ac528704da0f6eab508716fafe8ac835c">OrientationWarping</a> ()</td></tr>
+<tr class="memdesc:ac528704da0f6eab508716fafe8ac835c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an unconfigured warper with no borrowed skeleton.  <br /></td></tr>
+<tr class="separator:ac528704da0f6eab508716fafe8ac835c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f6df03cfbaa53e12a32a759e08b4887" id="r_a2f6df03cfbaa53e12a32a759e08b4887"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a2f6df03cfbaa53e12a32a759e08b4887">~OrientationWarping</a> ()</td></tr>
+<tr class="memdesc:a2f6df03cfbaa53e12a32a759e08b4887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release owned interpolation state; the borrowed skeleton is not accessed.  <br /></td></tr>
+<tr class="separator:a2f6df03cfbaa53e12a32a759e08b4887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d60c40b9b909ca61c567c3c25db6bc1" id="r_a0d60c40b9b909ca61c567c3c25db6bc1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a0d60c40b9b909ca61c567c3c25db6bc1">OrientationWarping</a> (const <a class="el" href="classeve_1_1animation_1_1OrientationWarping.html">OrientationWarping</a> &amp;)=delete</td></tr>
+<tr class="separator:a0d60c40b9b909ca61c567c3c25db6bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a973be7f647ff12bde858a5430551993f" id="r_a973be7f647ff12bde858a5430551993f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html">OrientationWarping</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a973be7f647ff12bde858a5430551993f">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1OrientationWarping.html">OrientationWarping</a> &amp;)=delete</td></tr>
+<tr class="separator:a973be7f647ff12bde858a5430551993f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac394213683e73dd5701c588e351aba6e" id="r_ac394213683e73dd5701c588e351aba6e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#ac394213683e73dd5701c588e351aba6e">configure</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> &amp;skeleton, int rootBone, std::span&lt; const int &gt; spineBones={}, std::span&lt; const int &gt; ikBones={})</td></tr>
+<tr class="memdesc:ac394213683e73dd5701c588e351aba6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically bind a skeleton and bone lists used by later apply calls.  <br /></td></tr>
+<tr class="separator:ac394213683e73dd5701c588e351aba6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d849069987367e8395bb483f26d1f78" id="r_a2d849069987367e8395bb483f26d1f78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a2d849069987367e8395bb483f26d1f78">setDistributedAlpha</a> (float alpha)</td></tr>
+<tr class="memdesc:a2d849069987367e8395bb483f26d1f78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set how much of the warp is distributed onto the spine chain.  <br /></td></tr>
+<tr class="separator:a2d849069987367e8395bb483f26d1f78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8544a2f6cfb0bd62aaabf46827598c18" id="r_a8544a2f6cfb0bd62aaabf46827598c18"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a8544a2f6cfb0bd62aaabf46827598c18">getDistributedAlpha</a> () const</td></tr>
+<tr class="separator:a8544a2f6cfb0bd62aaabf46827598c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91b41861f1b7c3091fd72be3297435fb" id="r_a91b41861f1b7c3091fd72be3297435fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a91b41861f1b7c3091fd72be3297435fb">setAngleThreshold</a> (float radians)</td></tr>
+<tr class="memdesc:a91b41861f1b7c3091fd72be3297435fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the inclusive planar-angle magnitude that disables warping.  <br /></td></tr>
+<tr class="separator:a91b41861f1b7c3091fd72be3297435fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63fbdcfacb6cfd2dd7d118db9b83424c" id="r_a63fbdcfacb6cfd2dd7d118db9b83424c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a63fbdcfacb6cfd2dd7d118db9b83424c">getAngleThreshold</a> () const</td></tr>
+<tr class="separator:a63fbdcfacb6cfd2dd7d118db9b83424c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa24b880e1368cce1459add9ccd6a1156" id="r_aa24b880e1368cce1459add9ccd6a1156"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#aa24b880e1368cce1459add9ccd6a1156">setRotationInterpSpeed</a> (float speed)</td></tr>
+<tr class="memdesc:aa24b880e1368cce1459add9ccd6a1156"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set how quickly the applied yaw approaches the target, matching Unreal FInterpTo.  <br /></td></tr>
+<tr class="separator:aa24b880e1368cce1459add9ccd6a1156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d823ca35dcd55cdcf19c7e5f4c2f651" id="r_a4d823ca35dcd55cdcf19c7e5f4c2f651"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a4d823ca35dcd55cdcf19c7e5f4c2f651">getRotationInterpSpeed</a> () const</td></tr>
+<tr class="separator:a4d823ca35dcd55cdcf19c7e5f4c2f651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9516e8fd20c84b373215e1286a7b695f" id="r_a9516e8fd20c84b373215e1286a7b695f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a9516e8fd20c84b373215e1286a7b695f">setMinRootMotionSpeed</a> (float metresPerSecond)</td></tr>
+<tr class="memdesc:a9516e8fd20c84b373215e1286a7b695f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the planar speed below which either direction is treated as stationary.  <br /></td></tr>
+<tr class="separator:a9516e8fd20c84b373215e1286a7b695f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add84c6bf5624a526775b49cb6bb04ebf" id="r_add84c6bf5624a526775b49cb6bb04ebf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#add84c6bf5624a526775b49cb6bb04ebf">getMinRootMotionSpeed</a> () const</td></tr>
+<tr class="separator:add84c6bf5624a526775b49cb6bb04ebf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab54068185efded8c31e0374f72097c14" id="r_ab54068185efded8c31e0374f72097c14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#ab54068185efded8c31e0374f72097c14">setEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:ab54068185efded8c31e0374f72097c14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable pose mutation. Disabled apply calls still recompute the target.  <br /></td></tr>
+<tr class="separator:ab54068185efded8c31e0374f72097c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab80c224b9f2df0345330569e3d0ff2f0" id="r_ab80c224b9f2df0345330569e3d0ff2f0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#ab80c224b9f2df0345330569e3d0ff2f0">isEnabled</a> () const</td></tr>
+<tr class="memdesc:ab80c224b9f2df0345330569e3d0ff2f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when enabled.  <br /></td></tr>
+<tr class="separator:ab80c224b9f2df0345330569e3d0ff2f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a025abb771db93e764a60da18110ebc" id="r_a4a025abb771db93e764a60da18110ebc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a4a025abb771db93e764a60da18110ebc">reset</a> ()</td></tr>
+<tr class="memdesc:a4a025abb771db93e764a60da18110ebc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear smoothed yaw so the next apply starts from zero.  <br /></td></tr>
+<tr class="separator:a4a025abb771db93e764a60da18110ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6deb9dc69f0057d421c7a7c91cb32f97" id="r_a6deb9dc69f0057d421c7a7c91cb32f97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a6deb9dc69f0057d421c7a7c91cb32f97">apply</a> (<a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &amp;<a class="el" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>, float locomotionX, float locomotionZ, float animatedX, float animatedZ, float dt)</td></tr>
+<tr class="memdesc:a6deb9dc69f0057d421c7a7c91cb32f97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Warp a local pose so animated planar velocity aligns with locomotion velocity.  <br /></td></tr>
+<tr class="separator:a6deb9dc69f0057d421c7a7c91cb32f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86827a10d5b01671f58d4d24f2096d6b" id="r_a86827a10d5b01671f58d4d24f2096d6b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a86827a10d5b01671f58d4d24f2096d6b">getAppliedAngle</a> () const</td></tr>
+<tr class="memdesc:a86827a10d5b01671f58d4d24f2096d6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothed yaw last applied to a pose, radians, positive from +Z toward +X.  <br /></td></tr>
+<tr class="separator:a86827a10d5b01671f58d4d24f2096d6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad627fc510d41816a9b881929d8f2a104" id="r_ad627fc510d41816a9b881929d8f2a104"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#ad627fc510d41816a9b881929d8f2a104">getTargetAngle</a> () const</td></tr>
+<tr class="memdesc:ad627fc510d41816a9b881929d8f2a104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unsmoothed target yaw from the last successful apply, radians.  <br /></td></tr>
+<tr class="separator:ad627fc510d41816a9b881929d8f2a104"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31d008b685c188b715e20a3719daa3c7" id="r_a31d008b685c188b715e20a3719daa3c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a31d008b685c188b715e20a3719daa3c7">getSkeleton</a> () const</td></tr>
+<tr class="memdesc:a31d008b685c188b715e20a3719daa3c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed skeleton from the last successful configure, or null. @ownership Borrowed; ownership remains with the caller. @lifetime Valid until the next successful configure or destruction.  <br /></td></tr>
+<tr class="separator:a31d008b685c188b715e20a3719daa3c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada1041799620e2c7afd51d7d73f48e41" id="r_ada1041799620e2c7afd51d7d73f48e41"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#ada1041799620e2c7afd51d7d73f48e41">getRootBone</a> () const</td></tr>
+<tr class="memdesc:ada1041799620e2c7afd51d7d73f48e41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the root bone.  <br /></td></tr>
+<tr class="separator:ada1041799620e2c7afd51d7d73f48e41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d41510548dc825505d533fddb91c33c" id="r_a1d41510548dc825505d533fddb91c33c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#a1d41510548dc825505d533fddb91c33c">getSpineBoneCount</a> () const</td></tr>
+<tr class="memdesc:a1d41510548dc825505d533fddb91c33c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the spine bone count.  <br /></td></tr>
+<tr class="separator:a1d41510548dc825505d533fddb91c33c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7ad16e88795fed0c9a5927c4ce07ccf" id="r_aa7ad16e88795fed0c9a5927c4ce07ccf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html#aa7ad16e88795fed0c9a5927c4ce07ccf">getIkBoneCount</a> () const</td></tr>
+<tr class="memdesc:aa7ad16e88795fed0c9a5927c4ce07ccf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the ik bone count.  <br /></td></tr>
+<tr class="separator:aa7ad16e88795fed0c9a5927c4ce07ccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Planar orientation warp applied after motion matching, never fed back into search. </p>
+<p>Aligns an authored clip's planar displacement with a locomotion direction by adding world-Y rotation. Root receives <code>(1 - distributedAlpha) * angle</code>; remaining yaw is split equally across the configured spine chain. Optional IK bones restore their pre-warp world orientation so separate foot targets stay animation-owned. Magnitude above the angle threshold, or either planar speed below the minimum, targets zero instead of twisting through a pivot. Interpolation uses injected simulation time. @thread Owner simulation thread only; not reentrant; no callbacks. @ownership The warper owns interpolation state. The skeleton is borrowed and must outlive this object after a successful configure. Apply copies the input pose internally and publishes only on success; failed calls leave the caller's pose and prior warp unchanged. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8h_source.html">OrientationWarping.h</a> 第 <a class="el" href="OrientationWarping_8h_source.html#l00026">26</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac528704da0f6eab508716fafe8ac835c" name="ac528704da0f6eab508716fafe8ac835c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac528704da0f6eab508716fafe8ac835c">&#9670;&#160;</a></span>OrientationWarping() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::OrientationWarping::OrientationWarping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct an unconfigured warper with no borrowed skeleton. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2f6df03cfbaa53e12a32a759e08b4887" name="a2f6df03cfbaa53e12a32a759e08b4887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f6df03cfbaa53e12a32a759e08b4887">&#9670;&#160;</a></span>~OrientationWarping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::OrientationWarping::~OrientationWarping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release owned interpolation state; the borrowed skeleton is not accessed. </p>
+
+</div>
+</div>
+<a id="a0d60c40b9b909ca61c567c3c25db6bc1" name="a0d60c40b9b909ca61c567c3c25db6bc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d60c40b9b909ca61c567c3c25db6bc1">&#9670;&#160;</a></span>OrientationWarping() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::OrientationWarping::OrientationWarping </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1OrientationWarping.html">OrientationWarping</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6deb9dc69f0057d421c7a7c91cb32f97" name="a6deb9dc69f0057d421c7a7c91cb32f97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6deb9dc69f0057d421c7a7c91cb32f97">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::OrientationWarping::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>locomotionX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>locomotionZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>animatedX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>animatedZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Warp a local pose so animated planar velocity aligns with locomotion velocity. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pose</td><td>Local pose matching the configured skeleton; mutated only on success. </td></tr>
+    <tr><td class="paramname">locomotionX</td><td>Desired planar velocity X in the same space as the pose, metres/second. </td></tr>
+    <tr><td class="paramname">locomotionZ</td><td>Desired planar velocity Z in the same space as the pose, metres/second. </td></tr>
+    <tr><td class="paramname">animatedX</td><td>Authored root-motion velocity X from the unwarped pose, metres/second. </td></tr>
+    <tr><td class="paramname">animatedZ</td><td>Authored root-motion velocity Z from the unwarped pose, metres/second. </td></tr>
+    <tr><td class="paramname">dt</td><td>Finite nonnegative simulation step in seconds, at most one second. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, NoOp when disabled, or InvalidArgument leaving pose and warp unchanged.</dd></dl>
+<p>Values must be finite. Search must keep reading the unwarped matcher pose; copy it into a display pose before calling this. Deterministic for the same pose, directions, dt and prior smoothed angle within floating-point tolerance. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00239">angle</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00379">pose</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00249">qw</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00249">qx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00249">qy</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00249">qz</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00153">value</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ac394213683e73dd5701c588e351aba6e" name="ac394213683e73dd5701c588e351aba6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac394213683e73dd5701c588e351aba6e">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::OrientationWarping::configure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> &amp;&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rootBone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int &gt;&#160;</td>
+          <td class="paramname"><em>spineBones</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const int &gt;&#160;</td>
+          <td class="paramname"><em>ikBones</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically bind a skeleton and bone lists used by later apply calls. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">skeleton</td><td>Borrowed hierarchy; must outlive this warper until the next configure. </td></tr>
+    <tr><td class="paramname">rootBone</td><td>Index of the bone that receives the root share of the yaw. </td></tr>
+    <tr><td class="paramname">spineBones</td><td>Ordered parent-to-child chain that shares the remaining yaw; copied. </td></tr>
+    <tr><td class="paramname">ikBones</td><td>Bones whose world orientation is restored after the body warp; copied. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or InvalidArgument leaving the previous configuration and warp state.</dd></dl>
+<p>At most 32 spine bones and 16 IK bones. Indices must be valid, unique, and distinct from the root. Empty spine or IK lists are valid. No input pointers are retained. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00033">eve::animation::AnimSkeleton::getBoneCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a63fbdcfacb6cfd2dd7d118db9b83424c" name="a63fbdcfacb6cfd2dd7d118db9b83424c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63fbdcfacb6cfd2dd7d118db9b83424c">&#9670;&#160;</a></span>getAngleThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::OrientationWarping::getAngleThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a86827a10d5b01671f58d4d24f2096d6b" name="a86827a10d5b01671f58d4d24f2096d6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86827a10d5b01671f58d4d24f2096d6b">&#9670;&#160;</a></span>getAppliedAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::OrientationWarping::getAppliedAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smoothed yaw last applied to a pose, radians, positive from +Z toward +X. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a8544a2f6cfb0bd62aaabf46827598c18" name="a8544a2f6cfb0bd62aaabf46827598c18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8544a2f6cfb0bd62aaabf46827598c18">&#9670;&#160;</a></span>getDistributedAlpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::OrientationWarping::getDistributedAlpha </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aa7ad16e88795fed0c9a5927c4ce07ccf" name="aa7ad16e88795fed0c9a5927c4ce07ccf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7ad16e88795fed0c9a5927c4ce07ccf">&#9670;&#160;</a></span>getIkBoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::OrientationWarping::getIkBoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the ik bone count. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="add84c6bf5624a526775b49cb6bb04ebf" name="add84c6bf5624a526775b49cb6bb04ebf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add84c6bf5624a526775b49cb6bb04ebf">&#9670;&#160;</a></span>getMinRootMotionSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::OrientationWarping::getMinRootMotionSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ada1041799620e2c7afd51d7d73f48e41" name="ada1041799620e2c7afd51d7d73f48e41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada1041799620e2c7afd51d7d73f48e41">&#9670;&#160;</a></span>getRootBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::OrientationWarping::getRootBone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the root bone. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a4d823ca35dcd55cdcf19c7e5f4c2f651" name="a4d823ca35dcd55cdcf19c7e5f4c2f651"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d823ca35dcd55cdcf19c7e5f4c2f651">&#9670;&#160;</a></span>getRotationInterpSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::OrientationWarping::getRotationInterpSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a31d008b685c188b715e20a3719daa3c7" name="a31d008b685c188b715e20a3719daa3c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31d008b685c188b715e20a3719daa3c7">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::OrientationWarping::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrowed skeleton from the last successful configure, or null. @ownership Borrowed; ownership remains with the caller. @lifetime Valid until the next successful configure or destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a1d41510548dc825505d533fddb91c33c" name="a1d41510548dc825505d533fddb91c33c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d41510548dc825505d533fddb91c33c">&#9670;&#160;</a></span>getSpineBoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::OrientationWarping::getSpineBoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the spine bone count. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ad627fc510d41816a9b881929d8f2a104" name="ad627fc510d41816a9b881929d8f2a104"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad627fc510d41816a9b881929d8f2a104">&#9670;&#160;</a></span>getTargetAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::OrientationWarping::getTargetAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unsmoothed target yaw from the last successful apply, radians. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ab80c224b9f2df0345330569e3d0ff2f0" name="ab80c224b9f2df0345330569e3d0ff2f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab80c224b9f2df0345330569e3d0ff2f0">&#9670;&#160;</a></span>isEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::OrientationWarping::isEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a973be7f647ff12bde858a5430551993f" name="a973be7f647ff12bde858a5430551993f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a973be7f647ff12bde858a5430551993f">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1OrientationWarping.html">OrientationWarping</a> &amp; eve::animation::OrientationWarping::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1OrientationWarping.html">OrientationWarping</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a025abb771db93e764a60da18110ebc" name="a4a025abb771db93e764a60da18110ebc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a025abb771db93e764a60da18110ebc">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::OrientationWarping::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear smoothed yaw so the next apply starts from zero. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a91b41861f1b7c3091fd72be3297435fb" name="a91b41861f1b7c3091fd72be3297435fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91b41861f1b7c3091fd72be3297435fb">&#9670;&#160;</a></span>setAngleThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::OrientationWarping::setAngleThreshold </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the inclusive planar-angle magnitude that disables warping. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">radians</td><td>Finite value in (0, pi]. Default is 135 degrees. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or InvalidArgument without changing the previous threshold. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a2d849069987367e8395bb483f26d1f78" name="a2d849069987367e8395bb483f26d1f78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d849069987367e8395bb483f26d1f78">&#9670;&#160;</a></span>setDistributedAlpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::OrientationWarping::setDistributedAlpha </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>alpha</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set how much of the warp is distributed onto the spine chain. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>Finite value in [0, 1]. Zero applies the full yaw to the root. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or InvalidArgument without changing the previous alpha. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ab54068185efded8c31e0374f72097c14" name="ab54068185efded8c31e0374f72097c14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab54068185efded8c31e0374f72097c14">&#9670;&#160;</a></span>setEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::OrientationWarping::setEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable pose mutation. Disabled apply calls still recompute the target. </p>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a9516e8fd20c84b373215e1286a7b695f" name="a9516e8fd20c84b373215e1286a7b695f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9516e8fd20c84b373215e1286a7b695f">&#9670;&#160;</a></span>setMinRootMotionSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::OrientationWarping::setMinRootMotionSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>metresPerSecond</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the planar speed below which either direction is treated as stationary. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">metresPerSecond</td><td>Finite value in [0, 100]. Default is 0.1 m/s. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or InvalidArgument without changing the previous minimum. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aa24b880e1368cce1459add9ccd6a1156" name="aa24b880e1368cce1459add9ccd6a1156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa24b880e1368cce1459add9ccd6a1156">&#9670;&#160;</a></span>setRotationInterpSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::OrientationWarping::setRotationInterpSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set how quickly the applied yaw approaches the target, matching Unreal FInterpTo. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">speed</td><td>Finite value in [0, 100] (1/seconds). Zero snaps every apply. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or InvalidArgument without changing the previous speed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a> 第 <a class="el" href="OrientationWarping_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OrientationWarpingBindings_8cpp_source.html#l00030">eve::animation::exposeOrientationWarpingBindings()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="OrientationWarping_8h_source.html">OrientationWarping.h</a></li>
+<li>src/modules/animation/<a class="el" href="OrientationWarping_8cpp_source.html">OrientationWarping.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

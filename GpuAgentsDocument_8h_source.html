@@ -1,0 +1,343 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/gpuagents/editing/GpuAgentsDocument.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_bf63b7e9ed1d28c1335dd36e5b0f5062.html">gpuagents</a></li><li class="navelem"><a class="el" href="dir_12a7df508a883814fc635e2565b634bc.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GpuAgentsDocument.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GpuAgentsDocument_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditableTarget_8h.html">editing/EditableTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EditingAuthority_8h.html">editing/EditingAuthority.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProperty_8h.html">editing/EditingProperty.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="EffectProfile_8h.html">gpuagents/EffectProfile.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1gpuagents.html">eve::gpuagents</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>EffectBackend;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span>GpuAgentWorld;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}  <span class="comment">// namespace eve::gpuagents</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1gpuagents__editing.html">eve::gpuagents_editing</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a27db9e7eb9f9c784d1ea67f98f55d705">   19</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a>       = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#ab922fae00d25f17a4bd4c5c11badc4be">   20</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">DiagnosticSeverity</a> = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">editing::DiagnosticSeverity</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a9757829b9b4172998bb9e168f5f47967">   21</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>    = <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a41bee1533ac5040f5c68d7798b6d9ca9">   22</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Diagnostic.html">EditorDiagnostic</a>   = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Result.html">editing::Result</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a0701b584161e7edb92485b4c704707fc">   24</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>           = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">editing::Status</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a3544d9afe8ea0cc6f7639b81bf98695c">   25</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>            = <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">editing::Value</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a883c12bd95dd8c35c6f43089730068c4">   26</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> = <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#aef9194a5ed0a3c2ea4ce40755f199b4f">   27</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>        = <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a413e76d4b1812873907311aacc6c8b67">   28</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1IPropertyProvider.html">IPropertyProvider</a>      = <a class="code hl_class" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#ac3aeed6362350e8b0cb2b48b0692b581">   29</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>           = <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a6ffb9ff5f242ee0cdb94afae505b897b">   30</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a>     = <a class="code hl_struct" href="structeve_1_1editing_1_1PropertyReadResult.html">editing::PropertyReadResult</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#aef422333a4e2e707d64130efcf56bd60">   31</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a>         = <a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#af9ed02c6c8409f82ce15ca364f705e3b">   32</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a>        = <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">editing::PropertySetMode</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a80665ae1d79d69cb35fa51dee1226b7c">   33</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1gpuagents__editing.html#a80665ae1d79d69cb35fa51dee1226b7c">Revision</a>               = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a12de88551150ec7523e3e7937a8b5bf8">   34</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>                 = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#aec7d7662b2291d0802e8b560c029f336">   35</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>      = <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a455a947ae47c04afa032d55ae5eb236b">   36</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a>       = <a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpuagents__editing.html#a5fed7fdc0db186d6fa092a1045552a2b">   37</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a>               = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="};">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">   40</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> <a class="code hl_struct" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">GpuAgentsSettings</a> {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ad5460527562b26d6081c2eb657ed70b0">   41</a></span>    std::string  <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>                = <span class="stringliteral">&quot;Fish&quot;</span>;  </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a08eb80bb1c1f2b4eaa54c4161124544e">   42</a></span>    std::int64_t maxAgents           = 128;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a2a83d0cad4167817aa0a2c096bdfe208">   43</a></span>    <span class="keywordtype">double</span>       fixedDt             = 1.0 / 60.0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a052f34645523bbd1639ea0206592926a">   44</a></span>    <span class="keywordtype">double</span>       agentRadius         = 0.25;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a7e0cdd4f6caa9597441a23bb720e5da8">   45</a></span>    <span class="keywordtype">double</span>       obstaclePredictTime = 0.35;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a81023bebea9e0b2d0baec15b519e6015">   46</a></span>    std::int64_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>                = 1;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="comment">// Shared boid / life motion knobs (kind-specific consumers ignore unused fields).</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#abf61671b2dc32419b0948ce84e85651c">   49</a></span>    <span class="keywordtype">double</span>       separationRadius  = 1.5;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a613c73a01cd8666527355f0203a6b7b7">   50</a></span>    <span class="keywordtype">double</span>       cohesionRadius    = 4.0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a6800f29024d798dd41e2ec16144a3775">   51</a></span>    <span class="keywordtype">double</span>       alignmentRadius   = 3.0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a4fa81dd702e1a834fbbc6d13b0919a94">   52</a></span>    <span class="keywordtype">double</span>       separationWeight  = 1.4;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a0ebd18b9f669f0ad7cdf837b29c22c8b">   53</a></span>    <span class="keywordtype">double</span>       cohesionWeight    = 0.8;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a450372892cf87bb6a51fc229b7834435">   54</a></span>    <span class="keywordtype">double</span>       alignmentWeight   = 1.0;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a6658cc5bee1953ffa786521174b7e119">   55</a></span>    <span class="keywordtype">double</span>       maxSpeed          = 4.0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a92e3b2a536b6cde28ec2acda7dc8ee2e">   56</a></span>    <span class="keywordtype">double</span>       moveSpeed         = 1.8;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#abb2ab6fde84722df7a0f92462eb673f7">   57</a></span>    <span class="keywordtype">double</span>       depositStrength   = 0.35;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#aed9356c0e379f4de9f902deba1a5db16">   58</a></span>    <span class="keywordtype">double</span>       trailDecayRate    = 0.15;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ab75da5d81a72cd79d4be68ccf9eefec1">   59</a></span>    <span class="keywordtype">double</span>       diffusionRate     = 0.08;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a8a8053dc3c5bc6f524552724a3a973c5">   60</a></span>    <span class="keywordtype">double</span>       trailFollow       = 1.2;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a09eb36a69f3c52e34120f5f27163d0be">   61</a></span>    std::int64_t fieldResolution   = 64;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ad578d24c6256429d2c9fda593b8f2be1">   62</a></span>    <span class="keywordtype">double</span>       worldSize         = 32.0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ae2d4d352d0d9174616c68635ba4665cb">   63</a></span>    <span class="keywordtype">double</span>       originX           = -16.0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a11d8a4519301952f01c3f027ee47bef4">   64</a></span>    <span class="keywordtype">double</span>       originY           = 0.0;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#acd8b8fd07d89c7a8f37e32ba30a76f0b">   65</a></span>    <span class="keywordtype">double</span>       originZ           = -16.0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#aaf874bf0dfc9112346cee2ee49837103">   66</a></span>    <span class="keywordtype">double</span>       minSurfaceNormalZ = 0.35;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment">// LifeField material binding labels.</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ac724886986cd6e033e5bdcaadeb8c099">   69</a></span>    std::string lifeFieldSampler   = <span class="stringliteral">&quot;LifeFieldTexture&quot;</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ad23f45753abb184c712fe0bbe0376a00">   70</a></span>    std::string surfaceDataSampler = <span class="stringliteral">&quot;SurfaceDataTexture&quot;</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a8c53bad0cc587fc3894b44e33e3292b9">   73</a></span>    <span class="keyword">auto</span> <a class="code hl_function" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a8c53bad0cc587fc3894b44e33e3292b9">operator&lt;=&gt;</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">GpuAgentsSettings</a>&amp;) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> <a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a> <a class="code hl_function" href="namespaceeve_1_1gpuagents__editing.html#a0d45149ff41679b034682e1c44a7a1e2">gpuAgentsEffectSchema</a>();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> <a class="code hl_struct" href="structeve_1_1gpuagents_1_1EffectProfile.html">gpuagents::EffectProfile</a> <a class="code hl_function" href="namespaceeve_1_1gpuagents__editing.html#a7dd1efe7e25b522ee44a5a64a418c85f">toEffectProfile</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">GpuAgentsSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="};">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html">   83</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> <a class="code hl_class" href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html">GpuAgentsDocumentTarget</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1EditableTargetState.html">::eve::editing::EditableTargetState</a>,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                                                 <span class="keyword">public</span> <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                                                                 <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                                                 <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IPropertyProvider.html">IPropertyProvider</a> {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html">GpuAgentsDocumentTarget</a>(std::string <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html#a5ac3081436ec1d80a46f294518686028">   91</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a>         <a class="code hl_function" href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html#a5ac3081436ec1d80a46f294518686028">targetId</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a>(id_); }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> describe() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">void</span>*                         queryCapability(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a>&amp; capability) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a>            applyDomainOperation(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Revision&gt;</a>    currentRevision(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a>                schema(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a>            read(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DomainOperation&gt;</a> makeSet(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>,</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                                          <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a> mode) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DomainOperation&gt;</a> makeReset(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                                            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp;      <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html#a53458bb39e34d41963c4ff5d2af52ff6">  117</a></span>    <a class="code hl_struct" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">GpuAgentsSettings</a> <a class="code hl_function" href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html#a53458bb39e34d41963c4ff5d2af52ff6">settings</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> settings_; }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    std::vector&lt;EditorDiagnostic&gt; validate() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> snapshotValue() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> loadSnapshot(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; snapshot);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">bool</span>              matches(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp; selection) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    std::string       id_;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <a class="code hl_struct" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">GpuAgentsSettings</a> settings_;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>};</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="foldopen" id="foldopen00136" data-start="{" data-end="};">
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents__editing_1_1GpuAgentsRuntimeApplier.html">  136</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> <a class="code hl_class" href="classeve_1_1gpuagents__editing_1_1GpuAgentsRuntimeApplier.html">GpuAgentsRuntimeApplier</a> {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    [[nodiscard(<span class="stringliteral">&quot;check runtime apply&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> apply(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html">GpuAgentsDocumentTarget</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>,</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                                                                  <a class="code hl_class" href="classeve_1_1gpuagents_1_1EffectBackend.html">gpuagents::EffectBackend</a>*      backend,</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                                                                  <a class="code hl_class" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html">gpuagents::GpuAgentWorld</a>*      <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>};</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}  <span class="comment">// namespace eve::gpuagents_editing</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00151">ActionNotifyRegistry.cpp:151</a></div></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a1d8330996490721964918f24590a398b"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a></div><div class="ttdeci">ActionParameterOperation operation</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00152">ActionNotifyRegistry.cpp:152</a></div></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00153">ActionNotifyRegistry.cpp:153</a></div></div>
+<div class="ttc" id="aEditableTarget_8h_html"><div class="ttname"><a href="EditableTarget_8h.html">EditableTarget.h</a></div></div>
+<div class="ttc" id="aEditingAuthority_8h_html"><div class="ttname"><a href="EditingAuthority_8h.html">EditingAuthority.h</a></div></div>
+<div class="ttc" id="aEditingProperty_8h_html"><div class="ttname"><a href="EditingProperty_8h.html">EditingProperty.h</a></div></div>
+<div class="ttc" id="aEffectProfile_8h_html"><div class="ttname"><a href="EffectProfile_8h.html">EffectProfile.h</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_af85ff84ca379cb803d64a467fc5faf5a"><div class="ttname"><a href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a></div><div class="ttdeci">#define EVENGINE_API_ORCHESTRATION</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00111">Export.h:111</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00116">PhysicsCapabilities.cpp:116</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00110">PlayHost.cpp:110</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00807">PointSet.cpp:807</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00314">Identity.h:314</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1EditableTargetState_html"><div class="ttname"><a href="classeve_1_1editing_1_1EditableTargetState.html">eve::editing::EditableTargetState</a></div><div class="ttdoc">Dirty region and revision shared by every editable document target.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00154">EditableTarget.h:154</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></div><div class="ttdoc">Editable-target capability that applies owning domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00011">EditingTargetOperations.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdoc">IEditableTarget public API.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00048">EditableTarget.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IPropertyProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></div><div class="ttdoc">UI-independent property access for an immutable selection snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00139">EditingProperty.h:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></div><div class="ttdoc">Dotted property path (layout.size) compared and persisted as text.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00078">EditingIds.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00019">EditingValue.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1EffectBackend_html"><div class="ttname"><a href="classeve_1_1gpuagents_1_1EffectBackend.html">eve::gpuagents::EffectBackend</a></div><div class="ttdoc">Binds an EffectProfile to a GpuAgentSimulation and optional renderer.</div><div class="ttdef"><b>Definition</b> <a href="EffectBackend_8h_source.html#l00019">EffectBackend.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1GpuAgentWorld_html"><div class="ttname"><a href="classeve_1_1gpuagents_1_1GpuAgentWorld.html">eve::gpuagents::GpuAgentWorld</a></div><div class="ttdoc">World-level registry for GPU agent simulations and environment semantics.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentWorld_8h_source.html#l00027">GpuAgentWorld.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget_html"><div class="ttname"><a href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html">eve::gpuagents_editing::GpuAgentsDocumentTarget</a></div><div class="ttdoc">Reversible document for GPU Agents effect authoring.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentsDocument_8h_source.html#l00083">GpuAgentsDocument.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget_html_a53458bb39e34d41963c4ff5d2af52ff6"><div class="ttname"><a href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html#a53458bb39e34d41963c4ff5d2af52ff6">eve::gpuagents_editing::GpuAgentsDocumentTarget::settings</a></div><div class="ttdeci">GpuAgentsSettings settings() const</div><div class="ttdoc">Immutable authored settings.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentsDocument_8h_source.html#l00117">GpuAgentsDocument.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget_html_a5ac3081436ec1d80a46f294518686028"><div class="ttname"><a href="classeve_1_1gpuagents__editing_1_1GpuAgentsDocumentTarget.html#a5ac3081436ec1d80a46f294518686028">eve::gpuagents_editing::GpuAgentsDocumentTarget::targetId</a></div><div class="ttdeci">TargetId targetId() const override</div><div class="ttdoc">Target id.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentsDocument_8h_source.html#l00091">GpuAgentsDocument.h:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents__editing_1_1GpuAgentsRuntimeApplier_html"><div class="ttname"><a href="classeve_1_1gpuagents__editing_1_1GpuAgentsRuntimeApplier.html">eve::gpuagents_editing::GpuAgentsRuntimeApplier</a></div><div class="ttdoc">Optional bridge projecting a validated document into live World/Backend. @ownership Borrowed world/ba...</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentsDocument_8h_source.html#l00136">GpuAgentsDocument.h:136</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a011e7c6c3a26ea959d34a63beca22c19"><div class="ttname"><a href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">eve::editing::DiagnosticSeverity</a></div><div class="ttdeci">eve::Severity DiagnosticSeverity</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00015">EditingResult.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2b0f525a0b733bb08ccf8109b114213b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a></div><div class="ttdeci">StrongId&lt; TargetIdTag &gt; TargetId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00016">EditingResult.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00060">EditingIds.h:60</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a642f65bf61b271dc4b599f4069b93060"><div class="ttname"><a href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">eve::editing::PropertySetMode</a></div><div class="ttdeci">PropertySetMode</div><div class="ttdoc">PropertySetMode public API.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00136">EditingProperty.h:136</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a80e450b5eb4cf0da7c013972cc572568"><div class="ttname"><a href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">eve::editing::CapabilityId</a></div><div class="ttdeci">StrongId&lt; CapabilityIdTag &gt; CapabilityId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00061">EditingIds.h:61</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents__editing_html"><div class="ttname"><a href="namespaceeve_1_1gpuagents__editing.html">eve::gpuagents_editing</a></div><div class="ttdef"><b>Definition</b> <a href="GpuAgentsDocument_8cpp_source.html#l00010">GpuAgentsDocument.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents__editing_html_a0d45149ff41679b034682e1c44a7a1e2"><div class="ttname"><a href="namespaceeve_1_1gpuagents__editing.html#a0d45149ff41679b034682e1c44a7a1e2">eve::gpuagents_editing::gpuAgentsEffectSchema</a></div><div class="ttdeci">PropertySchema gpuAgentsEffectSchema()</div><div class="ttdoc">Build the UI-independent PropertySchema for gpuagents:effect-document v1.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentsDocument_8cpp_source.html#l00176">GpuAgentsDocument.cpp:176</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents__editing_html_a7dd1efe7e25b522ee44a5a64a418c85f"><div class="ttname"><a href="namespaceeve_1_1gpuagents__editing.html#a7dd1efe7e25b522ee44a5a64a418c85f">eve::gpuagents_editing::toEffectProfile</a></div><div class="ttdeci">gpuagents::EffectProfile toEffectProfile(const GpuAgentsSettings &amp;settings)</div><div class="ttdoc">Convert authoring settings into a runtime EffectProfile.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentsDocument_8cpp_source.html#l00212">GpuAgentsDocument.cpp:212</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents__editing_html_a80665ae1d79d69cb35fa51dee1226b7c"><div class="ttname"><a href="namespaceeve_1_1gpuagents__editing.html#a80665ae1d79d69cb35fa51dee1226b7c">eve::gpuagents_editing::Revision</a></div><div class="ttdeci">editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentsDocument_8h_source.html#l00033">GpuAgentsDocument.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_html"><div class="ttname"><a href="namespaceeve_1_1gpuagents.html">eve::gpuagents</a></div><div class="ttdef"><b>Definition</b> <a href="AgentInstanceRenderer_8cpp_source.html#l00005">AgentInstanceRenderer.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdoc">Stable severity of a diagnostic, independent of its display text.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00020">Diagnostic.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdoc">DomainOperation public API.</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00044">EditingProtocol.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertyReadResult_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertyReadResult.html">eve::editing::PropertyReadResult</a></div><div class="ttdoc">PropertyReadResult public API.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00129">EditingProperty.h:129</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertySchema_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertySchema.html">eve::editing::PropertySchema</a></div><div class="ttdoc">EVENGINE_API_PLATFORM public API.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00117">EditingProperty.h:117</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html">eve::editing::SelectionSnapshot</a></div><div class="ttdoc">SelectionSnapshot public API.</div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00020">EditingSelection.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TargetDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1TargetDescriptor.html">eve::editing::TargetDescriptor</a></div><div class="ttdoc">Stable discovery metadata exposed by every editable target.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00039">EditableTarget.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EffectProfile_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EffectProfile.html">eve::gpuagents::EffectProfile</a></div><div class="ttdoc">Type-erased profile bundle owned by an EffectBackend.</div><div class="ttdef"><b>Definition</b> <a href="EffectProfile_8h_source.html#l00130">EffectProfile.h:130</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents__editing_1_1GpuAgentsSettings_html"><div class="ttname"><a href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">eve::gpuagents_editing::GpuAgentsSettings</a></div><div class="ttdoc">Authoring values for one GPU Agents effect document.</div><div class="ttdef"><b>Definition</b> <a href="GpuAgentsDocument_8h_source.html#l00040">GpuAgentsDocument.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents__editing_1_1GpuAgentsSettings_html_a8c53bad0cc587fc3894b44e33e3292b9"><div class="ttname"><a href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a8c53bad0cc587fc3894b44e33e3292b9">eve::gpuagents_editing::GpuAgentsSettings::operator&lt;=&gt;</a></div><div class="ttdeci">auto operator&lt;=&gt;(const GpuAgentsSettings &amp;) const =default</div><div class="ttdoc">Operator &lt;=&gt;.</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

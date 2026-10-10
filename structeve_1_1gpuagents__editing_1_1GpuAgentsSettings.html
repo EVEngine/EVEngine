@@ -1,0 +1,698 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpuagents_editing::GpuAgentsSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpuagents__editing.html">gpuagents_editing</a></li><li class="navelem"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">GpuAgentsSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpuagents_editing::GpuAgentsSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authoring values for one GPU Agents effect document.  
+ <a href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8c53bad0cc587fc3894b44e33e3292b9" id="r_a8c53bad0cc587fc3894b44e33e3292b9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a8c53bad0cc587fc3894b44e33e3292b9">operator&lt;=&gt;</a> (const <a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">GpuAgentsSettings</a> &amp;) const =default</td></tr>
+<tr class="memdesc:a8c53bad0cc587fc3894b44e33e3292b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator &lt;=&gt;.  <br /></td></tr>
+<tr class="separator:a8c53bad0cc587fc3894b44e33e3292b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad5460527562b26d6081c2eb657ed70b0" id="r_ad5460527562b26d6081c2eb657ed70b0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ad5460527562b26d6081c2eb657ed70b0">kind</a> = &quot;Fish&quot;</td></tr>
+<tr class="memdesc:ad5460527562b26d6081c2eb657ed70b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fish | LifeNetwork | Bird | Petal  <br /></td></tr>
+<tr class="separator:ad5460527562b26d6081c2eb657ed70b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08eb80bb1c1f2b4eaa54c4161124544e" id="r_a08eb80bb1c1f2b4eaa54c4161124544e"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a08eb80bb1c1f2b4eaa54c4161124544e">maxAgents</a> = 128</td></tr>
+<tr class="separator:a08eb80bb1c1f2b4eaa54c4161124544e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a83d0cad4167817aa0a2c096bdfe208" id="r_a2a83d0cad4167817aa0a2c096bdfe208"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a2a83d0cad4167817aa0a2c096bdfe208">fixedDt</a> = 1.0 / 60.0</td></tr>
+<tr class="separator:a2a83d0cad4167817aa0a2c096bdfe208"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a052f34645523bbd1639ea0206592926a" id="r_a052f34645523bbd1639ea0206592926a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a052f34645523bbd1639ea0206592926a">agentRadius</a> = 0.25</td></tr>
+<tr class="separator:a052f34645523bbd1639ea0206592926a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e0cdd4f6caa9597441a23bb720e5da8" id="r_a7e0cdd4f6caa9597441a23bb720e5da8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a7e0cdd4f6caa9597441a23bb720e5da8">obstaclePredictTime</a> = 0.35</td></tr>
+<tr class="separator:a7e0cdd4f6caa9597441a23bb720e5da8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81023bebea9e0b2d0baec15b519e6015" id="r_a81023bebea9e0b2d0baec15b519e6015"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a81023bebea9e0b2d0baec15b519e6015">seed</a> = 1</td></tr>
+<tr class="separator:a81023bebea9e0b2d0baec15b519e6015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf61671b2dc32419b0948ce84e85651c" id="r_abf61671b2dc32419b0948ce84e85651c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#abf61671b2dc32419b0948ce84e85651c">separationRadius</a> = 1.5</td></tr>
+<tr class="separator:abf61671b2dc32419b0948ce84e85651c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a613c73a01cd8666527355f0203a6b7b7" id="r_a613c73a01cd8666527355f0203a6b7b7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a613c73a01cd8666527355f0203a6b7b7">cohesionRadius</a> = 4.0</td></tr>
+<tr class="separator:a613c73a01cd8666527355f0203a6b7b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6800f29024d798dd41e2ec16144a3775" id="r_a6800f29024d798dd41e2ec16144a3775"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a6800f29024d798dd41e2ec16144a3775">alignmentRadius</a> = 3.0</td></tr>
+<tr class="separator:a6800f29024d798dd41e2ec16144a3775"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fa81dd702e1a834fbbc6d13b0919a94" id="r_a4fa81dd702e1a834fbbc6d13b0919a94"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a4fa81dd702e1a834fbbc6d13b0919a94">separationWeight</a> = 1.4</td></tr>
+<tr class="separator:a4fa81dd702e1a834fbbc6d13b0919a94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ebd18b9f669f0ad7cdf837b29c22c8b" id="r_a0ebd18b9f669f0ad7cdf837b29c22c8b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a0ebd18b9f669f0ad7cdf837b29c22c8b">cohesionWeight</a> = 0.8</td></tr>
+<tr class="separator:a0ebd18b9f669f0ad7cdf837b29c22c8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a450372892cf87bb6a51fc229b7834435" id="r_a450372892cf87bb6a51fc229b7834435"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a450372892cf87bb6a51fc229b7834435">alignmentWeight</a> = 1.0</td></tr>
+<tr class="separator:a450372892cf87bb6a51fc229b7834435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6658cc5bee1953ffa786521174b7e119" id="r_a6658cc5bee1953ffa786521174b7e119"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a6658cc5bee1953ffa786521174b7e119">maxSpeed</a> = 4.0</td></tr>
+<tr class="separator:a6658cc5bee1953ffa786521174b7e119"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92e3b2a536b6cde28ec2acda7dc8ee2e" id="r_a92e3b2a536b6cde28ec2acda7dc8ee2e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a92e3b2a536b6cde28ec2acda7dc8ee2e">moveSpeed</a> = 1.8</td></tr>
+<tr class="separator:a92e3b2a536b6cde28ec2acda7dc8ee2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb2ab6fde84722df7a0f92462eb673f7" id="r_abb2ab6fde84722df7a0f92462eb673f7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#abb2ab6fde84722df7a0f92462eb673f7">depositStrength</a> = 0.35</td></tr>
+<tr class="separator:abb2ab6fde84722df7a0f92462eb673f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed9356c0e379f4de9f902deba1a5db16" id="r_aed9356c0e379f4de9f902deba1a5db16"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#aed9356c0e379f4de9f902deba1a5db16">trailDecayRate</a> = 0.15</td></tr>
+<tr class="separator:aed9356c0e379f4de9f902deba1a5db16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab75da5d81a72cd79d4be68ccf9eefec1" id="r_ab75da5d81a72cd79d4be68ccf9eefec1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ab75da5d81a72cd79d4be68ccf9eefec1">diffusionRate</a> = 0.08</td></tr>
+<tr class="separator:ab75da5d81a72cd79d4be68ccf9eefec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a8053dc3c5bc6f524552724a3a973c5" id="r_a8a8053dc3c5bc6f524552724a3a973c5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a8a8053dc3c5bc6f524552724a3a973c5">trailFollow</a> = 1.2</td></tr>
+<tr class="separator:a8a8053dc3c5bc6f524552724a3a973c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09eb36a69f3c52e34120f5f27163d0be" id="r_a09eb36a69f3c52e34120f5f27163d0be"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a09eb36a69f3c52e34120f5f27163d0be">fieldResolution</a> = 64</td></tr>
+<tr class="separator:a09eb36a69f3c52e34120f5f27163d0be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad578d24c6256429d2c9fda593b8f2be1" id="r_ad578d24c6256429d2c9fda593b8f2be1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ad578d24c6256429d2c9fda593b8f2be1">worldSize</a> = 32.0</td></tr>
+<tr class="separator:ad578d24c6256429d2c9fda593b8f2be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2d4d352d0d9174616c68635ba4665cb" id="r_ae2d4d352d0d9174616c68635ba4665cb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ae2d4d352d0d9174616c68635ba4665cb">originX</a> = -16.0</td></tr>
+<tr class="separator:ae2d4d352d0d9174616c68635ba4665cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11d8a4519301952f01c3f027ee47bef4" id="r_a11d8a4519301952f01c3f027ee47bef4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#a11d8a4519301952f01c3f027ee47bef4">originY</a> = 0.0</td></tr>
+<tr class="separator:a11d8a4519301952f01c3f027ee47bef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd8b8fd07d89c7a8f37e32ba30a76f0b" id="r_acd8b8fd07d89c7a8f37e32ba30a76f0b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#acd8b8fd07d89c7a8f37e32ba30a76f0b">originZ</a> = -16.0</td></tr>
+<tr class="separator:acd8b8fd07d89c7a8f37e32ba30a76f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf874bf0dfc9112346cee2ee49837103" id="r_aaf874bf0dfc9112346cee2ee49837103"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#aaf874bf0dfc9112346cee2ee49837103">minSurfaceNormalZ</a> = 0.35</td></tr>
+<tr class="separator:aaf874bf0dfc9112346cee2ee49837103"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac724886986cd6e033e5bdcaadeb8c099" id="r_ac724886986cd6e033e5bdcaadeb8c099"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ac724886986cd6e033e5bdcaadeb8c099">lifeFieldSampler</a> = &quot;LifeFieldTexture&quot;</td></tr>
+<tr class="separator:ac724886986cd6e033e5bdcaadeb8c099"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad23f45753abb184c712fe0bbe0376a00" id="r_ad23f45753abb184c712fe0bbe0376a00"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html#ad23f45753abb184c712fe0bbe0376a00">surfaceDataSampler</a> = &quot;SurfaceDataTexture&quot;</td></tr>
+<tr class="separator:ad23f45753abb184c712fe0bbe0376a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authoring values for one GPU Agents effect document. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00040">40</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a8c53bad0cc587fc3894b44e33e3292b9" name="a8c53bad0cc587fc3894b44e33e3292b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c53bad0cc587fc3894b44e33e3292b9">&#9670;&#160;</a></span>operator&lt;=&gt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto eve::gpuagents_editing::GpuAgentsSettings::operator&lt;=&gt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1gpuagents__editing_1_1GpuAgentsSettings.html">GpuAgentsSettings</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Operator &lt;=&gt;. </p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a052f34645523bbd1639ea0206592926a" name="a052f34645523bbd1639ea0206592926a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a052f34645523bbd1639ea0206592926a">&#9670;&#160;</a></span>agentRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::agentRadius = 0.25</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6800f29024d798dd41e2ec16144a3775" name="a6800f29024d798dd41e2ec16144a3775"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6800f29024d798dd41e2ec16144a3775">&#9670;&#160;</a></span>alignmentRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::alignmentRadius = 3.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a450372892cf87bb6a51fc229b7834435" name="a450372892cf87bb6a51fc229b7834435"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a450372892cf87bb6a51fc229b7834435">&#9670;&#160;</a></span>alignmentWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::alignmentWeight = 1.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a613c73a01cd8666527355f0203a6b7b7" name="a613c73a01cd8666527355f0203a6b7b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a613c73a01cd8666527355f0203a6b7b7">&#9670;&#160;</a></span>cohesionRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::cohesionRadius = 4.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ebd18b9f669f0ad7cdf837b29c22c8b" name="a0ebd18b9f669f0ad7cdf837b29c22c8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ebd18b9f669f0ad7cdf837b29c22c8b">&#9670;&#160;</a></span>cohesionWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::cohesionWeight = 0.8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb2ab6fde84722df7a0f92462eb673f7" name="abb2ab6fde84722df7a0f92462eb673f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb2ab6fde84722df7a0f92462eb673f7">&#9670;&#160;</a></span>depositStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::depositStrength = 0.35</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab75da5d81a72cd79d4be68ccf9eefec1" name="ab75da5d81a72cd79d4be68ccf9eefec1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab75da5d81a72cd79d4be68ccf9eefec1">&#9670;&#160;</a></span>diffusionRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::diffusionRate = 0.08</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a09eb36a69f3c52e34120f5f27163d0be" name="a09eb36a69f3c52e34120f5f27163d0be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09eb36a69f3c52e34120f5f27163d0be">&#9670;&#160;</a></span>fieldResolution</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::gpuagents_editing::GpuAgentsSettings::fieldResolution = 64</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2a83d0cad4167817aa0a2c096bdfe208" name="a2a83d0cad4167817aa0a2c096bdfe208"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a83d0cad4167817aa0a2c096bdfe208">&#9670;&#160;</a></span>fixedDt</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::fixedDt = 1.0 / 60.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad5460527562b26d6081c2eb657ed70b0" name="ad5460527562b26d6081c2eb657ed70b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5460527562b26d6081c2eb657ed70b0">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::gpuagents_editing::GpuAgentsSettings::kind = &quot;Fish&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fish | LifeNetwork | Bird | Petal </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac724886986cd6e033e5bdcaadeb8c099" name="ac724886986cd6e033e5bdcaadeb8c099"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac724886986cd6e033e5bdcaadeb8c099">&#9670;&#160;</a></span>lifeFieldSampler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::gpuagents_editing::GpuAgentsSettings::lifeFieldSampler = &quot;LifeFieldTexture&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a08eb80bb1c1f2b4eaa54c4161124544e" name="a08eb80bb1c1f2b4eaa54c4161124544e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08eb80bb1c1f2b4eaa54c4161124544e">&#9670;&#160;</a></span>maxAgents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::gpuagents_editing::GpuAgentsSettings::maxAgents = 128</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6658cc5bee1953ffa786521174b7e119" name="a6658cc5bee1953ffa786521174b7e119"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6658cc5bee1953ffa786521174b7e119">&#9670;&#160;</a></span>maxSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::maxSpeed = 4.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf874bf0dfc9112346cee2ee49837103" name="aaf874bf0dfc9112346cee2ee49837103"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf874bf0dfc9112346cee2ee49837103">&#9670;&#160;</a></span>minSurfaceNormalZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::minSurfaceNormalZ = 0.35</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92e3b2a536b6cde28ec2acda7dc8ee2e" name="a92e3b2a536b6cde28ec2acda7dc8ee2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92e3b2a536b6cde28ec2acda7dc8ee2e">&#9670;&#160;</a></span>moveSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::moveSpeed = 1.8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e0cdd4f6caa9597441a23bb720e5da8" name="a7e0cdd4f6caa9597441a23bb720e5da8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e0cdd4f6caa9597441a23bb720e5da8">&#9670;&#160;</a></span>obstaclePredictTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::obstaclePredictTime = 0.35</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2d4d352d0d9174616c68635ba4665cb" name="ae2d4d352d0d9174616c68635ba4665cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2d4d352d0d9174616c68635ba4665cb">&#9670;&#160;</a></span>originX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::originX = -16.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a11d8a4519301952f01c3f027ee47bef4" name="a11d8a4519301952f01c3f027ee47bef4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11d8a4519301952f01c3f027ee47bef4">&#9670;&#160;</a></span>originY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::originY = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd8b8fd07d89c7a8f37e32ba30a76f0b" name="acd8b8fd07d89c7a8f37e32ba30a76f0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd8b8fd07d89c7a8f37e32ba30a76f0b">&#9670;&#160;</a></span>originZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::originZ = -16.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a81023bebea9e0b2d0baec15b519e6015" name="a81023bebea9e0b2d0baec15b519e6015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81023bebea9e0b2d0baec15b519e6015">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::gpuagents_editing::GpuAgentsSettings::seed = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abf61671b2dc32419b0948ce84e85651c" name="abf61671b2dc32419b0948ce84e85651c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf61671b2dc32419b0948ce84e85651c">&#9670;&#160;</a></span>separationRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::separationRadius = 1.5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4fa81dd702e1a834fbbc6d13b0919a94" name="a4fa81dd702e1a834fbbc6d13b0919a94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fa81dd702e1a834fbbc6d13b0919a94">&#9670;&#160;</a></span>separationWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::separationWeight = 1.4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad23f45753abb184c712fe0bbe0376a00" name="ad23f45753abb184c712fe0bbe0376a00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad23f45753abb184c712fe0bbe0376a00">&#9670;&#160;</a></span>surfaceDataSampler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::gpuagents_editing::GpuAgentsSettings::surfaceDataSampler = &quot;SurfaceDataTexture&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed9356c0e379f4de9f902deba1a5db16" name="aed9356c0e379f4de9f902deba1a5db16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed9356c0e379f4de9f902deba1a5db16">&#9670;&#160;</a></span>trailDecayRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::trailDecayRate = 0.15</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8a8053dc3c5bc6f524552724a3a973c5" name="a8a8053dc3c5bc6f524552724a3a973c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a8053dc3c5bc6f524552724a3a973c5">&#9670;&#160;</a></span>trailFollow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::trailFollow = 1.2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad578d24c6256429d2c9fda593b8f2be1" name="ad578d24c6256429d2c9fda593b8f2be1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad578d24c6256429d2c9fda593b8f2be1">&#9670;&#160;</a></span>worldSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::gpuagents_editing::GpuAgentsSettings::worldSize = 32.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a> 第 <a class="el" href="GpuAgentsDocument_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/gpuagents/editing/<a class="el" href="GpuAgentsDocument_8h_source.html">GpuAgentsDocument.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

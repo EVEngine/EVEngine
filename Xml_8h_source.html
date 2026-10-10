@@ -1,0 +1,267 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/Xml.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Xml.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Xml_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// Lightweight read-only XML facade for config / tileset documents (e.g. Tiled</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// TSX). Self-contained recursive-descent parser — no Poco — so EVCommon stays</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// dependency-free and modules that only need attribute-oriented XML do not pull</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// the full Poco DOM stack. Writing XML is out of scope; use data::XmlDocument</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// (Poco) only for legacy mutable encode/decode round-trips.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">//</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// Accessors never throw: a missing attribute or tag yields the supplied</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// default (or an empty Element).</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1xml.html">eve::xml</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">struct </span>Node;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>Document;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Element.html">   29</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1xml_1_1Element.html">Element</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Element.html#a24f18d84d3a2b8b8c725c2565d697512">   31</a></span>    <a class="code hl_function" href="classeve_1_1xml_1_1Element.html#a24f18d84d3a2b8b8c725c2565d697512">Element</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Element.html#a064861aa9dd0dfbfc4cd4b0c036092e1">   34</a></span>    <span class="keyword">explicit</span> <span class="keyword">operator</span> bool()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> node_ != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Element.html#a2b4d35ef70a263504724dac94f7a4e35">   36</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1xml_1_1Element.html#a2b4d35ef70a263504724dac94f7a4e35">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1xml_1_1Element.html">Element</a>&amp; other)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> node_ == other.node_; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Element.html#aa5a04f3f32b51b2cc7f4084185a9a0f6">   37</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1xml_1_1Element.html#aa5a04f3f32b51b2cc7f4084185a9a0f6">operator!=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1xml_1_1Element.html">Element</a>&amp; other)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> node_ != other.node_; }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::string tagName() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_class" href="classeve_1_1xml_1_1Element.html">Element</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span>        hasAttribute(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::string getAttribute(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> std::string&amp; fallback = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">int</span>         getIntAttribute(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">int</span> fallback = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    std::vector&lt;Element&gt; <a class="code hl_variable" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a> = <span class="keyword">nullptr</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::vector&lt;Element&gt; elementsByTag(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Element.html#a883538034e58fc5c0de7d4e4cab3cef7">   62</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1xml_1_1Element.html">Element</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1xml_1_1Node.html">Node</a>* <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>) : node_(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>) {}</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1xml_1_1Node.html">Node</a>* node_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="};">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Document.html">   70</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Document.html#ac2029c9bb37e0ab2494a74cc42b18902">   72</a></span>    <a class="code hl_function" href="classeve_1_1xml_1_1Document.html#ac2029c9bb37e0ab2494a74cc42b18902">Document</a>();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Document.html#a3b5950836feab0d090eb7e586693d732">   73</a></span>    <a class="code hl_function" href="classeve_1_1xml_1_1Document.html#a3b5950836feab0d090eb7e586693d732">~Document</a>();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Document.html#aeabde745db424f1353f01d06b6facc90">   74</a></span>    <a class="code hl_function" href="classeve_1_1xml_1_1Document.html#aeabde745db424f1353f01d06b6facc90">Document</a>(<a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a>&amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Document.html#afd09a8987a3c12b00d4750ab8da09910">   75</a></span>    <a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a>&amp; operator=(<a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a>&amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Document.html#a3f4cf75138a041dae38efb238fe12920">   76</a></span>    <a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a>(const <a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a>&amp;)            = delete;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Document.html#a990a9db84d6dd1e4e8af3bcb71c75582">   77</a></span>    <a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a>&amp; operator=(const <a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a>&amp;) = delete;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    static <a class="code hl_class" href="classeve_1_1xml_1_1Document.html">Document</a> parse(const <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&amp; <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>, <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>* <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keywordtype">nullptr</span>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Document.html#ae0a001121545408cbdac67ae6afabbdc">   85</a></span>    <span class="keywordtype">bool</span>    <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> root_ != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1xml_1_1Document.html#a66853009e17bea5fa66beb527065ac33">   86</a></span>    <a class="code hl_class" href="classeve_1_1xml_1_1Element.html">Element</a> <a class="code hl_function" href="classeve_1_1xml_1_1Document.html#a66853009e17bea5fa66beb527065ac33">root</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1xml_1_1Element.html">Element</a>(root_.get()); }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    std::unique_ptr&lt;Node&gt; root_;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>};</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}  <span class="comment">// namespace eve::xml</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_ae5a367e308f2a54eea84358fbc9bee47"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a></div><div class="ttdeci">std::int32_t parent</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00014">LegacyAnimationImporter.cpp:14</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00040">McpScriptTools.cpp:40</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00430">McpServer.cpp:430</a></div></div>
+<div class="ttc" id="aModuleAssembly_8cpp_html_afdc4d55537832536f73f894f88509864"><div class="ttname"><a href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a></div><div class="ttdeci">const std::string * tag</div><div class="ttdef"><b>Definition</b> <a href="ModuleAssembly_8cpp_source.html#l00083">ModuleAssembly.cpp:83</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aRoadTraffic_8cpp_html_a01b9cdd37a32341c192e0756617f9dc0"><div class="ttname"><a href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a></div><div class="ttdeci">const RoadNode * node</div><div class="ttdef"><b>Definition</b> <a href="RoadTraffic_8cpp_source.html#l00015">RoadTraffic.cpp:15</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a93ed9b546e7fadad14615c5ef0065277"><div class="ttname"><a href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a></div><div class="ttdeci">int children</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00295">TreeMesh.cpp:295</a></div></div>
+<div class="ttc" id="aclasseve_1_1xml_1_1Document_html"><div class="ttname"><a href="classeve_1_1xml_1_1Document.html">eve::xml::Document</a></div><div class="ttdef"><b>Definition</b> <a href="Xml_8h_source.html#l00070">Xml.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1xml_1_1Document_html_a3b5950836feab0d090eb7e586693d732"><div class="ttname"><a href="classeve_1_1xml_1_1Document.html#a3b5950836feab0d090eb7e586693d732">eve::xml::Document::~Document</a></div><div class="ttdeci">~Document()</div></div>
+<div class="ttc" id="aclasseve_1_1xml_1_1Document_html_a66853009e17bea5fa66beb527065ac33"><div class="ttname"><a href="classeve_1_1xml_1_1Document.html#a66853009e17bea5fa66beb527065ac33">eve::xml::Document::root</a></div><div class="ttdeci">Element root() const</div><div class="ttdef"><b>Definition</b> <a href="Xml_8h_source.html#l00086">Xml.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1xml_1_1Document_html_ac2029c9bb37e0ab2494a74cc42b18902"><div class="ttname"><a href="classeve_1_1xml_1_1Document.html#ac2029c9bb37e0ab2494a74cc42b18902">eve::xml::Document::Document</a></div><div class="ttdeci">Document()</div></div>
+<div class="ttc" id="aclasseve_1_1xml_1_1Document_html_aeabde745db424f1353f01d06b6facc90"><div class="ttname"><a href="classeve_1_1xml_1_1Document.html#aeabde745db424f1353f01d06b6facc90">eve::xml::Document::Document</a></div><div class="ttdeci">Document(Document &amp;&amp;) noexcept</div></div>
+<div class="ttc" id="aclasseve_1_1xml_1_1Element_html"><div class="ttname"><a href="classeve_1_1xml_1_1Element.html">eve::xml::Element</a></div><div class="ttdef"><b>Definition</b> <a href="Xml_8h_source.html#l00029">Xml.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1xml_1_1Element_html_a24f18d84d3a2b8b8c725c2565d697512"><div class="ttname"><a href="classeve_1_1xml_1_1Element.html#a24f18d84d3a2b8b8c725c2565d697512">eve::xml::Element::Element</a></div><div class="ttdeci">Element()=default</div></div>
+<div class="ttc" id="aclasseve_1_1xml_1_1Element_html_a2b4d35ef70a263504724dac94f7a4e35"><div class="ttname"><a href="classeve_1_1xml_1_1Element.html#a2b4d35ef70a263504724dac94f7a4e35">eve::xml::Element::operator==</a></div><div class="ttdeci">bool operator==(const Element &amp;other) const</div><div class="ttdef"><b>Definition</b> <a href="Xml_8h_source.html#l00036">Xml.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1xml_1_1Element_html_aa5a04f3f32b51b2cc7f4084185a9a0f6"><div class="ttname"><a href="classeve_1_1xml_1_1Element.html#aa5a04f3f32b51b2cc7f4084185a9a0f6">eve::xml::Element::operator!=</a></div><div class="ttdeci">bool operator!=(const Element &amp;other) const</div><div class="ttdef"><b>Definition</b> <a href="Xml_8h_source.html#l00037">Xml.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1xml_html"><div class="ttname"><a href="namespaceeve_1_1xml.html">eve::xml</a></div><div class="ttdef"><b>Definition</b> <a href="Xml_8cpp_source.html#l00008">Xml.cpp:8</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1xml_1_1Node_html"><div class="ttname"><a href="structeve_1_1xml_1_1Node.html">eve::xml::Node</a></div><div class="ttdef"><b>Definition</b> <a href="Xml_8cpp_source.html#l00010">Xml.cpp:10</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

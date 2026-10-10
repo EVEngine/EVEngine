@@ -1,0 +1,1046 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::fog::FogDensityField类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1fog.html">fog</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html">FogDensityField</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1fog_1_1FogDensityField-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::fog::FogDensityField类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>World-space density bands, curl assist velocity, and lighting helpers.  
+ <a href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="FogDensityField_8h_source.html">FogDensityField.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7ae704a8357ff9339f4c11f24bfd4913" id="r_a7ae704a8357ff9339f4c11f24bfd4913"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a7ae704a8357ff9339f4c11f24bfd4913">resize</a> (int <a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#ae37d20925440672cbc23e930eedad223">width</a>, int <a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#ac0c2d10af183559b71ec3bfdd62aa14b">height</a>, int <a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a7a378b43956ed5f859098a46c96986d5">depth</a>, const <a class="el" href="structeve_1_1graphics_1_1fog_1_1FogWorldBounds.html">FogWorldBounds</a> &amp;<a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a21e61807623646096897a72ee145081d">bounds</a>)</td></tr>
+<tr class="memdesc:a7ae704a8357ff9339f4c11f24bfd4913"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a regular lattice over world bounds.  <br /></td></tr>
+<tr class="separator:a7ae704a8357ff9339f4c11f24bfd4913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae37d20925440672cbc23e930eedad223" id="r_ae37d20925440672cbc23e930eedad223"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#ae37d20925440672cbc23e930eedad223">width</a> () const noexcept</td></tr>
+<tr class="separator:ae37d20925440672cbc23e930eedad223"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0c2d10af183559b71ec3bfdd62aa14b" id="r_ac0c2d10af183559b71ec3bfdd62aa14b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#ac0c2d10af183559b71ec3bfdd62aa14b">height</a> () const noexcept</td></tr>
+<tr class="separator:ac0c2d10af183559b71ec3bfdd62aa14b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a378b43956ed5f859098a46c96986d5" id="r_a7a378b43956ed5f859098a46c96986d5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a7a378b43956ed5f859098a46c96986d5">depth</a> () const noexcept</td></tr>
+<tr class="separator:a7a378b43956ed5f859098a46c96986d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21e61807623646096897a72ee145081d" id="r_a21e61807623646096897a72ee145081d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1fog_1_1FogWorldBounds.html">FogWorldBounds</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a21e61807623646096897a72ee145081d">bounds</a> () const noexcept</td></tr>
+<tr class="separator:a21e61807623646096897a72ee145081d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2587be09d3c4edf5ae3465a64800336" id="r_ac2587be09d3c4edf5ae3465a64800336"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#ac2587be09d3c4edf5ae3465a64800336">cellSize</a> () const noexcept</td></tr>
+<tr class="separator:ac2587be09d3c4edf5ae3465a64800336"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0beb8ed9649a5797ff3a7512bc551eb" id="r_aa0beb8ed9649a5797ff3a7512bc551eb"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#aa0beb8ed9649a5797ff3a7512bc551eb">revision</a> () const noexcept</td></tr>
+<tr class="separator:aa0beb8ed9649a5797ff3a7512bc551eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a5d12796064b19a3d72df69b3cbef51" id="r_a5a5d12796064b19a3d72df69b3cbef51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a5a5d12796064b19a3d72df69b3cbef51">clear</a> ()</td></tr>
+<tr class="memdesc:a5a5d12796064b19a3d72df69b3cbef51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear density / curl / light-assist bands and bump revision.  <br /></td></tr>
+<tr class="separator:a5a5d12796064b19a3d72df69b3cbef51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeabcdf29efdac675bd5c8e8aa1748e4" id="r_aaeabcdf29efdac675bd5c8e8aa1748e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#aaeabcdf29efdac675bd5c8e8aa1748e4">setDensity</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float density)</td></tr>
+<tr class="memdesc:aaeabcdf29efdac675bd5c8e8aa1748e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write cell-centered density; indices are clamped.  <br /></td></tr>
+<tr class="separator:aaeabcdf29efdac675bd5c8e8aa1748e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2301c442ec484b252b59f7fde58d0d4c" id="r_a2301c442ec484b252b59f7fde58d0d4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a2301c442ec484b252b59f7fde58d0d4c">densityAt</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const noexcept</td></tr>
+<tr class="memdesc:a2301c442ec484b252b59f7fde58d0d4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Density at.  <br /></td></tr>
+<tr class="separator:a2301c442ec484b252b59f7fde58d0d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ea19945f4f5848a039d2dbbd291b17" id="r_ab5ea19945f4f5848a039d2dbbd291b17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#ab5ea19945f4f5848a039d2dbbd291b17">setCurlVelocity</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, const glm::vec3 &amp;velocity)</td></tr>
+<tr class="memdesc:ab5ea19945f4f5848a039d2dbbd291b17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write curl-assist velocity (m/s) at a cell center.  <br /></td></tr>
+<tr class="separator:ab5ea19945f4f5848a039d2dbbd291b17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5667a72515ac988099c187c211cd7f49" id="r_a5667a72515ac988099c187c211cd7f49"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a5667a72515ac988099c187c211cd7f49">curlVelocityAt</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const noexcept</td></tr>
+<tr class="memdesc:a5667a72515ac988099c187c211cd7f49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Curl velocity at.  <br /></td></tr>
+<tr class="separator:a5667a72515ac988099c187c211cd7f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af16ccfd262057f45949534cfcc05b33e" id="r_af16ccfd262057f45949534cfcc05b33e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#af16ccfd262057f45949534cfcc05b33e">setLightAssist</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, const glm::vec3 &amp;assist)</td></tr>
+<tr class="memdesc:af16ccfd262057f45949534cfcc05b33e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulated lighting assist (pre-multiplied irradiance hint).  <br /></td></tr>
+<tr class="separator:af16ccfd262057f45949534cfcc05b33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68d492086962f99cc8b06377e4b2df8c" id="r_a68d492086962f99cc8b06377e4b2df8c"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a68d492086962f99cc8b06377e4b2df8c">lightAssistAt</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const noexcept</td></tr>
+<tr class="memdesc:a68d492086962f99cc8b06377e4b2df8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Light assist at.  <br /></td></tr>
+<tr class="separator:a68d492086962f99cc8b06377e4b2df8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4aacc64d9cb62b9158a2322e2e80238" id="r_ae4aacc64d9cb62b9158a2322e2e80238"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#ae4aacc64d9cb62b9158a2322e2e80238">sampleDensity</a> (const glm::vec3 &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>) const noexcept</td></tr>
+<tr class="memdesc:ae4aacc64d9cb62b9158a2322e2e80238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trilinear world-space density sample.  <br /></td></tr>
+<tr class="separator:ae4aacc64d9cb62b9158a2322e2e80238"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57ab2d37996c2965d23001c6f54b0dea" id="r_a57ab2d37996c2965d23001c6f54b0dea"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a57ab2d37996c2965d23001c6f54b0dea">sampleCurlVelocity</a> (const glm::vec3 &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>) const noexcept</td></tr>
+<tr class="memdesc:a57ab2d37996c2965d23001c6f54b0dea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trilinear world-space curl velocity sample.  <br /></td></tr>
+<tr class="separator:a57ab2d37996c2965d23001c6f54b0dea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5371297ebcd2e71d340545e905d7d1ba" id="r_a5371297ebcd2e71d340545e905d7d1ba"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a5371297ebcd2e71d340545e905d7d1ba">sampleLightAssist</a> (const glm::vec3 &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>) const noexcept</td></tr>
+<tr class="memdesc:a5371297ebcd2e71d340545e905d7d1ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trilinear world-space light-assist sample.  <br /></td></tr>
+<tr class="separator:a5371297ebcd2e71d340545e905d7d1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e43524e316ba00f0a3c6b88bb8dc3f9" id="r_a6e43524e316ba00f0a3c6b88bb8dc3f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a6e43524e316ba00f0a3c6b88bb8dc3f9">seedHeightBand</a> (float baseDensity, float baseHeight, float falloff, float curlScale, std::uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="memdesc:a6e43524e316ba00f0a3c6b88bb8dc3f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seed a height-banded density layer with optional curl noise.  <br /></td></tr>
+<tr class="separator:a6e43524e316ba00f0a3c6b88bb8dc3f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29e0e11458b7bd5642162fd66c03e31f" id="r_a29e0e11458b7bd5642162fd66c03e31f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a29e0e11458b7bd5642162fd66c03e31f">isOccupied</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float threshold=1e-4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const noexcept</td></tr>
+<tr class="memdesc:a29e0e11458b7bd5642162fd66c03e31f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occupancy bit: true when density exceeds the threshold.  <br /></td></tr>
+<tr class="separator:a29e0e11458b7bd5642162fd66c03e31f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c80958b4f4142e1ac26b6edd261de0c" id="r_a4c80958b4f4142e1ac26b6edd261de0c"><td class="memItemLeft" align="right" valign="top">std::span&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a4c80958b4f4142e1ac26b6edd261de0c">densitySpan</a> () noexcept</td></tr>
+<tr class="memdesc:a4c80958b4f4142e1ac26b6edd261de0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow density storage for MAC coupling (same resolution).  <br /></td></tr>
+<tr class="separator:a4c80958b4f4142e1ac26b6edd261de0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bb3e72c7ff0f04e85791a1ae8bfdb3d" id="r_a8bb3e72c7ff0f04e85791a1ae8bfdb3d"><td class="memItemLeft" align="right" valign="top">std::span&lt; const float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html#a8bb3e72c7ff0f04e85791a1ae8bfdb3d">densitySpan</a> () const noexcept</td></tr>
+<tr class="separator:a8bb3e72c7ff0f04e85791a1ae8bfdb3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>World-space density bands, curl assist velocity, and lighting helpers. </p>
+<p>Sampling is always in world units so fog does not crawl with screen UVs. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8h_source.html">FogDensityField.h</a> 第 <a class="el" href="FogDensityField_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a21e61807623646096897a72ee145081d" name="a21e61807623646096897a72ee145081d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21e61807623646096897a72ee145081d">&#9670;&#160;</a></span>bounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1fog_1_1FogWorldBounds.html">FogWorldBounds</a> &amp; eve::graphics::fog::FogDensityField::bounds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8h_source.html">FogDensityField.h</a> 第 <a class="el" href="FogDensityField_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogSystem_8cpp_source.html#l00192">eve::graphics::fog::FogSystem::generateDust()</a>, <a class="el" href="FogSystem_8cpp_source.html#l00080">eve::graphics::fog::FogSystem::renderToFroxel()</a>, <a class="el" href="FogDensityField_8cpp_source.html#l00025">resize()</a> , 以及 <a class="el" href="FogSystem_8cpp_source.html#l00137">eve::graphics::fog::FogSystem::syncToVolumetric()</a>.</p>
+
+</div>
+</div>
+<a id="ac2587be09d3c4edf5ae3465a64800336" name="ac2587be09d3c4edf5ae3465a64800336"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2587be09d3c4edf5ae3465a64800336">&#9670;&#160;</a></span>cellSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::fog::FogDensityField::cellSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8h_source.html">FogDensityField.h</a> 第 <a class="el" href="FogDensityField_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a5d12796064b19a3d72df69b3cbef51" name="a5a5d12796064b19a3d72df69b3cbef51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a5d12796064b19a3d72df69b3cbef51">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::fog::FogDensityField::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear density / curl / light-assist bands and bump revision. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5667a72515ac988099c187c211cd7f49" name="a5667a72515ac988099c187c211cd7f49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5667a72515ac988099c187c211cd7f49">&#9670;&#160;</a></span>curlVelocityAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::fog::FogDensityField::curlVelocityAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Curl velocity at. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a2301c442ec484b252b59f7fde58d0d4c" name="a2301c442ec484b252b59f7fde58d0d4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2301c442ec484b252b59f7fde58d0d4c">&#9670;&#160;</a></span>densityAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::fog::FogDensityField::densityAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Density at. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a8bb3e72c7ff0f04e85791a1ae8bfdb3d" name="a8bb3e72c7ff0f04e85791a1ae8bfdb3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bb3e72c7ff0f04e85791a1ae8bfdb3d">&#9670;&#160;</a></span>densitySpan() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const float &gt; eve::graphics::fog::FogDensityField::densitySpan </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4c80958b4f4142e1ac26b6edd261de0c" name="a4c80958b4f4142e1ac26b6edd261de0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c80958b4f4142e1ac26b6edd261de0c">&#9670;&#160;</a></span>densitySpan() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; float &gt; eve::graphics::fog::FogDensityField::densitySpan </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow density storage for MAC coupling (same resolution). </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a378b43956ed5f859098a46c96986d5" name="a7a378b43956ed5f859098a46c96986d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a378b43956ed5f859098a46c96986d5">&#9670;&#160;</a></span>depth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::fog::FogDensityField::depth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8h_source.html">FogDensityField.h</a> 第 <a class="el" href="FogDensityField_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogDensityField_8cpp_source.html#l00025">resize()</a>.</p>
+
+</div>
+</div>
+<a id="ac0c2d10af183559b71ec3bfdd62aa14b" name="ac0c2d10af183559b71ec3bfdd62aa14b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0c2d10af183559b71ec3bfdd62aa14b">&#9670;&#160;</a></span>height()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::fog::FogDensityField::height </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8h_source.html">FogDensityField.h</a> 第 <a class="el" href="FogDensityField_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogDensityField_8cpp_source.html#l00025">resize()</a>.</p>
+
+</div>
+</div>
+<a id="a29e0e11458b7bd5642162fd66c03e31f" name="a29e0e11458b7bd5642162fd66c03e31f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29e0e11458b7bd5642162fd66c03e31f">&#9670;&#160;</a></span>isOccupied()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::fog::FogDensityField::isOccupied </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>threshold</em> = <code>1e-4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Occupancy bit: true when density exceeds the threshold. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a68d492086962f99cc8b06377e4b2df8c" name="a68d492086962f99cc8b06377e4b2df8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68d492086962f99cc8b06377e4b2df8c">&#9670;&#160;</a></span>lightAssistAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::fog::FogDensityField::lightAssistAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Light assist at. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a7ae704a8357ff9339f4c11f24bfd4913" name="a7ae704a8357ff9339f4c11f24bfd4913"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ae704a8357ff9339f4c11f24bfd4913">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::fog::FogDensityField::resize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1fog_1_1FogWorldBounds.html">FogWorldBounds</a> &amp;&#160;</td>
+          <td class="paramname"><em>bounds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocate a regular lattice over world bounds. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FogDensityField_8h_source.html#l00029">bounds()</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="FogDensityField_8h_source.html#l00028">depth()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="FogDensityField_8h_source.html#l00027">height()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="FogTypes_8h_source.html#l00098">eve::graphics::fog::FogWorldBounds::maximum</a>, <a class="el" href="FogTypes_8h_source.html#l00097">eve::graphics::fog::FogWorldBounds::minimum</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="FogDensityField_8h_source.html#l00026">width()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogSystem_8cpp_source.html#l00021">eve::graphics::fog::FogSystem::configureDomain()</a>.</p>
+
+</div>
+</div>
+<a id="aa0beb8ed9649a5797ff3a7512bc551eb" name="aa0beb8ed9649a5797ff3a7512bc551eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0beb8ed9649a5797ff3a7512bc551eb">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::graphics::fog::FogDensityField::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8h_source.html">FogDensityField.h</a> 第 <a class="el" href="FogDensityField_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogSystem_8cpp_source.html#l00052">eve::graphics::fog::FogSystem::ensureBeerCache()</a>.</p>
+
+</div>
+</div>
+<a id="a57ab2d37996c2965d23001c6f54b0dea" name="a57ab2d37996c2965d23001c6f54b0dea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57ab2d37996c2965d23001c6f54b0dea">&#9670;&#160;</a></span>sampleCurlVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::fog::FogDensityField::sampleCurlVelocity </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Trilinear world-space curl velocity sample. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+</div>
+</div>
+<a id="ae4aacc64d9cb62b9158a2322e2e80238" name="ae4aacc64d9cb62b9158a2322e2e80238"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4aacc64d9cb62b9158a2322e2e80238">&#9670;&#160;</a></span>sampleDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::fog::FogDensityField::sampleDensity </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Trilinear world-space density sample. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+</div>
+</div>
+<a id="a5371297ebcd2e71d340545e905d7d1ba" name="a5371297ebcd2e71d340545e905d7d1ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5371297ebcd2e71d340545e905d7d1ba">&#9670;&#160;</a></span>sampleLightAssist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::fog::FogDensityField::sampleLightAssist </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Trilinear world-space light-assist sample. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+</div>
+</div>
+<a id="a6e43524e316ba00f0a3c6b88bb8dc3f9" name="a6e43524e316ba00f0a3c6b88bb8dc3f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e43524e316ba00f0a3c6b88bb8dc3f9">&#9670;&#160;</a></span>seedHeightBand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::fog::FogDensityField::seedHeightBand </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>baseDensity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>baseHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>falloff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>curlScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Seed a height-banded density layer with optional curl noise. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">baseDensity</td><td>Peak density at baseHeight. </td></tr>
+    <tr><td class="paramname">baseHeight</td><td>World Y of the densest band. </td></tr>
+    <tr><td class="paramname">falloff</td><td>Exponential falloff per meter. </td></tr>
+    <tr><td class="paramname">curlScale</td><td>Curl velocity amplitude in m/s. </td></tr>
+    <tr><td class="paramname">seed</td><td>Deterministic noise seed. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PointSet_8cpp_source.html#l00807">seed</a>, <a class="el" href="FogDensityField_8cpp_source.html#l00089">setCurlVelocity()</a>, <a class="el" href="FogDensityField_8cpp_source.html#l00078">setDensity()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogSystem_8cpp_source.html#l00031">eve::graphics::fog::FogSystem::seedHeightFog()</a>.</p>
+
+</div>
+</div>
+<a id="ab5ea19945f4f5848a039d2dbbd291b17" name="ab5ea19945f4f5848a039d2dbbd291b17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ea19945f4f5848a039d2dbbd291b17">&#9670;&#160;</a></span>setCurlVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::fog::FogDensityField::setCurlVelocity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>velocity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write curl-assist velocity (m/s) at a cell center. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogDensityField_8cpp_source.html#l00172">seedHeightBand()</a>.</p>
+
+</div>
+</div>
+<a id="aaeabcdf29efdac675bd5c8e8aa1748e4" name="aaeabcdf29efdac675bd5c8e8aa1748e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaeabcdf29efdac675bd5c8e8aa1748e4">&#9670;&#160;</a></span>setDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::fog::FogDensityField::setDensity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write cell-centered density; indices are clamped. </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogDensityField_8cpp_source.html#l00172">seedHeightBand()</a>.</p>
+
+</div>
+</div>
+<a id="af16ccfd262057f45949534cfcc05b33e" name="af16ccfd262057f45949534cfcc05b33e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af16ccfd262057f45949534cfcc05b33e">&#9670;&#160;</a></span>setLightAssist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::fog::FogDensityField::setLightAssist </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>assist</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Accumulated lighting assist (pre-multiplied irradiance hint). </p>
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a> 第 <a class="el" href="FogDensityField_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="ae37d20925440672cbc23e930eedad223" name="ae37d20925440672cbc23e930eedad223"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae37d20925440672cbc23e930eedad223">&#9670;&#160;</a></span>width()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::fog::FogDensityField::width </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FogDensityField_8h_source.html">FogDensityField.h</a> 第 <a class="el" href="FogDensityField_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FogSystem_8cpp_source.html#l00113">eve::graphics::fog::FogSystem::injectToFroxel()</a> , 以及 <a class="el" href="FogDensityField_8cpp_source.html#l00025">resize()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/fog/<a class="el" href="FogDensityField_8h_source.html">FogDensityField.h</a></li>
+<li>src/modules/graphics/fog/<a class="el" href="FogDensityField_8cpp_source.html">FogDensityField.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

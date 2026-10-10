@@ -1,0 +1,624 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::combat::MeleeHitRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1combat.html">combat</a></li><li class="navelem"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html">MeleeHitRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1combat_1_1MeleeHitRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::combat::MeleeHitRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread authority for hurtboxes, hitbox catalogs and sweep hits.  
+ <a href="classeve_1_1combat_1_1MeleeHitRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MeleeHit_8h_source.html">MeleeHit.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a91c83975812f8a854af6bc650cafd92e" id="r_a91c83975812f8a854af6bc650cafd92e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#a91c83975812f8a854af6bc650cafd92e">setPoseSource</a> (<a class="el" href="classeve_1_1combat_1_1IMeleePoseSource.html">IMeleePoseSource</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>) noexcept</td></tr>
+<tr class="memdesc:a91c83975812f8a854af6bc650cafd92e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install a borrowed pose source that must outlive this runtime or be cleared.  <br /></td></tr>
+<tr class="separator:a91c83975812f8a854af6bc650cafd92e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77bc4a07570018ba4c773b1105be7b2a" id="r_a77bc4a07570018ba4c773b1105be7b2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#a77bc4a07570018ba4c773b1105be7b2a">clearPoseSource</a> () noexcept</td></tr>
+<tr class="memdesc:a77bc4a07570018ba4c773b1105be7b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the borrowed pose source.  <br /></td></tr>
+<tr class="separator:a77bc4a07570018ba4c773b1105be7b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70de1e53e27879f8c20150aa4881b66e" id="r_a70de1e53e27879f8c20150aa4881b66e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#a70de1e53e27879f8c20150aa4881b66e">registerHitbox</a> (<a class="el" href="structeve_1_1combat_1_1MeleeHitboxDefinition.html">MeleeHitboxDefinition</a> definition)</td></tr>
+<tr class="memdesc:a70de1e53e27879f8c20150aa4881b66e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register or replace one hitbox catalog entry after full validation.  <br /></td></tr>
+<tr class="separator:a70de1e53e27879f8c20150aa4881b66e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9e15ea17c16f1b22c6b0e12a62b1eb5" id="r_af9e15ea17c16f1b22c6b0e12a62b1eb5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#af9e15ea17c16f1b22c6b0e12a62b1eb5">registerHurtbox</a> (<a class="el" href="structeve_1_1combat_1_1MeleeHurtboxDefinition.html">MeleeHurtboxDefinition</a> definition)</td></tr>
+<tr class="memdesc:af9e15ea17c16f1b22c6b0e12a62b1eb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register or replace one hurtbox after full validation.  <br /></td></tr>
+<tr class="separator:af9e15ea17c16f1b22c6b0e12a62b1eb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade5837b451a40fee7e1840aec7fd8ee5" id="r_ade5837b451a40fee7e1840aec7fd8ee5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#ade5837b451a40fee7e1840aec7fd8ee5">clearHurtboxes</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>)</td></tr>
+<tr class="memdesc:ade5837b451a40fee7e1840aec7fd8ee5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove every hurtbox owned by a subject.  <br /></td></tr>
+<tr class="separator:ade5837b451a40fee7e1840aec7fd8ee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa176b2662bfc752dc63e0d60d940b906" id="r_aa176b2662bfc752dc63e0d60d940b906"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#aa176b2662bfc752dc63e0d60d940b906">setHurtboxPose</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::string_view hurtboxId, <a class="el" href="structeve_1_1combat_1_1MeleePose.html">MeleePose</a> <a class="el" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>)</td></tr>
+<tr class="memdesc:aa176b2662bfc752dc63e0d60d940b906"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the current world pose of one registered hurtbox.  <br /></td></tr>
+<tr class="separator:aa176b2662bfc752dc63e0d60d940b906"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8d7e21b4a709d85855de3134e6672f9" id="r_ab8d7e21b4a709d85855de3134e6672f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#ab8d7e21b4a709d85855de3134e6672f9">armHitbox</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::string_view hitboxId, <a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> execution)</td></tr>
+<tr class="memdesc:ab8d7e21b4a709d85855de3134e6672f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arm one hitbox while a Montage window owns it.  <br /></td></tr>
+<tr class="separator:ab8d7e21b4a709d85855de3134e6672f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6e0ae2e6aada8b5af46d3d99c9df95c" id="r_ae6e0ae2e6aada8b5af46d3d99c9df95c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#ae6e0ae2e6aada8b5af46d3d99c9df95c">disarmHitbox</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::string_view hitboxId, <a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> execution)</td></tr>
+<tr class="memdesc:ae6e0ae2e6aada8b5af46d3d99c9df95c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disarm one hitbox window and forget its per-target hit memory.  <br /></td></tr>
+<tr class="separator:ae6e0ae2e6aada8b5af46d3d99c9df95c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac71fc5bc6ad8007eec5a9c078a4e4109" id="r_ac71fc5bc6ad8007eec5a9c078a4e4109"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1MeleeHitFrame.html">MeleeHitFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#ac71fc5bc6ad8007eec5a9c078a4e4109">advance</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:ac71fc5bc6ad8007eec5a9c078a4e4109"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample poses for armed hitboxes, sweep against hurtboxes and emit unique hits.  <br /></td></tr>
+<tr class="separator:ac71fc5bc6ad8007eec5a9c078a4e4109"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e5e41bb39272fbae75c7b2d5c6d6c1e" id="r_a9e5e41bb39272fbae75c7b2d5c6d6c1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1combat_1_1DamageOutcome.html">DamageOutcome</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#a9e5e41bb39272fbae75c7b2d5c6d6c1e">applyHits</a> (<a class="el" href="classeve_1_1combat_1_1DamageRuntime.html">DamageRuntime</a> &amp;damage, std::map&lt; std::string, <a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a>, std::less&lt;&gt; &gt; &amp;states, const std::vector&lt; <a class="el" href="structeve_1_1combat_1_1MeleeHitEvent.html">MeleeHitEvent</a> &gt; &amp;hits, const std::map&lt; std::string, double, std::less&lt;&gt; &gt; &amp;bodyPartMultipliers={}) const</td></tr>
+<tr class="memdesc:a9e5e41bb39272fbae75c7b2d5c6d6c1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply owning hit events through <a class="el" href="classeve_1_1combat_1_1DamageRuntime.html" title="Owner-thread deterministic damage coordinator.">DamageRuntime</a> using a mutable state map.  <br /></td></tr>
+<tr class="separator:a9e5e41bb39272fbae75c7b2d5c6d6c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade8160fcb903302cc2c3dee81923dbdc" id="r_ade8160fcb903302cc2c3dee81923dbdc"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#ade8160fcb903302cc2c3dee81923dbdc">armedCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ade8160fcb903302cc2c3dee81923dbdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of armed hitbox windows.  <br /></td></tr>
+<tr class="separator:ade8160fcb903302cc2c3dee81923dbdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cc897b8d12415270682f5aa6ff057a4" id="r_a7cc897b8d12415270682f5aa6ff057a4"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1MeleeHitRuntime.html#a7cc897b8d12415270682f5aa6ff057a4">hurtboxCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a7cc897b8d12415270682f5aa6ff057a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of registered hurtboxes.  <br /></td></tr>
+<tr class="separator:a7cc897b8d12415270682f5aa6ff057a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread authority for hurtboxes, hitbox catalogs and sweep hits. </p>
+<p>Active hitboxes are armed by string id while a Montage hitbox window is open. Geometry poses come from an optional pose source; missing poses fail the arm or advance observably. Hits are de-duplicated per (execution, hitbox, target, hurtbox) until the window exits. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8h_source.html">MeleeHit.h</a> 第 <a class="el" href="MeleeHit_8h_source.html#l00132">132</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ac71fc5bc6ad8007eec5a9c078a4e4109" name="ac71fc5bc6ad8007eec5a9c078a4e4109"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac71fc5bc6ad8007eec5a9c078a4e4109">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1MeleeHitFrame.html">MeleeHitFrame</a> &gt; eve::combat::MeleeHitRuntime::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample poses for armed hitboxes, sweep against hurtboxes and emit unique hits. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tick</td><td>Deterministic simulation tick; must be non-decreasing. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8cpp_source.html">MeleeHit.cpp</a> 第 <a class="el" href="MeleeHit_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MeleeHit_8h_source.html#l00103">eve::combat::MeleeHitFrame::hits</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00013">memory</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00154">normal</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00379">pose</a>, <a class="el" href="classeve_1_1combat_1_1IMeleePoseSource.html#af5a5a4633193e91b626a17c9281259f4">eve::combat::IMeleePoseSource::pose()</a>, <a class="el" href="MeleeHit_8h_source.html#l00086">eve::combat::MeleeHitEvent::source</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="MeleeHit_8h_source.html#l00102">eve::combat::MeleeHitFrame::tick</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00026">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a9e5e41bb39272fbae75c7b2d5c6d6c1e" name="a9e5e41bb39272fbae75c7b2d5c6d6c1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e5e41bb39272fbae75c7b2d5c6d6c1e">&#9670;&#160;</a></span>applyHits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1combat_1_1DamageOutcome.html">DamageOutcome</a> &gt; &gt; eve::combat::MeleeHitRuntime::applyHits </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1combat_1_1DamageRuntime.html">DamageRuntime</a> &amp;&#160;</td>
+          <td class="paramname"><em>damage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::map&lt; std::string, <a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a>, std::less&lt;&gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>states</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1combat_1_1MeleeHitEvent.html">MeleeHitEvent</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>hits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::map&lt; std::string, double, std::less&lt;&gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bodyPartMultipliers</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply owning hit events through <a class="el" href="classeve_1_1combat_1_1DamageRuntime.html" title="Owner-thread deterministic damage coordinator.">DamageRuntime</a> using a mutable state map. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8cpp_source.html">MeleeHit.cpp</a> 第 <a class="el" href="MeleeHit_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Damage_8cpp_source.html#l00200">eve::combat::DamageRuntime::apply()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Damage_8h_source.html#l00050">eve::combat::DamageRequest::source</a> , 以及 <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>.</p>
+
+</div>
+</div>
+<a id="ade8160fcb903302cc2c3dee81923dbdc" name="ade8160fcb903302cc2c3dee81923dbdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade8160fcb903302cc2c3dee81923dbdc">&#9670;&#160;</a></span>armedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::combat::MeleeHitRuntime::armedCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of armed hitbox windows. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8h_source.html">MeleeHit.h</a> 第 <a class="el" href="MeleeHit_8h_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8d7e21b4a709d85855de3134e6672f9" name="ab8d7e21b4a709d85855de3134e6672f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8d7e21b4a709d85855de3134e6672f9">&#9670;&#160;</a></span>armHitbox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::MeleeHitRuntime::armHitbox </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>hitboxId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>execution</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Arm one hitbox while a Montage window owns it. </p>
+<dl class="section remark"><dt>备注</dt><dd>Requires a pose source. The first pose becomes both previous and current. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8cpp_source.html">MeleeHit.cpp</a> 第 <a class="el" href="MeleeHit_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00379">pose</a>, <a class="el" href="classeve_1_1combat_1_1IMeleePoseSource.html#af5a5a4633193e91b626a17c9281259f4">eve::combat::IMeleePoseSource::pose()</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00026">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionWindowState_8cpp_source.html#l00038">eve::combat::CombatActionWindowState::enter()</a>.</p>
+
+</div>
+</div>
+<a id="ade5837b451a40fee7e1840aec7fd8ee5" name="ade5837b451a40fee7e1840aec7fd8ee5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade5837b451a40fee7e1840aec7fd8ee5">&#9670;&#160;</a></span>clearHurtboxes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::MeleeHitRuntime::clearHurtboxes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove every hurtbox owned by a subject. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8cpp_source.html">MeleeHit.cpp</a> 第 <a class="el" href="MeleeHit_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a77bc4a07570018ba4c773b1105be7b2a" name="a77bc4a07570018ba4c773b1105be7b2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77bc4a07570018ba4c773b1105be7b2a">&#9670;&#160;</a></span>clearPoseSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::combat::MeleeHitRuntime::clearPoseSource </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove the borrowed pose source. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8h_source.html">MeleeHit.h</a> 第 <a class="el" href="MeleeHit_8h_source.html#l00137">137</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae6e0ae2e6aada8b5af46d3d99c9df95c" name="ae6e0ae2e6aada8b5af46d3d99c9df95c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6e0ae2e6aada8b5af46d3d99c9df95c">&#9670;&#160;</a></span>disarmHitbox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::MeleeHitRuntime::disarmHitbox </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>hitboxId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>execution</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disarm one hitbox window and forget its per-target hit memory. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8cpp_source.html">MeleeHit.cpp</a> 第 <a class="el" href="MeleeHit_8cpp_source.html#l00242">242</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00026">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionWindowState_8cpp_source.html#l00075">eve::combat::CombatActionWindowState::exit()</a>.</p>
+
+</div>
+</div>
+<a id="a7cc897b8d12415270682f5aa6ff057a4" name="a7cc897b8d12415270682f5aa6ff057a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cc897b8d12415270682f5aa6ff057a4">&#9670;&#160;</a></span>hurtboxCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::combat::MeleeHitRuntime::hurtboxCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of registered hurtboxes. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8h_source.html">MeleeHit.h</a> 第 <a class="el" href="MeleeHit_8h_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a70de1e53e27879f8c20150aa4881b66e" name="a70de1e53e27879f8c20150aa4881b66e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70de1e53e27879f8c20150aa4881b66e">&#9670;&#160;</a></span>registerHitbox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::MeleeHitRuntime::registerHitbox </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1MeleeHitboxDefinition.html">MeleeHitboxDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register or replace one hitbox catalog entry after full validation. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8cpp_source.html">MeleeHit.cpp</a> 第 <a class="el" href="MeleeHit_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>.</p>
+
+</div>
+</div>
+<a id="af9e15ea17c16f1b22c6b0e12a62b1eb5" name="af9e15ea17c16f1b22c6b0e12a62b1eb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9e15ea17c16f1b22c6b0e12a62b1eb5">&#9670;&#160;</a></span>registerHurtbox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::MeleeHitRuntime::registerHurtbox </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1MeleeHurtboxDefinition.html">MeleeHurtboxDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register or replace one hurtbox after full validation. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8cpp_source.html">MeleeHit.cpp</a> 第 <a class="el" href="MeleeHit_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>.</p>
+
+</div>
+</div>
+<a id="aa176b2662bfc752dc63e0d60d940b906" name="aa176b2662bfc752dc63e0d60d940b906"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa176b2662bfc752dc63e0d60d940b906">&#9670;&#160;</a></span>setHurtboxPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::MeleeHitRuntime::setHurtboxPose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>hurtboxId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1MeleePose.html">MeleePose</a>&#160;</td>
+          <td class="paramname"><em>pose</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the current world pose of one registered hurtbox. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8cpp_source.html">MeleeHit.cpp</a> 第 <a class="el" href="MeleeHit_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00379">pose</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatLoop_8cpp_source.html#l00025">eve::combat::CombatLoopRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a91c83975812f8a854af6bc650cafd92e" name="a91c83975812f8a854af6bc650cafd92e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91c83975812f8a854af6bc650cafd92e">&#9670;&#160;</a></span>setPoseSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::combat::MeleeHitRuntime::setPoseSource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1combat_1_1IMeleePoseSource.html">IMeleePoseSource</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Install a borrowed pose source that must outlive this runtime or be cleared. </p>
+
+<p class="definition">在文件 <a class="el" href="MeleeHit_8h_source.html">MeleeHit.h</a> 第 <a class="el" href="MeleeHit_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/combat/<a class="el" href="MeleeHit_8h_source.html">MeleeHit.h</a></li>
+<li>src/modules/combat/<a class="el" href="MeleeHit_8cpp_source.html">MeleeHit.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

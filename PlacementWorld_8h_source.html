@@ -1,0 +1,483 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building/PlacementWorld.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_82516b7859a22590e742ab13945dc7b3.html">building</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PlacementWorld.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PlacementWorld_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="BuildingTypes_8h.html">building/BuildingTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1map.html">   19</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1map.html">eve::map</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1grid.html">   23</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1grid.html">eve::grid</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1grid_1_1GridConfig.html">GridConfig</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1building.html">eve::building</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">class </span>Ghost;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html">   32</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a2793ba8d37c0ef7af90787f21e6e3fd4">   34</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1building_1_1PlacementWorld.html#a2793ba8d37c0ef7af90787f21e6e3fd4">ChannelMap</a> = std::unordered_map&lt;std::string, std::vector&lt;int&gt;&gt;;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">float</span> cellSize = 32.f);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a363a09fb8fe0026f6dbdb2eea07f5797">   38</a></span>    <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a363a09fb8fe0026f6dbdb2eea07f5797">~PlacementWorld</a>();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a421000a97b14e3e7343f93ecbc81e446">   40</a></span>    <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a421000a97b14e3e7343f93ecbc81e446">PlacementWorld</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#afe6253d7b9ed13b470e034959c19b63d">   41</a></span>    <a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#afe6253d7b9ed13b470e034959c19b63d">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy</a>();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a682fd2c84444c78da2a67a205c56d1f0">   47</a></span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a682fd2c84444c78da2a67a205c56d1f0">getId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#aaa358a6c871bcca7d488689f50fd7a98">   49</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#aaa358a6c871bcca7d488689f50fd7a98">setId</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) { id_ = <a class="code hl_variable" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a1a8f14feae92dfe5123edb6d6cd11f72">   52</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a1a8f14feae92dfe5123edb6d6cd11f72">getWidth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width_; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#adbb01d447a9144861783a8083bf42bbe">   54</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#adbb01d447a9144861783a8083bf42bbe">getHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> height_; }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">float</span> getCellSize() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">void</span> setCellSize(<span class="keywordtype">float</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">float</span> getOriginX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">float</span> getOriginY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span> setOrigin(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a424217e4cfb05a4c8254a146dcfe016a">   68</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a424217e4cfb05a4c8254a146dcfe016a">getFloorHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> floorHeight_; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> setFloorHeight(<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a1da8ed98ba337d9952c875b9b2ed34de">   72</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a1da8ed98ba337d9952c875b9b2ed34de">getActiveLevel</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> activeLevel_; }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a86f3a2579d06c48029820cb658c29698">   74</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a86f3a2579d06c48029820cb658c29698">setActiveLevel</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>) { activeLevel_ = <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>; }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a637f1d935c1d4660d58b81f6320631ed">   77</a></span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a637f1d935c1d4660d58b81f6320631ed">getSnapMode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> snapMode_; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#ac520c8e511b32b1816d48a2ad7b39a86">   79</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#ac520c8e511b32b1816d48a2ad7b39a86">setSnapMode</a>(<span class="keyword">const</span> std::string &amp;mode) { snapMode_ = mode; }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a6b22f4bc8d37af4967687cac4da4eeae">   81</a></span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a6b22f4bc8d37af4967687cac4da4eeae">getValidateRule</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> validateRule_; }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a377634862b4da27eb5d0747863d6e9c9">   83</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a377634862b4da27eb5d0747863d6e9c9">setValidateRule</a>(<span class="keyword">const</span> std::string &amp;rule) { validateRule_ = rule; }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> setExtra(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::string getExtra(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>, <span class="keyword">const</span> std::string &amp;fallback = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// ---- Grid 配置（默认正交 2D，等价旧行为）----</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1grid_1_1GridConfig.html">grid::GridConfig</a> &amp;getGrid() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_struct" href="structeve_1_1grid_1_1GridConfig.html">grid::GridConfig</a> &amp;getGrid();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">void</span> setGridLayout(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="FloorTextures_8cpp.html#accc3e5dba688a899c37c57e53edddb7f">layout</a>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    std::string getGridLayoutName() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">void</span> setGridPlane(<span class="keyword">const</span> std::string &amp;plane);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::string getGridPlaneName() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> setCellGap(<span class="keywordtype">float</span> gapX, <span class="keywordtype">float</span> gapY);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">void</span> setHexSideLength(<span class="keywordtype">float</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordtype">void</span> setStagger(<span class="keyword">const</span> std::string &amp;axis, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">void</span> setGridFromLayer(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a7c2b74b7a94352acfc3a826a07d1f04f">  113</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a7c2b74b7a94352acfc3a826a07d1f04f">hasGridFromLayer</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> tileLayer_ != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="comment">// ---- 坐标换算 ----</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">int</span> worldToCellX(<span class="keywordtype">float</span> worldX) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">int</span> worldToCellY(<span class="keywordtype">float</span> worldY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">float</span> cellToWorldX(<span class="keywordtype">int</span> cellX) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">float</span> cellToWorldY(<span class="keywordtype">int</span> cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">void</span> cellToWorldPlane(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">void</span> cellToWorld3D(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a>, <span class="keywordtype">float</span> &amp;worldX, <span class="keywordtype">float</span> &amp;worldY,</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                       <span class="keywordtype">float</span> &amp;worldZ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">float</span> cellToWorld3DX(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">float</span> cellToWorld3DY(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">float</span> cellToWorld3DZ(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordtype">void</span> worldToCell3D(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY, <span class="keywordtype">float</span> worldZ, <span class="keywordtype">int</span> &amp;cellX, <span class="keywordtype">int</span> &amp;cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">int</span> worldToCell3DX(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY, <span class="keywordtype">float</span> worldZ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">int</span> worldToCell3DY(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY, <span class="keywordtype">float</span> worldZ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordtype">void</span> fillTerrain(<span class="keywordtype">int</span> <a class="code hl_variable" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordtype">void</span> setTerrain(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">int</span> <a class="code hl_variable" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">int</span> getTerrain(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">bool</span> inBounds(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="comment">// ---- Tilemap 绑定 ----</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordtype">void</span> bindTileLayer(<a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a88b62bb5e9f3519b6bc7c67d43e381c4">  162</a></span>    <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a88b62bb5e9f3519b6bc7c67d43e381c4">getTileLayer</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> tileLayer_; }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">void</span> clearTileLayer();</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordtype">void</span> setTerrainGidMapJson(<span class="keyword">const</span> std::string &amp;json);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordtype">void</span> setTerrainGid(<span class="keywordtype">int</span> gid, <span class="keywordtype">int</span> <a class="code hl_variable" href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a>);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordtype">void</span> clearTerrainGidMap();</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="comment">// ---- 占用查询 ----</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordtype">int</span> getOccupant(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordtype">int</span> getOccupantInChannel(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordtype">int</span> getOccupantAtLevel(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordtype">int</span> getAnyOccupant(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordtype">int</span> getAnyOccupantAtLevel(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordtype">bool</span> isCellEmpty(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordtype">bool</span> isCellEmptyInChannel(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">int</span> getEdgeOccupant(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY,</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                        <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordtype">int</span> getEdgeOccupantAtLevel(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY,</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                               <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordtype">bool</span> isEdgeEmpty(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY,</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>                     <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordtype">int</span> getCornerOccupant(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> vertexX, <span class="keywordtype">int</span> vertexY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keywordtype">int</span> getCornerOccupantAtLevel(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> vertexX, <span class="keywordtype">int</span> vertexY,</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                                 <span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordtype">int</span> getAnyCornerOccupantAtLevel(<span class="keywordtype">int</span> vertexX, <span class="keywordtype">int</span> vertexY, <span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordtype">bool</span> isCornerEmpty(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> vertexX, <span class="keywordtype">int</span> vertexY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordtype">int</span> getFreeOccupant(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordtype">int</span> getFreeOccupantAtLevel(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY,</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>                               <span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordtype">int</span> getEdgeConnectionMask(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    std::string getEdgeVariant(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordtype">int</span> getBuildingCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keywordtype">bool</span> hasBuilding(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    std::string getBuildingId(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordtype">int</span> getBuildingCellX(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordtype">int</span> getBuildingCellY(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordtype">float</span> getBuildingWorldX(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keywordtype">float</span> getBuildingWorldY(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keywordtype">float</span> getBuildingWorldZ(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordtype">float</span> getBuildingElevation(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keywordtype">int</span> getBuildingLevel(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keywordtype">int</span> getBuildingSupportCount(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    <span class="keywordtype">int</span> getBuildingSupportAt(<span class="keywordtype">int</span> instanceId, <span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keywordtype">int</span> getBuildingDependentCount(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    std::string getBuildingSurfaceId(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    int64_t getBuildingSurfaceRevision(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordtype">float</span> getBuildingSurfaceNormalX(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keywordtype">float</span> getBuildingSurfaceNormalY(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="keywordtype">float</span> getBuildingSurfaceNormalZ(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    std::string getBuildingChannel(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <span class="keywordtype">float</span> getBuildingRotation(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    std::string getBuildingProp(<span class="keywordtype">int</span> instanceId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>,</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>                                <span class="keyword">const</span> std::string &amp;fallback = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keywordtype">void</span> setBuildingProp(<span class="keywordtype">int</span> instanceId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <span class="keywordtype">bool</span> buildingHasTag(<span class="keywordtype">int</span> instanceId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keywordtype">int</span> getBuildingInstanceAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a83fe724aa0377c3236fed19519121d1a">  269</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a83fe724aa0377c3236fed19519121d1a">getEdgeCurveGroupCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(edgeCurveGroups_.size()); }</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#ab9f8592fedb93c30740d011705c0f65c">  271</a></span>    <a class="code hl_struct" href="structeve_1_1building_1_1EdgeCurveGroupId.html">EdgeCurveGroupId</a> <a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#ab9f8592fedb93c30740d011705c0f65c">nextEdgeCurveGroupId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> {nextEdgeCurveGroupId_}; }</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    std::vector&lt;EdgeCurveGroupId&gt; edgeCurveGroupIds() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EdgeCurveGroup&gt;</a> edgeCurveGroup(<a class="code hl_struct" href="structeve_1_1building_1_1EdgeCurveGroupId.html">EdgeCurveGroupId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EdgeCurveGroup&gt;</a> edgeCurveGroupForInstance(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordtype">bool</span> canPlace(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">float</span> rotationDeg = 0.f);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    std::string canPlaceReason(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY,</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                               <span class="keywordtype">float</span> rotationDeg = 0.f);</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    <span class="keywordtype">int</span> placeAt(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">float</span> rotationDeg = 0.f);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <span class="keywordtype">int</span> placeAtWorld(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY,</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                     <span class="keywordtype">float</span> rotationDeg = 0.f);</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    <span class="keywordtype">int</span> placeAtWorld3D(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY, <span class="keywordtype">float</span> worldZ,</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                       <span class="keywordtype">float</span> rotationDeg = 0.f);</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    <span class="keywordtype">int</span> placeGhost(<a class="code hl_class" href="classeve_1_1building_1_1Ghost.html">Ghost</a> *ghost);</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <span class="keywordtype">int</span> placeEdge(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY,</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>                  <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>);</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="keywordtype">bool</span> canPlaceEdge(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY,</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>                      <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>);</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    std::string canPlaceEdgeReason(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY,</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>                                   <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>);</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <span class="keywordtype">int</span> placeCorner(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">int</span> vertexX, <span class="keywordtype">int</span> vertexY);</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <span class="keywordtype">bool</span> canPlaceCorner(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">int</span> vertexX, <span class="keywordtype">int</span> vertexY);</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    std::string canPlaceCornerReason(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">int</span> vertexX, <span class="keywordtype">int</span> vertexY);</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    <span class="keywordtype">int</span> placeFree(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY,</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>                  <span class="keywordtype">float</span> <a class="code hl_variable" href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a> = 0.f, <span class="keywordtype">float</span> rotationDeg = 0.f);</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="keywordtype">bool</span> canPlaceFree(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY);</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    std::string canPlaceFreeReason(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldY);</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="keywordtype">bool</span> removeBuilding(<span class="keywordtype">int</span> instanceId);</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    std::string canRemoveBuildingReason(<span class="keywordtype">int</span> instanceId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keywordtype">int</span> removeBuildingCascade(<span class="keywordtype">int</span> instanceId);</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <span class="keywordtype">bool</span> moveBuilding(<span class="keywordtype">int</span> instanceId, <span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY, <span class="keywordtype">float</span> rotationDeg = -1.f);</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    <span class="keywordtype">void</span> clearBuildings();</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    [[nodiscard]] std::unique_ptr&lt;PlacementWorld&gt; cloneState() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <span class="keywordtype">void</span> swapState(<a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a>&amp; candidate) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span> </div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <span class="comment">// ---- 供 System 直接访问 ----</span></div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a637a84170ca4e7e9223f77b3ef0c8147">  341</a></span>    <span class="keyword">const</span> std::vector&lt;int&gt; &amp;<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a637a84170ca4e7e9223f77b3ef0c8147">occupancy</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> occupancy_; }</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#abd409694007ec50ba228a3a2f6940428">  343</a></span>    std::vector&lt;int&gt; &amp;<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#abd409694007ec50ba228a3a2f6940428">occupancy</a>() { <span class="keywordflow">return</span> occupancy_; }</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a59dcbbdace2ad7fd2d9f634e7bc3d205">  345</a></span>    <span class="keyword">const</span> std::vector&lt;int&gt; &amp;<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a59dcbbdace2ad7fd2d9f634e7bc3d205">terrain</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> terrain_; }</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#afbd1a02228f3b83579d1dccbfe073d67">  347</a></span>    std::vector&lt;int&gt; &amp;<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#afbd1a02228f3b83579d1dccbfe073d67">terrain</a>() { <span class="keywordflow">return</span> terrain_; }</div>
+<div class="foldopen" id="foldopen00348" data-start="{" data-end="}">
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#acc1ddbbcb93c07078776c4586b2d2a2a">  348</a></span>    <span class="keyword">const</span> std::unordered_map&lt;std::string, std::vector&lt;int&gt;&gt; &amp;<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#acc1ddbbcb93c07078776c4586b2d2a2a">allChannels</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>        <span class="keywordflow">return</span> allChannels_;</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    }</div>
+</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#adc52fdf3bd6f411eb5643756c4b4611c">  351</a></span>    std::unordered_map&lt;std::string, std::vector&lt;int&gt;&gt; &amp;<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#adc52fdf3bd6f411eb5643756c4b4611c">allChannels</a>() { <span class="keywordflow">return</span> allChannels_; }</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>    std::vector&lt;int&gt; &amp;channelOccupancy(<span class="keyword">const</span> std::string &amp;channel);</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    std::vector&lt;int&gt; &amp;channelOccupancy(<span class="keyword">const</span> std::string &amp;channel, <span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>);</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a571a293df6d19614c1d2e1ab03358621">  357</a></span>    <span class="keyword">const</span> std::unordered_map&lt;int, PlacedBuilding&gt; &amp;<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a571a293df6d19614c1d2e1ab03358621">buildings</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> buildings_; }</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#a9b3954f9ae3994da867a23db538d5a7e">  358</a></span>    std::unordered_map&lt;int, PlacedBuilding&gt; &amp;<a class="code hl_function" href="classeve_1_1building_1_1PlacementWorld.html#a9b3954f9ae3994da867a23db538d5a7e">buildings</a>() { <span class="keywordflow">return</span> buildings_; }</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span> </div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1PlacementWorld.html#ad01afd1d3e16fd66cd73fdb2fd7d58db">  361</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1building_1_1PlacementSystem.html">PlacementSystem</a>;</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span> </div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    <span class="keywordtype">int</span> terrainFromGid(<span class="keywordtype">int</span> cellX, <span class="keywordtype">int</span> cellY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    <a class="code hl_typedef" href="classeve_1_1building_1_1PlacementWorld.html#a2793ba8d37c0ef7af90787f21e6e3fd4">ChannelMap</a> &amp;edgeChannels(<a class="code hl_enumeration" href="namespaceeve_1_1building.html#ae3284fe6b5aff145b13a23e6df15082d">EdgeAxis</a> axis, <span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>);</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1building_1_1PlacementWorld.html#a2793ba8d37c0ef7af90787f21e6e3fd4">ChannelMap</a> *findEdgeChannels(<a class="code hl_enumeration" href="namespaceeve_1_1building.html#ae3284fe6b5aff145b13a23e6df15082d">EdgeAxis</a> axis, <span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    <a class="code hl_typedef" href="classeve_1_1building_1_1PlacementWorld.html#a2793ba8d37c0ef7af90787f21e6e3fd4">ChannelMap</a> &amp;cornerChannels(<span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>);</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1building_1_1PlacementWorld.html#a2793ba8d37c0ef7af90787f21e6e3fd4">ChannelMap</a> *findCornerChannels(<span class="keywordtype">int</span> <a class="code hl_variable" href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span> </div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    std::string id_;</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    <span class="keywordtype">int</span> width_ = 0;</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    <span class="keywordtype">int</span> height_ = 0;</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    <span class="keywordtype">float</span> floorHeight_ = 3.f;</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    <span class="keywordtype">int</span> activeLevel_ = 0;</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>    std::unique_ptr&lt;grid::GridConfig&gt; grid_;</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    std::string snapMode_ = <span class="stringliteral">&quot;grid&quot;</span>;</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    std::string validateRule_ = <span class="stringliteral">&quot;default&quot;</span>;</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>    std::vector&lt;int&gt; occupancy_;</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>    std::vector&lt;int&gt; terrain_;</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    std::vector&lt;uint8_t&gt; terrainOverrides_;  </div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    std::unordered_map&lt;std::string, std::vector&lt;int&gt;&gt; allChannels_;</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>    std::unordered_map&lt;std::string, std::vector&lt;int&gt;&gt; horizontalEdgeChannels_;</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    std::unordered_map&lt;std::string, std::vector&lt;int&gt;&gt; verticalEdgeChannels_;</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>    std::unordered_map&lt;std::string, std::vector&lt;int&gt;&gt; cornerChannels_;</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>    std::unordered_map&lt;int, ChannelMap&gt; cellChannelsByLevel_;</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>    std::unordered_map&lt;int, ChannelMap&gt; horizontalEdgesByLevel_;</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>    std::unordered_map&lt;int, ChannelMap&gt; verticalEdgesByLevel_;</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    std::unordered_map&lt;int, ChannelMap&gt; cornersByLevel_;</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>    std::unordered_map&lt;int, PlacedBuilding&gt; buildings_;</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>    std::unordered_map&lt;uint64_t, EdgeCurveGroup&gt; edgeCurveGroups_;</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    uint64_t nextEdgeCurveGroupId_ = 1;</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>    <span class="keywordtype">bool</span> publishEvents_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>    std::unordered_map&lt;std::string, std::string&gt; extra_;</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>    std::vector&lt;int&gt; instanceOrder_;</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span> </div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    <span class="comment">// tilemap 绑定（可空）</span></div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    <a class="code hl_class" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *tileLayer_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>    <span class="keywordtype">bool</span> terrainBound_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    std::unordered_map&lt;int, int&gt; terrainGidMap_;</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>};</div>
+</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span> </div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>}  <span class="comment">// namespace eve::building</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00153">ActionNotifyRegistry.cpp:153</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aBuildingTypes_8h_html"><div class="ttname"><a href="BuildingTypes_8h.html">BuildingTypes.h</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a709aad4619f93afb87fab238013812b2"><div class="ttname"><a href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a></div><div class="ttdeci">float py</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00015">CaveWetness.cpp:15</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aFloorTextures_8cpp_html_accc3e5dba688a899c37c57e53edddb7f"><div class="ttname"><a href="FloorTextures_8cpp.html#accc3e5dba688a899c37c57e53edddb7f">layout</a></div><div class="ttdeci">std::string layout</div><div class="ttdef"><b>Definition</b> <a href="FloorTextures_8cpp_source.html#l00206">FloorTextures.cpp:206</a></div></div>
+<div class="ttc" id="aGraphicsParticles_8cpp_html_afc73ef9f5bf5e49690d7bacf34a83fb6"><div class="ttname"><a href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a></div><div class="ttdeci">std::uint32_t key</div><div class="ttdef"><b>Definition</b> <a href="GraphicsParticles_8cpp_source.html#l00068">GraphicsParticles.cpp:68</a></div></div>
+<div class="ttc" id="aHexTerrain_8cpp_html_a1c921d7f2f6a29b15d709c49d2df1797"><div class="ttname"><a href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a></div><div class="ttdeci">float elevation</div><div class="ttdef"><b>Definition</b> <a href="HexTerrain_8cpp_source.html#l00030">HexTerrain.cpp:30</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aecb57814a4eed9c5ec6047d3af2a9488"><div class="ttname"><a href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a></div><div class="ttdeci">std::vector&lt; Colorf &gt; px</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00691">ImageData.cpp:691</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_aceb701de009133aff176d2653f4d0da4"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy</a></div><div class="ttdeci">void(* destroy)(void *)</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00091">JobSystemThreadPool.cpp:91</a></div></div>
+<div class="ttc" id="aModuleAssembly_8cpp_html_acf4d33ee4cff36f69b924471174dcb11"><div class="ttname"><a href="ModuleAssembly_8cpp.html#acf4d33ee4cff36f69b924471174dcb11">level</a></div><div class="ttdeci">int level</div><div class="ttdef"><b>Definition</b> <a href="ModuleAssembly_8cpp_source.html#l00022">ModuleAssembly.cpp:22</a></div></div>
+<div class="ttc" id="aModuleAssembly_8cpp_html_afdc4d55537832536f73f894f88509864"><div class="ttname"><a href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a></div><div class="ttdeci">const std::string * tag</div><div class="ttdef"><b>Definition</b> <a href="ModuleAssembly_8cpp_source.html#l00083">ModuleAssembly.cpp:83</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00146">Pathfinder.cpp:146</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00108">PlayHost.cpp:108</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aRoadTraffic_8cpp_html_a4b9956599f8dd2747a3d305df5cfe8b6"><div class="ttname"><a href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a></div><div class="ttdeci">RoadLaneDirection direction</div><div class="ttdef"><b>Definition</b> <a href="RoadTraffic_8cpp_source.html#l00020">RoadTraffic.cpp:20</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aWfcSimple_8cpp_html_adb4a2bf208285ee38a22edc61cb92ed3"><div class="ttname"><a href="WfcSimple_8cpp.html#adb4a2bf208285ee38a22edc61cb92ed3">semantic</a></div><div class="ttdeci">uint32_t semantic</div><div class="ttdef"><b>Definition</b> <a href="WfcSimple_8cpp_source.html#l00015">WfcSimple.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Ghost_html"><div class="ttname"><a href="classeve_1_1building_1_1Ghost.html">eve::building::Ghost</a></div><div class="ttdoc">EVENGINE_API_WORLD public API.</div><div class="ttdef"><b>Definition</b> <a href="Ghost_8h_source.html#l00016">Ghost.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementSystem_html"><div class="ttname"><a href="classeve_1_1building_1_1PlacementSystem.html">eve::building::PlacementSystem</a></div><div class="ttdoc">EVENGINE_API_WORLD public API.</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8h_source.html#l00031">PlacementSystem.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></div><div class="ttdoc">格子型建筑放置世界（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00032">PlacementWorld.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a1a8f14feae92dfe5123edb6d6cd11f72"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a1a8f14feae92dfe5123edb6d6cd11f72">eve::building::PlacementWorld::getWidth</a></div><div class="ttdeci">int getWidth() const</div><div class="ttdoc">尺寸 / 格子大小 / 原点。</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00052">PlacementWorld.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a1da8ed98ba337d9952c875b9b2ed34de"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a1da8ed98ba337d9952c875b9b2ed34de">eve::building::PlacementWorld::getActiveLevel</a></div><div class="ttdeci">int getActiveLevel() const</div><div class="ttdoc">Floor used by compatibility placement/query APIs.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00072">PlacementWorld.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a2793ba8d37c0ef7af90787f21e6e3fd4"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a2793ba8d37c0ef7af90787f21e6e3fd4">eve::building::PlacementWorld::ChannelMap</a></div><div class="ttdeci">std::unordered_map&lt; std::string, std::vector&lt; int &gt; &gt; ChannelMap</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00034">PlacementWorld.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a363a09fb8fe0026f6dbdb2eea07f5797"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a363a09fb8fe0026f6dbdb2eea07f5797">eve::building::PlacementWorld::~PlacementWorld</a></div><div class="ttdeci">~PlacementWorld()</div><div class="ttdoc">Placement world.</div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a377634862b4da27eb5d0747863d6e9c9"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a377634862b4da27eb5d0747863d6e9c9">eve::building::PlacementWorld::setValidateRule</a></div><div class="ttdeci">void setValidateRule(const std::string &amp;rule)</div><div class="ttdoc">Sets the validate rule.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00083">PlacementWorld.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a421000a97b14e3e7343f93ecbc81e446"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a421000a97b14e3e7343f93ecbc81e446">eve::building::PlacementWorld::PlacementWorld</a></div><div class="ttdeci">PlacementWorld(const PlacementWorld &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a424217e4cfb05a4c8254a146dcfe016a"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a424217e4cfb05a4c8254a146dcfe016a">eve::building::PlacementWorld::getFloorHeight</a></div><div class="ttdeci">float getFloorHeight() const</div><div class="ttdoc">Height between discrete floors along the grid plane normal.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00068">PlacementWorld.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a571a293df6d19614c1d2e1ab03358621"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a571a293df6d19614c1d2e1ab03358621">eve::building::PlacementWorld::buildings</a></div><div class="ttdeci">const std::unordered_map&lt; int, PlacedBuilding &gt; &amp; buildings() const</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00357">PlacementWorld.h:357</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a59dcbbdace2ad7fd2d9f634e7bc3d205"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a59dcbbdace2ad7fd2d9f634e7bc3d205">eve::building::PlacementWorld::terrain</a></div><div class="ttdeci">const std::vector&lt; int &gt; &amp; terrain() const</div><div class="ttdoc">Terrain.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00345">PlacementWorld.h:345</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a637a84170ca4e7e9223f77b3ef0c8147"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a637a84170ca4e7e9223f77b3ef0c8147">eve::building::PlacementWorld::occupancy</a></div><div class="ttdeci">const std::vector&lt; int &gt; &amp; occupancy() const</div><div class="ttdoc">Occupancy.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00341">PlacementWorld.h:341</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a637f1d935c1d4660d58b81f6320631ed"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a637f1d935c1d4660d58b81f6320631ed">eve::building::PlacementWorld::getSnapMode</a></div><div class="ttdeci">std::string getSnapMode() const</div><div class="ttdoc">放置策略：吸附模式 / 校验规则。</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00077">PlacementWorld.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a682fd2c84444c78da2a67a205c56d1f0"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a682fd2c84444c78da2a67a205c56d1f0">eve::building::PlacementWorld::getId</a></div><div class="ttdeci">std::string getId() const</div><div class="ttdoc">世界 id（用于变更事件定位）。</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00047">PlacementWorld.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a6b22f4bc8d37af4967687cac4da4eeae"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a6b22f4bc8d37af4967687cac4da4eeae">eve::building::PlacementWorld::getValidateRule</a></div><div class="ttdeci">std::string getValidateRule() const</div><div class="ttdoc">Returns the validate rule.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00081">PlacementWorld.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a7c2b74b7a94352acfc3a826a07d1f04f"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a7c2b74b7a94352acfc3a826a07d1f04f">eve::building::PlacementWorld::hasGridFromLayer</a></div><div class="ttdeci">bool hasGridFromLayer() const</div><div class="ttdoc">True when grid from layer.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00113">PlacementWorld.h:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a83fe724aa0377c3236fed19519121d1a"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a83fe724aa0377c3236fed19519121d1a">eve::building::PlacementWorld::getEdgeCurveGroupCount</a></div><div class="ttdeci">int getEdgeCurveGroupCount() const</div><div class="ttdoc">Number of complete authoritative edge-curve groups in this world.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00269">PlacementWorld.h:269</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a86f3a2579d06c48029820cb658c29698"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a86f3a2579d06c48029820cb658c29698">eve::building::PlacementWorld::setActiveLevel</a></div><div class="ttdeci">void setActiveLevel(int level)</div><div class="ttdoc">Select the floor used by compatibility placement/query APIs.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00074">PlacementWorld.h:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a88b62bb5e9f3519b6bc7c67d43e381c4"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a88b62bb5e9f3519b6bc7c67d43e381c4">eve::building::PlacementWorld::getTileLayer</a></div><div class="ttdeci">map::TileLayer * getTileLayer() const</div><div class="ttdoc">Returns the tile layer.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00162">PlacementWorld.h:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_a9b3954f9ae3994da867a23db538d5a7e"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#a9b3954f9ae3994da867a23db538d5a7e">eve::building::PlacementWorld::buildings</a></div><div class="ttdeci">std::unordered_map&lt; int, PlacedBuilding &gt; &amp; buildings()</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00358">PlacementWorld.h:358</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_aaa358a6c871bcca7d488689f50fd7a98"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#aaa358a6c871bcca7d488689f50fd7a98">eve::building::PlacementWorld::setId</a></div><div class="ttdeci">void setId(const std::string &amp;id)</div><div class="ttdoc">Sets the id.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00049">PlacementWorld.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_ab9f8592fedb93c30740d011705c0f65c"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#ab9f8592fedb93c30740d011705c0f65c">eve::building::PlacementWorld::nextEdgeCurveGroupId</a></div><div class="ttdeci">EdgeCurveGroupId nextEdgeCurveGroupId() const</div><div class="ttdoc">Return the next monotonic curve-group identity without reserving it.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00271">PlacementWorld.h:271</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_abd409694007ec50ba228a3a2f6940428"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#abd409694007ec50ba228a3a2f6940428">eve::building::PlacementWorld::occupancy</a></div><div class="ttdeci">std::vector&lt; int &gt; &amp; occupancy()</div><div class="ttdoc">Occupancy.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00343">PlacementWorld.h:343</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_ac520c8e511b32b1816d48a2ad7b39a86"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#ac520c8e511b32b1816d48a2ad7b39a86">eve::building::PlacementWorld::setSnapMode</a></div><div class="ttdeci">void setSnapMode(const std::string &amp;mode)</div><div class="ttdoc">Sets the snap mode.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00079">PlacementWorld.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_acc1ddbbcb93c07078776c4586b2d2a2a"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#acc1ddbbcb93c07078776c4586b2d2a2a">eve::building::PlacementWorld::allChannels</a></div><div class="ttdeci">const std::unordered_map&lt; std::string, std::vector&lt; int &gt; &gt; &amp; allChannels() const</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00348">PlacementWorld.h:348</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_adbb01d447a9144861783a8083bf42bbe"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#adbb01d447a9144861783a8083bf42bbe">eve::building::PlacementWorld::getHeight</a></div><div class="ttdeci">int getHeight() const</div><div class="ttdoc">Returns the height.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00054">PlacementWorld.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_adc52fdf3bd6f411eb5643756c4b4611c"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#adc52fdf3bd6f411eb5643756c4b4611c">eve::building::PlacementWorld::allChannels</a></div><div class="ttdeci">std::unordered_map&lt; std::string, std::vector&lt; int &gt; &gt; &amp; allChannels()</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00351">PlacementWorld.h:351</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_afbd1a02228f3b83579d1dccbfe073d67"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#afbd1a02228f3b83579d1dccbfe073d67">eve::building::PlacementWorld::terrain</a></div><div class="ttdeci">std::vector&lt; int &gt; &amp; terrain()</div><div class="ttdoc">Terrain.</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00347">PlacementWorld.h:347</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html_afe6253d7b9ed13b470e034959c19b63d"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html#afe6253d7b9ed13b470e034959c19b63d">eve::building::PlacementWorld::operator=</a></div><div class="ttdeci">PlacementWorld &amp; operator=(const PlacementWorld &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1TileLayer_html"><div class="ttname"><a href="classeve_1_1map_1_1TileLayer.html">eve::map::TileLayer</a></div><div class="ttdoc">ECS tile layer entity. Script mutates tile GIDs / tileset / draw; TileRenderSystem batch-draws atlas ...</div><div class="ttdef"><b>Definition</b> <a href="TileLayer_8h_source.html#l00032">TileLayer.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_html"><div class="ttname"><a href="namespaceeve_1_1building.html">eve::building</a></div><div class="ttdoc">建筑放置模块入口：定义 / 放置世界 / 鬼影 / 变更事件的脚本绑定点。 设计文档：docs/dev/建筑放置系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00007">Building.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_html_ae3284fe6b5aff145b13a23e6df15082d"><div class="ttname"><a href="namespaceeve_1_1building.html#ae3284fe6b5aff145b13a23e6df15082d">eve::building::EdgeAxis</a></div><div class="ttdeci">EdgeAxis</div><div class="ttdoc">Canonical orientation of an edge in logical grid coordinates.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTypes_8h_source.html#l00020">BuildingTypes.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1grid_html"><div class="ttname"><a href="namespaceeve_1_1grid.html">eve::grid</a></div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00023">PlacementWorld.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html"><div class="ttname"><a href="namespaceeve_1_1map.html">eve::map</a></div><div class="ttdoc">放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。 坐标换算统一走 eve::grid（支持 rectang...</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00019">PlacementWorld.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1EdgeCurveGroupId_html"><div class="ttname"><a href="structeve_1_1building_1_1EdgeCurveGroupId.html">eve::building::EdgeCurveGroupId</a></div><div class="ttdoc">Strong world-local identity of one authoritative edge-curve group.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTypes_8h_source.html#l00048">BuildingTypes.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1grid_1_1GridConfig_html"><div class="ttname"><a href="structeve_1_1grid_1_1GridConfig.html">eve::grid::GridConfig</a></div><div class="ttdoc">Grid shape, cell metrics, origin, and placement plane. Pure data; use GridProjection helpers for worl...</div><div class="ttdef"><b>Definition</b> <a href="GridConfig_8h_source.html#l00034">GridConfig.h:34</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/sky/SkyAtmospherePass.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_fde9bd4f816c36f3192a55ae50a4c35e.html">sky</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SkyAtmospherePass.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SkyAtmospherePass_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">Graphics</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">struct </span>SkyWispsLayer;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html">SkyHeightFogParameters</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#aba33976d99700c0acfaab1639116d96f">   20</a></span>    std::array&lt;float, 2&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#aba33976d99700c0acfaab1639116d96f">directionalElevationRange</a>{0, 0};</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ae9154964726cfa73b8820e4a80055412">   21</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ae9154964726cfa73b8820e4a80055412">densityPerMetre</a>       = 0;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ac9bc76035cc2c806722631a88f6db176">   22</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ac9bc76035cc2c806722631a88f6db176">heightFalloffPerMetre</a> = .006f;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#aa666245aaed213580ca884ebeb1beb5a">   23</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#aa666245aaed213580ca884ebeb1beb5a">baseHeightMetres</a>      = -1.5f;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a23b18765ed5e1ecc7f13adf8814fe01a">   24</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a23b18765ed5e1ecc7f13adf8814fe01a">startDistanceMetres</a>   = 73.4803369f;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a13f09930c17b8a1bb426b8aa837a5c17">   25</a></span>    std::array&lt;float, 3&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a13f09930c17b8a1bb426b8aa837a5c17">inscattering</a>{0, 0, 0};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ad346bcbe7c7bf13e32ba11b63822b549">   26</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ad346bcbe7c7bf13e32ba11b63822b549">maximumOpacity</a> = 1;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a0e6016392e6599cfbb816d45210689c1">   27</a></span>    std::array&lt;float, 3&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a0e6016392e6599cfbb816d45210689c1">directionalInscattering</a>{.78809762f, .64244735f, .55544519f};</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a9d4aa36c86a92eac378d3217191305d3">   28</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a9d4aa36c86a92eac378d3217191305d3">directionalExponent</a>            = 5;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ab856e303664a3b5bc09c83b61a36ed9e">   29</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ab856e303664a3b5bc09c83b61a36ed9e">directionalStartDistanceMetres</a> = 100;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a3d21600aaf252b96d3d670af6f920a4b">   30</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a3d21600aaf252b96d3d670af6f920a4b">atmosphereContribution</a>         = 2.3f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#aa6707bb08ed908cc87310e7bfdaab6fe">   31</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#aa6707bb08ed908cc87310e7bfdaab6fe">skyDistanceMetres</a>              = 100000;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    [[nodiscard]] <a class="code hl_define" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a374112bed6e5fb61128a066dc3715eb2">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">   39</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a3b9bae81f4dfd5bfc9682ebe69e2ef2f">   40</a></span>    std::array&lt;float, 3&gt;   <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a3b9bae81f4dfd5bfc9682ebe69e2ef2f">rayleigh</a>{.0067450796f, .0163137194f, .04f};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#ac61166c3b37a763693ea4e4ecf994061">   41</a></span>    <span class="keywordtype">float</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#ac61166c3b37a763693ea4e4ecf994061">rayleighHeightKm</a> = 8;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a7ef765e64b22142d9e6d0e7ffcbc3820">   42</a></span>    std::array&lt;float, 3&gt;   <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a7ef765e64b22142d9e6d0e7ffcbc3820">mieScattering</a>{.0112259542f, .0123162284f, .013996f};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#af350f87369070fec64bceea2c2f11b47">   43</a></span>    <span class="keywordtype">float</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#af350f87369070fec64bceea2c2f11b47">mieHeightKm</a> = 1.2f;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a5cbad0317eab474b82248c03b5096b2e">   44</a></span>    std::array&lt;float, 3&gt;   <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a5cbad0317eab474b82248c03b5096b2e">mieAbsorption</a>{.000444f, .000444f, .000444f};</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a855715f20d663510ec7e8090ed97ccd3">   45</a></span>    <span class="keywordtype">float</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a855715f20d663510ec7e8090ed97ccd3">mieAnisotropy</a> = .75f;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a9c116bb2ad20b05bd8ccc5ee5fa0dd6d">   46</a></span>    std::array&lt;float, 3&gt;   <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a9c116bb2ad20b05bd8ccc5ee5fa0dd6d">ozoneAbsorption</a>{.001794476f, .002f, .000190614f};</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a989a1ad99ce1bee9b2de82f15120a94a">   47</a></span>    <span class="keywordtype">float</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a989a1ad99ce1bee9b2de82f15120a94a">ozoneCenterKm</a>      = 25;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a2dca72d3471a6663b8a742bba631eb88">   48</a></span>    <span class="keywordtype">float</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a2dca72d3471a6663b8a742bba631eb88">ozoneHalfWidthKm</a>   = 15;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a58d7df4242c94302a07d841fff40e85a">   49</a></span>    <span class="keywordtype">float</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a58d7df4242c94302a07d841fff40e85a">groundRadiusKm</a>     = 6360;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a753b2f9eec0a7eb5ef98ffc5a07b7ea6">   50</a></span>    <span class="keywordtype">float</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a753b2f9eec0a7eb5ef98ffc5a07b7ea6">atmosphereHeightKm</a> = 60;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a150de3587dd97ec088c1f1243e9f4641">   51</a></span>    std::array&lt;float, 3&gt;   <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a150de3587dd97ec088c1f1243e9f4641">groundAlbedo</a>{.40197778f, .40197778f, .40197778f};</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a01811515717d917e576c8fe4d689b584">   52</a></span>    <span class="keywordtype">float</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a01811515717d917e576c8fe4d689b584">multiScatteringFactor</a> = 1;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#afafa1a57c157c3e27781385cb6b9a9c5">   53</a></span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1SkyHeightFogParameters.html">SkyHeightFogParameters</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#afafa1a57c157c3e27781385cb6b9a9c5">heightFog</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <a class="code hl_define" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a9ac9d04fcf30a0c5f98c94882d9359bb">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyCelestialLight.html">   59</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1SkyCelestialLight.html">SkyCelestialLight</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyCelestialLight.html#a2de314f0389769acc502d0f87c53bf92">   60</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyCelestialLight.html#a2de314f0389769acc502d0f87c53bf92">direction</a>{-.5f, .8660254f, 0};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyCelestialLight.html#a658de8a7387e9cbc9d36e5ca0cac1f77">   61</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyCelestialLight.html#a658de8a7387e9cbc9d36e5ca0cac1f77">irradiance</a>{5.f};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="};">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html">   65</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html">SkyAtmosphereFrame</a> {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html#adba377742b88347f4ef8892a3bdd39a5">   66</a></span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1SkyCelestialLight.html">SkyCelestialLight</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html#adba377742b88347f4ef8892a3bdd39a5">sun</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html#a53b32e2fc3a6a5c3648dc244e5dab078">   67</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html#a53b32e2fc3a6a5c3648dc244e5dab078">wispsMorphPhase</a> = 0;  <span class="comment">// Normalized periodic phase in [0,1).</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html#a3503d66180302f66d041a4e6d255c724">   69</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html#a3503d66180302f66d041a4e6d255c724">dayPhase</a> = 0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>};</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="};">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">   86</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="code hl_class" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a> {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;SkyAtmospherePass&gt;</a>&gt; prepare(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>&amp;                      graphics,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                                                                            <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a>&amp; parameters,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                                                                            <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1SkyWispsLayer.html">SkyWispsLayer</a>* wisps = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">~SkyAtmospherePass</a>();</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#a7faa070af2778836fe41d0d59b911446">   98</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#a7faa070af2778836fe41d0d59b911446">SkyAtmospherePass</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#acdcc51866e13c2ec790be4c73a325bd9">   99</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a>&amp; <a class="code hl_function" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#acdcc51866e13c2ec790be4c73a325bd9">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLight(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1SkyCelestialLight.html">SkyCelestialLight</a>&amp; <a class="code hl_variable" href="ShadowScheme_8cpp.html#a6d1763a0649bb8d1e7bb07e1f9f63a02">light</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setFrame(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html">SkyAtmosphereFrame</a>&amp; frame);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> attach();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> detach() noexcept;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; prepareView(const glm::mat4&amp; viewProjection, const glm::vec3&amp; eyeMetres);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_variable" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a>(const glm::mat4&amp; viewProjection, const glm::vec3&amp; eyeMetres);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>private:</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; drawView(const glm::mat4&amp;, const glm::vec3&amp;, <span class="keywordtype">bool</span> reflection);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a>();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    struct <a class="code hl_struct" href="structeve_1_1graphics_1_1SkyAtmospherePass_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::unique_ptr&lt;<a class="code hl_struct" href="structeve_1_1graphics_1_1SkyAtmospherePass_1_1Impl.html">Impl</a>&gt; impl_;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>};</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a74b09fdcf18b26aea79409bf319c562c"><div class="ttname"><a href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a></div><div class="ttdeci">#define EVENGINE_API_BACKENDS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00108">Export.h:108</a></div></div>
+<div class="ttc" id="aMeshVfxRenderBatch_8cpp_html_a90ba9e50cca44205ade0c723c61f20ad"><div class="ttname"><a href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a></div><div class="ttdeci">MeshVfxBatchedDraw draw</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8cpp_source.html#l00013">MeshVfxRenderBatch.cpp:13</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aShadowScheme_8cpp_html_a6d1763a0649bb8d1e7bb07e1f9f63a02"><div class="ttname"><a href="ShadowScheme_8cpp.html#a6d1763a0649bb8d1e7bb07e1f9f63a02">light</a></div><div class="ttdeci">Light3D::Data * light</div><div class="ttdef"><b>Definition</b> <a href="ShadowScheme_8cpp_source.html#l00016">ShadowScheme.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00115">Graphics.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1SkyAtmospherePass_html"><div class="ttname"><a href="classeve_1_1graphics_1_1SkyAtmospherePass.html">eve::graphics::SkyAtmospherePass</a></div><div class="ttdoc">Prepared HDR atmospheric sky draw with independent optical parameters and lookup tables.</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00086">SkyAtmospherePass.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1SkyAtmospherePass_html_a7faa070af2778836fe41d0d59b911446"><div class="ttname"><a href="classeve_1_1graphics_1_1SkyAtmospherePass.html#a7faa070af2778836fe41d0d59b911446">eve::graphics::SkyAtmospherePass::SkyAtmospherePass</a></div><div class="ttdeci">SkyAtmospherePass(const SkyAtmospherePass &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1SkyAtmospherePass_html_acdcc51866e13c2ec790be4c73a325bd9"><div class="ttname"><a href="classeve_1_1graphics_1_1SkyAtmospherePass.html#acdcc51866e13c2ec790be4c73a325bd9">eve::graphics::SkyAtmospherePass::operator=</a></div><div class="ttdeci">SkyAtmospherePass &amp; operator=(const SkyAtmospherePass &amp;)=delete</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00025">Animation.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">eve::PhotoModeDomain::Graphics</a></div><div class="ttdeci">@ Graphics</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereFrame_html"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html">eve::graphics::SkyAtmosphereFrame</a></div><div class="ttdoc">One atomic render snapshot, independent of view count or wall-clock time.</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00065">SkyAtmospherePass.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereFrame_html_a3503d66180302f66d041a4e6d255c724"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html#a3503d66180302f66d041a4e6d255c724">eve::graphics::SkyAtmosphereFrame::dayPhase</a></div><div class="ttdeci">float dayPhase</div><div class="ttdoc">Injected solar-day fraction in [0,1); zero is midnight, independent of render count.</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00069">SkyAtmospherePass.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereFrame_html_a53b32e2fc3a6a5c3648dc244e5dab078"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html#a53b32e2fc3a6a5c3648dc244e5dab078">eve::graphics::SkyAtmosphereFrame::wispsMorphPhase</a></div><div class="ttdeci">float wispsMorphPhase</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00067">SkyAtmospherePass.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereFrame_html_adba377742b88347f4ef8892a3bdd39a5"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html#adba377742b88347f4ef8892a3bdd39a5">eve::graphics::SkyAtmosphereFrame::sun</a></div><div class="ttdeci">SkyCelestialLight sun</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00066">SkyAtmospherePass.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">eve::graphics::SkyAtmosphereParameters</a></div><div class="ttdoc">Spherical atmospheric coefficients in inverse kilometres and kilometre heights.</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00039">SkyAtmospherePass.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a01811515717d917e576c8fe4d689b584"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a01811515717d917e576c8fe4d689b584">eve::graphics::SkyAtmosphereParameters::multiScatteringFactor</a></div><div class="ttdeci">float multiScatteringFactor</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00052">SkyAtmospherePass.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a150de3587dd97ec088c1f1243e9f4641"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a150de3587dd97ec088c1f1243e9f4641">eve::graphics::SkyAtmosphereParameters::groundAlbedo</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; groundAlbedo</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00051">SkyAtmospherePass.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a2dca72d3471a6663b8a742bba631eb88"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a2dca72d3471a6663b8a742bba631eb88">eve::graphics::SkyAtmosphereParameters::ozoneHalfWidthKm</a></div><div class="ttdeci">float ozoneHalfWidthKm</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00048">SkyAtmospherePass.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a3b9bae81f4dfd5bfc9682ebe69e2ef2f"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a3b9bae81f4dfd5bfc9682ebe69e2ef2f">eve::graphics::SkyAtmosphereParameters::rayleigh</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; rayleigh</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00040">SkyAtmospherePass.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a58d7df4242c94302a07d841fff40e85a"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a58d7df4242c94302a07d841fff40e85a">eve::graphics::SkyAtmosphereParameters::groundRadiusKm</a></div><div class="ttdeci">float groundRadiusKm</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00049">SkyAtmospherePass.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a5cbad0317eab474b82248c03b5096b2e"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a5cbad0317eab474b82248c03b5096b2e">eve::graphics::SkyAtmosphereParameters::mieAbsorption</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; mieAbsorption</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00044">SkyAtmospherePass.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a753b2f9eec0a7eb5ef98ffc5a07b7ea6"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a753b2f9eec0a7eb5ef98ffc5a07b7ea6">eve::graphics::SkyAtmosphereParameters::atmosphereHeightKm</a></div><div class="ttdeci">float atmosphereHeightKm</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00050">SkyAtmospherePass.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a7ef765e64b22142d9e6d0e7ffcbc3820"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a7ef765e64b22142d9e6d0e7ffcbc3820">eve::graphics::SkyAtmosphereParameters::mieScattering</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; mieScattering</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00042">SkyAtmospherePass.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a855715f20d663510ec7e8090ed97ccd3"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a855715f20d663510ec7e8090ed97ccd3">eve::graphics::SkyAtmosphereParameters::mieAnisotropy</a></div><div class="ttdeci">float mieAnisotropy</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00045">SkyAtmospherePass.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a989a1ad99ce1bee9b2de82f15120a94a"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a989a1ad99ce1bee9b2de82f15120a94a">eve::graphics::SkyAtmosphereParameters::ozoneCenterKm</a></div><div class="ttdeci">float ozoneCenterKm</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00047">SkyAtmospherePass.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a9ac9d04fcf30a0c5f98c94882d9359bb"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a9ac9d04fcf30a0c5f98c94882d9359bb">eve::graphics::SkyAtmosphereParameters::validate</a></div><div class="ttdeci">EVENGINE_API_BACKENDS Result&lt; void &gt; validate() const</div><div class="ttdoc">Validate finite optical coefficients, bounded geometry and energy controls without mutation.</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmosphereLuts_8cpp_source.html#l00106">SkyAtmosphereLuts.cpp:106</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_a9c116bb2ad20b05bd8ccc5ee5fa0dd6d"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#a9c116bb2ad20b05bd8ccc5ee5fa0dd6d">eve::graphics::SkyAtmosphereParameters::ozoneAbsorption</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; ozoneAbsorption</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00046">SkyAtmospherePass.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_ac61166c3b37a763693ea4e4ecf994061"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#ac61166c3b37a763693ea4e4ecf994061">eve::graphics::SkyAtmosphereParameters::rayleighHeightKm</a></div><div class="ttdeci">float rayleighHeightKm</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00041">SkyAtmospherePass.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_af350f87369070fec64bceea2c2f11b47"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#af350f87369070fec64bceea2c2f11b47">eve::graphics::SkyAtmosphereParameters::mieHeightKm</a></div><div class="ttdeci">float mieHeightKm</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00043">SkyAtmospherePass.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmosphereParameters_html_afafa1a57c157c3e27781385cb6b9a9c5"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html#afafa1a57c157c3e27781385cb6b9a9c5">eve::graphics::SkyAtmosphereParameters::heightFog</a></div><div class="ttdeci">SkyHeightFogParameters heightFog</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00053">SkyAtmospherePass.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyAtmospherePass_1_1Impl_html"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyAtmospherePass_1_1Impl.html">eve::graphics::SkyAtmospherePass::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8cpp_source.html#l00054">SkyAtmospherePass.cpp:54</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyCelestialLight_html"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyCelestialLight.html">eve::graphics::SkyCelestialLight</a></div><div class="ttdoc">Explicit celestial lighting snapshot; unit direction points towards the light.</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00059">SkyAtmospherePass.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyCelestialLight_html_a2de314f0389769acc502d0f87c53bf92"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyCelestialLight.html#a2de314f0389769acc502d0f87c53bf92">eve::graphics::SkyCelestialLight::direction</a></div><div class="ttdeci">glm::vec3 direction</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00060">SkyAtmospherePass.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyCelestialLight_html_a658de8a7387e9cbc9d36e5ca0cac1f77"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyCelestialLight.html#a658de8a7387e9cbc9d36e5ca0cac1f77">eve::graphics::SkyCelestialLight::irradiance</a></div><div class="ttdeci">glm::vec3 irradiance</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00061">SkyAtmospherePass.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html">eve::graphics::SkyHeightFogParameters</a></div><div class="ttdoc">Analytic background height fog in metre units, independent of legacy scene fog.</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00016">SkyAtmospherePass.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_a0e6016392e6599cfbb816d45210689c1"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a0e6016392e6599cfbb816d45210689c1">eve::graphics::SkyHeightFogParameters::directionalInscattering</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; directionalInscattering</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00027">SkyAtmospherePass.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_a13f09930c17b8a1bb426b8aa837a5c17"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a13f09930c17b8a1bb426b8aa837a5c17">eve::graphics::SkyHeightFogParameters::inscattering</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; inscattering</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00025">SkyAtmospherePass.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_a23b18765ed5e1ecc7f13adf8814fe01a"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a23b18765ed5e1ecc7f13adf8814fe01a">eve::graphics::SkyHeightFogParameters::startDistanceMetres</a></div><div class="ttdeci">float startDistanceMetres</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00024">SkyAtmospherePass.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_a374112bed6e5fb61128a066dc3715eb2"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a374112bed6e5fb61128a066dc3715eb2">eve::graphics::SkyHeightFogParameters::validate</a></div><div class="ttdeci">EVENGINE_API_BACKENDS Result&lt; void &gt; validate() const</div><div class="ttdoc">Validate finite bounded fog coefficients without mutation.</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmosphereLuts_8cpp_source.html#l00121">SkyAtmosphereLuts.cpp:121</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_a3d21600aaf252b96d3d670af6f920a4b"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a3d21600aaf252b96d3d670af6f920a4b">eve::graphics::SkyHeightFogParameters::atmosphereContribution</a></div><div class="ttdeci">float atmosphereContribution</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00030">SkyAtmospherePass.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_a9d4aa36c86a92eac378d3217191305d3"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#a9d4aa36c86a92eac378d3217191305d3">eve::graphics::SkyHeightFogParameters::directionalExponent</a></div><div class="ttdeci">float directionalExponent</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00028">SkyAtmospherePass.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_aa666245aaed213580ca884ebeb1beb5a"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#aa666245aaed213580ca884ebeb1beb5a">eve::graphics::SkyHeightFogParameters::baseHeightMetres</a></div><div class="ttdeci">float baseHeightMetres</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00023">SkyAtmospherePass.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_aa6707bb08ed908cc87310e7bfdaab6fe"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#aa6707bb08ed908cc87310e7bfdaab6fe">eve::graphics::SkyHeightFogParameters::skyDistanceMetres</a></div><div class="ttdeci">float skyDistanceMetres</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00031">SkyAtmospherePass.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_ab856e303664a3b5bc09c83b61a36ed9e"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ab856e303664a3b5bc09c83b61a36ed9e">eve::graphics::SkyHeightFogParameters::directionalStartDistanceMetres</a></div><div class="ttdeci">float directionalStartDistanceMetres</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00029">SkyAtmospherePass.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_aba33976d99700c0acfaab1639116d96f"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#aba33976d99700c0acfaab1639116d96f">eve::graphics::SkyHeightFogParameters::directionalElevationRange</a></div><div class="ttdeci">std::array&lt; float, 2 &gt; directionalElevationRange</div><div class="ttdoc">Optional directional fog fade over sun direction Y in [-1,1]. Equal endpoints disable fading; otherwi...</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00020">SkyAtmospherePass.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_ac9bc76035cc2c806722631a88f6db176"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ac9bc76035cc2c806722631a88f6db176">eve::graphics::SkyHeightFogParameters::heightFalloffPerMetre</a></div><div class="ttdeci">float heightFalloffPerMetre</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00022">SkyAtmospherePass.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_ad346bcbe7c7bf13e32ba11b63822b549"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ad346bcbe7c7bf13e32ba11b63822b549">eve::graphics::SkyHeightFogParameters::maximumOpacity</a></div><div class="ttdeci">float maximumOpacity</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00026">SkyAtmospherePass.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyHeightFogParameters_html_ae9154964726cfa73b8820e4a80055412"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyHeightFogParameters.html#ae9154964726cfa73b8820e4a80055412">eve::graphics::SkyHeightFogParameters::densityPerMetre</a></div><div class="ttdeci">float densityPerMetre</div><div class="ttdef"><b>Definition</b> <a href="SkyAtmospherePass_8h_source.html#l00021">SkyAtmospherePass.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SkyWispsLayer_html"><div class="ttname"><a href="structeve_1_1graphics_1_1SkyWispsLayer.html">eve::graphics::SkyWispsLayer</a></div><div class="ttdoc">Borrowed authored thin-cloud layer, consumed synchronously by sky preparation.</div><div class="ttdef"><b>Definition</b> <a href="SkyWispsLayer_8h_source.html#l00053">SkyWispsLayer.h:53</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">PhysicalBalancePose</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::animation::PhysicalBalancePose 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a25a15c170ad7bf7b541bb7d5092d06dc">advance</a>(const eve::SimulationStep &amp;step)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ab2e629439e3a31e10c075489d1bc7069">applyImpulse</a>(int boneIndex, float impulseX, float impulseY, float impulseZ, float pointX, float pointY, float pointZ)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a5c07b0ea9c4008131530d7374020a77d">getBalanceBone</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a6497d2e6ca139216d833318ccdba4616">getBoneMass</a>(int boneIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a746b86813e68bf53ad9cfd670d36bcad">getCenterOfMassX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a4e09f86f920dac3c5f55c5b213794079">getCenterOfMassY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a1a19d6f4a483a06ab803aaf99a72c287">getCenterOfMassZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a3f0debf9287238c405d603ee9ff41b6d">getGravity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ac675ee0a3aa3cc2b30b14e0ee72e4763">getInertia</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a2a2ec2316612039d37094ea8824795f3">getLeanVelocityX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ab27f308d6ddd437a9771eb4440ed00d5">getLeanVelocityZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a60ed35e1adf57ad9240f6c749c0ca252">getLeanX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aa7a06717fa34bd55823238b8d045e33c">getLeanZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aa541b987d454176869e6d9ae48c0454d">getMaxLean</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a7b89a8bc09fb17b2de2fbbadbc113e93">getPendulumHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a9581a7e5ff1404cb8a69029b1f27f336">getPose</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aacf1bc0d38d4947d384a4a5288fc5842">getRecoilDamping</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ab1690f9f270a3a65af296edb1e5b074a">getRecoilFrequency</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#acecfacf3727df9c9262d9c712d767ef2">getRecoilInertia</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#af2b7bc63ebd186c1a8a9c9b26af3cd2c">getRecoveryDamping</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#af14c2a9f94f1d04aa2024cebe817bcbb">getRecoveryFrequency</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aff77161bdf4f3f6ec31519b43b69ce2b">getSkeleton</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a45387176f199fe588116a6a473ad1b48">getSupportBone</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ad774ec3e12b7ea2e9493c0d760c1246c">getSupportX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aff0c4e778852b5f37ba0e1d053aee23f">getSupportY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a8dd5d4c131230240d327d04a2ff0537b">getSupportZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aca1b39b1060f10e0bc26a77e98392c63">getTargetPose</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a20860a82b0fe1a15f5f4eef53e25d92b">operator=</a>(const PhysicalBalancePose &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ae4ea4c7dc5c0c03d905620ebf1456771">PhysicalBalancePose</a>(AnimSkeleton *skeleton)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ab904ffb4d8139ec1c56404e08637d382">PhysicalBalancePose</a>(const PhysicalBalancePose &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a6688b2b86a2ac48c54888920d03349d4">setBalanceBone</a>(int boneIndex)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a850835830e7c140b73bb7ce54f36ce4f">setBoneMass</a>(int boneIndex, float mass)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#acdfed7119d99c26d36207fd770e33aa3">setGravity</a>(float metersPerSecondSquared)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a10bd96226e8ce775a5938e82eb66e407">setInertia</a>(float inertia)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a66446be046e92fea7340547606b2a0f9">setMaxLean</a>(float radians)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a78713d901e7255777d30694d68212e02">setPendulumHeight</a>(float meters)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#afb7c8e77665967e67821331c98bd8092">setRecoil</a>(float frequencyHz, float dampingZeta)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a226b54a17a70607a579e57455129efa3">setRecoilInertia</a>(float inertia)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a88729589d179f14b1939b1da30ff96b4">setRecovery</a>(float frequencyHz, float dampingZeta)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a3d72cafcf5a0e217de9f07e830799c21">setSupportBone</a>(int boneIndex)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a7c015e0d3082508ef6a618dce61334b7">setTargetPose</a>(const AnimPose *target)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a37f2de558ff669b6428fefa34bbc791f">snapToTarget</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a0e8fe1d7e4913ca2a08a5865edf2f7bb">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a2e15c0dda49d5762d378023317f114de">~PhysicalBalancePose</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">eve::animation::PhysicalBalancePose</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

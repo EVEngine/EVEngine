@@ -1,0 +1,699 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::stylize::AttackVfxRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1stylize.html">stylize</a></li><li class="navelem"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html">AttackVfxRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1stylize_1_1AttackVfxRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::stylize::AttackVfxRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic pooled runtime for <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html" title="Versioned attack VFX composition recipe.">AttackVfxRecipe</a> instances.  
+ <a href="classeve_1_1stylize_1_1AttackVfxRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AttackVfxRuntime_8h_source.html">AttackVfxRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abe4d46f08fca9611ba7ec5d224aeeeff" id="r_abe4d46f08fca9611ba7ec5d224aeeeff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#abe4d46f08fca9611ba7ec5d224aeeeff">AttackVfxRuntime</a> ()</td></tr>
+<tr class="memdesc:abe4d46f08fca9611ba7ec5d224aeeeff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct with a default pool capacity of 32.  <br /></td></tr>
+<tr class="separator:abe4d46f08fca9611ba7ec5d224aeeeff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc5c92d6b0e8ed0be844ab5e1ba28d6" id="r_afcc5c92d6b0e8ed0be844ab5e1ba28d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#afcc5c92d6b0e8ed0be844ab5e1ba28d6">~AttackVfxRuntime</a> ()</td></tr>
+<tr class="memdesc:afcc5c92d6b0e8ed0be844ab5e1ba28d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attack vfx runtime.  <br /></td></tr>
+<tr class="separator:afcc5c92d6b0e8ed0be844ab5e1ba28d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a949b105031ac5d6a4e127bafd102bf45" id="r_a949b105031ac5d6a4e127bafd102bf45"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a949b105031ac5d6a4e127bafd102bf45">AttackVfxRuntime</a> (const <a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html">AttackVfxRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a949b105031ac5d6a4e127bafd102bf45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a892d135ee623f52df7900d1284b13341" id="r_a892d135ee623f52df7900d1284b13341"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html">AttackVfxRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a892d135ee623f52df7900d1284b13341">operator=</a> (const <a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html">AttackVfxRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a892d135ee623f52df7900d1284b13341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a083e73717587e19c12c23029a45fee3d" id="r_a083e73717587e19c12c23029a45fee3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a083e73717587e19c12c23029a45fee3d">configurePool</a> (std::uint32_t <a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a3cf6bb01346ef59013373c50761cbe2c">capacity</a>)</td></tr>
+<tr class="memdesc:a083e73717587e19c12c23029a45fee3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the instance pool. Fails when any slot is occupied.  <br /></td></tr>
+<tr class="separator:a083e73717587e19c12c23029a45fee3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fd28f2e1aa00ebd4920ee89b18081aa" id="r_a2fd28f2e1aa00ebd4920ee89b18081aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a2fd28f2e1aa00ebd4920ee89b18081aa">registerRecipe</a> (const <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html">AttackVfxRecipe</a> &amp;recipe)</td></tr>
+<tr class="memdesc:a2fd28f2e1aa00ebd4920ee89b18081aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and store an immutable recipe copy keyed by recipe.id.  <br /></td></tr>
+<tr class="separator:a2fd28f2e1aa00ebd4920ee89b18081aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d118e6066499441ef51e6637f9aceae" id="r_a0d118e6066499441ef51e6637f9aceae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a0d118e6066499441ef51e6637f9aceae">registerSkin</a> (const <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> &amp;skin)</td></tr>
+<tr class="memdesc:a0d118e6066499441ef51e6637f9aceae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and store a reusable skin keyed by skin.id.  <br /></td></tr>
+<tr class="separator:a0d118e6066499441ef51e6637f9aceae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae69465951a4930d59c947fbf61ae412f" id="r_ae69465951a4930d59c947fbf61ae412f"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html">AttackVfxRecipe</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#ae69465951a4930d59c947fbf61ae412f">findRecipe</a> (const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;<a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="memdesc:ae69465951a4930d59c947fbf61ae412f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a copy of a registered recipe when present.  <br /></td></tr>
+<tr class="separator:ae69465951a4930d59c947fbf61ae412f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4f0ccfe6e69c687113e10c48fe09aeb" id="r_af4f0ccfe6e69c687113e10c48fe09aeb"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#af4f0ccfe6e69c687113e10c48fe09aeb">findSkin</a> (const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;<a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="memdesc:af4f0ccfe6e69c687113e10c48fe09aeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a copy of a registered skin when present.  <br /></td></tr>
+<tr class="separator:af4f0ccfe6e69c687113e10c48fe09aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab749e489460d6f6fc0b91054774550c2" id="r_ab749e489460d6f6fc0b91054774550c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#ab749e489460d6f6fc0b91054774550c2">play</a> (const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;recipeId, const <a class="el" href="structeve_1_1stylize_1_1AttackVfxRequest.html">AttackVfxRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:ab749e489460d6f6fc0b91054774550c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn one instance from a registered recipe.  <br /></td></tr>
+<tr class="separator:ab749e489460d6f6fc0b91054774550c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6c1e41928b1972670667d3e68f9e7f5" id="r_ac6c1e41928b1972670667d3e68f9e7f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#ac6c1e41928b1972670667d3e68f9e7f5">signal</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view cue)</td></tr>
+<tr class="memdesc:ac6c1e41928b1972670667d3e68f9e7f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deliver a named cue to one live instance (e.g. "impact", "cancel").  <br /></td></tr>
+<tr class="separator:ac6c1e41928b1972670667d3e68f9e7f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe6797c9bbf6ded34ea87057ea675f0e" id="r_afe6797c9bbf6ded34ea87057ea675f0e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#afe6797c9bbf6ded34ea87057ea675f0e">advance</a> (double dtSeconds)</td></tr>
+<tr class="memdesc:afe6797c9bbf6ded34ea87057ea675f0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance all live instances by injected simulation seconds.  <br /></td></tr>
+<tr class="separator:afe6797c9bbf6ded34ea87057ea675f0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2057d0a1a27cf3a1d365082197d043ff" id="r_a2057d0a1a27cf3a1d365082197d043ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a2057d0a1a27cf3a1d365082197d043ff">stop</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <a class="el" href="namespaceeve_1_1stylize.html#ac4ff118116ef00e1ba73e04e743c0932">AttackVfxStopMode</a> mode)</td></tr>
+<tr class="memdesc:a2057d0a1a27cf3a1d365082197d043ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop one instance using the requested teardown mode.  <br /></td></tr>
+<tr class="separator:a2057d0a1a27cf3a1d365082197d043ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d85b77579363979f0175e1b43c3fab8" id="r_a0d85b77579363979f0175e1b43c3fab8"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a0d85b77579363979f0175e1b43c3fab8">inspect</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const</td></tr>
+<tr class="memdesc:a0d85b77579363979f0175e1b43c3fab8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snapshot one live instance; empty when the handle is stale.  <br /></td></tr>
+<tr class="separator:a0d85b77579363979f0175e1b43c3fab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9398164eace7d8cf407cf59278f2ae5d" id="r_a9398164eace7d8cf407cf59278f2ae5d"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a9398164eace7d8cf407cf59278f2ae5d">activeCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a9398164eace7d8cf407cf59278f2ae5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of occupied slots.  <br /></td></tr>
+<tr class="separator:a9398164eace7d8cf407cf59278f2ae5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cf6bb01346ef59013373c50761cbe2c" id="r_a3cf6bb01346ef59013373c50761cbe2c"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html#a3cf6bb01346ef59013373c50761cbe2c">capacity</a> () const noexcept</td></tr>
+<tr class="memdesc:a3cf6bb01346ef59013373c50761cbe2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configured pool capacity.  <br /></td></tr>
+<tr class="separator:a3cf6bb01346ef59013373c50761cbe2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic pooled runtime for <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html" title="Versioned attack VFX composition recipe.">AttackVfxRecipe</a> instances. </p>
+<p>@ownership Owns live instance slots and registered recipe copies. Layer GPU resources are owned by <a class="el" href="classeve_1_1stylize_1_1IAttackVfxLayerExecutor.html" title="Optional open backend for one AttackVfxLayerRole.">IAttackVfxLayerExecutor</a> implementations. @thread Simulation-thread affine. No internal synchronization. @reentrancy Does not invoke user callbacks; may call registered executors. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8h_source.html">AttackVfxRuntime.h</a> 第 <a class="el" href="AttackVfxRuntime_8h_source.html#l00115">115</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abe4d46f08fca9611ba7ec5d224aeeeff" name="abe4d46f08fca9611ba7ec5d224aeeeff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4d46f08fca9611ba7ec5d224aeeeff">&#9670;&#160;</a></span>AttackVfxRuntime() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::AttackVfxRuntime::AttackVfxRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct with a default pool capacity of 32. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00419">419</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afcc5c92d6b0e8ed0be844ab5e1ba28d6" name="afcc5c92d6b0e8ed0be844ab5e1ba28d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcc5c92d6b0e8ed0be844ab5e1ba28d6">&#9670;&#160;</a></span>~AttackVfxRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::AttackVfxRuntime::~AttackVfxRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attack vfx runtime. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00420">420</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a949b105031ac5d6a4e127bafd102bf45" name="a949b105031ac5d6a4e127bafd102bf45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a949b105031ac5d6a4e127bafd102bf45">&#9670;&#160;</a></span>AttackVfxRuntime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::AttackVfxRuntime::AttackVfxRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html">AttackVfxRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9398164eace7d8cf407cf59278f2ae5d" name="a9398164eace7d8cf407cf59278f2ae5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9398164eace7d8cf407cf59278f2ae5d">&#9670;&#160;</a></span>activeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::stylize::AttackVfxRuntime::activeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of occupied slots. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00699">699</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StylizeAction_8cpp_source.html#l00154">eve::stylize_action::StylizeAction::activeCount()</a>.</p>
+
+</div>
+</div>
+<a id="afe6797c9bbf6ded34ea87057ea675f0e" name="afe6797c9bbf6ded34ea87057ea675f0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe6797c9bbf6ded34ea87057ea675f0e">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &gt; eve::stylize::AttackVfxRuntime::advance </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dtSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance all live instances by injected simulation seconds. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dtSeconds</td><td>Finite, non-negative simulation delta. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00573">573</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8h_source.html#l00102">eve::stylize::AttackVfxFrame::advanced</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Result_8h_source.html#l00269">eve::Result&lt; T &gt;::status()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00053">updated</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StylizeAction_8cpp_source.html#l00135">eve::stylize_action::StylizeAction::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a3cf6bb01346ef59013373c50761cbe2c" name="a3cf6bb01346ef59013373c50761cbe2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cf6bb01346ef59013373c50761cbe2c">&#9670;&#160;</a></span>capacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::stylize::AttackVfxRuntime::capacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Configured pool capacity. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00430">configurePool()</a>.</p>
+
+</div>
+</div>
+<a id="a083e73717587e19c12c23029a45fee3d" name="a083e73717587e19c12c23029a45fee3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a083e73717587e19c12c23029a45fee3d">&#9670;&#160;</a></span>configurePool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::configurePool </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>capacity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resize the instance pool. Fails when any slot is occupied. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">capacity</td><td>New slot count; must be &gt; 0. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00428">capacity()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00149">generation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00028">slots</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ae69465951a4930d59c947fbf61ae412f" name="ae69465951a4930d59c947fbf61ae412f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae69465951a4930d59c947fbf61ae412f">&#9670;&#160;</a></span>findRecipe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html">AttackVfxRecipe</a> &gt; eve::stylize::AttackVfxRuntime::findRecipe </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a copy of a registered recipe when present. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00478">478</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af4f0ccfe6e69c687113e10c48fe09aeb" name="af4f0ccfe6e69c687113e10c48fe09aeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4f0ccfe6e69c687113e10c48fe09aeb">&#9670;&#160;</a></span>findSkin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> &gt; eve::stylize::AttackVfxRuntime::findSkin </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a copy of a registered skin when present. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00484">484</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0d85b77579363979f0175e1b43c3fab8" name="a0d85b77579363979f0175e1b43c3fab8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d85b77579363979f0175e1b43c3fab8">&#9670;&#160;</a></span>inspect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> &gt; eve::stylize::AttackVfxRuntime::inspect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Snapshot one live instance; empty when the handle is stale. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00693">693</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StylizeAction_8cpp_source.html#l00145">eve::stylize_action::StylizeAction::inspect()</a>.</p>
+
+</div>
+</div>
+<a id="a892d135ee623f52df7900d1284b13341" name="a892d135ee623f52df7900d1284b13341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a892d135ee623f52df7900d1284b13341">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html">AttackVfxRuntime</a> &amp; eve::stylize::AttackVfxRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html">AttackVfxRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab749e489460d6f6fc0b91054774550c2" name="ab749e489460d6f6fc0b91054774550c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab749e489460d6f6fc0b91054774550c2">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a> &gt; eve::stylize::AttackVfxRuntime::play </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxRequest.html">AttackVfxRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn one instance from a registered recipe. </p>
+<dl class="section return"><dt>返回</dt><dd>Generation-qualified handle or a structured diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00490">490</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Identity_8h_source.html#l00436">eve::LogicalId::format()</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00059">eve::stylize::AttackVfxPhaseState::kind</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00064">eve::stylize::AttackVfxPhaseState::layerCount</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StylizeAction_8cpp_source.html#l00116">eve::stylize_action::StylizeAction::play()</a>.</p>
+
+</div>
+</div>
+<a id="a2fd28f2e1aa00ebd4920ee89b18081aa" name="a2fd28f2e1aa00ebd4920ee89b18081aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fd28f2e1aa00ebd4920ee89b18081aa">&#9670;&#160;</a></span>registerRecipe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::registerRecipe </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html">AttackVfxRecipe</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipe</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and store an immutable recipe copy keyed by recipe.id. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00455">455</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Identity_8h_source.html#l00436">eve::LogicalId::format()</a>, <a class="el" href="AttackVfxRecipe_8h_source.html#l00193">eve::stylize::AttackVfxRecipe::id</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00471">registerSkin()</a>, <a class="el" href="AttackVfxRecipe_8h_source.html#l00196">eve::stylize::AttackVfxRecipe::skin</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a> , 以及 <a class="el" href="AttackVfxRecipe_8cpp_source.html#l00542">eve::stylize::AttackVfxRecipe::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StylizeAction_8cpp_source.html#l00104">eve::stylize_action::StylizeAction::registerRecipeJson()</a>.</p>
+
+</div>
+</div>
+<a id="a0d118e6066499441ef51e6637f9aceae" name="a0d118e6066499441ef51e6637f9aceae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d118e6066499441ef51e6637f9aceae">&#9670;&#160;</a></span>registerSkin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::registerSkin </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> &amp;&#160;</td>
+          <td class="paramname"><em>skin</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and store a reusable skin keyed by skin.id. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00471">471</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00436">eve::LogicalId::format()</a>, <a class="el" href="AttackVfxRecipe_8h_source.html#l00153">eve::stylize::AttackVfxSkin::id</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a> , 以及 <a class="el" href="AttackVfxRecipe_8cpp_source.html#l00519">eve::stylize::AttackVfxSkin::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00455">registerRecipe()</a> , 以及 <a class="el" href="StylizeAction_8cpp_source.html#l00110">eve::stylize_action::StylizeAction::registerSkinJson()</a>.</p>
+
+</div>
+</div>
+<a id="ac6c1e41928b1972670667d3e68f9e7f5" name="ac6c1e41928b1972670667d3e68f9e7f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6c1e41928b1972670667d3e68f9e7f5">&#9670;&#160;</a></span>signal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &gt; eve::stylize::AttackVfxRuntime::signal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>cue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deliver a named cue to one live instance (e.g. "impact", "cancel"). </p>
+<dl class="section remark"><dt>备注</dt><dd>The reserved cue "cancel" finishes the instance immediately. </dd></dl>
+<dl class="section return"><dt>返回</dt><dd>Frame events produced by the cue (phase enter/exit, cue consumed/ignored). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00555">555</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StylizeAction_8cpp_source.html#l00129">eve::stylize_action::StylizeAction::signal()</a>.</p>
+
+</div>
+</div>
+<a id="a2057d0a1a27cf3a1d365082197d043ff" name="a2057d0a1a27cf3a1d365082197d043ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2057d0a1a27cf3a1d365082197d043ff">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &gt; eve::stylize::AttackVfxRuntime::stop </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1stylize.html#ac4ff118116ef00e1ba73e04e743c0932">AttackVfxStopMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop one instance using the requested teardown mode. </p>
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00678">678</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1stylize.html#ac4ff118116ef00e1ba73e04e743c0932aea4788705e6873b424c65e91c2846b19">eve::stylize::Cancel</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="namespaceeve_1_1stylize.html#ac4ff118116ef00e1ba73e04e743c0932a9ce669057aef5a0b1e9768be824ac83d">eve::stylize::StopEmitting</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StylizeAction_8cpp_source.html#l00139">eve::stylize_action::StylizeAction::stop()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/stylize/<a class="el" href="AttackVfxRuntime_8h_source.html">AttackVfxRuntime.h</a></li>
+<li>src/modules/stylize/<a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

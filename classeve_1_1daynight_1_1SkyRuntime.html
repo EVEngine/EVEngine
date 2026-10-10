@@ -1,0 +1,517 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::daynight::SkyRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1daynight.html">daynight</a></li><li class="navelem"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html">SkyRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1daynight_1_1SkyRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::daynight::SkyRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owns independent sky simulation and its prepared atmospheric contributor.  
+ <a href="classeve_1_1daynight_1_1SkyRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SkyRuntime_8h_source.html">SkyRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1SkyRuntime_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:adac83a9688a303f8e0e75324e5695772" id="r_adac83a9688a303f8e0e75324e5695772"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html#adac83a9688a303f8e0e75324e5695772">~SkyRuntime</a> ()</td></tr>
+<tr class="separator:adac83a9688a303f8e0e75324e5695772"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9204a9f2f48b34bd390a34cfce6774ec" id="r_a9204a9f2f48b34bd390a34cfce6774ec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html#a9204a9f2f48b34bd390a34cfce6774ec">SkyRuntime</a> (const <a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html">SkyRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a9204a9f2f48b34bd390a34cfce6774ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05e6d45aceed448c0681fdb4872ee242" id="r_a05e6d45aceed448c0681fdb4872ee242"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html">SkyRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html#a05e6d45aceed448c0681fdb4872ee242">operator=</a> (const <a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html">SkyRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a05e6d45aceed448c0681fdb4872ee242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30f9d4e2a324ac5875139a53bfffca2b" id="r_a30f9d4e2a324ac5875139a53bfffca2b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html#a30f9d4e2a324ac5875139a53bfffca2b">advance</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>)</td></tr>
+<tr class="memdesc:a30f9d4e2a324ac5875139a53bfffca2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance one simulation clock and atomically publish solar lighting/cloud phase; invalid time preserves all.  <br /></td></tr>
+<tr class="separator:a30f9d4e2a324ac5875139a53bfffca2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69340707732c621fbca651d32e51c020" id="r_a69340707732c621fbca651d32e51c020"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html#a69340707732c621fbca651d32e51c020">transitionTo</a> (const <a class="el" href="structeve_1_1daynight_1_1SkyWeather.html">SkyWeather</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>)</td></tr>
+<tr class="memdesc:a69340707732c621fbca651d32e51c020"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a validated weather transition without advancing simulation time.  <br /></td></tr>
+<tr class="separator:a69340707732c621fbca651d32e51c020"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86b5d9b94a597f07675ffdeeb57c0e68" id="r_a86b5d9b94a597f07675ffdeeb57c0e68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1daynight_1_1SkyRuntimeFrame.html">SkyRuntimeFrame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html#a86b5d9b94a597f07675ffdeeb57c0e68">frame</a> () const noexcept</td></tr>
+<tr class="memdesc:a86b5d9b94a597f07675ffdeeb57c0e68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy current simulation and solar lighting without advancing either.  <br /></td></tr>
+<tr class="separator:a86b5d9b94a597f07675ffdeeb57c0e68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10d4875e9524b5f891a5df4bde85c76d" id="r_a10d4875e9524b5f891a5df4bde85c76d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html#a10d4875e9524b5f891a5df4bde85c76d">attach</a> ()</td></tr>
+<tr class="memdesc:a10d4875e9524b5f891a5df4bde85c76d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach the prepared main-view and reflection contributors, idempotently.  <br /></td></tr>
+<tr class="separator:a10d4875e9524b5f891a5df4bde85c76d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdf06e275e222f6e15bed1864351497c" id="r_abdf06e275e222f6e15bed1864351497c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html#abdf06e275e222f6e15bed1864351497c">detach</a> () noexcept</td></tr>
+<tr class="memdesc:abdf06e275e222f6e15bed1864351497c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregister both contributors; simulation and prepared resources remain owned.  <br /></td></tr>
+<tr class="separator:abdf06e275e222f6e15bed1864351497c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a03230a37fb5f80f894121af63bb0952c" id="r_a03230a37fb5f80f894121af63bb0952c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html">SkyRuntime</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html#a03230a37fb5f80f894121af63bb0952c">prepare</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;graphics, const <a class="el" href="structeve_1_1daynight_1_1SkyRuntimeSettings.html">SkyRuntimeSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">graphics::SkyAtmosphereParameters</a> &amp;atmosphere, const <a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html">graphics::SkyWispsLayer</a> *wisps=nullptr)</td></tr>
+<tr class="memdesc:a03230a37fb5f80f894121af63bb0952c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate settings and prepare all atmospheric resources before publication.  <br /></td></tr>
+<tr class="separator:a03230a37fb5f80f894121af63bb0952c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owns independent sky simulation and its prepared atmospheric contributor. </p>
+<p>Exactly one timeline advances from caller-injected time. All render views consume the resulting lighting and authored wisps morph phase without advancing simulation. Weather transitions are simulated; volumetric clouds, weather-driven fog and precipitation are not yet rendered. No legacy <a class="el" href="classeve_1_1daynight_1_1DayNight.html" title="DayNight module — a time-of-day cycle that drives the sun, sky and light.">DayNight</a> state or scene light is changed. @thread Graphics thread, outside contributor dispatch, including destruction. @lifetime Owns all state and the render pass; provider-first retirement is detected through its weak lifetime token, and pass-first destruction unregisters contributors. @reentrancy No script callbacks, locks or retained caller configuration pointers. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyRuntime_8h_source.html">SkyRuntime.h</a> 第 <a class="el" href="SkyRuntime_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="adac83a9688a303f8e0e75324e5695772" name="adac83a9688a303f8e0e75324e5695772"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adac83a9688a303f8e0e75324e5695772">&#9670;&#160;</a></span>~SkyRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::daynight::SkyRuntime::~SkyRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9204a9f2f48b34bd390a34cfce6774ec" name="a9204a9f2f48b34bd390a34cfce6774ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9204a9f2f48b34bd390a34cfce6774ec">&#9670;&#160;</a></span>SkyRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::daynight::SkyRuntime::SkyRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html">SkyRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a30f9d4e2a324ac5875139a53bfffca2b" name="a30f9d4e2a324ac5875139a53bfffca2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30f9d4e2a324ac5875139a53bfffca2b">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::daynight::SkyRuntime::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>duration</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance one simulation clock and atomically publish solar lighting/cloud phase; invalid time preserves all. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyRuntime_8cpp_source.html">SkyRuntime.cpp</a> 第 <a class="el" href="SkyRuntime_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00018">duration</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00016">light</a>, <a class="el" href="GraphicsLifetime_8cpp_source.html#l00009">retired</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyScriptBindings_8cpp_source.html#l00035">eve::daynight::exposeSkyScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a10d4875e9524b5f891a5df4bde85c76d" name="a10d4875e9524b5f891a5df4bde85c76d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10d4875e9524b5f891a5df4bde85c76d">&#9670;&#160;</a></span>attach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::daynight::SkyRuntime::attach </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach the prepared main-view and reflection contributors, idempotently. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyRuntime_8cpp_source.html">SkyRuntime.cpp</a> 第 <a class="el" href="SkyRuntime_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="GraphicsLifetime_8cpp_source.html#l00009">retired</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyScriptBindings_8cpp_source.html#l00035">eve::daynight::exposeSkyScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="abdf06e275e222f6e15bed1864351497c" name="abdf06e275e222f6e15bed1864351497c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdf06e275e222f6e15bed1864351497c">&#9670;&#160;</a></span>detach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::SkyRuntime::detach </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unregister both contributors; simulation and prepared resources remain owned. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyRuntime_8cpp_source.html">SkyRuntime.cpp</a> 第 <a class="el" href="SkyRuntime_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyScriptBindings_8cpp_source.html#l00035">eve::daynight::exposeSkyScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a86b5d9b94a597f07675ffdeeb57c0e68" name="a86b5d9b94a597f07675ffdeeb57c0e68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86b5d9b94a597f07675ffdeeb57c0e68">&#9670;&#160;</a></span>frame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1daynight_1_1SkyRuntimeFrame.html">SkyRuntimeFrame</a> eve::daynight::SkyRuntime::frame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy current simulation and solar lighting without advancing either. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyRuntime_8cpp_source.html">SkyRuntime.cpp</a> 第 <a class="el" href="SkyRuntime_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkyRuntime_8h_source.html#l00032">eve::daynight::SkyRuntimeFrame::cloudTime</a>, <a class="el" href="SkyRuntime_8h_source.html#l00031">eve::daynight::SkyRuntimeFrame::simulation</a>, <a class="el" href="SkyRuntime_8h_source.html#l00034">eve::daynight::SkyRuntimeFrame::sunDirection</a>, <a class="el" href="SkyRuntime_8h_source.html#l00035">eve::daynight::SkyRuntimeFrame::sunIrradiance</a> , 以及 <a class="el" href="SkyRuntime_8h_source.html#l00033">eve::daynight::SkyRuntimeFrame::wispsMorphPhase</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyScriptBindings_8cpp_source.html#l00035">eve::daynight::exposeSkyScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a05e6d45aceed448c0681fdb4872ee242" name="a05e6d45aceed448c0681fdb4872ee242"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05e6d45aceed448c0681fdb4872ee242">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html">SkyRuntime</a> &amp; eve::daynight::SkyRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html">SkyRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a03230a37fb5f80f894121af63bb0952c" name="a03230a37fb5f80f894121af63bb0952c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03230a37fb5f80f894121af63bb0952c">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1daynight_1_1SkyRuntime.html">SkyRuntime</a> &gt; &gt; eve::daynight::SkyRuntime::prepare </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1daynight_1_1SkyRuntimeSettings.html">SkyRuntimeSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">graphics::SkyAtmosphereParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>atmosphere</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html">graphics::SkyWispsLayer</a> *&#160;</td>
+          <td class="paramname"><em>wisps</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate settings and prepare all atmospheric resources before publication. </p>
+<dl class="section return"><dt>返回</dt><dd>Detached owning runtime or failure without published contributors. </dd></dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">wisps</td><td>Optional source data borrowed synchronously; GPU preparation copies it. @cost CPU LUT baking and GPU pipeline/upload work; amortize over configuration lifetime. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="SkyRuntime_8cpp_source.html">SkyRuntime.cpp</a> 第 <a class="el" href="SkyRuntime_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkyWispsLayer_8h_source.html#l00088">eve::graphics::SkyWispsLayer::cloudTime</a>, <a class="el" href="SkyTimeline_8cpp_source.html#l00022">eve::daynight::SkyTimeline::create()</a>, <a class="el" href="SkySolarOrbit_8cpp_source.html#l00014">eve::daynight::SkySolarOrbit::create()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00016">light</a>, <a class="el" href="SkyWispsLayer_8h_source.html#l00086">eve::graphics::SkyWispsLayer::morphPeriod</a>, <a class="el" href="SkyWispsLayer_8h_source.html#l00086">eve::graphics::SkyWispsLayer::morphRate</a>, <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>, <a class="el" href="GraphicsLifetime_8cpp_source.html#l00027">eve::graphics::Graphics::resourceLifetime()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00153">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyScriptBindings_8cpp_source.html#l00035">eve::daynight::exposeSkyScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a69340707732c621fbca651d32e51c020" name="a69340707732c621fbca651d32e51c020"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69340707732c621fbca651d32e51c020">&#9670;&#160;</a></span>transitionTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::daynight::SkyRuntime::transitionTo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1daynight_1_1SkyWeather.html">SkyWeather</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>duration</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start a validated weather transition without advancing simulation time. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyRuntime_8cpp_source.html">SkyRuntime.cpp</a> 第 <a class="el" href="SkyRuntime_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00018">duration</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GraphicsLifetime_8cpp_source.html#l00009">retired</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/daynight/sky/<a class="el" href="SkyRuntime_8h_source.html">SkyRuntime.h</a></li>
+<li>src/modules/daynight/sky/<a class="el" href="SkyRuntime_8cpp_source.html">SkyRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

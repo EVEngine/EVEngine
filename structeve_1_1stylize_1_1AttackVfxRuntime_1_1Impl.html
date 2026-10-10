@@ -1,0 +1,1169 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::stylize::AttackVfxRuntime::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1stylize.html">stylize</a></li><li class="navelem"><a class="el" href="classeve_1_1stylize_1_1AttackVfxRuntime.html">AttackVfxRuntime</a></li><li class="navelem"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::stylize::AttackVfxRuntime::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1LiveLayer.html">LiveLayer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1LivePhase.html">LivePhase</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a04b8f79b6f70dfea64fc3f1f7c342c59" id="r_a04b8f79b6f70dfea64fc3f1f7c342c59"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a04b8f79b6f70dfea64fc3f1f7c342c59">resolve</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="separator:a04b8f79b6f70dfea64fc3f1f7c342c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e087e267d8fffba940cee5b3a12fd9" id="r_a96e087e267d8fffba940cee5b3a12fd9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a96e087e267d8fffba940cee5b3a12fd9">peek</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const noexcept</td></tr>
+<tr class="separator:a96e087e267d8fffba940cee5b3a12fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7214d2044f679d3336f0f1cd5eff10e4" id="r_a7214d2044f679d3336f0f1cd5eff10e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a7214d2044f679d3336f0f1cd5eff10e4">resolveSkinId</a> (const <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html">AttackVfxRecipe</a> &amp;recipe, const <a class="el" href="structeve_1_1stylize_1_1AttackVfxRequest.html">AttackVfxRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>) const</td></tr>
+<tr class="separator:a7214d2044f679d3336f0f1cd5eff10e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a8acaa75caa94ae8a4151fd2022ff6f" id="r_a7a8acaa75caa94ae8a4151fd2022ff6f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a7a8acaa75caa94ae8a4151fd2022ff6f">skinFor</a> (const <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> &amp;state) const</td></tr>
+<tr class="separator:a7a8acaa75caa94ae8a4151fd2022ff6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab70334c32787059d4dd935d9eefc5647" id="r_ab70334c32787059d4dd935d9eefc5647"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html">AttackVfxLayerStartRequest</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#ab70334c32787059d4dd935d9eefc5647">makeLayerRequest</a> (const <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> &amp;state, <a class="el" href="namespaceeve_1_1stylize.html#a22cb679f271c73efdd577a279eff5189">AttackVfxPhaseKind</a> <a class="el" href="CaveMesh_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a>, std::size_t phaseIndex, std::size_t layerIndex, const <a class="el" href="structeve_1_1stylize_1_1AttackVfxLayer.html">AttackVfxLayer</a> *<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, const <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> *skin) const</td></tr>
+<tr class="separator:ab70334c32787059d4dd935d9eefc5647"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4ebdfd9486d63d43b731fe5e09b4d7f" id="r_aa4ebdfd9486d63d43b731fe5e09b4d7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#aa4ebdfd9486d63d43b731fe5e09b4d7f">startOneLayer</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, std::size_t phaseIndex, const <a class="el" href="structeve_1_1stylize_1_1AttackVfxPhase.html">AttackVfxPhase</a> &amp;authored, const <a class="el" href="structeve_1_1stylize_1_1AttackVfxLayer.html">AttackVfxLayer</a> &amp;<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, std::size_t layerIndex, const <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> *skin, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;frame)</td></tr>
+<tr class="separator:aa4ebdfd9486d63d43b731fe5e09b4d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a438a143458c44d6b1063a0e9b329b367" id="r_a438a143458c44d6b1063a0e9b329b367"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a438a143458c44d6b1063a0e9b329b367">startPhaseLayers</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, std::size_t phaseIndex, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;frame)</td></tr>
+<tr class="separator:a438a143458c44d6b1063a0e9b329b367"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a958b9189cd41c4c269cc5c68220e3473" id="r_a958b9189cd41c4c269cc5c68220e3473"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a958b9189cd41c4c269cc5c68220e3473">stopLiveLayer</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1LiveLayer.html">LiveLayer</a> &amp;live, <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">AttackVfxStopBehavior</a> behavior)</td></tr>
+<tr class="separator:a958b9189cd41c4c269cc5c68220e3473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07b883fc081d547ebbe81adf1cfd616e" id="r_a07b883fc081d547ebbe81adf1cfd616e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a07b883fc081d547ebbe81adf1cfd616e">stopPhaseLayers</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, std::size_t phaseIndex, std::optional&lt; <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">AttackVfxStopBehavior</a> &gt; behaviorOverride=std::nullopt)</td></tr>
+<tr class="separator:a07b883fc081d547ebbe81adf1cfd616e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a180bc6db076992b3866294b2c1c299ff" id="r_a180bc6db076992b3866294b2c1c299ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a180bc6db076992b3866294b2c1c299ff">clearDraining</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">AttackVfxStopBehavior</a> behavior)</td></tr>
+<tr class="separator:a180bc6db076992b3866294b2c1c299ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addd0f19236532156f9347ba183a39a3c" id="r_addd0f19236532156f9347ba183a39a3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#addd0f19236532156f9347ba183a39a3c">updateLiveLayer</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, <a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1LiveLayer.html">LiveLayer</a> &amp;live, double dtSeconds)</td></tr>
+<tr class="separator:addd0f19236532156f9347ba183a39a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4f3963d20d3b7e79017875bcc2bac6a" id="r_ae4f3963d20d3b7e79017875bcc2bac6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#ae4f3963d20d3b7e79017875bcc2bac6a">updatePhaseLayers</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, std::size_t phaseIndex, double dtSeconds)</td></tr>
+<tr class="separator:ae4f3963d20d3b7e79017875bcc2bac6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8b3446d166cbf52faed063438328748" id="r_ad8b3446d166cbf52faed063438328748"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#ad8b3446d166cbf52faed063438328748">updateDraining</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, double dtSeconds)</td></tr>
+<tr class="separator:ad8b3446d166cbf52faed063438328748"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac13dc581927b3bb786ac613fbb02b9b6" id="r_ac13dc581927b3bb786ac613fbb02b9b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#ac13dc581927b3bb786ac613fbb02b9b6">enterPhase</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, std::size_t phaseIndex, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;frame)</td></tr>
+<tr class="separator:ac13dc581927b3bb786ac613fbb02b9b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b3e84053708d1bf1692c3f6106d9f26" id="r_a5b3e84053708d1bf1692c3f6106d9f26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a5b3e84053708d1bf1692c3f6106d9f26">exitPhase</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, std::size_t phaseIndex, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;frame, std::string_view cue, std::optional&lt; <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">AttackVfxStopBehavior</a> &gt; behaviorOverride=std::nullopt)</td></tr>
+<tr class="separator:a5b3e84053708d1bf1692c3f6106d9f26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16150300208a21e496fb65c88b214217" id="r_a16150300208a21e496fb65c88b214217"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a16150300208a21e496fb65c88b214217">armTimedPhases</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> &amp;state)</td></tr>
+<tr class="separator:a16150300208a21e496fb65c88b214217"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab60d71d316191c143802c00950d69c3c" id="r_ab60d71d316191c143802c00950d69c3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#ab60d71d316191c143802c00950d69c3c">applyCue</a> (<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;slot, std::string_view cue, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;frame)</td></tr>
+<tr class="separator:ab60d71d316191c143802c00950d69c3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe34ebc1f0c6c7b705506e3585bcd04c" id="r_abe34ebc1f0c6c7b705506e3585bcd04c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#abe34ebc1f0c6c7b705506e3585bcd04c">finishInstance</a> (std::size_t slotIndex, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;frame, std::string_view cue, bool clearImmediately)</td></tr>
+<tr class="separator:abe34ebc1f0c6c7b705506e3585bcd04c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c91d015007be88298fdb86e53db552f" id="r_a8c91d015007be88298fdb86e53db552f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a8c91d015007be88298fdb86e53db552f">stopAllOccupied</a> ()</td></tr>
+<tr class="separator:a8c91d015007be88298fdb86e53db552f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a8ddb1a73663bdd22a37e3b054daafe43" id="r_a8ddb1a73663bdd22a37e3b054daafe43"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a8ddb1a73663bdd22a37e3b054daafe43">slots</a> {kDefaultCapacity}</td></tr>
+<tr class="separator:a8ddb1a73663bdd22a37e3b054daafe43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a76308f12dec1d524ab2c7117880b40" id="r_a8a76308f12dec1d524ab2c7117880b40"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html">AttackVfxRecipe</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a8a76308f12dec1d524ab2c7117880b40">recipes</a></td></tr>
+<tr class="separator:a8a76308f12dec1d524ab2c7117880b40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96144521b0f185a18126bf567ea0f215" id="r_a96144521b0f185a18126bf567ea0f215"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#a96144521b0f185a18126bf567ea0f215">skins</a></td></tr>
+<tr class="separator:a96144521b0f185a18126bf567ea0f215"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab934a05067270c0d862bbeee9e22048b" id="r_ab934a05067270c0d862bbeee9e22048b"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl.html#ab934a05067270c0d862bbeee9e22048b">tickSerial</a> = 0</td></tr>
+<tr class="separator:ab934a05067270c0d862bbeee9e22048b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00026">26</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ab60d71d316191c143802c00950d69c3c" name="ab60d71d316191c143802c00950d69c3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab60d71d316191c143802c00950d69c3c">&#9670;&#160;</a></span>applyCue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::applyCue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>cue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00184">consumed</a>, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrameEvent.html#aff04cd7d6eaaa4e1bbe192ff998ca4e3ac3a663e1d305dd23f7ae047d4d7b09e3">eve::stylize::AttackVfxFrameEvent::CueConsumed</a>, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrameEvent.html#aff04cd7d6eaaa4e1bbe192ff998ca4e3ae763b2cd2595986054ecc73f24c0a55a">eve::stylize::AttackVfxFrameEvent::CueIgnored</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00297">enterPhase()</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00104">eve::stylize::AttackVfxFrame::events</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00312">exitPhase()</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00091">eve::stylize::AttackVfxFrameEvent::kind</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00048">recipes</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00042">eve::stylize::AttackVfxRuntime::Impl::Slot::state</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a16150300208a21e496fb65c88b214217" name="a16150300208a21e496fb65c88b214217"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16150300208a21e496fb65c88b214217">&#9670;&#160;</a></span>armTimedPhases()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::AttackVfxRuntime::Impl::armTimedPhases </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00048">recipes</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+</div>
+</div>
+<a id="a180bc6db076992b3866294b2c1c299ff" name="a180bc6db076992b3866294b2c1c299ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a180bc6db076992b3866294b2c1c299ff">&#9670;&#160;</a></span>clearDraining()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::clearDraining </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">AttackVfxStopBehavior</a>&#160;</td>
+          <td class="paramname"><em>behavior</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740a0152a06f686474aa7d9d54f2910b73c5">eve::stylize::ClearImmediately</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00044">eve::stylize::AttackVfxRuntime::Impl::Slot::draining</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00013">status</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00182">stopLiveLayer()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00372">finishInstance()</a>.</p>
+
+</div>
+</div>
+<a id="ac13dc581927b3bb786ac613fbb02b9b6" name="ac13dc581927b3bb786ac613fbb02b9b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac13dc581927b3bb786ac613fbb02b9b6">&#9670;&#160;</a></span>enterPhase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::enterPhase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>phaseIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8h_source.html#l00104">eve::stylize::AttackVfxFrame::events</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00091">eve::stylize::AttackVfxFrameEvent::kind</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrameEvent.html#aff04cd7d6eaaa4e1bbe192ff998ca4e3aa8c0c1e047b0eab45feadfa6eb6b6b69">eve::stylize::AttackVfxFrameEvent::PhaseEnter</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00144">startPhaseLayers()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00042">eve::stylize::AttackVfxRuntime::Impl::Slot::state</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00341">applyCue()</a>.</p>
+
+</div>
+</div>
+<a id="a5b3e84053708d1bf1692c3f6106d9f26" name="a5b3e84053708d1bf1692c3f6106d9f26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b3e84053708d1bf1692c3f6106d9f26">&#9670;&#160;</a></span>exitPhase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::exitPhase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>phaseIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>cue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">AttackVfxStopBehavior</a> &gt;&#160;</td>
+          <td class="paramname"><em>behaviorOverride</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8h_source.html#l00104">eve::stylize::AttackVfxFrame::events</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00091">eve::stylize::AttackVfxFrameEvent::kind</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrameEvent.html#aff04cd7d6eaaa4e1bbe192ff998ca4e3afea877fd9375f02cb77a5d33cdc2b702">eve::stylize::AttackVfxFrameEvent::PhaseExit</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00042">eve::stylize::AttackVfxRuntime::Impl::Slot::state</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00194">stopPhaseLayers()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00341">applyCue()</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00372">finishInstance()</a>.</p>
+
+</div>
+</div>
+<a id="abe34ebc1f0c6c7b705506e3585bcd04c" name="abe34ebc1f0c6c7b705506e3585bcd04c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe34ebc1f0c6c7b705506e3585bcd04c">&#9670;&#160;</a></span>finishInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::finishInstance </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>slotIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>cue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>clearImmediately</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00212">clearDraining()</a>, <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740a0152a06f686474aa7d9d54f2910b73c5">eve::stylize::ClearImmediately</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00104">eve::stylize::AttackVfxFrame::events</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00312">exitPhase()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrameEvent.html#aff04cd7d6eaaa4e1bbe192ff998ca4e3a9b50df8da92f453ec8b006920e304abf">eve::stylize::AttackVfxFrameEvent::InstanceStopped</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00091">eve::stylize::AttackVfxFrameEvent::kind</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00047">slots</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00013">status</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00103">eve::stylize::AttackVfxFrame::stopped</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00410">stopAllOccupied()</a>.</p>
+
+</div>
+</div>
+<a id="ab70334c32787059d4dd935d9eefc5647" name="ab70334c32787059d4dd935d9eefc5647"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab70334c32787059d4dd935d9eefc5647">&#9670;&#160;</a></span>makeLayerRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1stylize_1_1AttackVfxLayerStartRequest.html">AttackVfxLayerStartRequest</a> eve::stylize::AttackVfxRuntime::Impl::makeLayerRequest </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1stylize.html#a22cb679f271c73efdd577a279eff5189">AttackVfxPhaseKind</a>&#160;</td>
+          <td class="paramname"><em>phase</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>phaseIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layerIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxLayer.html">AttackVfxLayer</a> *&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> *&#160;</td>
+          <td class="paramname"><em>skin</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxLayerExecutor_8h_source.html#l00038">eve::stylize::AttackVfxLayerStartRequest::instance</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00050">tickSerial</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00103">startOneLayer()</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00224">updateLiveLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a96e087e267d8fffba940cee5b3a12fd9" name="a96e087e267d8fffba940cee5b3a12fd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96e087e267d8fffba940cee5b3a12fd9">&#9670;&#160;</a></span>peek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> * eve::stylize::AttackVfxRuntime::Impl::peek </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00047">slots</a>.</p>
+
+</div>
+</div>
+<a id="a04b8f79b6f70dfea64fc3f1f7c342c59" name="a04b8f79b6f70dfea64fc3f1f7c342c59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04b8f79b6f70dfea64fc3f1f7c342c59">&#9670;&#160;</a></span>resolve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> * &gt; eve::stylize::AttackVfxRuntime::Impl::resolve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxHandle.html">AttackVfxHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00047">slots</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7214d2044f679d3336f0f1cd5eff10e4" name="a7214d2044f679d3336f0f1cd5eff10e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7214d2044f679d3336f0f1cd5eff10e4">&#9670;&#160;</a></span>resolveSkinId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &gt; eve::stylize::AttackVfxRuntime::Impl::resolveSkinId </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html">AttackVfxRecipe</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipe</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxRequest.html">AttackVfxRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="AttackVfxRecipe_8h_source.html#l00196">eve::stylize::AttackVfxRecipe::skin</a>, <a class="el" href="AttackVfxRecipe_8h_source.html#l00195">eve::stylize::AttackVfxRecipe::skinId</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00049">skins</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7a8acaa75caa94ae8a4151fd2022ff6f" name="a7a8acaa75caa94ae8a4151fd2022ff6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a8acaa75caa94ae8a4151fd2022ff6f">&#9670;&#160;</a></span>skinFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> * eve::stylize::AttackVfxRuntime::Impl::skinFor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxInstanceState.html">AttackVfxInstanceState</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00049">skins</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00144">startPhaseLayers()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00254">updateDraining()</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00224">updateLiveLayer()</a>.</p>
+
+</div>
+</div>
+<a id="aa4ebdfd9486d63d43b731fe5e09b4d7f" name="aa4ebdfd9486d63d43b731fe5e09b4d7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4ebdfd9486d63d43b731fe5e09b4d7f">&#9670;&#160;</a></span>startOneLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::startOneLayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>phaseIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxPhase.html">AttackVfxPhase</a> &amp;&#160;</td>
+          <td class="paramname"><em>authored</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxLayer.html">AttackVfxLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layerIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a> *&#160;</td>
+          <td class="paramname"><em>skin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfAnimation_8cpp_source.html#l00016">code</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00104">eve::stylize::AttackVfxFrame::events</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00029">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::handle</a>, <a class="el" href="AttackVfxRuntime_8h_source.html#l00092">eve::stylize::AttackVfxFrameEvent::handle</a>, <a class="el" href="AttackVfxRecipe_8h_source.html#l00125">eve::stylize::AttackVfxPhase::kind</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00031">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::layerIndex</a>, <a class="el" href="AttackVfxRecipe_8h_source.html#l00130">eve::stylize::AttackVfxPhase::layers</a>, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrameEvent.html#aff04cd7d6eaaa4e1bbe192ff998ca4e3af532bf819b7a69be03a925fccae87021">eve::stylize::AttackVfxFrameEvent::LayerSkipped</a>, <a class="el" href="structeve_1_1stylize_1_1AttackVfxFrameEvent.html#aff04cd7d6eaaa4e1bbe192ff998ca4e3a9789ad1be3554ca74ec4fae227ff7d73">eve::stylize::AttackVfxFrameEvent::LayerStarted</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00088">makeLayerRequest()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00032">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::phase</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00033">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::phaseIndex</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00043">eve::stylize::AttackVfxRuntime::Impl::Slot::phaseLayers</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00028">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::role</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00183">started</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00042">eve::stylize::AttackVfxRuntime::Impl::Slot::state</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00030">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::stopBehavior</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00144">startPhaseLayers()</a>.</p>
+
+</div>
+</div>
+<a id="a438a143458c44d6b1063a0e9b329b367" name="a438a143458c44d6b1063a0e9b329b367"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a438a143458c44d6b1063a0e9b329b367">&#9670;&#160;</a></span>startPhaseLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::startPhaseLayers </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>phaseIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxFrame.html">AttackVfxFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve_1_1stylize.html#a186b7634514f8edd20a52c87610e4b6aac7741e4e8c3337cacd087cf4feede7cd">eve::stylize::MeshVfx</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00043">eve::stylize::AttackVfxRuntime::Impl::Slot::phaseLayers</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00048">recipes</a>, <a class="el" href="AttackVfxRecipe_8h_source.html#l00107">eve::stylize::AttackVfxLayer::role</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00082">skinFor()</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00183">started</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00103">startOneLayer()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00042">eve::stylize::AttackVfxRuntime::Impl::Slot::state</a>, <a class="el" href="namespaceeve_1_1stylize.html#a22cb679f271c73efdd577a279eff5189aec53a8c4f07baed5d8825072c89799be">eve::stylize::Status</a>, <a class="el" href="AttackVfxRecipe_8h_source.html#l00158">eve::stylize::AttackVfxSkin::statusOverlayUri</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AttackVfxRecipe_8h_source.html#l00108">eve::stylize::AttackVfxLayer::uri</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00297">enterPhase()</a>.</p>
+
+</div>
+</div>
+<a id="a8c91d015007be88298fdb86e53db552f" name="a8c91d015007be88298fdb86e53db552f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c91d015007be88298fdb86e53db552f">&#9670;&#160;</a></span>stopAllOccupied()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::AttackVfxRuntime::Impl::stopAllOccupied </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00410">410</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalAttackVfx_8cpp_source.html#l00160">draining</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00372">finishInstance()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00047">slots</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+</div>
+</div>
+<a id="a958b9189cd41c4c269cc5c68220e3473" name="a958b9189cd41c4c269cc5c68220e3473"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a958b9189cd41c4c269cc5c68220e3473">&#9670;&#160;</a></span>stopLiveLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::stopLiveLayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1LiveLayer.html">LiveLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>live</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">AttackVfxStopBehavior</a>&#160;</td>
+          <td class="paramname"><em>behavior</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740a0152a06f686474aa7d9d54f2910b73c5">eve::stylize::ClearImmediately</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00029">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::handle</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00028">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::role</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AttackVfxLayerExecutor_8h_source.html#l00028">eve::stylize::AttackVfxLayerHandle::valid()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00212">clearDraining()</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00194">stopPhaseLayers()</a>.</p>
+
+</div>
+</div>
+<a id="a07b883fc081d547ebbe81adf1cfd616e" name="a07b883fc081d547ebbe81adf1cfd616e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07b883fc081d547ebbe81adf1cfd616e">&#9670;&#160;</a></span>stopPhaseLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::stopPhaseLayers </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>phaseIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740">AttackVfxStopBehavior</a> &gt;&#160;</td>
+          <td class="paramname"><em>behaviorOverride</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00044">eve::stylize::AttackVfxRuntime::Impl::Slot::draining</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00043">eve::stylize::AttackVfxRuntime::Impl::Slot::phaseLayers</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00013">status</a>, <a class="el" href="namespaceeve_1_1stylize.html#a459a7cf4472fa6e5e9dd4c5375f2f740a9ce669057aef5a0b1e9768be824ac83d">eve::stylize::StopEmitting</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00182">stopLiveLayer()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00312">exitPhase()</a>.</p>
+
+</div>
+</div>
+<a id="ad8b3446d166cbf52faed063438328748" name="ad8b3446d166cbf52faed063438328748"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8b3446d166cbf52faed063438328748">&#9670;&#160;</a></span>updateDraining()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::updateDraining </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dtSeconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00044">eve::stylize::AttackVfxRuntime::Impl::Slot::draining</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AttackVfxLayerExecutor_8h_source.html#l00038">eve::stylize::AttackVfxLayerStartRequest::instance</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fad37b1f6c0512e2118cee17fea015b699">eve::Rejected</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00082">skinFor()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00042">eve::stylize::AttackVfxRuntime::Impl::Slot::state</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00013">status</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00050">tickSerial</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00053">updated</a>.</p>
+
+</div>
+</div>
+<a id="addd0f19236532156f9347ba183a39a3c" name="addd0f19236532156f9347ba183a39a3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addd0f19236532156f9347ba183a39a3c">&#9670;&#160;</a></span>updateLiveLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::updateLiveLayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1LiveLayer.html">LiveLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>live</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dtSeconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00029">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::handle</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00031">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::layerIndex</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00088">makeLayerRequest()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00032">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::phase</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00033">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::phaseIndex</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00048">recipes</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00028">eve::stylize::AttackVfxRuntime::Impl::LiveLayer::role</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00082">skinFor()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00042">eve::stylize::AttackVfxRuntime::Impl::Slot::state</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AttackVfxLayerExecutor_8h_source.html#l00028">eve::stylize::AttackVfxLayerHandle::valid()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00244">updatePhaseLayers()</a>.</p>
+
+</div>
+</div>
+<a id="ae4f3963d20d3b7e79017875bcc2bac6a" name="ae4f3963d20d3b7e79017875bcc2bac6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4f3963d20d3b7e79017875bcc2bac6a">&#9670;&#160;</a></span>updatePhaseLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::stylize::AttackVfxRuntime::Impl::updatePhaseLayers </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a> &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>phaseIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dtSeconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00043">eve::stylize::AttackVfxRuntime::Impl::Slot::phaseLayers</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00053">updated</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00224">updateLiveLayer()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a8a76308f12dec1d524ab2c7117880b40" name="a8a76308f12dec1d524ab2c7117880b40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a76308f12dec1d524ab2c7117880b40">&#9670;&#160;</a></span>recipes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, <a class="el" href="structeve_1_1stylize_1_1AttackVfxRecipe.html">AttackVfxRecipe</a>&gt; eve::stylize::AttackVfxRuntime::Impl::recipes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00341">applyCue()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00329">armTimedPhases()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00144">startPhaseLayers()</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00224">updateLiveLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a96144521b0f185a18126bf567ea0f215" name="a96144521b0f185a18126bf567ea0f215"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96144521b0f185a18126bf567ea0f215">&#9670;&#160;</a></span>skins</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, <a class="el" href="structeve_1_1stylize_1_1AttackVfxSkin.html">AttackVfxSkin</a>&gt; eve::stylize::AttackVfxRuntime::Impl::skins</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00068">resolveSkinId()</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00082">skinFor()</a>.</p>
+
+</div>
+</div>
+<a id="a8ddb1a73663bdd22a37e3b054daafe43" name="a8ddb1a73663bdd22a37e3b054daafe43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ddb1a73663bdd22a37e3b054daafe43">&#9670;&#160;</a></span>slots</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1stylize_1_1AttackVfxRuntime_1_1Impl_1_1Slot.html">Slot</a>&gt; eve::stylize::AttackVfxRuntime::Impl::slots {kDefaultCapacity}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00372">finishInstance()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00061">peek()</a>, <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00052">resolve()</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00410">stopAllOccupied()</a>.</p>
+
+</div>
+</div>
+<a id="ab934a05067270c0d862bbeee9e22048b" name="ab934a05067270c0d862bbeee9e22048b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab934a05067270c0d862bbeee9e22048b">&#9670;&#160;</a></span>tickSerial</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::stylize::AttackVfxRuntime::Impl::tickSerial = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a> 第 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00088">makeLayerRequest()</a> , 以及 <a class="el" href="AttackVfxRuntime_8cpp_source.html#l00254">updateDraining()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/stylize/<a class="el" href="AttackVfxRuntime_8cpp_source.html">AttackVfxRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

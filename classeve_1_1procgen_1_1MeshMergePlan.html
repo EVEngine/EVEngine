@@ -1,0 +1,780 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::MeshMergePlan类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html">MeshMergePlan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1procgen_1_1MeshMergePlan-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::MeshMergePlan类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authoring plan for commit-style static mesh merge.  
+ <a href="classeve_1_1procgen_1_1MeshMergePlan.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a49518fe95eca24d7056ff2b8b6fc1f4e" id="r_a49518fe95eca24d7056ff2b8b6fc1f4e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a49518fe95eca24d7056ff2b8b6fc1f4e">PivotMode</a> : std::uint8_t { <a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a49518fe95eca24d7056ff2b8b6fc1f4eabb6909d8c9c1aa7cc3b7686da9f00885">FirstSource</a> = 0
+, <a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a49518fe95eca24d7056ff2b8b6fc1f4ea642b7d9a13f2d6074997e60ce685e095">WorldOrigin</a> = 1
+ }</td></tr>
+<tr class="memdesc:a49518fe95eca24d7056ff2b8b6fc1f4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pivot placement for the merged mesh.  <a href="classeve_1_1procgen_1_1MeshMergePlan.html#a49518fe95eca24d7056ff2b8b6fc1f4e">更多...</a><br /></td></tr>
+<tr class="separator:a49518fe95eca24d7056ff2b8b6fc1f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad011e3c368adc20e16b3570c6e4eb2ba" id="r_ad011e3c368adc20e16b3570c6e4eb2ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#ad011e3c368adc20e16b3570c6e4eb2ba">appendSource</a> (const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, float tx, float ty, float tz, float yawDegrees, float <a class="el" href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a>, float <a class="el" href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a>, float <a class="el" href="PrefabActionCapabilities_8cpp.html#ac6d32aabb85617974e6e5ac197bca39a">sz</a>, std::string defaultMaterialId=&quot;default&quot;)</td></tr>
+<tr class="memdesc:ad011e3c368adc20e16b3570c6e4eb2ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy one mesh after yaw/scale/translation into the plan.  <br /></td></tr>
+<tr class="separator:ad011e3c368adc20e16b3570c6e4eb2ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9afcbea99094a14bd70d7da97ca28491" id="r_a9afcbea99094a14bd70d7da97ca28491"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a9afcbea99094a14bd70d7da97ca28491">clear</a> () noexcept</td></tr>
+<tr class="separator:a9afcbea99094a14bd70d7da97ca28491"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d2eda907228b7a65459c86a14015e5b" id="r_a0d2eda907228b7a65459c86a14015e5b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a0d2eda907228b7a65459c86a14015e5b">getSourceCount</a> () const noexcept</td></tr>
+<tr class="separator:a0d2eda907228b7a65459c86a14015e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90773264b840f5e7f401050bf93d934f" id="r_a90773264b840f5e7f401050bf93d934f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a90773264b840f5e7f401050bf93d934f">setEnableContactBlend</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) noexcept</td></tr>
+<tr class="separator:a90773264b840f5e7f401050bf93d934f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15221e1baea0bd5af8e361fbe19fdb8a" id="r_a15221e1baea0bd5af8e361fbe19fdb8a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a15221e1baea0bd5af8e361fbe19fdb8a">getEnableContactBlend</a> () const noexcept</td></tr>
+<tr class="separator:a15221e1baea0bd5af8e361fbe19fdb8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63c0033bd98b6f3d81bfbd3d30d0dec0" id="r_a63c0033bd98b6f3d81bfbd3d30d0dec0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a63c0033bd98b6f3d81bfbd3d30d0dec0">setContactBlendParams</a> (const <a class="el" href="structeve_1_1procgen_1_1MeshContactBlendParams.html">MeshContactBlendParams</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="separator:a63c0033bd98b6f3d81bfbd3d30d0dec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaec992b1d68ebb8c1d0ec5360943164" id="r_aeaec992b1d68ebb8c1d0ec5360943164"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1procgen_1_1MeshContactBlendParams.html">MeshContactBlendParams</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#aeaec992b1d68ebb8c1d0ec5360943164">contactBlendParams</a> () const noexcept</td></tr>
+<tr class="separator:aeaec992b1d68ebb8c1d0ec5360943164"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0727e8a17ac568732fff9504cbcc0f2" id="r_ae0727e8a17ac568732fff9504cbcc0f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#ae0727e8a17ac568732fff9504cbcc0f2">setWeldTolerance</a> (float tolerance) noexcept</td></tr>
+<tr class="memdesc:ae0727e8a17ac568732fff9504cbcc0f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Positive weld tolerance enables hard weld after contact blend; non-positive disables (default). Post-blend weld lets soft-snapped contact verts share topology/normals.  <br /></td></tr>
+<tr class="separator:ae0727e8a17ac568732fff9504cbcc0f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4167271ca87a2b8684cff836c632244a" id="r_a4167271ca87a2b8684cff836c632244a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a4167271ca87a2b8684cff836c632244a">getWeldTolerance</a> () const noexcept</td></tr>
+<tr class="separator:a4167271ca87a2b8684cff836c632244a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef9d2228a9cac0c2c0996ac87fa69232" id="r_aef9d2228a9cac0c2c0996ac87fa69232"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#aef9d2228a9cac0c2c0996ac87fa69232">setSimplifyQuality</a> (float quality) noexcept</td></tr>
+<tr class="memdesc:aef9d2228a9cac0c2c0996ac87fa69232"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional GTS quality in (0,1); non-positive disables simplify (default). When set, simplify runs after optional blend.  <br /></td></tr>
+<tr class="separator:aef9d2228a9cac0c2c0996ac87fa69232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63ed878650624d7792b1d358ab81876a" id="r_a63ed878650624d7792b1d358ab81876a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a63ed878650624d7792b1d358ab81876a">getSimplifyQuality</a> () const noexcept</td></tr>
+<tr class="separator:a63ed878650624d7792b1d358ab81876a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb21d2264450591a76d28d7a42ae5105" id="r_acb21d2264450591a76d28d7a42ae5105"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#acb21d2264450591a76d28d7a42ae5105">setPivotMode</a> (<a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a49518fe95eca24d7056ff2b8b6fc1f4e">PivotMode</a> mode) noexcept</td></tr>
+<tr class="separator:acb21d2264450591a76d28d7a42ae5105"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e8af85e496db282c85fe27e70931dc5" id="r_a6e8af85e496db282c85fe27e70931dc5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a49518fe95eca24d7056ff2b8b6fc1f4e">PivotMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a6e8af85e496db282c85fe27e70931dc5">getPivotMode</a> () const noexcept</td></tr>
+<tr class="separator:a6e8af85e496db282c85fe27e70931dc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78559683ee4d2b1f48787c61b0cfe3af" id="r_a78559683ee4d2b1f48787c61b0cfe3af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a78559683ee4d2b1f48787c61b0cfe3af">setMergeVertexColors</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) noexcept</td></tr>
+<tr class="separator:a78559683ee4d2b1f48787c61b0cfe3af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1df6faf8ee75ae5cb3c62a3aa4694ccf" id="r_a1df6faf8ee75ae5cb3c62a3aa4694ccf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a1df6faf8ee75ae5cb3c62a3aa4694ccf">getMergeVertexColors</a> () const noexcept</td></tr>
+<tr class="separator:a1df6faf8ee75ae5cb3c62a3aa4694ccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a69cd87b9084ea2460d5276fcbfa6e7b7" id="r_a69cd87b9084ea2460d5276fcbfa6e7b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a69cd87b9084ea2460d5276fcbfa6e7b7">mergeStaticMeshes</a> (const <a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html">MeshMergePlan</a> &amp;)</td></tr>
+<tr class="memdesc:a69cd87b9084ea2460d5276fcbfa6e7b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merge planned static meshes into one owning <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a>.  <br /></td></tr>
+<tr class="separator:a69cd87b9084ea2460d5276fcbfa6e7b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authoring plan for commit-style static mesh merge. </p>
+<p>Copies sources on append. Contact-band fusion is opt-in and off by default (<code>enableContactBlend == false</code>). Owner-thread mutation; no callbacks retained. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a> 第 <a class="el" href="MeshMerge_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a49518fe95eca24d7056ff2b8b6fc1f4e" name="a49518fe95eca24d7056ff2b8b6fc1f4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49518fe95eca24d7056ff2b8b6fc1f4e">&#9670;&#160;</a></span>PivotMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a49518fe95eca24d7056ff2b8b6fc1f4e">eve::procgen::MeshMergePlan::PivotMode</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pivot placement for the merged mesh. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a49518fe95eca24d7056ff2b8b6fc1f4eabb6909d8c9c1aa7cc3b7686da9f00885" name="a49518fe95eca24d7056ff2b8b6fc1f4eabb6909d8c9c1aa7cc3b7686da9f00885"></a>FirstSource&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a49518fe95eca24d7056ff2b8b6fc1f4ea642b7d9a13f2d6074997e60ce685e095" name="a49518fe95eca24d7056ff2b8b6fc1f4ea642b7d9a13f2d6074997e60ce685e095"></a>WorldOrigin&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a> 第 <a class="el" href="MeshMerge_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad011e3c368adc20e16b3570c6e4eb2ba" name="ad011e3c368adc20e16b3570c6e4eb2ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad011e3c368adc20e16b3570c6e4eb2ba">&#9670;&#160;</a></span>appendSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshMergePlan::appendSource </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yawDegrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>defaultMaterialId</em> = <code>&quot;default&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy one mesh after yaw/scale/translation into the plan. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">defaultMaterialId</td><td>Used when the source has no triangle groups. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00046">eve::procgen::MeshBuild::addTriangle()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00033">eve::procgen::MeshBuild::addVertex()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00125">eve::procgen::MeshBuild::appendTransformed()</a>, <a class="el" href="MeshBuild_8h_source.html#l00131">eve::procgen::MeshBuild::colors()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00063">eve::procgen::MeshBuild::getGroupCount()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00239">eve::procgen::MeshBuild::getIndex()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00171">eve::procgen::MeshBuild::getIndexCount()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00186">eve::procgen::MeshBuild::getNormalX()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00190">eve::procgen::MeshBuild::getNormalY()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00194">eve::procgen::MeshBuild::getNormalZ()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00174">eve::procgen::MeshBuild::getPositionX()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00178">eve::procgen::MeshBuild::getPositionY()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00182">eve::procgen::MeshBuild::getPositionZ()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00198">eve::procgen::MeshBuild::getUvU()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00202">eve::procgen::MeshBuild::getUvV()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00206">eve::procgen::MeshBuild::hasVertexColors()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00677">mesh</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00020">eve::procgen::MeshBuild::reserve()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00053">eve::procgen::MeshBuild::setActiveGroup()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00214">eve::procgen::MeshBuild::setVertexColors()</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00039">sx</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00040">sy</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00041">sz</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+</div>
+</div>
+<a id="a9afcbea99094a14bd70d7da97ca28491" name="a9afcbea99094a14bd70d7da97ca28491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9afcbea99094a14bd70d7da97ca28491">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::MeshMergePlan::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeaec992b1d68ebb8c1d0ec5360943164" name="aeaec992b1d68ebb8c1d0ec5360943164"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaec992b1d68ebb8c1d0ec5360943164">&#9670;&#160;</a></span>contactBlendParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1procgen_1_1MeshContactBlendParams.html">MeshContactBlendParams</a> &amp; eve::procgen::MeshMergePlan::contactBlendParams </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a> 第 <a class="el" href="MeshMerge_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a15221e1baea0bd5af8e361fbe19fdb8a" name="a15221e1baea0bd5af8e361fbe19fdb8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15221e1baea0bd5af8e361fbe19fdb8a">&#9670;&#160;</a></span>getEnableContactBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::MeshMergePlan::getEnableContactBlend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a> 第 <a class="el" href="MeshMerge_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1df6faf8ee75ae5cb3c62a3aa4694ccf" name="a1df6faf8ee75ae5cb3c62a3aa4694ccf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1df6faf8ee75ae5cb3c62a3aa4694ccf">&#9670;&#160;</a></span>getMergeVertexColors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::MeshMergePlan::getMergeVertexColors </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a> 第 <a class="el" href="MeshMerge_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e8af85e496db282c85fe27e70931dc5" name="a6e8af85e496db282c85fe27e70931dc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e8af85e496db282c85fe27e70931dc5">&#9670;&#160;</a></span>getPivotMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a49518fe95eca24d7056ff2b8b6fc1f4e">PivotMode</a> eve::procgen::MeshMergePlan::getPivotMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a> 第 <a class="el" href="MeshMerge_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a63ed878650624d7792b1d358ab81876a" name="a63ed878650624d7792b1d358ab81876a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63ed878650624d7792b1d358ab81876a">&#9670;&#160;</a></span>getSimplifyQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshMergePlan::getSimplifyQuality </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a> 第 <a class="el" href="MeshMerge_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0d2eda907228b7a65459c86a14015e5b" name="a0d2eda907228b7a65459c86a14015e5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d2eda907228b7a65459c86a14015e5b">&#9670;&#160;</a></span>getSourceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshMergePlan::getSourceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4167271ca87a2b8684cff836c632244a" name="a4167271ca87a2b8684cff836c632244a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4167271ca87a2b8684cff836c632244a">&#9670;&#160;</a></span>getWeldTolerance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshMergePlan::getWeldTolerance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a> 第 <a class="el" href="MeshMerge_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a63c0033bd98b6f3d81bfbd3d30d0dec0" name="a63c0033bd98b6f3d81bfbd3d30d0dec0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63c0033bd98b6f3d81bfbd3d30d0dec0">&#9670;&#160;</a></span>setContactBlendParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshMergePlan::setContactBlendParams </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1MeshContactBlendParams.html">MeshContactBlendParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MeshContactBlend_8h_source.html#l00031">eve::procgen::MeshContactBlendParams::falloff</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00029">params</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a90773264b840f5e7f401050bf93d934f" name="a90773264b840f5e7f401050bf93d934f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90773264b840f5e7f401050bf93d934f">&#9670;&#160;</a></span>setEnableContactBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshMergePlan::setEnableContactBlend </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a78559683ee4d2b1f48787c61b0cfe3af" name="a78559683ee4d2b1f48787c61b0cfe3af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78559683ee4d2b1f48787c61b0cfe3af">&#9670;&#160;</a></span>setMergeVertexColors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshMergePlan::setMergeVertexColors </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="acb21d2264450591a76d28d7a42ae5105" name="acb21d2264450591a76d28d7a42ae5105"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb21d2264450591a76d28d7a42ae5105">&#9670;&#160;</a></span>setPivotMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshMergePlan::setPivotMode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html#a49518fe95eca24d7056ff2b8b6fc1f4e">PivotMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aef9d2228a9cac0c2c0996ac87fa69232" name="aef9d2228a9cac0c2c0996ac87fa69232"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef9d2228a9cac0c2c0996ac87fa69232">&#9670;&#160;</a></span>setSimplifyQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshMergePlan::setSimplifyQuality </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Optional GTS quality in (0,1); non-positive disables simplify (default). When set, simplify runs after optional blend. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ae0727e8a17ac568732fff9504cbcc0f2" name="ae0727e8a17ac568732fff9504cbcc0f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0727e8a17ac568732fff9504cbcc0f2">&#9670;&#160;</a></span>setWeldTolerance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshMergePlan::setWeldTolerance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tolerance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Positive weld tolerance enables hard weld after contact blend; non-positive disables (default). Post-blend weld lets soft-snapped contact verts share topology/normals. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a69cd87b9084ea2460d5276fcbfa6e7b7" name="a69cd87b9084ea2460d5276fcbfa6e7b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69cd87b9084ea2460d5276fcbfa6e7b7">&#9670;&#160;</a></span>mergeStaticMeshes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt; mergeStaticMeshes </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshMergePlan.html">MeshMergePlan</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Merge planned static meshes into one owning <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a>. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning mesh or <code>procgen.mesh.merge.*</code> diagnostic; never partially publishes. @thread Synchronous CPU; inputs borrowed only for the call. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a> 第 <a class="el" href="MeshMerge_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/mesh/<a class="el" href="MeshMerge_8h_source.html">MeshMerge.h</a></li>
+<li>src/modules/procgen/mesh/<a class="el" href="MeshMerge_8cpp_source.html">MeshMerge.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/Resource.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Resource.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Resource_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="AssetReloader_8h.html">common/AssetReloader.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BorrowedRef_8h.html">common/BorrowedRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// Cached resources are owned by a RuntimeObjectRegistry and handed out as borrows and</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// keep-alive pins, so this header needs those definitions. RuntimeRegistry.h is</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// deliberately Squirrel-free: the cache&#39;s consumers must not be forced to include</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// &lt;squirrel.h&gt; just to name a resource handle.</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeRegistry_8h.html">common/RuntimeRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;condition_variable&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15abe8545ae7ab0276e15898aae7acfbd7a">Resource</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">struct </span>ResourceCacheTag;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceeve.html#a3fa369b3df75e5438f1f9c4e34e334e9">   30</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1script_1_1RuntimePin.html">ResourcePin</a> = <a class="code hl_class" href="classeve_1_1script_1_1RuntimePin.html">script::RuntimePin&lt;Resource, ResourceCacheTag&gt;</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html">   51</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1Resource.html">Resource</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#adafa47210aae55b174c8186b2e4c8908">   54</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1Resource.html#adafa47210aae55b174c8186b2e4c8908">~Resource</a>() {}</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#a1d97c9ca9f64d766340afbd0475de042">   69</a></span>    <a class="code hl_function" href="classeve_1_1Resource.html#a1d97c9ca9f64d766340afbd0475de042">Resource</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#ae67b3ef0ee103919e0ff881b1e20b346">   70</a></span>    <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>&amp; <a class="code hl_function" href="classeve_1_1Resource.html#ae67b3ef0ee103919e0ff881b1e20b346">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#abdb89e5f7295e7e7560bc05103680432">   73</a></span>    std::string <a class="code hl_function" href="classeve_1_1Resource.html#abdb89e5f7295e7e7560bc05103680432">getUri</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a>; }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    [[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::vector&lt;Resource*&gt; <a class="code hl_function" href="classeve_1_1Resource.html#a30151cbc223771902eb88b6422e55700">getDependencies</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1Resource.html#a8832baea6973ce16ec2e170f06bf6b7f">addDependency</a>(<a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>&amp; dependency);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#a04d654ee5794c46aa5a17142d4c54f0e">  110</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1Resource.html#a04d654ee5794c46aa5a17142d4c54f0e">adopt</a>(<a class="code hl_class" href="classeve_1_1Resource.html">eve::Resource</a>&amp; replacement) = 0;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#aeeeec005a7224dadf0cc9da955709a4f">  114</a></span>    <a class="code hl_function" href="classeve_1_1Resource.html#aeeeec005a7224dadf0cc9da955709a4f">Resource</a>(std::string <a class="code hl_variable" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a>) : <a class="code hl_variable" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a>(<a class="code hl_variable" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a>) {}</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#a2f63ca3139fd056072173c848947d962">  117</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1Resource.html#a2f63ca3139fd056072173c848947d962">setUri</a>(std::string <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { <a class="code hl_variable" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a> = std::move(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>); }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#a54c1252abc87a78a301e6b6984470408">  119</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1ResourceManager.html">ResourceManager</a>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">  121</a></span>    std::string <a class="code hl_variable" href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">uri</a>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classeve_1_1Resource.html#aaab290335a779197b7f7a94f6ac42604">  123</a></span>    std::vector&lt;ResourcePin&gt; <a class="code hl_variable" href="classeve_1_1Resource.html#aaab290335a779197b7f7a94f6ac42604">dependencies</a>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>};</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="foldopen" id="foldopen00152" data-start="{" data-end="};">
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html">  152</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1ResourceManager.html">ResourceManager</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1caps_1_1IAssetReloader.html">eve::caps::IAssetReloader</a> {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1ResourceManager.html">ResourceManager</a>&amp; getInstance();</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keyword">static</span> std::string normalizePath(std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keyword">static</span> std::string makeKey(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <span class="keyword">const</span> std::string&amp; query = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keyword">static</span> std::string pathOfKey(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    [[nodiscard(<span class="stringliteral">&quot;resource lookup ownership must be retained or explicitly handled&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>* get(std::string <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    [[nodiscard(<span class="stringliteral">&quot;async resource request outcome must be checked&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>(</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        std::string <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    [[nodiscard(<span class="stringliteral">&quot;async resource request outcome must be checked&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> requestAll(</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        std::span&lt;const std::string&gt; keys);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    [[nodiscard]] <a class="code hl_typedef" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">OptionalRef&lt;Resource&gt;</a> peek(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ResourcePin&gt;</a> pin(<a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>* <a class="code hl_variable" href="SettlementModule_8cpp.html#af2b932622a62edd2d074514bd4957b8a">resource</a>);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    [[nodiscard(<span class="stringliteral">&quot;resource wait outcome must be checked&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">ResultRef&lt;Resource&gt;</a> waitFor(std::string <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keywordtype">size_t</span> pendingCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keywordtype">void</span> unload(std::string <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    <span class="keywordtype">void</span> unloadPath(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    <span class="keywordtype">void</span> clear();</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <span class="comment">// eve::caps::IAssetReloader -- the cache participates in hot reload as the</span></div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="comment">// first listener, refreshing CPU resources before GPU/consumers re-bind.</span></div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#a9a5039bb636a105248c8a57e50dc0473">  281</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classeve_1_1ResourceManager.html#a9a5039bb636a105248c8a57e50dc0473">reloadKind</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;cache&quot;</span>; }</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="keywordtype">bool</span> handlesPath(<span class="keyword">const</span> std::string&amp; normPath) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    [[nodiscard(<span class="stringliteral">&quot;resource reload outcome must be checked&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;bool&gt;</a> reload(</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        <span class="keyword">const</span> std::string&amp; normPath) <span class="keyword">override</span>;</div>
+<div class="foldopen" id="foldopen00296" data-start="{" data-end="}">
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#a1211a8c5d6d950d78eed16bbfb0af07b">  296</a></span>    [[nodiscard(<span class="stringliteral">&quot;loaded resource ownership must be retained or explicitly handled&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>* <a class="code hl_function" href="classeve_1_1ResourceManager.html#a1211a8c5d6d950d78eed16bbfb0af07b">load</a>(</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    }</div>
+</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#a005f85475d9cf2194b9b4a747739cdbe">  303</a></span>    <a class="code hl_function" href="classeve_1_1ResourceManager.html#a005f85475d9cf2194b9b4a747739cdbe">ResourceManager</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span> </div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="keywordtype">void</span> ensureRegistered();</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>* loadReplacement(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>);</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>* loadUncached(<span class="keyword">const</span> std::string&amp; norm);</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="keywordtype">void</span> runLoadJob(std::string norm, uint64_t <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a7d1c4feed1318aeb0b96f657d87cd1ab">epoch</a>);</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="foldopen" id="foldopen00315" data-start="{" data-end="};">
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno"><a class="line" href="structeve_1_1ResourceManager_1_1AsyncLoad.html">  315</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ResourceManager_1_1AsyncLoad.html">AsyncLoad</a> {</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno"><a class="line" href="structeve_1_1ResourceManager_1_1AsyncLoad.html#a23641b7db233b05c1d03ac91a7bb8362">  316</a></span>        <span class="keywordtype">bool</span> done = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno"><a class="line" href="structeve_1_1ResourceManager_1_1AsyncLoad.html#a00af030a88b4c65476a5ca16cb1edaea">  317</a></span>        <span class="keywordtype">bool</span> failed = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno"><a class="line" href="structeve_1_1ResourceManager_1_1AsyncLoad.html#a799f99b1c5274235e67c23c1c94fe8fb">  318</a></span>        std::string <a class="code hl_variable" href="structeve_1_1ResourceManager_1_1AsyncLoad.html#a799f99b1c5274235e67c23c1c94fe8fb">error</a>;</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno"><a class="line" href="structeve_1_1ResourceManager_1_1AsyncLoad.html#a845d45131f3af3338995445cdb06a8a8">  319</a></span>        uint64_t <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a7d1c4feed1318aeb0b96f657d87cd1ab">epoch</a> = 0;</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    };</div>
+</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span> </div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#aa4016f4d37ac1a805f5ff92eb09890f1">  322</a></span>    <span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1script_1_1RuntimeHandleRef.html">ResourceRef</a> = <a class="code hl_struct" href="structeve_1_1script_1_1RuntimeHandleRef.html">script::RuntimeHandleRef&lt;ResourceCacheTag&gt;</a>;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span> </div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#aaeb0d56cc4fdd996875bd34a9dd5dc04">  331</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Resource.html">Resource</a>* <a class="code hl_function" href="classeve_1_1ResourceManager.html#aaeb0d56cc4fdd996875bd34a9dd5dc04">borrowLocked</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1script_1_1RuntimeHandleRef.html">ResourceRef</a>&amp; <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) { <span class="keywordflow">return</span> registry_.resolve(<a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>).get(); }</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#ad45d3faa8350e951f7ff584c70dddb6f">  334</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">script::RuntimeObjectRegistry&lt;Resource, ResourceCacheTag&gt;</a>   <a class="code hl_variable" href="classeve_1_1ResourceManager.html#ad45d3faa8350e951f7ff584c70dddb6f">registry_</a>;</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#af562c320500f1ba5e451064435beef73">  335</a></span>    std::map&lt;std::string, ResourceRef&gt;                          <a class="code hl_variable" href="classeve_1_1ResourceManager.html#af562c320500f1ba5e451064435beef73">resources</a>;</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#aad5b24804504f7fe9899136a21a25b5c">  336</a></span>    std::unordered_map&lt;std::string, std::shared_ptr&lt;AsyncLoad&gt;&gt; <a class="code hl_variable" href="classeve_1_1ResourceManager.html#aad5b24804504f7fe9899136a21a25b5c">pending_</a>;</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#ad6bfc93d40dccf1ac6f249c32b65af2a">  337</a></span>    <span class="keyword">mutable</span> std::mutex <a class="code hl_variable" href="classeve_1_1ResourceManager.html#ad6bfc93d40dccf1ac6f249c32b65af2a">mu_</a>;</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#ae228750b95f18e71d8e39de56fffd324">  338</a></span>    std::condition_variable <a class="code hl_variable" href="classeve_1_1ResourceManager.html#ae228750b95f18e71d8e39de56fffd324">cv_</a>;</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#a709d385ca8f681f9dd4f6c8a5a2008a0">  339</a></span>    uint64_t epoch_ = 1;</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno"><a class="line" href="classeve_1_1ResourceManager.html#ab0106f97a39ee4d579e3b3060462a153">  340</a></span>    <span class="keywordtype">bool</span> registered_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>};</div>
+</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span> </div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00153">ActionNotifyRegistry.cpp:153</a></div></div>
+<div class="ttc" id="aAssetReloader_8h_html"><div class="ttname"><a href="AssetReloader_8h.html">AssetReloader.h</a></div></div>
+<div class="ttc" id="aAuthority_8cpp_html_a7e214a50596aaa2c6748b6e36dda4f63"><div class="ttname"><a href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a></div><div class="ttdeci">AuthorityStoreHandleRef reference</div><div class="ttdef"><b>Definition</b> <a href="Authority_8cpp_source.html#l00024">Authority.cpp:24</a></div></div>
+<div class="ttc" id="aBorrowedRef_8h_html"><div class="ttname"><a href="BorrowedRef_8h.html">BorrowedRef.h</a></div><div class="ttdoc">Vocabulary aliases for nullable and checked borrowed references.</div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aGraphicsParticles_8cpp_html_afc73ef9f5bf5e49690d7bacf34a83fb6"><div class="ttname"><a href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a></div><div class="ttdeci">std::uint32_t key</div><div class="ttdef"><b>Definition</b> <a href="GraphicsParticles_8cpp_source.html#l00068">GraphicsParticles.cpp:68</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_a7d1c4feed1318aeb0b96f657d87cd1ab"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#a7d1c4feed1318aeb0b96f657d87cd1ab">epoch</a></div><div class="ttdeci">uint64_t epoch</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00028">OnnxGpgpu.cpp:28</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00110">PlayHost.cpp:110</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aRuntimeRegistry_8h_html"><div class="ttname"><a href="RuntimeRegistry_8h.html">RuntimeRegistry.h</a></div><div class="ttdoc">Tag-free slot registry: handles, borrows, unique ownership and keep-alive pins.</div></div>
+<div class="ttc" id="aSettlementModule_8cpp_html_af2b932622a62edd2d074514bd4957b8a"><div class="ttname"><a href="SettlementModule_8cpp.html#af2b932622a62edd2d074514bd4957b8a">resource</a></div><div class="ttdeci">std::string resource</div><div class="ttdef"><b>Definition</b> <a href="SettlementModule_8cpp_source.html#l00027">SettlementModule.cpp:27</a></div></div>
+<div class="ttc" id="aSourceTiff_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="SourceTiff_8cpp_source.html#l00024">SourceTiff.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html"><div class="ttname"><a href="classeve_1_1ResourceManager.html">eve::ResourceManager</a></div><div class="ttdoc">ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00152">Resource.h:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html_a005f85475d9cf2194b9b4a747739cdbe"><div class="ttname"><a href="classeve_1_1ResourceManager.html#a005f85475d9cf2194b9b4a747739cdbe">eve::ResourceManager::ResourceManager</a></div><div class="ttdeci">ResourceManager()=default</div><div class="ttdoc">Resource manager.</div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html_a1211a8c5d6d950d78eed16bbfb0af07b"><div class="ttname"><a href="classeve_1_1ResourceManager.html#a1211a8c5d6d950d78eed16bbfb0af07b">eve::ResourceManager::load</a></div><div class="ttdeci">Resource * load(const std::string &amp;key) override</div><div class="ttdoc">Cache provider entry point; this implementation does not claim keys.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00296">Resource.h:296</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html_a9a5039bb636a105248c8a57e50dc0473"><div class="ttname"><a href="classeve_1_1ResourceManager.html#a9a5039bb636a105248c8a57e50dc0473">eve::ResourceManager::reloadKind</a></div><div class="ttdeci">const char * reloadKind() const override</div><div class="ttdoc">Stable capability name for the cache reloader.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00281">Resource.h:281</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html_aad5b24804504f7fe9899136a21a25b5c"><div class="ttname"><a href="classeve_1_1ResourceManager.html#aad5b24804504f7fe9899136a21a25b5c">eve::ResourceManager::pending_</a></div><div class="ttdeci">std::unordered_map&lt; std::string, std::shared_ptr&lt; AsyncLoad &gt; &gt; pending_</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00336">Resource.h:336</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html_aaeb0d56cc4fdd996875bd34a9dd5dc04"><div class="ttname"><a href="classeve_1_1ResourceManager.html#aaeb0d56cc4fdd996875bd34a9dd5dc04">eve::ResourceManager::borrowLocked</a></div><div class="ttdeci">Resource * borrowLocked(const ResourceRef &amp;reference)</div><div class="ttdoc">Borrows the live resource behind a cache entry.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00331">Resource.h:331</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html_ad45d3faa8350e951f7ff584c70dddb6f"><div class="ttname"><a href="classeve_1_1ResourceManager.html#ad45d3faa8350e951f7ff584c70dddb6f">eve::ResourceManager::registry_</a></div><div class="ttdeci">script::RuntimeObjectRegistry&lt; Resource, ResourceCacheTag &gt; registry_</div><div class="ttdoc">Registry that exclusively owns every cached resource.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00334">Resource.h:334</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html_ad6bfc93d40dccf1ac6f249c32b65af2a"><div class="ttname"><a href="classeve_1_1ResourceManager.html#ad6bfc93d40dccf1ac6f249c32b65af2a">eve::ResourceManager::mu_</a></div><div class="ttdeci">std::mutex mu_</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00337">Resource.h:337</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html_ae228750b95f18e71d8e39de56fffd324"><div class="ttname"><a href="classeve_1_1ResourceManager.html#ae228750b95f18e71d8e39de56fffd324">eve::ResourceManager::cv_</a></div><div class="ttdeci">std::condition_variable cv_</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00338">Resource.h:338</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceManager_html_af562c320500f1ba5e451064435beef73"><div class="ttname"><a href="classeve_1_1ResourceManager.html#af562c320500f1ba5e451064435beef73">eve::ResourceManager::resources</a></div><div class="ttdeci">std::map&lt; std::string, ResourceRef &gt; resources</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00335">Resource.h:335</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html"><div class="ttname"><a href="classeve_1_1Resource.html">eve::Resource</a></div><div class="ttdoc">Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00051">Resource.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_a04d654ee5794c46aa5a17142d4c54f0e"><div class="ttname"><a href="classeve_1_1Resource.html#a04d654ee5794c46aa5a17142d4c54f0e">eve::Resource::adopt</a></div><div class="ttdeci">virtual void adopt(eve::Resource &amp;replacement)=0</div><div class="ttdoc">Replace this instance's contents with replacement's. The ResourceManager keeps instance identity stab...</div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_a1d97c9ca9f64d766340afbd0475de042"><div class="ttname"><a href="classeve_1_1Resource.html#a1d97c9ca9f64d766340afbd0475de042">eve::Resource::Resource</a></div><div class="ttdeci">Resource(const Resource &amp;)=delete</div><div class="ttdoc">Resources own keep-alive pins, so they are not copyable.</div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_a1f7295af4abb7e69aef94b0daeb4bcee"><div class="ttname"><a href="classeve_1_1Resource.html#a1f7295af4abb7e69aef94b0daeb4bcee">eve::Resource::uri</a></div><div class="ttdeci">std::string uri</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00121">Resource.h:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_a2f63ca3139fd056072173c848947d962"><div class="ttname"><a href="classeve_1_1Resource.html#a2f63ca3139fd056072173c848947d962">eve::Resource::setUri</a></div><div class="ttdeci">void setUri(std::string value)</div><div class="ttdoc">Set the resource URI (the cache key). Used by ResourceManager.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00117">Resource.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_a30151cbc223771902eb88b6422e55700"><div class="ttname"><a href="classeve_1_1Resource.html#a30151cbc223771902eb88b6422e55700">eve::Resource::getDependencies</a></div><div class="ttdeci">EVENGINE_API_FOUNDATION std::vector&lt; Resource * &gt; getDependencies() const</div><div class="ttdoc">Borrowed views of the resources this instance keeps alive.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8cpp_source.html#l00504">Resource.cpp:504</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_a8832baea6973ce16ec2e170f06bf6b7f"><div class="ttname"><a href="classeve_1_1Resource.html#a8832baea6973ce16ec2e170f06bf6b7f">eve::Resource::addDependency</a></div><div class="ttdeci">EVENGINE_API_FOUNDATION eve::Result&lt; void &gt; addDependency(Resource &amp;dependency)</div><div class="ttdoc">Keeps dependency alive for as long as this instance lives.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8cpp_source.html#l00511">Resource.cpp:511</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_aaab290335a779197b7f7a94f6ac42604"><div class="ttname"><a href="classeve_1_1Resource.html#aaab290335a779197b7f7a94f6ac42604">eve::Resource::dependencies</a></div><div class="ttdeci">std::vector&lt; ResourcePin &gt; dependencies</div><div class="ttdoc">Keep-alive pins; see getDependencies()/addDependency().</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00123">Resource.h:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_abdb89e5f7295e7e7560bc05103680432"><div class="ttname"><a href="classeve_1_1Resource.html#abdb89e5f7295e7e7560bc05103680432">eve::Resource::getUri</a></div><div class="ttdeci">std::string getUri() const</div><div class="ttdoc">Returns the uri.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00073">Resource.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_adafa47210aae55b174c8186b2e4c8908"><div class="ttname"><a href="classeve_1_1Resource.html#adafa47210aae55b174c8186b2e4c8908">eve::Resource::~Resource</a></div><div class="ttdeci">virtual ~Resource()</div><div class="ttdoc">Releases Resource resources.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00054">Resource.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_ae67b3ef0ee103919e0ff881b1e20b346"><div class="ttname"><a href="classeve_1_1Resource.html#ae67b3ef0ee103919e0ff881b1e20b346">eve::Resource::operator=</a></div><div class="ttdeci">Resource &amp; operator=(const Resource &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1Resource_html_aeeeec005a7224dadf0cc9da955709a4f"><div class="ttname"><a href="classeve_1_1Resource.html#aeeeec005a7224dadf0cc9da955709a4f">eve::Resource::Resource</a></div><div class="ttdeci">Resource(std::string uri)</div><div class="ttdoc">Constructs a Resource.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00114">Resource.h:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1caps_1_1IAssetReloader_html"><div class="ttname"><a href="classeve_1_1caps_1_1IAssetReloader.html">eve::caps::IAssetReloader</a></div><div class="ttdoc">EVENGINE_API_FOUNDATION public API.</div><div class="ttdef"><b>Definition</b> <a href="AssetReloader_8h_source.html#l00032">AssetReloader.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1RuntimeObjectRegistry_html"><div class="ttname"><a href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a></div><div class="ttdoc">Slot/generation registry whose objects are exclusively unique-owned.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeRegistry_8h_source.html#l00359">RuntimeRegistry.h:359</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1RuntimePin_html"><div class="ttname"><a href="classeve_1_1script_1_1RuntimePin.html">eve::script::RuntimePin</a></div><div class="ttdoc">RAII keep-alive for one RuntimeObjectRegistry entry.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeRegistry_8h_source.html#l00276">RuntimeRegistry.h:276</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1emergence_html_a8ba1dc4a393e763503929d88fc301c15abe8545ae7ab0276e15898aae7acfbd7a"><div class="ttname"><a href="namespaceeve_1_1emergence.html#a8ba1dc4a393e763503929d88fc301c15abe8545ae7ab0276e15898aae7acfbd7a">eve::emergence::FactDomain::Resource</a></div><div class="ttdeci">@ Resource</div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a503b0fa2c99caf9c2f8d2144f64c683f"><div class="ttname"><a href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a></div><div class="ttdeci">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt; OptionalRef</div><div class="ttdoc">Optional borrowed reference; it does not extend T's lifetime.</div><div class="ttdef"><b>Definition</b> <a href="BorrowedRef_8h_source.html#l00024">BorrowedRef.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1ResourceManager_1_1AsyncLoad_html"><div class="ttname"><a href="structeve_1_1ResourceManager_1_1AsyncLoad.html">eve::ResourceManager::AsyncLoad</a></div><div class="ttdoc">AsyncLoad public API.</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00315">Resource.h:315</a></div></div>
+<div class="ttc" id="astructeve_1_1ResourceManager_1_1AsyncLoad_html_a799f99b1c5274235e67c23c1c94fe8fb"><div class="ttname"><a href="structeve_1_1ResourceManager_1_1AsyncLoad.html#a799f99b1c5274235e67c23c1c94fe8fb">eve::ResourceManager::AsyncLoad::error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Resource_8h_source.html#l00318">Resource.h:318</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1RuntimeHandleRef_html"><div class="ttname"><a href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef</a></div><div class="ttdoc">Handle plus owner-lifetime epoch for a non-ECS registry object.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeRegistry_8h_source.html#l00091">RuntimeRegistry.h:91</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

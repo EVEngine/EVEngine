@@ -1,0 +1,999 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::ModuleAssemblyPlan类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html">ModuleAssemblyPlan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1ModuleAssemblyPlan-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::ModuleAssemblyPlan类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic owner of a validated modular assembly plan.  
+ <a href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ModuleAssembly_8h_source.html">ModuleAssembly.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a862cb974c52f4b5731512abfa08a5434" id="r_a862cb974c52f4b5731512abfa08a5434"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a862cb974c52f4b5731512abfa08a5434">ModuleAssemblyPlan</a> ()=default</td></tr>
+<tr class="memdesc:a862cb974c52f4b5731512abfa08a5434"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty plan with default constraints.  <br /></td></tr>
+<tr class="separator:a862cb974c52f4b5731512abfa08a5434"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae031bb898775e88dae909c3d239061e1" id="r_ae031bb898775e88dae909c3d239061e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#ae031bb898775e88dae909c3d239061e1">ModuleAssemblyPlan</a> (<a class="el" href="structeve_1_1procgen_1_1ModuleAssemblyConstraints.html">ModuleAssemblyConstraints</a> <a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a1ece4ae4a5334b1f4e8b208fac79e994">constraints</a>)</td></tr>
+<tr class="memdesc:ae031bb898775e88dae909c3d239061e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty plan with a copied constraint configuration.  <br /></td></tr>
+<tr class="separator:ae031bb898775e88dae909c3d239061e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1bd4b9208adf813216ef7b48d7c2113" id="r_aa1bd4b9208adf813216ef7b48d7c2113"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#aa1bd4b9208adf813216ef7b48d7c2113">configure</a> (float cellSize, float floorHeight, int minCellX, int maxCellX, int minCellZ, int maxCellZ, int maxLevels, bool bounded, bool requireConnection)</td></tr>
+<tr class="memdesc:aa1bd4b9208adf813216ef7b48d7c2113"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure an empty plan before definitions or placements are added.  <br /></td></tr>
+<tr class="separator:aa1bd4b9208adf813216ef7b48d7c2113"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a5f057032cb1c5dd9410c9bb80cfb51" id="r_a5a5f057032cb1c5dd9410c9bb80cfb51"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a5a5f057032cb1c5dd9410c9bb80cfb51">setAllowedQuarterTurns</a> (bool turn0, bool turn90, bool turn180, bool turn270)</td></tr>
+<tr class="memdesc:a5a5f057032cb1c5dd9410c9bb80cfb51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the four permitted quarter-turn rotations before registration or placement.  <br /></td></tr>
+<tr class="separator:a5a5f057032cb1c5dd9410c9bb80cfb51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5c794bbed903620b9db5ba4a0708e79" id="r_af5c794bbed903620b9db5ba4a0708e79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#af5c794bbed903620b9db5ba4a0708e79">setMinimumSupportRatio</a> (float ratio)</td></tr>
+<tr class="memdesc:af5c794bbed903620b9db5ba4a0708e79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Require this fraction of an elevated module's bottom cells to be supported from below.  <br /></td></tr>
+<tr class="separator:af5c794bbed903620b9db5ba4a0708e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3be82bfc4c7ce57da1e3cc4eebd32b03" id="r_a3be82bfc4c7ce57da1e3cc4eebd32b03"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a3be82bfc4c7ce57da1e3cc4eebd32b03">applyConfigJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a3be82bfc4c7ce57da1e3cc4eebd32b03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace an empty plan's constraints and module definitions from strict JSON. Schema <code>eve.procgen.module-assembly</code>, version 1 rejects unknown fields. Placements are never restored.  <br /></td></tr>
+<tr class="separator:a3be82bfc4c7ce57da1e3cc4eebd32b03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7df7d7245ce6824635ec4cc68d0728d2" id="r_a7df7d7245ce6824635ec4cc68d0728d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a7df7d7245ce6824635ec4cc68d0728d2">registerModuleType</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, int widthCells, int depthCells)</td></tr>
+<tr class="memdesc:a7df7d7245ce6824635ec4cc68d0728d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a module footprint using scalar script-friendly fields.  <br /></td></tr>
+<tr class="separator:a7df7d7245ce6824635ec4cc68d0728d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0eab40d12b36b2765a4991bf3599ba90" id="r_a0eab40d12b36b2765a4991bf3599ba90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a0eab40d12b36b2765a4991bf3599ba90">registerVolumeModuleType</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, int widthCells, int depthCells, int heightLevels)</td></tr>
+<tr class="memdesc:a0eab40d12b36b2765a4991bf3599ba90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a three-dimensional module volume using scalar script-friendly fields.  <br /></td></tr>
+<tr class="separator:a0eab40d12b36b2765a4991bf3599ba90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75c9ad72d44446f33a2d0b914ffadadd" id="r_a75c9ad72d44446f33a2d0b914ffadadd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a75c9ad72d44446f33a2d0b914ffadadd">addConnector</a> (const std::string &amp;moduleId, int cellX, int cellZ, int <a class="el" href="ModuleAssembly_8cpp.html#abc188cec62ba9cb38e9495e86a835bce">facing</a>, std::string <a class="el" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>, std::string <a class="el" href="ModuleAssembly_8cpp.html#a0276099c77ab0e934113d9ca66428e80">accepts</a>)</td></tr>
+<tr class="memdesc:a75c9ad72d44446f33a2d0b914ffadadd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a typed connector to a registered, not-yet-placed module.  <br /></td></tr>
+<tr class="separator:a75c9ad72d44446f33a2d0b914ffadadd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab84a363dfda1d4abf9916cce9d833975" id="r_ab84a363dfda1d4abf9916cce9d833975"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#ab84a363dfda1d4abf9916cce9d833975">addVolumeConnector</a> (const std::string &amp;moduleId, int cellX, int cellZ, int levelOffset, int <a class="el" href="ModuleAssembly_8cpp.html#abc188cec62ba9cb38e9495e86a835bce">facing</a>, std::string <a class="el" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>, std::string <a class="el" href="ModuleAssembly_8cpp.html#a0276099c77ab0e934113d9ca66428e80">accepts</a>)</td></tr>
+<tr class="memdesc:ab84a363dfda1d4abf9916cce9d833975"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a typed connector to one face of a cell in a module volume.  <br /></td></tr>
+<tr class="separator:ab84a363dfda1d4abf9916cce9d833975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec4956b624396209d49c95e4cfb94ce6" id="r_aec4956b624396209d49c95e4cfb94ce6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#aec4956b624396209d49c95e4cfb94ce6">registerModule</a> (<a class="el" href="structeve_1_1procgen_1_1ModuleDefinition.html">ModuleDefinition</a> definition)</td></tr>
+<tr class="memdesc:aec4956b624396209d49c95e4cfb94ce6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register one module definition before it is placed.  <br /></td></tr>
+<tr class="separator:aec4956b624396209d49c95e4cfb94ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2128b4ed4483972fabec2074075f0abc" id="r_a2128b4ed4483972fabec2074075f0abc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a2128b4ed4483972fabec2074075f0abc">place</a> (<a class="el" href="structeve_1_1procgen_1_1ModulePlacement.html">ModulePlacement</a> placement)</td></tr>
+<tr class="memdesc:a2128b4ed4483972fabec2074075f0abc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically append one placement. @cost Linear in existing occupied cells and connectors.  <br /></td></tr>
+<tr class="separator:a2128b4ed4483972fabec2074075f0abc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a426ddf0309c11b035982821ce75ca6e5" id="r_a426ddf0309c11b035982821ce75ca6e5"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1ModulePlacement.html">ModulePlacement</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a426ddf0309c11b035982821ce75ca6e5">placements</a> () const noexcept</td></tr>
+<tr class="memdesc:a426ddf0309c11b035982821ce75ca6e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the accepted placements in deterministic insertion order.  <br /></td></tr>
+<tr class="separator:a426ddf0309c11b035982821ce75ca6e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32dd5439e25fad6fd3ef5352da978b20" id="r_a32dd5439e25fad6fd3ef5352da978b20"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a32dd5439e25fad6fd3ef5352da978b20">getPlacementCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a32dd5439e25fad6fd3ef5352da978b20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of accepted placements.  <br /></td></tr>
+<tr class="separator:a32dd5439e25fad6fd3ef5352da978b20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11178bb9a7b1732527f549b5565c9354" id="r_a11178bb9a7b1732527f549b5565c9354"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a11178bb9a7b1732527f549b5565c9354">getPlacementModule</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a11178bb9a7b1732527f549b5565c9354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one accepted placement's module id, or empty text for an invalid index.  <br /></td></tr>
+<tr class="separator:a11178bb9a7b1732527f549b5565c9354"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92e963f5de29bbf16221f0c1abf0d20d" id="r_a92e963f5de29bbf16221f0c1abf0d20d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a92e963f5de29bbf16221f0c1abf0d20d">getPlacementX</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a92e963f5de29bbf16221f0c1abf0d20d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one placement's world X coordinate, or zero for an invalid index.  <br /></td></tr>
+<tr class="separator:a92e963f5de29bbf16221f0c1abf0d20d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7de6cc6b31dfd7c05bbf158dcc098113" id="r_a7de6cc6b31dfd7c05bbf158dcc098113"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a7de6cc6b31dfd7c05bbf158dcc098113">getPlacementY</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a7de6cc6b31dfd7c05bbf158dcc098113"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one placement's world Y coordinate, or zero for an invalid index.  <br /></td></tr>
+<tr class="separator:a7de6cc6b31dfd7c05bbf158dcc098113"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9852fc877ba47849dccc2c933f91bb70" id="r_a9852fc877ba47849dccc2c933f91bb70"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a9852fc877ba47849dccc2c933f91bb70">getPlacementZ</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a9852fc877ba47849dccc2c933f91bb70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one placement's world Z coordinate, or zero for an invalid index.  <br /></td></tr>
+<tr class="separator:a9852fc877ba47849dccc2c933f91bb70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad287cd810caf0d0f215eb9b5a1e38b02" id="r_ad287cd810caf0d0f215eb9b5a1e38b02"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#ad287cd810caf0d0f215eb9b5a1e38b02">getPlacementYawDegrees</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const noexcept</td></tr>
+<tr class="memdesc:ad287cd810caf0d0f215eb9b5a1e38b02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one placement's yaw in degrees, or zero for an invalid index.  <br /></td></tr>
+<tr class="separator:ad287cd810caf0d0f215eb9b5a1e38b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ece4ae4a5334b1f4e8b208fac79e994" id="r_a1ece4ae4a5334b1f4e8b208fac79e994"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1procgen_1_1ModuleAssemblyConstraints.html">ModuleAssemblyConstraints</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ModuleAssemblyPlan.html#a1ece4ae4a5334b1f4e8b208fac79e994">constraints</a> () const noexcept</td></tr>
+<tr class="memdesc:a1ece4ae4a5334b1f4e8b208fac79e994"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the immutable constraint configuration.  <br /></td></tr>
+<tr class="separator:a1ece4ae4a5334b1f4e8b208fac79e994"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic owner of a validated modular assembly plan. </p>
+<p>Definitions are registered before placement. A placement is committed only after its rotated footprint, bounds, occupancy and every touching connector have been validated. Failed placements leave the plan unchanged.</p>
+<p>@ownership Owns definitions and placements by value. @thread Affine to the caller; external synchronization is required. @reentrancy Does not invoke callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8h_source.html">ModuleAssembly.h</a> 第 <a class="el" href="ModuleAssembly_8h_source.html#l00069">69</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a862cb974c52f4b5731512abfa08a5434" name="a862cb974c52f4b5731512abfa08a5434"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a862cb974c52f4b5731512abfa08a5434">&#9670;&#160;</a></span>ModuleAssemblyPlan() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::ModuleAssemblyPlan::ModuleAssemblyPlan </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty plan with default constraints. </p>
+
+</div>
+</div>
+<a id="ae031bb898775e88dae909c3d239061e1" name="ae031bb898775e88dae909c3d239061e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae031bb898775e88dae909c3d239061e1">&#9670;&#160;</a></span>ModuleAssemblyPlan() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::ModuleAssemblyPlan::ModuleAssemblyPlan </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1ModuleAssemblyConstraints.html">ModuleAssemblyConstraints</a>&#160;</td>
+          <td class="paramname"><em>constraints</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty plan with a copied constraint configuration. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a75c9ad72d44446f33a2d0b914ffadadd" name="a75c9ad72d44446f33a2d0b914ffadadd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75c9ad72d44446f33a2d0b914ffadadd">&#9670;&#160;</a></span>addConnector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::addConnector </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>moduleId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>facing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>tag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>accepts</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a typed connector to a registered, not-yet-placed module. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModuleAssembly_8cpp_source.html#l00084">accepts</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00274">addVolumeConnector()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00082">facing</a> , 以及 <a class="el" href="ModuleAssembly_8cpp_source.html#l00083">tag</a>.</p>
+
+</div>
+</div>
+<a id="ab84a363dfda1d4abf9916cce9d833975" name="ab84a363dfda1d4abf9916cce9d833975"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab84a363dfda1d4abf9916cce9d833975">&#9670;&#160;</a></span>addVolumeConnector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::addVolumeConnector </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>moduleId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cellZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>levelOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>facing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>tag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>accepts</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a typed connector to one face of a cell in a module volume. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModuleAssembly_8cpp_source.html#l00084">accepts</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00082">facing</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ModuleAssembly_8cpp_source.html#l00083">tag</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ModuleAssembly_8cpp_source.html#l00269">addConnector()</a> , 以及 <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">applyConfigJson()</a>.</p>
+
+</div>
+</div>
+<a id="a3be82bfc4c7ce57da1e3cc4eebd32b03" name="a3be82bfc4c7ce57da1e3cc4eebd32b03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3be82bfc4c7ce57da1e3cc4eebd32b03">&#9670;&#160;</a></span>applyConfigJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::applyConfigJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace an empty plan's constraints and module definitions from strict JSON. Schema <code>eve.procgen.module-assembly</code>, version 1 rejects unknown fields. Placements are never restored. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>UTF-8 configuration, limited to 1 MiB, owning no external references. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Parse/validation failure without mutation, or an applied empty configured plan. @thread Caller-affine, synchronous, callback-free. @cost Linear in JSON bytes plus module and connector count; intended for one-time setup. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModuleAssembly_8cpp_source.html#l00084">accepts</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00274">addVolumeConnector()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00049">bounds</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00134">configure()</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00139">constraints()</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00082">facing</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00022">level</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00332">number</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00262">registerVolumeModuleType()</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00154">setAllowedQuarterTurns()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00164">setMinimumSupportRatio()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00083">tag</a>, <a class="el" href="UrbanGenerator_8cpp_source.html#l00212">turns</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="aa1bd4b9208adf813216ef7b48d7c2113" name="aa1bd4b9208adf813216ef7b48d7c2113"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1bd4b9208adf813216ef7b48d7c2113">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::configure </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>floorHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>minCellX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxCellX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>minCellZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxCellZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxLevels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bounded</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>requireConnection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure an empty plan before definitions or placements are added. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00053">eve::procgen::ModuleAssemblyConstraints::bounded</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00045">eve::procgen::ModuleAssemblyConstraints::cellSize</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00046">eve::procgen::ModuleAssemblyConstraints::floorHeight</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00048">eve::procgen::ModuleAssemblyConstraints::maxCellX</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00050">eve::procgen::ModuleAssemblyConstraints::maxCellZ</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00051">eve::procgen::ModuleAssemblyConstraints::maxLevels</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00047">eve::procgen::ModuleAssemblyConstraints::minCellX</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00049">eve::procgen::ModuleAssemblyConstraints::minCellZ</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00054">eve::procgen::ModuleAssemblyConstraints::requireConnection</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">applyConfigJson()</a>.</p>
+
+</div>
+</div>
+<a id="a1ece4ae4a5334b1f4e8b208fac79e994" name="a1ece4ae4a5334b1f4e8b208fac79e994"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ece4ae4a5334b1f4e8b208fac79e994">&#9670;&#160;</a></span>constraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1procgen_1_1ModuleAssemblyConstraints.html">ModuleAssemblyConstraints</a> &amp; eve::procgen::ModuleAssemblyPlan::constraints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the immutable constraint configuration. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8h_source.html">ModuleAssembly.h</a> 第 <a class="el" href="ModuleAssembly_8h_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">applyConfigJson()</a>.</p>
+
+</div>
+</div>
+<a id="a32dd5439e25fad6fd3ef5352da978b20" name="a32dd5439e25fad6fd3ef5352da978b20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32dd5439e25fad6fd3ef5352da978b20">&#9670;&#160;</a></span>getPlacementCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::ModuleAssemblyPlan::getPlacementCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of accepted placements. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8h_source.html">ModuleAssembly.h</a> 第 <a class="el" href="ModuleAssembly_8h_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a11178bb9a7b1732527f549b5565c9354" name="a11178bb9a7b1732527f549b5565c9354"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11178bb9a7b1732527f549b5565c9354">&#9670;&#160;</a></span>getPlacementModule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::ModuleAssemblyPlan::getPlacementModule </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one accepted placement's module id, or empty text for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a92e963f5de29bbf16221f0c1abf0d20d" name="a92e963f5de29bbf16221f0c1abf0d20d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92e963f5de29bbf16221f0c1abf0d20d">&#9670;&#160;</a></span>getPlacementX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ModuleAssemblyPlan::getPlacementX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return one placement's world X coordinate, or zero for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00412">412</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a7de6cc6b31dfd7c05bbf158dcc098113" name="a7de6cc6b31dfd7c05bbf158dcc098113"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7de6cc6b31dfd7c05bbf158dcc098113">&#9670;&#160;</a></span>getPlacementY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ModuleAssemblyPlan::getPlacementY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return one placement's world Y coordinate, or zero for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a> , 以及 <a class="el" href="ModuleAssembly_8cpp_source.html#l00022">level</a>.</p>
+
+</div>
+</div>
+<a id="ad287cd810caf0d0f215eb9b5a1e38b02" name="ad287cd810caf0d0f215eb9b5a1e38b02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad287cd810caf0d0f215eb9b5a1e38b02">&#9670;&#160;</a></span>getPlacementYawDegrees()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ModuleAssemblyPlan::getPlacementYawDegrees </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return one placement's yaw in degrees, or zero for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a9852fc877ba47849dccc2c933f91bb70" name="a9852fc877ba47849dccc2c933f91bb70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9852fc877ba47849dccc2c933f91bb70">&#9670;&#160;</a></span>getPlacementZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ModuleAssemblyPlan::getPlacementZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return one placement's world Z coordinate, or zero for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a2128b4ed4483972fabec2074075f0abc" name="a2128b4ed4483972fabec2074075f0abc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2128b4ed4483972fabec2074075f0abc">&#9670;&#160;</a></span>place()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::place </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1ModulePlacement.html">ModulePlacement</a>&#160;</td>
+          <td class="paramname"><em>placement</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically append one placement. @cost Linear in existing occupied cells and connectors. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModuleAssembly_8h_source.html#l00052">eve::procgen::ModuleAssemblyConstraints::allowedQuarterTurns</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00053">eve::procgen::ModuleAssemblyConstraints::bounded</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00037">eve::procgen::ModulePlacement::cellX</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00038">eve::procgen::ModulePlacement::cellZ</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00020">direction</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00082">facing</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00039">eve::procgen::ModulePlacement::level</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00048">eve::procgen::ModuleAssemblyConstraints::maxCellX</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00050">eve::procgen::ModuleAssemblyConstraints::maxCellZ</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00051">eve::procgen::ModuleAssemblyConstraints::maxLevels</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00047">eve::procgen::ModuleAssemblyConstraints::minCellX</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00049">eve::procgen::ModuleAssemblyConstraints::minCellZ</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00055">eve::procgen::ModuleAssemblyConstraints::minimumSupportRatio</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00036">eve::procgen::ModulePlacement::moduleId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00024">occupied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00040">eve::procgen::ModulePlacement::quarterTurn</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00054">eve::procgen::ModuleAssemblyConstraints::requireConnection</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+</div>
+</div>
+<a id="a426ddf0309c11b035982821ce75ca6e5" name="a426ddf0309c11b035982821ce75ca6e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a426ddf0309c11b035982821ce75ca6e5">&#9670;&#160;</a></span>placements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1ModulePlacement.html">ModulePlacement</a> &gt; &amp; eve::procgen::ModuleAssemblyPlan::placements </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the accepted placements in deterministic insertion order. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8h_source.html">ModuleAssembly.h</a> 第 <a class="el" href="ModuleAssembly_8h_source.html#l00125">125</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec4956b624396209d49c95e4cfb94ce6" name="aec4956b624396209d49c95e4cfb94ce6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec4956b624396209d49c95e4cfb94ce6">&#9670;&#160;</a></span>registerModule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::registerModule </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1ModuleDefinition.html">ModuleDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register one module definition before it is placed. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ModuleAssembly_8cpp_source.html#l00258">registerModuleType()</a> , 以及 <a class="el" href="ModuleAssembly_8cpp_source.html#l00262">registerVolumeModuleType()</a>.</p>
+
+</div>
+</div>
+<a id="a7df7d7245ce6824635ec4cc68d0728d2" name="a7df7d7245ce6824635ec4cc68d0728d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7df7d7245ce6824635ec4cc68d0728d2">&#9670;&#160;</a></span>registerModuleType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::registerModuleType </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>widthCells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depthCells</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a module footprint using scalar script-friendly fields. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00258">258</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModuleAssembly_8cpp_source.html#l00293">registerModule()</a>.</p>
+
+</div>
+</div>
+<a id="a0eab40d12b36b2765a4991bf3599ba90" name="a0eab40d12b36b2765a4991bf3599ba90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0eab40d12b36b2765a4991bf3599ba90">&#9670;&#160;</a></span>registerVolumeModuleType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::registerVolumeModuleType </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>widthCells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depthCells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>heightLevels</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a three-dimensional module volume using scalar script-friendly fields. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModuleAssembly_8cpp_source.html#l00293">registerModule()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">applyConfigJson()</a>.</p>
+
+</div>
+</div>
+<a id="a5a5f057032cb1c5dd9410c9bb80cfb51" name="a5a5f057032cb1c5dd9410c9bb80cfb51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a5f057032cb1c5dd9410c9bb80cfb51">&#9670;&#160;</a></span>setAllowedQuarterTurns()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::setAllowedQuarterTurns </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>turn0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>turn90</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>turn180</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>turn270</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure the four permitted quarter-turn rotations before registration or placement. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModuleAssembly_8h_source.html#l00052">eve::procgen::ModuleAssemblyConstraints::allowedQuarterTurns</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">applyConfigJson()</a>.</p>
+
+</div>
+</div>
+<a id="af5c794bbed903620b9db5ba4a0708e79" name="af5c794bbed903620b9db5ba4a0708e79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5c794bbed903620b9db5ba4a0708e79">&#9670;&#160;</a></span>setMinimumSupportRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ModuleAssemblyPlan::setMinimumSupportRatio </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ratio</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Require this fraction of an elevated module's bottom cells to be supported from below. </p>
+<p>A value of zero permits cantilevered modules; one requires every bottom cell to have an occupied cell directly beneath it. Touching vertical faces still require compatible Up/Down connectors. </p>
+
+<p class="definition">在文件 <a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a> 第 <a class="el" href="ModuleAssembly_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ModuleAssembly_8h_source.html#l00055">eve::procgen::ModuleAssemblyConstraints::minimumSupportRatio</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ModuleAssembly_8cpp_source.html#l00175">applyConfigJson()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="ModuleAssembly_8h_source.html">ModuleAssembly.h</a></li>
+<li>src/modules/procgen/<a class="el" href="ModuleAssembly_8cpp_source.html">ModuleAssembly.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

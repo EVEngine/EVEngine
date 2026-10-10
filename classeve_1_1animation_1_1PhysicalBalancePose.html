@@ -1,0 +1,1412 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::PhysicalBalancePose类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">PhysicalBalancePose</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1PhysicalBalancePose-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::PhysicalBalancePose类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authored-pose overlay that wobbles from world impulses and recovers balance.  
+ <a href="classeve_1_1animation_1_1PhysicalBalancePose.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PhysicalBalancePose_8h_source.html">PhysicalBalancePose.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae4ea4c7dc5c0c03d905620ebf1456771" id="r_ae4ea4c7dc5c0c03d905620ebf1456771"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ae4ea4c7dc5c0c03d905620ebf1456771">PhysicalBalancePose</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="memdesc:ae4ea4c7dc5c0c03d905620ebf1456771"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct for a borrowed skeleton.  <br /></td></tr>
+<tr class="separator:ae4ea4c7dc5c0c03d905620ebf1456771"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e15c0dda49d5762d378023317f114de" id="r_a2e15c0dda49d5762d378023317f114de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a2e15c0dda49d5762d378023317f114de">~PhysicalBalancePose</a> ()=default</td></tr>
+<tr class="memdesc:a2e15c0dda49d5762d378023317f114de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Physical balance pose.  <br /></td></tr>
+<tr class="separator:a2e15c0dda49d5762d378023317f114de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab904ffb4d8139ec1c56404e08637d382" id="r_ab904ffb4d8139ec1c56404e08637d382"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ab904ffb4d8139ec1c56404e08637d382">PhysicalBalancePose</a> (const <a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">PhysicalBalancePose</a> &amp;)=delete</td></tr>
+<tr class="separator:ab904ffb4d8139ec1c56404e08637d382"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20860a82b0fe1a15f5f4eef53e25d92b" id="r_a20860a82b0fe1a15f5f4eef53e25d92b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">PhysicalBalancePose</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a20860a82b0fe1a15f5f4eef53e25d92b">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">PhysicalBalancePose</a> &amp;)=delete</td></tr>
+<tr class="separator:a20860a82b0fe1a15f5f4eef53e25d92b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff77161bdf4f3f6ec31519b43b69ce2b" id="r_aff77161bdf4f3f6ec31519b43b69ce2b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aff77161bdf4f3f6ec31519b43b69ce2b">getSkeleton</a> () const</td></tr>
+<tr class="memdesc:aff77161bdf4f3f6ec31519b43b69ce2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed skeleton. @ownership Borrowed; ownership remains with the animation source. @lifetime Valid until this object or the skeleton is destroyed.  <br /></td></tr>
+<tr class="separator:aff77161bdf4f3f6ec31519b43b69ce2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d72cafcf5a0e217de9f07e830799c21" id="r_a3d72cafcf5a0e217de9f07e830799c21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a3d72cafcf5a0e217de9f07e830799c21">setSupportBone</a> (int boneIndex)</td></tr>
+<tr class="memdesc:a3d72cafcf5a0e217de9f07e830799c21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bone whose world XZ is the support point (typically pelvis/root).  <br /></td></tr>
+<tr class="separator:a3d72cafcf5a0e217de9f07e830799c21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45387176f199fe588116a6a473ad1b48" id="r_a45387176f199fe588116a6a473ad1b48"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a45387176f199fe588116a6a473ad1b48">getSupportBone</a> () const</td></tr>
+<tr class="separator:a45387176f199fe588116a6a473ad1b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6688b2b86a2ac48c54888920d03349d4" id="r_a6688b2b86a2ac48c54888920d03349d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a6688b2b86a2ac48c54888920d03349d4">setBalanceBone</a> (int boneIndex)</td></tr>
+<tr class="memdesc:a6688b2b86a2ac48c54888920d03349d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bone that receives whole-body lean (typically spine/chest).  <br /></td></tr>
+<tr class="separator:a6688b2b86a2ac48c54888920d03349d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c07b0ea9c4008131530d7374020a77d" id="r_a5c07b0ea9c4008131530d7374020a77d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a5c07b0ea9c4008131530d7374020a77d">getBalanceBone</a> () const</td></tr>
+<tr class="separator:a5c07b0ea9c4008131530d7374020a77d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a850835830e7c140b73bb7ce54f36ce4f" id="r_a850835830e7c140b73bb7ce54f36ce4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a850835830e7c140b73bb7ce54f36ce4f">setBoneMass</a> (int boneIndex, float mass)</td></tr>
+<tr class="memdesc:a850835830e7c140b73bb7ce54f36ce4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mass used for center-of-mass; zero excludes the bone.  <br /></td></tr>
+<tr class="separator:a850835830e7c140b73bb7ce54f36ce4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6497d2e6ca139216d833318ccdba4616" id="r_a6497d2e6ca139216d833318ccdba4616"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a6497d2e6ca139216d833318ccdba4616">getBoneMass</a> (int boneIndex) const</td></tr>
+<tr class="separator:a6497d2e6ca139216d833318ccdba4616"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88729589d179f14b1939b1da30ff96b4" id="r_a88729589d179f14b1939b1da30ff96b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a88729589d179f14b1939b1da30ff96b4">setRecovery</a> (float frequencyHz, float dampingZeta)</td></tr>
+<tr class="memdesc:a88729589d179f14b1939b1da30ff96b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recovery frequency (Hz) and damping ζ for the balance pendulum.  <br /></td></tr>
+<tr class="separator:a88729589d179f14b1939b1da30ff96b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af14c2a9f94f1d04aa2024cebe817bcbb" id="r_af14c2a9f94f1d04aa2024cebe817bcbb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#af14c2a9f94f1d04aa2024cebe817bcbb">getRecoveryFrequency</a> () const</td></tr>
+<tr class="separator:af14c2a9f94f1d04aa2024cebe817bcbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2b7bc63ebd186c1a8a9c9b26af3cd2c" id="r_af2b7bc63ebd186c1a8a9c9b26af3cd2c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#af2b7bc63ebd186c1a8a9c9b26af3cd2c">getRecoveryDamping</a> () const</td></tr>
+<tr class="separator:af2b7bc63ebd186c1a8a9c9b26af3cd2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb7c8e77665967e67821331c98bd8092" id="r_afb7c8e77665967e67821331c98bd8092"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#afb7c8e77665967e67821331c98bd8092">setRecoil</a> (float frequencyHz, float dampingZeta)</td></tr>
+<tr class="memdesc:afb7c8e77665967e67821331c98bd8092"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local-bone recoil frequency and damping toward the authored rotation.  <br /></td></tr>
+<tr class="separator:afb7c8e77665967e67821331c98bd8092"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1690f9f270a3a65af296edb1e5b074a" id="r_ab1690f9f270a3a65af296edb1e5b074a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ab1690f9f270a3a65af296edb1e5b074a">getRecoilFrequency</a> () const</td></tr>
+<tr class="separator:ab1690f9f270a3a65af296edb1e5b074a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacf1bc0d38d4947d384a4a5288fc5842" id="r_aacf1bc0d38d4947d384a4a5288fc5842"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aacf1bc0d38d4947d384a4a5288fc5842">getRecoilDamping</a> () const</td></tr>
+<tr class="separator:aacf1bc0d38d4947d384a4a5288fc5842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdfed7119d99c26d36207fd770e33aa3" id="r_acdfed7119d99c26d36207fd770e33aa3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#acdfed7119d99c26d36207fd770e33aa3">setGravity</a> (float metersPerSecondSquared)</td></tr>
+<tr class="memdesc:acdfed7119d99c26d36207fd770e33aa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gravity magnitude (m/s², Y-up). Zero disables the fall-away term.  <br /></td></tr>
+<tr class="separator:acdfed7119d99c26d36207fd770e33aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f0debf9287238c405d603ee9ff41b6d" id="r_a3f0debf9287238c405d603ee9ff41b6d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a3f0debf9287238c405d603ee9ff41b6d">getGravity</a> () const</td></tr>
+<tr class="separator:a3f0debf9287238c405d603ee9ff41b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78713d901e7255777d30694d68212e02" id="r_a78713d901e7255777d30694d68212e02"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a78713d901e7255777d30694d68212e02">setPendulumHeight</a> (float meters)</td></tr>
+<tr class="memdesc:a78713d901e7255777d30694d68212e02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pendulum length used as g/h (meters).  <br /></td></tr>
+<tr class="separator:a78713d901e7255777d30694d68212e02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b89a8bc09fb17b2de2fbbadbc113e93" id="r_a7b89a8bc09fb17b2de2fbbadbc113e93"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a7b89a8bc09fb17b2de2fbbadbc113e93">getPendulumHeight</a> () const</td></tr>
+<tr class="separator:a7b89a8bc09fb17b2de2fbbadbc113e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10bd96226e8ce775a5938e82eb66e407" id="r_a10bd96226e8ce775a5938e82eb66e407"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a10bd96226e8ce775a5938e82eb66e407">setInertia</a> (float <a class="el" href="TreeMesh_8cpp.html#a17ca74f051befb55deca87ccc0e5cbdd">inertia</a>)</td></tr>
+<tr class="memdesc:a10bd96226e8ce775a5938e82eb66e407"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whole-body rotational inertia for lean (kg·m²).  <br /></td></tr>
+<tr class="separator:a10bd96226e8ce775a5938e82eb66e407"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac675ee0a3aa3cc2b30b14e0ee72e4763" id="r_ac675ee0a3aa3cc2b30b14e0ee72e4763"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ac675ee0a3aa3cc2b30b14e0ee72e4763">getInertia</a> () const</td></tr>
+<tr class="separator:ac675ee0a3aa3cc2b30b14e0ee72e4763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a226b54a17a70607a579e57455129efa3" id="r_a226b54a17a70607a579e57455129efa3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a226b54a17a70607a579e57455129efa3">setRecoilInertia</a> (float <a class="el" href="TreeMesh_8cpp.html#a17ca74f051befb55deca87ccc0e5cbdd">inertia</a>)</td></tr>
+<tr class="memdesc:a226b54a17a70607a579e57455129efa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-bone recoil inertia (kg·m²).  <br /></td></tr>
+<tr class="separator:a226b54a17a70607a579e57455129efa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acecfacf3727df9c9262d9c712d767ef2" id="r_acecfacf3727df9c9262d9c712d767ef2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#acecfacf3727df9c9262d9c712d767ef2">getRecoilInertia</a> () const</td></tr>
+<tr class="separator:acecfacf3727df9c9262d9c712d767ef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66446be046e92fea7340547606b2a0f9" id="r_a66446be046e92fea7340547606b2a0f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a66446be046e92fea7340547606b2a0f9">setMaxLean</a> (float radians)</td></tr>
+<tr class="memdesc:a66446be046e92fea7340547606b2a0f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clamp for lean angle in radians.  <br /></td></tr>
+<tr class="separator:a66446be046e92fea7340547606b2a0f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa541b987d454176869e6d9ae48c0454d" id="r_aa541b987d454176869e6d9ae48c0454d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aa541b987d454176869e6d9ae48c0454d">getMaxLean</a> () const</td></tr>
+<tr class="separator:aa541b987d454176869e6d9ae48c0454d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c015e0d3082508ef6a618dce61334b7" id="r_a7c015e0d3082508ef6a618dce61334b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a7c015e0d3082508ef6a618dce61334b7">setTargetPose</a> (const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>)</td></tr>
+<tr class="memdesc:a7c015e0d3082508ef6a618dce61334b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the authored pose that recovery tracks.  <br /></td></tr>
+<tr class="separator:a7c015e0d3082508ef6a618dce61334b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37f2de558ff669b6428fefa34bbc791f" id="r_a37f2de558ff669b6428fefa34bbc791f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a37f2de558ff669b6428fefa34bbc791f">snapToTarget</a> ()</td></tr>
+<tr class="memdesc:a37f2de558ff669b6428fefa34bbc791f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zero lean, recoil and pending impulses; pose snaps to the last target.  <br /></td></tr>
+<tr class="separator:a37f2de558ff669b6428fefa34bbc791f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2e629439e3a31e10c075489d1bc7069" id="r_ab2e629439e3a31e10c075489d1bc7069"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ab2e629439e3a31e10c075489d1bc7069">applyImpulse</a> (int boneIndex, float impulseX, float impulseY, float impulseZ, float pointX, float pointY, float pointZ)</td></tr>
+<tr class="memdesc:ab2e629439e3a31e10c075489d1bc7069"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue a world-space linear impulse at a world point.  <br /></td></tr>
+<tr class="separator:ab2e629439e3a31e10c075489d1bc7069"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25a15c170ad7bf7b541bb7d5092d06dc" id="r_a25a15c170ad7bf7b541bb7d5092d06dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a25a15c170ad7bf7b541bb7d5092d06dc">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:a25a15c170ad7bf7b541bb7d5092d06dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the pendulum and recoil, then write the overlay pose.  <br /></td></tr>
+<tr class="separator:a25a15c170ad7bf7b541bb7d5092d06dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e8fe1d7e4913ca2a08a5865edf2f7bb" id="r_a0e8fe1d7e4913ca2a08a5865edf2f7bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a0e8fe1d7e4913ca2a08a5865edf2f7bb">update</a> (float dt)</td></tr>
+<tr class="memdesc:a0e8fe1d7e4913ca2a08a5865edf2f7bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy seconds facade; forwards to <a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a25a15c170ad7bf7b541bb7d5092d06dc" title="Advance the pendulum and recoil, then write the overlay pose.">advance()</a> and ignores its <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>.  <br /></td></tr>
+<tr class="separator:a0e8fe1d7e4913ca2a08a5865edf2f7bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9581a7e5ff1404cb8a69029b1f27f336" id="r_a9581a7e5ff1404cb8a69029b1f27f336"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a9581a7e5ff1404cb8a69029b1f27f336">getPose</a> ()</td></tr>
+<tr class="memdesc:a9581a7e5ff1404cb8a69029b1f27f336"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overlay pose after the last successful advance (or snap). @ownership Borrowed; this object retains ownership. @lifetime Valid until the next mutating call or destruction.  <br /></td></tr>
+<tr class="separator:a9581a7e5ff1404cb8a69029b1f27f336"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca1b39b1060f10e0bc26a77e98392c63" id="r_aca1b39b1060f10e0bc26a77e98392c63"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aca1b39b1060f10e0bc26a77e98392c63">getTargetPose</a> ()</td></tr>
+<tr class="memdesc:aca1b39b1060f10e0bc26a77e98392c63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last authored target, or bind pose before the first setTargetPose. @ownership Borrowed; this object retains ownership. @lifetime Valid until the next setTargetPose/snap or destruction.  <br /></td></tr>
+<tr class="separator:aca1b39b1060f10e0bc26a77e98392c63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60ed35e1adf57ad9240f6c749c0ca252" id="r_a60ed35e1adf57ad9240f6c749c0ca252"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a60ed35e1adf57ad9240f6c749c0ca252">getLeanX</a> () const</td></tr>
+<tr class="separator:a60ed35e1adf57ad9240f6c749c0ca252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7a06717fa34bd55823238b8d045e33c" id="r_aa7a06717fa34bd55823238b8d045e33c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aa7a06717fa34bd55823238b8d045e33c">getLeanZ</a> () const</td></tr>
+<tr class="separator:aa7a06717fa34bd55823238b8d045e33c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a2ec2316612039d37094ea8824795f3" id="r_a2a2ec2316612039d37094ea8824795f3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a2a2ec2316612039d37094ea8824795f3">getLeanVelocityX</a> () const</td></tr>
+<tr class="separator:a2a2ec2316612039d37094ea8824795f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab27f308d6ddd437a9771eb4440ed00d5" id="r_ab27f308d6ddd437a9771eb4440ed00d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ab27f308d6ddd437a9771eb4440ed00d5">getLeanVelocityZ</a> () const</td></tr>
+<tr class="separator:ab27f308d6ddd437a9771eb4440ed00d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a746b86813e68bf53ad9cfd670d36bcad" id="r_a746b86813e68bf53ad9cfd670d36bcad"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a746b86813e68bf53ad9cfd670d36bcad">getCenterOfMassX</a> () const</td></tr>
+<tr class="separator:a746b86813e68bf53ad9cfd670d36bcad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e09f86f920dac3c5f55c5b213794079" id="r_a4e09f86f920dac3c5f55c5b213794079"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a4e09f86f920dac3c5f55c5b213794079">getCenterOfMassY</a> () const</td></tr>
+<tr class="separator:a4e09f86f920dac3c5f55c5b213794079"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a19d6f4a483a06ab803aaf99a72c287" id="r_a1a19d6f4a483a06ab803aaf99a72c287"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a1a19d6f4a483a06ab803aaf99a72c287">getCenterOfMassZ</a> () const</td></tr>
+<tr class="separator:a1a19d6f4a483a06ab803aaf99a72c287"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad774ec3e12b7ea2e9493c0d760c1246c" id="r_ad774ec3e12b7ea2e9493c0d760c1246c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#ad774ec3e12b7ea2e9493c0d760c1246c">getSupportX</a> () const</td></tr>
+<tr class="separator:ad774ec3e12b7ea2e9493c0d760c1246c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff0c4e778852b5f37ba0e1d053aee23f" id="r_aff0c4e778852b5f37ba0e1d053aee23f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#aff0c4e778852b5f37ba0e1d053aee23f">getSupportY</a> () const</td></tr>
+<tr class="separator:aff0c4e778852b5f37ba0e1d053aee23f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dd5d4c131230240d327d04a2ff0537b" id="r_a8dd5d4c131230240d327d04a2ff0537b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a8dd5d4c131230240d327d04a2ff0537b">getSupportZ</a> () const</td></tr>
+<tr class="separator:a8dd5d4c131230240d327d04a2ff0537b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authored-pose overlay that wobbles from world impulses and recovers balance. </p>
+<p><a class="el" href="classeve_1_1animation_1_1Animation.html" title="Animation module — tween factory + 2D sprite-sheet / Spine + 3D skeletal playback (player / state mac...">Animation</a> remains the target. A planar inverted pendulum on the balance bone leans from contact impulses; recovery PD plus a gravity term makes the character actively fight the lean. Optional per-bone recoil springs back to the authored local rotation. Physics is not referenced: callers inject impulse values from World3D contacts or gameplay.</p>
+<p>Determinism: identical skeleton, target pose, impulses and <a class="el" href="structeve_1_1SimulationStep.html" title="One deterministic fixed-step emitted by SimulationClock.">SimulationStep</a> sequences produce the same pose within float rounding. Not bit-exact across compilers.</p>
+<p>Script type: <code><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html" title="Authored-pose overlay that wobbles from world impulses and recovers balance.">PhysicalBalancePose</a></code>. @ownership Value-like runtime object; the borrowed skeleton is not owned. @thread Owner thread only; no callbacks or reentrancy. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8h_source.html">PhysicalBalancePose.h</a> 第 <a class="el" href="PhysicalBalancePose_8h_source.html#l00030">30</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae4ea4c7dc5c0c03d905620ebf1456771" name="ae4ea4c7dc5c0c03d905620ebf1456771"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4ea4c7dc5c0c03d905620ebf1456771">&#9670;&#160;</a></span>PhysicalBalancePose() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::PhysicalBalancePose::PhysicalBalancePose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct for a borrowed skeleton. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">skeleton</td><td>Hierarchy used for world COM and bone indexing; must outlive this object. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html" title="EVENGINE_API_FOUNDATION public API.">eve::Exception</a></td><td>when skeleton is null. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8cpp_source.html#l00132">eve::animation::AnimSkeleton::applyBindPose()</a>.</p>
+
+</div>
+</div>
+<a id="a2e15c0dda49d5762d378023317f114de" name="a2e15c0dda49d5762d378023317f114de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e15c0dda49d5762d378023317f114de">&#9670;&#160;</a></span>~PhysicalBalancePose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::PhysicalBalancePose::~PhysicalBalancePose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Physical balance pose. </p>
+
+</div>
+</div>
+<a id="ab904ffb4d8139ec1c56404e08637d382" name="ab904ffb4d8139ec1c56404e08637d382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab904ffb4d8139ec1c56404e08637d382">&#9670;&#160;</a></span>PhysicalBalancePose() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::PhysicalBalancePose::PhysicalBalancePose </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">PhysicalBalancePose</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a25a15c170ad7bf7b541bb7d5092d06dc" name="a25a15c170ad7bf7b541bb7d5092d06dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25a15c170ad7bf7b541bb7d5092d06dc">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance the pendulum and recoil, then write the overlay pose. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied, or InvalidArgument/Conflict for a bad step. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00355">355</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimationTime_8h_source.html#l00013">eve::animation::detail::secondsForStep()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00364">update()</a>.</p>
+
+</div>
+</div>
+<a id="ab2e629439e3a31e10c075489d1bc7069" name="ab2e629439e3a31e10c075489d1bc7069"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2e629439e3a31e10c075489d1bc7069">&#9670;&#160;</a></span>applyImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::applyImpulse </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pointX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pointY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pointZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queue a world-space linear impulse at a world point. </p>
+<p>Torque about the support updates lean velocity; torque about the hit bone updates that bone's recoil. Applied on the next advance. </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">boneIndex</td><td>Hit bone; must be in range. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, NoOp for a near-zero impulse, or InvalidArgument for bad input. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="AnimPose_8cpp_source.html#l00203">eve::animation::AnimPose::computeWorld()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::px</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::py</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::pz</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AnimPose_8cpp_source.html#l00367">eve::animation::AnimPose::world()</a>.</p>
+
+</div>
+</div>
+<a id="a5c07b0ea9c4008131530d7374020a77d" name="a5c07b0ea9c4008131530d7374020a77d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c07b0ea9c4008131530d7374020a77d">&#9670;&#160;</a></span>getBalanceBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::PhysicalBalancePose::getBalanceBone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00378">378</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a6497d2e6ca139216d833318ccdba4616" name="a6497d2e6ca139216d833318ccdba4616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6497d2e6ca139216d833318ccdba4616">&#9670;&#160;</a></span>getBoneMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getBoneMass </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a746b86813e68bf53ad9cfd670d36bcad" name="a746b86813e68bf53ad9cfd670d36bcad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a746b86813e68bf53ad9cfd670d36bcad">&#9670;&#160;</a></span>getCenterOfMassX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getCenterOfMassX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a4e09f86f920dac3c5f55c5b213794079" name="a4e09f86f920dac3c5f55c5b213794079"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e09f86f920dac3c5f55c5b213794079">&#9670;&#160;</a></span>getCenterOfMassY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getCenterOfMassY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00393">393</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a1a19d6f4a483a06ab803aaf99a72c287" name="a1a19d6f4a483a06ab803aaf99a72c287"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a19d6f4a483a06ab803aaf99a72c287">&#9670;&#160;</a></span>getCenterOfMassZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getCenterOfMassZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a3f0debf9287238c405d603ee9ff41b6d" name="a3f0debf9287238c405d603ee9ff41b6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f0debf9287238c405d603ee9ff41b6d">&#9670;&#160;</a></span>getGravity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getGravity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00383">383</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ac675ee0a3aa3cc2b30b14e0ee72e4763" name="ac675ee0a3aa3cc2b30b14e0ee72e4763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac675ee0a3aa3cc2b30b14e0ee72e4763">&#9670;&#160;</a></span>getInertia()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getInertia </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00385">385</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a2a2ec2316612039d37094ea8824795f3" name="a2a2ec2316612039d37094ea8824795f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a2ec2316612039d37094ea8824795f3">&#9670;&#160;</a></span>getLeanVelocityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getLeanVelocityX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ab27f308d6ddd437a9771eb4440ed00d5" name="ab27f308d6ddd437a9771eb4440ed00d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab27f308d6ddd437a9771eb4440ed00d5">&#9670;&#160;</a></span>getLeanVelocityZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getLeanVelocityZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00391">391</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a60ed35e1adf57ad9240f6c749c0ca252" name="a60ed35e1adf57ad9240f6c749c0ca252"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60ed35e1adf57ad9240f6c749c0ca252">&#9670;&#160;</a></span>getLeanX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getLeanX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00388">388</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aa7a06717fa34bd55823238b8d045e33c" name="aa7a06717fa34bd55823238b8d045e33c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7a06717fa34bd55823238b8d045e33c">&#9670;&#160;</a></span>getLeanZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getLeanZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00389">389</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aa541b987d454176869e6d9ae48c0454d" name="aa541b987d454176869e6d9ae48c0454d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa541b987d454176869e6d9ae48c0454d">&#9670;&#160;</a></span>getMaxLean()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getMaxLean </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a7b89a8bc09fb17b2de2fbbadbc113e93" name="a7b89a8bc09fb17b2de2fbbadbc113e93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b89a8bc09fb17b2de2fbbadbc113e93">&#9670;&#160;</a></span>getPendulumHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getPendulumHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a9581a7e5ff1404cb8a69029b1f27f336" name="a9581a7e5ff1404cb8a69029b1f27f336"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9581a7e5ff1404cb8a69029b1f27f336">&#9670;&#160;</a></span>getPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> * eve::animation::PhysicalBalancePose::getPose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Overlay pose after the last successful advance (or snap). @ownership Borrowed; this object retains ownership. @lifetime Valid until the next mutating call or destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aacf1bc0d38d4947d384a4a5288fc5842" name="aacf1bc0d38d4947d384a4a5288fc5842"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacf1bc0d38d4947d384a4a5288fc5842">&#9670;&#160;</a></span>getRecoilDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getRecoilDamping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00382">382</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ab1690f9f270a3a65af296edb1e5b074a" name="ab1690f9f270a3a65af296edb1e5b074a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1690f9f270a3a65af296edb1e5b074a">&#9670;&#160;</a></span>getRecoilFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getRecoilFrequency </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00381">381</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="acecfacf3727df9c9262d9c712d767ef2" name="acecfacf3727df9c9262d9c712d767ef2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acecfacf3727df9c9262d9c712d767ef2">&#9670;&#160;</a></span>getRecoilInertia()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getRecoilInertia </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00386">386</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="af2b7bc63ebd186c1a8a9c9b26af3cd2c" name="af2b7bc63ebd186c1a8a9c9b26af3cd2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2b7bc63ebd186c1a8a9c9b26af3cd2c">&#9670;&#160;</a></span>getRecoveryDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getRecoveryDamping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="af14c2a9f94f1d04aa2024cebe817bcbb" name="af14c2a9f94f1d04aa2024cebe817bcbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af14c2a9f94f1d04aa2024cebe817bcbb">&#9670;&#160;</a></span>getRecoveryFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getRecoveryFrequency </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aff77161bdf4f3f6ec31519b43b69ce2b" name="aff77161bdf4f3f6ec31519b43b69ce2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff77161bdf4f3f6ec31519b43b69ce2b">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::PhysicalBalancePose::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrowed skeleton. @ownership Borrowed; ownership remains with the animation source. @lifetime Valid until this object or the skeleton is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a45387176f199fe588116a6a473ad1b48" name="a45387176f199fe588116a6a473ad1b48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45387176f199fe588116a6a473ad1b48">&#9670;&#160;</a></span>getSupportBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::PhysicalBalancePose::getSupportBone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ad774ec3e12b7ea2e9493c0d760c1246c" name="ad774ec3e12b7ea2e9493c0d760c1246c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad774ec3e12b7ea2e9493c0d760c1246c">&#9670;&#160;</a></span>getSupportX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getSupportX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00395">395</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aff0c4e778852b5f37ba0e1d053aee23f" name="aff0c4e778852b5f37ba0e1d053aee23f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff0c4e778852b5f37ba0e1d053aee23f">&#9670;&#160;</a></span>getSupportY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getSupportY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00396">396</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a8dd5d4c131230240d327d04a2ff0537b" name="a8dd5d4c131230240d327d04a2ff0537b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dd5d4c131230240d327d04a2ff0537b">&#9670;&#160;</a></span>getSupportZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::PhysicalBalancePose::getSupportZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00397">397</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aca1b39b1060f10e0bc26a77e98392c63" name="aca1b39b1060f10e0bc26a77e98392c63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca1b39b1060f10e0bc26a77e98392c63">&#9670;&#160;</a></span>getTargetPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> * eve::animation::PhysicalBalancePose::getTargetPose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Last authored target, or bind pose before the first setTargetPose. @ownership Borrowed; this object retains ownership. @lifetime Valid until the next setTargetPose/snap or destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a20860a82b0fe1a15f5f4eef53e25d92b" name="a20860a82b0fe1a15f5f4eef53e25d92b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20860a82b0fe1a15f5f4eef53e25d92b">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">PhysicalBalancePose</a> &amp; eve::animation::PhysicalBalancePose::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html">PhysicalBalancePose</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6688b2b86a2ac48c54888920d03349d4" name="a6688b2b86a2ac48c54888920d03349d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6688b2b86a2ac48c54888920d03349d4">&#9670;&#160;</a></span>setBalanceBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setBalanceBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bone that receives whole-body lean (typically spine/chest). </p>
+<dl class="section return"><dt>返回</dt><dd>Applied, or InvalidArgument when the index is out of range. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a850835830e7c140b73bb7ce54f36ce4f" name="a850835830e7c140b73bb7ce54f36ce4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a850835830e7c140b73bb7ce54f36ce4f">&#9670;&#160;</a></span>setBoneMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setBoneMass </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mass</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mass used for center-of-mass; zero excludes the bone. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied, InvalidArgument for a bad index or non-finite/negative mass. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="acdfed7119d99c26d36207fd770e33aa3" name="acdfed7119d99c26d36207fd770e33aa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdfed7119d99c26d36207fd770e33aa3">&#9670;&#160;</a></span>setGravity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setGravity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>metersPerSecondSquared</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gravity magnitude (m/s², Y-up). Zero disables the fall-away term. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a10bd96226e8ce775a5938e82eb66e407" name="a10bd96226e8ce775a5938e82eb66e407"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10bd96226e8ce775a5938e82eb66e407">&#9670;&#160;</a></span>setInertia()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setInertia </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>inertia</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whole-body rotational inertia for lean (kg·m²). </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00309">inertia</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a66446be046e92fea7340547606b2a0f9" name="a66446be046e92fea7340547606b2a0f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66446be046e92fea7340547606b2a0f9">&#9670;&#160;</a></span>setMaxLean()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setMaxLean </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clamp for lean angle in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="AnimMath_8h_source.html#l00034">eve::animation::clampf()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a78713d901e7255777d30694d68212e02" name="a78713d901e7255777d30694d68212e02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78713d901e7255777d30694d68212e02">&#9670;&#160;</a></span>setPendulumHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setPendulumHeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>meters</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pendulum length used as g/h (meters). </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="afb7c8e77665967e67821331c98bd8092" name="afb7c8e77665967e67821331c98bd8092"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb7c8e77665967e67821331c98bd8092">&#9670;&#160;</a></span>setRecoil()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setRecoil </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequencyHz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingZeta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Local-bone recoil frequency and damping toward the authored rotation. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a226b54a17a70607a579e57455129efa3" name="a226b54a17a70607a579e57455129efa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a226b54a17a70607a579e57455129efa3">&#9670;&#160;</a></span>setRecoilInertia()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setRecoilInertia </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>inertia</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-bone recoil inertia (kg·m²). </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00309">inertia</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a88729589d179f14b1939b1da30ff96b4" name="a88729589d179f14b1939b1da30ff96b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88729589d179f14b1939b1da30ff96b4">&#9670;&#160;</a></span>setRecovery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setRecovery </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequencyHz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingZeta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recovery frequency (Hz) and damping ζ for the balance pendulum. </p>
+<p>Requires (2π f)² &gt; g / height so the character can win against gravity. ζ in (0, 1) wobbles while returning upright; ζ ≥ 1 settles without overshoot. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3d72cafcf5a0e217de9f07e830799c21" name="a3d72cafcf5a0e217de9f07e830799c21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d72cafcf5a0e217de9f07e830799c21">&#9670;&#160;</a></span>setSupportBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setSupportBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bone whose world XZ is the support point (typically pelvis/root). </p>
+<dl class="section return"><dt>返回</dt><dd>Applied, or InvalidArgument when the index is out of range. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7c015e0d3082508ef6a618dce61334b7" name="a7c015e0d3082508ef6a618dce61334b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c015e0d3082508ef6a618dce61334b7">&#9670;&#160;</a></span>setTargetPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::setTargetPose </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy the authored pose that recovery tracks. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Borrowed for this call only; bone count must match the skeleton. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or InvalidArgument when target is null or the count mismatches. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="AnimPose_8cpp_source.html#l00091">eve::animation::AnimPose::copyFrom()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00033">eve::animation::AnimSkeleton::getBoneCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+</div>
+</div>
+<a id="a37f2de558ff669b6428fefa34bbc791f" name="a37f2de558ff669b6428fefa34bbc791f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37f2de558ff669b6428fefa34bbc791f">&#9670;&#160;</a></span>snapToTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::PhysicalBalancePose::snapToTarget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Zero lean, recoil and pending impulses; pose snaps to the last target. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a0e8fe1d7e4913ca2a08a5865edf2f7bb" name="a0e8fe1d7e4913ca2a08a5865edf2f7bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e8fe1d7e4913ca2a08a5865edf2f7bb">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::PhysicalBalancePose::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Legacy seconds facade; forwards to <a class="el" href="classeve_1_1animation_1_1PhysicalBalancePose.html#a25a15c170ad7bf7b541bb7d5092d06dc" title="Advance the pendulum and recoil, then write the overlay pose.">advance()</a> and ignores its <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a> 第 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00355">advance()</a>, <a class="el" href="Result_8h_source.html#l00537">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="AnimationTime_8h_source.html#l00034">eve::animation::detail::legacyStep()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicalBalancePoseBindings_8cpp_source.html#l00012">eve::animation::exposePhysicalBalancePoseBindings()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="PhysicalBalancePose_8h_source.html">PhysicalBalancePose.h</a></li>
+<li>src/modules/animation/<a class="el" href="PhysicalBalancePose_8cpp_source.html">PhysicalBalancePose.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

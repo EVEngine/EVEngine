@@ -1,0 +1,389 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/fog/FogRayMarch.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_2bc1c862ec002b05a77fa4466b607328.html">fog</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">FogRayMarch.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="FogRayMarch_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="FogRayMarch_8h.html">graphics/fog/FogRayMarch.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;glm/common.hpp&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;glm/geometric.hpp&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1fog.html">eve::graphics::fog</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>[[nodiscard]] std::optional&lt;FogRayInterval&gt; intersectSlab(<span class="keywordtype">float</span> <a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>, <span class="keywordtype">float</span> minV,</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>                                                          <span class="keywordtype">float</span> maxV) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">if</span> (std::fabs(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>) &lt; 1e-8f) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">if</span> (origin &lt; minV || origin &gt; maxV) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">return</span> FogRayInterval{0.f, 1e6f};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordtype">float</span> t0 = (minV - <a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a>) / <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">float</span> t1 = (maxV - <a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a>) / <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (t0 &gt; t1) std::swap(t0, t1);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">return</span> FogRayInterval{t0, t1};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>[[nodiscard]] std::optional&lt;FogRayInterval&gt; intersectRayAabb(<span class="keyword">const</span> glm::vec3&amp; o, <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                                                             <span class="keyword">const</span> glm::vec3&amp; mn, <span class="keyword">const</span> glm::vec3&amp; mx) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a> = intersectSlab(o.x, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.x, mn.x, mx.x);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a> = intersectSlab(o.y, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.y, mn.y, mx.y);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac6d32aabb85617974e6e5ac197bca39a">sz</a> = intersectSlab(o.z, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.z, mn.z, mx.z);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a> || !<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a> || !<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac6d32aabb85617974e6e5ac197bca39a">sz</a>) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> tEnter = std::max({<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a>-&gt;tEnter, <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a>-&gt;tEnter, <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac6d32aabb85617974e6e5ac197bca39a">sz</a>-&gt;tEnter, 0.f});</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> tExit = std::min({<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a>-&gt;tExit, <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a>-&gt;tExit, <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac6d32aabb85617974e6e5ac197bca39a">sz</a>-&gt;tExit});</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (tExit &lt;= tEnter) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> FogRayInterval{tEnter, tExit};</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1fog_1_1FogRayMarch.html#a3b84db3507bcfbbfe3088551759d84c1">   40</a></span>std::optional&lt;FogRayInterval&gt; <a class="code hl_function" href="classeve_1_1graphics_1_1fog_1_1FogRayMarch.html#a3b84db3507bcfbbfe3088551759d84c1">FogRayMarch::intersectBound</a>(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                                          <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                                          <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html">FogVolumeBound</a>&amp; bound) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> len = glm::length(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (!(len &gt; 1e-8f)) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a> / len;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">switch</span> (bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a0495e567d4573679647f5a986a1d168e">kind</a>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a65a750f921f4d7dc24d2961d566368c9a0db6bf01596c85705a208af5d8de2433">FogVolumeBound::Kind::SkyShell</a>: {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="comment">// Ray vs sphere centered at origin xz / y=0 shell approximation.</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="GeometryCollectionCooker_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>(<a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a>.x, 0.f, <a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a>.z);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keyword">const</span> glm::vec3 oc = <a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a> - <a class="code hl_variable" href="GeometryCollectionCooker_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> = glm::dot(oc, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> = glm::dot(oc, oc) - bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a438d827fc7c895ecb6929f7550a633ad">skyRadius</a> * bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a438d827fc7c895ecb6929f7550a633ad">skyRadius</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> disc = <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> * <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> - <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordflow">if</span> (disc &lt; 0.f) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = std::sqrt(disc);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> t0 = -<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> - <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> t1 = -<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> + <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> tEnter = std::max(t0, 0.f);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">if</span> (t1 &lt;= tEnter) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1fog_1_1FogRayInterval.html">FogRayInterval</a>{tEnter, t1};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a65a750f921f4d7dc24d2961d566368c9a60c31128d23ad7eb3208a4398c4d2ed1">FogVolumeBound::Kind::HeightLayer</a>: {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keyword">auto</span> slab = intersectSlab(<a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a>.y, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.y, bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#aa59a17eadbef1ba6d254535718530e4b">heightMin</a>, bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#aded39fc062ed21e099ebe81cfccf4602">heightMax</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordflow">if</span> (!slab) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> tEnter = std::max(slab-&gt;tEnter, 0.f);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">if</span> (slab-&gt;tExit &lt;= tEnter) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="comment">// Cap far distance so infinite rays remain bounded.</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1fog_1_1FogRayInterval.html">FogRayInterval</a>{tEnter, std::min(slab-&gt;tExit, tEnter + 200.f)};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a65a750f921f4d7dc24d2961d566368c9a7a0d970e032aaceb39c4da7736d2dcf8">FogVolumeBound::Kind::Obb</a>: {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="comment">// Transform ray into OBB local space, then AABB test.</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keyword">const</span> glm::vec3 o = <a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a> - bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#aa26c20da04f8eeba0ae85c543d17f820">obbCenter</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keyword">const</span> glm::vec3 localO(glm::dot(o, bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#ad96b467cfb4d1a4e155ac6f4fa81e78b">obbAxisX</a>), glm::dot(o, bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a99157293b12322a8bf65a59bb5b4457f">obbAxisY</a>),</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                                  glm::dot(o, bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#af7febeccd5afbd6108397feb6fe39280">obbAxisZ</a>));</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keyword">const</span> glm::vec3 localD(glm::dot(<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#ad96b467cfb4d1a4e155ac6f4fa81e78b">obbAxisX</a>), glm::dot(<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a99157293b12322a8bf65a59bb5b4457f">obbAxisY</a>),</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                  glm::dot(<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#af7febeccd5afbd6108397feb6fe39280">obbAxisZ</a>));</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordflow">return</span> intersectRayAabb(localO, localD, -bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#ab463db2c9e0c84586f2f5497b7d45f64">obbHalfExtents</a>, bound.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#ab463db2c9e0c84586f2f5497b7d45f64">obbHalfExtents</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1fog_1_1FogRayMarch.html#ad29557ab9446cfa17b31a459db094e0c">   84</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;FogRayResult&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1fog_1_1FogRayMarch.html#ad29557ab9446cfa17b31a459db094e0c">FogRayMarch::integrate</a>(</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html">FogDensityField</a>&amp; field, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1fog_1_1FogProfile.html">FogProfile</a>&amp; profile, <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html">FogVolumeBound</a>&amp; bound, <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="webgpu_2GraphicsDeferredLighting_8cpp.html#a5c1ba42a2425ee119b707f90769face3">lightDir</a>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="webgpu_2GraphicsDeferredLighting_8cpp.html#a1591ea0f27f1977991944f530de58061">lightColor</a>, <span class="keywordtype">float</span> lightIntensity, <span class="keyword">const</span> glm::vec3&amp; skyAmbient,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">const</span> glm::vec3&amp; groundAmbient, <span class="keywordtype">int</span> sampleCount, <span class="keywordtype">float</span> sceneDepth, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1fog_1_1BeerLightCache.html">BeerLightCache</a>* beerCache,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">bool</span> useAnalyticSegments)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">if</span> (sampleCount &lt; 1 || sampleCount &gt; 256) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;FogRayResult&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;sampleCount must be in [1,256]&quot;</span>, <span class="stringliteral">&quot;sampleCount&quot;</span>, {},</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="stringliteral">&quot;graphics.fog&quot;</span>));</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> dirLen = glm::length(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (!(dirLen &gt; 1e-8f)) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;FogRayResult&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;direction must be non-zero&quot;</span>, <span class="stringliteral">&quot;direction&quot;</span>, {},</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="stringliteral">&quot;graphics.fog&quot;</span>));</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a> / dirLen;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">auto</span> interval = <a class="code hl_function" href="classeve_1_1graphics_1_1fog_1_1FogRayMarch.html#a3b84db3507bcfbbfe3088551759d84c1">intersectBound</a>(<a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a>, <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>, bound);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (!interval) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <a class="code hl_struct" href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html">FogRayResult</a> empty;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;FogRayResult&gt;::success</a>(empty);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">if</span> (sceneDepth &gt; 0.f) interval-&gt;tExit = std::min(interval-&gt;tExit, sceneDepth);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">if</span> (!interval-&gt;valid()) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <a class="code hl_struct" href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html">FogRayResult</a> empty;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;FogRayResult&gt;::success</a>(empty);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">const</span> glm::vec3 L = glm::length(<a class="code hl_variable" href="webgpu_2GraphicsDeferredLighting_8cpp.html#a5c1ba42a2425ee119b707f90769face3">lightDir</a>) &gt; 1e-6f ? glm::normalize(<a class="code hl_variable" href="webgpu_2GraphicsDeferredLighting_8cpp.html#a5c1ba42a2425ee119b707f90769face3">lightDir</a>) : glm::vec3(0.f, 1.f, 0.f);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> cosTheta = glm::dot(-<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>, L);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a> = profile.<a class="code hl_function" href="classeve_1_1graphics_1_1fog_1_1FogProfile.html#a75bcdd8b36d8cfd7e849c4ec9d6cfb0e">phase</a>(cosTheta);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html">FogRayResult</a> result;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordtype">float</span> T = 1.f;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> segLen = interval-&gt;length() / <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(sampleCount);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordtype">float</span> prevDensity = -1.f;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; sampleCount &amp;&amp; T &gt; 1e-4f; ++i) {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = interval-&gt;tEnter + (<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(i) + 0.5f) * segLen;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = <a class="code hl_variable" href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a> + <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> density = field.sampleDensity(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> sigmaT = profile.<a class="code hl_function" href="classeve_1_1graphics_1_1fog_1_1FogProfile.html#a07d59557c95c1ada27506883d05ef223">extinctionAt</a>(density);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keyword">const</span> glm::vec3 sigmaS = profile.<a class="code hl_function" href="classeve_1_1graphics_1_1fog_1_1FogProfile.html#ac76ecee93e18a027926625a732dd2d13">scatteringAt</a>(density);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keywordtype">float</span> stepOptical = sigmaT * segLen;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keywordtype">float</span> stepT;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordflow">if</span> (useAnalyticSegments &amp;&amp; prevDensity &gt;= 0.f &amp;&amp;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            std::fabs(density - prevDensity) &lt; 0.02f * std::max(1.f, prevDensity)) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <span class="comment">// Closed-form Beer segment for locally stable media.</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            stepT = std::exp(-stepOptical);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            stepT = std::exp(-stepOptical);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        prevDensity = density;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordtype">float</span> visibility = 1.f;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordflow">if</span> (beerCache &amp;&amp; beerCache-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1fog_1_1BeerLightCache.html#aed7237a59c26410f7d6f4039470b65c2">valid</a>()) {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            visibility = beerCache-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1fog_1_1BeerLightCache.html#aaaa4785f41331b5766f730fefcbd3c2f">sampleTransmittance</a>(field, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="webgpu_2GraphicsDeferredLighting_8cpp.html#a26bc65b35ee6be5977a74bcd27c85825">ambient</a> = profile.<a class="code hl_function" href="classeve_1_1graphics_1_1fog_1_1FogProfile.html#a4c32a11d9a5c55f961e85e7ffaf29c22">ambientRadiance</a>(skyAmbient, groundAmbient, density);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keyword">const</span> glm::vec3 assist = field.sampleLightAssist(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keyword">const</span> glm::vec3 Li = <a class="code hl_variable" href="webgpu_2GraphicsDeferredLighting_8cpp.html#a1591ea0f27f1977991944f530de58061">lightColor</a> * lightIntensity * visibility * <a class="code hl_variable" href="CaveMesh_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a> + <a class="code hl_variable" href="webgpu_2GraphicsDeferredLighting_8cpp.html#a26bc65b35ee6be5977a74bcd27c85825">ambient</a> + assist;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="comment">// Front-to-back: in-scatter attenuated by current transmittance.</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keyword">const</span> glm::vec3 scatter = sigmaS * Li * ((1.f - stepT) / std::max(sigmaT, 1e-6f));</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        result.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html#a43cd0cfea9a5746873c9cc5637cd2cef">inScatter</a> += T * scatter;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        T *= stepT;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        result.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html#af8c0593016f40b4e4b7045d689a3139c">opticalDepth</a> += stepOptical;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        ++result.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html#a2081778befa05d816010ce63da514638">samplesUsed</a>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    result.<a class="code hl_variable" href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html#a25228d9e5182c6960481d3782a776a5d">transmittance</a> = T;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;FogRayResult&gt;::success</a>(result);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>}</div>
+</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>}  <span class="comment">// namespace eve::graphics::fog</span></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a275dd6dafe5d4455e599ffd15feb06f8"><div class="ttname"><a href="CaveMesh_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a></div><div class="ttdeci">float phase</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00058">CaveMesh.cpp:58</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aFogRayMarch_8h_html"><div class="ttname"><a href="FogRayMarch_8h.html">FogRayMarch.h</a></div></div>
+<div class="ttc" id="aGeometryCollectionCooker_8cpp_html_ae8299b6e2cd3285a9280125dae748b26"><div class="ttname"><a href="GeometryCollectionCooker_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a></div><div class="ttdeci">Vec3 center</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionCooker_8cpp_source.html#l00048">GeometryCollectionCooker.cpp:48</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00068">HexSphereTopology.cpp:68</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_a45a3b372c24413308bf197591146bde9"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a></div><div class="ttdeci">float sy</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00040">PrefabActionCapabilities.cpp:40</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_ac6d32aabb85617974e6e5ac197bca39a"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#ac6d32aabb85617974e6e5ac197bca39a">sz</a></div><div class="ttdeci">float sz</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00041">PrefabActionCapabilities.cpp:41</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_ae5a7fb9ce69778fd8de7ed7ca3d501ee"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a></div><div class="ttdeci">float sx</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00039">PrefabActionCapabilities.cpp:39</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aRoadBake_8cpp_html_af77195abe513156bff4a9696475a67c9"><div class="ttname"><a href="RoadBake_8cpp.html#af77195abe513156bff4a9696475a67c9">origin</a></div><div class="ttdeci">V3 origin</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8cpp_source.html#l00138">RoadBake.cpp:138</a></div></div>
+<div class="ttc" id="aRoadTraffic_8cpp_html_a4b9956599f8dd2747a3d305df5cfe8b6"><div class="ttname"><a href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a></div><div class="ttdeci">RoadLaneDirection direction</div><div class="ttdef"><b>Definition</b> <a href="RoadTraffic_8cpp_source.html#l00020">RoadTraffic.cpp:20</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ad8763533b7c9fc0f7c4dd1918d79df84"><div class="ttname"><a href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a></div><div class="ttdeci">V3 dir</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00150">TreeMesh.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00125">Diagnostic.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00164">Result.h:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1BeerLightCache_html"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1BeerLightCache.html">eve::graphics::fog::BeerLightCache</a></div><div class="ttdoc">Cached light-path transmittance used by Fast / Enhanced quality tiers.</div><div class="ttdef"><b>Definition</b> <a href="BeerLightCache_8h_source.html#l00020">BeerLightCache.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1BeerLightCache_html_aaaa4785f41331b5766f730fefcbd3c2f"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1BeerLightCache.html#aaaa4785f41331b5766f730fefcbd3c2f">eve::graphics::fog::BeerLightCache::sampleTransmittance</a></div><div class="ttdeci">float sampleTransmittance(const FogDensityField &amp;field, const glm::vec3 &amp;world) const noexcept</div><div class="ttdoc">Sample cached transmittance at a world position (1 = fully lit).</div><div class="ttdef"><b>Definition</b> <a href="BeerLightCache_8cpp_source.html#l00085">BeerLightCache.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1BeerLightCache_html_aed7237a59c26410f7d6f4039470b65c2"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1BeerLightCache.html#aed7237a59c26410f7d6f4039470b65c2">eve::graphics::fog::BeerLightCache::valid</a></div><div class="ttdeci">bool valid() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="BeerLightCache_8h_source.html#l00032">BeerLightCache.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1FogDensityField_html"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1FogDensityField.html">eve::graphics::fog::FogDensityField</a></div><div class="ttdoc">World-space density bands, curl assist velocity, and lighting helpers.</div><div class="ttdef"><b>Definition</b> <a href="FogDensityField_8h_source.html#l00021">FogDensityField.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1FogProfile_html"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1FogProfile.html">eve::graphics::fog::FogProfile</a></div><div class="ttdoc">Unit-density optical profile for participating media.</div><div class="ttdef"><b>Definition</b> <a href="FogProfile_8h_source.html#l00016">FogProfile.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1FogProfile_html_a07d59557c95c1ada27506883d05ef223"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1FogProfile.html#a07d59557c95c1ada27506883d05ef223">eve::graphics::fog::FogProfile::extinctionAt</a></div><div class="ttdeci">float extinctionAt(float density) const noexcept</div><div class="ttdoc">Extinction for a sampled density value.</div><div class="ttdef"><b>Definition</b> <a href="FogProfile_8cpp_source.html#l00059">FogProfile.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1FogProfile_html_a4c32a11d9a5c55f961e85e7ffaf29c22"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1FogProfile.html#a4c32a11d9a5c55f961e85e7ffaf29c22">eve::graphics::fog::FogProfile::ambientRadiance</a></div><div class="ttdeci">glm::vec3 ambientRadiance(const glm::vec3 &amp;skyUp, const glm::vec3 &amp;groundDown, float density) const noexcept</div><div class="ttdoc">Ambient term using up/down visibility and AO.</div><div class="ttdef"><b>Definition</b> <a href="FogProfile_8cpp_source.html#l00074">FogProfile.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1FogProfile_html_a75bcdd8b36d8cfd7e849c4ec9d6cfb0e"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1FogProfile.html#a75bcdd8b36d8cfd7e849c4ec9d6cfb0e">eve::graphics::fog::FogProfile::phase</a></div><div class="ttdeci">float phase(float cosTheta) const noexcept</div><div class="ttdoc">Dual-lobe Henyey–Greenstein phase evaluated for cosθ.</div><div class="ttdef"><b>Definition</b> <a href="FogProfile_8cpp_source.html#l00067">FogProfile.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1FogProfile_html_ac76ecee93e18a027926625a732dd2d13"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1FogProfile.html#ac76ecee93e18a027926625a732dd2d13">eve::graphics::fog::FogProfile::scatteringAt</a></div><div class="ttdeci">glm::vec3 scatteringAt(float density) const noexcept</div><div class="ttdoc">Scattering coefficient σ_s = albedo * σ_t.</div><div class="ttdef"><b>Definition</b> <a href="FogProfile_8cpp_source.html#l00063">FogProfile.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1FogRayMarch_html_a3b84db3507bcfbbfe3088551759d84c1"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1FogRayMarch.html#a3b84db3507bcfbbfe3088551759d84c1">eve::graphics::fog::FogRayMarch::intersectBound</a></div><div class="ttdeci">static std::optional&lt; FogRayInterval &gt; intersectBound(const glm::vec3 &amp;origin, const glm::vec3 &amp;direction, const FogVolumeBound &amp;bound)</div><div class="ttdoc">Intersect a ray with a volume bound; returns empty when misses.</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8cpp_source.html#l00040">FogRayMarch.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1fog_1_1FogRayMarch_html_ad29557ab9446cfa17b31a459db094e0c"><div class="ttname"><a href="classeve_1_1graphics_1_1fog_1_1FogRayMarch.html#ad29557ab9446cfa17b31a459db094e0c">eve::graphics::fog::FogRayMarch::integrate</a></div><div class="ttdeci">Result&lt; FogRayResult &gt; integrate(const FogDensityField &amp;field, const FogProfile &amp;profile, const glm::vec3 &amp;origin, const glm::vec3 &amp;direction, const FogVolumeBound &amp;bound, const glm::vec3 &amp;lightDir, const glm::vec3 &amp;lightColor, float lightIntensity, const glm::vec3 &amp;skyAmbient, const glm::vec3 &amp;groundAmbient, int sampleCount, float sceneDepth, const BeerLightCache *beerCache, bool useAnalyticSegments) const</div><div class="ttdoc">Integrate one view ray through the density field.</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8cpp_source.html#l00084">FogRayMarch.cpp:84</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1fog_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1fog.html">eve::graphics::fog</a></div><div class="ttdef"><b>Definition</b> <a href="AnalyticalVolLight_8cpp_source.html#l00011">AnalyticalVolLight.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogRayInterval_html"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogRayInterval.html">eve::graphics::fog::FogRayInterval</a></div><div class="ttdoc">Interval along a ray where media is present (t in world units).</div><div class="ttdef"><b>Definition</b> <a href="FogTypes_8h_source.html#l00112">FogTypes.h:112</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogRayResult_html"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html">eve::graphics::fog::FogRayResult</a></div><div class="ttdoc">Optical result of integrating one view ray through fog.</div><div class="ttdef"><b>Definition</b> <a href="FogTypes_8h_source.html#l00122">FogTypes.h:122</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogRayResult_html_a2081778befa05d816010ce63da514638"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html#a2081778befa05d816010ce63da514638">eve::graphics::fog::FogRayResult::samplesUsed</a></div><div class="ttdeci">int samplesUsed</div><div class="ttdef"><b>Definition</b> <a href="FogTypes_8h_source.html#l00126">FogTypes.h:126</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogRayResult_html_a25228d9e5182c6960481d3782a776a5d"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html#a25228d9e5182c6960481d3782a776a5d">eve::graphics::fog::FogRayResult::transmittance</a></div><div class="ttdeci">float transmittance</div><div class="ttdef"><b>Definition</b> <a href="FogTypes_8h_source.html#l00124">FogTypes.h:124</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogRayResult_html_a43cd0cfea9a5746873c9cc5637cd2cef"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html#a43cd0cfea9a5746873c9cc5637cd2cef">eve::graphics::fog::FogRayResult::inScatter</a></div><div class="ttdeci">glm::vec3 inScatter</div><div class="ttdef"><b>Definition</b> <a href="FogTypes_8h_source.html#l00123">FogTypes.h:123</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogRayResult_html_af8c0593016f40b4e4b7045d689a3139c"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogRayResult.html#af8c0593016f40b4e4b7045d689a3139c">eve::graphics::fog::FogRayResult::opticalDepth</a></div><div class="ttdeci">float opticalDepth</div><div class="ttdef"><b>Definition</b> <a href="FogTypes_8h_source.html#l00125">FogTypes.h:125</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html">eve::graphics::fog::FogVolumeBound</a></div><div class="ttdoc">Analytic volume used to bound a camera ray before sampling.</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00017">FogRayMarch.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_a0495e567d4573679647f5a986a1d168e"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a0495e567d4573679647f5a986a1d168e">eve::graphics::fog::FogVolumeBound::kind</a></div><div class="ttdeci">Kind kind</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00021">FogRayMarch.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_a438d827fc7c895ecb6929f7550a633ad"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a438d827fc7c895ecb6929f7550a633ad">eve::graphics::fog::FogVolumeBound::skyRadius</a></div><div class="ttdeci">float skyRadius</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00022">FogRayMarch.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_a65a750f921f4d7dc24d2961d566368c9a0db6bf01596c85705a208af5d8de2433"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a65a750f921f4d7dc24d2961d566368c9a0db6bf01596c85705a208af5d8de2433">eve::graphics::fog::FogVolumeBound::Kind::SkyShell</a></div><div class="ttdeci">@ SkyShell</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_a65a750f921f4d7dc24d2961d566368c9a60c31128d23ad7eb3208a4398c4d2ed1"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a65a750f921f4d7dc24d2961d566368c9a60c31128d23ad7eb3208a4398c4d2ed1">eve::graphics::fog::FogVolumeBound::Kind::HeightLayer</a></div><div class="ttdeci">@ HeightLayer</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_a65a750f921f4d7dc24d2961d566368c9a7a0d970e032aaceb39c4da7736d2dcf8"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a65a750f921f4d7dc24d2961d566368c9a7a0d970e032aaceb39c4da7736d2dcf8">eve::graphics::fog::FogVolumeBound::Kind::Obb</a></div><div class="ttdeci">@ Obb</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_a99157293b12322a8bf65a59bb5b4457f"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#a99157293b12322a8bf65a59bb5b4457f">eve::graphics::fog::FogVolumeBound::obbAxisY</a></div><div class="ttdeci">glm::vec3 obbAxisY</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00028">FogRayMarch.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_aa26c20da04f8eeba0ae85c543d17f820"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#aa26c20da04f8eeba0ae85c543d17f820">eve::graphics::fog::FogVolumeBound::obbCenter</a></div><div class="ttdeci">glm::vec3 obbCenter</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00025">FogRayMarch.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_aa59a17eadbef1ba6d254535718530e4b"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#aa59a17eadbef1ba6d254535718530e4b">eve::graphics::fog::FogVolumeBound::heightMin</a></div><div class="ttdeci">float heightMin</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00023">FogRayMarch.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_ab463db2c9e0c84586f2f5497b7d45f64"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#ab463db2c9e0c84586f2f5497b7d45f64">eve::graphics::fog::FogVolumeBound::obbHalfExtents</a></div><div class="ttdeci">glm::vec3 obbHalfExtents</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00026">FogRayMarch.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_ad96b467cfb4d1a4e155ac6f4fa81e78b"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#ad96b467cfb4d1a4e155ac6f4fa81e78b">eve::graphics::fog::FogVolumeBound::obbAxisX</a></div><div class="ttdeci">glm::vec3 obbAxisX</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00027">FogRayMarch.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_aded39fc062ed21e099ebe81cfccf4602"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#aded39fc062ed21e099ebe81cfccf4602">eve::graphics::fog::FogVolumeBound::heightMax</a></div><div class="ttdeci">float heightMax</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00024">FogRayMarch.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1fog_1_1FogVolumeBound_html_af7febeccd5afbd6108397feb6fe39280"><div class="ttname"><a href="structeve_1_1graphics_1_1fog_1_1FogVolumeBound.html#af7febeccd5afbd6108397feb6fe39280">eve::graphics::fog::FogVolumeBound::obbAxisZ</a></div><div class="ttdeci">glm::vec3 obbAxisZ</div><div class="ttdef"><b>Definition</b> <a href="FogRayMarch_8h_source.html#l00029">FogRayMarch.h:29</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsDeferredLighting_8cpp_html_a1591ea0f27f1977991944f530de58061"><div class="ttname"><a href="webgpu_2GraphicsDeferredLighting_8cpp.html#a1591ea0f27f1977991944f530de58061">lightColor</a></div><div class="ttdeci">glm::vec4 lightColor</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsDeferredLighting_8cpp_source.html#l00020">GraphicsDeferredLighting.cpp:20</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsDeferredLighting_8cpp_html_a26bc65b35ee6be5977a74bcd27c85825"><div class="ttname"><a href="webgpu_2GraphicsDeferredLighting_8cpp.html#a26bc65b35ee6be5977a74bcd27c85825">ambient</a></div><div class="ttdeci">glm::vec4 ambient</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsDeferredLighting_8cpp_source.html#l00022">GraphicsDeferredLighting.cpp:22</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsDeferredLighting_8cpp_html_a5c1ba42a2425ee119b707f90769face3"><div class="ttname"><a href="webgpu_2GraphicsDeferredLighting_8cpp.html#a5c1ba42a2425ee119b707f90769face3">lightDir</a></div><div class="ttdeci">glm::vec4 lightDir</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsDeferredLighting_8cpp_source.html#l00019">GraphicsDeferredLighting.cpp:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/gpuagents/solvers/LifeNetworkSolver.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_bf63b7e9ed1d28c1335dd36e5b0f5062.html">gpuagents</a></li><li class="navelem"><a class="el" href="dir_68b38bf4134be5b5a8e504116190eb69.html">solvers</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">LifeNetworkSolver.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="LifeNetworkSolver_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="LifeNetworkSolver_8h.html">gpuagents/solvers/LifeNetworkSolver.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BoidsCommon_8h.html">gpuagents/solvers/BoidsCommon.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Assert_8h.html">common/Assert.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1gpuagents.html">eve::gpuagents</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents_1_1LifeNetworkSolver.html#a7b2380d2e39b2a41c97d4b110b4c2f58">   12</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpuagents_1_1LifeNetworkSolver.html#a7b2380d2e39b2a41c97d4b110b4c2f58">LifeNetworkSolver::step</a>(std::span&lt;const AgentState&gt; read, std::span&lt;AgentState&gt; write,</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>                             <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents_1_1EffectProfile.html">EffectProfile</a>&amp; profile, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">EnvironmentSnapshot</a>&amp; env, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(profile.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EffectProfile.html#a705a476067b80064a3c82f312810bcd9">kind</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1gpuagents.html#a8b53456dc4abbf12c3762d95f331368fa0b37c82ec5468c8e02f5dde04eb8bbb4">EffectKind::LifeNetwork</a>);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(read.size() == write.size());</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents_1_1LifeNetworkProfile.html">LifeNetworkProfile</a>&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = profile.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EffectProfile.html#a2fd9bb3d9ea5c60689abd3d7fb60e424">life</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(env.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a67e9c1931b473314e921787559104a9c">surface</a> != <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_class" href="classeve_1_1gpuagents_1_1SurfaceField.html">SurfaceField</a>&amp; surface = *env.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a67e9c1931b473314e921787559104a9c">surface</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    std::vector&lt;glm::vec3&gt; deposits;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    deposits.reserve(read.size());</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; read.size(); ++i) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a>&amp; in = read[i];</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">if</span> (in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a8549aa034b7284c4176df4765e52b61a">alive</a> == 0) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            write[i] = in;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        glm::vec3 <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a> = in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">velocity</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span> (glm::length(glm::vec2(<a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.x, <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.z)) &lt; 1e-4f) <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a> = glm::vec3(0.f, 0.f, 1.f);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.y = 0.f;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>   = glm::normalize(<a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = std::sin(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.sensorAngle);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> = std::cos(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.sensorAngle);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">const</span> glm::vec3 leftDir(<a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.x * <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> + <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.z * <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, 0.f, -<a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.x * <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> + <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.z * <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">const</span> glm::vec3 rightDir(<a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.x * <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> - <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.z * <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, 0.f, <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.x * <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> + <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>.z * <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">const</span> <span class="keyword">auto</span> sense = [&amp;](<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keyword">const</span> glm::vec3 sp = in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a> + <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a> * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.sensorDistance;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keyword">const</span> glm::vec4 life = surface.<a class="code hl_function" href="classeve_1_1gpuagents_1_1SurfaceField.html#ae3b429cc163d94238b568d8640e92173">sampleLife</a>(sp.x, sp.z);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>    = surface.<a class="code hl_function" href="classeve_1_1gpuagents_1_1SurfaceField.html#a06f78181fa468e656596b1342bda952b">sampleNormal</a>(sp.x, sp.z);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keywordtype">float</span> <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a> = life.r * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.trailFollow + life.g * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.nutrient - life.b * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.danger;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="comment">// Soft repulsion from saturated trails encourages exploration.</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a> -= life.r * life.r * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.repulsion * 0.25f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.y &lt; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.minSurfaceNormalZ) <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a> -= 10.f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> : env.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa8234192374fc6d1974b737704a8f62f">dangers</a>) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> dist = glm::length(sp - <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.position);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                <span class="keywordflow">if</span> (dist &lt; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.radius) <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a> -= <a class="code hl_function" href="namespaceeve_1_1gpuagents_1_1detail.html#a4531283f32265d01efd14f635436dec6">detail::compactWeight</a>(dist, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.radius) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.strength * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.danger;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; nMark : env.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a5dbc94c98eaaa04a1612b79ff5cf56d1">nutrients</a>) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> dist = glm::length(sp - nMark.position);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <span class="keywordflow">if</span> (dist &lt; nMark.radius)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                    <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a> += <a class="code hl_function" href="namespaceeve_1_1gpuagents_1_1detail.html#a4531283f32265d01efd14f635436dec6">detail::compactWeight</a>(dist, nMark.radius) * nMark.strength * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.nutrient;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keywordflow">return</span> <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        };</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> scoreF = sense(<a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> scoreL = sense(leftDir);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> scoreR = sense(rightDir);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        glm::vec3 choose = <a class="code hl_variable" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">if</span> (scoreL &gt; scoreF &amp;&amp; scoreL &gt;= scoreR) choose = leftDir;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (scoreR &gt; scoreF &amp;&amp; scoreR &gt; scoreL)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            choose = rightDir;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <a class="code hl_struct" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a> out   = in;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">velocity</a>     = choose * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.moveSpeed;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>     = in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a> + out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">velocity</a> * dt;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>     = surface.<a class="code hl_function" href="classeve_1_1gpuagents_1_1SurfaceField.html#a10c8ec3c912821089740976e5713f93d">project</a>(out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = surface.<a class="code hl_function" href="classeve_1_1gpuagents_1_1SurfaceField.html#a06f78181fa468e656596b1342bda952b">sampleNormal</a>(out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>.x, out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>.z);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.y &lt; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.minSurfaceNormalZ) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="comment">// Slide back toward previous feasible point.</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a> = surface.<a class="code hl_function" href="classeve_1_1gpuagents_1_1SurfaceField.html#a10c8ec3c912821089740976e5713f93d">project</a>(in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">velocity</a> = -choose * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.moveSpeed * 0.5f;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a59f752c6b3c5b24ea725da4205da1e10">rotation</a>      = <a class="code hl_function" href="namespaceeve_1_1gpuagents.html#a51eee83a5321bce22156a4398d89e0fc">lookRotation</a>(out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">velocity</a>, <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#ae45cc5538793c45ae7703482115eed5a">age</a>           = in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#ae45cc5538793c45ae7703482115eed5a">age</a> + dt;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aba233df9104e928df54f0bb33fc4f91b">customData</a>[0] = surface.<a class="code hl_function" href="classeve_1_1gpuagents_1_1SurfaceField.html#ae3b429cc163d94238b568d8640e92173">sampleLife</a>(out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>.x, out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>.z).r;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a8549aa034b7284c4176df4765e52b61a">alive</a>         = in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a8549aa034b7284c4176df4765e52b61a">alive</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        deposits.push_back(out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        write[i] = out;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    surface.<a class="code hl_function" href="classeve_1_1gpuagents_1_1SurfaceField.html#a23176760d4c4111b68bd37a71d283de8">stepLife</a>(dt, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.trailDecayRate, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.freshnessHalfLife, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.diffusionRate, deposits, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.depositStrength);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}  <span class="comment">// namespace eve::gpuagents</span></div>
+<div class="ttc" id="aAgent_8cpp_html_a40a24ec85daa9ac70aa74e4ca744f838"><div class="ttname"><a href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a></div><div class="ttdeci">double score</div><div class="ttdef"><b>Definition</b> <a href="Agent_8cpp_source.html#l00050">Agent.cpp:50</a></div></div>
+<div class="ttc" id="aAssert_8h_html"><div class="ttname"><a href="Assert_8h.html">Assert.h</a></div><div class="ttdoc">EVEngine assertion entry point, backed by zeroerr.</div></div>
+<div class="ttc" id="aAssert_8h_html_aea3f8f4629b6e05814f9228e022d10fd"><div class="ttname"><a href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a></div><div class="ttdeci">#define EV_PARAM_CHECK(cond,...)</div><div class="ttdoc">Validate a function parameter / public API precondition.</div><div class="ttdef"><b>Definition</b> <a href="Assert_8h_source.html#l00030">Assert.h:30</a></div></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aBoidsCommon_8h_html"><div class="ttname"><a href="BoidsCommon_8h.html">BoidsCommon.h</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00063">Grass.cpp:63</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00068">HexSphereTopology.cpp:68</a></div></div>
+<div class="ttc" id="aLifeNetworkSolver_8h_html"><div class="ttname"><a href="LifeNetworkSolver_8h.html">LifeNetworkSolver.h</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a959b42a817333546414a646493f19c16"><div class="ttname"><a href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a></div><div class="ttdeci">V3 heading</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00292">TreeMesh.cpp:292</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ad8763533b7c9fc0f7c4dd1918d79df84"><div class="ttname"><a href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a></div><div class="ttdeci">V3 dir</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00150">TreeMesh.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1LifeNetworkSolver_html_a7b2380d2e39b2a41c97d4b110b4c2f58"><div class="ttname"><a href="classeve_1_1gpuagents_1_1LifeNetworkSolver.html#a7b2380d2e39b2a41c97d4b110b4c2f58">eve::gpuagents::LifeNetworkSolver::step</a></div><div class="ttdeci">void step(std::span&lt; const AgentState &gt; read, std::span&lt; AgentState &gt; write, const EffectProfile &amp;profile, const EnvironmentSnapshot &amp;env, float dt) override</div><div class="ttdoc">Step.</div><div class="ttdef"><b>Definition</b> <a href="LifeNetworkSolver_8cpp_source.html#l00012">LifeNetworkSolver.cpp:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1SurfaceField_html"><div class="ttname"><a href="classeve_1_1gpuagents_1_1SurfaceField.html">eve::gpuagents::SurfaceField</a></div><div class="ttdoc">2.5D surface + life-field textures for Life Network.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceField_8h_source.html#l00016">SurfaceField.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1SurfaceField_html_a06f78181fa468e656596b1342bda952b"><div class="ttname"><a href="classeve_1_1gpuagents_1_1SurfaceField.html#a06f78181fa468e656596b1342bda952b">eve::gpuagents::SurfaceField::sampleNormal</a></div><div class="ttdeci">glm::vec3 sampleNormal(float x, float z) const</div><div class="ttdoc">Bilinear sample of surface normal.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceField_8cpp_source.html#l00052">SurfaceField.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1SurfaceField_html_a10c8ec3c912821089740976e5713f93d"><div class="ttname"><a href="classeve_1_1gpuagents_1_1SurfaceField.html#a10c8ec3c912821089740976e5713f93d">eve::gpuagents::SurfaceField::project</a></div><div class="ttdeci">glm::vec3 project(const glm::vec3 &amp;p) const</div><div class="ttdoc">Project a world point onto the surface (Y from height).</div><div class="ttdef"><b>Definition</b> <a href="SurfaceField_8cpp_source.html#l00079">SurfaceField.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1SurfaceField_html_a23176760d4c4111b68bd37a71d283de8"><div class="ttname"><a href="classeve_1_1gpuagents_1_1SurfaceField.html#a23176760d4c4111b68bd37a71d283de8">eve::gpuagents::SurfaceField::stepLife</a></div><div class="ttdeci">void stepLife(float dt, float decayRate, float halfLife, float diffusion, const std::vector&lt; glm::vec3 &gt; &amp;deposits, float depositStrength)</div><div class="ttdoc">Advance trail deposit / decay / diffusion / danger for one fixed step.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceField_8cpp_source.html#l00083">SurfaceField.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1SurfaceField_html_ae3b429cc163d94238b568d8640e92173"><div class="ttname"><a href="classeve_1_1gpuagents_1_1SurfaceField.html#ae3b429cc163d94238b568d8640e92173">eve::gpuagents::SurfaceField::sampleLife</a></div><div class="ttdeci">glm::vec4 sampleLife(float x, float z) const</div><div class="ttdoc">Bilinear sample of life RGBA.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceField_8cpp_source.html#l00073">SurfaceField.cpp:73</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_1_1detail_html_a4531283f32265d01efd14f635436dec6"><div class="ttname"><a href="namespaceeve_1_1gpuagents_1_1detail.html#a4531283f32265d01efd14f635436dec6">eve::gpuagents::detail::compactWeight</a></div><div class="ttdeci">float compactWeight(float dist, float radius)</div><div class="ttdoc">Compact-support radial weight w(q)=(1-q)^2 for q in [0,1).</div><div class="ttdef"><b>Definition</b> <a href="BoidsCommon_8h_source.html#l00015">BoidsCommon.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_html"><div class="ttname"><a href="namespaceeve_1_1gpuagents.html">eve::gpuagents</a></div><div class="ttdef"><b>Definition</b> <a href="AgentInstanceRenderer_8cpp_source.html#l00005">AgentInstanceRenderer.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_html_a51eee83a5321bce22156a4398d89e0fc"><div class="ttname"><a href="namespaceeve_1_1gpuagents.html#a51eee83a5321bce22156a4398d89e0fc">eve::gpuagents::lookRotation</a></div><div class="ttdeci">glm::quat lookRotation(const glm::vec3 &amp;forward, const glm::vec3 &amp;upHint=glm::vec3(0.f, 1.f, 0.f))</div><div class="ttdoc">Builds a facing quaternion from a unit forward and approximate up.</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00036">AgentState.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_html_a8b53456dc4abbf12c3762d95f331368fa0b37c82ec5468c8e02f5dde04eb8bbb4"><div class="ttname"><a href="namespaceeve_1_1gpuagents.html#a8b53456dc4abbf12c3762d95f331368fa0b37c82ec5468c8e02f5dde04eb8bbb4">eve::gpuagents::EffectKind::LifeNetwork</a></div><div class="ttdeci">@ LifeNetwork</div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html">eve::gpuagents::AgentState</a></div><div class="ttdoc">Standardized per-agent simulation output shared by all effect kinds.</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00012">AgentState.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_a17cbce90eb5670e8ded03fd6daa579f6"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">eve::gpuagents::AgentState::velocity</a></div><div class="ttdeci">glm::vec3 velocity</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00014">AgentState.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_a59f752c6b3c5b24ea725da4205da1e10"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#a59f752c6b3c5b24ea725da4205da1e10">eve::gpuagents::AgentState::rotation</a></div><div class="ttdeci">glm::quat rotation</div><div class="ttdoc">wxyz storage (glm default).</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00015">AgentState.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_a8549aa034b7284c4176df4765e52b61a"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#a8549aa034b7284c4176df4765e52b61a">eve::gpuagents::AgentState::alive</a></div><div class="ttdeci">std::uint32_t alive</div><div class="ttdoc">0 = recycled / inactive slot.</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00018">AgentState.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_aa1dab67ff4ad8b84747c09bdaa58d38c"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">eve::gpuagents::AgentState::position</a></div><div class="ttdeci">glm::vec3 position</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00013">AgentState.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_aba233df9104e928df54f0bb33fc4f91b"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#aba233df9104e928df54f0bb33fc4f91b">eve::gpuagents::AgentState::customData</a></div><div class="ttdeci">float customData[4]</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00017">AgentState.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_ae45cc5538793c45ae7703482115eed5a"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#ae45cc5538793c45ae7703482115eed5a">eve::gpuagents::AgentState::age</a></div><div class="ttdeci">float age</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00016">AgentState.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EffectProfile_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EffectProfile.html">eve::gpuagents::EffectProfile</a></div><div class="ttdoc">Type-erased profile bundle owned by an EffectBackend.</div><div class="ttdef"><b>Definition</b> <a href="EffectProfile_8h_source.html#l00130">EffectProfile.h:130</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EffectProfile_html_a2fd9bb3d9ea5c60689abd3d7fb60e424"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EffectProfile.html#a2fd9bb3d9ea5c60689abd3d7fb60e424">eve::gpuagents::EffectProfile::life</a></div><div class="ttdeci">LifeNetworkProfile life</div><div class="ttdef"><b>Definition</b> <a href="EffectProfile_8h_source.html#l00133">EffectProfile.h:133</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EffectProfile_html_a705a476067b80064a3c82f312810bcd9"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EffectProfile.html#a705a476067b80064a3c82f312810bcd9">eve::gpuagents::EffectProfile::kind</a></div><div class="ttdeci">EffectKind kind</div><div class="ttdef"><b>Definition</b> <a href="EffectProfile_8h_source.html#l00131">EffectProfile.h:131</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">eve::gpuagents::EnvironmentSnapshot</a></div><div class="ttdoc">Read-only environment semantics prepared by GpuAgentWorld each tick.</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00026">EnvironmentSnapshot.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_a5dbc94c98eaaa04a1612b79ff5cf56d1"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a5dbc94c98eaaa04a1612b79ff5cf56d1">eve::gpuagents::EnvironmentSnapshot::nutrients</a></div><div class="ttdeci">std::vector&lt; EnvironmentMarker &gt; nutrients</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00034">EnvironmentSnapshot.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_a67e9c1931b473314e921787559104a9c"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a67e9c1931b473314e921787559104a9c">eve::gpuagents::EnvironmentSnapshot::surface</a></div><div class="ttdeci">SurfaceField * surface</div><div class="ttdoc">optional; Life Network writes trails here</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00037">EnvironmentSnapshot.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_aa8234192374fc6d1974b737704a8f62f"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa8234192374fc6d1974b737704a8f62f">eve::gpuagents::EnvironmentSnapshot::dangers</a></div><div class="ttdeci">std::vector&lt; EnvironmentMarker &gt; dangers</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00033">EnvironmentSnapshot.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1LifeNetworkProfile_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1LifeNetworkProfile.html">eve::gpuagents::LifeNetworkProfile</a></div><div class="ttdoc">Life Network 2D surface-trail parameters.</div><div class="ttdef"><b>Definition</b> <a href="EffectProfile_8h_source.html#l00047">EffectProfile.h:47</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

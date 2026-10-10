@@ -1,0 +1,515 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpuagents::PetalProfile结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpuagents.html">gpuagents</a></li><li class="navelem"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html">PetalProfile</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1gpuagents_1_1PetalProfile-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpuagents::PetalProfile结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Passive petal rigid-body aerodynamic parameters.  
+ <a href="structeve_1_1gpuagents_1_1PetalProfile.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a5465155a743ef1cf0eede6cc0922b303" id="r_a5465155a743ef1cf0eede6cc0922b303"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1gpuagents_1_1EffectProfileBase.html">EffectProfileBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#a5465155a743ef1cf0eede6cc0922b303">base</a> {}</td></tr>
+<tr class="separator:a5465155a743ef1cf0eede6cc0922b303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3962a30c88210f56f9803a9edd6d15e" id="r_aa3962a30c88210f56f9803a9edd6d15e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#aa3962a30c88210f56f9803a9edd6d15e">length</a> = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa3962a30c88210f56f9803a9edd6d15e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf2e7d7bbaae47d94b4f6f78c313174d" id="r_acf2e7d7bbaae47d94b4f6f78c313174d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#acf2e7d7bbaae47d94b4f6f78c313174d">width</a> = 0.06<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acf2e7d7bbaae47d94b4f6f78c313174d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41522667a1b5d3f9d69e40fd1a333c15" id="r_a41522667a1b5d3f9d69e40fd1a333c15"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#a41522667a1b5d3f9d69e40fd1a333c15">thickness</a> = 0.004<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a41522667a1b5d3f9d69e40fd1a333c15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a6f662c72c0f8e448d84f9fd7fe8b0e" id="r_a0a6f662c72c0f8e448d84f9fd7fe8b0e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#a0a6f662c72c0f8e448d84f9fd7fe8b0e">mass</a> = 0.002<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0a6f662c72c0f8e448d84f9fd7fe8b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4715e291e4af49a57d0287480a92898" id="r_af4715e291e4af49a57d0287480a92898"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#af4715e291e4af49a57d0287480a92898">sizeVariation</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af4715e291e4af49a57d0287480a92898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c3dcfc1610d8874b350827c9a9092c1" id="r_a2c3dcfc1610d8874b350827c9a9092c1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#a2c3dcfc1610d8874b350827c9a9092c1">frontalDrag</a> = 1.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2c3dcfc1610d8874b350827c9a9092c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac933805e482dc062d7489fb1e4b10b5c" id="r_ac933805e482dc062d7489fb1e4b10b5c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#ac933805e482dc062d7489fb1e4b10b5c">edgeDrag</a> = 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac933805e482dc062d7489fb1e4b10b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09e3905cc32feb5362d47005ed1d424d" id="r_a09e3905cc32feb5362d47005ed1d424d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#a09e3905cc32feb5362d47005ed1d424d">liftCoeff</a> = 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a09e3905cc32feb5362d47005ed1d424d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0bf8f664be282e3d828b2d60c173f42" id="r_ab0bf8f664be282e3d828b2d60c173f42"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#ab0bf8f664be282e3d828b2d60c173f42">angularDrag</a> = 0.9<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab0bf8f664be282e3d828b2d60c173f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0591e37223a06f2f1ded4e8107c1d8a3" id="r_a0591e37223a06f2f1ded4e8107c1d8a3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#a0591e37223a06f2f1ded4e8107c1d8a3">pressureCenterOffset</a> = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0591e37223a06f2f1ded4e8107c1d8a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dd85416aee296bf4693dcaeea4f683f" id="r_a4dd85416aee296bf4693dcaeea4f683f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#a4dd85416aee296bf4693dcaeea4f683f">lifetime</a> = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4dd85416aee296bf4693dcaeea4f683f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0059ac2ac27531d39d043567fdca9cf" id="r_ae0059ac2ac27531d39d043567fdca9cf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#ae0059ac2ac27531d39d043567fdca9cf">settleSpeed</a> = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae0059ac2ac27531d39d043567fdca9cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb5df41871c7de7f4071d57d3824615d" id="r_aeb5df41871c7de7f4071d57d3824615d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#aeb5df41871c7de7f4071d57d3824615d">softBoundPadding</a> = 1.0f</td></tr>
+<tr class="separator:aeb5df41871c7de7f4071d57d3824615d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72185fcfd17e77be58abbb916d9615ec" id="r_a72185fcfd17e77be58abbb916d9615ec"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#a72185fcfd17e77be58abbb916d9615ec">groundY</a> = 0.0f</td></tr>
+<tr class="separator:a72185fcfd17e77be58abbb916d9615ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab34e391ef54bdd7ae361d79268344d1c" id="r_ab34e391ef54bdd7ae361d79268344d1c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#ab34e391ef54bdd7ae361d79268344d1c">gravity</a> = 9.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab34e391ef54bdd7ae361d79268344d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3982f4de5859905e2475bae4e6ae156" id="r_af3982f4de5859905e2475bae4e6ae156"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#af3982f4de5859905e2475bae4e6ae156">worldMin</a> {-20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, -20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:af3982f4de5859905e2475bae4e6ae156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ef079fe79f9fe8ebeb867b92370fc44" id="r_a4ef079fe79f9fe8ebeb867b92370fc44"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpuagents_1_1PetalProfile.html#a4ef079fe79f9fe8ebeb867b92370fc44">worldMax</a> {20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 30.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a4ef079fe79f9fe8ebeb867b92370fc44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Passive petal rigid-body aerodynamic parameters. </p>
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00105">105</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ab0bf8f664be282e3d828b2d60c173f42" name="ab0bf8f664be282e3d828b2d60c173f42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0bf8f664be282e3d828b2d60c173f42">&#9670;&#160;</a></span>angularDrag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::angularDrag = 0.9<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5465155a743ef1cf0eede6cc0922b303" name="a5465155a743ef1cf0eede6cc0922b303"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5465155a743ef1cf0eede6cc0922b303">&#9670;&#160;</a></span>base</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1gpuagents_1_1EffectProfileBase.html">EffectProfileBase</a> eve::gpuagents::PetalProfile::base {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac933805e482dc062d7489fb1e4b10b5c" name="ac933805e482dc062d7489fb1e4b10b5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac933805e482dc062d7489fb1e4b10b5c">&#9670;&#160;</a></span>edgeDrag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::edgeDrag = 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c3dcfc1610d8874b350827c9a9092c1" name="a2c3dcfc1610d8874b350827c9a9092c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c3dcfc1610d8874b350827c9a9092c1">&#9670;&#160;</a></span>frontalDrag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::frontalDrag = 1.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab34e391ef54bdd7ae361d79268344d1c" name="ab34e391ef54bdd7ae361d79268344d1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab34e391ef54bdd7ae361d79268344d1c">&#9670;&#160;</a></span>gravity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::gravity = 9.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00124">124</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72185fcfd17e77be58abbb916d9615ec" name="a72185fcfd17e77be58abbb916d9615ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72185fcfd17e77be58abbb916d9615ec">&#9670;&#160;</a></span>groundY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::groundY = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00123">123</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa3962a30c88210f56f9803a9edd6d15e" name="aa3962a30c88210f56f9803a9edd6d15e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3962a30c88210f56f9803a9edd6d15e">&#9670;&#160;</a></span>length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::length = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4dd85416aee296bf4693dcaeea4f683f" name="a4dd85416aee296bf4693dcaeea4f683f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dd85416aee296bf4693dcaeea4f683f">&#9670;&#160;</a></span>lifetime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::lifetime = 12.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a09e3905cc32feb5362d47005ed1d424d" name="a09e3905cc32feb5362d47005ed1d424d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09e3905cc32feb5362d47005ed1d424d">&#9670;&#160;</a></span>liftCoeff</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::liftCoeff = 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a6f662c72c0f8e448d84f9fd7fe8b0e" name="a0a6f662c72c0f8e448d84f9fd7fe8b0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a6f662c72c0f8e448d84f9fd7fe8b0e">&#9670;&#160;</a></span>mass</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::mass = 0.002<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0591e37223a06f2f1ded4e8107c1d8a3" name="a0591e37223a06f2f1ded4e8107c1d8a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0591e37223a06f2f1ded4e8107c1d8a3">&#9670;&#160;</a></span>pressureCenterOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::pressureCenterOffset = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae0059ac2ac27531d39d043567fdca9cf" name="ae0059ac2ac27531d39d043567fdca9cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0059ac2ac27531d39d043567fdca9cf">&#9670;&#160;</a></span>settleSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::settleSpeed = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00121">121</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af4715e291e4af49a57d0287480a92898" name="af4715e291e4af49a57d0287480a92898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4715e291e4af49a57d0287480a92898">&#9670;&#160;</a></span>sizeVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::sizeVariation = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb5df41871c7de7f4071d57d3824615d" name="aeb5df41871c7de7f4071d57d3824615d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb5df41871c7de7f4071d57d3824615d">&#9670;&#160;</a></span>softBoundPadding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::softBoundPadding = 1.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00122">122</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a41522667a1b5d3f9d69e40fd1a333c15" name="a41522667a1b5d3f9d69e40fd1a333c15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41522667a1b5d3f9d69e40fd1a333c15">&#9670;&#160;</a></span>thickness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::thickness = 0.004<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf2e7d7bbaae47d94b4f6f78c313174d" name="acf2e7d7bbaae47d94b4f6f78c313174d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf2e7d7bbaae47d94b4f6f78c313174d">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpuagents::PetalProfile::width = 0.06<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ef079fe79f9fe8ebeb867b92370fc44" name="a4ef079fe79f9fe8ebeb867b92370fc44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ef079fe79f9fe8ebeb867b92370fc44">&#9670;&#160;</a></span>worldMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::gpuagents::PetalProfile::worldMax {20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 30.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00126">126</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3982f4de5859905e2475bae4e6ae156" name="af3982f4de5859905e2475bae4e6ae156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3982f4de5859905e2475bae4e6ae156">&#9670;&#160;</a></span>worldMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::gpuagents::PetalProfile::worldMin {-20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, -20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a> 第 <a class="el" href="EffectProfile_8h_source.html#l00125">125</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/gpuagents/<a class="el" href="EffectProfile_8h_source.html">EffectProfile.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

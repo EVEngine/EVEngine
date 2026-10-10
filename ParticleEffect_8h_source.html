@@ -1,0 +1,382 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/particles/ParticleEffect.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_be2a98047adf0b17748c2ae9b7b0177c.html">particles</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ParticleEffect.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ParticleEffect_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1particles.html">eve::particles</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span>ParticleEmitter;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html">ParticleEffectEventRoute</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#a25aa3f345a811cc10dbc0e1b5e809f25">   23</a></span>    std::string <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#a25aa3f345a811cc10dbc0e1b5e809f25">from</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#accbe4b5cb1cc7ac7e57517941a6a27d1">   24</a></span>    std::string <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#accbe4b5cb1cc7ac7e57517941a6a27d1">on</a>             = <span class="stringliteral">&quot;death&quot;</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#a8580ada288d340d7650bcde2c4c7c0a5">   25</a></span>    std::string <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#a8580ada288d340d7650bcde2c4c7c0a5">to</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#aab2ebe1e7dcbda8a0bf438c237fe3716">   26</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#aab2ebe1e7dcbda8a0bf438c237fe3716">inheritVelocity</a> = 0.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html">ParticleEffectTimelineCue</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#a73dc55008eda06cd336525a1688cbbf7">   37</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#a73dc55008eda06cd336525a1688cbbf7">time</a>      = 0.f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#a496f56e88172768137811a7f51890777">   38</a></span>    std::string <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#a496f56e88172768137811a7f51890777">action</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#ab0dbff033bd8d0a410258d2a86964b90">   39</a></span>    std::string <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#ab0dbff033bd8d0a410258d2a86964b90">emitter</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#ae5848fb85884de9f252e2bf6f72e94f4">   40</a></span>    std::string <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#ae5848fb85884de9f252e2bf6f72e94f4">parameter</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#a4cd515ff4b65602a471ab631e18d93ab">   41</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#a4cd515ff4b65602a471ab631e18d93ab">value</a>     = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#abb700220ccc97d70cd41c70a330fc113">   42</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#abb700220ccc97d70cd41c70a330fc113">count</a>     = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="};">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimeline.html">   52</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1particles_1_1ParticleEffectTimeline.html">ParticleEffectTimeline</a> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimeline.html#a7bef773a09db0128f2298f25a1a5f592">   53</a></span>    <span class="keywordtype">float</span>                                <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectTimeline.html#a7bef773a09db0128f2298f25a1a5f592">duration</a> = 0.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimeline.html#a1ed755578e1e71caa5e4c86d61d0859b">   54</a></span>    <span class="keywordtype">bool</span>                                 <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectTimeline.html#a1ed755578e1e71caa5e4c86d61d0859b">looping</a>  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1particles_1_1ParticleEffectTimeline.html#aa98529f8d868a21e552f223d20c69e3f">   55</a></span>    std::vector&lt;ParticleEffectTimelineCue&gt; <a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEffectTimeline.html#aa98529f8d868a21e552f223d20c69e3f">cues</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00068" data-start="{" data-end="};">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html">   68</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#ac48ab2ce888c52d11e476f0decf8cfa7">   71</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> kMaxSupportedVersion = 2;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a9edd35cafcf17447ce842c2d00744711">   73</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> kMinSupportedVersion = 1;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEffect.html">~ParticleEffect</a>();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a44d811d56c9e0366f0ca330056306c4c">   78</a></span>    <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a44d811d56c9e0366f0ca330056306c4c">ParticleEffect</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a2359889351dc84c1ee76d22ba9c18673">   79</a></span>    <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a>&amp; <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a2359889351dc84c1ee76d22ba9c18673">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a>* fromText(<span class="keyword">const</span> std::string&amp; json, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="TileConfig_8cpp.html#a99ae91f77d0452d3aa8a61d60339963d">sourcePath</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                    std::string* <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a>* fromFile(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string* <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ParticleEffect*&gt;</a> tryFromText(<span class="keyword">const</span> std::string&amp; json,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                                                             <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="TileConfig_8cpp.html#a99ae91f77d0452d3aa8a61d60339963d">sourcePath</a> = {});</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ParticleEffect*&gt;</a> tryFromFile(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a2bedf5949d01e47d048bb64d60180f8b">  100</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a2bedf5949d01e47d048bb64d60180f8b">getVersion</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> version_; }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a11dfaa46e2270ad1adc10709c10c06ee">  102</a></span>    std::string <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a11dfaa46e2270ad1adc10709c10c06ee">getSourcePath</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sourcePath_; }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">int</span> getEmitterCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::string getEmitterName(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a>* getEmitter(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a>* getEmitterByName(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    [[nodiscard]] std::span&lt;const ParticleEffectEventRoute&gt; eventRoutes() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a443089f3e2171f8a9d3fe30e039f06c8">  115</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1particles_1_1ParticleEffectTimeline.html">ParticleEffectTimeline</a>&amp; <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a443089f3e2171f8a9d3fe30e039f06c8">timeline</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> timeline_; }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a2cfc661fdfb475aab2e39054e88658a6">  117</a></span>    [[nodiscard]] <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a2cfc661fdfb475aab2e39054e88658a6">getTimelineSeconds</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(timelineSeconds_); }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a6683f23ab8423f6924f2ec689f83021f">  119</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a6683f23ab8423f6924f2ec689f83021f">isTimelinePlaying</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> timelinePlaying_ &amp;&amp; !timelinePaused_; }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Duration&gt;</a> naturalDuration() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> reloadFromText(<span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> reloadFromFile(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {});</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> advanceTimeline(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">void</span> updateTimeline(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> tickRegisteredTimelines(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> advanceRegisteredTimelines(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordtype">void</span> setPosition(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#addb3be31f0cb74e3165bbf0db11544c1">  159</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#addb3be31f0cb74e3165bbf0db11544c1">getX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> x_; }</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a1a36cce987b14aaeffbe90f7611ed4c1">  161</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a1a36cce987b14aaeffbe90f7611ed4c1">getY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> y_; }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">void</span> setRotation(<span class="keywordtype">float</span> radians);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a8a68f6c7c05620bdc0d75d4057d1e093">  165</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a8a68f6c7c05620bdc0d75d4057d1e093">getRotation</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rotation_; }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordtype">void</span> setScale(<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#aed93b1c2173f5884511c2d86082dbde4">  169</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#aed93b1c2173f5884511c2d86082dbde4">getScale</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> scale_; }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordtype">void</span> setLayer(<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a1d1054b8b4696419746c246da5dbf554">  173</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a1d1054b8b4696419746c246da5dbf554">getLayer</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> layer_; }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordtype">void</span> setVisible(<span class="keywordtype">bool</span> <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEffect.html#a8ce8b1409aaa0070ffe617494fe3c11b">  177</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEffect.html#a8ce8b1409aaa0070ffe617494fe3c11b">isVisible</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> visible_; }</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordtype">void</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>();</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordtype">void</span> stop();</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordtype">void</span> pause();</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordtype">void</span> reset();</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordtype">bool</span> emit(<span class="keyword">const</span> std::string&amp; emitterName, <span class="keywordtype">int</span> <a class="code hl_variable" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">void</span> setFloatParameter(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordtype">float</span> getFloatParameter(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">bool</span> hasFloatParameter(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keyword">struct </span>Layer {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        std::string      <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <a class="code hl_class" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a>* <a class="code hl_variable" href="StylizeAttackVfx_8cpp.html#a597de2084235ba1d769706f8969902be">emitter</a>       = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keywordtype">float</span>            <a class="code hl_variable" href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a>       = 0.f;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordtype">float</span>            <a class="code hl_variable" href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a>       = 0.f;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordtype">float</span>            baseDirection = 0.f;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordtype">int</span>              baseLayer     = 0;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keywordtype">bool</span>             <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>       = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    };</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keyword">struct </span>RuntimeCue {</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        ParticleEffectTimelineCue cue;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keywordtype">bool</span>                      fired = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    };</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    ParticleEffect() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    [[nodiscard]] <span class="keyword">static</span> Result&lt;ParticleEffect*&gt; parse(<span class="keyword">const</span> std::string&amp; json,</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                                                       <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="TileConfig_8cpp.html#a99ae91f77d0452d3aa8a61d60339963d">sourcePath</a>);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordtype">void</span> syncTransform();</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">void</span> syncLayer();</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordtype">void</span> wireEventRoutes();</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordtype">void</span> rewindTimelineClock();</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordtype">void</span> registerForTimelineTicks();</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keywordtype">void</span> unregisterFromTimelineTicks();</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    [[nodiscard]] Result&lt;void&gt; fireDueCues(<span class="keywordtype">double</span> previousSeconds, <span class="keywordtype">double</span> currentSeconds);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    [[nodiscard]] Result&lt;void&gt; applyCue(<span class="keyword">const</span> ParticleEffectTimelineCue&amp; cue);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keywordtype">void</span> adoptParsed(ParticleEffect&amp;&amp; other, <span class="keywordtype">bool</span> preserveWorldState);</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordtype">int</span>                                      version_ = 1;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    std::string                              sourcePath_;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    std::vector&lt;Layer&gt;                       layers_;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    std::unordered_map&lt;std::string, float&gt;   parameters_;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    std::vector&lt;ParticleEffectEventRoute&gt;    eventRoutes_;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    ParticleEffectTimeline                   timeline_;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    std::vector&lt;RuntimeCue&gt;                  runtimeCues_;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordtype">double</span>                                   timelineSeconds_ = 0.0;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keywordtype">bool</span>                                     timelinePlaying_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keywordtype">bool</span>                                     timelinePaused_  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordtype">bool</span>                                     timelineRegistered_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordtype">float</span>                                    x_        = 0.f;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keywordtype">float</span>                                    y_        = 0.f;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keywordtype">float</span>                                    rotation_ = 0.f;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordtype">float</span>                                    scale_    = 1.f;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keywordtype">int</span>                                      layer_    = 0;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordtype">bool</span>                                     visible_  = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>};</div>
+</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>}  <span class="comment">// namespace eve::particles</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00153">ActionNotifyRegistry.cpp:153</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00030">ActionTimelineWidget.cpp:30</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00040">McpScriptTools.cpp:40</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00146">Pathfinder.cpp:146</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00110">PlayHost.cpp:110</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSourceTiff_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="SourceTiff_8cpp_source.html#l00024">SourceTiff.cpp:24</a></div></div>
+<div class="ttc" id="aStylizeAttackVfx_8cpp_html_a597de2084235ba1d769706f8969902be"><div class="ttname"><a href="StylizeAttackVfx_8cpp.html#a597de2084235ba1d769706f8969902be">emitter</a></div><div class="ttdeci">std::unique_ptr&lt; TrailEmitter &gt; emitter</div><div class="ttdef"><b>Definition</b> <a href="StylizeAttackVfx_8cpp_source.html#l00244">StylizeAttackVfx.cpp:244</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a40e27a95878bc0a443bac4815628f3e2"><div class="ttname"><a href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a></div><div class="ttdeci">float offsetX</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00783">TileConfig.cpp:783</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a577cbd3610eed001754028f74db1dd02"><div class="ttname"><a href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a></div><div class="ttdeci">float offsetY</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00784">TileConfig.cpp:784</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a99ae91f77d0452d3aa8a61d60339963d"><div class="ttname"><a href="TileConfig_8cpp.html#a99ae91f77d0452d3aa8a61d60339963d">sourcePath</a></div><div class="ttdeci">std::string sourcePath</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00080">TileConfig.cpp:80</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_aa54a57ae048476d840caf6d4d2c47aa3"><div class="ttname"><a href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00786">TileConfig.cpp:786</a></div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00314">TreeMesh.cpp:314</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html">eve::particles::ParticleEffect</a></div><div class="ttdoc">Runtime instance of a versioned, multi-emitter particle effect asset.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00068">ParticleEffect.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a11dfaa46e2270ad1adc10709c10c06ee"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a11dfaa46e2270ad1adc10709c10c06ee">eve::particles::ParticleEffect::getSourcePath</a></div><div class="ttdeci">std::string getSourcePath() const</div><div class="ttdoc">Return the source file path, or empty text for an in-memory asset.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00102">ParticleEffect.h:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a1a36cce987b14aaeffbe90f7611ed4c1"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a1a36cce987b14aaeffbe90f7611ed4c1">eve::particles::ParticleEffect::getY</a></div><div class="ttdeci">float getY() const</div><div class="ttdoc">Return the group origin Y coordinate.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00161">ParticleEffect.h:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a1d1054b8b4696419746c246da5dbf554"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a1d1054b8b4696419746c246da5dbf554">eve::particles::ParticleEffect::getLayer</a></div><div class="ttdeci">int getLayer() const</div><div class="ttdoc">Return the group render-layer offset.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00173">ParticleEffect.h:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a2359889351dc84c1ee76d22ba9c18673"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a2359889351dc84c1ee76d22ba9c18673">eve::particles::ParticleEffect::operator=</a></div><div class="ttdeci">ParticleEffect &amp; operator=(const ParticleEffect &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a2bedf5949d01e47d048bb64d60180f8b"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a2bedf5949d01e47d048bb64d60180f8b">eve::particles::ParticleEffect::getVersion</a></div><div class="ttdeci">int getVersion() const</div><div class="ttdoc">Return the asset schema version.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00100">ParticleEffect.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a2cfc661fdfb475aab2e39054e88658a6"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a2cfc661fdfb475aab2e39054e88658a6">eve::particles::ParticleEffect::getTimelineSeconds</a></div><div class="ttdeci">float getTimelineSeconds() const</div><div class="ttdoc">Return the current effect-local timeline clock in seconds.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00117">ParticleEffect.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a443089f3e2171f8a9d3fe30e039f06c8"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a443089f3e2171f8a9d3fe30e039f06c8">eve::particles::ParticleEffect::timeline</a></div><div class="ttdeci">const ParticleEffectTimeline &amp; timeline() const</div><div class="ttdoc">Return authored timeline controls.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00115">ParticleEffect.h:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a44d811d56c9e0366f0ca330056306c4c"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a44d811d56c9e0366f0ca330056306c4c">eve::particles::ParticleEffect::ParticleEffect</a></div><div class="ttdeci">ParticleEffect(const ParticleEffect &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a6683f23ab8423f6924f2ec689f83021f"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a6683f23ab8423f6924f2ec689f83021f">eve::particles::ParticleEffect::isTimelinePlaying</a></div><div class="ttdeci">bool isTimelinePlaying() const</div><div class="ttdoc">Return true while the effect timeline is advancing.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00119">ParticleEffect.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a8a68f6c7c05620bdc0d75d4057d1e093"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a8a68f6c7c05620bdc0d75d4057d1e093">eve::particles::ParticleEffect::getRotation</a></div><div class="ttdeci">float getRotation() const</div><div class="ttdoc">Return the group rotation in radians.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00165">ParticleEffect.h:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_a8ce8b1409aaa0070ffe617494fe3c11b"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#a8ce8b1409aaa0070ffe617494fe3c11b">eve::particles::ParticleEffect::isVisible</a></div><div class="ttdeci">bool isVisible() const</div><div class="ttdoc">Return the group visibility state.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00177">ParticleEffect.h:177</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_addb3be31f0cb74e3165bbf0db11544c1"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#addb3be31f0cb74e3165bbf0db11544c1">eve::particles::ParticleEffect::getX</a></div><div class="ttdeci">float getX() const</div><div class="ttdoc">Return the group origin X coordinate.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00159">ParticleEffect.h:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEffect_html_aed93b1c2173f5884511c2d86082dbde4"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEffect.html#aed93b1c2173f5884511c2d86082dbde4">eve::particles::ParticleEffect::getScale</a></div><div class="ttdeci">float getScale() const</div><div class="ttdoc">Return the local-offset scale.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00169">ParticleEffect.h:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></div><div class="ttdoc">ECS emitter entity. Script configures components; ParticleSimSystem / ParticleRenderSystem drive per-...</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00071">ParticleEmitter.h:71</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1particles_html"><div class="ttname"><a href="namespaceeve_1_1particles.html">eve::particles</a></div><div class="ttdef"><b>Definition</b> <a href="ParticleGraph_8h_source.html#l00053">ParticleGraph.h:53</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00031">Settlement.cpp:31</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00158">Time.h:158</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectEventRoute_html"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectEventRoute.html">eve::particles::ParticleEffectEventRoute</a></div><div class="ttdoc">One authored cross-emitter event route inside a particle effect asset.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00022">ParticleEffect.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectEventRoute_html_a25aa3f345a811cc10dbc0e1b5e809f25"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#a25aa3f345a811cc10dbc0e1b5e809f25">eve::particles::ParticleEffectEventRoute::from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00023">ParticleEffect.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectEventRoute_html_a8580ada288d340d7650bcde2c4c7c0a5"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#a8580ada288d340d7650bcde2c4c7c0a5">eve::particles::ParticleEffectEventRoute::to</a></div><div class="ttdeci">std::string to</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00025">ParticleEffect.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectEventRoute_html_aab2ebe1e7dcbda8a0bf438c237fe3716"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#aab2ebe1e7dcbda8a0bf438c237fe3716">eve::particles::ParticleEffectEventRoute::inheritVelocity</a></div><div class="ttdeci">float inheritVelocity</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00026">ParticleEffect.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectEventRoute_html_accbe4b5cb1cc7ac7e57517941a6a27d1"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectEventRoute.html#accbe4b5cb1cc7ac7e57517941a6a27d1">eve::particles::ParticleEffectEventRoute::on</a></div><div class="ttdeci">std::string on</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00024">ParticleEffect.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimelineCue_html"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html">eve::particles::ParticleEffectTimelineCue</a></div><div class="ttdoc">One effect-local timeline cue evaluated against the effect clock.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00036">ParticleEffect.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimelineCue_html_a496f56e88172768137811a7f51890777"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#a496f56e88172768137811a7f51890777">eve::particles::ParticleEffectTimelineCue::action</a></div><div class="ttdeci">std::string action</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00038">ParticleEffect.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimelineCue_html_a4cd515ff4b65602a471ab631e18d93ab"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#a4cd515ff4b65602a471ab631e18d93ab">eve::particles::ParticleEffectTimelineCue::value</a></div><div class="ttdeci">float value</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00041">ParticleEffect.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimelineCue_html_a73dc55008eda06cd336525a1688cbbf7"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#a73dc55008eda06cd336525a1688cbbf7">eve::particles::ParticleEffectTimelineCue::time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00037">ParticleEffect.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimelineCue_html_ab0dbff033bd8d0a410258d2a86964b90"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#ab0dbff033bd8d0a410258d2a86964b90">eve::particles::ParticleEffectTimelineCue::emitter</a></div><div class="ttdeci">std::string emitter</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00039">ParticleEffect.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimelineCue_html_abb700220ccc97d70cd41c70a330fc113"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#abb700220ccc97d70cd41c70a330fc113">eve::particles::ParticleEffectTimelineCue::count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00042">ParticleEffect.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimelineCue_html_ae5848fb85884de9f252e2bf6f72e94f4"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimelineCue.html#ae5848fb85884de9f252e2bf6f72e94f4">eve::particles::ParticleEffectTimelineCue::parameter</a></div><div class="ttdeci">std::string parameter</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00040">ParticleEffect.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimeline_html"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimeline.html">eve::particles::ParticleEffectTimeline</a></div><div class="ttdoc">Effect-level timeline controls (schema v2, optional on v1).</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00052">ParticleEffect.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimeline_html_a1ed755578e1e71caa5e4c86d61d0859b"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimeline.html#a1ed755578e1e71caa5e4c86d61d0859b">eve::particles::ParticleEffectTimeline::looping</a></div><div class="ttdeci">bool looping</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00054">ParticleEffect.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimeline_html_a7bef773a09db0128f2298f25a1a5f592"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimeline.html#a7bef773a09db0128f2298f25a1a5f592">eve::particles::ParticleEffectTimeline::duration</a></div><div class="ttdeci">float duration</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00053">ParticleEffect.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEffectTimeline_html_aa98529f8d868a21e552f223d20c69e3f"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEffectTimeline.html#aa98529f8d868a21e552f223d20c69e3f">eve::particles::ParticleEffectTimeline::cues</a></div><div class="ttdeci">std::vector&lt; ParticleEffectTimelineCue &gt; cues</div><div class="ttdef"><b>Definition</b> <a href="ParticleEffect_8h_source.html#l00055">ParticleEffect.h:55</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

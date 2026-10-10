@@ -1,0 +1,263 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/gpuagents/solvers/FishSolver.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_bf63b7e9ed1d28c1335dd36e5b0f5062.html">gpuagents</a></li><li class="navelem"><a class="el" href="dir_68b38bf4134be5b5a8e504116190eb69.html">solvers</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">FishSolver.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="FishSolver_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="FishSolver_8h.html">gpuagents/solvers/FishSolver.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BoidsCommon_8h.html">gpuagents/solvers/BoidsCommon.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Assert_8h.html">common/Assert.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1gpuagents.html">eve::gpuagents</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1gpuagents_1_1FishSolver.html#a68e403b0ebb1c8e6eb7aa7b352bc1928">    9</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1gpuagents_1_1FishSolver.html#a68e403b0ebb1c8e6eb7aa7b352bc1928">FishSolver::step</a>(std::span&lt;const AgentState&gt; read, std::span&lt;AgentState&gt; write, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents_1_1EffectProfile.html">EffectProfile</a>&amp; profile,</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">EnvironmentSnapshot</a>&amp; env, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(profile.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EffectProfile.html#a705a476067b80064a3c82f312810bcd9">kind</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1gpuagents.html#a8b53456dc4abbf12c3762d95f331368fa071642fa72ba780ee90ed36350d82745">EffectKind::Fish</a>);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(read.size() == write.size());</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents_1_1FishProfile.html">FishProfile</a>&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> = profile.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EffectProfile.html#aba33f3b51038eca07921ada97e6e710e">fish</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; read.size(); ++i) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a>&amp; in = read[i];</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">if</span> (in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a8549aa034b7284c4176df4765e52b61a">alive</a> == 0) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            write[i] = in;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        glm::vec3 forward = in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">velocity</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">if</span> (glm::length(forward) &lt; 1e-4f) forward = glm::vec3(0.f, 0.f, 1.f);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            forward = glm::normalize(forward);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">const</span> <span class="keyword">auto</span> acc = <a class="code hl_function" href="namespaceeve_1_1gpuagents_1_1detail.html#af932eacf94a650b74db65a67927ab804">detail::gatherNeighbors</a>(read, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i), forward, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.separationRadius,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                                                 <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.cohesionRadius, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.alignmentRadius, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.perceptionFovDegrees,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                                                 <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.maxNeighborSamples);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        glm::vec3 force(0.f);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span> (acc.sepWeightSum &gt; 0.f) force += (acc.separation / acc.sepWeightSum) * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.separationWeight;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">if</span> (acc.cohWeightSum &gt; 0.f) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="GeometryCollectionCooker_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a> = acc.cohesionPos / acc.cohWeightSum;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keyword">const</span> glm::vec3 toC    = <a class="code hl_variable" href="GeometryCollectionCooker_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a> - in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keyword">const</span> <span class="keywordtype">float</span>     len    = glm::length(toC);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="keywordflow">if</span> (len &gt; 1e-4f) force += (toC / len) * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.cohesionWeight;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">if</span> (acc.aliWeightSum &gt; 0.f) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keyword">const</span> glm::vec3 avgV = acc.alignmentVel / acc.aliWeightSum;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keyword">const</span> glm::vec3 delta = avgV - in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">velocity</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            force += delta * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.alignmentWeight;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        force += <a class="code hl_function" href="namespaceeve_1_1gpuagents_1_1detail.html#a8ea20e7dfb21a6d6536d43867dbc7951">detail::markerForce</a>(in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>, env.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa5308fb6bb632b4a28c33805f705fefc">goals</a>, <span class="keyword">true</span>) * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.goalWeight;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        force += <a class="code hl_function" href="namespaceeve_1_1gpuagents_1_1detail.html#a8ea20e7dfb21a6d6536d43867dbc7951">detail::markerForce</a>(in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>, env.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa8234192374fc6d1974b737704a8f62f">dangers</a>, <span class="keyword">false</span>) * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.dangerWeight;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        force += env.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#ab289803570a1c20ca557b94c176de0c8">waterCurrent</a> * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.currentWeight;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> depthErr = (in.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>.y - <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.preferredDepth) / std::max(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.depthTolerance, 1e-3f);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        force.y -= depthErr * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.depthWeight;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_struct" href="structeve_1_1gpuagents_1_1AgentState.html">AgentState</a> out;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_function" href="namespaceeve_1_1gpuagents_1_1detail.html#aeb567ba041dba3fc0bb5e230ac6cf512">detail::integrateBoid</a>(out, in, force, dt, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.maxAcceleration, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.maxSpeed, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.maxHorizontalTurn,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                              <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.maxVerticalTurn);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">if</span> (env.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a0aa96ca00fe4e05750d6c19734bef9c2">obstacles</a>) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            env.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a0aa96ca00fe4e05750d6c19734bef9c2">obstacles</a>-&gt;<a class="code hl_function" href="classeve_1_1gpuagents_1_1ObstacleField.html#af686a02f3b7d5c3c4b9bf3501b4737d3">resolve</a>(out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">position</a>, out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">velocity</a>, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.base.agentRadius, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.base.obstaclePredictTime);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a59f752c6b3c5b24ea725da4205da1e10">rotation</a> = <a class="code hl_function" href="namespaceeve_1_1gpuagents.html#a51eee83a5321bce22156a4398d89e0fc">lookRotation</a>(out.<a class="code hl_variable" href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">velocity</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        write[i] = out;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}  <span class="comment">// namespace eve::gpuagents</span></div>
+<div class="ttc" id="aAssert_8h_html"><div class="ttname"><a href="Assert_8h.html">Assert.h</a></div><div class="ttdoc">EVEngine assertion entry point, backed by zeroerr.</div></div>
+<div class="ttc" id="aAssert_8h_html_aea3f8f4629b6e05814f9228e022d10fd"><div class="ttname"><a href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a></div><div class="ttdeci">#define EV_PARAM_CHECK(cond,...)</div><div class="ttdoc">Validate a function parameter / public API precondition.</div><div class="ttdef"><b>Definition</b> <a href="Assert_8h_source.html#l00030">Assert.h:30</a></div></div>
+<div class="ttc" id="aBoidsCommon_8h_html"><div class="ttname"><a href="BoidsCommon_8h.html">BoidsCommon.h</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aFishSolver_8h_html"><div class="ttname"><a href="FishSolver_8h.html">FishSolver.h</a></div></div>
+<div class="ttc" id="aGeometryCollectionCooker_8cpp_html_ae8299b6e2cd3285a9280125dae748b26"><div class="ttname"><a href="GeometryCollectionCooker_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a></div><div class="ttdeci">Vec3 center</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionCooker_8cpp_source.html#l00048">GeometryCollectionCooker.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1FishSolver_html_a68e403b0ebb1c8e6eb7aa7b352bc1928"><div class="ttname"><a href="classeve_1_1gpuagents_1_1FishSolver.html#a68e403b0ebb1c8e6eb7aa7b352bc1928">eve::gpuagents::FishSolver::step</a></div><div class="ttdeci">void step(std::span&lt; const AgentState &gt; read, std::span&lt; AgentState &gt; write, const EffectProfile &amp;profile, const EnvironmentSnapshot &amp;env, float dt) override</div><div class="ttdoc">Step.</div><div class="ttdef"><b>Definition</b> <a href="FishSolver_8cpp_source.html#l00009">FishSolver.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpuagents_1_1ObstacleField_html_af686a02f3b7d5c3c4b9bf3501b4737d3"><div class="ttname"><a href="classeve_1_1gpuagents_1_1ObstacleField.html#af686a02f3b7d5c3c4b9bf3501b4737d3">eve::gpuagents::ObstacleField::resolve</a></div><div class="ttdeci">void resolve(glm::vec3 &amp;position, glm::vec3 &amp;velocity, float agentRadius, float predictTime) const</div><div class="ttdoc">Push an agent out of obstacles and keep feasible tangential velocity.</div><div class="ttdef"><b>Definition</b> <a href="ObstacleField_8cpp_source.html#l00140">ObstacleField.cpp:140</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_1_1detail_html_a8ea20e7dfb21a6d6536d43867dbc7951"><div class="ttname"><a href="namespaceeve_1_1gpuagents_1_1detail.html#a8ea20e7dfb21a6d6536d43867dbc7951">eve::gpuagents::detail::markerForce</a></div><div class="ttdeci">glm::vec3 markerForce(const glm::vec3 &amp;pos, const std::vector&lt; EnvironmentMarker &gt; &amp;markers, bool attract)</div><div class="ttdoc">Marker force.</div><div class="ttdef"><b>Definition</b> <a href="BoidsCommon_8h_source.html#l00076">BoidsCommon.h:76</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_1_1detail_html_aeb567ba041dba3fc0bb5e230ac6cf512"><div class="ttname"><a href="namespaceeve_1_1gpuagents_1_1detail.html#aeb567ba041dba3fc0bb5e230ac6cf512">eve::gpuagents::detail::integrateBoid</a></div><div class="ttdeci">void integrateBoid(AgentState &amp;out, const AgentState &amp;in, glm::vec3 accel, float dt, float maxAccel, float maxSpeed, float maxHTurn, float maxVTurn)</div><div class="ttdoc">Clamp acceleration then integrate semi-implicit Euler with turn-rate limits.</div><div class="ttdef"><b>Definition</b> <a href="BoidsCommon_8h_source.html#l00090">BoidsCommon.h:90</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_1_1detail_html_af932eacf94a650b74db65a67927ab804"><div class="ttname"><a href="namespaceeve_1_1gpuagents_1_1detail.html#af932eacf94a650b74db65a67927ab804">eve::gpuagents::detail::gatherNeighbors</a></div><div class="ttdeci">NeighborAccum gatherNeighbors(std::span&lt; const AgentState &gt; agents, int selfIndex, const glm::vec3 &amp;forward, float sepR, float cohR, float aliR, float fovDeg, int maxSamples)</div><div class="ttdoc">Gather neighborhood forces with compact weights and FOV / sample caps.</div><div class="ttdef"><b>Definition</b> <a href="BoidsCommon_8h_source.html#l00046">BoidsCommon.h:46</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_html"><div class="ttname"><a href="namespaceeve_1_1gpuagents.html">eve::gpuagents</a></div><div class="ttdef"><b>Definition</b> <a href="AgentInstanceRenderer_8cpp_source.html#l00005">AgentInstanceRenderer.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_html_a51eee83a5321bce22156a4398d89e0fc"><div class="ttname"><a href="namespaceeve_1_1gpuagents.html#a51eee83a5321bce22156a4398d89e0fc">eve::gpuagents::lookRotation</a></div><div class="ttdeci">glm::quat lookRotation(const glm::vec3 &amp;forward, const glm::vec3 &amp;upHint=glm::vec3(0.f, 1.f, 0.f))</div><div class="ttdoc">Builds a facing quaternion from a unit forward and approximate up.</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00036">AgentState.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpuagents_html_a8b53456dc4abbf12c3762d95f331368fa071642fa72ba780ee90ed36350d82745"><div class="ttname"><a href="namespaceeve_1_1gpuagents.html#a8b53456dc4abbf12c3762d95f331368fa071642fa72ba780ee90ed36350d82745">eve::gpuagents::EffectKind::Fish</a></div><div class="ttdeci">@ Fish</div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html">eve::gpuagents::AgentState</a></div><div class="ttdoc">Standardized per-agent simulation output shared by all effect kinds.</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00012">AgentState.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_a17cbce90eb5670e8ded03fd6daa579f6"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#a17cbce90eb5670e8ded03fd6daa579f6">eve::gpuagents::AgentState::velocity</a></div><div class="ttdeci">glm::vec3 velocity</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00014">AgentState.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_a59f752c6b3c5b24ea725da4205da1e10"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#a59f752c6b3c5b24ea725da4205da1e10">eve::gpuagents::AgentState::rotation</a></div><div class="ttdeci">glm::quat rotation</div><div class="ttdoc">wxyz storage (glm default).</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00015">AgentState.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_a8549aa034b7284c4176df4765e52b61a"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#a8549aa034b7284c4176df4765e52b61a">eve::gpuagents::AgentState::alive</a></div><div class="ttdeci">std::uint32_t alive</div><div class="ttdoc">0 = recycled / inactive slot.</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00018">AgentState.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1AgentState_html_aa1dab67ff4ad8b84747c09bdaa58d38c"><div class="ttname"><a href="structeve_1_1gpuagents_1_1AgentState.html#aa1dab67ff4ad8b84747c09bdaa58d38c">eve::gpuagents::AgentState::position</a></div><div class="ttdeci">glm::vec3 position</div><div class="ttdef"><b>Definition</b> <a href="AgentState_8h_source.html#l00013">AgentState.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EffectProfile_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EffectProfile.html">eve::gpuagents::EffectProfile</a></div><div class="ttdoc">Type-erased profile bundle owned by an EffectBackend.</div><div class="ttdef"><b>Definition</b> <a href="EffectProfile_8h_source.html#l00130">EffectProfile.h:130</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EffectProfile_html_a705a476067b80064a3c82f312810bcd9"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EffectProfile.html#a705a476067b80064a3c82f312810bcd9">eve::gpuagents::EffectProfile::kind</a></div><div class="ttdeci">EffectKind kind</div><div class="ttdef"><b>Definition</b> <a href="EffectProfile_8h_source.html#l00131">EffectProfile.h:131</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EffectProfile_html_aba33f3b51038eca07921ada97e6e710e"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EffectProfile.html#aba33f3b51038eca07921ada97e6e710e">eve::gpuagents::EffectProfile::fish</a></div><div class="ttdeci">FishProfile fish</div><div class="ttdef"><b>Definition</b> <a href="EffectProfile_8h_source.html#l00132">EffectProfile.h:132</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">eve::gpuagents::EnvironmentSnapshot</a></div><div class="ttdoc">Read-only environment semantics prepared by GpuAgentWorld each tick.</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00026">EnvironmentSnapshot.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_a0aa96ca00fe4e05750d6c19734bef9c2"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#a0aa96ca00fe4e05750d6c19734bef9c2">eve::gpuagents::EnvironmentSnapshot::obstacles</a></div><div class="ttdeci">const ObstacleField * obstacles</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00036">EnvironmentSnapshot.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_aa5308fb6bb632b4a28c33805f705fefc"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa5308fb6bb632b4a28c33805f705fefc">eve::gpuagents::EnvironmentSnapshot::goals</a></div><div class="ttdeci">std::vector&lt; EnvironmentMarker &gt; goals</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00032">EnvironmentSnapshot.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_aa8234192374fc6d1974b737704a8f62f"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#aa8234192374fc6d1974b737704a8f62f">eve::gpuagents::EnvironmentSnapshot::dangers</a></div><div class="ttdeci">std::vector&lt; EnvironmentMarker &gt; dangers</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00033">EnvironmentSnapshot.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1EnvironmentSnapshot_html_ab289803570a1c20ca557b94c176de0c8"><div class="ttname"><a href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html#ab289803570a1c20ca557b94c176de0c8">eve::gpuagents::EnvironmentSnapshot::waterCurrent</a></div><div class="ttdeci">glm::vec3 waterCurrent</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentSnapshot_8h_source.html#l00027">EnvironmentSnapshot.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1gpuagents_1_1FishProfile_html"><div class="ttname"><a href="structeve_1_1gpuagents_1_1FishProfile.html">eve::gpuagents::FishProfile</a></div><div class="ttdoc">3D Boids fish school parameters.</div><div class="ttdef"><b>Definition</b> <a href="EffectProfile_8h_source.html#l00021">EffectProfile.h:21</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

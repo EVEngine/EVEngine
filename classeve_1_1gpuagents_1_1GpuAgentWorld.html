@@ -1,0 +1,795 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpuagents::GpuAgentWorld类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpuagents.html">gpuagents</a></li><li class="navelem"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html">GpuAgentWorld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1gpuagents_1_1GpuAgentWorld-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpuagents::GpuAgentWorld类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>World-level registry for GPU agent simulations and environment semantics.  
+ <a href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1f4e037a8d698d6a35e339c0c551b5c6" id="r_a1f4e037a8d698d6a35e339c0c551b5c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a1f4e037a8d698d6a35e339c0c551b5c6">GpuAgentWorld</a> ()=default</td></tr>
+<tr class="memdesc:a1f4e037a8d698d6a35e339c0c551b5c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gpu agent world.  <br /></td></tr>
+<tr class="separator:a1f4e037a8d698d6a35e339c0c551b5c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecfe23c4195a0645786a9c337d1d70c8" id="r_aecfe23c4195a0645786a9c337d1d70c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpuagents_1_1ObstacleField.html">ObstacleField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#aecfe23c4195a0645786a9c337d1d70c8">obstacles</a> ()</td></tr>
+<tr class="memdesc:aecfe23c4195a0645786a9c337d1d70c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the shared obstacle field (mutable for baking).  <br /></td></tr>
+<tr class="separator:aecfe23c4195a0645786a9c337d1d70c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2009bfb5981e048f82055e338d2461a1" id="r_a2009bfb5981e048f82055e338d2461a1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1gpuagents_1_1ObstacleField.html">ObstacleField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a2009bfb5981e048f82055e338d2461a1">obstacles</a> () const</td></tr>
+<tr class="memdesc:a2009bfb5981e048f82055e338d2461a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const obstacle field.  <br /></td></tr>
+<tr class="separator:a2009bfb5981e048f82055e338d2461a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ca3436b341b264a42704815c8e7346f" id="r_a8ca3436b341b264a42704815c8e7346f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpuagents_1_1SurfaceField.html">SurfaceField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a8ca3436b341b264a42704815c8e7346f">surface</a> ()</td></tr>
+<tr class="memdesc:a8ca3436b341b264a42704815c8e7346f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared surface field for Life Network effects.  <br /></td></tr>
+<tr class="separator:a8ca3436b341b264a42704815c8e7346f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6613155bf3e350a6130be3ee313bc11a" id="r_a6613155bf3e350a6130be3ee313bc11a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1gpuagents_1_1SurfaceField.html">SurfaceField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a6613155bf3e350a6130be3ee313bc11a">surface</a> () const</td></tr>
+<tr class="memdesc:a6613155bf3e350a6130be3ee313bc11a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const surface field.  <br /></td></tr>
+<tr class="separator:a6613155bf3e350a6130be3ee313bc11a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8f066021dd2f6daa5a26505cd6c4cb3" id="r_ac8f066021dd2f6daa5a26505cd6c4cb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#ac8f066021dd2f6daa5a26505cd6c4cb3">setWaterCurrent</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:ac8f066021dd2f6daa5a26505cd6c4cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set uniform water current.  <br /></td></tr>
+<tr class="separator:ac8f066021dd2f6daa5a26505cd6c4cb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad84f3114dbbf7920d741d316379bc97b" id="r_ad84f3114dbbf7920d741d316379bc97b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#ad84f3114dbbf7920d741d316379bc97b">setWind</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:ad84f3114dbbf7920d741d316379bc97b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set uniform wind.  <br /></td></tr>
+<tr class="separator:ad84f3114dbbf7920d741d316379bc97b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5263fe1885d83fdf7e50e55488880e8" id="r_ae5263fe1885d83fdf7e50e55488880e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#ae5263fe1885d83fdf7e50e55488880e8">setVerticalBounds</a> (float groundY, float ceilingY)</td></tr>
+<tr class="memdesc:ae5263fe1885d83fdf7e50e55488880e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set ground / ceiling heights for bird clearance.  <br /></td></tr>
+<tr class="separator:ae5263fe1885d83fdf7e50e55488880e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a434646132e2f49725bbab297f2bdfc62" id="r_a434646132e2f49725bbab297f2bdfc62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a434646132e2f49725bbab297f2bdfc62">setGoals</a> (std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentMarker.html">EnvironmentMarker</a> &gt; goals)</td></tr>
+<tr class="memdesc:a434646132e2f49725bbab297f2bdfc62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace goal markers.  <br /></td></tr>
+<tr class="separator:a434646132e2f49725bbab297f2bdfc62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41ff51fc19f8bc71444b2f9d56c006bf" id="r_a41ff51fc19f8bc71444b2f9d56c006bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a41ff51fc19f8bc71444b2f9d56c006bf">setDangers</a> (std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentMarker.html">EnvironmentMarker</a> &gt; dangers)</td></tr>
+<tr class="memdesc:a41ff51fc19f8bc71444b2f9d56c006bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace danger markers.  <br /></td></tr>
+<tr class="separator:a41ff51fc19f8bc71444b2f9d56c006bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1b3fc603eb442f989da637d11bec6a5" id="r_ae1b3fc603eb442f989da637d11bec6a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#ae1b3fc603eb442f989da637d11bec6a5">setNutrients</a> (std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentMarker.html">EnvironmentMarker</a> &gt; nutrients)</td></tr>
+<tr class="memdesc:ae1b3fc603eb442f989da637d11bec6a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace nutrient markers.  <br /></td></tr>
+<tr class="separator:ae1b3fc603eb442f989da637d11bec6a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb8ae04027efd69dd2f08f2b64dee26d" id="r_abb8ae04027efd69dd2f08f2b64dee26d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#abb8ae04027efd69dd2f08f2b64dee26d">registerBackend</a> (std::string <a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1gpuagents_1_1EffectBackend.html">EffectBackend</a> *backend)</td></tr>
+<tr class="memdesc:abb8ae04027efd69dd2f08f2b64dee26d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a borrowed backend under a unique name.  <br /></td></tr>
+<tr class="separator:abb8ae04027efd69dd2f08f2b64dee26d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2477e152688390717e38726694a6baf6" id="r_a2477e152688390717e38726694a6baf6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a2477e152688390717e38726694a6baf6">unregisterBackend</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a2477e152688390717e38726694a6baf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a named backend registration without destroying the backend. @ownership Does not take or release ownership of the backend instance.  <br /></td></tr>
+<tr class="separator:a2477e152688390717e38726694a6baf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1386033cb8e3803ae7776a25e83bcdbc" id="r_a1386033cb8e3803ae7776a25e83bcdbc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpuagents_1_1EffectBackend.html">EffectBackend</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a1386033cb8e3803ae7776a25e83bcdbc">find</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a1386033cb8e3803ae7776a25e83bcdbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Look up a registered backend by name. @ownership Borrowed; World does not own the returned pointer. @lifetime Valid until unregisterBackend or World destruction; nullptr when missing. @nullable Yes when the name is not registered.  <br /></td></tr>
+<tr class="separator:a1386033cb8e3803ae7776a25e83bcdbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ea0c4c8d4937baead016c7de7f31dda" id="r_a7ea0c4c8d4937baead016c7de7f31dda"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#a7ea0c4c8d4937baead016c7de7f31dda">backendCount</a> () const</td></tr>
+<tr class="memdesc:a7ea0c4c8d4937baead016c7de7f31dda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of registered backends.  <br /></td></tr>
+<tr class="separator:a7ea0c4c8d4937baead016c7de7f31dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5bb0be55067fc9660804a8570a0b7a5" id="r_aa5bb0be55067fc9660804a8570a0b7a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">EnvironmentSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#aa5bb0be55067fc9660804a8570a0b7a5">makeSnapshot</a> (bool includeSurface) const</td></tr>
+<tr class="memdesc:aa5bb0be55067fc9660804a8570a0b7a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build an environment snapshot for the current World state.  <br /></td></tr>
+<tr class="separator:aa5bb0be55067fc9660804a8570a0b7a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbf089c5eff26518d8906d9b47d5d08b" id="r_adbf089c5eff26518d8906d9b47d5d08b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpuagents_1_1GpuAgentWorld.html#adbf089c5eff26518d8906d9b47d5d08b">stepAll</a> (float dt)</td></tr>
+<tr class="memdesc:adbf089c5eff26518d8906d9b47d5d08b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Step every registered backend with a shared environment snapshot.  <br /></td></tr>
+<tr class="separator:adbf089c5eff26518d8906d9b47d5d08b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>World-level registry for GPU agent simulations and environment semantics. </p>
+<p>Analogous to a World Subsystem: owns obstacle/surface fields, registers named EffectBackends that stay caller-owned, and prepares per-tick <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html" title="Read-only environment semantics prepared by GpuAgentWorld each tick.">EnvironmentSnapshot</a> values for every registered simulation.</p>
+<p>@ownership Backends are borrowed; the caller / script VM retains ownership for the full World registration lifetime. @lifetime World must not outlive registered backends; unregister before destroy. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1f4e037a8d698d6a35e339c0c551b5c6" name="a1f4e037a8d698d6a35e339c0c551b5c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f4e037a8d698d6a35e339c0c551b5c6">&#9670;&#160;</a></span>GpuAgentWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpuagents::GpuAgentWorld::GpuAgentWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gpu agent world. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7ea0c4c8d4937baead016c7de7f31dda" name="a7ea0c4c8d4937baead016c7de7f31dda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ea0c4c8d4937baead016c7de7f31dda">&#9670;&#160;</a></span>backendCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpuagents::GpuAgentWorld::backendCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of registered backends. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1386033cb8e3803ae7776a25e83bcdbc" name="a1386033cb8e3803ae7776a25e83bcdbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1386033cb8e3803ae7776a25e83bcdbc">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpuagents_1_1EffectBackend.html">EffectBackend</a> * eve::gpuagents::GpuAgentWorld::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Look up a registered backend by name. @ownership Borrowed; World does not own the returned pointer. @lifetime Valid until unregisterBackend or World destruction; nullptr when missing. @nullable Yes when the name is not registered. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8cpp_source.html">GpuAgentWorld.cpp</a> 第 <a class="el" href="GpuAgentWorld_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>.</p>
+
+</div>
+</div>
+<a id="aa5bb0be55067fc9660804a8570a0b7a5" name="aa5bb0be55067fc9660804a8570a0b7a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5bb0be55067fc9660804a8570a0b7a5">&#9670;&#160;</a></span>makeSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1gpuagents_1_1EnvironmentSnapshot.html">EnvironmentSnapshot</a> eve::gpuagents::GpuAgentWorld::makeSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>includeSurface</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build an environment snapshot for the current World state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">includeSurface</td><td>When true, attaches the mutable surface pointer. @ownership Snapshot borrows obstacle/surface pointers owned by this World. @lifetime Valid only while this World and its fields remain alive for the step. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8cpp_source.html">GpuAgentWorld.cpp</a> 第 <a class="el" href="GpuAgentWorld_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EnvironmentSnapshot_8h_source.html#l00030">eve::gpuagents::EnvironmentSnapshot::ceilingY</a>, <a class="el" href="EnvironmentSnapshot_8h_source.html#l00033">eve::gpuagents::EnvironmentSnapshot::dangers</a>, <a class="el" href="EnvironmentSnapshot_8h_source.html#l00032">eve::gpuagents::EnvironmentSnapshot::goals</a>, <a class="el" href="EnvironmentSnapshot_8h_source.html#l00029">eve::gpuagents::EnvironmentSnapshot::groundY</a>, <a class="el" href="EnvironmentSnapshot_8h_source.html#l00034">eve::gpuagents::EnvironmentSnapshot::nutrients</a>, <a class="el" href="EnvironmentSnapshot_8h_source.html#l00036">eve::gpuagents::EnvironmentSnapshot::obstacles</a>, <a class="el" href="EnvironmentSnapshot_8h_source.html#l00037">eve::gpuagents::EnvironmentSnapshot::surface</a>, <a class="el" href="EnvironmentSnapshot_8h_source.html#l00027">eve::gpuagents::EnvironmentSnapshot::waterCurrent</a> , 以及 <a class="el" href="EnvironmentSnapshot_8h_source.html#l00028">eve::gpuagents::EnvironmentSnapshot::windVelocity</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuAgentWorld_8cpp_source.html#l00051">stepAll()</a>.</p>
+
+</div>
+</div>
+<a id="aecfe23c4195a0645786a9c337d1d70c8" name="aecfe23c4195a0645786a9c337d1d70c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecfe23c4195a0645786a9c337d1d70c8">&#9670;&#160;</a></span>obstacles() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpuagents_1_1ObstacleField.html">ObstacleField</a> &amp; eve::gpuagents::GpuAgentWorld::obstacles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Access the shared obstacle field (mutable for baking). </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2009bfb5981e048f82055e338d2461a1" name="a2009bfb5981e048f82055e338d2461a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2009bfb5981e048f82055e338d2461a1">&#9670;&#160;</a></span>obstacles() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1gpuagents_1_1ObstacleField.html">ObstacleField</a> &amp; eve::gpuagents::GpuAgentWorld::obstacles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Const obstacle field. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb8ae04027efd69dd2f08f2b64dee26d" name="abb8ae04027efd69dd2f08f2b64dee26d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb8ae04027efd69dd2f08f2b64dee26d">&#9670;&#160;</a></span>registerBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::gpuagents::GpuAgentWorld::registerBackend </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpuagents_1_1EffectBackend.html">EffectBackend</a> *&#160;</td>
+          <td class="paramname"><em>backend</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a borrowed backend under a unique name. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Non-empty unique key. </td></tr>
+    <tr><td class="paramname">backend</td><td>Borrowed backend; must outlive the World registration. @ownership Borrowed; caller retains ownership. @lifetime <code>backend</code> must remain valid until unregisterBackend or World destruction. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8cpp_source.html">GpuAgentWorld.cpp</a> 第 <a class="el" href="GpuAgentWorld_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a41ff51fc19f8bc71444b2f9d56c006bf" name="a41ff51fc19f8bc71444b2f9d56c006bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41ff51fc19f8bc71444b2f9d56c006bf">&#9670;&#160;</a></span>setDangers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpuagents::GpuAgentWorld::setDangers </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentMarker.html">EnvironmentMarker</a> &gt;&#160;</td>
+          <td class="paramname"><em>dangers</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace danger markers. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a434646132e2f49725bbab297f2bdfc62" name="a434646132e2f49725bbab297f2bdfc62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a434646132e2f49725bbab297f2bdfc62">&#9670;&#160;</a></span>setGoals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpuagents::GpuAgentWorld::setGoals </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentMarker.html">EnvironmentMarker</a> &gt;&#160;</td>
+          <td class="paramname"><em>goals</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace goal markers. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1b3fc603eb442f989da637d11bec6a5" name="ae1b3fc603eb442f989da637d11bec6a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1b3fc603eb442f989da637d11bec6a5">&#9670;&#160;</a></span>setNutrients()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpuagents::GpuAgentWorld::setNutrients </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1gpuagents_1_1EnvironmentMarker.html">EnvironmentMarker</a> &gt;&#160;</td>
+          <td class="paramname"><em>nutrients</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace nutrient markers. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5263fe1885d83fdf7e50e55488880e8" name="ae5263fe1885d83fdf7e50e55488880e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5263fe1885d83fdf7e50e55488880e8">&#9670;&#160;</a></span>setVerticalBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpuagents::GpuAgentWorld::setVerticalBounds </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>groundY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ceilingY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set ground / ceiling heights for bird clearance. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac8f066021dd2f6daa5a26505cd6c4cb3" name="ac8f066021dd2f6daa5a26505cd6c4cb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8f066021dd2f6daa5a26505cd6c4cb3">&#9670;&#160;</a></span>setWaterCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpuagents::GpuAgentWorld::setWaterCurrent </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set uniform water current. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="ad84f3114dbbf7920d741d316379bc97b" name="ad84f3114dbbf7920d741d316379bc97b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad84f3114dbbf7920d741d316379bc97b">&#9670;&#160;</a></span>setWind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpuagents::GpuAgentWorld::setWind </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set uniform wind. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="adbf089c5eff26518d8906d9b47d5d08b" name="adbf089c5eff26518d8906d9b47d5d08b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbf089c5eff26518d8906d9b47d5d08b">&#9670;&#160;</a></span>stepAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::gpuagents::GpuAgentWorld::stepAll </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Step every registered backend with a shared environment snapshot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>Frame delta seconds. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8cpp_source.html">GpuAgentWorld.cpp</a> 第 <a class="el" href="GpuAgentWorld_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1gpuagents.html#a8b53456dc4abbf12c3762d95f331368fa0b37c82ec5468c8e02f5dde04eb8bbb4">eve::gpuagents::LifeNetwork</a>, <a class="el" href="GpuAgentWorld_8cpp_source.html#l00037">makeSnapshot()</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a8ca3436b341b264a42704815c8e7346f" name="a8ca3436b341b264a42704815c8e7346f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ca3436b341b264a42704815c8e7346f">&#9670;&#160;</a></span>surface() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpuagents_1_1SurfaceField.html">SurfaceField</a> &amp; eve::gpuagents::GpuAgentWorld::surface </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Shared surface field for Life Network effects. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6613155bf3e350a6130be3ee313bc11a" name="a6613155bf3e350a6130be3ee313bc11a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6613155bf3e350a6130be3ee313bc11a">&#9670;&#160;</a></span>surface() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1gpuagents_1_1SurfaceField.html">SurfaceField</a> &amp; eve::gpuagents::GpuAgentWorld::surface </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Const surface field. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a> 第 <a class="el" href="GpuAgentWorld_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2477e152688390717e38726694a6baf6" name="a2477e152688390717e38726694a6baf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2477e152688390717e38726694a6baf6">&#9670;&#160;</a></span>unregisterBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::gpuagents::GpuAgentWorld::unregisterBackend </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a named backend registration without destroying the backend. @ownership Does not take or release ownership of the backend instance. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuAgentWorld_8cpp_source.html">GpuAgentWorld.cpp</a> 第 <a class="el" href="GpuAgentWorld_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/gpuagents/<a class="el" href="GpuAgentWorld_8h_source.html">GpuAgentWorld.h</a></li>
+<li>src/modules/gpuagents/<a class="el" href="GpuAgentWorld_8cpp_source.html">GpuAgentWorld.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

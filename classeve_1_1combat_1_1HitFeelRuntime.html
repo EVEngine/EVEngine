@@ -1,0 +1,411 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::combat::HitFeelRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1combat.html">combat</a></li><li class="navelem"><a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html">HitFeelRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1combat_1_1HitFeelRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::combat::HitFeelRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread hitstop/hitstun coordinator.  
+ <a href="classeve_1_1combat_1_1HitFeelRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HitFeel_8h_source.html">HitFeel.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa44ca7c51dfe5291b2f95f90004b6cd5" id="r_aa44ca7c51dfe5291b2f95f90004b6cd5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html#aa44ca7c51dfe5291b2f95f90004b6cd5">apply</a> (<a class="el" href="structeve_1_1combat_1_1HitFeelRequest.html">HitFeelRequest</a> <a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:aa44ca7c51dfe5291b2f95f90004b6cd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated feel request; overlapping windows take the max remaining.  <br /></td></tr>
+<tr class="separator:aa44ca7c51dfe5291b2f95f90004b6cd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6df575cc1a24c054dbec99a96639c84" id="r_aa6df575cc1a24c054dbec99a96639c84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html#aa6df575cc1a24c054dbec99a96639c84">applyFromOutcome</a> (const <a class="el" href="structeve_1_1combat_1_1DamageOutcome.html">DamageOutcome</a> &amp;outcome)</td></tr>
+<tr class="memdesc:aa6df575cc1a24c054dbec99a96639c84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derive a feel request from a damage outcome using fixed reaction tables.  <br /></td></tr>
+<tr class="separator:aa6df575cc1a24c054dbec99a96639c84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a670289ee6b97bc8b7d8560d41a34e8aa" id="r_a670289ee6b97bc8b7d8560d41a34e8aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1HitFeelAdvance.html">HitFeelAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html#a670289ee6b97bc8b7d8560d41a34e8aa">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:a670289ee6b97bc8b7d8560d41a34e8aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance remaining timers with the supplied deterministic step.  <br /></td></tr>
+<tr class="separator:a670289ee6b97bc8b7d8560d41a34e8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00f0c1697b2911c6005d25c50903fede" id="r_a00f0c1697b2911c6005d25c50903fede"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1combat_1_1HitFeelState.html">HitFeelState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html#a00f0c1697b2911c6005d25c50903fede">state</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>) const</td></tr>
+<tr class="memdesc:a00f0c1697b2911c6005d25c50903fede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning snapshot, or empty defaults when the subject has no feel state.  <br /></td></tr>
+<tr class="separator:a00f0c1697b2911c6005d25c50903fede"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a904e24a600c0b5add4633f64055dfd6d" id="r_a904e24a600c0b5add4633f64055dfd6d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html#a904e24a600c0b5add4633f64055dfd6d">isFrozen</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>) const noexcept</td></tr>
+<tr class="memdesc:a904e24a600c0b5add4633f64055dfd6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the subject currently has positive hitstop remaining.  <br /></td></tr>
+<tr class="separator:a904e24a600c0b5add4633f64055dfd6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93fa7caa14909861281674dd0eb263a5" id="r_a93fa7caa14909861281674dd0eb263a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html#a93fa7caa14909861281674dd0eb263a5">isStunned</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>) const noexcept</td></tr>
+<tr class="memdesc:a93fa7caa14909861281674dd0eb263a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the subject currently has positive hitstun remaining.  <br /></td></tr>
+<tr class="separator:a93fa7caa14909861281674dd0eb263a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c6ab59aff6e7e70e2608582b74c6025" id="r_a1c6ab59aff6e7e70e2608582b74c6025"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1HitFeelRuntime.html#a1c6ab59aff6e7e70e2608582b74c6025">activeCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a1c6ab59aff6e7e70e2608582b74c6025"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of subjects with any remaining feel timer.  <br /></td></tr>
+<tr class="separator:a1c6ab59aff6e7e70e2608582b74c6025"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread hitstop/hitstun coordinator. </p>
+<p>Durations use injected simulation time only. While hitstop remains, callers should treat the subject as time-frozen for animation and hitbox sampling. </p>
+
+<p class="definition">在文件 <a class="el" href="HitFeel_8h_source.html">HitFeel.h</a> 第 <a class="el" href="HitFeel_8h_source.html#l00061">61</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a1c6ab59aff6e7e70e2608582b74c6025" name="a1c6ab59aff6e7e70e2608582b74c6025"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c6ab59aff6e7e70e2608582b74c6025">&#9670;&#160;</a></span>activeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::combat::HitFeelRuntime::activeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of subjects with any remaining feel timer. </p>
+
+<p class="definition">在文件 <a class="el" href="HitFeel_8h_source.html">HitFeel.h</a> 第 <a class="el" href="HitFeel_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a670289ee6b97bc8b7d8560d41a34e8aa" name="a670289ee6b97bc8b7d8560d41a34e8aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a670289ee6b97bc8b7d8560d41a34e8aa">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1HitFeelAdvance.html">HitFeelAdvance</a> &gt; eve::combat::HitFeelRuntime::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance remaining timers with the supplied deterministic step. </p>
+
+<p class="definition">在文件 <a class="el" href="HitFeel_8cpp_source.html">HitFeel.cpp</a> 第 <a class="el" href="HitFeel_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HitFeel_8cpp_source.html#l00075">advance()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00055">eve::Duration::fromNanoseconds()</a>, <a class="el" href="namespaceeve_1_1combat.html#afb5eb873a8a49841302e90de0edd152ba18f223366146929414733b7bd8459507">eve::combat::HitstopEnded</a>, <a class="el" href="HitFeel_8h_source.html#l00034">eve::combat::HitFeelState::hitstopRemaining</a>, <a class="el" href="namespaceeve_1_1combat.html#afb5eb873a8a49841302e90de0edd152ba00999bcd0ba6865198da2f2796faf68d">eve::combat::HitstunEnded</a>, <a class="el" href="HitFeel_8h_source.html#l00035">eve::combat::HitFeelState::hitstunRemaining</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Time_8h_source.html#l00075">eve::Duration::isZero()</a>, <a class="el" href="Time_8h_source.html#l00069">eve::Duration::nanoseconds()</a>, <a class="el" href="HitFeel_8cpp_source.html#l00115">state()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="HitFeel_8h_source.html#l00033">eve::combat::HitFeelState::subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="HitFeel_8h_source.html#l00051">eve::combat::HitFeelAdvance::tick</a>, <a class="el" href="HitFeel_8h_source.html#l00036">eve::combat::HitFeelState::timeFrozen</a>, <a class="el" href="StrongUint64_8h_source.html#l00026">eve::detail::StrongUint64&lt; Tag &gt;::value()</a> , 以及 <a class="el" href="Time_8h_source.html#l00060">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HitFeel_8cpp_source.html#l00075">advance()</a>.</p>
+
+</div>
+</div>
+<a id="aa44ca7c51dfe5291b2f95f90004b6cd5" name="aa44ca7c51dfe5291b2f95f90004b6cd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa44ca7c51dfe5291b2f95f90004b6cd5">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::HitFeelRuntime::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1HitFeelRequest.html">HitFeelRequest</a>&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply one validated feel request; overlapping windows take the max remaining. </p>
+
+<p class="definition">在文件 <a class="el" href="HitFeel_8cpp_source.html">HitFeel.cpp</a> 第 <a class="el" href="HitFeel_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a> , 以及 <a class="el" href="Time_8h_source.html#l00060">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HitFeel_8cpp_source.html#l00041">applyFromOutcome()</a>.</p>
+
+</div>
+</div>
+<a id="aa6df575cc1a24c054dbec99a96639c84" name="aa6df575cc1a24c054dbec99a96639c84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6df575cc1a24c054dbec99a96639c84">&#9670;&#160;</a></span>applyFromOutcome()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::HitFeelRuntime::applyFromOutcome </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1combat_1_1DamageOutcome.html">DamageOutcome</a> &amp;&#160;</td>
+          <td class="paramname"><em>outcome</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Derive a feel request from a damage outcome using fixed reaction tables. </p>
+
+<p class="definition">在文件 <a class="el" href="HitFeel_8cpp_source.html">HitFeel.cpp</a> 第 <a class="el" href="HitFeel_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HitFeel_8cpp_source.html#l00025">apply()</a>, <a class="el" href="HitFeel_8h_source.html#l00020">eve::combat::HitFeelRequest::attacker</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6097f89e3092d4ccd249c9d479785c1f">eve::combat::Death</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea16d1bfa931066fc5c7876947e11295af">eve::combat::Flinch</a>, <a class="el" href="Time_8h_source.html#l00055">eve::Duration::fromNanoseconds()</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12eae085600d13d0c185ec1e3c4efd913601">eve::combat::Knockdown</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6adf97f83acf6453d4a6a4b1070f3754">eve::combat::None</a>, <a class="el" href="Damage_8h_source.html#l00109">eve::combat::DamageOutcome::reaction</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Damage_8h_source.html#l00099">eve::combat::DamageOutcome::source</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea9c953a2c37f8c641deeb996cf8924232">eve::combat::Stagger</a> , 以及 <a class="el" href="Damage_8h_source.html#l00100">eve::combat::DamageOutcome::target</a>.</p>
+
+</div>
+</div>
+<a id="a904e24a600c0b5add4633f64055dfd6d" name="a904e24a600c0b5add4633f64055dfd6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a904e24a600c0b5add4633f64055dfd6d">&#9670;&#160;</a></span>isFrozen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::combat::HitFeelRuntime::isFrozen </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the subject currently has positive hitstop remaining. </p>
+
+<p class="definition">在文件 <a class="el" href="HitFeel_8cpp_source.html">HitFeel.cpp</a> 第 <a class="el" href="HitFeel_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Time_8h_source.html#l00060">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatLoop_8cpp_source.html#l00025">eve::combat::CombatLoopRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a93fa7caa14909861281674dd0eb263a5" name="a93fa7caa14909861281674dd0eb263a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93fa7caa14909861281674dd0eb263a5">&#9670;&#160;</a></span>isStunned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::combat::HitFeelRuntime::isStunned </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the subject currently has positive hitstun remaining. </p>
+
+<p class="definition">在文件 <a class="el" href="HitFeel_8cpp_source.html">HitFeel.cpp</a> 第 <a class="el" href="HitFeel_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Time_8h_source.html#l00060">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="a00f0c1697b2911c6005d25c50903fede" name="a00f0c1697b2911c6005d25c50903fede"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00f0c1697b2911c6005d25c50903fede">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1combat_1_1HitFeelState.html">HitFeelState</a> eve::combat::HitFeelRuntime::state </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning snapshot, or empty defaults when the subject has no feel state. </p>
+
+<p class="definition">在文件 <a class="el" href="HitFeel_8cpp_source.html">HitFeel.cpp</a> 第 <a class="el" href="HitFeel_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Time_8h_source.html#l00060">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HitFeel_8cpp_source.html#l00075">advance()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/combat/<a class="el" href="HitFeel_8h_source.html">HitFeel.h</a></li>
+<li>src/modules/combat/<a class="el" href="HitFeel_8cpp_source.html">HitFeel.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

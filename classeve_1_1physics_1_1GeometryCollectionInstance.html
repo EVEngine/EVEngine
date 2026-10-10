@@ -1,0 +1,982 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::GeometryCollectionInstance类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1GeometryCollectionInstance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::GeometryCollectionInstance类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Runtime.html" title="EVENGINE_API_FOUNDATION public API.">Runtime</a> owner of bone state, connection strain, and <a class="el" href="structeve_1_1physics_1_1PhysicsLink.html" title="Generation-qualified relationship between one world and one body.">PhysicsLink</a> bindings.  
+ <a href="classeve_1_1physics_1_1GeometryCollectionInstance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4af4aed0230af8f63c4652acb9e93072" id="r_a4af4aed0230af8f63c4652acb9e93072"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a4af4aed0230af8f63c4652acb9e93072">GeometryCollectionInstance</a> (const <a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:a4af4aed0230af8f63c4652acb9e93072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d8127228f09ac963745bf618525e7a3" id="r_a7d8127228f09ac963745bf618525e7a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7d8127228f09ac963745bf618525e7a3">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:a7d8127228f09ac963745bf618525e7a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e2311340e8948be7c53c6adb7d266f9" id="r_a7e2311340e8948be7c53c6adb7d266f9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7e2311340e8948be7c53c6adb7d266f9">~GeometryCollectionInstance</a> ()</td></tr>
+<tr class="memdesc:a7e2311340e8948be7c53c6adb7d266f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Geometry collection instance.  <br /></td></tr>
+<tr class="separator:a7e2311340e8948be7c53c6adb7d266f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71b3d8c758926a639abf778a42861555" id="r_a71b3d8c758926a639abf778a42861555"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a71b3d8c758926a639abf778a42861555">hasLiveWorld</a> () const noexcept</td></tr>
+<tr class="memdesc:a71b3d8c758926a639abf778a42861555"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the owning world handle still resolves.  <br /></td></tr>
+<tr class="separator:a71b3d8c758926a639abf778a42861555"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40be65716ba4d25d77b7aae759c38522" id="r_a40be65716ba4d25d77b7aae759c38522"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a40be65716ba4d25d77b7aae759c38522">setStepBudget</a> (<a class="el" href="structeve_1_1physics_1_1DestructionStepBudget.html">DestructionStepBudget</a> budget) noexcept</td></tr>
+<tr class="memdesc:a40be65716ba4d25d77b7aae759c38522"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the per-step break/sleep budgets (0 = unlimited).  <br /></td></tr>
+<tr class="separator:a40be65716ba4d25d77b7aae759c38522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bfd09cedf87b0b976348de39038f7ad" id="r_a7bfd09cedf87b0b976348de39038f7ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1DestructionStepBudget.html">DestructionStepBudget</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7bfd09cedf87b0b976348de39038f7ad">stepBudget</a> () const noexcept</td></tr>
+<tr class="memdesc:a7bfd09cedf87b0b976348de39038f7ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the active per-step budgets.  <br /></td></tr>
+<tr class="separator:a7bfd09cedf87b0b976348de39038f7ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12f752b23951c1953ca39e574d68e181" id="r_a12f752b23951c1953ca39e574d68e181"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1FieldApplicationReceipt.html">FieldApplicationReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a12f752b23951c1953ca39e574d68e181">applyField</a> (const <a class="el" href="structeve_1_1physics_1_1DestructionField.html">DestructionField</a> &amp;field)</td></tr>
+<tr class="memdesc:a12f752b23951c1953ca39e574d68e181"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one destruction field; failure leaves instance unchanged.  <br /></td></tr>
+<tr class="separator:a12f752b23951c1953ca39e574d68e181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7437c56538a0e9d11e5afd165112d494" id="r_a7437c56538a0e9d11e5afd165112d494"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1DestructionStepReceipt.html">DestructionStepReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7437c56538a0e9d11e5afd165112d494">step</a> (<a class="el" href="namespaceeve_1_1physics.html#aae90b9d63f8076e9ec80145c36fcb8d8">SimulationStep</a> step)</td></tr>
+<tr class="memdesc:a7437c56538a0e9d11e5afd165112d494"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance connection-graph breaks under the configured budget.  <br /></td></tr>
+<tr class="separator:a7437c56538a0e9d11e5afd165112d494"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8978819e3db84505da878e29f4574f34" id="r_a8978819e3db84505da878e29f4574f34"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a8978819e3db84505da878e29f4574f34">boneCount</a> () const noexcept</td></tr>
+<tr class="separator:a8978819e3db84505da878e29f4574f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a1a8fa94fc15e3ebf00d5a24db32404" id="r_a5a1a8fa94fc15e3ebf00d5a24db32404"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a5a1a8fa94fc15e3ebf00d5a24db32404">edgeCount</a> () const noexcept</td></tr>
+<tr class="separator:a5a1a8fa94fc15e3ebf00d5a24db32404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3d9d7966c28436d987481a6dc27cca4" id="r_af3d9d7966c28436d987481a6dc27cca4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22">BoneRuntimeState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#af3d9d7966c28436d987481a6dc27cca4">boneState</a> (int boneIndex) const</td></tr>
+<tr class="separator:af3d9d7966c28436d987481a6dc27cca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b67c3cc0dca0513debcb97809b64385" id="r_a3b67c3cc0dca0513debcb97809b64385"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a3b67c3cc0dca0513debcb97809b64385">boneClusterId</a> (int boneIndex) const</td></tr>
+<tr class="separator:a3b67c3cc0dca0513debcb97809b64385"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00de842695e406360a71ab0c609228f2" id="r_a00de842695e406360a71ab0c609228f2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a00de842695e406360a71ab0c609228f2">edgeStrain</a> (int edgeIndex) const</td></tr>
+<tr class="separator:a00de842695e406360a71ab0c609228f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa820fe9608fe74add1fb386fb9154085" id="r_aa820fe9608fe74add1fb386fb9154085"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#aa820fe9608fe74add1fb386fb9154085">isEdgeBroken</a> (int edgeIndex) const</td></tr>
+<tr class="memdesc:aa820fe9608fe74add1fb386fb9154085"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the edge at index has already broken.  <br /></td></tr>
+<tr class="separator:aa820fe9608fe74add1fb386fb9154085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e869205d80765375c1d2a619e5c5d93" id="r_a3e869205d80765375c1d2a619e5c5d93"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a3e869205d80765375c1d2a619e5c5d93">detachEventCount</a> () const noexcept</td></tr>
+<tr class="separator:a3e869205d80765375c1d2a619e5c5d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6947ea3ddba5df8a464063c36f9f014f" id="r_a6947ea3ddba5df8a464063c36f9f014f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1BoneDetachEvent.html">BoneDetachEvent</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a6947ea3ddba5df8a464063c36f9f014f">detachEventAt</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a6947ea3ddba5df8a464063c36f9f014f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70970d803555592b935b859acdf13379" id="r_a70970d803555592b935b859acdf13379"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a70970d803555592b935b859acdf13379">clusterBreakEventCount</a> () const noexcept</td></tr>
+<tr class="separator:a70970d803555592b935b859acdf13379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb92b54d2d7f6537aacde8301027d4fe" id="r_afb92b54d2d7f6537aacde8301027d4fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1ClusterBreakEvent.html">ClusterBreakEvent</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#afb92b54d2d7f6537aacde8301027d4fe">clusterBreakEventAt</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:afb92b54d2d7f6537aacde8301027d4fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cluster break event at.  <br /></td></tr>
+<tr class="separator:afb92b54d2d7f6537aacde8301027d4fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a567c7cb9af00e3271913340967a61ec0" id="r_a567c7cb9af00e3271913340967a61ec0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a567c7cb9af00e3271913340967a61ec0">pendingEdgeBreakCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a567c7cb9af00e3271913340967a61ec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Edges still waiting because of the break budget.  <br /></td></tr>
+<tr class="separator:a567c7cb9af00e3271913340967a61ec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bf9cbc5eb5cf8e8ccda54318a295acf" id="r_a7bf9cbc5eb5cf8e8ccda54318a295acf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1PhysicsLink.html">PhysicsLink</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a7bf9cbc5eb5cf8e8ccda54318a295acf">boneLink</a> (int boneIndex) const</td></tr>
+<tr class="memdesc:a7bf9cbc5eb5cf8e8ccda54318a295acf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve the <a class="el" href="structeve_1_1physics_1_1PhysicsLink.html" title="Generation-qualified relationship between one world and one body.">PhysicsLink</a> for one bone against the live world.  <br /></td></tr>
+<tr class="separator:a7bf9cbc5eb5cf8e8ccda54318a295acf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfe907bc1ee2b13e917da0f3634e3db3" id="r_acfe907bc1ee2b13e917da0f3634e3db3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1BonePresentation.html">BonePresentation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#acfe907bc1ee2b13e917da0f3634e3db3">bonePresentation</a> (int boneIndex) const</td></tr>
+<tr class="memdesc:acfe907bc1ee2b13e917da0f3634e3db3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample one bone's world pose and proxy extents for presentation.  <br /></td></tr>
+<tr class="separator:acfe907bc1ee2b13e917da0f3634e3db3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4442d1d555e30b063e2b6326fedff875" id="r_a4442d1d555e30b063e2b6326fedff875"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a4442d1d555e30b063e2b6326fedff875">sleepBatchRevision</a> () const noexcept</td></tr>
+<tr class="memdesc:a4442d1d555e30b063e2b6326fedff875"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic revision bumped when any bone enters Sleeping (for batch rebuild).  <br /></td></tr>
+<tr class="separator:a4442d1d555e30b063e2b6326fedff875"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac65d20b4d281947e6dbc697446da6528" id="r_ac65d20b4d281947e6dbc697446da6528"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html">GeometryCollectionInstanceSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#ac65d20b4d281947e6dbc697446da6528">captureSnapshot</a> () const</td></tr>
+<tr class="memdesc:ac65d20b4d281947e6dbc697446da6528"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture a process-portable runtime snapshot (no <a class="el" href="structeve_1_1physics_1_1PhysicsLink.html" title="Generation-qualified relationship between one world and one body.">PhysicsLink</a> handles). @ownership Caller owns the returned snapshot value.  <br /></td></tr>
+<tr class="separator:ac65d20b4d281947e6dbc697446da6528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a119f805afe8124094bd18f3ba585e5e7" id="r_a119f805afe8124094bd18f3ba585e5e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a119f805afe8124094bd18f3ba585e5e7">restoreSnapshot</a> (const <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html">GeometryCollectionInstanceSnapshot</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a119f805afe8124094bd18f3ba585e5e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore bone/edge state from a snapshot against the live world.  <br /></td></tr>
+<tr class="separator:a119f805afe8124094bd18f3ba585e5e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadfbf3a674c95ba6be400be38e636494" id="r_aadfbf3a674c95ba6be400be38e636494"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#aadfbf3a674c95ba6be400be38e636494">releaseBodies</a> ()</td></tr>
+<tr class="memdesc:aadfbf3a674c95ba6be400be38e636494"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy owned bodies if the world is still live; always clears links.  <br /></td></tr>
+<tr class="separator:aadfbf3a674c95ba6be400be38e636494"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a6ac4b11226e00784fcc8c4fa07d73639" id="r_a6ac4b11226e00784fcc8c4fa07d73639"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html#a6ac4b11226e00784fcc8c4fa07d73639">create</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, const <a class="el" href="structeve_1_1physics_1_1GeometryCollectionAsset.html">GeometryCollectionAsset</a> &amp;asset, float originX, float originY, float originZ)</td></tr>
+<tr class="memdesc:a6ac4b11226e00784fcc8c4fa07d73639"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create bodies for every bone and bind PhysicsLinks.  <br /></td></tr>
+<tr class="separator:a6ac4b11226e00784fcc8c4fa07d73639"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Runtime.html" title="EVENGINE_API_FOUNDATION public API.">Runtime</a> owner of bone state, connection strain, and <a class="el" href="structeve_1_1physics_1_1PhysicsLink.html" title="Generation-qualified relationship between one world and one body.">PhysicsLink</a> bindings. </p>
+<p>@ownership Owns <a class="el" href="classeve_1_1physics_1_1Body3D.html" title="3D rigid body (Box3D) in meter-space coordinates (+Y up by convention). Owned by a World3D; create pr...">Body3D</a> objects it creates; never retains raw <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> or <a class="el" href="classeve_1_1physics_1_1Body3D.html" title="3D rigid body (Box3D) in meter-space coordinates (+Y up by convention). Owned by a World3D; create pr...">Body3D</a> pointers across calls. Borrows <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> only through a process-local handle. @lifetime Instance-first teardown destroys owned bodies then clears links; world-first teardown makes later resolve/step/applyField return StaleHandle. Either order leaves PhysicsLinks resolvable without use-after-free. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a> 第 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00096">96</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4af4aed0230af8f63c4652acb9e93072" name="a4af4aed0230af8f63c4652acb9e93072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4af4aed0230af8f63c4652acb9e93072">&#9670;&#160;</a></span>GeometryCollectionInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::GeometryCollectionInstance::GeometryCollectionInstance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7e2311340e8948be7c53c6adb7d266f9" name="a7e2311340e8948be7c53c6adb7d266f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e2311340e8948be7c53c6adb7d266f9">&#9670;&#160;</a></span>~GeometryCollectionInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::GeometryCollectionInstance::~GeometryCollectionInstance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Geometry collection instance. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a12f752b23951c1953ca39e574d68e181" name="a12f752b23951c1953ca39e574d68e181"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12f752b23951c1953ca39e574d68e181">&#9670;&#160;</a></span>applyField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1FieldApplicationReceipt.html">FieldApplicationReceipt</a> &gt; eve::physics::GeometryCollectionInstance::applyField </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1DestructionField.html">DestructionField</a> &amp;&#160;</td>
+          <td class="paramname"><em>field</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply one destruction field; failure leaves instance unchanged. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00595">body</a>, <a class="el" href="DestructionField_8h_source.html#l00044">eve::physics::FieldApplicationReceipt::bonesAffected</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00020">dx</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00020">dy</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00020">dz</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00014">edge</a>, <a class="el" href="DestructionField_8h_source.html#l00045">eve::physics::FieldApplicationReceipt::edgesAffected</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="DestructionField_8h_source.html#l00047">eve::physics::FieldApplicationReceipt::sleepsDeferred</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00240">vx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00240">vy</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00250">vz</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00164">weight</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+</div>
+</div>
+<a id="a3b67c3cc0dca0513debcb97809b64385" name="a3b67c3cc0dca0513debcb97809b64385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b67c3cc0dca0513debcb97809b64385">&#9670;&#160;</a></span>boneClusterId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::GeometryCollectionInstance::boneClusterId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00386">386</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GeometryCollectionCooker_8cpp_source.html#l00050">clusterId</a>.</p>
+
+</div>
+</div>
+<a id="a8978819e3db84505da878e29f4574f34" name="a8978819e3db84505da878e29f4574f34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8978819e3db84505da878e29f4574f34">&#9670;&#160;</a></span>boneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::GeometryCollectionInstance::boneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a> 第 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionRenderer_8cpp_source.html#l00168">eve::physics::GeometryCollectionRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="a7bf9cbc5eb5cf8e8ccda54318a295acf" name="a7bf9cbc5eb5cf8e8ccda54318a295acf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bf9cbc5eb5cf8e8ccda54318a295acf">&#9670;&#160;</a></span>boneLink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1PhysicsLink.html">PhysicsLink</a> &gt; eve::physics::GeometryCollectionInstance::boneLink </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve the <a class="el" href="structeve_1_1physics_1_1PhysicsLink.html" title="Generation-qualified relationship between one world and one body.">PhysicsLink</a> for one bone against the live world. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00411">411</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00595">body</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+</div>
+</div>
+<a id="acfe907bc1ee2b13e917da0f3634e3db3" name="acfe907bc1ee2b13e917da0f3634e3db3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe907bc1ee2b13e917da0f3634e3db3">&#9670;&#160;</a></span>bonePresentation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1BonePresentation.html">BonePresentation</a> &gt; eve::physics::GeometryCollectionInstance::bonePresentation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample one bone's world pose and proxy extents for presentation. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning snapshot, or StaleHandle/InvalidArgument without mutating state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00595">body</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00083">eve::physics::BonePresentation::clusterId</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00084">eve::physics::BonePresentation::fractureLevel</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00073">eve::physics::BonePresentation::halfExtentX</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00074">eve::physics::BonePresentation::halfExtentY</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00075">eve::physics::BonePresentation::halfExtentZ</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00082">eve::physics::BonePresentation::rotW</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00079">eve::physics::BonePresentation::rotX</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00080">eve::physics::BonePresentation::rotY</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00081">eve::physics::BonePresentation::rotZ</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00072">eve::physics::BonePresentation::state</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00076">eve::physics::BonePresentation::worldX</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00077">eve::physics::BonePresentation::worldY</a> , 以及 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00078">eve::physics::BonePresentation::worldZ</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionRenderer_8cpp_source.html#l00168">eve::physics::GeometryCollectionRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="af3d9d7966c28436d987481a6dc27cca4" name="af3d9d7966c28436d987481a6dc27cca4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3d9d7966c28436d987481a6dc27cca4">&#9670;&#160;</a></span>boneState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#ab0fc5d86c5b7c2c28b953d69d8085b22">BoneRuntimeState</a> eve::physics::GeometryCollectionInstance::boneState </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00381">381</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+</div>
+</div>
+<a id="ac65d20b4d281947e6dbc697446da6528" name="ac65d20b4d281947e6dbc697446da6528"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac65d20b4d281947e6dbc697446da6528">&#9670;&#160;</a></span>captureSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html">GeometryCollectionInstanceSnapshot</a> &gt; eve::physics::GeometryCollectionInstance::captureSnapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture a process-portable runtime snapshot (no <a class="el" href="structeve_1_1physics_1_1PhysicsLink.html" title="Generation-qualified relationship between one world and one body.">PhysicsLink</a> handles). @ownership Caller owns the returned snapshot value. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00452">452</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00047">eve::physics::GeometryCollectionInstanceSnapshot::EdgeSnapshot::accumulatedStrain</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00035">eve::physics::GeometryCollectionInstanceSnapshot::BoneSnapshot::anchored</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00044">eve::physics::GeometryCollectionInstanceSnapshot::EdgeSnapshot::boneA</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00045">eve::physics::GeometryCollectionInstanceSnapshot::EdgeSnapshot::boneB</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00056">eve::physics::GeometryCollectionInstanceSnapshot::bones</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00048">eve::physics::GeometryCollectionInstanceSnapshot::EdgeSnapshot::broken</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00036">eve::physics::GeometryCollectionInstanceSnapshot::BoneSnapshot::clusterId</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00014">edge</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00057">eve::physics::GeometryCollectionInstanceSnapshot::edges</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00037">eve::physics::GeometryCollectionInstanceSnapshot::BoneSnapshot::fractureLevel</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00038">eve::physics::GeometryCollectionInstanceSnapshot::BoneSnapshot::halfExtentX</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00039">eve::physics::GeometryCollectionInstanceSnapshot::BoneSnapshot::halfExtentY</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00040">eve::physics::GeometryCollectionInstanceSnapshot::BoneSnapshot::halfExtentZ</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00054">eve::physics::GeometryCollectionInstanceSnapshot::lastTick</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00051">eve::physics::GeometryCollectionInstanceSnapshot::originX</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00052">eve::physics::GeometryCollectionInstanceSnapshot::originY</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00053">eve::physics::GeometryCollectionInstanceSnapshot::originZ</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00055">eve::physics::GeometryCollectionInstanceSnapshot::sleepBatchRevision</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00034">eve::physics::GeometryCollectionInstanceSnapshot::BoneSnapshot::state</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00046">eve::physics::GeometryCollectionInstanceSnapshot::EdgeSnapshot::strainThreshold</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">eve::physics::GeometryCollectionInstanceSnapshot::validate()</a>.</p>
+
+</div>
+</div>
+<a id="afb92b54d2d7f6537aacde8301027d4fe" name="afb92b54d2d7f6537aacde8301027d4fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb92b54d2d7f6537aacde8301027d4fe">&#9670;&#160;</a></span>clusterBreakEventAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1ClusterBreakEvent.html">ClusterBreakEvent</a> eve::physics::GeometryCollectionInstance::clusterBreakEventAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cluster break event at. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a70970d803555592b935b859acdf13379" name="a70970d803555592b935b859acdf13379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70970d803555592b935b859acdf13379">&#9670;&#160;</a></span>clusterBreakEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::GeometryCollectionInstance::clusterBreakEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a> 第 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00150">150</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ac4b11226e00784fcc8c4fa07d73639" name="a6ac4b11226e00784fcc8c4fa07d73639"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ac4b11226e00784fcc8c4fa07d73639">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a> &gt; &gt; eve::physics::GeometryCollectionInstance::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1GeometryCollectionAsset.html">GeometryCollectionAsset</a> &amp;&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create bodies for every bone and bind PhysicsLinks. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td>Borrowed <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> that must outlive successful physics writes. </td></tr>
+    <tr><td class="paramname">asset</td><td>Immutable bone/edge definition (copied). </td></tr>
+    <tr><td class="paramname">originX</td><td>Origin of the collection in world metres. </td></tr>
+    <tr><td class="paramname">originY</td><td>Origin of the collection in world metres. </td></tr>
+    <tr><td class="paramname">originZ</td><td>Origin of the collection in world metres. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning instance, or a structured failure without partial bodies. @ownership Caller owns the returned unique_ptr; Instance owns created bodies. @lifetime <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> must remain live for physics writes until releaseBodies or Instance destruction; world destruction first yields StaleHandle. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00595">body</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="GeometryCollectionAsset_8h_source.html#l00053">eve::physics::GeometryCollectionAsset::bones</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00014">edge</a>, <a class="el" href="GeometryCollectionAsset_8h_source.html#l00054">eve::physics::GeometryCollectionAsset::edges</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>, <a class="el" href="GeometryCollectionAsset_8cpp_source.html#l00181">eve::physics::GeometryCollectionAsset::validate()</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Destruction_8cpp_source.html#l00037">eve::physics::Destruction::createInstance()</a>.</p>
+
+</div>
+</div>
+<a id="a6947ea3ddba5df8a464063c36f9f014f" name="a6947ea3ddba5df8a464063c36f9f014f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6947ea3ddba5df8a464063c36f9f014f">&#9670;&#160;</a></span>detachEventAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1BoneDetachEvent.html">BoneDetachEvent</a> eve::physics::GeometryCollectionInstance::detachEventAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00401">401</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a3e869205d80765375c1d2a619e5c5d93" name="a3e869205d80765375c1d2a619e5c5d93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e869205d80765375c1d2a619e5c5d93">&#9670;&#160;</a></span>detachEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::GeometryCollectionInstance::detachEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a> 第 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00148">148</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a1a8fa94fc15e3ebf00d5a24db32404" name="a5a1a8fa94fc15e3ebf00d5a24db32404"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a1a8fa94fc15e3ebf00d5a24db32404">&#9670;&#160;</a></span>edgeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::GeometryCollectionInstance::edgeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a> 第 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00142">142</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a00de842695e406360a71ab0c609228f2" name="a00de842695e406360a71ab0c609228f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00de842695e406360a71ab0c609228f2">&#9670;&#160;</a></span>edgeStrain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::GeometryCollectionInstance::edgeStrain </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>edgeIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00391">391</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71b3d8c758926a639abf778a42861555" name="a71b3d8c758926a639abf778a42861555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71b3d8c758926a639abf778a42861555">&#9670;&#160;</a></span>hasLiveWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::GeometryCollectionInstance::hasLiveWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the owning world handle still resolves. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionRenderer_8cpp_source.html#l00168">eve::physics::GeometryCollectionRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="aa820fe9608fe74add1fb386fb9154085" name="aa820fe9608fe74add1fb386fb9154085"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa820fe9608fe74add1fb386fb9154085">&#9670;&#160;</a></span>isEdgeBroken()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::GeometryCollectionInstance::isEdgeBroken </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>edgeIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether the edge at index has already broken. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00396">396</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d8127228f09ac963745bf618525e7a3" name="a7d8127228f09ac963745bf618525e7a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d8127228f09ac963745bf618525e7a3">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a> &amp; eve::physics::GeometryCollectionInstance::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1GeometryCollectionInstance.html">GeometryCollectionInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a567c7cb9af00e3271913340967a61ec0" name="a567c7cb9af00e3271913340967a61ec0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a567c7cb9af00e3271913340967a61ec0">&#9670;&#160;</a></span>pendingEdgeBreakCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::GeometryCollectionInstance::pendingEdgeBreakCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Edges still waiting because of the break budget. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a> 第 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00156">156</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aadfbf3a674c95ba6be400be38e636494" name="aadfbf3a674c95ba6be400be38e636494"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadfbf3a674c95ba6be400be38e636494">&#9670;&#160;</a></span>releaseBodies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::GeometryCollectionInstance::releaseBodies </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroy owned bodies if the world is still live; always clears links. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00566">566</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+</div>
+</div>
+<a id="a119f805afe8124094bd18f3ba585e5e7" name="a119f805afe8124094bd18f3ba585e5e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a119f805afe8124094bd18f3ba585e5e7">&#9670;&#160;</a></span>restoreSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::GeometryCollectionInstance::restoreSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html">GeometryCollectionInstanceSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore bone/edge state from a snapshot against the live world. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument/StaleHandle without partial mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00486">486</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00595">body</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00056">eve::physics::GeometryCollectionInstanceSnapshot::bones</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00057">eve::physics::GeometryCollectionInstanceSnapshot::edges</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00054">eve::physics::GeometryCollectionInstanceSnapshot::lastTick</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00051">eve::physics::GeometryCollectionInstanceSnapshot::originX</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00052">eve::physics::GeometryCollectionInstanceSnapshot::originY</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00053">eve::physics::GeometryCollectionInstanceSnapshot::originZ</a>, <a class="el" href="Body3D_8cpp_source.html#l00656">eve::physics::Body3D::setType()</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00055">eve::physics::GeometryCollectionInstanceSnapshot::sleepBatchRevision</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">eve::physics::GeometryCollectionInstanceSnapshot::validate()</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+</div>
+</div>
+<a id="a40be65716ba4d25d77b7aae759c38522" name="a40be65716ba4d25d77b7aae759c38522"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40be65716ba4d25d77b7aae759c38522">&#9670;&#160;</a></span>setStepBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::GeometryCollectionInstance::setStepBudget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1DestructionStepBudget.html">DestructionStepBudget</a>&#160;</td>
+          <td class="paramname"><em>budget</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace the per-step break/sleep budgets (0 = unlimited). </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a> 第 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00125">125</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4442d1d555e30b063e2b6326fedff875" name="a4442d1d555e30b063e2b6326fedff875"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4442d1d555e30b063e2b6326fedff875">&#9670;&#160;</a></span>sleepBatchRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::physics::GeometryCollectionInstance::sleepBatchRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic revision bumped when any bone enters Sleeping (for batch rebuild). </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a> 第 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionRenderer_8cpp_source.html#l00168">eve::physics::GeometryCollectionRenderer::draw()</a>.</p>
+
+</div>
+</div>
+<a id="a7437c56538a0e9d11e5afd165112d494" name="a7437c56538a0e9d11e5afd165112d494"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7437c56538a0e9d11e5afd165112d494">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1DestructionStepReceipt.html">DestructionStepReceipt</a> &gt; eve::physics::GeometryCollectionInstance::step </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#aae90b9d63f8076e9ec80145c36fcb8d8">SimulationStep</a>&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance connection-graph breaks under the configured budget. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">step</td><td>Injected simulation tick/delta; wall clock is never read. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Receipt with broken/deferred edge counts, or a structured failure that leaves topology unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a> 第 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00333">333</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadTraffic_8cpp_source.html#l00014">edge</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00060">eve::physics::DestructionStepReceipt::edgesBroken</a>, <a class="el" href="GeometryCollectionInstance_8h_source.html#l00061">eve::physics::DestructionStepReceipt::edgesDeferred</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>.</p>
+
+</div>
+</div>
+<a id="a7bfd09cedf87b0b976348de39038f7ad" name="a7bfd09cedf87b0b976348de39038f7ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bfd09cedf87b0b976348de39038f7ad">&#9670;&#160;</a></span>stepBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1DestructionStepBudget.html">DestructionStepBudget</a> eve::physics::GeometryCollectionInstance::stepBudget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the active per-step budgets. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a> 第 <a class="el" href="GeometryCollectionInstance_8h_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/destruction/<a class="el" href="GeometryCollectionInstance_8h_source.html">GeometryCollectionInstance.h</a></li>
+<li>src/modules/physics/destruction/<a class="el" href="GeometryCollectionInstance_8cpp_source.html">GeometryCollectionInstance.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

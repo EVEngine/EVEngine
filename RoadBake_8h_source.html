@@ -1,0 +1,307 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/road/RoadBake.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_eae28a20e025a9c7686e9c0b6d57b77b.html">road</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RoadBake.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RoadBake_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="MeshBuild_8h.html">procgen/MeshBuild.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="PointSet_8h.html">procgen/PointSet.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="RoadNetwork_8h.html">procgen/road/RoadNetwork.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="RoadTypes_8h.html">procgen/road/RoadTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Heightmap;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen_1_1road.html">eve::procgen::road</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html">   18</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html">RoadTerrainConformOptions</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a4ee4fa4e2c3d8c1f7c9f6bc1d7b39f86">   19</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a4ee4fa4e2c3d8c1f7c9f6bc1d7b39f86">originX</a>           = 0.f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a1f55ec91a1d3b041f6cb82e39c605b4c">   20</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a1f55ec91a1d3b041f6cb82e39c605b4c">originZ</a>           = 0.f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a574c83850382f85d12104346f1c93961">   21</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a574c83850382f85d12104346f1c93961">cellSize</a>          = 1.f;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a89a4964c24a2ad82a1b8d6ac929d4a28">   22</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a89a4964c24a2ad82a1b8d6ac929d4a28">heightScale</a>       = 1.f;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#ac3bf4d22b3f959643b31f5e94bdacfce">   23</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#ac3bf4d22b3f959643b31f5e94bdacfce">blendDistance</a>     = 2.f;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a9eb37b809f9854e129b82082b4727645">   24</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a9eb37b809f9854e129b82082b4727645">maxVerticalDelta</a>  = 2.f;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a31900659bcce7bad77dcf21998e6b2a8">   25</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a31900659bcce7bad77dcf21998e6b2a8">maximumWork</a> = 16u * 1024u * 1024u;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html">RoadTerrainConformReceipt</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#a68a92aeeb76a9bd2dce19fd6706fa451">   33</a></span>    <span class="keywordtype">int</span>                        <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#a68a92aeeb76a9bd2dce19fd6706fa451">width</a>  = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#a2b0ec68c761d9b6f2e6311b431c82c1e">   34</a></span>    <span class="keywordtype">int</span>                        <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#a2b0ec68c761d9b6f2e6311b431c82c1e">height</a> = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#ac8c82c7601904a89bb298287260b7eba">   35</a></span>    <span class="keywordtype">int</span>                        <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#ac8c82c7601904a89bb298287260b7eba">skippedBridgeSamples</a> = 0;  </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#a5e4ccee5098b8516aa7a4def887d4fe5">   36</a></span>    <span class="keywordtype">int</span>                        <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#a5e4ccee5098b8516aa7a4def887d4fe5">skippedTunnelSamples</a> = 0;  </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#afb5e9a714fc339dda27897c3459a380a">   37</a></span>    std::vector&lt;std::size_t&gt;   <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#afb5e9a714fc339dda27897c3459a380a">sampleIndices</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#ae16e9205547ec510d04ef1c014d599f3">   38</a></span>    std::vector&lt;float&gt;         <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#ae16e9205547ec510d04ef1c014d599f3">before</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#ab070edb50e50781f2fff6d8b998ea0d4">   39</a></span>    std::vector&lt;float&gt;         <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#ab070edb50e50781f2fff6d8b998ea0d4">after</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">   43</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">RoadBakeOptions</a> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a9ecc0ad29687e262d3d55087e48fb74e">   44</a></span>    <span class="keywordtype">int</span>   <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a9ecc0ad29687e262d3d55087e48fb74e">pathSegmentsPerEdge</a> = 48;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a25fd3b1cfb97e08fbecc2ccee36b1d2c">   45</a></span>    <span class="keywordtype">int</span>   <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a25fd3b1cfb97e08fbecc2ccee36b1d2c">turnSamples</a>         = 12;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a9d78bf2f234aa90054cc31cf0a9cdf67">   46</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a9d78bf2f234aa90054cc31cf0a9cdf67">includePiers</a>        = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#afc28ac77fb1458886dcd624c0ee110e2">   47</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#afc28ac77fb1458886dcd624c0ee110e2">includeMarkings</a>     = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a98152161717adaa50ce6d513cec025ee">   48</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a98152161717adaa50ce6d513cec025ee">includeNavigation</a>   = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a477e79f66669f851e859caf913d13635">   49</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a477e79f66669f851e859caf913d13635">includeJunctions</a>    = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a9f09329f57222948128081a941f955e3">   50</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a9f09329f57222948128081a941f955e3">includePlacements</a>   = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#ac55f12db7807ec6d4f4080dfee6418f5">   51</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#ac55f12db7807ec6d4f4080dfee6418f5">navRibbonHalfWidth</a>  = 0.22f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a48bbc681fa0c2706d63fd6077035a2a7">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a48bbc681fa0c2706d63fd6077035a2a7">arrowSpacing</a>        = 5.f;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a7584aed0a372eb8070b72efa31f36d10">   53</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a7584aed0a372eb8070b72efa31f36d10">junctionChordError</a>  = 0.10f;  </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a8a1f02b39932e247b5feec88fb569bff">   54</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a8a1f02b39932e247b5feec88fb569bff">sideObjectSpacing</a>   = 8.f;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#aa1a83d868e02fa200c36ecf0a9ae1abf">   55</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#aa1a83d868e02fa200c36ecf0a9ae1abf">sideObjectOffset</a>    = 0.5f;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#ad15b88d76cafbe254197dce55c784565">   56</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#ad15b88d76cafbe254197dce55c784565">sideObjectClearance</a> = 1.5f;  </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a07ccfa31a2aaf2f178a59fa0615aad56">   57</a></span>    <span class="keywordtype">int</span>   <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a07ccfa31a2aaf2f178a59fa0615aad56">maximumPlacements</a>   = 65536;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#add95bd581d143309def9edf6522b4418">   58</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#add95bd581d143309def9edf6522b4418">maximumMeshElements</a> = 8u * 1024u * 1024u;  </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html">   62</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html">RoadBakeResult</a> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#a1217e7f9d648599bb65476f426e20907">   63</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a>   <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#a1217e7f9d648599bb65476f426e20907">mesh</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#a4d4c235edd2d8199bc7a33ef5649319e">   64</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html">RoadOverlay</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#a4d4c235edd2d8199bc7a33ef5649319e">overlay</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#a8f7294ef19535a3f58873d069bb3b710">   65</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>    <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#a8f7294ef19535a3f58873d069bb3b710">placements</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RoadBakeResult&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road.html#a6ab9c6afb968cb8c472d65718ab4c067">bakeRoadNetwork</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html">RoadNetwork</a>&amp;     network,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                                                          <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">RoadBakeOptions</a>&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {});</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road.html#a3484a50fdec7fe20917ea9cb0704d9de">conformHeightmapToRoad</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a>&amp; roadMesh,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                                                                      <span class="keyword">const</span> RoadTerrainConformOptions&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {});</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RoadTerrainConformReceipt&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road.html#ae145e69eecc78fa903ebf53cc33d9133">conformHeightmapToRoadWithReceipt</a>(</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    Heightmap&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>, <span class="keyword">const</span> MeshBuild&amp; roadMesh, <span class="keyword">const</span> RoadTerrainConformOptions&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {});</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> Result&lt;int&gt; <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road.html#aaf8c5e0d082807ee13d74cafe57f5d0d">restoreHeightmapFromRoad</a>(Heightmap&amp;                       <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>,</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                                                                        <span class="keyword">const</span> RoadTerrainConformReceipt&amp; receipt);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}  <span class="comment">// namespace eve::procgen::road</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ab2a3d0d88ca0598e78bd62e7d03ca6a1"><div class="ttname"><a href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a></div><div class="ttdeci">std::string terrain</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aMeshBuild_8h_html"><div class="ttname"><a href="MeshBuild_8h.html">MeshBuild.h</a></div></div>
+<div class="ttc" id="aPointSet_8h_html"><div class="ttname"><a href="PointSet_8h.html">PointSet.h</a></div></div>
+<div class="ttc" id="aRoadNetwork_8h_html"><div class="ttname"><a href="RoadNetwork_8h.html">RoadNetwork.h</a></div></div>
+<div class="ttc" id="aRoadTypes_8h_html"><div class="ttname"><a href="RoadTypes_8h.html">RoadTypes.h</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00017">SquirrelBinding.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00021">Heightmap.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html">eve::procgen::MeshBuild</a></div><div class="ttdoc">CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8h_source.html#l00019">MeshBuild.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></div><div class="ttdoc">Script-friendly collection of attributed 3D samples.</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8h_source.html#l00059">PointSet.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html">eve::procgen::road::RoadNetwork</a></div><div class="ttdoc">Owning directed road graph with lane connectivity.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8h_source.html#l00019">RoadNetwork.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html">eve::procgen::road</a></div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8cpp_source.html#l00017">RoadBake.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_a3484a50fdec7fe20917ea9cb0704d9de"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#a3484a50fdec7fe20917ea9cb0704d9de">eve::procgen::road::conformHeightmapToRoad</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; int &gt; conformHeightmapToRoad(Heightmap &amp;terrain, const MeshBuild &amp;roadMesh, const RoadTerrainConformOptions &amp;options={})</div><div class="ttdoc">Atomically conform a heightmap to nearby baked road surface triangles.</div><div class="ttdef"><b>Definition</b> <a href="RoadTerrain_8cpp_source.html#l00166">RoadTerrain.cpp:166</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_a6ab9c6afb968cb8c472d65718ab4c067"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#a6ab9c6afb968cb8c472d65718ab4c067">eve::procgen::road::bakeRoadNetwork</a></div><div class="ttdeci">Result&lt; RoadBakeResult &gt; bakeRoadNetwork(const RoadNetwork &amp;network, const RoadBakeOptions &amp;options)</div><div class="ttdoc">Bake every edge, junction platform, pier, marking and navigation overlay.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8cpp_source.html#l01899">RoadBake.cpp:1899</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_aaf8c5e0d082807ee13d74cafe57f5d0d"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#aaf8c5e0d082807ee13d74cafe57f5d0d">eve::procgen::road::restoreHeightmapFromRoad</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; int &gt; restoreHeightmapFromRoad(Heightmap &amp;terrain, const RoadTerrainConformReceipt &amp;receipt)</div><div class="ttdoc">Atomically restore a conformance receipt if none of its samples became stale.</div><div class="ttdef"><b>Definition</b> <a href="RoadTerrain_8cpp_source.html#l00173">RoadTerrain.cpp:173</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_ae145e69eecc78fa903ebf53cc33d9133"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#ae145e69eecc78fa903ebf53cc33d9133">eve::procgen::road::conformHeightmapToRoadWithReceipt</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; RoadTerrainConformReceipt &gt; conformHeightmapToRoadWithReceipt(Heightmap &amp;terrain, const MeshBuild &amp;roadMesh, const RoadTerrainConformOptions &amp;options={})</div><div class="ttdoc">Atomically conform terrain and return the exact reversible sample delta.</div><div class="ttdef"><b>Definition</b> <a href="RoadTerrain_8cpp_source.html#l00024">RoadTerrain.cpp:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">eve::procgen::road::RoadBakeOptions</a></div><div class="ttdoc">Options for baking a road network into mesh + navigation overlays.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00043">RoadBake.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a07ccfa31a2aaf2f178a59fa0615aad56"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a07ccfa31a2aaf2f178a59fa0615aad56">eve::procgen::road::RoadBakeOptions::maximumPlacements</a></div><div class="ttdeci">int maximumPlacements</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00057">RoadBake.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a25fd3b1cfb97e08fbecc2ccee36b1d2c"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a25fd3b1cfb97e08fbecc2ccee36b1d2c">eve::procgen::road::RoadBakeOptions::turnSamples</a></div><div class="ttdeci">int turnSamples</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00045">RoadBake.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a477e79f66669f851e859caf913d13635"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a477e79f66669f851e859caf913d13635">eve::procgen::road::RoadBakeOptions::includeJunctions</a></div><div class="ttdeci">bool includeJunctions</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00049">RoadBake.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a48bbc681fa0c2706d63fd6077035a2a7"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a48bbc681fa0c2706d63fd6077035a2a7">eve::procgen::road::RoadBakeOptions::arrowSpacing</a></div><div class="ttdeci">float arrowSpacing</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00052">RoadBake.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a7584aed0a372eb8070b72efa31f36d10"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a7584aed0a372eb8070b72efa31f36d10">eve::procgen::road::RoadBakeOptions::junctionChordError</a></div><div class="ttdeci">float junctionChordError</div><div class="ttdoc">Maximum junction-return tessellation error in world metres.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00053">RoadBake.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a8a1f02b39932e247b5feec88fb569bff"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a8a1f02b39932e247b5feec88fb569bff">eve::procgen::road::RoadBakeOptions::sideObjectSpacing</a></div><div class="ttdeci">float sideObjectSpacing</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00054">RoadBake.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a98152161717adaa50ce6d513cec025ee"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a98152161717adaa50ce6d513cec025ee">eve::procgen::road::RoadBakeOptions::includeNavigation</a></div><div class="ttdeci">bool includeNavigation</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00048">RoadBake.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a9d78bf2f234aa90054cc31cf0a9cdf67"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a9d78bf2f234aa90054cc31cf0a9cdf67">eve::procgen::road::RoadBakeOptions::includePiers</a></div><div class="ttdeci">bool includePiers</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00046">RoadBake.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a9ecc0ad29687e262d3d55087e48fb74e"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a9ecc0ad29687e262d3d55087e48fb74e">eve::procgen::road::RoadBakeOptions::pathSegmentsPerEdge</a></div><div class="ttdeci">int pathSegmentsPerEdge</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00044">RoadBake.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_a9f09329f57222948128081a941f955e3"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#a9f09329f57222948128081a941f955e3">eve::procgen::road::RoadBakeOptions::includePlacements</a></div><div class="ttdeci">bool includePlacements</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00050">RoadBake.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_aa1a83d868e02fa200c36ecf0a9ae1abf"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#aa1a83d868e02fa200c36ecf0a9ae1abf">eve::procgen::road::RoadBakeOptions::sideObjectOffset</a></div><div class="ttdeci">float sideObjectOffset</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00055">RoadBake.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_ac55f12db7807ec6d4f4080dfee6418f5"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#ac55f12db7807ec6d4f4080dfee6418f5">eve::procgen::road::RoadBakeOptions::navRibbonHalfWidth</a></div><div class="ttdeci">float navRibbonHalfWidth</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00051">RoadBake.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_ad15b88d76cafbe254197dce55c784565"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#ad15b88d76cafbe254197dce55c784565">eve::procgen::road::RoadBakeOptions::sideObjectClearance</a></div><div class="ttdeci">float sideObjectClearance</div><div class="ttdoc">Minimum 3D clearance from other roads and accepted side anchors.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00056">RoadBake.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_add95bd581d143309def9edf6522b4418"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#add95bd581d143309def9edf6522b4418">eve::procgen::road::RoadBakeOptions::maximumMeshElements</a></div><div class="ttdeci">std::size_t maximumMeshElements</div><div class="ttdoc">Combined vertex and index output budget.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00058">RoadBake.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html_afc28ac77fb1458886dcd624c0ee110e2"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#afc28ac77fb1458886dcd624c0ee110e2">eve::procgen::road::RoadBakeOptions::includeMarkings</a></div><div class="ttdeci">bool includeMarkings</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00047">RoadBake.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeResult_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html">eve::procgen::road::RoadBakeResult</a></div><div class="ttdoc">Owning bake result: mesh, overlays and generic decoration placement points.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00062">RoadBake.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeResult_html_a1217e7f9d648599bb65476f426e20907"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#a1217e7f9d648599bb65476f426e20907">eve::procgen::road::RoadBakeResult::mesh</a></div><div class="ttdeci">MeshBuild mesh</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00063">RoadBake.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeResult_html_a4d4c235edd2d8199bc7a33ef5649319e"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#a4d4c235edd2d8199bc7a33ef5649319e">eve::procgen::road::RoadBakeResult::overlay</a></div><div class="ttdeci">RoadOverlay overlay</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00064">RoadBake.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeResult_html_a8f7294ef19535a3f58873d069bb3b710"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#a8f7294ef19535a3f58873d069bb3b710">eve::procgen::road::RoadBakeResult::placements</a></div><div class="ttdeci">PointSet placements</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00065">RoadBake.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadOverlay_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html">eve::procgen::road::RoadOverlay</a></div><div class="ttdoc">Owning bake-time overlay snapshot (no pointers into the network).</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00116">RoadTypes.h:116</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html">eve::procgen::road::RoadTerrainConformOptions</a></div><div class="ttdoc">World/grid mapping and bounded blending settings for road-to-terrain conformance.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00018">RoadBake.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions_html_a1f55ec91a1d3b041f6cb82e39c605b4c"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a1f55ec91a1d3b041f6cb82e39c605b4c">eve::procgen::road::RoadTerrainConformOptions::originZ</a></div><div class="ttdeci">float originZ</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00020">RoadBake.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions_html_a31900659bcce7bad77dcf21998e6b2a8"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a31900659bcce7bad77dcf21998e6b2a8">eve::procgen::road::RoadTerrainConformOptions::maximumWork</a></div><div class="ttdeci">std::size_t maximumWork</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00025">RoadBake.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions_html_a4ee4fa4e2c3d8c1f7c9f6bc1d7b39f86"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a4ee4fa4e2c3d8c1f7c9f6bc1d7b39f86">eve::procgen::road::RoadTerrainConformOptions::originX</a></div><div class="ttdeci">float originX</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00019">RoadBake.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions_html_a574c83850382f85d12104346f1c93961"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a574c83850382f85d12104346f1c93961">eve::procgen::road::RoadTerrainConformOptions::cellSize</a></div><div class="ttdeci">float cellSize</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00021">RoadBake.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions_html_a89a4964c24a2ad82a1b8d6ac929d4a28"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a89a4964c24a2ad82a1b8d6ac929d4a28">eve::procgen::road::RoadTerrainConformOptions::heightScale</a></div><div class="ttdeci">float heightScale</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00022">RoadBake.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions_html_a9eb37b809f9854e129b82082b4727645"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#a9eb37b809f9854e129b82082b4727645">eve::procgen::road::RoadTerrainConformOptions::maxVerticalDelta</a></div><div class="ttdeci">float maxVerticalDelta</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00024">RoadBake.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions_html_ac3bf4d22b3f959643b31f5e94bdacfce"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformOptions.html#ac3bf4d22b3f959643b31f5e94bdacfce">eve::procgen::road::RoadTerrainConformOptions::blendDistance</a></div><div class="ttdeci">float blendDistance</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00023">RoadBake.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html">eve::procgen::road::RoadTerrainConformReceipt</a></div><div class="ttdoc">Exact changed samples needed to safely restore one road terrain conformance. @cost Storage,...</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00032">RoadBake.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt_html_a2b0ec68c761d9b6f2e6311b431c82c1e"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#a2b0ec68c761d9b6f2e6311b431c82c1e">eve::procgen::road::RoadTerrainConformReceipt::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00034">RoadBake.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt_html_a5e4ccee5098b8516aa7a4def887d4fe5"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#a5e4ccee5098b8516aa7a4def887d4fe5">eve::procgen::road::RoadTerrainConformReceipt::skippedTunnelSamples</a></div><div class="ttdeci">int skippedTunnelSamples</div><div class="ttdoc">Cells whose terrain roof was kept above tunnel surfaces.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00036">RoadBake.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt_html_a68a92aeeb76a9bd2dce19fd6706fa451"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#a68a92aeeb76a9bd2dce19fd6706fa451">eve::procgen::road::RoadTerrainConformReceipt::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00033">RoadBake.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt_html_ab070edb50e50781f2fff6d8b998ea0d4"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#ab070edb50e50781f2fff6d8b998ea0d4">eve::procgen::road::RoadTerrainConformReceipt::after</a></div><div class="ttdeci">std::vector&lt; float &gt; after</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00039">RoadBake.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt_html_ac8c82c7601904a89bb298287260b7eba"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#ac8c82c7601904a89bb298287260b7eba">eve::procgen::road::RoadTerrainConformReceipt::skippedBridgeSamples</a></div><div class="ttdeci">int skippedBridgeSamples</div><div class="ttdoc">Cells kept below elevated road surfaces.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00035">RoadBake.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt_html_ae16e9205547ec510d04ef1c014d599f3"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#ae16e9205547ec510d04ef1c014d599f3">eve::procgen::road::RoadTerrainConformReceipt::before</a></div><div class="ttdeci">std::vector&lt; float &gt; before</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00038">RoadBake.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt_html_afb5e9a714fc339dda27897c3459a380a"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadTerrainConformReceipt.html#afb5e9a714fc339dda27897c3459a380a">eve::procgen::road::RoadTerrainConformReceipt::sampleIndices</a></div><div class="ttdeci">std::vector&lt; std::size_t &gt; sampleIndices</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00037">RoadBake.h:37</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

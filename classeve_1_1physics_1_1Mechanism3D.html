@@ -1,0 +1,961 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::Mechanism3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html">Mechanism3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1physics_1_1Mechanism3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::Mechanism3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Composed mechanical assembly owned by a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>.  
+ <a href="classeve_1_1physics_1_1Mechanism3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:afc4189ba2912d29383277180f4ede713" id="r_afc4189ba2912d29383277180f4ede713"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#afc4189ba2912d29383277180f4ede713">Kind</a> { <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#afc4189ba2912d29383277180f4ede713af82c4714082b68d116ae0426bf3e810d">CrankSlider</a>
+, <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#afc4189ba2912d29383277180f4ede713a36a4e7379721183a40e80d8391bb3fd8">Shaft</a>
+, <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#afc4189ba2912d29383277180f4ede713aeffe23f4e93d4b177831313cda81ecef">Ratchet</a>
+ }</td></tr>
+<tr class="memdesc:afc4189ba2912d29383277180f4ede713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembly kind.  <a href="classeve_1_1physics_1_1Mechanism3D.html#afc4189ba2912d29383277180f4ede713">更多...</a><br /></td></tr>
+<tr class="separator:afc4189ba2912d29383277180f4ede713"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0e43aae975723213b441491ec9bf8416" id="r_a0e43aae975723213b441491ec9bf8416"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a0e43aae975723213b441491ec9bf8416">Mechanism3D</a> (const <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html">Mechanism3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a0e43aae975723213b441491ec9bf8416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae99e58a38329f56e2dbcc5ac1a98077e" id="r_ae99e58a38329f56e2dbcc5ac1a98077e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html">Mechanism3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#ae99e58a38329f56e2dbcc5ac1a98077e">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html">Mechanism3D</a> &amp;)=delete</td></tr>
+<tr class="separator:ae99e58a38329f56e2dbcc5ac1a98077e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87b105c0bcc931410b7364982f7768f3" id="r_a87b105c0bcc931410b7364982f7768f3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a87b105c0bcc931410b7364982f7768f3">getId</a> () const</td></tr>
+<tr class="memdesc:a87b105c0bcc931410b7364982f7768f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable world-local identifier.  <br /></td></tr>
+<tr class="separator:a87b105c0bcc931410b7364982f7768f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98c0726f14d768ed843f09fce44a47e3" id="r_a98c0726f14d768ed843f09fce44a47e3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a98c0726f14d768ed843f09fce44a47e3">getKind</a> () const</td></tr>
+<tr class="memdesc:a98c0726f14d768ed843f09fce44a47e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Kind name: "crankSlider", "shaft", or "ratchet".  <br /></td></tr>
+<tr class="separator:a98c0726f14d768ed843f09fce44a47e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad16250545e60f9b78fb1ea5d0d6a623e" id="r_ad16250545e60f9b78fb1ea5d0d6a623e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#ad16250545e60f9b78fb1ea5d0d6a623e">getWorld</a> () const</td></tr>
+<tr class="memdesc:ad16250545e60f9b78fb1ea5d0d6a623e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning world, or null after invalidation.  <br /></td></tr>
+<tr class="separator:ad16250545e60f9b78fb1ea5d0d6a623e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92cfbd775e417b8863ea902c60214016" id="r_a92cfbd775e417b8863ea902c60214016"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a92cfbd775e417b8863ea902c60214016">isValid</a> () const</td></tr>
+<tr class="memdesc:a92cfbd775e417b8863ea902c60214016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the assembly and its primary joints are still live.  <br /></td></tr>
+<tr class="separator:a92cfbd775e417b8863ea902c60214016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8d9c911e512596426611861ff1aed0a" id="r_ac8d9c911e512596426611861ff1aed0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#ac8d9c911e512596426611861ff1aed0a">getDriveJoint</a> () const</td></tr>
+<tr class="memdesc:ac8d9c911e512596426611861ff1aed0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary revolute (crank / shaft / ratchet wheel).  <br /></td></tr>
+<tr class="separator:ac8d9c911e512596426611861ff1aed0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a87c76cdaa3bd2242ae4f59fb6b19c0" id="r_a2a87c76cdaa3bd2242ae4f59fb6b19c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a2a87c76cdaa3bd2242ae4f59fb6b19c0">getCrankPinJoint</a> () const</td></tr>
+<tr class="memdesc:a2a87c76cdaa3bd2242ae4f59fb6b19c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Crank-to-rod revolute, or null for shaft/ratchet.  <br /></td></tr>
+<tr class="separator:a2a87c76cdaa3bd2242ae4f59fb6b19c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85cdfa15363b2574dc1d83e35e906847" id="r_a85cdfa15363b2574dc1d83e35e906847"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a85cdfa15363b2574dc1d83e35e906847">getSliderPinJoint</a> () const</td></tr>
+<tr class="memdesc:a85cdfa15363b2574dc1d83e35e906847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rod-to-slider revolute, or null for shaft/ratchet.  <br /></td></tr>
+<tr class="separator:a85cdfa15363b2574dc1d83e35e906847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4b7ceba019689f725cff7f2fab8a689" id="r_ad4b7ceba019689f725cff7f2fab8a689"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#ad4b7ceba019689f725cff7f2fab8a689">getSliderJoint</a> () const</td></tr>
+<tr class="memdesc:ad4b7ceba019689f725cff7f2fab8a689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frame-to-slider prismatic, or null for shaft/ratchet.  <br /></td></tr>
+<tr class="separator:ad4b7ceba019689f725cff7f2fab8a689"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e6679c64b8f93ee09c2dadb2977584e" id="r_a4e6679c64b8f93ee09c2dadb2977584e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a4e6679c64b8f93ee09c2dadb2977584e">getDriveAngle</a> () const</td></tr>
+<tr class="memdesc:a4e6679c64b8f93ee09c2dadb2977584e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current drive revolute angle in radians (shaft/crank/ratchet).  <br /></td></tr>
+<tr class="separator:a4e6679c64b8f93ee09c2dadb2977584e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31484446bd55e4b0eda4a1ec10063790" id="r_a31484446bd55e4b0eda4a1ec10063790"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a31484446bd55e4b0eda4a1ec10063790">getSliderTranslation</a> () const</td></tr>
+<tr class="memdesc:a31484446bd55e4b0eda4a1ec10063790"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current slider translation in metres (crank-slider only).  <br /></td></tr>
+<tr class="separator:a31484446bd55e4b0eda4a1ec10063790"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade8f3571161fbf2d416a247aa6eb28be" id="r_ade8f3571161fbf2d416a247aa6eb28be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#ade8f3571161fbf2d416a247aa6eb28be">getSpinSpeed</a> () const</td></tr>
+<tr class="memdesc:ade8f3571161fbf2d416a247aa6eb28be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative spin speed along the drive axis in radians/second.  <br /></td></tr>
+<tr class="separator:ade8f3571161fbf2d416a247aa6eb28be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cd01db29a0ed37d688d27e384893979" id="r_a5cd01db29a0ed37d688d27e384893979"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a5cd01db29a0ed37d688d27e384893979">setDrive</a> (float speed, float maxTorque)</td></tr>
+<tr class="memdesc:a5cd01db29a0ed37d688d27e384893979"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables a continuous drive motor on the primary revolute.  <br /></td></tr>
+<tr class="separator:a5cd01db29a0ed37d688d27e384893979"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac80dd4914385e064d31e6259289705f7" id="r_ac80dd4914385e064d31e6259289705f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#ac80dd4914385e064d31e6259289705f7">clearDrive</a> ()</td></tr>
+<tr class="memdesc:ac80dd4914385e064d31e6259289705f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables the continuous drive motor.  <br /></td></tr>
+<tr class="separator:ac80dd4914385e064d31e6259289705f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdcc1407520f72e6b17e1d8e79c6ee88" id="r_abdcc1407520f72e6b17e1d8e79c6ee88"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#abdcc1407520f72e6b17e1d8e79c6ee88">isDriveEnabled</a> () const</td></tr>
+<tr class="memdesc:abdcc1407520f72e6b17e1d8e79c6ee88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a continuous drive motor is configured.  <br /></td></tr>
+<tr class="separator:abdcc1407520f72e6b17e1d8e79c6ee88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a480fca018c8b3ad45697b86e6d236aca" id="r_a480fca018c8b3ad45697b86e6d236aca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a480fca018c8b3ad45697b86e6d236aca">setRatchetDirection</a> (int <a class="el" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>)</td></tr>
+<tr class="memdesc:a480fca018c8b3ad45697b86e6d236aca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets ratchet freewheel direction.  <br /></td></tr>
+<tr class="separator:a480fca018c8b3ad45697b86e6d236aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a970cbe797fd01d7117b08de675c9803b" id="r_a970cbe797fd01d7117b08de675c9803b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a970cbe797fd01d7117b08de675c9803b">getRatchetDirection</a> () const</td></tr>
+<tr class="memdesc:a970cbe797fd01d7117b08de675c9803b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current ratchet freewheel direction (+1 or -1).  <br /></td></tr>
+<tr class="separator:a970cbe797fd01d7117b08de675c9803b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a365e069b72f5a5855f323bd6c2d28615" id="r_a365e069b72f5a5855f323bd6c2d28615"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a365e069b72f5a5855f323bd6c2d28615">setRatchetEngagementTorque</a> (float torque)</td></tr>
+<tr class="memdesc:a365e069b72f5a5855f323bd6c2d28615"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets reverse-lock torque for ratchet engagement.  <br /></td></tr>
+<tr class="separator:a365e069b72f5a5855f323bd6c2d28615"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacebd3c3fcf2c517c95534cd96a51aac" id="r_aacebd3c3fcf2c517c95534cd96a51aac"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#aacebd3c3fcf2c517c95534cd96a51aac">getRatchetEngagementTorque</a> () const</td></tr>
+<tr class="memdesc:aacebd3c3fcf2c517c95534cd96a51aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current ratchet engagement torque in newton-metres.  <br /></td></tr>
+<tr class="separator:aacebd3c3fcf2c517c95534cd96a51aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a468fbe4181bf3150cb2cbd57aaa08eb6" id="r_a468fbe4181bf3150cb2cbd57aaa08eb6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a468fbe4181bf3150cb2cbd57aaa08eb6">destroy</a> ()</td></tr>
+<tr class="memdesc:a468fbe4181bf3150cb2cbd57aaa08eb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys owned joints and invalidates this wrapper.  <br /></td></tr>
+<tr class="separator:a468fbe4181bf3150cb2cbd57aaa08eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a799dbf91593593f76f6d307f9aaf77da" id="r_a799dbf91593593f76f6d307f9aaf77da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a799dbf91593593f76f6d307f9aaf77da">invalidate</a> ()</td></tr>
+<tr class="memdesc:a799dbf91593593f76f6d307f9aaf77da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal invalidation used by world teardown.  <br /></td></tr>
+<tr class="separator:a799dbf91593593f76f6d307f9aaf77da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6452f1be970df2d4ae04181e6a44828a" id="r_a6452f1be970df2d4ae04181e6a44828a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a6452f1be970df2d4ae04181e6a44828a">syncBeforeStep</a> ()</td></tr>
+<tr class="memdesc:a6452f1be970df2d4ae04181e6a44828a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal: applies ratchet lock / drive before a solver step.  <br /></td></tr>
+<tr class="separator:a6452f1be970df2d4ae04181e6a44828a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbf4690f845228205659643d5b4c7f9c" id="r_afbf4690f845228205659643d5b4c7f9c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#afbf4690f845228205659643d5b4c7f9c">~Mechanism3D</a> ()</td></tr>
+<tr class="separator:afbf4690f845228205659643d5b4c7f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a8e149544dc4d48fbdfe8b8a6efc1fb9b" id="r_a8e149544dc4d48fbdfe8b8a6efc1fb9b"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a8e149544dc4d48fbdfe8b8a6efc1fb9b">World3D</a></td></tr>
+<tr class="separator:a8e149544dc4d48fbdfe8b8a6efc1fb9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Composed mechanical assembly owned by a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>. </p>
+<p>Builds crank-slider, shaft, and ratchet mechanisms from <a class="el" href="classeve_1_1physics_1_1Joint3D.html" title="Script-facing Box3D joint owned by a World3D.">Joint3D</a> primitives. Ratchet one-way locking is applied automatically during <a class="el" href="classeve_1_1physics_1_1World3D.html#a2e488b69d46948a9927827b905c893ab" title="Advances the 3D domain with an injected deterministic step.">World3D::step</a>.</p>
+<p>@ownership <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> owns the mechanism and the joints it creates. Borrowed <a class="el" href="classeve_1_1physics_1_1Body3D.html" title="3D rigid body (Box3D) in meter-space coordinates (+Y up by convention). Owned by a World3D; create pr...">Body3D</a> inputs are never retained as caller ownership. @lifetime Valid until <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a468fbe4181bf3150cb2cbd57aaa08eb6" title="Destroys owned joints and invalidates this wrapper.">Mechanism3D::destroy()</a>, <a class="el" href="classeve_1_1physics_1_1World3D.html#ac6811005567b31807ae2255a17bda304" title="Destroys the world and invalidates all wrappers.">World3D::destroy()</a>, or any dependent body/joint invalidation. @thread Call on the owning physics thread. @reentrancy Does not invoke callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="afc4189ba2912d29383277180f4ede713" name="afc4189ba2912d29383277180f4ede713"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc4189ba2912d29383277180f4ede713">&#9670;&#160;</a></span>Kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#afc4189ba2912d29383277180f4ede713">eve::physics::Mechanism3D::Kind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Assembly kind. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="afc4189ba2912d29383277180f4ede713af82c4714082b68d116ae0426bf3e810d" name="afc4189ba2912d29383277180f4ede713af82c4714082b68d116ae0426bf3e810d"></a>CrankSlider&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afc4189ba2912d29383277180f4ede713a36a4e7379721183a40e80d8391bb3fd8" name="afc4189ba2912d29383277180f4ede713a36a4e7379721183a40e80d8391bb3fd8"></a>Shaft&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afc4189ba2912d29383277180f4ede713aeffe23f4e93d4b177831313cda81ecef" name="afc4189ba2912d29383277180f4ede713aeffe23f4e93d4b177831313cda81ecef"></a>Ratchet&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0e43aae975723213b441491ec9bf8416" name="a0e43aae975723213b441491ec9bf8416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e43aae975723213b441491ec9bf8416">&#9670;&#160;</a></span>Mechanism3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Mechanism3D::Mechanism3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html">Mechanism3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afbf4690f845228205659643d5b4c7f9c" name="afbf4690f845228205659643d5b4c7f9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbf4690f845228205659643d5b4c7f9c">&#9670;&#160;</a></span>~Mechanism3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Mechanism3D::~Mechanism3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00091">destroy</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac80dd4914385e064d31e6259289705f7" name="ac80dd4914385e064d31e6259289705f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac80dd4914385e064d31e6259289705f7">&#9670;&#160;</a></span>clearDrive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Mechanism3D::clearDrive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disables the continuous drive motor. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a468fbe4181bf3150cb2cbd57aaa08eb6" name="a468fbe4181bf3150cb2cbd57aaa08eb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a468fbe4181bf3150cb2cbd57aaa08eb6">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Mechanism3D::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys owned joints and invalidates this wrapper. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2a87c76cdaa3bd2242ae4f59fb6b19c0" name="a2a87c76cdaa3bd2242ae4f59fb6b19c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a87c76cdaa3bd2242ae4f59fb6b19c0">&#9670;&#160;</a></span>getCrankPinJoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> * eve::physics::Mechanism3D::getCrankPinJoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Crank-to-rod revolute, or null for shaft/ratchet. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed joint owned by the parent <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>, or null when unused/invalid. @ownership <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> owns the joint; this mechanism only borrows it. @lifetime Valid until <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a468fbe4181bf3150cb2cbd57aaa08eb6" title="Destroys owned joints and invalidates this wrapper.">Mechanism3D::destroy()</a>, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a0f8497f666f0cde64af90dcbbf6eb8a8" title="Destroys the backend joint and invalidates this wrapper.">Joint3D::destroy()</a>, or <a class="el" href="classeve_1_1physics_1_1World3D.html#ac6811005567b31807ae2255a17bda304" title="Destroys the world and invalidates all wrappers.">World3D::destroy()</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4e6679c64b8f93ee09c2dadb2977584e" name="a4e6679c64b8f93ee09c2dadb2977584e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e6679c64b8f93ee09c2dadb2977584e">&#9670;&#160;</a></span>getDriveAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Mechanism3D::getDriveAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current drive revolute angle in radians (shaft/crank/ratchet). </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac8d9c911e512596426611861ff1aed0a" name="ac8d9c911e512596426611861ff1aed0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8d9c911e512596426611861ff1aed0a">&#9670;&#160;</a></span>getDriveJoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> * eve::physics::Mechanism3D::getDriveJoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Primary revolute (crank / shaft / ratchet wheel). </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed joint owned by the parent <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>, or null after invalidation. @ownership <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> owns the joint; this mechanism only borrows it. @lifetime Valid until <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a468fbe4181bf3150cb2cbd57aaa08eb6" title="Destroys owned joints and invalidates this wrapper.">Mechanism3D::destroy()</a>, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a0f8497f666f0cde64af90dcbbf6eb8a8" title="Destroys the backend joint and invalidates this wrapper.">Joint3D::destroy()</a>, or <a class="el" href="classeve_1_1physics_1_1World3D.html#ac6811005567b31807ae2255a17bda304" title="Destroys the world and invalidates all wrappers.">World3D::destroy()</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a87b105c0bcc931410b7364982f7768f3" name="a87b105c0bcc931410b7364982f7768f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87b105c0bcc931410b7364982f7768f3">&#9670;&#160;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Mechanism3D::getId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable world-local identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a98c0726f14d768ed843f09fce44a47e3" name="a98c0726f14d768ed843f09fce44a47e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98c0726f14d768ed843f09fce44a47e3">&#9670;&#160;</a></span>getKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::Mechanism3D::getKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Kind name: "crankSlider", "shaft", or "ratchet". </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a970cbe797fd01d7117b08de675c9803b" name="a970cbe797fd01d7117b08de675c9803b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a970cbe797fd01d7117b08de675c9803b">&#9670;&#160;</a></span>getRatchetDirection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Mechanism3D::getRatchetDirection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current ratchet freewheel direction (+1 or -1). </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aacebd3c3fcf2c517c95534cd96a51aac" name="aacebd3c3fcf2c517c95534cd96a51aac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacebd3c3fcf2c517c95534cd96a51aac">&#9670;&#160;</a></span>getRatchetEngagementTorque()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Mechanism3D::getRatchetEngagementTorque </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current ratchet engagement torque in newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4b7ceba019689f725cff7f2fab8a689" name="ad4b7ceba019689f725cff7f2fab8a689"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4b7ceba019689f725cff7f2fab8a689">&#9670;&#160;</a></span>getSliderJoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> * eve::physics::Mechanism3D::getSliderJoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Frame-to-slider prismatic, or null for shaft/ratchet. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed joint owned by the parent <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>, or null when unused/invalid. @ownership <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> owns the joint; this mechanism only borrows it. @lifetime Valid until <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a468fbe4181bf3150cb2cbd57aaa08eb6" title="Destroys owned joints and invalidates this wrapper.">Mechanism3D::destroy()</a>, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a0f8497f666f0cde64af90dcbbf6eb8a8" title="Destroys the backend joint and invalidates this wrapper.">Joint3D::destroy()</a>, or <a class="el" href="classeve_1_1physics_1_1World3D.html#ac6811005567b31807ae2255a17bda304" title="Destroys the world and invalidates all wrappers.">World3D::destroy()</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85cdfa15363b2574dc1d83e35e906847" name="a85cdfa15363b2574dc1d83e35e906847"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85cdfa15363b2574dc1d83e35e906847">&#9670;&#160;</a></span>getSliderPinJoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> * eve::physics::Mechanism3D::getSliderPinJoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Rod-to-slider revolute, or null for shaft/ratchet. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed joint owned by the parent <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>, or null when unused/invalid. @ownership <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> owns the joint; this mechanism only borrows it. @lifetime Valid until <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html#a468fbe4181bf3150cb2cbd57aaa08eb6" title="Destroys owned joints and invalidates this wrapper.">Mechanism3D::destroy()</a>, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a0f8497f666f0cde64af90dcbbf6eb8a8" title="Destroys the backend joint and invalidates this wrapper.">Joint3D::destroy()</a>, or <a class="el" href="classeve_1_1physics_1_1World3D.html#ac6811005567b31807ae2255a17bda304" title="Destroys the world and invalidates all wrappers.">World3D::destroy()</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a31484446bd55e4b0eda4a1ec10063790" name="a31484446bd55e4b0eda4a1ec10063790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31484446bd55e4b0eda4a1ec10063790">&#9670;&#160;</a></span>getSliderTranslation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Mechanism3D::getSliderTranslation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current slider translation in metres (crank-slider only). </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ade8f3571161fbf2d416a247aa6eb28be" name="ade8f3571161fbf2d416a247aa6eb28be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade8f3571161fbf2d416a247aa6eb28be">&#9670;&#160;</a></span>getSpinSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Mechanism3D::getSpinSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Relative spin speed along the drive axis in radians/second. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad16250545e60f9b78fb1ea5d0d6a623e" name="ad16250545e60f9b78fb1ea5d0d6a623e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad16250545e60f9b78fb1ea5d0d6a623e">&#9670;&#160;</a></span>getWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> * eve::physics::Mechanism3D::getWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Owning world, or null after invalidation. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a799dbf91593593f76f6d307f9aaf77da" name="a799dbf91593593f76f6d307f9aaf77da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a799dbf91593593f76f6d307f9aaf77da">&#9670;&#160;</a></span>invalidate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Mechanism3D::invalidate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal invalidation used by world teardown. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abdcc1407520f72e6b17e1d8e79c6ee88" name="abdcc1407520f72e6b17e1d8e79c6ee88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdcc1407520f72e6b17e1d8e79c6ee88">&#9670;&#160;</a></span>isDriveEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Mechanism3D::isDriveEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a continuous drive motor is configured. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92cfbd775e417b8863ea902c60214016" name="a92cfbd775e417b8863ea902c60214016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92cfbd775e417b8863ea902c60214016">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Mechanism3D::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether the assembly and its primary joints are still live. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae99e58a38329f56e2dbcc5ac1a98077e" name="ae99e58a38329f56e2dbcc5ac1a98077e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae99e58a38329f56e2dbcc5ac1a98077e">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Mechanism3D.html">Mechanism3D</a> &amp; eve::physics::Mechanism3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Mechanism3D.html">Mechanism3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5cd01db29a0ed37d688d27e384893979" name="a5cd01db29a0ed37d688d27e384893979"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cd01db29a0ed37d688d27e384893979">&#9670;&#160;</a></span>setDrive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Mechanism3D::setDrive </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxTorque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables a continuous drive motor on the primary revolute. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">speed</td><td>Target speed in radians/second (sign is absolute; ratchet remaps it onto the freewheel direction). </td></tr>
+    <tr><td class="paramname">maxTorque</td><td>Maximum motor torque in newton-metres. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a480fca018c8b3ad45697b86e6d236aca" name="a480fca018c8b3ad45697b86e6d236aca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a480fca018c8b3ad45697b86e6d236aca">&#9670;&#160;</a></span>setRatchetDirection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Mechanism3D::setRatchetDirection </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>direction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets ratchet freewheel direction. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">direction</td><td>+1 or -1 along the joint axis; other values throw. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadTraffic_8cpp_source.html#l00020">direction</a>.</p>
+
+</div>
+</div>
+<a id="a365e069b72f5a5855f323bd6c2d28615" name="a365e069b72f5a5855f323bd6c2d28615"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a365e069b72f5a5855f323bd6c2d28615">&#9670;&#160;</a></span>setRatchetEngagementTorque()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Mechanism3D::setRatchetEngagementTorque </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>torque</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets reverse-lock torque for ratchet engagement. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">torque</td><td>Maximum opposing torque in newton-metres. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6452f1be970df2d4ae04181e6a44828a" name="a6452f1be970df2d4ae04181e6a44828a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6452f1be970df2d4ae04181e6a44828a">&#9670;&#160;</a></span>syncBeforeStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Mechanism3D::syncBeforeStep </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal: applies ratchet lock / drive before a solver step. </p>
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a> 第 <a class="el" href="Mechanism3D_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a8e149544dc4d48fbdfe8b8a6efc1fb9b" name="a8e149544dc4d48fbdfe8b8a6efc1fb9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e149544dc4d48fbdfe8b8a6efc1fb9b">&#9670;&#160;</a></span>World3D</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a> 第 <a class="el" href="Mechanism3D_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="Mechanism3D_8h_source.html">Mechanism3D.h</a></li>
+<li>src/modules/physics/<a class="el" href="Mechanism3D_8cpp_source.html">Mechanism3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

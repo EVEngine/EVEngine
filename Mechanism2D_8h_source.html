@@ -1,0 +1,268 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/Mechanism2D.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Mechanism2D.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Mechanism2D_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#ae6e88b00248728aaa3008c5ea1707e32aac101b32dda4448cf13a93fe283dddd8">Body</a>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>Joint2D;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>World;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html">   25</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1physics_1_1Mechanism2D.html">Mechanism2D</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#ab7e9c0a018e995d5303ce4152fee98da">   28</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="classeve_1_1physics_1_1Mechanism2D.html#ab7e9c0a018e995d5303ce4152fee98da">Kind</a> { CrankSlider, Shaft, Ratchet };</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#ac71ce3e34b563bc48d704ee9e1a87d8a">   30</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#ac71ce3e34b563bc48d704ee9e1a87d8a">Mechanism2D</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Mechanism2D.html">Mechanism2D</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#a97dd56c8a88d0816459a71bae5e43480">   31</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1Mechanism2D.html">Mechanism2D</a> &amp;<a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#a97dd56c8a88d0816459a71bae5e43480">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Mechanism2D.html">Mechanism2D</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#a7c463f5634c26b5d29f136d37e95c9ee">   34</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#a7c463f5634c26b5d29f136d37e95c9ee">getId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    std::string getKind() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#afb45045f427a2ed3376d93f45687d00c">   43</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1World.html">World</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#afb45045f427a2ed3376d93f45687d00c">getWorld</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> world_; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span> isValid() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#a730fdade0e4f27189b05e1d92e6ee4ff">   53</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#a730fdade0e4f27189b05e1d92e6ee4ff">getDriveJoint</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> drive_; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#aa2735a60c7e8376a9a3279487b80976d">   60</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#aa2735a60c7e8376a9a3279487b80976d">getCrankPinJoint</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> crankPin_; }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#ac5230aa7b69413a68b314590c47f0b91">   67</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#ac5230aa7b69413a68b314590c47f0b91">getSliderPinJoint</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sliderPin_; }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#a0c339ebf4658ee7a172cc26f8988465e">   74</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#a0c339ebf4658ee7a172cc26f8988465e">getSliderJoint</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> slider_; }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">float</span> getDriveAngle() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">float</span> getSliderTranslation() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">float</span> getSpinSpeed() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">void</span> setDrive(<span class="keywordtype">float</span> speed, <span class="keywordtype">float</span> maxTorque);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">void</span> clearDrive();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#af5b7f0781c6b9ce4fb9459cdc0bce936">   92</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#af5b7f0781c6b9ce4fb9459cdc0bce936">isDriveEnabled</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> driveEnabled_; }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">void</span> setRatchetDirection(<span class="keywordtype">int</span> <a class="code hl_variable" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#a6df3f64fa8aed12e37fb0b2f57cd58e9">   97</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#a6df3f64fa8aed12e37fb0b2f57cd58e9">getRatchetDirection</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ratchetDirection_; }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span> setRatchetEngagementTorque(<span class="keywordtype">float</span> torque);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#a23b6d265e80b034a47486540f5da31bb">  101</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Mechanism2D.html#a23b6d265e80b034a47486540f5da31bb">getRatchetEngagementTorque</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> engagementTorque_; }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy</a>();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">void</span> invalidate();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordtype">void</span> syncBeforeStep();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Mechanism2D.html">~Mechanism2D</a>();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Mechanism2D.html#a7b4bcdf992c21ae83363f25df05b1d25">  113</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1World.html">World</a>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Mechanism2D.html">Mechanism2D</a>(<a class="code hl_class" href="classeve_1_1physics_1_1World.html">World</a> *<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="code hl_enumeration" href="classeve_1_1physics_1_1Mechanism2D.html#ab7e9c0a018e995d5303ce4152fee98da">Kind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, <span class="keywordtype">int</span> <span class="keywordtype">id</span>, <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *drive, <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *crankPin, <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *sliderPin,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *slider, <span class="keywordtype">int</span> ratchetDirection, <span class="keywordtype">float</span> engagementTorque);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordtype">void</span> requireKind(<a class="code hl_enumeration" href="classeve_1_1physics_1_1Mechanism2D.html#ab7e9c0a018e995d5303ce4152fee98da">Kind</a> expected, <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">float</span> axisSpinSpeed() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_class" href="classeve_1_1physics_1_1World.html">World</a> *world_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <a class="code hl_enumeration" href="classeve_1_1physics_1_1Mechanism2D.html#ab7e9c0a018e995d5303ce4152fee98da">Kind</a> kind_ = Kind::Shaft;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">int</span> id_ = 0;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *drive_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *crankPin_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *sliderPin_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Joint2D.html">Joint2D</a> *slider_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">bool</span> driveEnabled_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">float</span> driveSpeed_ = 0.f;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordtype">float</span> driveMaxTorque_ = 0.f;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">int</span> ratchetDirection_ = 1;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">float</span> engagementTorque_ = 0.f;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>};</div>
+</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a1d8330996490721964918f24590a398b"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a></div><div class="ttdeci">ActionParameterOperation operation</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00152">ActionNotifyRegistry.cpp:152</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_aceb701de009133aff176d2653f4d0da4"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy</a></div><div class="ttdeci">void(* destroy)(void *)</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00091">JobSystemThreadPool.cpp:91</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00116">PhysicsCapabilities.cpp:116</a></div></div>
+<div class="ttc" id="aRoadTraffic_8cpp_html_a4b9956599f8dd2747a3d305df5cfe8b6"><div class="ttname"><a href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a></div><div class="ttdeci">RoadLaneDirection direction</div><div class="ttdef"><b>Definition</b> <a href="RoadTraffic_8cpp_source.html#l00020">RoadTraffic.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Joint2D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Joint2D.html">eve::physics::Joint2D</a></div><div class="ttdoc">Script-facing Box2D joint owned by a World.</div><div class="ttdef"><b>Definition</b> <a href="Joint2D_8h_source.html#l00021">Joint2D.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html">eve::physics::Mechanism2D</a></div><div class="ttdoc">Composed 2D mechanical assembly owned by a World.</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00025">Mechanism2D.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_a0c339ebf4658ee7a172cc26f8988465e"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#a0c339ebf4658ee7a172cc26f8988465e">eve::physics::Mechanism2D::getSliderJoint</a></div><div class="ttdeci">Joint2D * getSliderJoint() const</div><div class="ttdoc">Frame-to-slider prismatic, or null for shaft/ratchet.</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00074">Mechanism2D.h:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_a23b6d265e80b034a47486540f5da31bb"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#a23b6d265e80b034a47486540f5da31bb">eve::physics::Mechanism2D::getRatchetEngagementTorque</a></div><div class="ttdeci">float getRatchetEngagementTorque() const</div><div class="ttdoc">Current ratchet engagement torque in newton-metres.</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00101">Mechanism2D.h:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_a6df3f64fa8aed12e37fb0b2f57cd58e9"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#a6df3f64fa8aed12e37fb0b2f57cd58e9">eve::physics::Mechanism2D::getRatchetDirection</a></div><div class="ttdeci">int getRatchetDirection() const</div><div class="ttdoc">Current ratchet freewheel direction (+1 or -1).</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00097">Mechanism2D.h:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_a730fdade0e4f27189b05e1d92e6ee4ff"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#a730fdade0e4f27189b05e1d92e6ee4ff">eve::physics::Mechanism2D::getDriveJoint</a></div><div class="ttdeci">Joint2D * getDriveJoint() const</div><div class="ttdoc">Primary revolute (crank / shaft / ratchet wheel).</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00053">Mechanism2D.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_a7c463f5634c26b5d29f136d37e95c9ee"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#a7c463f5634c26b5d29f136d37e95c9ee">eve::physics::Mechanism2D::getId</a></div><div class="ttdeci">int getId() const</div><div class="ttdoc">Stable world-local identifier.</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00034">Mechanism2D.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_a97dd56c8a88d0816459a71bae5e43480"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#a97dd56c8a88d0816459a71bae5e43480">eve::physics::Mechanism2D::operator=</a></div><div class="ttdeci">Mechanism2D &amp; operator=(const Mechanism2D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_aa2735a60c7e8376a9a3279487b80976d"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#aa2735a60c7e8376a9a3279487b80976d">eve::physics::Mechanism2D::getCrankPinJoint</a></div><div class="ttdeci">Joint2D * getCrankPinJoint() const</div><div class="ttdoc">Crank-to-rod revolute, or null for shaft/ratchet.</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00060">Mechanism2D.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_ab7e9c0a018e995d5303ce4152fee98da"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#ab7e9c0a018e995d5303ce4152fee98da">eve::physics::Mechanism2D::Kind</a></div><div class="ttdeci">Kind</div><div class="ttdoc">Assembly kind.</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00028">Mechanism2D.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_ac5230aa7b69413a68b314590c47f0b91"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#ac5230aa7b69413a68b314590c47f0b91">eve::physics::Mechanism2D::getSliderPinJoint</a></div><div class="ttdeci">Joint2D * getSliderPinJoint() const</div><div class="ttdoc">Rod-to-slider revolute, or null for shaft/ratchet.</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00067">Mechanism2D.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_ac71ce3e34b563bc48d704ee9e1a87d8a"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#ac71ce3e34b563bc48d704ee9e1a87d8a">eve::physics::Mechanism2D::Mechanism2D</a></div><div class="ttdeci">Mechanism2D(const Mechanism2D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_af5b7f0781c6b9ce4fb9459cdc0bce936"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#af5b7f0781c6b9ce4fb9459cdc0bce936">eve::physics::Mechanism2D::isDriveEnabled</a></div><div class="ttdeci">bool isDriveEnabled() const</div><div class="ttdoc">Whether a continuous drive motor is configured.</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00092">Mechanism2D.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Mechanism2D_html_afb45045f427a2ed3376d93f45687d00c"><div class="ttname"><a href="classeve_1_1physics_1_1Mechanism2D.html#afb45045f427a2ed3376d93f45687d00c">eve::physics::Mechanism2D::getWorld</a></div><div class="ttdeci">World * getWorld() const</div><div class="ttdoc">Owning world, or null after invalidation.</div><div class="ttdef"><b>Definition</b> <a href="Mechanism2D_8h_source.html#l00043">Mechanism2D.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World_html"><div class="ttname"><a href="classeve_1_1physics_1_1World.html">eve::physics::World</a></div><div class="ttdoc">Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...</div><div class="ttdef"><b>Definition</b> <a href="World_8h_source.html#l00041">World.h:41</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ae6e88b00248728aaa3008c5ea1707e32aac101b32dda4448cf13a93fe283dddd8"><div class="ttname"><a href="namespaceeve_1_1editor.html#ae6e88b00248728aaa3008c5ea1707e32aac101b32dda4448cf13a93fe283dddd8">eve::editor::TimelineHitPart::Body</a></div><div class="ttdeci">@ Body</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00036">Climbing.h:36</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

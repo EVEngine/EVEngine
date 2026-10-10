@@ -1,0 +1,196 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1combat.html">combat</a></li><li class="navelem"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">CombatCharacterRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::combat::CombatCharacterRuntime 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a7837f89cd35687ee15c5d67801055a0d">advance</a>(const SimulationStep &amp;step)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a3facaae406e26cffa945352bd29e43d5">applyDamageReaction</a>(SubjectRef subject, HitReaction reaction, Duration stunDuration, Impulse3 knockback)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#abe563741324c27e0a514ab78a946c7a4">applyImpulse</a>(SubjectRef subject, CombatVector3 impulse)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a151a8f6a822bcd69c6e1a3a00dfb3d0c">applyStun</a>(SubjectRef subject, Duration duration)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#aaf5a33bdacbe867c952d6aabb3beb712">beginAttack</a>(SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#ab0d02dd445d0b71d65bd63d2fbd25a1c">clearGroundProvider</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a24732e667d7b962e4dcd7c5d805dabf3">clearMoveProbe</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#aaf926223f552fef0ad9566cd71d32cef">dodge</a>(SubjectRef subject, std::optional&lt; CombatVector3 &gt; direction=std::nullopt)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#aee18cf3cfe3778dbd3c0fc802a4cb358">dodgeRelative</a>(SubjectRef subject, CombatVector3 lockTarget, CombatDodgeRelative relative)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a83ddf59ed65f863274225187559e5030">endAttack</a>(SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#ae4a17a1739e98841987a9bea6e575e31">jump</a>(SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a6b1c76bf5b44e88d1bcb6716394ad329">kill</a>(SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#ab476b96b366ec8aa369703f0941d310e">registerSubject</a>(CombatCharacterDefinition definition)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a426bf3e523ae63525f7672b9286ad5b6">setFacing</a>(SubjectRef subject, CombatVector3 facing)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a6f979a02f39117dd2780769a8d0abc07">setGroundProvider</a>(ICombatGroundProvider &amp;provider) noexcept</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#aa984a5a7c3917eb2ac1e706f28dc7e57">setMoveIntent</a>(SubjectRef subject, CombatVector3 direction, double speedFraction)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#af3abdc96f4c77190e047a512581331d2">setMoveProbe</a>(ICombatMoveProbe &amp;probe) noexcept</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a71f9ca09e01e95657f3a6334c533200b">setRootMotionDelta</a>(SubjectRef subject, CombatVector3 delta)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a48aab1c15e441291c91ea866977ab202">setTimeFrozen</a>(SubjectRef subject, bool frozen)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a8c0046ebc4d98b00dc613acc69e50d7f">state</a>(SubjectRef subject) const</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#a800d43af28f1b274977969991da4db0a">states</a>() const</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html#ab3cac13161cd455cfca37ff0880cd582">unregisterSubject</a>(SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

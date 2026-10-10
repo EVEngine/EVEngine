@@ -1,0 +1,672 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::FrameStatsPanel类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1dev_1_1FrameStatsPanel-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::FrameStatsPanel类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Lightweight FPS / frame-time overlay for DevTools (0.6 closeout).  
+ <a href="classeve_1_1dev_1_1FrameStatsPanel.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="FrameStatsPanel_8hpp_source.html">FrameStatsPanel.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a7ff5057743f8402c2c80ab5773e83e09" id="r_a7ff5057743f8402c2c80ab5773e83e09"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a7ff5057743f8402c2c80ab5773e83e09">ImGuiDrawer</a> = void(*)(<a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a> &amp;panel)</td></tr>
+<tr class="separator:a7ff5057743f8402c2c80ab5773e83e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a60d7e69dcfa2b37401f4c8af094808ed" id="r_a60d7e69dcfa2b37401f4c8af094808ed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a60d7e69dcfa2b37401f4c8af094808ed">FrameStatsPanel</a> (const <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a> &amp;)=delete</td></tr>
+<tr class="separator:a60d7e69dcfa2b37401f4c8af094808ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0b1cab3d7591b5d2716541f3083f7dc" id="r_af0b1cab3d7591b5d2716541f3083f7dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#af0b1cab3d7591b5d2716541f3083f7dc">operator=</a> (const <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a> &amp;)=delete</td></tr>
+<tr class="separator:af0b1cab3d7591b5d2716541f3083f7dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8dbda012369db14ca0210e2aa03d27b" id="r_ad8dbda012369db14ca0210e2aa03d27b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#ad8dbda012369db14ca0210e2aa03d27b">setVisible</a> (bool on)</td></tr>
+<tr class="separator:ad8dbda012369db14ca0210e2aa03d27b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13318f05a7a7141e0a33fc690582cc5f" id="r_a13318f05a7a7141e0a33fc690582cc5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a13318f05a7a7141e0a33fc690582cc5f">isVisible</a> () const</td></tr>
+<tr class="separator:a13318f05a7a7141e0a33fc690582cc5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c6771941b16835e032f7e7d1a2cd530" id="r_a4c6771941b16835e032f7e7d1a2cd530"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a4c6771941b16835e032f7e7d1a2cd530">toggleVisible</a> ()</td></tr>
+<tr class="separator:a4c6771941b16835e032f7e7d1a2cd530"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5c7d58a1e00c30999b630819397ff55" id="r_af5c7d58a1e00c30999b630819397ff55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#af5c7d58a1e00c30999b630819397ff55">sample</a> (float dtSeconds)</td></tr>
+<tr class="memdesc:af5c7d58a1e00c30999b630819397ff55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Feed one frame duration in seconds (must be finite and &gt; 0). Updates EMA FPS and last frame milliseconds.  <br /></td></tr>
+<tr class="separator:af5c7d58a1e00c30999b630819397ff55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a65beec69d7faf6eaae86637931b7b9" id="r_a1a65beec69d7faf6eaae86637931b7b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a1a65beec69d7faf6eaae86637931b7b9">setEntityCount</a> (int <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:a1a65beec69d7faf6eaae86637931b7b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional entity / actor count shown in the overlay; negative clears.  <br /></td></tr>
+<tr class="separator:a1a65beec69d7faf6eaae86637931b7b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc3c637b5b411dc86f4d4136c5ae2e06" id="r_acc3c637b5b411dc86f4d4136c5ae2e06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#acc3c637b5b411dc86f4d4136c5ae2e06">clearEntityCount</a> ()</td></tr>
+<tr class="separator:acc3c637b5b411dc86f4d4136c5ae2e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a168d1c5c08f8f721f1ba5bbe95aaeda1" id="r_a168d1c5c08f8f721f1ba5bbe95aaeda1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a168d1c5c08f8f721f1ba5bbe95aaeda1">fps</a> () const</td></tr>
+<tr class="separator:a168d1c5c08f8f721f1ba5bbe95aaeda1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d963eccb53a14e5174b56078cd7513e" id="r_a0d963eccb53a14e5174b56078cd7513e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a0d963eccb53a14e5174b56078cd7513e">frameMs</a> () const</td></tr>
+<tr class="separator:a0d963eccb53a14e5174b56078cd7513e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67ce70eb6dba8c9b503c65fb55719c0a" id="r_a67ce70eb6dba8c9b503c65fb55719c0a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a67ce70eb6dba8c9b503c65fb55719c0a">entityCount</a> () const</td></tr>
+<tr class="memdesc:a67ce70eb6dba8c9b503c65fb55719c0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">-1 when unset  <br /></td></tr>
+<tr class="separator:a67ce70eb6dba8c9b503c65fb55719c0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad641b4188e2f96c412a085af6822670d" id="r_ad641b4188e2f96c412a085af6822670d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#ad641b4188e2f96c412a085af6822670d">hasEntityCount</a> () const</td></tr>
+<tr class="separator:ad641b4188e2f96c412a085af6822670d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa4032f573da3967d5a1306b0bdedc71" id="r_afa4032f573da3967d5a1306b0bdedc71"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#afa4032f573da3967d5a1306b0bdedc71">format</a> () const</td></tr>
+<tr class="memdesc:afa4032f573da3967d5a1306b0bdedc71"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-line summary for logs / scripts, e.g. <code>60.1 fps | 16.6 ms | 128 entities</code>.  <br /></td></tr>
+<tr class="separator:afa4032f573da3967d5a1306b0bdedc71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94f809ec24e36bedc49e738a17bec731" id="r_a94f809ec24e36bedc49e738a17bec731"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a94f809ec24e36bedc49e738a17bec731">drawImGui</a> ()</td></tr>
+<tr class="separator:a94f809ec24e36bedc49e738a17bec731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a83717dee37705c5b5ff4db5a55dd2096" id="r_a83717dee37705c5b5ff4db5a55dd2096"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a83717dee37705c5b5ff4db5a55dd2096">instance</a> ()</td></tr>
+<tr class="separator:a83717dee37705c5b5ff4db5a55dd2096"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf26e2c18d6a90cc3a415fa4863727b5" id="r_abf26e2c18d6a90cc3a415fa4863727b5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#abf26e2c18d6a90cc3a415fa4863727b5">setImGuiDrawer</a> (<a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a7ff5057743f8402c2c80ab5773e83e09">ImGuiDrawer</a> <a class="el" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="separator:abf26e2c18d6a90cc3a415fa4863727b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a92fdba2769d69e2b01328eaf13fe7c1c" id="r_a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memTemplParams" colspan="2">template&lt;typename &gt; </td></tr>
+<tr class="memitem:a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memTemplItemLeft" align="right" valign="top">struct&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a92fdba2769d69e2b01328eaf13fe7c1c">Immortal</a></td></tr>
+<tr class="separator:a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Lightweight FPS / frame-time overlay for DevTools (0.6 closeout). </p>
+<p>Call <code>sample(dtSeconds)</code> once per frame (typically from <code>load.nut</code> when <code>--debug</code> is on). Optional <code>setEntityCount</code> lets games expose ECS size. <a class="el" href="namespaceImGui.html">ImGui</a> drawing is registered by the host (<code><a class="el" href="ImGuiHostPanels_8cpp.html">ImGuiHostPanels.cpp</a></code>) so EVDevTools does not include imgui.h.</p>
+<p>Script API (<code>eve run --debug</code>): eve.dev.stats.sample(dt) / setEntityCount(n) / <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#acc3c637b5b411dc86f4d4136c5ae2e06">clearEntityCount()</a> eve.dev.stats.fps() / <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a0d963eccb53a14e5174b56078cd7513e">frameMs()</a> / <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a67ce70eb6dba8c9b503c65fb55719c0a" title="-1 when unset">entityCount()</a> / <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#afa4032f573da3967d5a1306b0bdedc71" title="One-line summary for logs / scripts, e.g. 60.1 fps | 16.6 ms | 128 entities.">format()</a> eve.dev.stats.setVisible / isVisible / toggleVisible / draw </p>
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8hpp_source.html">FrameStatsPanel.hpp</a> 第 <a class="el" href="FrameStatsPanel_8hpp_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a7ff5057743f8402c2c80ab5773e83e09" name="a7ff5057743f8402c2c80ab5773e83e09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ff5057743f8402c2c80ab5773e83e09">&#9670;&#160;</a></span>ImGuiDrawer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a7ff5057743f8402c2c80ab5773e83e09">eve::dev::FrameStatsPanel::ImGuiDrawer</a> =  void (*)(<a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a>&amp; panel)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8hpp_source.html">FrameStatsPanel.hpp</a> 第 <a class="el" href="FrameStatsPanel_8hpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a60d7e69dcfa2b37401f4c8af094808ed" name="a60d7e69dcfa2b37401f4c8af094808ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60d7e69dcfa2b37401f4c8af094808ed">&#9670;&#160;</a></span>FrameStatsPanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::FrameStatsPanel::FrameStatsPanel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="acc3c637b5b411dc86f4d4136c5ae2e06" name="acc3c637b5b411dc86f4d4136c5ae2e06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc3c637b5b411dc86f4d4136c5ae2e06">&#9670;&#160;</a></span>clearEntityCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::FrameStatsPanel::clearEntityCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a94f809ec24e36bedc49e738a17bec731" name="a94f809ec24e36bedc49e738a17bec731"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94f809ec24e36bedc49e738a17bec731">&#9670;&#160;</a></span>drawImGui()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::FrameStatsPanel::drawImGui </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00266">eve::dev::DevTool::drawFrameStatsPanel()</a>.</p>
+
+</div>
+</div>
+<a id="a67ce70eb6dba8c9b503c65fb55719c0a" name="a67ce70eb6dba8c9b503c65fb55719c0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67ce70eb6dba8c9b503c65fb55719c0a">&#9670;&#160;</a></span>entityCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dev::FrameStatsPanel::entityCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>-1 when unset </p>
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="afa4032f573da3967d5a1306b0bdedc71" name="afa4032f573da3967d5a1306b0bdedc71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa4032f573da3967d5a1306b0bdedc71">&#9670;&#160;</a></span>format()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::FrameStatsPanel::format </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>One-line summary for logs / scripts, e.g. <code>60.1 fps | 16.6 ms | 128 entities</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a168d1c5c08f8f721f1ba5bbe95aaeda1" name="a168d1c5c08f8f721f1ba5bbe95aaeda1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a168d1c5c08f8f721f1ba5bbe95aaeda1">&#9670;&#160;</a></span>fps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::dev::FrameStatsPanel::fps </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a0d963eccb53a14e5174b56078cd7513e" name="a0d963eccb53a14e5174b56078cd7513e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d963eccb53a14e5174b56078cd7513e">&#9670;&#160;</a></span>frameMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::dev::FrameStatsPanel::frameMs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="ad641b4188e2f96c412a085af6822670d" name="ad641b4188e2f96c412a085af6822670d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad641b4188e2f96c412a085af6822670d">&#9670;&#160;</a></span>hasEntityCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::FrameStatsPanel::hasEntityCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a83717dee37705c5b5ff4db5a55dd2096" name="a83717dee37705c5b5ff4db5a55dd2096"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83717dee37705c5b5ff4db5a55dd2096">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a> &amp; eve::dev::FrameStatsPanel::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Immortal_8hpp_source.html#l00021">eve::dev::Immortal&lt; T &gt;::get()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00266">eve::dev::DevTool::drawFrameStatsPanel()</a>, <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00255">eve::dev::DevTool::frameStats()</a>.</p>
+
+</div>
+</div>
+<a id="a13318f05a7a7141e0a33fc690582cc5f" name="a13318f05a7a7141e0a33fc690582cc5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13318f05a7a7141e0a33fc690582cc5f">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::FrameStatsPanel::isVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00028">toggleVisible()</a>.</p>
+
+</div>
+</div>
+<a id="af0b1cab3d7591b5d2716541f3083f7dc" name="af0b1cab3d7591b5d2716541f3083f7dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0b1cab3d7591b5d2716541f3083f7dc">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a> &amp; eve::dev::FrameStatsPanel::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html">FrameStatsPanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af5c7d58a1e00c30999b630819397ff55" name="af5c7d58a1e00c30999b630819397ff55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5c7d58a1e00c30999b630819397ff55">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::FrameStatsPanel::sample </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dtSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Feed one frame duration in seconds (must be finite and &gt; 0). Updates EMA FPS and last frame milliseconds. </p>
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a1a65beec69d7faf6eaae86637931b7b9" name="a1a65beec69d7faf6eaae86637931b7b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a65beec69d7faf6eaae86637931b7b9">&#9670;&#160;</a></span>setEntityCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::FrameStatsPanel::setEntityCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional entity / actor count shown in the overlay; negative clears. </p>
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="abf26e2c18d6a90cc3a415fa4863727b5" name="abf26e2c18d6a90cc3a415fa4863727b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf26e2c18d6a90cc3a415fa4863727b5">&#9670;&#160;</a></span>setImGuiDrawer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::FrameStatsPanel::setImGuiDrawer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dev_1_1FrameStatsPanel.html#a7ff5057743f8402c2c80ab5773e83e09">ImGuiDrawer</a>&#160;</td>
+          <td class="paramname"><em>fn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00032">fn</a>.</p>
+
+</div>
+</div>
+<a id="ad8dbda012369db14ca0210e2aa03d27b" name="ad8dbda012369db14ca0210e2aa03d27b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8dbda012369db14ca0210e2aa03d27b">&#9670;&#160;</a></span>setVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::FrameStatsPanel::setVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00028">toggleVisible()</a>.</p>
+
+</div>
+</div>
+<a id="a4c6771941b16835e032f7e7d1a2cd530" name="a4c6771941b16835e032f7e7d1a2cd530"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c6771941b16835e032f7e7d1a2cd530">&#9670;&#160;</a></span>toggleVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::FrameStatsPanel::toggleVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a> 第 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00023">isVisible()</a> , 以及 <a class="el" href="FrameStatsPanel_8cpp_source.html#l00018">setVisible()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00268">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a92fdba2769d69e2b01328eaf13fe7c1c" name="a92fdba2769d69e2b01328eaf13fe7c1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92fdba2769d69e2b01328eaf13fe7c1c">&#9670;&#160;</a></span>Immortal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend struct <a class="el" href="structeve_1_1dev_1_1Immortal.html">Immortal</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FrameStatsPanel_8hpp_source.html">FrameStatsPanel.hpp</a> 第 <a class="el" href="FrameStatsPanel_8hpp_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="FrameStatsPanel_8hpp_source.html">FrameStatsPanel.hpp</a></li>
+<li>src/engine/devtools/<a class="el" href="FrameStatsPanel_8cpp_source.html">FrameStatsPanel.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

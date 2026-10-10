@@ -1,0 +1,304 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/emergence/RuleEngine.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_1f0bec2fbf6e568257d9aef0c45d4606.html">emergence</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RuleEngine.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RuleEngine_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelOwnership_8h.html">common/SquirrelOwnership.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="FactStore_8h.html">emergence/FactStore.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="RuleTypes_8h.html">emergence/RuleTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="WatchIndex_8h.html">emergence/WatchIndex.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1emergence.html">eve::emergence</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1emergence_1_1RuleEngineHandleTag.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1emergence_1_1RuleEngineHandleTag.html">RuleEngineHandleTag</a> {};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespaceeve_1_1emergence.html#aa505dd68a2fefa5dd475af3c43dfd885">   27</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1script_1_1RuntimeHandleRef.html">RuleEngineHandleRef</a> = <a class="code hl_struct" href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef&lt;RuleEngineHandleTag&gt;</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html">   43</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#a005bb237b5b0a948b2bed5232358f778">   46</a></span>    <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#a005bb237b5b0a948b2bed5232358f778">RuleEngine</a>()  = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#a32049c8f832b7b0688f194668ca01ea8">   48</a></span>    <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#a32049c8f832b7b0688f194668ca01ea8">~RuleEngine</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#aa6ee008a2f9e148e7bb6aa611d039f0c">   50</a></span>    <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#aa6ee008a2f9e148e7bb6aa611d039f0c">RuleEngine</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#a5ed813125f7eea7a6b495ee1ecc30a6b">   51</a></span>    <a class="code hl_class" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a>&amp; <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#a5ed813125f7eea7a6b495ee1ecc30a6b">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#aefaec0b3af85396c650f82649f67bb05">   53</a></span>    <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#aefaec0b3af85396c650f82649f67bb05">RuleEngine</a>(<a class="code hl_class" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a>&amp;&amp;)                 = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#aae051aadb1c5c3a04c0bfc83a0760f7d">   55</a></span>    <a class="code hl_class" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a>&amp; <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#aae051aadb1c5c3a04c0bfc83a0760f7d">operator=</a>(<a class="code hl_class" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a>&amp;&amp;)      = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> replaceCatalogue(std::vector&lt;RuleDefinition&gt; rules);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> replaceCatalogueJson(std::string_view json);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> clear();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#a851e924a819125fa7a8d053402f9a949">   75</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#a851e924a819125fa7a8d053402f9a949">ruleCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(rules_.size()); }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] <span class="keywordtype">bool</span> contains(std::string_view ruleId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1emergence_1_1RuleDefinition.html">RuleDefinition</a>* find(std::string_view ruleId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#a59c2d9ab41dd9fb1f726f1f1c0c311de">   94</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1emergence_1_1FactStore.html">FactStore</a>&amp; <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#a59c2d9ab41dd9fb1f726f1f1c0c311de">facts</a>() const noexcept { <span class="keywordflow">return</span> facts_; }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;bool&gt;</a> setValue(std::string <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>, <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;bool&gt;</a> setTag(std::string <a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>, <span class="keywordtype">bool</span> present);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;bool&gt;</a> setAttribute(std::string <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>, <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;bool&gt;</a> setResource(std::string <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>, <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;bool&gt;</a> setState(std::string <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>, <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;bool&gt;</a> setAuthority(std::string <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, <span class="keywordtype">bool</span> granted);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;bool&gt;</a> setPolicy(std::string <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_class" href="classeve_1_1decision_1_1ConditionResult.html">decision::ConditionResult</a> result);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> drain(std::uint64_t <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#ad70a955a40265e84ce8c2f0620365971">  128</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#ad70a955a40265e84ce8c2f0620365971">activationCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(activations_.size()); }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1emergence_1_1Activation.html">Activation</a>* activationAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordtype">void</span> clearActivations();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> resetRule(std::string_view ruleId);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#a9f1e0ef7b0eb59479e0a803f2ec36ece">  147</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#a9f1e0ef7b0eb59479e0a803f2ec36ece">dirtyCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(dirty_.size()); }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#a83c1f6fc3a320e4c43e659eabfb937e0">  149</a></span>    [[nodiscard]] std::uint64_t <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#a83c1f6fc3a320e4c43e659eabfb937e0">lastDrainEvaluations</a>() const noexcept { <span class="keywordflow">return</span> lastDrainEvaluations_; }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classeve_1_1emergence_1_1RuleEngine.html#a15b8620420096b7ba87cc15bd4415ac2">  151</a></span>    [[nodiscard]] std::uint64_t <a class="code hl_function" href="classeve_1_1emergence_1_1RuleEngine.html#a15b8620420096b7ba87cc15bd4415ac2">wakeKeyEvents</a>() const noexcept { <span class="keywordflow">return</span> wakeKeyEvents_; }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    [[nodiscard]] std::string snapshotJson() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> restoreJson(std::string_view json);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keyword">struct </span>RuleRuntime {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keywordtype">bool</span>          passed        = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordtype">bool</span>          fired         = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keywordtype">bool</span>          disabled      = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        std::uint64_t cooldownUntil = 0;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    };</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordtype">void</span>                            wakeKey(std::string_view <a class="code hl_variable" href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a>);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> executeActions(<span class="keyword">const</span> std::vector&lt;EmergenceAction&gt;&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#af6fd42a42168a245b67c5cc7fa032925">actions</a>, std::uint64_t <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> executeOne(<span class="keyword">const</span> EmergenceAction&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a057699cf114942bd42087102f39351f4">action</a>, std::uint64_t <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;RuleDefinition&gt;</a> validateAndNormalize(RuleDefinition rule);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    FactStore                                      facts_;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    WatchIndex                                     watchIndex_;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    std::vector&lt;RuleDefinition&gt;                    rules_;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    std::vector&lt;RuleRuntime&gt;                       runtime_;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    std::unordered_map&lt;std::string, std::uint32_t&gt; idToIndex_;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    std::unordered_set&lt;std::uint32_t&gt;              dirty_;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    std::vector&lt;Activation&gt;                        activations_;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    std::uint64_t                                  nextSequence_         = 1;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    std::uint64_t                                  lastDrainEvaluations_ = 0;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    std::uint64_t                                  wakeKeyEvents_        = 0;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordtype">bool</span>                                           draining_             = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>};</div>
+</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>}  <span class="comment">// namespace eve::emergence</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00153">ActionNotifyRegistry.cpp:153</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="aFactStore_8h_html"><div class="ttname"><a href="FactStore_8h.html">FactStore.h</a></div><div class="ttdoc">Authoritative, rule-visible world facts implementing EvaluationContext.</div></div>
+<div class="ttc" id="aGraphicsParticles_8cpp_html_afc73ef9f5bf5e49690d7bacf34a83fb6"><div class="ttname"><a href="GraphicsParticles_8cpp.html#afc73ef9f5bf5e49690d7bacf34a83fb6">key</a></div><div class="ttdeci">std::uint32_t key</div><div class="ttdef"><b>Definition</b> <a href="GraphicsParticles_8cpp_source.html#l00068">GraphicsParticles.cpp:68</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_acca1405ad8722c85f51c891decedadda"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a></div><div class="ttdeci">JobScope scope</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00158">JobSystemThreadPool.cpp:158</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00040">McpScriptTools.cpp:40</a></div></div>
+<div class="ttc" id="aModuleAssembly_8cpp_html_afdc4d55537832536f73f894f88509864"><div class="ttname"><a href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a></div><div class="ttdeci">const std::string * tag</div><div class="ttdef"><b>Definition</b> <a href="ModuleAssembly_8cpp_source.html#l00083">ModuleAssembly.cpp:83</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a057699cf114942bd42087102f39351f4"><div class="ttname"><a href="PlayHost_8cpp.html#a057699cf114942bd42087102f39351f4">action</a></div><div class="ttdeci">std::string action</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00117">PlayHost.cpp:117</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_af6fd42a42168a245b67c5cc7fa032925"><div class="ttname"><a href="PlayHost_8cpp.html#af6fd42a42168a245b67c5cc7fa032925">actions</a></div><div class="ttdeci">std::vector&lt; ActionSpec &gt; actions</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00126">PlayHost.cpp:126</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aRuleTypes_8h_html"><div class="ttname"><a href="RuleTypes_8h.html">RuleTypes.h</a></div><div class="ttdoc">Immutable emergence rule definitions and deferred activations.</div></div>
+<div class="ttc" id="aSquirrelOwnership_8h_html"><div class="ttname"><a href="SquirrelOwnership_8h.html">SquirrelOwnership.h</a></div><div class="ttdoc">Explicit Value/Owned/Borrowed semantics at the Squirrel boundary.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00158">TacticsPersistence.cpp:158</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aWatchIndex_8h_html"><div class="ttname"><a href="WatchIndex_8h.html">WatchIndex.h</a></div><div class="ttdoc">Inverted index from fact keys to interested rule ids.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1decision_1_1ConditionResult_html"><div class="ttname"><a href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a></div><div class="ttdoc">Explain one condition evaluation in a UI- and log-friendly form.</div><div class="ttdef"><b>Definition</b> <a href="Condition_8h_source.html#l00128">Condition.h:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1FactStore_html"><div class="ttname"><a href="classeve_1_1emergence_1_1FactStore.html">eve::emergence::FactStore</a></div><div class="ttdoc">Mutable fact bag that doubles as a read-only Condition evaluation context.</div><div class="ttdef"><b>Definition</b> <a href="FactStore_8h_source.html#l00060">FactStore.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html">eve::emergence::RuleEngine</a></div><div class="ttdoc">Indexed, deferred rule evaluator for tens of thousands of conditions.</div><div class="ttdef"><b>Definition</b> <a href="RuleEngine_8h_source.html#l00043">RuleEngine.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_a005bb237b5b0a948b2bed5232358f778"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#a005bb237b5b0a948b2bed5232358f778">eve::emergence::RuleEngine::RuleEngine</a></div><div class="ttdeci">RuleEngine()=default</div><div class="ttdoc">Rule engine.</div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_a15b8620420096b7ba87cc15bd4415ac2"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#a15b8620420096b7ba87cc15bd4415ac2">eve::emergence::RuleEngine::wakeKeyEvents</a></div><div class="ttdeci">std::uint64_t wakeKeyEvents() const noexcept</div><div class="ttdoc">Diagnostic: distinct keys that woke at least one rule since construction/clear.</div><div class="ttdef"><b>Definition</b> <a href="RuleEngine_8h_source.html#l00151">RuleEngine.h:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_a32049c8f832b7b0688f194668ca01ea8"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#a32049c8f832b7b0688f194668ca01ea8">eve::emergence::RuleEngine::~RuleEngine</a></div><div class="ttdeci">~RuleEngine()=default</div><div class="ttdoc">Rule engine.</div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_a59c2d9ab41dd9fb1f726f1f1c0c311de"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#a59c2d9ab41dd9fb1f726f1f1c0c311de">eve::emergence::RuleEngine::facts</a></div><div class="ttdeci">const FactStore &amp; facts() const noexcept</div><div class="ttdoc">Borrow the authoritative fact store for read-only inspection. @ownership Borrowed; this engine remain...</div><div class="ttdef"><b>Definition</b> <a href="RuleEngine_8h_source.html#l00094">RuleEngine.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_a5ed813125f7eea7a6b495ee1ecc30a6b"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#a5ed813125f7eea7a6b495ee1ecc30a6b">eve::emergence::RuleEngine::operator=</a></div><div class="ttdeci">RuleEngine &amp; operator=(const RuleEngine &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_a83c1f6fc3a320e4c43e659eabfb937e0"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#a83c1f6fc3a320e4c43e659eabfb937e0">eve::emergence::RuleEngine::lastDrainEvaluations</a></div><div class="ttdeci">std::uint64_t lastDrainEvaluations() const noexcept</div><div class="ttdoc">Diagnostic: condition evaluations performed during the last drain.</div><div class="ttdef"><b>Definition</b> <a href="RuleEngine_8h_source.html#l00149">RuleEngine.h:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_a851e924a819125fa7a8d053402f9a949"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#a851e924a819125fa7a8d053402f9a949">eve::emergence::RuleEngine::ruleCount</a></div><div class="ttdeci">int ruleCount() const noexcept</div><div class="ttdoc">Committed rule count.</div><div class="ttdef"><b>Definition</b> <a href="RuleEngine_8h_source.html#l00075">RuleEngine.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_a9f1e0ef7b0eb59479e0a803f2ec36ece"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#a9f1e0ef7b0eb59479e0a803f2ec36ece">eve::emergence::RuleEngine::dirtyCount</a></div><div class="ttdeci">int dirtyCount() const noexcept</div><div class="ttdoc">Diagnostic: rules marked dirty since the last successful drain start.</div><div class="ttdef"><b>Definition</b> <a href="RuleEngine_8h_source.html#l00147">RuleEngine.h:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_aa6ee008a2f9e148e7bb6aa611d039f0c"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#aa6ee008a2f9e148e7bb6aa611d039f0c">eve::emergence::RuleEngine::RuleEngine</a></div><div class="ttdeci">RuleEngine(const RuleEngine &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_aae051aadb1c5c3a04c0bfc83a0760f7d"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#aae051aadb1c5c3a04c0bfc83a0760f7d">eve::emergence::RuleEngine::operator=</a></div><div class="ttdeci">RuleEngine &amp; operator=(RuleEngine &amp;&amp;)=default</div><div class="ttdoc">Operator =.</div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_ad70a955a40265e84ce8c2f0620365971"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#ad70a955a40265e84ce8c2f0620365971">eve::emergence::RuleEngine::activationCount</a></div><div class="ttdeci">int activationCount() const noexcept</div><div class="ttdoc">Activations retained from the most recent drain batches since clearActivations.</div><div class="ttdef"><b>Definition</b> <a href="RuleEngine_8h_source.html#l00128">RuleEngine.h:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1emergence_1_1RuleEngine_html_aefaec0b3af85396c650f82649f67bb05"><div class="ttname"><a href="classeve_1_1emergence_1_1RuleEngine.html#aefaec0b3af85396c650f82649f67bb05">eve::emergence::RuleEngine::RuleEngine</a></div><div class="ttdeci">RuleEngine(RuleEngine &amp;&amp;)=default</div><div class="ttdoc">Rule engine.</div></div>
+<div class="ttc" id="anamespaceeve_1_1emergence_html"><div class="ttname"><a href="namespaceeve_1_1emergence.html">eve::emergence</a></div><div class="ttdef"><b>Definition</b> <a href="ConditionCodec_8cpp_source.html#l00010">ConditionCodec.cpp:10</a></div></div>
+<div class="ttc" id="astructeve_1_1emergence_1_1Activation_html"><div class="ttname"><a href="structeve_1_1emergence_1_1Activation.html">eve::emergence::Activation</a></div><div class="ttdoc">One scheduled activation produced by drain().</div><div class="ttdef"><b>Definition</b> <a href="RuleTypes_8h_source.html#l00050">RuleTypes.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1emergence_1_1RuleDefinition_html"><div class="ttname"><a href="structeve_1_1emergence_1_1RuleDefinition.html">eve::emergence::RuleDefinition</a></div><div class="ttdoc">One immutable rule definition owned by the catalogue.</div><div class="ttdef"><b>Definition</b> <a href="RuleTypes_8h_source.html#l00038">RuleTypes.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1emergence_1_1RuleEngineHandleTag_html"><div class="ttname"><a href="structeve_1_1emergence_1_1RuleEngineHandleTag.html">eve::emergence::RuleEngineHandleTag</a></div><div class="ttdoc">Handle domain for module-owned rule engines.</div><div class="ttdef"><b>Definition</b> <a href="RuleEngine_8h_source.html#l00025">RuleEngine.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1RuntimeHandleRef_html"><div class="ttname"><a href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef</a></div><div class="ttdoc">Handle plus owner-lifetime epoch for a non-ECS registry object.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeRegistry_8h_source.html#l00091">RuntimeRegistry.h:91</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

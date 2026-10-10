@@ -1,0 +1,313 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/decal/ProceduralDecal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_142d39b210c829fb98c9455411585e83.html">decal</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ProceduralDecal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ProceduralDecal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1decal.html">eve::decal</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43c">   14</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43c">DecalPattern</a> : std::uint8_t {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca002cee6c3a810e20324fff49fe6af633">Spots</a>,</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43cacb2da4e014f32a47bf0f7aefaef5860f">Cracks</a>,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca47c434dbb303b0aa728e98f193a65dc6">Streaks</a>,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca3304b5cf02faed21daa8e1ba758d2c12">Puddle</a>,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50">Grunge</a>,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1decal_1_1ProceduralDecalLayer.html">ProceduralDecalLayer</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a7fac869c8c491f7d4ab4a8786260f3b9">   29</a></span>    <span class="keywordtype">bool</span>                 <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a7fac869c8c491f7d4ab4a8786260f3b9">enabled</a>  = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a80366e11483740b6bd778c8578719667">   30</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43c">DecalPattern</a>         <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a80366e11483740b6bd778c8578719667">pattern</a>  = <a class="code hl_enumvalue" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50">DecalPattern::Grunge</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a00ef0fa88aebc358134cc736e901e7f7">   31</a></span>    std::uint32_t        <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a00ef0fa88aebc358134cc736e901e7f7">seed</a>     = 1;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#ad0bb16b4f7998c2f61a50f9262a0bc7c">   32</a></span>    <span class="keywordtype">int</span>                  <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#ad0bb16b4f7998c2f61a50f9262a0bc7c">sourcePatternId</a> = -1;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a0d11c413215587934c24ca2e4b11f3d8">   33</a></span>    <span class="keywordtype">bool</span>                 <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a0d11c413215587934c24ca2e4b11f3d8">invertMask</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a779eb4879cfd42350e3175cab619c60e">   34</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a779eb4879cfd42350e3175cab619c60e">amount</a>   = 0.65f;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a1e5e63211eaaa93d2b9a7dbc7a26e1e5">   35</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a1e5e63211eaaa93d2b9a7dbc7a26e1e5">scale</a>    = 5.f;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a479ee6db3bce26f48b400fc1d0c827eb">   36</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a479ee6db3bce26f48b400fc1d0c827eb">rotation</a> = 0.f;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a0ce0bc98d67f92ac33bc9f21bd690cea">   37</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a0ce0bc98d67f92ac33bc9f21bd690cea">blur</a>     = 0.08f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#ab604ab1df5070baeec7b377d698ec0bd">   38</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#ab604ab1df5070baeec7b377d698ec0bd">contrast</a> = 1.4f;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a3f0adfd1d5cb7d95346db08d39dad0c1">   39</a></span>    std::array&lt;float, 3&gt; <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a3f0adfd1d5cb7d95346db08d39dad0c1">color</a>{0.35f, 0.12f, 0.06f};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a4547b7cee1b7deb24c9877941815da69">   40</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a4547b7cee1b7deb24c9877941815da69">colorVariation</a>     = 0.15f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#aec43cf7d8a5aec87c441bb3434accd8d">   41</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#aec43cf7d8a5aec87c441bb3434accd8d">hueVariation</a>       = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a3dc8c2d358cc2d9091ead5876b7d91c4">   42</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a3dc8c2d358cc2d9091ead5876b7d91c4">roughness</a>          = 0.7f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#acd81a3030e03f9656cfc7ba0a9b4a345">   43</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#acd81a3030e03f9656cfc7ba0a9b4a345">roughnessVariation</a> = 0.1f;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a75223a1f58d4e3b722fce075910aad4b">   44</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a75223a1f58d4e3b722fce075910aad4b">metallic</a>           = 0.f;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a98e54310a89693358589ed7d57e91510">   45</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a98e54310a89693358589ed7d57e91510">emissive</a>           = 0.f;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a968597b06df91c2e85f48c9710016979">   46</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a968597b06df91c2e85f48c9710016979">normalStrength</a>     = 2.f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#aa67d3acf01fcd5e8c1b4ffa3833d407e">   47</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#aa67d3acf01fcd5e8c1b4ffa3833d407e">normalSoftness</a>     = 0.08f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a21ce1c517f92df0ecbd53fb9c2678b55">   48</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a21ce1c517f92df0ecbd53fb9c2678b55">normalTrim</a>         = 0.f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a27bb60bae5ecb4f8904993c9ff533df1">   49</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a27bb60bae5ecb4f8904993c9ff533df1">normalThickness</a>    = 1.f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a8b4dca2f2e17fc46fed09e9390a4adfb">   50</a></span>    <span class="keywordtype">int</span>                  <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a8b4dca2f2e17fc46fed09e9390a4adfb">normalStyle</a>        = 0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a7bbcad9b989cbe663725c0e42d0bfe38">   51</a></span>    <span class="keywordtype">float</span>                <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a7bbcad9b989cbe663725c0e42d0bfe38">height</a>             = 0.5f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>};</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="};">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">   58</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">ProceduralDecalRecipe</a> {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a9767f40368d9431fc464c7763e47f6a9">   59</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::uint32_t <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a9767f40368d9431fc464c7763e47f6a9">kSchemaVersion</a> = 2;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#ae08eb0c1916d17679c29c47dd42457b3">   60</a></span>    std::uint32_t                  <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#ae08eb0c1916d17679c29c47dd42457b3">schemaVersion</a>  = <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a9767f40368d9431fc464c7763e47f6a9">kSchemaVersion</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a4560454e0f7c6ef3a67e67e5e673dad0">   61</a></span>    <span class="keywordtype">int</span>                            <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a4560454e0f7c6ef3a67e67e5e673dad0">width</a>          = 256;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#afa8bf9415a4b4058c7b5ffdc48135b9d">   62</a></span>    <span class="keywordtype">int</span>                            <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#afa8bf9415a4b4058c7b5ffdc48135b9d">height</a>         = 256;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#afe9347a2e058957088128e53abb824c1">   63</a></span>    std::uint32_t                  <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#afe9347a2e058957088128e53abb824c1">seed</a>           = 1;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#ad2189f93baad2657a905f221ea78d35d">   64</a></span>    <a class="code hl_struct" href="structeve_1_1decal_1_1ProceduralDecalLayer.html">ProceduralDecalLayer</a>             <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#ad2189f93baad2657a905f221ea78d35d">layerA</a>{};</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a082caacce5ef9144ba2f7808484605a2">   65</a></span>    <a class="code hl_struct" href="structeve_1_1decal_1_1ProceduralDecalLayer.html">ProceduralDecalLayer</a>             <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a082caacce5ef9144ba2f7808484605a2">layerB</a>{};</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a931b417015169b6e54b3672b4a250991">   66</a></span>    <span class="keywordtype">float</span>                          <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a931b417015169b6e54b3672b4a250991">layerHeightBlend</a> = 0.5f;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#ac3591ffccd9b038f684ec5b560d6661f">   67</a></span>    <span class="keywordtype">float</span>                          <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#ac3591ffccd9b038f684ec5b560d6661f">layerBalance</a>     = 0.5f;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a056f14199f24151ef9dee19d9eb8da8f">   68</a></span>    <span class="keywordtype">int</span>                            <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a056f14199f24151ef9dee19d9eb8da8f">layerBlendMode</a>   = 0;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a94b43b9b68e16d5807f2b59956cfb73f">   69</a></span>    <span class="keywordtype">float</span>                          <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a94b43b9b68e16d5807f2b59956cfb73f">opacity</a>          = 1.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>};</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="};">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalBake.html">   80</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1decal_1_1ProceduralDecalBake.html">ProceduralDecalBake</a> {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalBake.html#a6fb7d4d035ea7b9dbb40baea34556932">   81</a></span>    <span class="keywordtype">int</span>                       <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalBake.html#a6fb7d4d035ea7b9dbb40baea34556932">width</a>  = 0;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalBake.html#a8e2baad6df0664758bc4131e52394ef3">   82</a></span>    <span class="keywordtype">int</span>                       <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalBake.html#a8e2baad6df0664758bc4131e52394ef3">height</a> = 0;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalBake.html#a3bad07d586282c70d8de317e34a8ebcf">   83</a></span>    std::vector&lt;std::uint8_t&gt; <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalBake.html#a3bad07d586282c70d8de317e34a8ebcf">albedo</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalBake.html#aecb15bcc9640c44911e7a09d72afde0e">   84</a></span>    std::vector&lt;std::uint8_t&gt; <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalBake.html#aecb15bcc9640c44911e7a09d72afde0e">normal</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1decal_1_1ProceduralDecalBake.html#ab5314d8a60375a155313d13839891c13">   85</a></span>    std::vector&lt;std::uint8_t&gt; <a class="code hl_variable" href="structeve_1_1decal_1_1ProceduralDecalBake.html#ab5314d8a60375a155313d13839891c13">params</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ProceduralDecalRecipe&gt;</a> <a class="code hl_function" href="namespaceeve_1_1decal.html#a72d8972c3a201cd744957a1a1193a95d">proceduralDecalPreset</a>(std::string_view <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                                                                                     std::uint32_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a> = 1);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ProceduralDecalRecipe&gt;</a> <a class="code hl_function" href="namespaceeve_1_1decal.html#ade47cd0d53ca0a17c562351ac08558b0">importProceduralDecalSbsprs</a>(std::string_view xml);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ProceduralDecalBake&gt;</a> <a class="code hl_function" href="namespaceeve_1_1decal.html#a6cf897ba61f621cf2703e554c36cd522">bakeProceduralDecal</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">ProceduralDecalRecipe</a>&amp; recipe);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}  <span class="comment">// namespace eve::decal</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00040">McpScriptTools.cpp:40</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00807">PointSet.cpp:807</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html"><div class="ttname"><a href="namespaceeve_1_1decal.html">eve::decal</a></div><div class="ttdef"><b>Definition</b> <a href="Decal_8cpp_source.html#l00012">Decal.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html_a6cf897ba61f621cf2703e554c36cd522"><div class="ttname"><a href="namespaceeve_1_1decal.html#a6cf897ba61f621cf2703e554c36cd522">eve::decal::bakeProceduralDecal</a></div><div class="ttdeci">Result&lt; ProceduralDecalBake &gt; bakeProceduralDecal(const ProceduralDecalRecipe &amp;recipe)</div><div class="ttdoc">Bake a two-layer decal recipe into renderer-ready texture bytes.</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8cpp_source.html#l00436">ProceduralDecal.cpp:436</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html_a72d8972c3a201cd744957a1a1193a95d"><div class="ttname"><a href="namespaceeve_1_1decal.html#a72d8972c3a201cd744957a1a1193a95d">eve::decal::proceduralDecalPreset</a></div><div class="ttdeci">Result&lt; ProceduralDecalRecipe &gt; proceduralDecalPreset(std::string_view name, std::uint32_t seed)</div><div class="ttdoc">Build a deterministic preset recipe.</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8cpp_source.html#l00295">ProceduralDecal.cpp:295</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html_ac412c03b32cd4121ff2e9d0bee55b43c"><div class="ttname"><a href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43c">eve::decal::DecalPattern</a></div><div class="ttdeci">DecalPattern</div><div class="ttdoc">Built-in procedural masks used by a procedural decal layer.</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00014">ProceduralDecal.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html_ac412c03b32cd4121ff2e9d0bee55b43ca002cee6c3a810e20324fff49fe6af633"><div class="ttname"><a href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca002cee6c3a810e20324fff49fe6af633">eve::decal::DecalPattern::Spots</a></div><div class="ttdeci">@ Spots</div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html_ac412c03b32cd4121ff2e9d0bee55b43ca3304b5cf02faed21daa8e1ba758d2c12"><div class="ttname"><a href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca3304b5cf02faed21daa8e1ba758d2c12">eve::decal::DecalPattern::Puddle</a></div><div class="ttdeci">@ Puddle</div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html_ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50"><div class="ttname"><a href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50">eve::decal::DecalPattern::Grunge</a></div><div class="ttdeci">@ Grunge</div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html_ac412c03b32cd4121ff2e9d0bee55b43ca47c434dbb303b0aa728e98f193a65dc6"><div class="ttname"><a href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca47c434dbb303b0aa728e98f193a65dc6">eve::decal::DecalPattern::Streaks</a></div><div class="ttdeci">@ Streaks</div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html_ac412c03b32cd4121ff2e9d0bee55b43cacb2da4e014f32a47bf0f7aefaef5860f"><div class="ttname"><a href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43cacb2da4e014f32a47bf0f7aefaef5860f">eve::decal::DecalPattern::Cracks</a></div><div class="ttdeci">@ Cracks</div></div>
+<div class="ttc" id="anamespaceeve_1_1decal_html_ade47cd0d53ca0a17c562351ac08558b0"><div class="ttname"><a href="namespaceeve_1_1decal.html#ade47cd0d53ca0a17c562351ac08558b0">eve::decal::importProceduralDecalSbsprs</a></div><div class="ttdeci">Result&lt; ProceduralDecalRecipe &gt; importProceduralDecalSbsprs(std::string_view xml)</div><div class="ttdoc">Import one Substance .sbsprs preset into the native version-two recipe.</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8cpp_source.html#l00336">ProceduralDecal.cpp:336</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalBake_html"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalBake.html">eve::decal::ProceduralDecalBake</a></div><div class="ttdoc">Owning, renderer-neutral output of one decal bake.</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00080">ProceduralDecal.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalBake_html_a3bad07d586282c70d8de317e34a8ebcf"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalBake.html#a3bad07d586282c70d8de317e34a8ebcf">eve::decal::ProceduralDecalBake::albedo</a></div><div class="ttdeci">std::vector&lt; std::uint8_t &gt; albedo</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00083">ProceduralDecal.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalBake_html_a6fb7d4d035ea7b9dbb40baea34556932"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalBake.html#a6fb7d4d035ea7b9dbb40baea34556932">eve::decal::ProceduralDecalBake::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00081">ProceduralDecal.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalBake_html_a8e2baad6df0664758bc4131e52394ef3"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalBake.html#a8e2baad6df0664758bc4131e52394ef3">eve::decal::ProceduralDecalBake::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00082">ProceduralDecal.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalBake_html_ab5314d8a60375a155313d13839891c13"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalBake.html#ab5314d8a60375a155313d13839891c13">eve::decal::ProceduralDecalBake::params</a></div><div class="ttdeci">std::vector&lt; std::uint8_t &gt; params</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00085">ProceduralDecal.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalBake_html_aecb15bcc9640c44911e7a09d72afde0e"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalBake.html#aecb15bcc9640c44911e7a09d72afde0e">eve::decal::ProceduralDecalBake::normal</a></div><div class="ttdeci">std::vector&lt; std::uint8_t &gt; normal</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00084">ProceduralDecal.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html">eve::decal::ProceduralDecalLayer</a></div><div class="ttdoc">One independently art-directed layer of a procedural decal recipe.</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00028">ProceduralDecal.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a00ef0fa88aebc358134cc736e901e7f7"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a00ef0fa88aebc358134cc736e901e7f7">eve::decal::ProceduralDecalLayer::seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00031">ProceduralDecal.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a0ce0bc98d67f92ac33bc9f21bd690cea"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a0ce0bc98d67f92ac33bc9f21bd690cea">eve::decal::ProceduralDecalLayer::blur</a></div><div class="ttdeci">float blur</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00037">ProceduralDecal.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a0d11c413215587934c24ca2e4b11f3d8"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a0d11c413215587934c24ca2e4b11f3d8">eve::decal::ProceduralDecalLayer::invertMask</a></div><div class="ttdeci">bool invertMask</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00033">ProceduralDecal.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a1e5e63211eaaa93d2b9a7dbc7a26e1e5"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a1e5e63211eaaa93d2b9a7dbc7a26e1e5">eve::decal::ProceduralDecalLayer::scale</a></div><div class="ttdeci">float scale</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00035">ProceduralDecal.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a21ce1c517f92df0ecbd53fb9c2678b55"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a21ce1c517f92df0ecbd53fb9c2678b55">eve::decal::ProceduralDecalLayer::normalTrim</a></div><div class="ttdeci">float normalTrim</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00048">ProceduralDecal.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a27bb60bae5ecb4f8904993c9ff533df1"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a27bb60bae5ecb4f8904993c9ff533df1">eve::decal::ProceduralDecalLayer::normalThickness</a></div><div class="ttdeci">float normalThickness</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00049">ProceduralDecal.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a3dc8c2d358cc2d9091ead5876b7d91c4"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a3dc8c2d358cc2d9091ead5876b7d91c4">eve::decal::ProceduralDecalLayer::roughness</a></div><div class="ttdeci">float roughness</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00042">ProceduralDecal.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a3f0adfd1d5cb7d95346db08d39dad0c1"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a3f0adfd1d5cb7d95346db08d39dad0c1">eve::decal::ProceduralDecalLayer::color</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; color</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00039">ProceduralDecal.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a4547b7cee1b7deb24c9877941815da69"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a4547b7cee1b7deb24c9877941815da69">eve::decal::ProceduralDecalLayer::colorVariation</a></div><div class="ttdeci">float colorVariation</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00040">ProceduralDecal.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a479ee6db3bce26f48b400fc1d0c827eb"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a479ee6db3bce26f48b400fc1d0c827eb">eve::decal::ProceduralDecalLayer::rotation</a></div><div class="ttdeci">float rotation</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00036">ProceduralDecal.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a75223a1f58d4e3b722fce075910aad4b"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a75223a1f58d4e3b722fce075910aad4b">eve::decal::ProceduralDecalLayer::metallic</a></div><div class="ttdeci">float metallic</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00044">ProceduralDecal.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a779eb4879cfd42350e3175cab619c60e"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a779eb4879cfd42350e3175cab619c60e">eve::decal::ProceduralDecalLayer::amount</a></div><div class="ttdeci">float amount</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00034">ProceduralDecal.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a7bbcad9b989cbe663725c0e42d0bfe38"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a7bbcad9b989cbe663725c0e42d0bfe38">eve::decal::ProceduralDecalLayer::height</a></div><div class="ttdeci">float height</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00051">ProceduralDecal.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a7fac869c8c491f7d4ab4a8786260f3b9"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a7fac869c8c491f7d4ab4a8786260f3b9">eve::decal::ProceduralDecalLayer::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00029">ProceduralDecal.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a80366e11483740b6bd778c8578719667"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a80366e11483740b6bd778c8578719667">eve::decal::ProceduralDecalLayer::pattern</a></div><div class="ttdeci">DecalPattern pattern</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00030">ProceduralDecal.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a8b4dca2f2e17fc46fed09e9390a4adfb"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a8b4dca2f2e17fc46fed09e9390a4adfb">eve::decal::ProceduralDecalLayer::normalStyle</a></div><div class="ttdeci">int normalStyle</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00050">ProceduralDecal.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a968597b06df91c2e85f48c9710016979"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a968597b06df91c2e85f48c9710016979">eve::decal::ProceduralDecalLayer::normalStrength</a></div><div class="ttdeci">float normalStrength</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00046">ProceduralDecal.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_a98e54310a89693358589ed7d57e91510"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a98e54310a89693358589ed7d57e91510">eve::decal::ProceduralDecalLayer::emissive</a></div><div class="ttdeci">float emissive</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00045">ProceduralDecal.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_aa67d3acf01fcd5e8c1b4ffa3833d407e"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#aa67d3acf01fcd5e8c1b4ffa3833d407e">eve::decal::ProceduralDecalLayer::normalSoftness</a></div><div class="ttdeci">float normalSoftness</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00047">ProceduralDecal.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_ab604ab1df5070baeec7b377d698ec0bd"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#ab604ab1df5070baeec7b377d698ec0bd">eve::decal::ProceduralDecalLayer::contrast</a></div><div class="ttdeci">float contrast</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00038">ProceduralDecal.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_acd81a3030e03f9656cfc7ba0a9b4a345"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#acd81a3030e03f9656cfc7ba0a9b4a345">eve::decal::ProceduralDecalLayer::roughnessVariation</a></div><div class="ttdeci">float roughnessVariation</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00043">ProceduralDecal.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_ad0bb16b4f7998c2f61a50f9262a0bc7c"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#ad0bb16b4f7998c2f61a50f9262a0bc7c">eve::decal::ProceduralDecalLayer::sourcePatternId</a></div><div class="ttdeci">int sourcePatternId</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00032">ProceduralDecal.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalLayer_html_aec43cf7d8a5aec87c441bb3434accd8d"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#aec43cf7d8a5aec87c441bb3434accd8d">eve::decal::ProceduralDecalLayer::hueVariation</a></div><div class="ttdeci">float hueVariation</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00041">ProceduralDecal.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">eve::decal::ProceduralDecalRecipe</a></div><div class="ttdoc">Versioned two-layer authoring recipe analogous to Procedural Decal's Standard graph and material-inst...</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00058">ProceduralDecal.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_a056f14199f24151ef9dee19d9eb8da8f"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a056f14199f24151ef9dee19d9eb8da8f">eve::decal::ProceduralDecalRecipe::layerBlendMode</a></div><div class="ttdeci">int layerBlendMode</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00068">ProceduralDecal.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_a082caacce5ef9144ba2f7808484605a2"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a082caacce5ef9144ba2f7808484605a2">eve::decal::ProceduralDecalRecipe::layerB</a></div><div class="ttdeci">ProceduralDecalLayer layerB</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00065">ProceduralDecal.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_a4560454e0f7c6ef3a67e67e5e673dad0"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a4560454e0f7c6ef3a67e67e5e673dad0">eve::decal::ProceduralDecalRecipe::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00061">ProceduralDecal.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_a931b417015169b6e54b3672b4a250991"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a931b417015169b6e54b3672b4a250991">eve::decal::ProceduralDecalRecipe::layerHeightBlend</a></div><div class="ttdeci">float layerHeightBlend</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00066">ProceduralDecal.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_a94b43b9b68e16d5807f2b59956cfb73f"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a94b43b9b68e16d5807f2b59956cfb73f">eve::decal::ProceduralDecalRecipe::opacity</a></div><div class="ttdeci">float opacity</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00069">ProceduralDecal.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_a9767f40368d9431fc464c7763e47f6a9"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#a9767f40368d9431fc464c7763e47f6a9">eve::decal::ProceduralDecalRecipe::kSchemaVersion</a></div><div class="ttdeci">static constexpr std::uint32_t kSchemaVersion</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00059">ProceduralDecal.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_ac3591ffccd9b038f684ec5b560d6661f"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#ac3591ffccd9b038f684ec5b560d6661f">eve::decal::ProceduralDecalRecipe::layerBalance</a></div><div class="ttdeci">float layerBalance</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00067">ProceduralDecal.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_ad2189f93baad2657a905f221ea78d35d"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#ad2189f93baad2657a905f221ea78d35d">eve::decal::ProceduralDecalRecipe::layerA</a></div><div class="ttdeci">ProceduralDecalLayer layerA</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00064">ProceduralDecal.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_ae08eb0c1916d17679c29c47dd42457b3"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#ae08eb0c1916d17679c29c47dd42457b3">eve::decal::ProceduralDecalRecipe::schemaVersion</a></div><div class="ttdeci">std::uint32_t schemaVersion</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00060">ProceduralDecal.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_afa8bf9415a4b4058c7b5ffdc48135b9d"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#afa8bf9415a4b4058c7b5ffdc48135b9d">eve::decal::ProceduralDecalRecipe::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00062">ProceduralDecal.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1decal_1_1ProceduralDecalRecipe_html_afe9347a2e058957088128e53abb824c1"><div class="ttname"><a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#afe9347a2e058957088128e53abb824c1">eve::decal::ProceduralDecalRecipe::seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="ProceduralDecal_8h_source.html#l00063">ProceduralDecal.h:63</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

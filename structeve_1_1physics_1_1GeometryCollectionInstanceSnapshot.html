@@ -1,0 +1,575 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::GeometryCollectionInstanceSnapshot结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html">GeometryCollectionInstanceSnapshot</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::GeometryCollectionInstanceSnapshot结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Persistent runtime snapshot for one geometry-collection instance.  
+ <a href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1BoneSnapshot.html">BoneSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1BoneSnapshot.html" title="BoneSnapshot public API.">BoneSnapshot</a> public API.  <a href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1BoneSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1EdgeSnapshot.html">EdgeSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1EdgeSnapshot.html" title="EdgeSnapshot public API.">EdgeSnapshot</a> public API.  <a href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1EdgeSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abb9099b6764505863cdcea5a43fbd22e" id="r_abb9099b6764505863cdcea5a43fbd22e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#abb9099b6764505863cdcea5a43fbd22e">validate</a> () const</td></tr>
+<tr class="memdesc:abb9099b6764505863cdcea5a43fbd22e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate counts and numeric ranges.  <br /></td></tr>
+<tr class="separator:abb9099b6764505863cdcea5a43fbd22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ee18f5ee9e97bb7c333e67b21b2de75" id="r_a5ee18f5ee9e97bb7c333e67b21b2de75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#a5ee18f5ee9e97bb7c333e67b21b2de75">toValue</a> () const</td></tr>
+<tr class="memdesc:a5ee18f5ee9e97bb7c333e67b21b2de75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the complete canonical version-1 value.  <br /></td></tr>
+<tr class="separator:a5ee18f5ee9e97bb7c333e67b21b2de75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a3986b8cc1203762394b469cd256e13a3" id="r_a3986b8cc1203762394b469cd256e13a3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">eve::schema::SchemaDefinition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#a3986b8cc1203762394b469cd256e13a3">schemaDefinition</a> ()</td></tr>
+<tr class="memdesc:a3986b8cc1203762394b469cd256e13a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the tooling schema that mirrors <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#abb9099b6764505863cdcea5a43fbd22e" title="Validate counts and numeric ranges.">validate()</a>.  <br /></td></tr>
+<tr class="separator:a3986b8cc1203762394b469cd256e13a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fcd6d2e01c9891f3eea646474ae391d" id="r_a6fcd6d2e01c9891f3eea646474ae391d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#a6fcd6d2e01c9891f3eea646474ae391d">ensureSchemaRegistered</a> ()</td></tr>
+<tr class="memdesc:a6fcd6d2e01c9891f3eea646474ae391d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idempotently register version 1 in the process schema registry.  <br /></td></tr>
+<tr class="separator:a6fcd6d2e01c9891f3eea646474ae391d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb5bbe8d139aec576f550978dbf992d1" id="r_adb5bbe8d139aec576f550978dbf992d1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html">GeometryCollectionInstanceSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#adb5bbe8d139aec576f550978dbf992d1">fromValue</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:adb5bbe8d139aec576f550978dbf992d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode and validate version 1 transactionally.  <br /></td></tr>
+<tr class="separator:adb5bbe8d139aec576f550978dbf992d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aaa26f25c878548c5570ef91f4498f689" id="r_aaa26f25c878548c5570ef91f4498f689"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#aaa26f25c878548c5570ef91f4498f689">originX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aaa26f25c878548c5570ef91f4498f689"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a759a1c84ac6e9318d1f4a630954f6cbd" id="r_a759a1c84ac6e9318d1f4a630954f6cbd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#a759a1c84ac6e9318d1f4a630954f6cbd">originY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a759a1c84ac6e9318d1f4a630954f6cbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab56ccfae687ccb431518430ff9588b36" id="r_ab56ccfae687ccb431518430ff9588b36"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#ab56ccfae687ccb431518430ff9588b36">originZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab56ccfae687ccb431518430ff9588b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4404dd224ba1a62ad37b96b658876308" id="r_a4404dd224ba1a62ad37b96b658876308"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#a4404dd224ba1a62ad37b96b658876308">lastTick</a> = 0</td></tr>
+<tr class="separator:a4404dd224ba1a62ad37b96b658876308"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7565f1d82a5e4623ba96db6ed0ddbf88" id="r_a7565f1d82a5e4623ba96db6ed0ddbf88"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#a7565f1d82a5e4623ba96db6ed0ddbf88">sleepBatchRevision</a> = 0</td></tr>
+<tr class="separator:a7565f1d82a5e4623ba96db6ed0ddbf88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b8004ef57aacadf57645cc9d563997a" id="r_a9b8004ef57aacadf57645cc9d563997a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1BoneSnapshot.html">BoneSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#a9b8004ef57aacadf57645cc9d563997a">bones</a></td></tr>
+<tr class="separator:a9b8004ef57aacadf57645cc9d563997a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac77e22e4201da4ff0dda904dffd002dc" id="r_ac77e22e4201da4ff0dda904dffd002dc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1EdgeSnapshot.html">EdgeSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#ac77e22e4201da4ff0dda904dffd002dc">edges</a></td></tr>
+<tr class="separator:ac77e22e4201da4ff0dda904dffd002dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a86acaf93153a11c4a208aaadaa0e9c34" id="r_a86acaf93153a11c4a208aaadaa0e9c34"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#a86acaf93153a11c4a208aaadaa0e9c34">SchemaId</a> = &quot;physics:geometry-collection-instance&quot;</td></tr>
+<tr class="separator:a86acaf93153a11c4a208aaadaa0e9c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2211c428d9d127361ea0f14a8dff3a85" id="r_a2211c428d9d127361ea0f14a8dff3a85"><td class="memItemLeft" align="right" valign="top">static constexpr std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#a2211c428d9d127361ea0f14a8dff3a85">SchemaVersion</a> = 1</td></tr>
+<tr class="separator:a2211c428d9d127361ea0f14a8dff3a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Persistent runtime snapshot for one geometry-collection instance. </p>
+<p>Schema id <code>physics:geometry-collection-instance</code> version 1. Captures bone states, edge strain/broken flags, and origin — not live <a class="el" href="structeve_1_1physics_1_1PhysicsLink.html" title="Generation-qualified relationship between one world and one body.">PhysicsLink</a> handles. Restore rebuilds body types from state against a live <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>.</p>
+<p>Bone <code>state</code> uses the same integer encoding as BoneRuntimeState (Attached=0, Detached=1, Sleeping=2).</p>
+<p>@ownership Owning value; never retains <a class="el" href="classeve_1_1physics_1_1Body3D.html" title="3D rigid body (Box3D) in meter-space coordinates (+Y up by convention). Owned by a World3D; create pr...">Body3D</a> or <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> pointers. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a6fcd6d2e01c9891f3eea646474ae391d" name="a6fcd6d2e01c9891f3eea646474ae391d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fcd6d2e01c9891f3eea646474ae391d">&#9670;&#160;</a></span>ensureSchemaRegistered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::GeometryCollectionInstanceSnapshot::ensureSchemaRegistered </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Idempotently register version 1 in the process schema registry. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html">GeometryCollectionSnapshot.cpp</a> 第 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00864">eve::schema::SchemaRegistry::registerVersioned()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00879">eve::schema::SchemaRegistry::resolve()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00206">schemaDefinition()</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00029">SchemaId</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a> , 以及 <a class="el" href="Destruction_8cpp_source.html#l00017">eve::physics::Destruction::registerGeometryCollectionSchema()</a>.</p>
+
+</div>
+</div>
+<a id="adb5bbe8d139aec576f550978dbf992d1" name="adb5bbe8d139aec576f550978dbf992d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb5bbe8d139aec576f550978dbf992d1">&#9670;&#160;</a></span>fromValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html">GeometryCollectionInstanceSnapshot</a> &gt; eve::physics::GeometryCollectionInstanceSnapshot::fromValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decode and validate version 1 transactionally. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html">GeometryCollectionSnapshot.cpp</a> 第 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00056">bones</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00014">edge</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00057">edges</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00235">ensureSchemaRegistered()</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00054">lastTick</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00332">number</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00051">originX</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00052">originY</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00053">originZ</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00029">SchemaId</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00055">sleepBatchRevision</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">validate()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00153">value</a>.</p>
+
+</div>
+</div>
+<a id="a3986b8cc1203762394b469cd256e13a3" name="a3986b8cc1203762394b469cd256e13a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3986b8cc1203762394b469cd256e13a3">&#9670;&#160;</a></span>schemaDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">eve::schema::SchemaDefinition</a> eve::physics::GeometryCollectionInstanceSnapshot::schemaDefinition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build the tooling schema that mirrors <a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot.html#abb9099b6764505863cdcea5a43fbd22e" title="Validate counts and numeric ranges.">validate()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html">GeometryCollectionSnapshot.cpp</a> 第 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaTypes_8h_source.html#l00098">eve::schema::SchemaDefinition::additionalProperties</a>, <a class="el" href="SchemaTypes_8h_source.html#l00097">eve::schema::SchemaDefinition::description</a>, <a class="el" href="SchemaTypes_8h_source.html#l00099">eve::schema::SchemaDefinition::fields</a>, <a class="el" href="SchemaTypes_8h_source.html#l00094">eve::schema::SchemaDefinition::id</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00064">required</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00029">SchemaId</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00030">SchemaVersion</a>, <a class="el" href="SchemaTypes_8h_source.html#l00096">eve::schema::SchemaDefinition::title</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>, <a class="el" href="EditingValue_8cpp_source.html#l00007">eve::editing::Value::type()</a> , 以及 <a class="el" href="SchemaTypes_8h_source.html#l00095">eve::schema::SchemaDefinition::version</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00235">ensureSchemaRegistered()</a>.</p>
+
+</div>
+</div>
+<a id="a5ee18f5ee9e97bb7c333e67b21b2de75" name="a5ee18f5ee9e97bb7c333e67b21b2de75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ee18f5ee9e97bb7c333e67b21b2de75">&#9670;&#160;</a></span>toValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::physics::GeometryCollectionInstanceSnapshot::toValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode the complete canonical version-1 value. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html">GeometryCollectionSnapshot.cpp</a> 第 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00056">bones</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00014">edge</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00057">edges</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00054">lastTick</a>, <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00051">originX</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00052">originY</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00053">originZ</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00029">SchemaId</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00030">SchemaVersion</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00055">sleepBatchRevision</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">validate()</a>.</p>
+
+</div>
+</div>
+<a id="abb9099b6764505863cdcea5a43fbd22e" name="abb9099b6764505863cdcea5a43fbd22e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb9099b6764505863cdcea5a43fbd22e">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::GeometryCollectionInstanceSnapshot::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate counts and numeric ranges. </p>
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html">GeometryCollectionSnapshot.cpp</a> 第 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00056">bones</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00014">edge</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00057">edges</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00054">lastTick</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00051">originX</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00052">originY</a>, <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00053">originZ</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00452">eve::physics::GeometryCollectionInstance::captureSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00486">eve::physics::GeometryCollectionInstance::restoreSnapshot()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a9b8004ef57aacadf57645cc9d563997a" name="a9b8004ef57aacadf57645cc9d563997a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b8004ef57aacadf57645cc9d563997a">&#9670;&#160;</a></span>bones</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1BoneSnapshot.html">BoneSnapshot</a>&gt; eve::physics::GeometryCollectionInstanceSnapshot::bones</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00452">eve::physics::GeometryCollectionInstance::captureSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00486">eve::physics::GeometryCollectionInstance::restoreSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ac77e22e4201da4ff0dda904dffd002dc" name="ac77e22e4201da4ff0dda904dffd002dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac77e22e4201da4ff0dda904dffd002dc">&#9670;&#160;</a></span>edges</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1physics_1_1GeometryCollectionInstanceSnapshot_1_1EdgeSnapshot.html">EdgeSnapshot</a>&gt; eve::physics::GeometryCollectionInstanceSnapshot::edges</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00452">eve::physics::GeometryCollectionInstance::captureSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00486">eve::physics::GeometryCollectionInstance::restoreSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a4404dd224ba1a62ad37b96b658876308" name="a4404dd224ba1a62ad37b96b658876308"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4404dd224ba1a62ad37b96b658876308">&#9670;&#160;</a></span>lastTick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::physics::GeometryCollectionInstanceSnapshot::lastTick = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00452">eve::physics::GeometryCollectionInstance::captureSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00486">eve::physics::GeometryCollectionInstance::restoreSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">validate()</a>.</p>
+
+</div>
+</div>
+<a id="aaa26f25c878548c5570ef91f4498f689" name="aaa26f25c878548c5570ef91f4498f689"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa26f25c878548c5570ef91f4498f689">&#9670;&#160;</a></span>originX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::GeometryCollectionInstanceSnapshot::originX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00452">eve::physics::GeometryCollectionInstance::captureSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00486">eve::physics::GeometryCollectionInstance::restoreSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a759a1c84ac6e9318d1f4a630954f6cbd" name="a759a1c84ac6e9318d1f4a630954f6cbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a759a1c84ac6e9318d1f4a630954f6cbd">&#9670;&#160;</a></span>originY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::GeometryCollectionInstanceSnapshot::originY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00452">eve::physics::GeometryCollectionInstance::captureSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00486">eve::physics::GeometryCollectionInstance::restoreSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ab56ccfae687ccb431518430ff9588b36" name="ab56ccfae687ccb431518430ff9588b36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab56ccfae687ccb431518430ff9588b36">&#9670;&#160;</a></span>originZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::GeometryCollectionInstanceSnapshot::originZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00452">eve::physics::GeometryCollectionInstance::captureSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00486">eve::physics::GeometryCollectionInstance::restoreSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00126">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a86acaf93153a11c4a208aaadaa0e9c34" name="a86acaf93153a11c4a208aaadaa0e9c34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86acaf93153a11c4a208aaadaa0e9c34">&#9670;&#160;</a></span>SchemaId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::physics::GeometryCollectionInstanceSnapshot::SchemaId = &quot;physics:geometry-collection-instance&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00235">ensureSchemaRegistered()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00206">schemaDefinition()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a>.</p>
+
+</div>
+</div>
+<a id="a2211c428d9d127361ea0f14a8dff3a85" name="a2211c428d9d127361ea0f14a8dff3a85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2211c428d9d127361ea0f14a8dff3a85">&#9670;&#160;</a></span>SchemaVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint32_t eve::physics::GeometryCollectionInstanceSnapshot::SchemaVersion = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00206">schemaDefinition()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a>.</p>
+
+</div>
+</div>
+<a id="a7565f1d82a5e4623ba96db6ed0ddbf88" name="a7565f1d82a5e4623ba96db6ed0ddbf88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7565f1d82a5e4623ba96db6ed0ddbf88">&#9670;&#160;</a></span>sleepBatchRevision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::physics::GeometryCollectionInstanceSnapshot::sleepBatchRevision = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a> 第 <a class="el" href="GeometryCollectionSnapshot_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00452">eve::physics::GeometryCollectionInstance::captureSnapshot()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">fromValue()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00486">eve::physics::GeometryCollectionInstance::restoreSnapshot()</a> , 以及 <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00166">toValue()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/physics/destruction/<a class="el" href="GeometryCollectionSnapshot_8h_source.html">GeometryCollectionSnapshot.h</a></li>
+<li>src/modules/physics/destruction/<a class="el" href="GeometryCollectionSnapshot_8cpp_source.html">GeometryCollectionSnapshot.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

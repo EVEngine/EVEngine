@@ -1,0 +1,557 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/texture/CableTextures.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_58df875c20f4dbb0276e827a5bf00a98.html">texture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">CableTextures.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="CableTextures_8h_source.html">procgen/texture/CableTextures.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ImageData_8h_source.html">image/ImageData.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ParamSchema_8h_source.html">procgen/ParamSchema.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="NoiseField_8h_source.html">procgen/texture/NoiseField.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PbrMaterial_8h_source.html">procgen/texture/PbrMaterial.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="TextureRecipe_8h_source.html">procgen/texture/TextureRecipe.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="CableTextures_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a8c49ec80a61a61e4d942018d1a266880" id="r_a8c49ec80a61a61e4d942018d1a266880"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8c49ec80a61a61e4d942018d1a266880">eve::procgen::generateSteelCableTexture</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="memdesc:a8c49ec80a61a61e4d942018d1a266880"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a parameterized steel-cable braid albedo (<code>tex.cable.steel</code>). @ownership On success the caller exclusively owns the returned <a class="el" href="structeve_1_1procgen_1_1ImageData.html" title="Small owning image product; raw pixels stay out of JSON metadata.">ImageData</a>.  <br /></td></tr>
+<tr class="separator:a8c49ec80a61a61e4d942018d1a266880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3007a60357a13dbbb86785f7d63b359f" id="r_a3007a60357a13dbbb86785f7d63b359f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a3007a60357a13dbbb86785f7d63b359f">eve::procgen::generateIronChainTexture</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="memdesc:a3007a60357a13dbbb86785f7d63b359f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a parameterized iron / rusted metal albedo (<code>tex.chain.iron</code>). @ownership On success the caller exclusively owns the returned <a class="el" href="structeve_1_1procgen_1_1ImageData.html" title="Small owning image product; raw pixels stay out of JSON metadata.">ImageData</a>.  <br /></td></tr>
+<tr class="separator:a3007a60357a13dbbb86785f7d63b359f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6965bad9e2d47b361c7659a29cc6a26" id="r_af6965bad9e2d47b361c7659a29cc6a26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#af6965bad9e2d47b361c7659a29cc6a26">eve::procgen::generateHempRopeTexture</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="memdesc:af6965bad9e2d47b361c7659a29cc6a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a parameterized hemp-rope fiber albedo (<code>tex.rope.hemp</code>). @ownership On success the caller exclusively owns the returned <a class="el" href="structeve_1_1procgen_1_1ImageData.html" title="Small owning image product; raw pixels stay out of JSON metadata.">ImageData</a>.  <br /></td></tr>
+<tr class="separator:af6965bad9e2d47b361c7659a29cc6a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8fbad437ea31d0d17cdfb280ea2c073" id="r_ab8fbad437ea31d0d17cdfb280ea2c073"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ab8fbad437ea31d0d17cdfb280ea2c073">eve::procgen::generateSteelCablePbr</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="memdesc:ab8fbad437ea31d0d17cdfb280ea2c073"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full PBR map set for steel cable (<code>pbr.cable.steel</code>). @ownership On success the caller exclusively owns the returned set and all maps.  <br /></td></tr>
+<tr class="separator:ab8fbad437ea31d0d17cdfb280ea2c073"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e3c264600f5762707b54c471933d5ef" id="r_a9e3c264600f5762707b54c471933d5ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a9e3c264600f5762707b54c471933d5ef">eve::procgen::generateIronChainPbr</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="memdesc:a9e3c264600f5762707b54c471933d5ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full PBR map set for iron chain metal (<code>pbr.chain.iron</code>). @ownership On success the caller exclusively owns the returned set and all maps.  <br /></td></tr>
+<tr class="separator:a9e3c264600f5762707b54c471933d5ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fa7ef14284483889dc87024a2a76633" id="r_a8fa7ef14284483889dc87024a2a76633"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8fa7ef14284483889dc87024a2a76633">eve::procgen::generateHempRopePbr</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="memdesc:a8fa7ef14284483889dc87024a2a76633"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full PBR map set for hemp rope (<code>pbr.rope.hemp</code>). @ownership On success the caller exclusively owns the returned set and all maps.  <br /></td></tr>
+<tr class="separator:a8fa7ef14284483889dc87024a2a76633"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25c30aa0c02561daf83d85854ebf2431" id="r_a25c30aa0c02561daf83d85854ebf2431"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a25c30aa0c02561daf83d85854ebf2431">eve::procgen::registerCableTextureRecipes</a> (<a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">TextureRecipeRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:a25c30aa0c02561daf83d85854ebf2431"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>tex.cable.steel</code> / <code>tex.chain.iron</code> / <code>tex.rope.hemp</code>.  <br /></td></tr>
+<tr class="separator:a25c30aa0c02561daf83d85854ebf2431"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56499934ca64dd4eae34d465a82295e6" id="r_a56499934ca64dd4eae34d465a82295e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a56499934ca64dd4eae34d465a82295e6">eve::procgen::registerCablePbrRecipes</a> (<a class="el" href="classeve_1_1procgen_1_1PbrRecipeRegistry.html">PbrRecipeRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:a56499934ca64dd4eae34d465a82295e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>pbr.cable.steel</code> / <code>pbr.chain.iron</code> / <code>pbr.rope.hemp</code>.  <br /></td></tr>
+<tr class="separator:a56499934ca64dd4eae34d465a82295e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a6bca0467c0e95c429e5962528d15dc12" name="a6bca0467c0e95c429e5962528d15dc12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bca0467c0e95c429e5962528d15dc12">&#9670;&#160;</a></span>albedo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;image::ImageData&gt; albedo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a262c07ca774ae91952a70139e1b01aef" name="a262c07ca774ae91952a70139e1b01aef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a262c07ca774ae91952a70139e1b01aef">&#9670;&#160;</a></span>aoStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float aoStrength = 1.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a83fc1af92e29717b4513d121b0c72c7d" name="a83fc1af92e29717b4513d121b0c72c7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83fc1af92e29717b4513d121b0c72c7d">&#9670;&#160;</a></span>b</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float b = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af983608eaad77853e6283a63910341d7" name="af983608eaad77853e6283a63910341d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af983608eaad77853e6283a63910341d7">&#9670;&#160;</a></span>colors</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int colors = 8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54f9241733d72e5c36ea64144aeafbd1" name="a54f9241733d72e5c36ea64144aeafbd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f9241733d72e5c36ea64144aeafbd1">&#9670;&#160;</a></span>contrast</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float contrast = 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00049">eve::procgen::GtsHeightBlendSet::addLayer()</a> , 以及 <a class="el" href="MapFog_8cpp_source.html#l00358">eve::graphics::MapFog::setCloudDensity()</a>.</p>
+
+</div>
+</div>
+<a id="a8cf17d727651616de6f2b79ef32170cd" name="a8cf17d727651616de6f2b79ef32170cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cf17d727651616de6f2b79ef32170cd">&#9670;&#160;</a></span>g</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float g = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a825c8b5fcb954eb72eccfea1f5ce4299" name="a825c8b5fcb954eb72eccfea1f5ce4299"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a825c8b5fcb954eb72eccfea1f5ce4299">&#9670;&#160;</a></span>gap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float gap = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l00913">eve::ui::UI::beginColumn()</a>, <a class="el" href="UI_8cpp_source.html#l00905">eve::ui::UI::beginFlex()</a>, <a class="el" href="UI_8cpp_source.html#l00911">eve::ui::UI::beginRow()</a>, <a class="el" href="Layout_8cpp_source.html#l00201">eve::ui::flexArrange()</a>, <a class="el" href="Layout_8cpp_source.html#l00025">eve::ui::flexArrangeSingleLine()</a> , 以及 <a class="el" href="Layout_8cpp_source.html#l00369">eve::ui::measureNode()</a>.</p>
+
+</div>
+</div>
+<a id="a16611451551e3d15916bae723c3f59f7" name="a16611451551e3d15916bae723c3f59f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16611451551e3d15916bae723c3f59f7">&#9670;&#160;</a></span>h</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int h = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a895f8ed31d4ab9b65c147110c46aa260" name="a895f8ed31d4ab9b65c147110c46aa260"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a895f8ed31d4ab9b65c147110c46aa260">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; height</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ef9f4cafe2c064c1e511a1094522e8e" name="a4ef9f4cafe2c064c1e511a1094522e8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ef9f4cafe2c064c1e511a1094522e8e">&#9670;&#160;</a></span>heightStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float heightStrength = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abf199fccc6834e86bd7ca4693eba27bb" name="abf199fccc6834e86bd7ca4693eba27bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf199fccc6834e86bd7ca4693eba27bb">&#9670;&#160;</a></span>metallic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float metallic = 0.85<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5ee4c850452c326a0e0c95bf057c052" name="ac5ee4c850452c326a0e0c95bf057c052"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5ee4c850452c326a0e0c95bf057c052">&#9670;&#160;</a></span>normalStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float normalStrength = 5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics3D_8cpp_source.html#l00867">eve::graphics::vulkan::Graphics::drawDecal()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03830">eve::graphics::webgpu::Graphics::drawDecal()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00081">eve::decal::DecalManager::project()</a>, <a class="el" href="Decal_8cpp_source.html#l00057">eve::decal::Decal::setStrength()</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00152">eve::decal::DecalManager::setStrength()</a>.</p>
+
+</div>
+</div>
+<a id="a4788d82c901b9367dd5c0daff8a7616b" name="a4788d82c901b9367dd5c0daff8a7616b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4788d82c901b9367dd5c0daff8a7616b">&#9670;&#160;</a></span>r</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float r = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeeedb5a669b726082c4d6c537f5b8268" name="aeeedb5a669b726082c4d6c537f5b8268"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeedb5a669b726082c4d6c537f5b8268">&#9670;&#160;</a></span>roughnessHigh</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float roughnessHigh = 0.75<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a119fe675ad7f141a1b23dae4766ec292" name="a119fe675ad7f141a1b23dae4766ec292"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a119fe675ad7f141a1b23dae4766ec292">&#9670;&#160;</a></span>roughnessLow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float roughnessLow = 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45b6a834c73679a6afa86d8e11f6eadb" name="a45b6a834c73679a6afa86d8e11f6eadb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45b6a834c73679a6afa86d8e11f6eadb">&#9670;&#160;</a></span>seamless</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool seamless = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02015">eve::procgen::Procgen::generateNormalImageHandle()</a>, <a class="el" href="Procgen_8cpp_source.html#l02072">eve::procgen::Procgen::generateTextureBorrowed()</a> , 以及 <a class="el" href="TextureRecipe_8cpp_source.html#l00148">eve::procgen::heightToNormalImage()</a>.</p>
+
+</div>
+</div>
+<a id="affcaf69c829c1ab53ba8d60003947d66" name="affcaf69c829c1ab53ba8d60003947d66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affcaf69c829c1ab53ba8d60003947d66">&#9670;&#160;</a></span>strands</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int strands = 6</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00163">eve::graphics::hair::GroomInstance::bakeProceduralMesh()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00156">eve::graphics::hair::GroomInstance::bakeProceduralPlane()</a>, <a class="el" href="Binding_8cpp_source.html#l00164">eve::graphics::hair::GroomBinding::build()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00074">eve::graphics::hair::ClusterGrid::build()</a>, <a class="el" href="Guides_8cpp_source.html#l00103">eve::graphics::hair::buildGuideWeights()</a>, <a class="el" href="RibbonBuilder_8cpp_source.html#l00021">eve::graphics::hair::buildRibbons()</a>, <a class="el" href="Guides_8cpp_source.html#l00056">eve::graphics::hair::extractGuides()</a>, <a class="el" href="CableChainRope_8cpp_source.html#l00225">eve::procgen::generateCableChainRope()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00397">eve::graphics::hair::GroomInstance::rebuild()</a> , 以及 <a class="el" href="GroomInstance_8cpp_source.html#l00287">eve::graphics::hair::GroomInstance::update()</a>.</p>
+
+</div>
+</div>
+<a id="a0d0569a6fc14951e5ee43c3a26273b72" name="a0d0569a6fc14951e5ee43c3a26273b72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d0569a6fc14951e5ee43c3a26273b72">&#9670;&#160;</a></span>twist</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float twist = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystemMesh_8cpp_source.html#l00147">eve::procgen::generateLSystemMesh()</a>.</p>
+
+</div>
+</div>
+<a id="aac374e320caaadeca4874add33b62af2" name="aac374e320caaadeca4874add33b62af2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac374e320caaadeca4874add33b62af2">&#9670;&#160;</a></span>w</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int w = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a370ea558d59afa38aa6ad7ae03c74491" name="a370ea558d59afa38aa6ad7ae03c74491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a370ea558d59afa38aa6ad7ae03c74491">&#9670;&#160;</a></span>wear</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float wear = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CableTextures_8cpp_source.html">CableTextures.cpp</a> 第 <a class="el" href="CableTextures_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,553 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::SkyAtmospherePass类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1SkyAtmospherePass-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::SkyAtmospherePass类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Prepared HDR atmospheric sky draw with independent optical parameters and lookup tables.  
+ <a href="classeve_1_1graphics_1_1SkyAtmospherePass.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SkyAtmospherePass_8h_source.html">SkyAtmospherePass.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyAtmospherePass_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:adf3ebbf6b5093acd61bd246a67ec792c" id="r_adf3ebbf6b5093acd61bd246a67ec792c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#adf3ebbf6b5093acd61bd246a67ec792c">~SkyAtmospherePass</a> ()</td></tr>
+<tr class="separator:adf3ebbf6b5093acd61bd246a67ec792c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7faa070af2778836fe41d0d59b911446" id="r_a7faa070af2778836fe41d0d59b911446"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#a7faa070af2778836fe41d0d59b911446">SkyAtmospherePass</a> (const <a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a> &amp;)=delete</td></tr>
+<tr class="separator:a7faa070af2778836fe41d0d59b911446"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdcc51866e13c2ec790be4c73a325bd9" id="r_acdcc51866e13c2ec790be4c73a325bd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#acdcc51866e13c2ec790be4c73a325bd9">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a> &amp;)=delete</td></tr>
+<tr class="separator:acdcc51866e13c2ec790be4c73a325bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a553ea5f940dc3261673d846177ee52fb" id="r_a553ea5f940dc3261673d846177ee52fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#a553ea5f940dc3261673d846177ee52fb">setLight</a> (const <a class="el" href="structeve_1_1graphics_1_1SkyCelestialLight.html">SkyCelestialLight</a> &amp;<a class="el" href="ShadowScheme_8cpp.html#a6d1763a0649bb8d1e7bb07e1f9f63a02">light</a>)</td></tr>
+<tr class="memdesc:a553ea5f940dc3261673d846177ee52fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically set explicit light direction and RGB irradiance; rejects nonfinite or negative energy.  <br /></td></tr>
+<tr class="separator:a553ea5f940dc3261673d846177ee52fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a27c95d78d769f23a496de12dbd8d30" id="r_a7a27c95d78d769f23a496de12dbd8d30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#a7a27c95d78d769f23a496de12dbd8d30">setFrame</a> (const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html">SkyAtmosphereFrame</a> &amp;frame)</td></tr>
+<tr class="memdesc:a7a27c95d78d769f23a496de12dbd8d30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically publish solar lighting, normalized cloud phase and solar-day fraction. @thread <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> thread outside drawing. Copies the snapshot; no callbacks or GPU allocation.  <br /></td></tr>
+<tr class="separator:a7a27c95d78d769f23a496de12dbd8d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add25b5b31985e1bb6890f1c215093c90" id="r_add25b5b31985e1bb6890f1c215093c90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#add25b5b31985e1bb6890f1c215093c90">attach</a> ()</td></tr>
+<tr class="memdesc:add25b5b31985e1bb6890f1c215093c90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the prepared pass for main view and reflection captures, idempotently.  <br /></td></tr>
+<tr class="separator:add25b5b31985e1bb6890f1c215093c90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbd400cf562815f11b8b0c1abbcdd883" id="r_adbd400cf562815f11b8b0c1abbcdd883"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#adbd400cf562815f11b8b0c1abbcdd883">detach</a> () noexcept</td></tr>
+<tr class="memdesc:adbd400cf562815f11b8b0c1abbcdd883"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel both registrations; does not mutate legacy DayNight state.  <br /></td></tr>
+<tr class="separator:adbd400cf562815f11b8b0c1abbcdd883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c1b2d34329e7430da920ee41d107707" id="r_a4c1b2d34329e7430da920ee41d107707"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#a4c1b2d34329e7430da920ee41d107707">prepareView</a> (const glm::mat4 &amp;viewProjection, const glm::vec3 &amp;eyeMetres)</td></tr>
+<tr class="memdesc:a4c1b2d34329e7430da920ee41d107707"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare the cached sky-view texture before opening a destination pass.  <br /></td></tr>
+<tr class="separator:a4c1b2d34329e7430da920ee41d107707"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb3cc4c4fa0d762e3b0511fdd317aaaf" id="r_acb3cc4c4fa0d762e3b0511fdd317aaaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#acb3cc4c4fa0d762e3b0511fdd317aaaf">draw</a> (const glm::mat4 &amp;viewProjection, const glm::vec3 &amp;eyeMetres)</td></tr>
+<tr class="memdesc:acb3cc4c4fa0d762e3b0511fdd317aaaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw a prepared view into an already-open HDR 3D pass; sky writes only far-depth background pixels.  <br /></td></tr>
+<tr class="separator:acb3cc4c4fa0d762e3b0511fdd317aaaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:abe655cf54ac92a48ddf1065745fd3b73" id="r_abe655cf54ac92a48ddf1065745fd3b73"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html#abe655cf54ac92a48ddf1065745fd3b73">prepare</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;graphics, const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a> &amp;parameters, const <a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html">SkyWispsLayer</a> *wisps=nullptr)</td></tr>
+<tr class="memdesc:abe655cf54ac92a48ddf1065745fd3b73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare an independent atmospheric program and immutable coefficient buffer.  <br /></td></tr>
+<tr class="separator:abe655cf54ac92a48ddf1065745fd3b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Prepared HDR atmospheric sky draw with independent optical parameters and lookup tables. </p>
+<p>Main-view and reflection contributors use the same program and lighting snapshot. Includes two-direction finite-order multiple scattering and optional authored thin-cloud compositing. Authored layers may include a solar disk with separate reflection scaling. The optional daylight layer adds tiling stars and source-driven cloud/glow lighting. The lunar option adds phase-normal shading, star occultation and glow through the same sky composite. <a class="el" href="classeve_1_1graphics_1_1Volumetric.html" title="Volumetric light + fog.">Volumetric</a> clouds remain separate; this pass does not claim full UDS equivalence. @thread All operations and destruction run on the graphics thread outside contributor dispatch. @lifetime The pass owns its registrations; <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> owns GPU allocations. Provider-first destruction invalidates a weak token, and later draws fail without dereferencing it. Pass-first destruction unregisters callbacks and releases mesh/shader allocations. The fixed-size view <a class="el" href="classeve_1_1graphics_1_1Canvas.html" title="Canvas public API.">Canvas</a> follows the existing Graphics-owned <a class="el" href="classeve_1_1graphics_1_1Canvas.html" title="Canvas public API.">Canvas</a> lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmospherePass_8h_source.html">SkyAtmospherePass.h</a> 第 <a class="el" href="SkyAtmospherePass_8h_source.html#l00086">86</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="adf3ebbf6b5093acd61bd246a67ec792c" name="adf3ebbf6b5093acd61bd246a67ec792c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf3ebbf6b5093acd61bd246a67ec792c">&#9670;&#160;</a></span>~SkyAtmospherePass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::SkyAtmospherePass::~SkyAtmospherePass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyAtmospherePass_8cpp_source.html">SkyAtmospherePass.cpp</a> 第 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00510">detach()</a>.</p>
+
+</div>
+</div>
+<a id="a7faa070af2778836fe41d0d59b911446" name="a7faa070af2778836fe41d0d59b911446"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7faa070af2778836fe41d0d59b911446">&#9670;&#160;</a></span>SkyAtmospherePass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::SkyAtmospherePass::SkyAtmospherePass </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="add25b5b31985e1bb6890f1c215093c90" name="add25b5b31985e1bb6890f1c215093c90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add25b5b31985e1bb6890f1c215093c90">&#9670;&#160;</a></span>attach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::SkyAtmospherePass::attach </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register the prepared pass for main view and reflection captures, idempotently. </p>
+<dl class="section return"><dt>返回</dt><dd>Success or failure without partial registration. Must be outside draw callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmospherePass_8cpp_source.html">SkyAtmospherePass.cpp</a> 第 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00477">477</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00481">eve::graphics::RenderSystem3D::addCaptureExtraDrawer()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00496">eve::graphics::RenderSystem3D::addForwardExtraDrawer()</a>, <a class="el" href="ViewPreparation_8cpp_source.html#l00019">eve::graphics::addViewPreparation()</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00062">camera</a>, <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00510">detach()</a>, <a class="el" href="MeshVfxRenderBatch_8cpp_source.html#l00013">draw</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00629">eye</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00419">prepareView()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="adbd400cf562815f11b8b0c1abbcdd883" name="adbd400cf562815f11b8b0c1abbcdd883"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbd400cf562815f11b8b0c1abbcdd883">&#9670;&#160;</a></span>detach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::SkyAtmospherePass::detach </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cancel both registrations; does not mutate legacy DayNight state. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmospherePass_8cpp_source.html">SkyAtmospherePass.cpp</a> 第 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00510">510</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00488">eve::graphics::RenderSystem3D::removeCaptureExtraDrawer()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00503">eve::graphics::RenderSystem3D::removeForwardExtraDrawer()</a> , 以及 <a class="el" href="ViewPreparation_8cpp_source.html#l00031">eve::graphics::removeViewPreparation()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00477">attach()</a> , 以及 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00074">~SkyAtmospherePass()</a>.</p>
+
+</div>
+</div>
+<a id="acb3cc4c4fa0d762e3b0511fdd317aaaf" name="acb3cc4c4fa0d762e3b0511fdd317aaaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb3cc4c4fa0d762e3b0511fdd317aaaf">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::SkyAtmospherePass::draw </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>viewProjection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>eyeMetres</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw a prepared view into an already-open HDR 3D pass; sky writes only far-depth background pixels. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">viewProjection</td><td>Invertible current camera transform. </td></tr>
+    <tr><td class="paramname">eyeMetres</td><td>Current camera position; world Y=0 is the reference ground surface. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or invalid/provider-expired status before submission. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmospherePass_8cpp_source.html">SkyAtmospherePass.cpp</a> 第 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00443">443</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acdcc51866e13c2ec790be4c73a325bd9" name="acdcc51866e13c2ec790be4c73a325bd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdcc51866e13c2ec790be4c73a325bd9">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a> &amp; eve::graphics::SkyAtmospherePass::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abe655cf54ac92a48ddf1065745fd3b73" name="abe655cf54ac92a48ddf1065745fd3b73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe655cf54ac92a48ddf1065745fd3b73">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1graphics_1_1SkyAtmospherePass.html">SkyAtmospherePass</a> &gt; &gt; eve::graphics::SkyAtmospherePass::prepare </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereParameters.html">SkyAtmosphereParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>parameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html">SkyWispsLayer</a> *&#160;</td>
+          <td class="paramname"><em>wisps</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prepare an independent atmospheric program and immutable coefficient buffer. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">wisps</td><td>Optional authored thin-cloud inputs, borrowed only until preparation returns. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning prepared pass or structured failure; no contributors are published on failure. @cost GPU pipeline creation and upload, plus 81 CPU optical bakes for the optical cycle; amortize over the lifetime of a sky configuration (about 22 MiB of shared optical volume data, plus about 21.3 MiB for the two optional 1024-square RGBA16F lunar mip chains). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmospherePass_8cpp_source.html">SkyAtmospherePass.cpp</a> 第 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkyAtmosphereLuts_8cpp_source.html#l00135">eve::graphics::detail::bakeSkyAtmosphereLuts()</a>, <a class="el" href="Graphics_8h_source.html#l01847">eve::graphics::Graphics::configureMeshShaderRaster()</a>, <a class="el" href="Graphics_8h_source.html#l01830">eve::graphics::Graphics::configureMeshShaderSurface()</a>, <a class="el" href="SkyWispsLayer_8h_source.html#l00058">eve::graphics::SkyWispsLayer::daylight</a>, <a class="el" href="SkyWispsLayer_8h_source.html#l00055">eve::graphics::SkyWispsLayer::daylightEnabled</a>, <a class="el" href="MeshShaderRasterState_8h_source.html#l00014">eve::graphics::MeshShaderRasterState::depthCompare</a>, <a class="el" href="SkyWispsLayer_8h_source.html#l00081">eve::graphics::SkyWispsLayer::domeScale</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669ab696e5f895616f606a8be85892c374a9">eve::graphics::Image2D</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1bea414c24b27aede3f4320639704669a2d4c32ae3db71aee7bf3a801d15f5075">eve::graphics::Image3D</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve_1_1graphics.html#affa67bdc5735184fc118ff96a43fe94cad3e6fdac55bb7b0edd7834c968ba1f38">eve::graphics::LessEqual</a>, <a class="el" href="TextureSampler_8h_source.html#l00051">eve::graphics::TextureSampler::linear()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">eve::graphics::Graphics::newMeshShaderFromSpv()</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980afaa90538de35640e4b1e31ccf35b6eb5">eve::Opaque</a>, <a class="el" href="SkyWispsLayer_8h_source.html#l00057">eve::graphics::SkyWispsLayer::opticalCycleEnabled</a>, <a class="el" href="SkyOpticalCycle_8h_source.html#l00024">eve::graphics::detail::OpticalLayers</a>, <a class="el" href="SkyOpticalCycle_8h_source.html#l00025">eve::graphics::detail::OpticalMaximum</a>, <a class="el" href="SkyOpticalCycle_8h_source.html#l00025">eve::graphics::detail::OpticalMinimum</a>, <a class="el" href="SkyOpticalCycle_8h_source.html#l00007">eve::graphics::detail::opticalSample()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="ShaderResources_8cpp_source.html#l00010">eve::graphics::Graphics::replaceMeshShaderResources()</a>, <a class="el" href="GraphicsLifetime_8cpp_source.html#l00027">eve::graphics::Graphics::resourceLifetime()</a>, <a class="el" href="namespaceeve_1_1graphics.html#a03522064038f77bd309db7340575ae70aeb2c00a865e6d373efbef741bd999a53">eve::graphics::RGBA32Float</a>, <a class="el" href="SkyAtmosphereSpv_8h_source.html#l00647">sky_atmosphere_frag</a>, <a class="el" href="SkyAtmosphereSpv_8h_source.html#l00005">sky_atmosphere_vert</a>, <a class="el" href="SkyViewLutSpv_8h_source.html#l00037">sky_view_lut_frag</a>, <a class="el" href="SkyViewLutSpv_8h_source.html#l00005">sky_view_lut_vert</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00153">value</a>, <a class="el" href="EditorHost_8cpp_source.html#l00490">values</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyRuntime_8cpp_source.html#l00067">eve::daynight::SkyRuntime::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a4c1b2d34329e7430da920ee41d107707" name="a4c1b2d34329e7430da920ee41d107707"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c1b2d34329e7430da920ee41d107707">&#9670;&#160;</a></span>prepareView()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::SkyAtmospherePass::prepareView </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>viewProjection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>eyeMetres</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prepare the cached sky-view texture before opening a destination pass. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">viewProjection</td><td>Invertible camera matrix, borrowed for this call only. </td></tr>
+    <tr><td class="paramname">eyeMetres</td><td><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> world position; only the optical camera is clamped above ground. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success or a structured error; failure invalidates the candidate view. @thread <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> thread, outside any open 3D render pass; no callbacks. @cost One 192x104 atmospheric integration pass for changed camera/light inputs; identical inputs reuse the cache. The existing offscreen backend waits for submission. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmospherePass_8cpp_source.html">SkyAtmospherePass.cpp</a> 第 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00419">419</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00477">attach()</a>.</p>
+
+</div>
+</div>
+<a id="a7a27c95d78d769f23a496de12dbd8d30" name="a7a27c95d78d769f23a496de12dbd8d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a27c95d78d769f23a496de12dbd8d30">&#9670;&#160;</a></span>setFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::SkyAtmospherePass::setFrame </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1SkyAtmosphereFrame.html">SkyAtmosphereFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically publish solar lighting, normalized cloud phase and solar-day fraction. @thread <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> thread outside drawing. Copies the snapshot; no callbacks or GPU allocation. </p>
+<dl class="section return"><dt>返回</dt><dd>Failure leaves lighting and both phases unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmospherePass_8cpp_source.html">SkyAtmospherePass.cpp</a> 第 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkyAtmospherePass_8h_source.html#l00069">eve::graphics::SkyAtmosphereFrame::dayPhase</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="ShadowScheme_8cpp_source.html#l00016">light</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="SkyAtmospherePass_8h_source.html#l00066">eve::graphics::SkyAtmosphereFrame::sun</a> , 以及 <a class="el" href="SkyAtmospherePass_8h_source.html#l00067">eve::graphics::SkyAtmosphereFrame::wispsMorphPhase</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00395">setLight()</a>.</p>
+
+</div>
+</div>
+<a id="a553ea5f940dc3261673d846177ee52fb" name="a553ea5f940dc3261673d846177ee52fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a553ea5f940dc3261673d846177ee52fb">&#9670;&#160;</a></span>setLight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::SkyAtmospherePass::setLight </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1SkyCelestialLight.html">SkyCelestialLight</a> &amp;&#160;</td>
+          <td class="paramname"><em>light</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically set explicit light direction and RGB irradiance; rejects nonfinite or negative energy. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyAtmospherePass_8cpp_source.html">SkyAtmospherePass.cpp</a> 第 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00395">395</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShadowScheme_8cpp_source.html#l00016">light</a> , 以及 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00398">setFrame()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/sky/<a class="el" href="SkyAtmospherePass_8h_source.html">SkyAtmospherePass.h</a></li>
+<li>src/modules/graphics/sky/<a class="el" href="SkyAtmospherePass_8cpp_source.html">SkyAtmospherePass.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::trajectory::BoneColliderDefinition结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1trajectory.html">trajectory</a></li><li class="navelem"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html">BoneColliderDefinition</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::trajectory::BoneColliderDefinition结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Catalog entry that binds a sphere or capsule to named attachment points.  
+ <a href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4304c542d47acc76f9c4af49694a7aab" id="r_a4304c542d47acc76f9c4af49694a7aab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a4304c542d47acc76f9c4af49694a7aab">validate</a> () const</td></tr>
+<tr class="memdesc:a4304c542d47acc76f9c4af49694a7aab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reject empty ids, non-finite dimensions, or inconsistent shape fields.  <br /></td></tr>
+<tr class="separator:a4304c542d47acc76f9c4af49694a7aab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a337836c13370b139ce1c65e77e4b1b05" id="r_a337836c13370b139ce1c65e77e4b1b05"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a337836c13370b139ce1c65e77e4b1b05">colliderId</a></td></tr>
+<tr class="memdesc:a337836c13370b139ce1c65e77e4b1b05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable catalog id (e.g. weapon.blade, hand.L).  <br /></td></tr>
+<tr class="separator:a337836c13370b139ce1c65e77e4b1b05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4972568033b761bd9c824c2aabc7446b" id="r_a4972568033b761bd9c824c2aabc7446b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a4972568033b761bd9c824c2aabc7446b">boneName</a></td></tr>
+<tr class="memdesc:a4972568033b761bd9c824c2aabc7446b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary / start attachment name resolved by <a class="el" href="classeve_1_1IAttachmentPointSource.html" title="Read-only cross-module contract for sampling named animated attachment points. @ownership Implementat...">IAttachmentPointSource</a>.  <br /></td></tr>
+<tr class="separator:a4972568033b761bd9c824c2aabc7446b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f416ab45bd9b68cbee5a261276cdc3f" id="r_a0f416ab45bd9b68cbee5a261276cdc3f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a0f416ab45bd9b68cbee5a261276cdc3f">endBoneName</a></td></tr>
+<tr class="memdesc:a0f416ab45bd9b68cbee5a261276cdc3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional second attachment for dual-socket capsules. Empty means a single-bone capsule axis along local +Y through the center.  <br /></td></tr>
+<tr class="separator:a0f416ab45bd9b68cbee5a261276cdc3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8300a8523c5585d0c127a652b3a2640d" id="r_a8300a8523c5585d0c127a652b3a2640d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics_1_1trajectory.html#a8663d3e56a620753d850a83825f7c204">BoneColliderShapeKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a8300a8523c5585d0c127a652b3a2640d">kind</a> = <a class="el" href="namespaceeve_1_1physics_1_1trajectory.html#a8663d3e56a620753d850a83825f7c204ab7095f057db3fefa7325ad93a04e14fd">BoneColliderShapeKind::Sphere</a></td></tr>
+<tr class="separator:a8300a8523c5585d0c127a652b3a2640d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a931417a8fe4deb36ce21e8e66f1e792e" id="r_a931417a8fe4deb36ce21e8e66f1e792e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a931417a8fe4deb36ce21e8e66f1e792e">radius</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a931417a8fe4deb36ce21e8e66f1e792e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-negative finite collision radius in meters.  <br /></td></tr>
+<tr class="separator:a931417a8fe4deb36ce21e8e66f1e792e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c0feb4c01185b5261281f1caa3a30cd" id="r_a8c0feb4c01185b5261281f1caa3a30cd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a8c0feb4c01185b5261281f1caa3a30cd">halfHeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a8c0feb4c01185b5261281f1caa3a30cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Half-length along local +Y for single-bone capsules; ignored otherwise.  <br /></td></tr>
+<tr class="separator:a8c0feb4c01185b5261281f1caa3a30cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a904fb78a7fd04cc04d46d32cc4bef0fd" id="r_a904fb78a7fd04cc04d46d32cc4bef0fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1AttachmentPoint.html">AttachmentPoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a904fb78a7fd04cc04d46d32cc4bef0fd">localOffset</a> {}</td></tr>
+<tr class="memdesc:a904fb78a7fd04cc04d46d32cc4bef0fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local offset on <code>boneName</code> (sphere center or capsule start/center).  <br /></td></tr>
+<tr class="separator:a904fb78a7fd04cc04d46d32cc4bef0fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af89c3a9cda84bac8ebd5b6bc7baf57ae" id="r_af89c3a9cda84bac8ebd5b6bc7baf57ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1AttachmentPoint.html">AttachmentPoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#af89c3a9cda84bac8ebd5b6bc7baf57ae">endLocalOffset</a> {}</td></tr>
+<tr class="memdesc:af89c3a9cda84bac8ebd5b6bc7baf57ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local offset on <code>endBoneName</code> for dual-socket capsules.  <br /></td></tr>
+<tr class="separator:af89c3a9cda84bac8ebd5b6bc7baf57ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95a3143493e0618f6917f0b833e637a7" id="r_a95a3143493e0618f6917f0b833e637a7"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a95a3143493e0618f6917f0b833e637a7">categoryBits</a> = 0xFFFFFFFFu</td></tr>
+<tr class="memdesc:a95a3143493e0618f6917f0b833e637a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query category bits applied during sweeps.  <br /></td></tr>
+<tr class="separator:a95a3143493e0618f6917f0b833e637a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b599673b9bcd692adfe1d130fa4ec0c" id="r_a7b599673b9bcd692adfe1d130fa4ec0c"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a7b599673b9bcd692adfe1d130fa4ec0c">maskBits</a> = 0xFFFFFFFFu</td></tr>
+<tr class="memdesc:a7b599673b9bcd692adfe1d130fa4ec0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query mask bits applied during sweeps.  <br /></td></tr>
+<tr class="separator:a7b599673b9bcd692adfe1d130fa4ec0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af764c45cfd443b0ebb2d02328eac3ad5" id="r_af764c45cfd443b0ebb2d02328eac3ad5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#af764c45cfd443b0ebb2d02328eac3ad5">ignoredBodyId</a> = -1</td></tr>
+<tr class="memdesc:af764c45cfd443b0ebb2d02328eac3ad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional body id ignored by sweeps (-1 = none).  <br /></td></tr>
+<tr class="separator:af764c45cfd443b0ebb2d02328eac3ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c2647331e6646cc88af19dc3981fd15" id="r_a6c2647331e6646cc88af19dc3981fd15"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1trajectory_1_1BoneColliderDefinition.html#a6c2647331e6646cc88af19dc3981fd15">maxHits</a> = 8</td></tr>
+<tr class="memdesc:a6c2647331e6646cc88af19dc3981fd15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> cast results retained per armed collider per frame.  <br /></td></tr>
+<tr class="separator:a6c2647331e6646cc88af19dc3981fd15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Catalog entry that binds a sphere or capsule to named attachment points. </p>
+<p>Sphere samples <code>boneName</code> once with <code>localOffset</code>. Capsule either:</p><ul>
+<li>samples the same bone twice with <code>localOffset ± (0, halfHeight, 0)</code> when <code>endBoneName</code> is empty (<a class="el" href="classeve_1_1physics_1_1Physics.html" title="Physics module — Box2D (2D) + Box3D (3D) rigid bodies and SPH fluid. Script: physics &lt;- eve....">Physics</a> Asset style), or</li>
+<li>samples <code>boneName</code>/<code>endBoneName</code> with their local offsets (weapon-blade / dual-socket sweep style, matching UE5 anim-notify traces).</li>
+</ul>
+<p>Filter bits mirror <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> query category/mask; they are applied only for the duration of each sweep and do not mutate persistent world defaults. </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a4304c542d47acc76f9c4af49694a7aab" name="a4304c542d47acc76f9c4af49694a7aab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4304c542d47acc76f9c4af49694a7aab">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::trajectory::BoneColliderDefinition::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reject empty ids, non-finite dimensions, or inconsistent shape fields. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied when valid; InvalidArgument otherwise. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8cpp_source.html">BoneCollider.cpp</a> 第 <a class="el" href="BoneCollider_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BoneCollider_8h_source.html#l00036">boneName</a>, <a class="el" href="namespaceeve_1_1physics_1_1trajectory.html#a8663d3e56a620753d850a83825f7c204a4880c0f12c06dd6d142e7a40b041bf1a">eve::physics::trajectory::Capsule</a>, <a class="el" href="BoneCollider_8h_source.html#l00034">colliderId</a>, <a class="el" href="BoneCollider_8h_source.html#l00041">endBoneName</a>, <a class="el" href="BoneCollider_8h_source.html#l00050">endLocalOffset</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="BoneCollider_8h_source.html#l00046">halfHeight</a>, <a class="el" href="BoneCollider_8h_source.html#l00056">ignoredBodyId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="BoneCollider_8h_source.html#l00042">kind</a>, <a class="el" href="BoneCollider_8h_source.html#l00048">localOffset</a>, <a class="el" href="BoneCollider_8h_source.html#l00058">maxHits</a>, <a class="el" href="BoneCollider_8h_source.html#l00044">radius</a>, <a class="el" href="namespaceeve_1_1physics_1_1trajectory.html#a8663d3e56a620753d850a83825f7c204ab7095f057db3fefa7325ad93a04e14fd">eve::physics::trajectory::Sphere</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AttachmentPoint_8h_source.html#l00011">eve::AttachmentPoint::x</a>, <a class="el" href="AttachmentPoint_8h_source.html#l00012">eve::AttachmentPoint::y</a> , 以及 <a class="el" href="AttachmentPoint_8h_source.html#l00013">eve::AttachmentPoint::z</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a4972568033b761bd9c824c2aabc7446b" name="a4972568033b761bd9c824c2aabc7446b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4972568033b761bd9c824c2aabc7446b">&#9670;&#160;</a></span>boneName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::trajectory::BoneColliderDefinition::boneName</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Primary / start attachment name resolved by <a class="el" href="classeve_1_1IAttachmentPointSource.html" title="Read-only cross-module contract for sampling named animated attachment points. @ownership Implementat...">IAttachmentPointSource</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a95a3143493e0618f6917f0b833e637a7" name="a95a3143493e0618f6917f0b833e637a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95a3143493e0618f6917f0b833e637a7">&#9670;&#160;</a></span>categoryBits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::physics::trajectory::BoneColliderDefinition::categoryBits = 0xFFFFFFFFu</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query category bits applied during sweeps. </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a337836c13370b139ce1c65e77e4b1b05" name="a337836c13370b139ce1c65e77e4b1b05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a337836c13370b139ce1c65e77e4b1b05">&#9670;&#160;</a></span>colliderId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::trajectory::BoneColliderDefinition::colliderId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable catalog id (e.g. weapon.blade, hand.L). </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a0f416ab45bd9b68cbee5a261276cdc3f" name="a0f416ab45bd9b68cbee5a261276cdc3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f416ab45bd9b68cbee5a261276cdc3f">&#9670;&#160;</a></span>endBoneName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::trajectory::BoneColliderDefinition::endBoneName</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional second attachment for dual-socket capsules. Empty means a single-bone capsule axis along local +Y through the center. </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<a id="af89c3a9cda84bac8ebd5b6bc7baf57ae" name="af89c3a9cda84bac8ebd5b6bc7baf57ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af89c3a9cda84bac8ebd5b6bc7baf57ae">&#9670;&#160;</a></span>endLocalOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1AttachmentPoint.html">AttachmentPoint</a> eve::physics::trajectory::BoneColliderDefinition::endLocalOffset {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Local offset on <code>endBoneName</code> for dual-socket capsules. </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a8c0feb4c01185b5261281f1caa3a30cd" name="a8c0feb4c01185b5261281f1caa3a30cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c0feb4c01185b5261281f1caa3a30cd">&#9670;&#160;</a></span>halfHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::trajectory::BoneColliderDefinition::halfHeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Half-length along local +Y for single-bone capsules; ignored otherwise. </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<a id="af764c45cfd443b0ebb2d02328eac3ad5" name="af764c45cfd443b0ebb2d02328eac3ad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af764c45cfd443b0ebb2d02328eac3ad5">&#9670;&#160;</a></span>ignoredBodyId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::trajectory::BoneColliderDefinition::ignoredBodyId = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional body id ignored by sweeps (-1 = none). </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a8300a8523c5585d0c127a652b3a2640d" name="a8300a8523c5585d0c127a652b3a2640d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8300a8523c5585d0c127a652b3a2640d">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics_1_1trajectory.html#a8663d3e56a620753d850a83825f7c204">BoneColliderShapeKind</a> eve::physics::trajectory::BoneColliderDefinition::kind = <a class="el" href="namespaceeve_1_1physics_1_1trajectory.html#a8663d3e56a620753d850a83825f7c204ab7095f057db3fefa7325ad93a04e14fd">BoneColliderShapeKind::Sphere</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a904fb78a7fd04cc04d46d32cc4bef0fd" name="a904fb78a7fd04cc04d46d32cc4bef0fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a904fb78a7fd04cc04d46d32cc4bef0fd">&#9670;&#160;</a></span>localOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1AttachmentPoint.html">AttachmentPoint</a> eve::physics::trajectory::BoneColliderDefinition::localOffset {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Local offset on <code>boneName</code> (sphere center or capsule start/center). </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a7b599673b9bcd692adfe1d130fa4ec0c" name="a7b599673b9bcd692adfe1d130fa4ec0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b599673b9bcd692adfe1d130fa4ec0c">&#9670;&#160;</a></span>maskBits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::physics::trajectory::BoneColliderDefinition::maskBits = 0xFFFFFFFFu</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query mask bits applied during sweeps. </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c2647331e6646cc88af19dc3981fd15" name="a6c2647331e6646cc88af19dc3981fd15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c2647331e6646cc88af19dc3981fd15">&#9670;&#160;</a></span>maxHits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::trajectory::BoneColliderDefinition::maxHits = 8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> cast results retained per armed collider per frame. </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a931417a8fe4deb36ce21e8e66f1e792e" name="a931417a8fe4deb36ce21e8e66f1e792e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a931417a8fe4deb36ce21e8e66f1e792e">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::trajectory::BoneColliderDefinition::radius = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Non-negative finite collision radius in meters. </p>
+
+<p class="definition">在文件 <a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a> 第 <a class="el" href="BoneCollider_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BoneCollider_8cpp_source.html#l00007">validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/physics/trajectory/<a class="el" href="BoneCollider_8h_source.html">BoneCollider.h</a></li>
+<li>src/modules/physics/trajectory/<a class="el" href="BoneCollider_8cpp_source.html">BoneCollider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

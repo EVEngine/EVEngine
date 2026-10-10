@@ -1,0 +1,594 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::decal 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1decal.html">decal</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::decal 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1Decal.html">Decal</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html" title="EVENGINE_API_FOUNDATION public API.">Runtime</a> decal module — project surface effects (blood, dirt, scorch, dents via normal maps, ...) onto any world geometry.  <a href="classeve_1_1decal_1_1Decal.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1DecalInstance.html">DecalInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One live decal instance (CPU-side state; GPU draw happens per frame).  <a href="structeve_1_1decal_1_1DecalInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html">DecalManager</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU-side decal registry: spawn / remove / fade / quotas, and the per-frame drawer that feeds the graphics decal pass.  <a href="classeve_1_1decal_1_1DecalManager.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalBake.html">ProceduralDecalBake</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning, renderer-neutral output of one decal bake.  <a href="structeve_1_1decal_1_1ProceduralDecalBake.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html">ProceduralDecalLayer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One independently art-directed layer of a procedural decal recipe.  <a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">ProceduralDecalRecipe</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Versioned two-layer authoring recipe analogous to Procedural <a class="el" href="classeve_1_1decal_1_1Decal.html" title="Runtime decal module — project surface effects (blood, dirt, scorch, dents via normal maps,...">Decal</a>'s Standard graph and material-instance presets.  <a href="structeve_1_1decal_1_1ProceduralDecalRecipe.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:ab67b0d70b6ad455cb74da2524cfbcba2" id="r_ab67b0d70b6ad455cb74da2524cfbcba2"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#ab67b0d70b6ad455cb74da2524cfbcba2">DecalProjectionStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1decal.html#ab67b0d70b6ad455cb74da2524cfbcba2a733d43480c8589b1368e5def6b480415">Applied</a> = 0
+, <a class="el" href="namespaceeve_1_1decal.html#ab67b0d70b6ad455cb74da2524cfbcba2ac67895e62ed074a71cddce880229c9b4">UnknownId</a> = 1
+, <a class="el" href="namespaceeve_1_1decal.html#ab67b0d70b6ad455cb74da2524cfbcba2a6593ba14ae200b59fd71ea6143223e06">InvalidMode</a> = 2
+, <a class="el" href="namespaceeve_1_1decal.html#ab67b0d70b6ad455cb74da2524cfbcba2a4900d598a9dc8b10a5cb5983defc2408">InvalidSharpness</a> = 3
+ }</td></tr>
+<tr class="memdesc:ab67b0d70b6ad455cb74da2524cfbcba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outcome of DecalManager::setProjection / Decal::setProjection.  <a href="namespaceeve_1_1decal.html#ab67b0d70b6ad455cb74da2524cfbcba2">更多...</a><br /></td></tr>
+<tr class="separator:ab67b0d70b6ad455cb74da2524cfbcba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dd5049104798b10bbdaaf05f58e0365" id="r_a1dd5049104798b10bbdaaf05f58e0365"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#a1dd5049104798b10bbdaaf05f58e0365">DecalParallaxStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1decal.html#a1dd5049104798b10bbdaaf05f58e0365a733d43480c8589b1368e5def6b480415">Applied</a> = 0
+, <a class="el" href="namespaceeve_1_1decal.html#a1dd5049104798b10bbdaaf05f58e0365ac67895e62ed074a71cddce880229c9b4">UnknownId</a> = 1
+, <a class="el" href="namespaceeve_1_1decal.html#a1dd5049104798b10bbdaaf05f58e0365a483ba1e06216fb2d5d08d7ac51225f10">InvalidScale</a> = 2
+, <a class="el" href="namespaceeve_1_1decal.html#a1dd5049104798b10bbdaaf05f58e0365ae4666fd364009a1541bf7749ac8f87d7">InvalidLayers</a> = 3
+ }</td></tr>
+<tr class="memdesc:a1dd5049104798b10bbdaaf05f58e0365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outcome of applying height-driven parallax settings to a live decal.  <a href="namespaceeve_1_1decal.html#a1dd5049104798b10bbdaaf05f58e0365">更多...</a><br /></td></tr>
+<tr class="separator:a1dd5049104798b10bbdaaf05f58e0365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae89afddb823ea4c72e6531e8e1f97f3b" id="r_ae89afddb823ea4c72e6531e8e1f97f3b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#ae89afddb823ea4c72e6531e8e1f97f3b">DecalEdgeFadeStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1decal.html#ae89afddb823ea4c72e6531e8e1f97f3ba733d43480c8589b1368e5def6b480415">Applied</a> = 0
+, <a class="el" href="namespaceeve_1_1decal.html#ae89afddb823ea4c72e6531e8e1f97f3bac67895e62ed074a71cddce880229c9b4">UnknownId</a> = 1
+, <a class="el" href="namespaceeve_1_1decal.html#ae89afddb823ea4c72e6531e8e1f97f3ba6518a24cb2d8166f5c57016e65e3f419">InvalidWidth</a> = 2
+ }</td></tr>
+<tr class="memdesc:ae89afddb823ea4c72e6531e8e1f97f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outcome of changing the projection-volume edge mask width.  <a href="namespaceeve_1_1decal.html#ae89afddb823ea4c72e6531e8e1f97f3b">更多...</a><br /></td></tr>
+<tr class="separator:ae89afddb823ea4c72e6531e8e1f97f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac412c03b32cd4121ff2e9d0bee55b43c" id="r_ac412c03b32cd4121ff2e9d0bee55b43c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43c">DecalPattern</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca002cee6c3a810e20324fff49fe6af633">Spots</a>
+, <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43cacb2da4e014f32a47bf0f7aefaef5860f">Cracks</a>
+, <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca47c434dbb303b0aa728e98f193a65dc6">Streaks</a>
+, <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca3304b5cf02faed21daa8e1ba758d2c12">Puddle</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50">Grunge</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ac412c03b32cd4121ff2e9d0bee55b43c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in procedural masks used by a procedural decal layer.  <a href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43c">更多...</a><br /></td></tr>
+<tr class="separator:ac412c03b32cd4121ff2e9d0bee55b43c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a12485390e1277d9c3b7ac0171e30aece" id="r_a12485390e1277d9c3b7ac0171e30aece"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#a12485390e1277d9c3b7ac0171e30aece">Module_IMPL</a> (<a class="el" href="classeve_1_1decal_1_1Decal.html">Decal</a>, new <a class="el" href="classeve_1_1decal_1_1Decal.html">Decal</a>())</td></tr>
+<tr class="separator:a12485390e1277d9c3b7ac0171e30aece"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ad1b35a6ed297fa69688253a1e01c2b" id="r_a3ad1b35a6ed297fa69688253a1e01c2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#a3ad1b35a6ed297fa69688253a1e01c2b">registerDecalCapabilities</a> ()</td></tr>
+<tr class="memdesc:a3ad1b35a6ed297fa69688253a1e01c2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the <a class="el" href="classeve_1_1IDecalQuery.html" title="Runtime decal query surface (provided by the decal module).">IDecalQuery</a> capability (implemented in <a class="el" href="DecalCapabilities_8cpp.html">DecalCapabilities.cpp</a>).  <br /></td></tr>
+<tr class="separator:a3ad1b35a6ed297fa69688253a1e01c2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade69501a33c14a688949928e82f935e1" id="r_ade69501a33c14a688949928e82f935e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#ade69501a33c14a688949928e82f935e1">registerDecalAttackVfxExecutor</a> ()</td></tr>
+<tr class="memdesc:ade69501a33c14a688949928e82f935e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the AttackVfx <a class="el" href="classeve_1_1decal_1_1Decal.html" title="Runtime decal module — project surface effects (blood, dirt, scorch, dents via normal maps,...">Decal</a> layer executor (soft-skips when Graphics is absent).  <br /></td></tr>
+<tr class="separator:ade69501a33c14a688949928e82f935e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a216f20048e7dd0314e9772d45d8bd1f7" id="r_a216f20048e7dd0314e9772d45d8bd1f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#a216f20048e7dd0314e9772d45d8bd1f7">unregisterDecalAttackVfxExecutor</a> ()</td></tr>
+<tr class="memdesc:a216f20048e7dd0314e9772d45d8bd1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregister the AttackVfx <a class="el" href="classeve_1_1decal_1_1Decal.html" title="Runtime decal module — project surface effects (blood, dirt, scorch, dents via normal maps,...">Decal</a> layer executor.  <br /></td></tr>
+<tr class="separator:a216f20048e7dd0314e9772d45d8bd1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72d8972c3a201cd744957a1a1193a95d" id="r_a72d8972c3a201cd744957a1a1193a95d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">ProceduralDecalRecipe</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#a72d8972c3a201cd744957a1a1193a95d">proceduralDecalPreset</a> (std::string_view <a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>=1)</td></tr>
+<tr class="memdesc:a72d8972c3a201cd744957a1a1193a95d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a deterministic preset recipe.  <br /></td></tr>
+<tr class="separator:a72d8972c3a201cd744957a1a1193a95d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade47cd0d53ca0a17c562351ac08558b0" id="r_ade47cd0d53ca0a17c562351ac08558b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">ProceduralDecalRecipe</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#ade47cd0d53ca0a17c562351ac08558b0">importProceduralDecalSbsprs</a> (std::string_view xml)</td></tr>
+<tr class="memdesc:ade47cd0d53ca0a17c562351ac08558b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Import one Substance <code>.sbsprs</code> preset into the native version-two recipe.  <br /></td></tr>
+<tr class="separator:ade47cd0d53ca0a17c562351ac08558b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cf897ba61f621cf2703e554c36cd522" id="r_a6cf897ba61f621cf2703e554c36cd522"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1decal_1_1ProceduralDecalBake.html">ProceduralDecalBake</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1decal.html#a6cf897ba61f621cf2703e554c36cd522">bakeProceduralDecal</a> (const <a class="el" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">ProceduralDecalRecipe</a> &amp;recipe)</td></tr>
+<tr class="memdesc:a6cf897ba61f621cf2703e554c36cd522"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake a two-layer decal recipe into renderer-ready texture bytes.  <br /></td></tr>
+<tr class="separator:a6cf897ba61f621cf2703e554c36cd522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="ae89afddb823ea4c72e6531e8e1f97f3b" name="ae89afddb823ea4c72e6531e8e1f97f3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae89afddb823ea4c72e6531e8e1f97f3b">&#9670;&#160;</a></span>DecalEdgeFadeStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1decal.html#ae89afddb823ea4c72e6531e8e1f97f3b">eve::decal::DecalEdgeFadeStatus</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Outcome of changing the projection-volume edge mask width. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ae89afddb823ea4c72e6531e8e1f97f3ba733d43480c8589b1368e5def6b480415" name="ae89afddb823ea4c72e6531e8e1f97f3ba733d43480c8589b1368e5def6b480415"></a>Applied&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae89afddb823ea4c72e6531e8e1f97f3bac67895e62ed074a71cddce880229c9b4" name="ae89afddb823ea4c72e6531e8e1f97f3bac67895e62ed074a71cddce880229c9b4"></a>UnknownId&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae89afddb823ea4c72e6531e8e1f97f3ba6518a24cb2d8166f5c57016e65e3f419" name="ae89afddb823ea4c72e6531e8e1f97f3ba6518a24cb2d8166f5c57016e65e3f419"></a>InvalidWidth&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8h_source.html">DecalManager.h</a> 第 <a class="el" href="DecalManager_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1dd5049104798b10bbdaaf05f58e0365" name="a1dd5049104798b10bbdaaf05f58e0365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dd5049104798b10bbdaaf05f58e0365">&#9670;&#160;</a></span>DecalParallaxStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1decal.html#a1dd5049104798b10bbdaaf05f58e0365">eve::decal::DecalParallaxStatus</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Outcome of applying height-driven parallax settings to a live decal. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a1dd5049104798b10bbdaaf05f58e0365a733d43480c8589b1368e5def6b480415" name="a1dd5049104798b10bbdaaf05f58e0365a733d43480c8589b1368e5def6b480415"></a>Applied&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1dd5049104798b10bbdaaf05f58e0365ac67895e62ed074a71cddce880229c9b4" name="a1dd5049104798b10bbdaaf05f58e0365ac67895e62ed074a71cddce880229c9b4"></a>UnknownId&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1dd5049104798b10bbdaaf05f58e0365a483ba1e06216fb2d5d08d7ac51225f10" name="a1dd5049104798b10bbdaaf05f58e0365a483ba1e06216fb2d5d08d7ac51225f10"></a>InvalidScale&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1dd5049104798b10bbdaaf05f58e0365ae4666fd364009a1541bf7749ac8f87d7" name="a1dd5049104798b10bbdaaf05f58e0365ae4666fd364009a1541bf7749ac8f87d7"></a>InvalidLayers&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8h_source.html">DecalManager.h</a> 第 <a class="el" href="DecalManager_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac412c03b32cd4121ff2e9d0bee55b43c" name="ac412c03b32cd4121ff2e9d0bee55b43c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac412c03b32cd4121ff2e9d0bee55b43c">&#9670;&#160;</a></span>DecalPattern</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43c">eve::decal::DecalPattern</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Built-in procedural masks used by a procedural decal layer. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ac412c03b32cd4121ff2e9d0bee55b43ca002cee6c3a810e20324fff49fe6af633" name="ac412c03b32cd4121ff2e9d0bee55b43ca002cee6c3a810e20324fff49fe6af633"></a>Spots&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac412c03b32cd4121ff2e9d0bee55b43cacb2da4e014f32a47bf0f7aefaef5860f" name="ac412c03b32cd4121ff2e9d0bee55b43cacb2da4e014f32a47bf0f7aefaef5860f"></a>Cracks&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac412c03b32cd4121ff2e9d0bee55b43ca47c434dbb303b0aa728e98f193a65dc6" name="ac412c03b32cd4121ff2e9d0bee55b43ca47c434dbb303b0aa728e98f193a65dc6"></a>Streaks&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac412c03b32cd4121ff2e9d0bee55b43ca3304b5cf02faed21daa8e1ba758d2c12" name="ac412c03b32cd4121ff2e9d0bee55b43ca3304b5cf02faed21daa8e1ba758d2c12"></a>Puddle&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50" name="ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50"></a>Grunge&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab67b0d70b6ad455cb74da2524cfbcba2" name="ab67b0d70b6ad455cb74da2524cfbcba2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab67b0d70b6ad455cb74da2524cfbcba2">&#9670;&#160;</a></span>DecalProjectionStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1decal.html#ab67b0d70b6ad455cb74da2524cfbcba2">eve::decal::DecalProjectionStatus</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Outcome of <a class="el" href="classeve_1_1decal_1_1DecalManager.html#a5c25bb4e3ed6283d76f65d510f0b6d92" title="Projection mode: &quot;planar&quot; (default) or &quot;triplanar&quot;.">DecalManager::setProjection</a> / <a class="el" href="classeve_1_1decal_1_1Decal.html#a003c503f5d57aaff3600f51ca82cc494" title="Projection: &quot;planar&quot;, &quot;triplanar&quot;, &quot;spherical&quot;, or world-aligned &quot;world&quot;.">Decal::setProjection</a>. </p>
+<p>Named status (not bool) so callers can distinguish unknown id, bad mode, and non-positive sharpness without a parallel lastError channel. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ab67b0d70b6ad455cb74da2524cfbcba2a733d43480c8589b1368e5def6b480415" name="ab67b0d70b6ad455cb74da2524cfbcba2a733d43480c8589b1368e5def6b480415"></a>Applied&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab67b0d70b6ad455cb74da2524cfbcba2ac67895e62ed074a71cddce880229c9b4" name="ab67b0d70b6ad455cb74da2524cfbcba2ac67895e62ed074a71cddce880229c9b4"></a>UnknownId&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab67b0d70b6ad455cb74da2524cfbcba2a6593ba14ae200b59fd71ea6143223e06" name="ab67b0d70b6ad455cb74da2524cfbcba2a6593ba14ae200b59fd71ea6143223e06"></a>InvalidMode&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab67b0d70b6ad455cb74da2524cfbcba2a4900d598a9dc8b10a5cb5983defc2408" name="ab67b0d70b6ad455cb74da2524cfbcba2a4900d598a9dc8b10a5cb5983defc2408"></a>InvalidSharpness&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8h_source.html">DecalManager.h</a> 第 <a class="el" href="DecalManager_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a6cf897ba61f621cf2703e554c36cd522" name="a6cf897ba61f621cf2703e554c36cd522"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cf897ba61f621cf2703e554c36cd522">&#9670;&#160;</a></span>bakeProceduralDecal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1decal_1_1ProceduralDecalBake.html">ProceduralDecalBake</a> &gt; eve::decal::bakeProceduralDecal </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">ProceduralDecalRecipe</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipe</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake a two-layer decal recipe into renderer-ready texture bytes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">recipe</td><td>Fully specified version-two recipe. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Three owning RGBA8 maps, or a structured validation failure. @cost Linear in pixel count and blur radius; amortize at authoring or load time. @thread Thread-safe; no renderer calls or shared caches. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8cpp_source.html">ProceduralDecal.cpp</a> 第 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">436</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00083">eve::decal::ProceduralDecalBake::albedo</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00032">at</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00039">eve::decal::ProceduralDecalLayer::color</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00050">color</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00040">eve::decal::ProceduralDecalLayer::colorVariation</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00045">eve::decal::ProceduralDecalLayer::emissive</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00051">eve::decal::ProceduralDecalLayer::height</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00062">eve::decal::ProceduralDecalRecipe::height</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00082">eve::decal::ProceduralDecalBake::height</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00041">eve::decal::ProceduralDecalLayer::hueVariation</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00059">eve::decal::ProceduralDecalRecipe::kSchemaVersion</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00064">eve::decal::ProceduralDecalRecipe::layerA</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00065">eve::decal::ProceduralDecalRecipe::layerB</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00067">eve::decal::ProceduralDecalRecipe::layerBalance</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00068">eve::decal::ProceduralDecalRecipe::layerBlendMode</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00066">eve::decal::ProceduralDecalRecipe::layerHeightBlend</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00044">eve::decal::ProceduralDecalLayer::metallic</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00084">eve::decal::ProceduralDecalBake::normal</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00046">eve::decal::ProceduralDecalLayer::normalStrength</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00069">eve::decal::ProceduralDecalRecipe::opacity</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00085">eve::decal::ProceduralDecalBake::params</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">py</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00042">eve::decal::ProceduralDecalLayer::roughness</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00158">roughness</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00043">eve::decal::ProceduralDecalLayer::roughnessVariation</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00060">eve::decal::ProceduralDecalRecipe::schemaVersion</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00063">eve::decal::ProceduralDecalRecipe::seed</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00121">strength</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00083">thickness</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00061">eve::decal::ProceduralDecalRecipe::width</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00081">eve::decal::ProceduralDecalBake::width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00113">eve::decal::Decal::bakePresetTexture()</a> , 以及 <a class="el" href="Decal_8cpp_source.html#l00138">eve::decal::Decal::bakeSbsprsTexture()</a>.</p>
+
+</div>
+</div>
+<a id="ade47cd0d53ca0a17c562351ac08558b0" name="ade47cd0d53ca0a17c562351ac08558b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade47cd0d53ca0a17c562351ac08558b0">&#9670;&#160;</a></span>importProceduralDecalSbsprs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">ProceduralDecalRecipe</a> &gt; eve::decal::importProceduralDecalSbsprs </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>xml</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Import one Substance <code>.sbsprs</code> preset into the native version-two recipe. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">xml</td><td>UTF-8 <code>sbspresets</code> document; the importer consumes known Procedural <a class="el" href="classeve_1_1decal_1_1Decal.html" title="Runtime decal module — project surface effects (blood, dirt, scorch, dents via normal maps,...">Decal</a> inputs and ignores unknown forward-compatible inputs. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A fully owned recipe, or a structured parse/validation failure without publishing state. @cost Linear in the preset text size; intended for asset admission, never per frame. @thread Thread-safe; no filesystem, renderer, or global state is accessed. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8cpp_source.html">ProceduralDecal.cpp</a> 第 <a class="el" href="ProceduralDecal_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00160">cursor</a>, <a class="el" href="SpellFragmentCompiler_8cpp_source.html#l00108">element</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00019">end</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00062">eve::decal::ProceduralDecalRecipe::height</a>, <a class="el" href="GridGraph_8cpp_source.html#l00023">inputs</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00068">key</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00064">eve::decal::ProceduralDecalRecipe::layerA</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00065">eve::decal::ProceduralDecalRecipe::layerB</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00067">eve::decal::ProceduralDecalRecipe::layerBalance</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00068">eve::decal::ProceduralDecalRecipe::layerBlendMode</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00066">eve::decal::ProceduralDecalRecipe::layerHeightBlend</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00332">number</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00031">eve::decal::ProceduralDecalLayer::seed</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00063">eve::decal::ProceduralDecalRecipe::seed</a>, <a class="el" href="PointSet_8cpp_source.html#l00807">seed</a>, <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00153">value</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00061">eve::decal::ProceduralDecalRecipe::width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00138">eve::decal::Decal::bakeSbsprsTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a12485390e1277d9c3b7ac0171e30aece" name="a12485390e1277d9c3b7ac0171e30aece"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12485390e1277d9c3b7ac0171e30aece">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::decal::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1decal_1_1Decal.html">Decal</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Decal</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a72d8972c3a201cd744957a1a1193a95d" name="a72d8972c3a201cd744957a1a1193a95d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72d8972c3a201cd744957a1a1193a95d">&#9670;&#160;</a></span>proceduralDecalPreset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1decal_1_1ProceduralDecalRecipe.html">ProceduralDecalRecipe</a> &gt; eve::decal::proceduralDecalPreset </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a deterministic preset recipe. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Stable preset family: blood-wet, blood-dried, damage, dirt, rust, puddle, paint, moss, mold, or lichen. </td></tr>
+    <tr><td class="paramname">seed</td><td>Named recipe seed; equal inputs are byte-identical. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Recipe or InvalidArgument for an unknown preset. @thread Thread-safe; no global mutable state is accessed. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8cpp_source.html">ProceduralDecal.cpp</a> 第 <a class="el" href="ProceduralDecal_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProceduralDecal_8h_source.html#l00034">eve::decal::ProceduralDecalLayer::amount</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00037">eve::decal::ProceduralDecalLayer::blur</a>, <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43cacb2da4e014f32a47bf0f7aefaef5860f">Cracks</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00029">eve::decal::ProceduralDecalLayer::enabled</a>, <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50">Grunge</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00064">eve::decal::ProceduralDecalRecipe::layerA</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00065">eve::decal::ProceduralDecalRecipe::layerB</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00046">eve::decal::ProceduralDecalLayer::normalStrength</a>, <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca3304b5cf02faed21daa8e1ba758d2c12">Puddle</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00035">eve::decal::ProceduralDecalLayer::scale</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00031">eve::decal::ProceduralDecalLayer::seed</a>, <a class="el" href="ProceduralDecal_8h_source.html#l00063">eve::decal::ProceduralDecalRecipe::seed</a>, <a class="el" href="PointSet_8cpp_source.html#l00807">seed</a>, <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca002cee6c3a810e20324fff49fe6af633">Spots</a>, <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca47c434dbb303b0aa728e98f193a65dc6">Streaks</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00113">eve::decal::Decal::bakePresetTexture()</a>.</p>
+
+</div>
+</div>
+<a id="ade69501a33c14a688949928e82f935e1" name="ade69501a33c14a688949928e82f935e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade69501a33c14a688949928e82f935e1">&#9670;&#160;</a></span>registerDecalAttackVfxExecutor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::decal::registerDecalAttackVfxExecutor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register the AttackVfx <a class="el" href="classeve_1_1decal_1_1Decal.html" title="Runtime decal module — project surface effects (blood, dirt, scorch, dents via normal maps,...">Decal</a> layer executor (soft-skips when Graphics is absent). </p>
+
+<p class="definition">在文件 <a class="el" href="DecalAttackVfx_8cpp_source.html">DecalAttackVfx.cpp</a> 第 <a class="el" href="DecalAttackVfx_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalCapabilities_8cpp_source.html#l00036">registerDecalCapabilities()</a>.</p>
+
+</div>
+</div>
+<a id="a3ad1b35a6ed297fa69688253a1e01c2b" name="a3ad1b35a6ed297fa69688253a1e01c2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ad1b35a6ed297fa69688253a1e01c2b">&#9670;&#160;</a></span>registerDecalCapabilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::decal::registerDecalCapabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register the <a class="el" href="classeve_1_1IDecalQuery.html" title="Runtime decal query surface (provided by the decal module).">IDecalQuery</a> capability (implemented in <a class="el" href="DecalCapabilities_8cpp.html">DecalCapabilities.cpp</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="DecalCapabilities_8cpp_source.html">DecalCapabilities.cpp</a> 第 <a class="el" href="DecalCapabilities_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00014">impl</a> , 以及 <a class="el" href="DecalAttackVfx_8cpp_source.html#l00183">registerDecalAttackVfxExecutor()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00038">eve::decal::Decal::Decal()</a>.</p>
+
+</div>
+</div>
+<a id="a216f20048e7dd0314e9772d45d8bd1f7" name="a216f20048e7dd0314e9772d45d8bd1f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a216f20048e7dd0314e9772d45d8bd1f7">&#9670;&#160;</a></span>unregisterDecalAttackVfxExecutor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::decal::unregisterDecalAttackVfxExecutor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unregister the AttackVfx <a class="el" href="classeve_1_1decal_1_1Decal.html" title="Runtime decal module — project surface effects (blood, dirt, scorch, dents via normal maps,...">Decal</a> layer executor. </p>
+
+<p class="definition">在文件 <a class="el" href="DecalAttackVfx_8cpp_source.html">DecalAttackVfx.cpp</a> 第 <a class="el" href="DecalAttackVfx_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00047">eve::decal::Decal::~Decal()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

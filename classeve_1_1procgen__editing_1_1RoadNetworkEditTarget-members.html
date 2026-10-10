@@ -1,0 +1,255 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen__editing.html">procgen_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">RoadNetworkEditTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::procgen_editing::RoadNetworkEditTarget 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a66f18fce84c432d9f0e556a102719415">applyDomainOperation</a>(const editing::DomainOperation &amp;operation) override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>()</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aaa21957cde5d46cf2f6627ebef78cca9">clearDirtyRegion</a>() override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a37f5540565a3799bcff29dab154b4e18">cloneDomainState</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a2a7b8ff9630828695e02f320edcd8ab3">commitDomainState</a>(std::unique_ptr&lt; editing::IDomainOperationTarget &gt; candidate) override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging::commitDomainState</a>(std::unique_ptr&lt; IDomainOperationTarget &gt; candidate)=0</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ad246ff5fa7d1f38e8130a9b9b496a212">createOwned</a>(std::string id)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a2fff4d151e5ea0818f1518f5097286e2">describe</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a540df43599b86b23adcac6f31ef1f0a5">dirtyRegion</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#a4662234a5db91e86c8be8df9d88ebd53">editingCapabilityId</a>()</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aa5038e4342894b5544ecfa0c294de3a7">gizmo</a>(std::size_t maximumPrimitives=4096, bool showLabels=true) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a630aaf8e1bf040cf122a55f2393c220a">kBlockLaneLink</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a444e4a6da73ce51022fc1dff8284df7e">kConnectEdgeIntersection</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a08a17e7110873a16e0201de9863d3307">kConnectNodeAtPosition</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a2771c9bbef97954ed965ca574b13118c">kDetachEdgeEndpoint</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a3e9485c91ff51416c3c2b4f11d22a31c">kDisconnectEdgeIntersection</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a74718d5a6fdfe53402019eb79a6cfd56">kDisconnectNodeAtPosition</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a9f9efca680623eb06409f52ca79211b8">kMergeNodes</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aa1997ea4a9f0d57a58e27c41d340d09e">kMergeNodesAndConnect</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a7fe2ac5837425b4bd7b443a9f94b40e6">kMoveNode</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a89aa0573bbce3586c4e52bf916bc6703">kReattachEdgeEndpoint</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a5d52a865df16c5572590e5c0d589aaa4">kReconnectEdgeEndpoint</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aa1febab7274991c8801ae4cc8468811f">kRemoveEdge</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a7633e4b1bd1ee5aa87d5bffda5598907">kRemoveLaneLink</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a4462fbe186a7e43302dbd6eca34f9792">kRemoveLaneLinks</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#adc376383cbea33504941dbc8143ba094">kRemoveNode</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a50dddeb8206931414342e0800794d862">kRestoreEdge</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#af7344191c29da9ea37e71f403e9572b0">kRestoreLaneLink</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aa1ba30f452db12170eb9b15f4f362844">kRestoreLaneLinks</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a7fbc013e26064b41454a5ef8a56e4e6a">kRestoreNode</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#af07a6d550e3bbbf551a7048354f277a2">kReverseEdge</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a94f2446c085842a11516436df65a4990">kSetEdgeLanes</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a44ffb15dd6b002e3e4f778ccb82afb63">kSetEdgePoints</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aaf9774e6e1fc20ad756d5f67e236688e">kSetEdgeStyle</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#af78dba12bdafa729a759ee54b0a2a7eb">kSetNodeControl</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ad6f3e10ad327b88d5041f7e728664b9e">kSetNodeRadius</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a1ebabbd0dcf10c4ef1c752b3cf99d609">kSplitEdge</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a151de2f1cc00e33d72eb6364b61047e5">kSplitEdgeAtPosition</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ad73685fd2cb0fd584cf3a5e910728ef9">kUnblockLaneLink</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a3f8fdb8560fc33fefdda4460bfe233af">kUnmergeNodes</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a204e932fd3459499c7f1e46b2b55577d">kUnsplitEdge</a></td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a229430539d645bd139ccbb7444c6c994">loadSnapshot</a>(const EditorValue &amp;snapshot)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a8acab4b3571b30dc10747b21e9e7e594">makeAddEdge</a>(std::uint32_t from, std::uint32_t to, std::vector&lt; procgen::road::RoadControlPoint &gt; points, int lanesForward=2, int lanesBackward=0, procgen::road::RoadStyle style={}) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ab7362af059d3cef1391d04c6694207c6">makeAddEdgeAndConnect</a>(std::uint32_t from, std::uint32_t to, std::vector&lt; procgen::road::RoadControlPoint &gt; points, int lanesForward=2, int lanesBackward=0, procgen::road::RoadStyle style={}) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ad24e7aa4fe0862b7defb0b0fc2444677">makeAddLaneLink</a>(procgen::road::RoadLaneConnection link) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a27ea262db1f46b01caca0f779432daab">makeAddNode</a>(float x, float y, float z, float junctionRadius=6.f) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a05154e0d1c9ef9a08d4b3167a781d219">makeBlockLaneLink</a>(procgen::road::RoadLaneConnection link) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a6043b9b577409c440b2f64665379f833">makeConnectAllTurns</a>(std::uint32_t nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ac86c17c0a0374b58fb8ba6c666a5f098">makeConnectEdgeIntersection</a>(std::uint32_t firstEdgeId, std::uint32_t secondEdgeId, float maximumHeightDelta=0.5f, float junctionRadius=6.f) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aa04e1b4f16b2b3e30462cc5731552e5a">makeConnectNodeAtPosition</a>(std::uint32_t sourceNodeId, std::uint32_t edgeId, procgen::road::RoadControlPoint position, float maxDistance, float junctionRadius=6.f, int lanesForward=1, int lanesBackward=0, procgen::road::RoadStyle style={}) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ada0b5bc88cc7d041c2aaa307e2b49b87">makeDetachEdgeEndpoint</a>(std::uint32_t edgeId, bool fromEndpoint) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#af9173af6a9f46547499f5ff60d2802a1">makeMergeNodes</a>(std::uint32_t keepNodeId, std::uint32_t removeNodeId, float maxDistance) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ad0c41ca6af0b485616b058fe24327462">makeMergeNodesAndConnect</a>(std::uint32_t keepNodeId, std::uint32_t removeNodeId, float maxDistance) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ae9c5553c8d67bd4b467f6fb8362438ae">makeMoveNode</a>(std::uint32_t nodeId, float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a1cf92699e512253a9da4694c0202bb24">makeReconnectEdgeEndpoint</a>(std::uint32_t edgeId, bool fromEndpoint, std::uint32_t nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a6b6813da00bfa10724cc6cdfdecdc520">makeReconnectEdgeEndpointAndConnect</a>(std::uint32_t edgeId, bool fromEndpoint, std::uint32_t nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aaff58dd96a86d7cb4307c2ee28ba3a6b">makeRemoveEdge</a>(std::uint32_t edgeId) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a03191ed7bdacf54d07498fa3b9610dc7">makeRemoveLaneLink</a>(const procgen::road::RoadLaneConnection &amp;link) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ab0408073cdfacc7437bad266f8af4997">makeRemoveNode</a>(std::uint32_t nodeId) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a5e7fc46d4bcb58e72e603c117338f2d5">makeReverseEdge</a>(std::uint32_t edgeId) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a8bd368036f476d0dae8dc4fdeefdbee6">makeSetEdgeControlPoints</a>(std::uint32_t edgeId, std::vector&lt; procgen::road::RoadControlPoint &gt; points) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a16777a68f7549e69663a4cb6f853a273">makeSetEdgeLaneCounts</a>(std::uint32_t edgeId, int lanesForward, int lanesBackward) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a6a078de09717d2a8ea7650052f288ebc">makeSetEdgeStyle</a>(std::uint32_t edgeId, procgen::road::RoadStyle style) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a89e148bdc777b16305a701ae6e85796a">makeSetNodeJunctionControl</a>(std::uint32_t nodeId, procgen::road::RoadJunctionControl control) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ae37cb546bd21aca51faec92f870c8cec">makeSetNodeJunctionRadius</a>(std::uint32_t nodeId, float junctionRadius) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a7953231c448d60a7acd7cc92bd3a29fb">makeSnapEdgeEndpoint</a>(std::uint32_t edgeId, bool fromEndpoint, float maxDistance, bool connectTurns=true) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a3cabcd66c1ce6b698ab0e4fe03a3faa4">makeSplitEdge</a>(std::uint32_t edgeId, std::size_t controlPointIndex, float junctionRadius=6.f) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a88085fe17bc534242c5f1fa53ab086fb">makeSplitEdgeAtPosition</a>(std::uint32_t edgeId, procgen::road::RoadControlPoint position, float maxDistance, float junctionRadius=6.f) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ad7d8dbb898c50cad4449983dc0159975">makeUnblockLaneLink</a>(const procgen::road::RoadLaneConnection &amp;link) const</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a>()</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a>() const</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aa1c5b1a2f5ec277fea2905a9b8195042">queryCapability</a>(const editing::CapabilityId &amp;capability) override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a850bdd767b77e3800526be4fcbc5533c">revision</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#ae977a4611f2b2f680dc91c374c89ab2d">RoadNetworkEditTarget</a>(std::string id, procgen::road::RoadNetwork &amp;network)</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#a8875b198c5ce265cb453bac6b30598ee">snapshotValue</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html#aeff1dedea60ed20ed1d468adc4c498fc">targetId</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1procgen__editing_1_1RoadNetworkEditTarget.html">eve::procgen_editing::RoadNetworkEditTarget</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a>() override=default</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#aa00a32f2caa4773935cb1e420cb556f4">~IEditingSnapshotProvider</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

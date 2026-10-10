@@ -1,0 +1,346 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/AnimationPlayerBindings.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimationPlayerBindings.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimationPlayerBindings_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="AnimClip_8h.html">animation/AnimClip.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="AnimPlayer_8h.html">animation/AnimPlayer.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="AnimationBindings_8h.html">animation/AnimationBindings.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="RootMotionPolicy_8h.html">animation/RootMotionPolicy.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>std::string formatLockAxes(<a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539">RootMotionLockAxes</a> <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">const</span> <span class="keyword">auto</span> bits = <span class="keyword">static_cast&lt;</span>std::uint8_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (bits == 0) <span class="keywordflow">return</span> <span class="stringliteral">&quot;none&quot;</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">if</span> (bits == <span class="keyword">static_cast&lt;</span>std::uint8_t<span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539ab1c94ca2fbc3e78fc30069c8d0f01680">RootMotionLockAxes::All</a>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;xyz&quot;</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (bits == <span class="keyword">static_cast&lt;</span>std::uint8_t<span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a94bd9202e672b627615bdb037f85dae7">RootMotionLockAxes::HorizontalXZ</a>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;xz&quot;</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (bits == <span class="keyword">static_cast&lt;</span>std::uint8_t<span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a253bca941d27787962be8eb616021613">RootMotionLockAxes::VerticalY</a>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;y&quot;</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">if</span> (bits == <span class="keyword">static_cast&lt;</span>std::uint8_t<span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a02129bb861061d1a052c592e2dc6b383">RootMotionLockAxes::X</a>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;x&quot;</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (bits == <span class="keyword">static_cast&lt;</span>std::uint8_t<span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a21c2e59531c8710156d34a3c30ac81d5">RootMotionLockAxes::Z</a>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;z&quot;</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (bits == <span class="keyword">static_cast&lt;</span>std::uint8_t<span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a02129bb861061d1a052c592e2dc6b383">RootMotionLockAxes::X</a> | <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a57cec4137b614c87cb4e24a3d003a3e0">RootMotionLockAxes::Y</a>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;xy&quot;</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (bits == <span class="keyword">static_cast&lt;</span>std::uint8_t<span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a57cec4137b614c87cb4e24a3d003a3e0">RootMotionLockAxes::Y</a> | <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a21c2e59531c8710156d34a3c30ac81d5">RootMotionLockAxes::Z</a>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;yz&quot;</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;xyz&quot;</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>std::string formatApplySpace(<a class="code hl_enumeration" href="namespaceeve_1_1animation.html#ad92f84d412527c50b72b3ef668d6e803">RootMotionApplySpace</a> space) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> space == <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#ad92f84d412527c50b72b3ef668d6e803aa250fd1fdfc29da13d24405aded08a00">RootMotionApplySpace::CharacterFacing</a> ? <span class="stringliteral">&quot;characterFacing&quot;</span> : <span class="stringliteral">&quot;boneLocal&quot;</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>ssq::Table applyPolicy(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, AnimPlayer* self, <span class="keyword">const</span> RootMotionPolicy&amp; policy) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;setRootMotionPolicy(policy));</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a31d444686b9f7641294ac57aa7b1888c">   38</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1animation.html#a31d444686b9f7641294ac57aa7b1888c">exposeAnimPlayerBindings</a>(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">auto</span> player = table.addClass&lt;<a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>&gt;(</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="stringliteral">&quot;AnimPlayer&quot;</span>, std::function&lt;AnimPlayer*()&gt;([]() -&gt; <a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>* { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }), <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    player.addFunc(<span class="stringliteral">&quot;play&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#afcf4c43989bc7ead627d1c0f2b6c4833">AnimPlayer::play</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    player.addFunc(<span class="stringliteral">&quot;crossFade&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a660605e3f44e061191968f244abfbcdc">AnimPlayer::crossFade</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    player.addFunc(<span class="stringliteral">&quot;stop&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a9c1414cf531b594b29f9f839a505a92f">AnimPlayer::stop</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    player.addFunc(<span class="stringliteral">&quot;pause&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#ab3c7c6d88ddab36882625c6d22275e8e">AnimPlayer::pause</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    player.addFunc(<span class="stringliteral">&quot;resume&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a48b61f8ff0ca0eee0c5d570293e5c852">AnimPlayer::resume</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    player.addFunc(<span class="stringliteral">&quot;setSpeed&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a11ece9b96fee367b5ee707b5dca424a4">AnimPlayer::setSpeed</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    player.addFunc(<span class="stringliteral">&quot;getSpeed&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a367fd08913066f27d1ae50199a3fe779">AnimPlayer::getSpeed</a>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    player.addFunc(<span class="stringliteral">&quot;setTime&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a2b64bfab052920132408d98d603cd19b">AnimPlayer::setTime</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    player.addFunc(<span class="stringliteral">&quot;getTime&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a363cbfea3079424c7c99b5b93e190e44">AnimPlayer::getTime</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    player.addFunc(<span class="stringliteral">&quot;setLoop&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a58d15d3f223bce3bc898cd7569000ee2">AnimPlayer::setLoop</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    player.addFunc(<span class="stringliteral">&quot;getLoop&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#abc1d7f37cc8bce8ce8c22f5d30bb5d54">AnimPlayer::getLoop</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    player.addFunc(<span class="stringliteral">&quot;isPlaying&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#ae8e681f4888d125560341f1081c61982">AnimPlayer::isPlaying</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    player.addFunc(<span class="stringliteral">&quot;isPaused&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a679399f8de994084fb9b78af07cb797b">AnimPlayer::isPaused</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    player.addFunc(<span class="stringliteral">&quot;getPose&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#ac9967c8442fdcdc4a49c3b6146bec966">AnimPlayer::getPose</a>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    player.addFunc(<span class="stringliteral">&quot;getClip&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#af94dbeba2f86c0ca9696ba1c82f6ed26">AnimPlayer::getClip</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    player.addFunc(<span class="stringliteral">&quot;setRootMotionBone&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a321b471243bda8ae1f7a35f20d527b57">AnimPlayer::setRootMotionBone</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    player.addFunc(<span class="stringliteral">&quot;getRootMotionBone&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a8312f5b256eb8601b6c6701aea0afc49">AnimPlayer::getRootMotionBone</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    player.addFunc(<span class="stringliteral">&quot;setRootMotionLockAxes&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>* self, <span class="keyword">const</span> std::string&amp; axes) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        auto parsed = parseRootMotionLockAxes(axes);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        if (!parsed) return script::projectStatusResult(vm, parsed.status());</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        RootMotionPolicy policy = self-&gt;getRootMotionPolicy();</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        policy.lockAxes         = parsed.value();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        return applyPolicy(vm, self, policy);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    });</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    player.addFunc(<span class="stringliteral">&quot;setRootMotionApplySpace&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>* self, <span class="keyword">const</span> std::string&amp; space) {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        auto parsed = parseRootMotionApplySpace(space);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        if (!parsed) return script::projectStatusResult(vm, parsed.status());</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        RootMotionPolicy policy = self-&gt;getRootMotionPolicy();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        policy.applySpace       = parsed.value();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        return applyPolicy(vm, self, policy);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    });</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    player.addFunc(<span class="stringliteral">&quot;setBakeRootTranslationIntoPose&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>* self, <span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        RootMotionPolicy policy        = self-&gt;getRootMotionPolicy();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        policy.bakeTranslationIntoPose = enabled;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        return applyPolicy(vm, self, policy);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    });</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    player.addFunc(<span class="stringliteral">&quot;setBakeRootRotationIntoPose&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>* self, <span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        RootMotionPolicy policy     = self-&gt;getRootMotionPolicy();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        policy.bakeRotationIntoPose = enabled;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        return applyPolicy(vm, self, policy);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    });</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    player.addFunc(<span class="stringliteral">&quot;setRootMotionLockRotation&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>* self, <span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        RootMotionPolicy policy = self-&gt;getRootMotionPolicy();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        policy.lockRotation     = enabled;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        return applyPolicy(vm, self, policy);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    });</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    player.addFunc(<span class="stringliteral">&quot;getRootMotionPolicy&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>* self) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        const RootMotionPolicy policy = self-&gt;getRootMotionPolicy();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        ssq::Table             tableOut(vm);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        tableOut.set(<span class="stringliteral">&quot;lockAxes&quot;</span>, formatLockAxes(policy.lockAxes));</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        tableOut.set(<span class="stringliteral">&quot;applySpace&quot;</span>, formatApplySpace(policy.applySpace));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        tableOut.set(<span class="stringliteral">&quot;bakeTranslationIntoPose&quot;</span>, policy.bakeTranslationIntoPose);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        tableOut.set(<span class="stringliteral">&quot;bakeRotationIntoPose&quot;</span>, policy.bakeRotationIntoPose);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        tableOut.set(<span class="stringliteral">&quot;lockRotation&quot;</span>, policy.lockRotation);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        tableOut.set(<span class="stringliteral">&quot;characterYaw&quot;</span>, policy.characterYaw);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        return tableOut;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    });</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    player.addFunc(<span class="stringliteral">&quot;setRootMotionCharacterYaw&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_class" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a>* self, <span class="keywordtype">float</span> <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a7efc219781df4a1e281cb5d348b7fbf9">yaw</a>) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        return script::projectResult(vm, self-&gt;setRootMotionCharacterYaw(yaw));</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    });</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    player.addFunc(<span class="stringliteral">&quot;getRootMotionX&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#aae2fd491999fce463cc5579b3db28716">AnimPlayer::getRootMotionX</a>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    player.addFunc(<span class="stringliteral">&quot;getRootMotionY&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a46e53d1034c13adf93bb3d1db1c98f0b">AnimPlayer::getRootMotionY</a>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    player.addFunc(<span class="stringliteral">&quot;getRootMotionZ&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#afc6684770f2baf8284d5a7eeb10fae8c">AnimPlayer::getRootMotionZ</a>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    player.addFunc(<span class="stringliteral">&quot;getRootMotionRotationX&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#ab31c754fefee0d6a50d4d6aa928ce28e">AnimPlayer::getRootMotionRotationX</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    player.addFunc(<span class="stringliteral">&quot;getRootMotionRotationY&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a30ebb00c650d1c05e787bef10f995569">AnimPlayer::getRootMotionRotationY</a>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    player.addFunc(<span class="stringliteral">&quot;getRootMotionRotationZ&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#ac63acc26f396b3966240a5f8dc6423a1">AnimPlayer::getRootMotionRotationZ</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    player.addFunc(<span class="stringliteral">&quot;getRootMotionRotationW&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a19c36e8d4b47df02baae98dcf760cf75">AnimPlayer::getRootMotionRotationW</a>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    player.addFunc(<span class="stringliteral">&quot;consumeEvent&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a4bad23ca96b184059277a6052ff59dfb">AnimPlayer::consumeEvent</a>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    player.addFunc(<span class="stringliteral">&quot;setUpdateRate&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#acbab69d1ed9ffca72ce90439173830d1">AnimPlayer::setUpdateRate</a>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    player.addFunc(<span class="stringliteral">&quot;getUpdateRate&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a6164bdb9887d3bf69fd194b0aa6156a8">AnimPlayer::getUpdateRate</a>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    player.addFunc(<span class="stringliteral">&quot;update&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a5b36951ee92ed42666f993fc157805ca">AnimPlayer::update</a>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    player.addFunc(<span class="stringliteral">&quot;getEventCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a9a173ccffd1a0ef8fd21c9049a4a4588">AnimPlayer::getEventCount</a>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    player.addFunc(<span class="stringliteral">&quot;getEventName&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a1a5ac2db9f1a8afa0f6beade842ec769">AnimPlayer::getEventName</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    player.addFunc(<span class="stringliteral">&quot;getEventPayload&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a96c2348f7393e40f21a9b729c4e11fc6">AnimPlayer::getEventPayload</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    player.addFunc(<span class="stringliteral">&quot;clearEvents&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimPlayer.html#a41f1ac6f696be088be7a778a877fb5d9">AnimPlayer::clearEvents</a>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}</div>
+</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimClip_8h_html"><div class="ttname"><a href="AnimClip_8h.html">AnimClip.h</a></div></div>
+<div class="ttc" id="aAnimPlayer_8h_html"><div class="ttname"><a href="AnimPlayer_8h.html">AnimPlayer.h</a></div></div>
+<div class="ttc" id="aAnimationBindings_8h_html"><div class="ttname"><a href="AnimationBindings_8h.html">AnimationBindings.h</a></div></div>
+<div class="ttc" id="aBuildingFx_8cpp_html_ab77cc972f3ee899689ba053015472ccd"><div class="ttname"><a href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a></div><div class="ttdeci">int mask</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00064">BuildingFx.cpp:64</a></div></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_a7efc219781df4a1e281cb5d348b7fbf9"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#a7efc219781df4a1e281cb5d348b7fbf9">yaw</a></div><div class="ttdeci">float yaw</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00036">PrefabActionCapabilities.cpp:36</a></div></div>
+<div class="ttc" id="aRootMotionPolicy_8h_html"><div class="ttname"><a href="RootMotionPolicy_8h.html">RootMotionPolicy.h</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html">eve::animation::AnimPlayer</a></div><div class="ttdoc">Single-clip (or cross-fading) 3D animation player. Script type: AnimPlayer.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00030">AnimPlayer.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a11ece9b96fee367b5ee707b5dca424a4"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a11ece9b96fee367b5ee707b5dca424a4">eve::animation::AnimPlayer::setSpeed</a></div><div class="ttdeci">void setSpeed(float speed)</div><div class="ttdoc">Sets the speed.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00047">AnimPlayer.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a19c36e8d4b47df02baae98dcf760cf75"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a19c36e8d4b47df02baae98dcf760cf75">eve::animation::AnimPlayer::getRootMotionRotationW</a></div><div class="ttdeci">float getRootMotionRotationW() const</div><div class="ttdoc">Returns the root motion rotation w.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00124">AnimPlayer.h:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a1a5ac2db9f1a8afa0f6beade842ec769"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a1a5ac2db9f1a8afa0f6beade842ec769">eve::animation::AnimPlayer::getEventName</a></div><div class="ttdeci">std::string getEventName(int index) const override</div><div class="ttdoc">Name of a dispatched event, or empty for invalid index.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00150">AnimPlayer.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a2b64bfab052920132408d98d603cd19b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a2b64bfab052920132408d98d603cd19b">eve::animation::AnimPlayer::setTime</a></div><div class="ttdeci">void setTime(float seconds)</div><div class="ttdoc">Sets the time.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00052">AnimPlayer.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a30ebb00c650d1c05e787bef10f995569"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a30ebb00c650d1c05e787bef10f995569">eve::animation::AnimPlayer::getRootMotionRotationY</a></div><div class="ttdeci">float getRootMotionRotationY() const</div><div class="ttdoc">Returns the root motion rotation y.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00120">AnimPlayer.h:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a321b471243bda8ae1f7a35f20d527b57"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a321b471243bda8ae1f7a35f20d527b57">eve::animation::AnimPlayer::setRootMotionBone</a></div><div class="ttdeci">void setRootMotionBone(int boneIndex)</div><div class="ttdoc">Select the bone whose per-frame motion is extracted (default 0).</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00116">AnimPlayer.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a363cbfea3079424c7c99b5b93e190e44"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a363cbfea3079424c7c99b5b93e190e44">eve::animation::AnimPlayer::getTime</a></div><div class="ttdeci">float getTime() const</div><div class="ttdoc">Returns the time.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00067">AnimPlayer.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a367fd08913066f27d1ae50199a3fe779"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a367fd08913066f27d1ae50199a3fe779">eve::animation::AnimPlayer::getSpeed</a></div><div class="ttdeci">float getSpeed() const</div><div class="ttdoc">Returns the speed.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00063">AnimPlayer.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a41f1ac6f696be088be7a778a877fb5d9"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a41f1ac6f696be088be7a778a877fb5d9">eve::animation::AnimPlayer::clearEvents</a></div><div class="ttdeci">void clearEvents()</div><div class="ttdoc">Clear currently dispatched events. update() also clears them at frame start.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00139">AnimPlayer.h:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a46e53d1034c13adf93bb3d1db1c98f0b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a46e53d1034c13adf93bb3d1db1c98f0b">eve::animation::AnimPlayer::getRootMotionY</a></div><div class="ttdeci">float getRootMotionY() const</div><div class="ttdoc">Returns the root motion y.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00114">AnimPlayer.h:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a48b61f8ff0ca0eee0c5d570293e5c852"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a48b61f8ff0ca0eee0c5d570293e5c852">eve::animation::AnimPlayer::resume</a></div><div class="ttdeci">void resume()</div><div class="ttdoc">Resume.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00110">AnimPlayer.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a4bad23ca96b184059277a6052ff59dfb"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a4bad23ca96b184059277a6052ff59dfb">eve::animation::AnimPlayer::consumeEvent</a></div><div class="ttdeci">std::string consumeEvent()</div><div class="ttdoc">Pop the oldest notify crossed since the previous update.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00137">AnimPlayer.cpp:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a58d15d3f223bce3bc898cd7569000ee2"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a58d15d3f223bce3bc898cd7569000ee2">eve::animation::AnimPlayer::setLoop</a></div><div class="ttdeci">void setLoop(bool loop)</div><div class="ttdoc">Sets the loop.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00069">AnimPlayer.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a5b36951ee92ed42666f993fc157805ca"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a5b36951ee92ed42666f993fc157805ca">eve::animation::AnimPlayer::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdoc">Legacy seconds facade retained for scripts and old callers.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00269">AnimPlayer.cpp:269</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a6164bdb9887d3bf69fd194b0aa6156a8"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a6164bdb9887d3bf69fd194b0aa6156a8">eve::animation::AnimPlayer::getUpdateRate</a></div><div class="ttdeci">float getUpdateRate() const</div><div class="ttdoc">Returns the update rate.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00130">AnimPlayer.h:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a660605e3f44e061191968f244abfbcdc"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a660605e3f44e061191968f244abfbcdc">eve::animation::AnimPlayer::crossFade</a></div><div class="ttdeci">void crossFade(AnimClip *clip, float blendSeconds)</div><div class="ttdoc">Cross-fade to clip over blendSeconds (keeps sampling previous until done).</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00076">AnimPlayer.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a679399f8de994084fb9b78af07cb797b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a679399f8de994084fb9b78af07cb797b">eve::animation::AnimPlayer::isPaused</a></div><div class="ttdeci">bool isPaused() const</div><div class="ttdoc">True when paused.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00079">AnimPlayer.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a8312f5b256eb8601b6c6701aea0afc49"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a8312f5b256eb8601b6c6701aea0afc49">eve::animation::AnimPlayer::getRootMotionBone</a></div><div class="ttdeci">int getRootMotionBone() const</div><div class="ttdoc">Returns the root motion bone.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00095">AnimPlayer.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a96c2348f7393e40f21a9b729c4e11fc6"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a96c2348f7393e40f21a9b729c4e11fc6">eve::animation::AnimPlayer::getEventPayload</a></div><div class="ttdeci">std::string getEventPayload(int index) const override</div><div class="ttdoc">Payload of a dispatched event, or empty for invalid index.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00155">AnimPlayer.cpp:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a9a173ccffd1a0ef8fd21c9049a4a4588"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a9a173ccffd1a0ef8fd21c9049a4a4588">eve::animation::AnimPlayer::getEventCount</a></div><div class="ttdeci">int getEventCount() const override</div><div class="ttdoc">Number of events crossed by the most recent play/update call.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00133">AnimPlayer.h:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_a9c1414cf531b594b29f9f839a505a92f"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#a9c1414cf531b594b29f9f839a505a92f">eve::animation::AnimPlayer::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdoc">Stops .</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00095">AnimPlayer.cpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_aae2fd491999fce463cc5579b3db28716"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#aae2fd491999fce463cc5579b3db28716">eve::animation::AnimPlayer::getRootMotionX</a></div><div class="ttdeci">float getRootMotionX() const</div><div class="ttdoc">Controller-facing translation X after policy filtering (BoneLocal or CharacterFacing).</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00112">AnimPlayer.h:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_ab31c754fefee0d6a50d4d6aa928ce28e"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#ab31c754fefee0d6a50d4d6aa928ce28e">eve::animation::AnimPlayer::getRootMotionRotationX</a></div><div class="ttdeci">float getRootMotionRotationX() const</div><div class="ttdoc">Returns the root motion rotation x.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00118">AnimPlayer.h:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_ab3c7c6d88ddab36882625c6d22275e8e"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#ab3c7c6d88ddab36882625c6d22275e8e">eve::animation::AnimPlayer::pause</a></div><div class="ttdeci">void pause()</div><div class="ttdoc">Pause.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00106">AnimPlayer.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_abc1d7f37cc8bce8ce8c22f5d30bb5d54"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#abc1d7f37cc8bce8ce8c22f5d30bb5d54">eve::animation::AnimPlayer::getLoop</a></div><div class="ttdeci">bool getLoop() const</div><div class="ttdoc">Returns the loop.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00045">AnimPlayer.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_ac63acc26f396b3966240a5f8dc6423a1"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#ac63acc26f396b3966240a5f8dc6423a1">eve::animation::AnimPlayer::getRootMotionRotationZ</a></div><div class="ttdeci">float getRootMotionRotationZ() const</div><div class="ttdoc">Returns the root motion rotation z.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00122">AnimPlayer.h:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_ac9967c8442fdcdc4a49c3b6146bec966"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#ac9967c8442fdcdc4a49c3b6146bec966">eve::animation::AnimPlayer::getPose</a></div><div class="ttdeci">AnimPose * getPose() override</div><div class="ttdoc">Borrowed pointer accessor. @ownership Borrowed @lifetime Valid while the owning animation object rema...</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00114">AnimPlayer.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_acbab69d1ed9ffca72ce90439173830d1"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#acbab69d1ed9ffca72ce90439173830d1">eve::animation::AnimPlayer::setUpdateRate</a></div><div class="ttdeci">void setUpdateRate(float hz)</div><div class="ttdoc">Limit pose evaluation frequency for animation LOD; 0 updates every call.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00144">AnimPlayer.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_ae8e681f4888d125560341f1081c61982"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#ae8e681f4888d125560341f1081c61982">eve::animation::AnimPlayer::isPlaying</a></div><div class="ttdeci">bool isPlaying() const</div><div class="ttdoc">True when playing.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00077">AnimPlayer.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_af94dbeba2f86c0ca9696ba1c82f6ed26"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#af94dbeba2f86c0ca9696ba1c82f6ed26">eve::animation::AnimPlayer::getClip</a></div><div class="ttdeci">AnimClip * getClip() const</div><div class="ttdoc">Borrow the selected clip, or null if none is selected. The caller owns the clip and must keep it aliv...</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00086">AnimPlayer.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_afc6684770f2baf8284d5a7eeb10fae8c"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#afc6684770f2baf8284d5a7eeb10fae8c">eve::animation::AnimPlayer::getRootMotionZ</a></div><div class="ttdeci">float getRootMotionZ() const</div><div class="ttdoc">Returns the root motion z.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8h_source.html#l00116">AnimPlayer.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPlayer_html_afcf4c43989bc7ead627d1c0f2b6c4833"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPlayer.html#afcf4c43989bc7ead627d1c0f2b6c4833">eve::animation::AnimPlayer::play</a></div><div class="ttdeci">void play(AnimClip *clip)</div><div class="ttdoc">Play.</div><div class="ttdef"><b>Definition</b> <a href="AnimPlayer_8cpp_source.html#l00060">AnimPlayer.cpp:60</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00058">Animation.cpp:58</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a15137ba27b87791d29fe6d9f84bfc539"><div class="ttname"><a href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539">eve::animation::RootMotionLockAxes</a></div><div class="ttdeci">RootMotionLockAxes</div><div class="ttdoc">Per-axis translation locks for extracted root-motion deltas.</div><div class="ttdef"><b>Definition</b> <a href="RootMotionPolicy_8h_source.html#l00021">RootMotionPolicy.h:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a15137ba27b87791d29fe6d9f84bfc539a02129bb861061d1a052c592e2dc6b383"><div class="ttname"><a href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a02129bb861061d1a052c592e2dc6b383">eve::animation::RootMotionLockAxes::X</a></div><div class="ttdeci">@ X</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a15137ba27b87791d29fe6d9f84bfc539a21c2e59531c8710156d34a3c30ac81d5"><div class="ttname"><a href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a21c2e59531c8710156d34a3c30ac81d5">eve::animation::RootMotionLockAxes::Z</a></div><div class="ttdeci">@ Z</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a15137ba27b87791d29fe6d9f84bfc539a253bca941d27787962be8eb616021613"><div class="ttname"><a href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a253bca941d27787962be8eb616021613">eve::animation::RootMotionLockAxes::VerticalY</a></div><div class="ttdeci">@ VerticalY</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a15137ba27b87791d29fe6d9f84bfc539a57cec4137b614c87cb4e24a3d003a3e0"><div class="ttname"><a href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a57cec4137b614c87cb4e24a3d003a3e0">eve::animation::RootMotionLockAxes::Y</a></div><div class="ttdeci">@ Y</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a15137ba27b87791d29fe6d9f84bfc539a94bd9202e672b627615bdb037f85dae7"><div class="ttname"><a href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539a94bd9202e672b627615bdb037f85dae7">eve::animation::RootMotionLockAxes::HorizontalXZ</a></div><div class="ttdeci">@ HorizontalXZ</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a15137ba27b87791d29fe6d9f84bfc539ab1c94ca2fbc3e78fc30069c8d0f01680"><div class="ttname"><a href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539ab1c94ca2fbc3e78fc30069c8d0f01680">eve::animation::RootMotionLockAxes::All</a></div><div class="ttdeci">@ All</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a31d444686b9f7641294ac57aa7b1888c"><div class="ttname"><a href="namespaceeve_1_1animation.html#a31d444686b9f7641294ac57aa7b1888c">eve::animation::exposeAnimPlayerBindings</a></div><div class="ttdeci">void exposeAnimPlayerBindings(ssq::Table &amp;table)</div><div class="ttdoc">Register playback, sampling and event inspection for AnimPlayer.</div><div class="ttdef"><b>Definition</b> <a href="AnimationPlayerBindings_8cpp_source.html#l00038">AnimationPlayerBindings.cpp:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_ad92f84d412527c50b72b3ef668d6e803"><div class="ttname"><a href="namespaceeve_1_1animation.html#ad92f84d412527c50b72b3ef668d6e803">eve::animation::RootMotionApplySpace</a></div><div class="ttdeci">RootMotionApplySpace</div><div class="ttdoc">Coordinate space used when publishing root-motion translation.</div><div class="ttdef"><b>Definition</b> <a href="RootMotionPolicy_8h_source.html#l00052">RootMotionPolicy.h:52</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_ad92f84d412527c50b72b3ef668d6e803aa250fd1fdfc29da13d24405aded08a00"><div class="ttname"><a href="namespaceeve_1_1animation.html#ad92f84d412527c50b72b3ef668d6e803aa250fd1fdfc29da13d24405aded08a00">eve::animation::RootMotionApplySpace::CharacterFacing</a></div><div class="ttdeci">@ CharacterFacing</div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ac3b6f94120aaac0606b048042b94ec36"><div class="ttname"><a href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00470">SquirrelBinding.cpp:470</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00031">Settlement.cpp:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

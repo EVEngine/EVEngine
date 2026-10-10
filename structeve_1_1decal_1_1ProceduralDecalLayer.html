@@ -1,0 +1,634 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::decal::ProceduralDecalLayer结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1decal.html">decal</a></li><li class="navelem"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html">ProceduralDecalLayer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1decal_1_1ProceduralDecalLayer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::decal::ProceduralDecalLayer结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One independently art-directed layer of a procedural decal recipe.  
+ <a href="structeve_1_1decal_1_1ProceduralDecalLayer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a7fac869c8c491f7d4ab4a8786260f3b9" id="r_a7fac869c8c491f7d4ab4a8786260f3b9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a7fac869c8c491f7d4ab4a8786260f3b9">enabled</a> = true</td></tr>
+<tr class="separator:a7fac869c8c491f7d4ab4a8786260f3b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80366e11483740b6bd778c8578719667" id="r_a80366e11483740b6bd778c8578719667"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43c">DecalPattern</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a80366e11483740b6bd778c8578719667">pattern</a> = <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50">DecalPattern::Grunge</a></td></tr>
+<tr class="separator:a80366e11483740b6bd778c8578719667"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00ef0fa88aebc358134cc736e901e7f7" id="r_a00ef0fa88aebc358134cc736e901e7f7"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a00ef0fa88aebc358134cc736e901e7f7">seed</a> = 1</td></tr>
+<tr class="separator:a00ef0fa88aebc358134cc736e901e7f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0bb16b4f7998c2f61a50f9262a0bc7c" id="r_ad0bb16b4f7998c2f61a50f9262a0bc7c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#ad0bb16b4f7998c2f61a50f9262a0bc7c">sourcePatternId</a> = -1</td></tr>
+<tr class="separator:ad0bb16b4f7998c2f61a50f9262a0bc7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d11c413215587934c24ca2e4b11f3d8" id="r_a0d11c413215587934c24ca2e4b11f3d8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a0d11c413215587934c24ca2e4b11f3d8">invertMask</a> = false</td></tr>
+<tr class="separator:a0d11c413215587934c24ca2e4b11f3d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a779eb4879cfd42350e3175cab619c60e" id="r_a779eb4879cfd42350e3175cab619c60e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a779eb4879cfd42350e3175cab619c60e">amount</a> = 0.65<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a779eb4879cfd42350e3175cab619c60e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e5e63211eaaa93d2b9a7dbc7a26e1e5" id="r_a1e5e63211eaaa93d2b9a7dbc7a26e1e5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a1e5e63211eaaa93d2b9a7dbc7a26e1e5">scale</a> = 5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1e5e63211eaaa93d2b9a7dbc7a26e1e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a479ee6db3bce26f48b400fc1d0c827eb" id="r_a479ee6db3bce26f48b400fc1d0c827eb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a479ee6db3bce26f48b400fc1d0c827eb">rotation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a479ee6db3bce26f48b400fc1d0c827eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ce0bc98d67f92ac33bc9f21bd690cea" id="r_a0ce0bc98d67f92ac33bc9f21bd690cea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a0ce0bc98d67f92ac33bc9f21bd690cea">blur</a> = 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0ce0bc98d67f92ac33bc9f21bd690cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab604ab1df5070baeec7b377d698ec0bd" id="r_ab604ab1df5070baeec7b377d698ec0bd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#ab604ab1df5070baeec7b377d698ec0bd">contrast</a> = 1.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab604ab1df5070baeec7b377d698ec0bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f0adfd1d5cb7d95346db08d39dad0c1" id="r_a3f0adfd1d5cb7d95346db08d39dad0c1"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a3f0adfd1d5cb7d95346db08d39dad0c1">color</a> {0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.06<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a3f0adfd1d5cb7d95346db08d39dad0c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4547b7cee1b7deb24c9877941815da69" id="r_a4547b7cee1b7deb24c9877941815da69"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a4547b7cee1b7deb24c9877941815da69">colorVariation</a> = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4547b7cee1b7deb24c9877941815da69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec43cf7d8a5aec87c441bb3434accd8d" id="r_aec43cf7d8a5aec87c441bb3434accd8d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#aec43cf7d8a5aec87c441bb3434accd8d">hueVariation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aec43cf7d8a5aec87c441bb3434accd8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dc8c2d358cc2d9091ead5876b7d91c4" id="r_a3dc8c2d358cc2d9091ead5876b7d91c4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a3dc8c2d358cc2d9091ead5876b7d91c4">roughness</a> = 0.7<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3dc8c2d358cc2d9091ead5876b7d91c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd81a3030e03f9656cfc7ba0a9b4a345" id="r_acd81a3030e03f9656cfc7ba0a9b4a345"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#acd81a3030e03f9656cfc7ba0a9b4a345">roughnessVariation</a> = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acd81a3030e03f9656cfc7ba0a9b4a345"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75223a1f58d4e3b722fce075910aad4b" id="r_a75223a1f58d4e3b722fce075910aad4b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a75223a1f58d4e3b722fce075910aad4b">metallic</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a75223a1f58d4e3b722fce075910aad4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98e54310a89693358589ed7d57e91510" id="r_a98e54310a89693358589ed7d57e91510"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a98e54310a89693358589ed7d57e91510">emissive</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a98e54310a89693358589ed7d57e91510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a968597b06df91c2e85f48c9710016979" id="r_a968597b06df91c2e85f48c9710016979"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a968597b06df91c2e85f48c9710016979">normalStrength</a> = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a968597b06df91c2e85f48c9710016979"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa67d3acf01fcd5e8c1b4ffa3833d407e" id="r_aa67d3acf01fcd5e8c1b4ffa3833d407e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#aa67d3acf01fcd5e8c1b4ffa3833d407e">normalSoftness</a> = 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa67d3acf01fcd5e8c1b4ffa3833d407e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21ce1c517f92df0ecbd53fb9c2678b55" id="r_a21ce1c517f92df0ecbd53fb9c2678b55"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a21ce1c517f92df0ecbd53fb9c2678b55">normalTrim</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a21ce1c517f92df0ecbd53fb9c2678b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27bb60bae5ecb4f8904993c9ff533df1" id="r_a27bb60bae5ecb4f8904993c9ff533df1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a27bb60bae5ecb4f8904993c9ff533df1">normalThickness</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a27bb60bae5ecb4f8904993c9ff533df1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b4dca2f2e17fc46fed09e9390a4adfb" id="r_a8b4dca2f2e17fc46fed09e9390a4adfb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a8b4dca2f2e17fc46fed09e9390a4adfb">normalStyle</a> = 0</td></tr>
+<tr class="separator:a8b4dca2f2e17fc46fed09e9390a4adfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bbcad9b989cbe663725c0e42d0bfe38" id="r_a7bbcad9b989cbe663725c0e42d0bfe38"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1decal_1_1ProceduralDecalLayer.html#a7bbcad9b989cbe663725c0e42d0bfe38">height</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7bbcad9b989cbe663725c0e42d0bfe38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One independently art-directed layer of a procedural decal recipe. </p>
+<p>Layers are pure authoring values. They own no renderer resources and are safe to serialize, copy, and evaluate on a worker thread. </p>
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a779eb4879cfd42350e3175cab619c60e" name="a779eb4879cfd42350e3175cab619c60e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a779eb4879cfd42350e3175cab619c60e">&#9670;&#160;</a></span>amount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::amount = 0.65<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00295">eve::decal::proceduralDecalPreset()</a>.</p>
+
+</div>
+</div>
+<a id="a0ce0bc98d67f92ac33bc9f21bd690cea" name="a0ce0bc98d67f92ac33bc9f21bd690cea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ce0bc98d67f92ac33bc9f21bd690cea">&#9670;&#160;</a></span>blur</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::blur = 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00295">eve::decal::proceduralDecalPreset()</a>.</p>
+
+</div>
+</div>
+<a id="a3f0adfd1d5cb7d95346db08d39dad0c1" name="a3f0adfd1d5cb7d95346db08d39dad0c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f0adfd1d5cb7d95346db08d39dad0c1">&#9670;&#160;</a></span>color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::decal::ProceduralDecalLayer::color {0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.06<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">eve::decal::bakeProceduralDecal()</a>.</p>
+
+</div>
+</div>
+<a id="a4547b7cee1b7deb24c9877941815da69" name="a4547b7cee1b7deb24c9877941815da69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4547b7cee1b7deb24c9877941815da69">&#9670;&#160;</a></span>colorVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::colorVariation = 0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">eve::decal::bakeProceduralDecal()</a>.</p>
+
+</div>
+</div>
+<a id="ab604ab1df5070baeec7b377d698ec0bd" name="ab604ab1df5070baeec7b377d698ec0bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab604ab1df5070baeec7b377d698ec0bd">&#9670;&#160;</a></span>contrast</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::contrast = 1.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a98e54310a89693358589ed7d57e91510" name="a98e54310a89693358589ed7d57e91510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98e54310a89693358589ed7d57e91510">&#9670;&#160;</a></span>emissive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::emissive = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">eve::decal::bakeProceduralDecal()</a>.</p>
+
+</div>
+</div>
+<a id="a7fac869c8c491f7d4ab4a8786260f3b9" name="a7fac869c8c491f7d4ab4a8786260f3b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fac869c8c491f7d4ab4a8786260f3b9">&#9670;&#160;</a></span>enabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::decal::ProceduralDecalLayer::enabled = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00295">eve::decal::proceduralDecalPreset()</a>.</p>
+
+</div>
+</div>
+<a id="a7bbcad9b989cbe663725c0e42d0bfe38" name="a7bbcad9b989cbe663725c0e42d0bfe38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bbcad9b989cbe663725c0e42d0bfe38">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::height = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">eve::decal::bakeProceduralDecal()</a>.</p>
+
+</div>
+</div>
+<a id="aec43cf7d8a5aec87c441bb3434accd8d" name="aec43cf7d8a5aec87c441bb3434accd8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec43cf7d8a5aec87c441bb3434accd8d">&#9670;&#160;</a></span>hueVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::hueVariation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">eve::decal::bakeProceduralDecal()</a>.</p>
+
+</div>
+</div>
+<a id="a0d11c413215587934c24ca2e4b11f3d8" name="a0d11c413215587934c24ca2e4b11f3d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d11c413215587934c24ca2e4b11f3d8">&#9670;&#160;</a></span>invertMask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::decal::ProceduralDecalLayer::invertMask = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a75223a1f58d4e3b722fce075910aad4b" name="a75223a1f58d4e3b722fce075910aad4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75223a1f58d4e3b722fce075910aad4b">&#9670;&#160;</a></span>metallic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::metallic = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">eve::decal::bakeProceduralDecal()</a>.</p>
+
+</div>
+</div>
+<a id="aa67d3acf01fcd5e8c1b4ffa3833d407e" name="aa67d3acf01fcd5e8c1b4ffa3833d407e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa67d3acf01fcd5e8c1b4ffa3833d407e">&#9670;&#160;</a></span>normalSoftness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::normalSoftness = 0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a968597b06df91c2e85f48c9710016979" name="a968597b06df91c2e85f48c9710016979"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a968597b06df91c2e85f48c9710016979">&#9670;&#160;</a></span>normalStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::normalStrength = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">eve::decal::bakeProceduralDecal()</a> , 以及 <a class="el" href="ProceduralDecal_8cpp_source.html#l00295">eve::decal::proceduralDecalPreset()</a>.</p>
+
+</div>
+</div>
+<a id="a8b4dca2f2e17fc46fed09e9390a4adfb" name="a8b4dca2f2e17fc46fed09e9390a4adfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b4dca2f2e17fc46fed09e9390a4adfb">&#9670;&#160;</a></span>normalStyle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::decal::ProceduralDecalLayer::normalStyle = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a27bb60bae5ecb4f8904993c9ff533df1" name="a27bb60bae5ecb4f8904993c9ff533df1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27bb60bae5ecb4f8904993c9ff533df1">&#9670;&#160;</a></span>normalThickness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::normalThickness = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a21ce1c517f92df0ecbd53fb9c2678b55" name="a21ce1c517f92df0ecbd53fb9c2678b55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21ce1c517f92df0ecbd53fb9c2678b55">&#9670;&#160;</a></span>normalTrim</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::normalTrim = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a80366e11483740b6bd778c8578719667" name="a80366e11483740b6bd778c8578719667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80366e11483740b6bd778c8578719667">&#9670;&#160;</a></span>pattern</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43c">DecalPattern</a> eve::decal::ProceduralDecalLayer::pattern = <a class="el" href="namespaceeve_1_1decal.html#ac412c03b32cd4121ff2e9d0bee55b43ca42dd5b575163e4a03fb16c58f7c7ce50">DecalPattern::Grunge</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a479ee6db3bce26f48b400fc1d0c827eb" name="a479ee6db3bce26f48b400fc1d0c827eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a479ee6db3bce26f48b400fc1d0c827eb">&#9670;&#160;</a></span>rotation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::rotation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3dc8c2d358cc2d9091ead5876b7d91c4" name="a3dc8c2d358cc2d9091ead5876b7d91c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dc8c2d358cc2d9091ead5876b7d91c4">&#9670;&#160;</a></span>roughness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::roughness = 0.7<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">eve::decal::bakeProceduralDecal()</a>.</p>
+
+</div>
+</div>
+<a id="acd81a3030e03f9656cfc7ba0a9b4a345" name="acd81a3030e03f9656cfc7ba0a9b4a345"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd81a3030e03f9656cfc7ba0a9b4a345">&#9670;&#160;</a></span>roughnessVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::roughnessVariation = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00436">eve::decal::bakeProceduralDecal()</a>.</p>
+
+</div>
+</div>
+<a id="a1e5e63211eaaa93d2b9a7dbc7a26e1e5" name="a1e5e63211eaaa93d2b9a7dbc7a26e1e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e5e63211eaaa93d2b9a7dbc7a26e1e5">&#9670;&#160;</a></span>scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::decal::ProceduralDecalLayer::scale = 5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00295">eve::decal::proceduralDecalPreset()</a>.</p>
+
+</div>
+</div>
+<a id="a00ef0fa88aebc358134cc736e901e7f7" name="a00ef0fa88aebc358134cc736e901e7f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00ef0fa88aebc358134cc736e901e7f7">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::decal::ProceduralDecalLayer::seed = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralDecal_8cpp_source.html#l00336">eve::decal::importProceduralDecalSbsprs()</a> , 以及 <a class="el" href="ProceduralDecal_8cpp_source.html#l00295">eve::decal::proceduralDecalPreset()</a>.</p>
+
+</div>
+</div>
+<a id="ad0bb16b4f7998c2f61a50f9262a0bc7c" name="ad0bb16b4f7998c2f61a50f9262a0bc7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0bb16b4f7998c2f61a50f9262a0bc7c">&#9670;&#160;</a></span>sourcePatternId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::decal::ProceduralDecalLayer::sourcePatternId = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a> 第 <a class="el" href="ProceduralDecal_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/decal/<a class="el" href="ProceduralDecal_8h_source.html">ProceduralDecal.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

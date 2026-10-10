@@ -1,0 +1,737 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::SkyWispsLayer结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html">SkyWispsLayer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1SkyWispsLayer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::SkyWispsLayer结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Borrowed authored thin-cloud layer, consumed synchronously by sky preparation.  
+ <a href="structeve_1_1graphics_1_1SkyWispsLayer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a78497db23c9812e46fd795680357f4e4" id="r_a78497db23c9812e46fd795680357f4e4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a78497db23c9812e46fd795680357f4e4">daylightEnabled</a> = false</td></tr>
+<tr class="memdesc:a78497db23c9812e46fd795680357f4e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opt-in daylight chain. Disabled for legacy manifests; no independent time source.  <br /></td></tr>
+<tr class="separator:a78497db23c9812e46fd795680357f4e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a768d10ba5571d41801f97cb831899046" id="r_a768d10ba5571d41801f97cb831899046"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a768d10ba5571d41801f97cb831899046">opticalCycleEnabled</a> = false</td></tr>
+<tr class="memdesc:a768d10ba5571d41801f97cb831899046"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opt-in source optical cycle, prepared as an immutable height-sampled LUT volume.  <br /></td></tr>
+<tr class="separator:a768d10ba5571d41801f97cb831899046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a855f3f8f9225412c919682e00b632d9e" id="r_a855f3f8f9225412c919682e00b632d9e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1SkyDaylightLayer.html">SkyDaylightLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a855f3f8f9225412c919682e00b632d9e">daylight</a></td></tr>
+<tr class="separator:a855f3f8f9225412c919682e00b632d9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e40f48a8e0ff311e121926a1deb72ce" id="r_a7e40f48a8e0ff311e121926a1deb72ce"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a7e40f48a8e0ff311e121926a1deb72ce">starsTexture</a> = nullptr</td></tr>
+<tr class="memdesc:a7e40f48a8e0ff311e121926a1deb72ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional star/noise uploads, borrowed through preparation only; required by daylightEnabled.  <br /></td></tr>
+<tr class="separator:a7e40f48a8e0ff311e121926a1deb72ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae86c55fd549f7a542aafec4cffee4bd5" id="r_ae86c55fd549f7a542aafec4cffee4bd5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#ae86c55fd549f7a542aafec4cffee4bd5">starsNoiseTexture</a> = nullptr</td></tr>
+<tr class="separator:ae86c55fd549f7a542aafec4cffee4bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7e5e2050183c398859cd4822db1d95" id="r_abc7e5e2050183c398859cd4822db1d95"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#abc7e5e2050183c398859cd4822db1d95">moonColorTexture</a> = nullptr</td></tr>
+<tr class="memdesc:abc7e5e2050183c398859cd4822db1d95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lunar color/alpha and phase-normal uploads; borrowed only until prepare returns. Required when daylight.moonDiskColor.w is 1; ignored otherwise.  <br /></td></tr>
+<tr class="separator:abc7e5e2050183c398859cd4822db1d95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eec4a279d3c6988d237a207c418a4fc" id="r_a8eec4a279d3c6988d237a207c418a4fc"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a8eec4a279d3c6988d237a207c418a4fc">moonNormalTexture</a> = nullptr</td></tr>
+<tr class="separator:a8eec4a279d3c6988d237a207c418a4fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abce15b00bf5c2a7911d03ec6d1138aeb" id="r_abce15b00bf5c2a7911d03ec6d1138aeb"><td class="memItemLeft" align="right" valign="top">std::array&lt; std::array&lt; float, 4 &gt;, 12 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#abce15b00bf5c2a7911d03ec6d1138aeb">sunDiskCurve</a> {}</td></tr>
+<tr class="memdesc:abce15b00bf5c2a7911d03ec6d1138aeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional RGB elevation curves: four (height,value,arrive tangent,leave tangent) keys per channel. Values scale disk radiance relative to each channel's final key; heights are (1+sunDirection.y)/2. Unweighted cubic Hermite interpolation with constant endpoint extrapolation; no clock is retained.  <br /></td></tr>
+<tr class="separator:abce15b00bf5c2a7911d03ec6d1138aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33ce9912fca7e88ccd8cf732714609be" id="r_a33ce9912fca7e88ccd8cf732714609be"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a33ce9912fca7e88ccd8cf732714609be">sunDiskCurveEnabled</a> = false</td></tr>
+<tr class="separator:a33ce9912fca7e88ccd8cf732714609be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a421964bd32a6a44bbd6142d41ed726a9" id="r_a421964bd32a6a44bbd6142d41ed726a9"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a421964bd32a6a44bbd6142d41ed726a9">sunDiskColor</a> {0, 0, 0}</td></tr>
+<tr class="memdesc:a421964bd32a6a44bbd6142d41ed726a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solar disk RGB radiance; zero disables it. Copied at preparation, independent of light irradiance.  <br /></td></tr>
+<tr class="separator:a421964bd32a6a44bbd6142d41ed726a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc1bc6669f6dd27831cc4bdefb8562c2" id="r_abc1bc6669f6dd27831cc4bdefb8562c2"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#abc1bc6669f6dd27831cc4bdefb8562c2">sunDiskShape</a> {.021380283<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="memdesc:abc1bc6669f6dd27831cc4bdefb8562c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Angular radius in radians, positive edge exponent and nonnegative reflection multiplier.  <br /></td></tr>
+<tr class="separator:abc1bc6669f6dd27831cc4bdefb8562c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae97f8aa5740e78e6a3e075d380c357b2" id="r_ae97f8aa5740e78e6a3e075d380c357b2"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#ae97f8aa5740e78e6a3e075d380c357b2">materialContrast</a> {0, 1, 1}</td></tr>
+<tr class="memdesc:ae97f8aa5740e78e6a3e075d380c357b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parent material contrast, midpoint and intensity, applied after sky/cloud composition.  <br /></td></tr>
+<tr class="separator:ae97f8aa5740e78e6a3e075d380c357b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7142220e796bbab6a7b92cba12e8f572" id="r_a7142220e796bbab6a7b92cba12e8f572"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a7142220e796bbab6a7b92cba12e8f572">authoredSkyLighting</a> = false</td></tr>
+<tr class="memdesc:a7142220e796bbab6a7b92cba12e8f572"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply authored sun/moon intensity gradients to the physical sky before composition.  <br /></td></tr>
+<tr class="separator:a7142220e796bbab6a7b92cba12e8f572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7970636fb738b7cf25dc9357cc6ec569" id="r_a7970636fb738b7cf25dc9357cc6ec569"><td class="memItemLeft" align="right" valign="top">std::span&lt; const float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a7970636fb738b7cf25dc9357cc6ec569">corners</a></td></tr>
+<tr class="separator:a7970636fb738b7cf25dc9357cc6ec569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace9bdcc566dd30828c3f178948eea714" id="r_ace9bdcc566dd30828c3f178948eea714"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#ace9bdcc566dd30828c3f178948eea714">densityTexture</a> = nullptr</td></tr>
+<tr class="separator:ace9bdcc566dd30828c3f178948eea714"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b4ac1a8b126dd36adc7491e1dc8ef8b" id="r_a5b4ac1a8b126dd36adc7491e1dc8ef8b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a5b4ac1a8b126dd36adc7491e1dc8ef8b">domeScale</a> = 5000</td></tr>
+<tr class="separator:a5b4ac1a8b126dd36adc7491e1dc8ef8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0e7354999206df635fd9cca13ef265d" id="r_af0e7354999206df635fd9cca13ef265d"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#af0e7354999206df635fd9cca13ef265d">color</a> {.355900f, .399502<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, .469850f}</td></tr>
+<tr class="separator:af0e7354999206df635fd9cca13ef265d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49b107c1ecf7526009fb838cbd760afe" id="r_a49b107c1ecf7526009fb838cbd760afe"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a49b107c1ecf7526009fb838cbd760afe">gradient</a> {.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0, -.866025<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 5}</td></tr>
+<tr class="separator:a49b107c1ecf7526009fb838cbd760afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a166aa5b8a14af81341e0828cb6f52690" id="r_a166aa5b8a14af81341e0828cb6f52690"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a166aa5b8a14af81341e0828cb6f52690">movement</a> {-1, 0}</td></tr>
+<tr class="separator:a166aa5b8a14af81341e0828cb6f52690"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa541bf2b08f5abeee83a0121fce40cb5" id="r_aa541bf2b08f5abeee83a0121fce40cb5"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#aa541bf2b08f5abeee83a0121fce40cb5">moonForward</a> {0, 0, 1}</td></tr>
+<tr class="separator:aa541bf2b08f5abeee83a0121fce40cb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20570ab63ae0a5413807f66b8c0ffcd1" id="r_a20570ab63ae0a5413807f66b8c0ffcd1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a20570ab63ae0a5413807f66b8c0ffcd1">morphRate</a> = 1</td></tr>
+<tr class="separator:a20570ab63ae0a5413807f66b8c0ffcd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ecc0c0a7deee9adafece059e5df00bb" id="r_a7ecc0c0a7deee9adafece059e5df00bb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a7ecc0c0a7deee9adafece059e5df00bb">morphPeriod</a> = 10</td></tr>
+<tr class="separator:a7ecc0c0a7deee9adafece059e5df00bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdac666242b6f96fd428f5a7e87d6562" id="r_afdac666242b6f96fd428f5a7e87d6562"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#afdac666242b6f96fd428f5a7e87d6562">morphAmount</a> = .4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:afdac666242b6f96fd428f5a7e87d6562"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e6d2f492e85eb71ef8c4f86b5b1522d" id="r_a1e6d2f492e85eb71ef8c4f86b5b1522d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a1e6d2f492e85eb71ef8c4f86b5b1522d">opacity</a> = .2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1e6d2f492e85eb71ef8c4f86b5b1522d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35db5e53a5632213b468b40fcf313b6f" id="r_a35db5e53a5632213b468b40fcf313b6f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a35db5e53a5632213b468b40fcf313b6f">litIntensity</a> = .8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a35db5e53a5632213b468b40fcf313b6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84cd30f4004705c0e0b0abee9fabbb33" id="r_a84cd30f4004705c0e0b0abee9fabbb33"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a84cd30f4004705c0e0b0abee9fabbb33">cloudTime</a> = 0</td></tr>
+<tr class="separator:a84cd30f4004705c0e0b0abee9fabbb33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb9707d41a8f13144f2ce92bfc7039d4" id="r_aeb9707d41a8f13144f2ce92bfc7039d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#aeb9707d41a8f13144f2ce92bfc7039d4">moonGradient</a> = true</td></tr>
+<tr class="separator:aeb9707d41a8f13144f2ce92bfc7039d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38570089f4a6e0c12c70e3305df7f046" id="r_a38570089f4a6e0c12c70e3305df7f046"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1SkyWispsLayer.html#a38570089f4a6e0c12c70e3305df7f046">staticClouds</a> = false</td></tr>
+<tr class="separator:a38570089f4a6e0c12c70e3305df7f046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Borrowed authored thin-cloud layer, consumed synchronously by sky preparation. </p>
+<p>Triangle-list corners are x,y,z,u,v,r,g,b,a in Unreal local centimetres. Coordinates convert to native (x,z,y) metres, with the explicit uniform dome scale. <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a> storage/sRGB interpretation is explicit in densityTexture; its binding is reassigned. No file loading, provider pointers, clocks or callbacks are retained. All values are copied to GPU storage. This is a runtime upload description, not a persistent file schema. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00053">53</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a7142220e796bbab6a7b92cba12e8f572" name="a7142220e796bbab6a7b92cba12e8f572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7142220e796bbab6a7b92cba12e8f572">&#9670;&#160;</a></span>authoredSkyLighting</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::SkyWispsLayer::authoredSkyLighting = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply authored sun/moon intensity gradients to the physical sky before composition. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a84cd30f4004705c0e0b0abee9fabbb33" name="a84cd30f4004705c0e0b0abee9fabbb33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84cd30f4004705c0e0b0abee9fabbb33">&#9670;&#160;</a></span>cloudTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::SkyWispsLayer::cloudTime = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyRuntime_8cpp_source.html#l00067">eve::daynight::SkyRuntime::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="af0e7354999206df635fd9cca13ef265d" name="af0e7354999206df635fd9cca13ef265d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0e7354999206df635fd9cca13ef265d">&#9670;&#160;</a></span>color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::graphics::SkyWispsLayer::color {.355900f, .399502<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, .469850f}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7970636fb738b7cf25dc9357cc6ec569" name="a7970636fb738b7cf25dc9357cc6ec569"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7970636fb738b7cf25dc9357cc6ec569">&#9670;&#160;</a></span>corners</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt;const float&gt; eve::graphics::SkyWispsLayer::corners</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a855f3f8f9225412c919682e00b632d9e" name="a855f3f8f9225412c919682e00b632d9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a855f3f8f9225412c919682e00b632d9e">&#9670;&#160;</a></span>daylight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1SkyDaylightLayer.html">SkyDaylightLayer</a> eve::graphics::SkyWispsLayer::daylight</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a78497db23c9812e46fd795680357f4e4" name="a78497db23c9812e46fd795680357f4e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78497db23c9812e46fd795680357f4e4">&#9670;&#160;</a></span>daylightEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::SkyWispsLayer::daylightEnabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opt-in daylight chain. Disabled for legacy manifests; no independent time source. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="ace9bdcc566dd30828c3f178948eea714" name="ace9bdcc566dd30828c3f178948eea714"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace9bdcc566dd30828c3f178948eea714">&#9670;&#160;</a></span>densityTexture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a>* eve::graphics::SkyWispsLayer::densityTexture = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b4ac1a8b126dd36adc7491e1dc8ef8b" name="a5b4ac1a8b126dd36adc7491e1dc8ef8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b4ac1a8b126dd36adc7491e1dc8ef8b">&#9670;&#160;</a></span>domeScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::SkyWispsLayer::domeScale = 5000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a49b107c1ecf7526009fb838cbd760afe" name="a49b107c1ecf7526009fb838cbd760afe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49b107c1ecf7526009fb838cbd760afe">&#9670;&#160;</a></span>gradient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 4&gt; eve::graphics::SkyWispsLayer::gradient {.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0, -.866025<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 5}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a35db5e53a5632213b468b40fcf313b6f" name="a35db5e53a5632213b468b40fcf313b6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35db5e53a5632213b468b40fcf313b6f">&#9670;&#160;</a></span>litIntensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::SkyWispsLayer::litIntensity = .8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae97f8aa5740e78e6a3e075d380c357b2" name="ae97f8aa5740e78e6a3e075d380c357b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae97f8aa5740e78e6a3e075d380c357b2">&#9670;&#160;</a></span>materialContrast</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::graphics::SkyWispsLayer::materialContrast {0, 1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parent material contrast, midpoint and intensity, applied after sky/cloud composition. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc7e5e2050183c398859cd4822db1d95" name="abc7e5e2050183c398859cd4822db1d95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc7e5e2050183c398859cd4822db1d95">&#9670;&#160;</a></span>moonColorTexture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a>* eve::graphics::SkyWispsLayer::moonColorTexture = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lunar color/alpha and phase-normal uploads; borrowed only until prepare returns. Required when daylight.moonDiskColor.w is 1; ignored otherwise. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa541bf2b08f5abeee83a0121fce40cb5" name="aa541bf2b08f5abeee83a0121fce40cb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa541bf2b08f5abeee83a0121fce40cb5">&#9670;&#160;</a></span>moonForward</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::graphics::SkyWispsLayer::moonForward {0, 0, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb9707d41a8f13144f2ce92bfc7039d4" name="aeb9707d41a8f13144f2ce92bfc7039d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb9707d41a8f13144f2ce92bfc7039d4">&#9670;&#160;</a></span>moonGradient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::SkyWispsLayer::moonGradient = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8eec4a279d3c6988d237a207c418a4fc" name="a8eec4a279d3c6988d237a207c418a4fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8eec4a279d3c6988d237a207c418a4fc">&#9670;&#160;</a></span>moonNormalTexture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a>* eve::graphics::SkyWispsLayer::moonNormalTexture = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afdac666242b6f96fd428f5a7e87d6562" name="afdac666242b6f96fd428f5a7e87d6562"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdac666242b6f96fd428f5a7e87d6562">&#9670;&#160;</a></span>morphAmount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::SkyWispsLayer::morphAmount = .4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7ecc0c0a7deee9adafece059e5df00bb" name="a7ecc0c0a7deee9adafece059e5df00bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ecc0c0a7deee9adafece059e5df00bb">&#9670;&#160;</a></span>morphPeriod</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::SkyWispsLayer::morphPeriod = 10</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyRuntime_8cpp_source.html#l00067">eve::daynight::SkyRuntime::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a20570ab63ae0a5413807f66b8c0ffcd1" name="a20570ab63ae0a5413807f66b8c0ffcd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20570ab63ae0a5413807f66b8c0ffcd1">&#9670;&#160;</a></span>morphRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::SkyWispsLayer::morphRate = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyRuntime_8cpp_source.html#l00067">eve::daynight::SkyRuntime::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a166aa5b8a14af81341e0828cb6f52690" name="a166aa5b8a14af81341e0828cb6f52690"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a166aa5b8a14af81341e0828cb6f52690">&#9670;&#160;</a></span>movement</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 2&gt; eve::graphics::SkyWispsLayer::movement {-1, 0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e6d2f492e85eb71ef8c4f86b5b1522d" name="a1e6d2f492e85eb71ef8c4f86b5b1522d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e6d2f492e85eb71ef8c4f86b5b1522d">&#9670;&#160;</a></span>opacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::SkyWispsLayer::opacity = .2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a768d10ba5571d41801f97cb831899046" name="a768d10ba5571d41801f97cb831899046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a768d10ba5571d41801f97cb831899046">&#9670;&#160;</a></span>opticalCycleEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::SkyWispsLayer::opticalCycleEnabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opt-in source optical cycle, prepared as an immutable height-sampled LUT volume. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="ae86c55fd549f7a542aafec4cffee4bd5" name="ae86c55fd549f7a542aafec4cffee4bd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae86c55fd549f7a542aafec4cffee4bd5">&#9670;&#160;</a></span>starsNoiseTexture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a>* eve::graphics::SkyWispsLayer::starsNoiseTexture = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e40f48a8e0ff311e121926a1deb72ce" name="a7e40f48a8e0ff311e121926a1deb72ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e40f48a8e0ff311e121926a1deb72ce">&#9670;&#160;</a></span>starsTexture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1ShaderImageInput.html">ShaderImageInput</a>* eve::graphics::SkyWispsLayer::starsTexture = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional star/noise uploads, borrowed through preparation only; required by daylightEnabled. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38570089f4a6e0c12c70e3305df7f046" name="a38570089f4a6e0c12c70e3305df7f046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38570089f4a6e0c12c70e3305df7f046">&#9670;&#160;</a></span>staticClouds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::SkyWispsLayer::staticClouds = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a421964bd32a6a44bbd6142d41ed726a9" name="a421964bd32a6a44bbd6142d41ed726a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a421964bd32a6a44bbd6142d41ed726a9">&#9670;&#160;</a></span>sunDiskColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::graphics::SkyWispsLayer::sunDiskColor {0, 0, 0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solar disk RGB radiance; zero disables it. Copied at preparation, independent of light irradiance. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abce15b00bf5c2a7911d03ec6d1138aeb" name="abce15b00bf5c2a7911d03ec6d1138aeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abce15b00bf5c2a7911d03ec6d1138aeb">&#9670;&#160;</a></span>sunDiskCurve</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;std::array&lt;float, 4&gt;, 12&gt; eve::graphics::SkyWispsLayer::sunDiskCurve {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional RGB elevation curves: four (height,value,arrive tangent,leave tangent) keys per channel. Values scale disk radiance relative to each channel's final key; heights are (1+sunDirection.y)/2. Unweighted cubic Hermite interpolation with constant endpoint extrapolation; no clock is retained. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33ce9912fca7e88ccd8cf732714609be" name="a33ce9912fca7e88ccd8cf732714609be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33ce9912fca7e88ccd8cf732714609be">&#9670;&#160;</a></span>sunDiskCurveEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::SkyWispsLayer::sunDiskCurveEnabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc1bc6669f6dd27831cc4bdefb8562c2" name="abc1bc6669f6dd27831cc4bdefb8562c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc1bc6669f6dd27831cc4bdefb8562c2">&#9670;&#160;</a></span>sunDiskShape</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::graphics::SkyWispsLayer::sunDiskShape {.021380283<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Angular radius in radians, positive edge exponent and nonnegative reflection multiplier. </p>
+
+<p class="definition">在文件 <a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a> 第 <a class="el" href="SkyWispsLayer_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/sky/<a class="el" href="SkyWispsLayer_8h_source.html">SkyWispsLayer.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

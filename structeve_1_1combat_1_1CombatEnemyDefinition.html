@@ -1,0 +1,383 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::combat::CombatEnemyDefinition结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1combat.html">combat</a></li><li class="navelem"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html">CombatEnemyDefinition</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1combat_1_1CombatEnemyDefinition-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::combat::CombatEnemyDefinition结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning configuration for one enemy fighter.  
+ <a href="structeve_1_1combat_1_1CombatEnemyDefinition.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a07a7bc96d12ecc8037ff1bcdd65d2d8a" id="r_a07a7bc96d12ecc8037ff1bcdd65d2d8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html#a07a7bc96d12ecc8037ff1bcdd65d2d8a">validate</a> () const</td></tr>
+<tr class="memdesc:a07a7bc96d12ecc8037ff1bcdd65d2d8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate subject, owner and positive radii.  <br /></td></tr>
+<tr class="separator:a07a7bc96d12ecc8037ff1bcdd65d2d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aba9a57099e1782b957dfbe43898b46eb" id="r_aba9a57099e1782b957dfbe43898b46eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html#aba9a57099e1782b957dfbe43898b46eb">subject</a></td></tr>
+<tr class="separator:aba9a57099e1782b957dfbe43898b46eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fe169d732389404cd42ec2668e3f06c" id="r_a0fe169d732389404cd42ec2668e3f06c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html#a0fe169d732389404cd42ec2668e3f06c">ownerId</a></td></tr>
+<tr class="separator:a0fe169d732389404cd42ec2668e3f06c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8138494344f547b6cd11b2177e04425e" id="r_a8138494344f547b6cd11b2177e04425e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1action.html#aeb6b71f12765459f9ee8b593fb89e09d">action::AbilityGrantId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html#a8138494344f547b6cd11b2177e04425e">lightGrant</a> {}</td></tr>
+<tr class="separator:a8138494344f547b6cd11b2177e04425e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd17e56556ae99b7a3ace36ed11fa233" id="r_acd17e56556ae99b7a3ace36ed11fa233"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html#acd17e56556ae99b7a3ace36ed11fa233">nearRadius</a> = 1.8</td></tr>
+<tr class="separator:acd17e56556ae99b7a3ace36ed11fa233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e77a93f587273f2455c777a6fdfb888" id="r_a4e77a93f587273f2455c777a6fdfb888"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html#a4e77a93f587273f2455c777a6fdfb888">midRadius</a> = 4.0</td></tr>
+<tr class="separator:a4e77a93f587273f2455c777a6fdfb888"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a473794ef6a4c2eb4aff3def3323c5cd6" id="r_a473794ef6a4c2eb4aff3def3323c5cd6"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html#a473794ef6a4c2eb4aff3def3323c5cd6">attackCooldownTicks</a> = 30</td></tr>
+<tr class="separator:a473794ef6a4c2eb4aff3def3323c5cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb897e0e914634aeb12224c4ef626619" id="r_afb897e0e914634aeb12224c4ef626619"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html#afb897e0e914634aeb12224c4ef626619">telegraphTicks</a> = 0</td></tr>
+<tr class="memdesc:afb897e0e914634aeb12224c4ef626619"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ticks spent warning before the light attack; 0 emits immediately.  <br /></td></tr>
+<tr class="separator:afb897e0e914634aeb12224c4ef626619"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0c051e1fb833bb7d630734a8bb1864c" id="r_ab0c051e1fb833bb7d630734a8bb1864c"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatEnemyDefinition.html#ab0c051e1fb833bb7d630734a8bb1864c">recoverTicks</a> = 0</td></tr>
+<tr class="memdesc:ab0c051e1fb833bb7d630734a8bb1864c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ticks spent recovering after the light attack; 0 returns to Idle immediately.  <br /></td></tr>
+<tr class="separator:ab0c051e1fb833bb7d630734a8bb1864c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning configuration for one enemy fighter. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a> 第 <a class="el" href="CombatEnemyAI_8h_source.html#l00033">33</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a07a7bc96d12ecc8037ff1bcdd65d2d8a" name="a07a7bc96d12ecc8037ff1bcdd65d2d8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07a7bc96d12ecc8037ff1bcdd65d2d8a">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatEnemyDefinition::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate subject, owner and positive radii. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8cpp_source.html">CombatEnemyAI.cpp</a> 第 <a class="el" href="CombatEnemyAI_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CombatEnemyAI_8h_source.html#l00039">attackCooldownTicks</a>, <a class="el" href="Diagnostic_8h_source.html#l00125">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00175">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SubjectRef_8h_source.html#l00038">eve::SubjectRef::isValid()</a>, <a class="el" href="CombatEnemyAI_8h_source.html#l00038">midRadius</a>, <a class="el" href="CombatEnemyAI_8h_source.html#l00037">nearRadius</a>, <a class="el" href="CombatEnemyAI_8h_source.html#l00035">ownerId</a>, <a class="el" href="CombatEnemyAI_8h_source.html#l00034">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00164">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a473794ef6a4c2eb4aff3def3323c5cd6" name="a473794ef6a4c2eb4aff3def3323c5cd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a473794ef6a4c2eb4aff3def3323c5cd6">&#9670;&#160;</a></span>attackCooldownTicks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::combat::CombatEnemyDefinition::attackCooldownTicks = 30</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a> 第 <a class="el" href="CombatEnemyAI_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatEnemyAI_8cpp_source.html#l00019">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a8138494344f547b6cd11b2177e04425e" name="a8138494344f547b6cd11b2177e04425e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8138494344f547b6cd11b2177e04425e">&#9670;&#160;</a></span>lightGrant</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1action.html#aeb6b71f12765459f9ee8b593fb89e09d">action::AbilityGrantId</a> eve::combat::CombatEnemyDefinition::lightGrant {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a> 第 <a class="el" href="CombatEnemyAI_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4e77a93f587273f2455c777a6fdfb888" name="a4e77a93f587273f2455c777a6fdfb888"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e77a93f587273f2455c777a6fdfb888">&#9670;&#160;</a></span>midRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::combat::CombatEnemyDefinition::midRadius = 4.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a> 第 <a class="el" href="CombatEnemyAI_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatEnemyAI_8cpp_source.html#l00019">validate()</a>.</p>
+
+</div>
+</div>
+<a id="acd17e56556ae99b7a3ace36ed11fa233" name="acd17e56556ae99b7a3ace36ed11fa233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd17e56556ae99b7a3ace36ed11fa233">&#9670;&#160;</a></span>nearRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::combat::CombatEnemyDefinition::nearRadius = 1.8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a> 第 <a class="el" href="CombatEnemyAI_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatEnemyAI_8cpp_source.html#l00019">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a0fe169d732389404cd42ec2668e3f06c" name="a0fe169d732389404cd42ec2668e3f06c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fe169d732389404cd42ec2668e3f06c">&#9670;&#160;</a></span>ownerId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::combat::CombatEnemyDefinition::ownerId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a> 第 <a class="el" href="CombatEnemyAI_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatEnemyAI_8cpp_source.html#l00019">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ab0c051e1fb833bb7d630734a8bb1864c" name="ab0c051e1fb833bb7d630734a8bb1864c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0c051e1fb833bb7d630734a8bb1864c">&#9670;&#160;</a></span>recoverTicks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::combat::CombatEnemyDefinition::recoverTicks = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ticks spent recovering after the light attack; 0 returns to Idle immediately. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a> 第 <a class="el" href="CombatEnemyAI_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba9a57099e1782b957dfbe43898b46eb" name="aba9a57099e1782b957dfbe43898b46eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba9a57099e1782b957dfbe43898b46eb">&#9670;&#160;</a></span>subject</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::combat::CombatEnemyDefinition::subject</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a> 第 <a class="el" href="CombatEnemyAI_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CombatEnemyAI_8cpp_source.html#l00019">validate()</a>.</p>
+
+</div>
+</div>
+<a id="afb897e0e914634aeb12224c4ef626619" name="afb897e0e914634aeb12224c4ef626619"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb897e0e914634aeb12224c4ef626619">&#9670;&#160;</a></span>telegraphTicks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::combat::CombatEnemyDefinition::telegraphTicks = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ticks spent warning before the light attack; 0 emits immediately. </p>
+
+<p class="definition">在文件 <a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a> 第 <a class="el" href="CombatEnemyAI_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/combat/<a class="el" href="CombatEnemyAI_8h_source.html">CombatEnemyAI.h</a></li>
+<li>src/modules/combat/<a class="el" href="CombatEnemyAI_8cpp_source.html">CombatEnemyAI.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

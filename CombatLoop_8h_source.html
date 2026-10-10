@@ -1,0 +1,310 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/combat/CombatLoop.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_8ff025988e0b86b4485582b47b9a5d61.html">combat</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CombatLoop.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CombatLoop_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="CombatCamera_8h.html">combat/CombatCamera.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="CombatCancelResolver_8h.html">combat/CombatCancelResolver.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="CombatCharacter_8h.html">combat/CombatCharacter.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="CombatEnemyAI_8h.html">combat/CombatEnemyAI.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="CombatTarget_8h.html">combat/CombatTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Damage_8h.html">combat/Damage.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="GuardWindowState_8h.html">combat/GuardWindowState.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="HitFeel_8h.html">combat/HitFeel.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="MeleeHit_8h.html">combat/MeleeHit.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="Identity_8h.html">common/Identity.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1combat.html">eve::combat</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>CombatActionWindowState;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatPerfectDodge.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1combat_1_1CombatPerfectDodge.html">CombatPerfectDodge</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatPerfectDodge.html#a76833a9c4cd25dafb9139bad7d9c547c">   27</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>  <a class="code hl_variable" href="structeve_1_1combat_1_1CombatPerfectDodge.html#a76833a9c4cd25dafb9139bad7d9c547c">defender</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatPerfectDodge.html#af2f5bb78b1b8693663345e0526f3ecb4">   28</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>  <a class="code hl_variable" href="structeve_1_1combat_1_1CombatPerfectDodge.html#af2f5bb78b1b8693663345e0526f3ecb4">attacker</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatPerfectDodge.html#a786e3a0dc1d47e24e2ce78943c3134dc">   29</a></span>    std::string <a class="code hl_variable" href="structeve_1_1combat_1_1CombatPerfectDodge.html#a786e3a0dc1d47e24e2ce78943c3134dc">hitboxId</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1combat_1_1CombatLoopFrame.html">CombatLoopFrame</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html#a9da0c2b4eab4460c6f3f8f04534257f4">   34</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a>                      <a class="code hl_variable" href="structeve_1_1combat_1_1CombatLoopFrame.html#a9da0c2b4eab4460c6f3f8f04534257f4">tick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html#ae3a566e76ce792ebd617a52c1c58d5fb">   35</a></span>    <a class="code hl_struct" href="structeve_1_1combat_1_1CombatCharacterAdvance.html">CombatCharacterAdvance</a>              <a class="code hl_variable" href="structeve_1_1combat_1_1CombatLoopFrame.html#ae3a566e76ce792ebd617a52c1c58d5fb">locomotion</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html#aac792a109d48a5718d7b74691b57f141">   36</a></span>    <a class="code hl_struct" href="structeve_1_1combat_1_1MeleeHitFrame.html">MeleeHitFrame</a>                       <a class="code hl_variable" href="structeve_1_1combat_1_1CombatLoopFrame.html#aac792a109d48a5718d7b74691b57f141">melee</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html#aa5d11e06ea0e813e65d5c8fe26b01a44">   37</a></span>    std::vector&lt;DamageOutcome&gt;          <a class="code hl_variable" href="structeve_1_1combat_1_1CombatLoopFrame.html#aa5d11e06ea0e813e65d5c8fe26b01a44">outcomes</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html#a6cbf81021979bd0a4d78b8b67009d245">   38</a></span>    std::vector&lt;GuardEvaluation&gt;        <a class="code hl_variable" href="structeve_1_1combat_1_1CombatLoopFrame.html#a6cbf81021979bd0a4d78b8b67009d245">guards</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html#a7b604c6dd567f3de77d0ac36e9a69d34">   39</a></span>    std::vector&lt;CombatPerfectDodge&gt;     <a class="code hl_variable" href="structeve_1_1combat_1_1CombatLoopFrame.html#a7b604c6dd567f3de77d0ac36e9a69d34">perfectDodges</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html#af3778649b345839ddb8706ba660aae33">   40</a></span>    std::vector&lt;CombatCancelResolution&gt; <a class="code hl_variable" href="structeve_1_1combat_1_1CombatLoopFrame.html#af3778649b345839ddb8706ba660aae33">cancels</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html#a0974a5b75d59f949c02e0d3e2c811141">   41</a></span>    std::vector&lt;CombatEnemySteering&gt;    <a class="code hl_variable" href="structeve_1_1combat_1_1CombatLoopFrame.html#a0974a5b75d59f949c02e0d3e2c811141">enemySteering</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1CombatLoopFrame.html#adefc25e0d311021a31709828ae314d19">   42</a></span>    <a class="code hl_struct" href="structeve_1_1combat_1_1CombatCameraView.html">CombatCameraView</a>                    <a class="code hl_variable" href="structeve_1_1combat_1_1CombatLoopFrame.html#adefc25e0d311021a31709828ae314d19">camera</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html">   53</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="code hl_class" href="classeve_1_1combat_1_1CombatLoopRuntime.html">CombatLoopRuntime</a> {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ad615c96e259476493c8c682291976d59">   56</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ad615c96e259476493c8c682291976d59">setCharacters</a>(<a class="code hl_class" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">CombatCharacterRuntime</a>&amp; characters) <span class="keyword">noexcept</span> { characters_ = &amp;characters; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ac340d380b19cdd8b9653e4aaab08e1c9">   58</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ac340d380b19cdd8b9653e4aaab08e1c9">setMelee</a>(<a class="code hl_class" href="classeve_1_1combat_1_1MeleeHitRuntime.html">MeleeHitRuntime</a>&amp; melee) <span class="keyword">noexcept</span> { melee_ = &amp;melee; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#a747eb95203ad22e07131b6fd34824dd5">   60</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#a747eb95203ad22e07131b6fd34824dd5">setWindows</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1combat_1_1CombatActionWindowState.html">CombatActionWindowState</a>* windows) <span class="keyword">noexcept</span> { windows_ = windows; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#a6c4a680493a8fc1c5cd63e17352432fb">   62</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#a6c4a680493a8fc1c5cd63e17352432fb">setGuards</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1combat_1_1GuardWindowState.html">GuardWindowState</a>* guards) <span class="keyword">noexcept</span> { guards_ = guards; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#a4cd03c7905eed5dc0ec2fc4814aae9c8">   64</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#a4cd03c7905eed5dc0ec2fc4814aae9c8">setFeel</a>(<a class="code hl_class" href="classeve_1_1combat_1_1HitFeelRuntime.html">HitFeelRuntime</a>* feel) <span class="keyword">noexcept</span> { feel_ = feel; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#abd8286f961c7239eb9afc5d14d605c30">   66</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#abd8286f961c7239eb9afc5d14d605c30">setTargets</a>(<a class="code hl_class" href="classeve_1_1combat_1_1CombatTargetRuntime.html">CombatTargetRuntime</a>* targets) <span class="keyword">noexcept</span> { targets_ = targets; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ac6f9f159e7388805e09d674a3b2744c0">   68</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ac6f9f159e7388805e09d674a3b2744c0">setCameraFocus</a>(<a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> player) <span class="keyword">noexcept</span> { cameraFocus_ = player; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ae81e6227e1bc97f1832b0427fa35fb21">   70</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ae81e6227e1bc97f1832b0427fa35fb21">setDamageStates</a>(std::map&lt;std::string, <a class="code hl_struct" href="structeve_1_1combat_1_1CombatState.html">CombatState</a>, std::less&lt;&gt;&gt;* states) <span class="keyword">noexcept</span> { states_ = states; }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ad9933b1ece2047db622f7c1c8c1472fd">   72</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ad9933b1ece2047db622f7c1c8c1472fd">setCancelResolver</a>(<a class="code hl_class" href="classeve_1_1combat_1_1CombatCancelResolver.html">CombatCancelResolver</a>* cancels) <span class="keyword">noexcept</span> { cancelResolver_ = cancels; }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#a8dc48f9778631b1e77c2c204041c6d29">   74</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#a8dc48f9778631b1e77c2c204041c6d29">setCancelSubject</a>(<a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>) <span class="keyword">noexcept</span> { cancelSubject_ = <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ab3bc6a97177bb92c118ed7c89d57a088">   76</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ab3bc6a97177bb92c118ed7c89d57a088">setCancelAbility</a>(<a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a> ability) <span class="keyword">noexcept</span> { cancelAbility_ = std::move(ability); }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ae84464dfc99301efeb14ec6f356f07dd">   78</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1combat_1_1CombatLoopRuntime.html#ae84464dfc99301efeb14ec6f356f07dd">setEnemyAI</a>(<a class="code hl_class" href="classeve_1_1combat_1_1CombatEnemyIntentSource.html">CombatEnemyIntentSource</a>* enemies) <span class="keyword">noexcept</span> { enemies_ = enemies; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CombatLoopFrame&gt;</a> advance(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_class" href="classeve_1_1combat_1_1CombatCharacterRuntime.html">CombatCharacterRuntime</a>*                          characters_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_class" href="classeve_1_1combat_1_1MeleeHitRuntime.html">MeleeHitRuntime</a>*                                 melee_          = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1combat_1_1CombatActionWindowState.html">CombatActionWindowState</a>*                   windows_        = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1combat_1_1GuardWindowState.html">GuardWindowState</a>*                          guards_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_class" href="classeve_1_1combat_1_1HitFeelRuntime.html">HitFeelRuntime</a>*                                  feel_           = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_class" href="classeve_1_1combat_1_1CombatTargetRuntime.html">CombatTargetRuntime</a>*                             targets_        = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::map&lt;std::string, CombatState, std::less&lt;&gt;&gt;* states_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_class" href="classeve_1_1combat_1_1CombatCancelResolver.html">CombatCancelResolver</a>*                            cancelResolver_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_class" href="classeve_1_1combat_1_1CombatEnemyIntentSource.html">CombatEnemyIntentSource</a>*                         enemies_        = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>                                       cameraFocus_;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>                                       cancelSubject_;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>                                        cancelAbility_;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>};</div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}  <span class="comment">// namespace eve::combat</span></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_aaca3fbd883cca67884738545312b4752"><div class="ttname"><a href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a></div><div class="ttdeci">int subject</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00163">AnimSmr.cpp:163</a></div></div>
+<div class="ttc" id="aCombatCamera_8h_html"><div class="ttname"><a href="CombatCamera_8h.html">CombatCamera.h</a></div><div class="ttdoc">Lock-on framing math owned by combat, consumed by any camera.</div></div>
+<div class="ttc" id="aCombatCancelResolver_8h_html"><div class="ttname"><a href="CombatCancelResolver_8h.html">CombatCancelResolver.h</a></div><div class="ttdoc">Cancel buffer + windows + combo graph resolution.</div></div>
+<div class="ttc" id="aCombatCharacter_8h_html"><div class="ttname"><a href="CombatCharacter_8h.html">CombatCharacter.h</a></div><div class="ttdoc">3D action-combat character controller.</div></div>
+<div class="ttc" id="aCombatEnemyAI_8h_html"><div class="ttname"><a href="CombatEnemyAI_8h.html">CombatEnemyAI.h</a></div><div class="ttdoc">Minimal ring-based combat enemy intent source.</div></div>
+<div class="ttc" id="aCombatTarget_8h_html"><div class="ttname"><a href="CombatTarget_8h.html">CombatTarget.h</a></div><div class="ttdoc">Soft/hard lock-on ownership for action combat.</div></div>
+<div class="ttc" id="aDamage_8h_html"><div class="ttname"><a href="Damage_8h.html">Damage.h</a></div><div class="ttdoc">Deterministic damage, poise, hit-reaction and knockback resolution.</div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a74b09fdcf18b26aea79409bf319c562c"><div class="ttname"><a href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a></div><div class="ttdeci">#define EVENGINE_API_BACKENDS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00108">Export.h:108</a></div></div>
+<div class="ttc" id="aGuardWindowState_8h_html"><div class="ttname"><a href="GuardWindowState_8h.html">GuardWindowState.h</a></div><div class="ttdoc">Block and parry windows projected from Montage state.</div></div>
+<div class="ttc" id="aHitFeel_8h_html"><div class="ttname"><a href="HitFeel_8h.html">HitFeel.h</a></div><div class="ttdoc">Deterministic hitstop and hitstun ownership for combat.</div></div>
+<div class="ttc" id="aIdentity_8h_html"><div class="ttname"><a href="Identity_8h.html">Identity.h</a></div><div class="ttdoc">Strong identity values shared by persistence, content and logical-name APIs.</div></div>
+<div class="ttc" id="aMeleeHit_8h_html"><div class="ttname"><a href="MeleeHit_8h.html">MeleeHit.h</a></div><div class="ttdoc">Deterministic bone-agnostic melee hitbox/hurtbox sweep.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00314">TreeMesh.cpp:314</a></div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html"><div class="ttname"><a href="classeve_1_1LogicalId.html">eve::LogicalId</a></div><div class="ttdoc">Human-readable, scoped identifier in the form namespace:name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00411">Identity.h:411</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00155">Result.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatActionWindowState_html"><div class="ttname"><a href="classeve_1_1combat_1_1CombatActionWindowState.html">eve::combat::CombatActionWindowState</a></div><div class="ttdoc">Authoritative combat projection of active Montage hitbox and invulnerability windows.</div><div class="ttdef"><b>Definition</b> <a href="ActionWindowState_8h_source.html#l00033">ActionWindowState.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatCancelResolver_html"><div class="ttname"><a href="classeve_1_1combat_1_1CombatCancelResolver.html">eve::combat::CombatCancelResolver</a></div><div class="ttdoc">Compose buffered input, cancel/combo windows and ComboGraph without activating abilities.</div><div class="ttdef"><b>Definition</b> <a href="CombatCancelResolver_8h_source.html#l00036">CombatCancelResolver.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatCharacterRuntime_html"><div class="ttname"><a href="classeve_1_1combat_1_1CombatCharacterRuntime.html">eve::combat::CombatCharacterRuntime</a></div><div class="ttdoc">Owner-thread 3D character authority for action combat.</div><div class="ttdef"><b>Definition</b> <a href="CombatCharacter_8h_source.html#l00134">CombatCharacter.h:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatEnemyIntentSource_html"><div class="ttname"><a href="classeve_1_1combat_1_1CombatEnemyIntentSource.html">eve::combat::CombatEnemyIntentSource</a></div><div class="ttdoc">Deterministic enemy intent source for arena vertical slices.</div><div class="ttdef"><b>Definition</b> <a href="CombatEnemyAI_8h_source.html#l00057">CombatEnemyAI.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html">eve::combat::CombatLoopRuntime</a></div><div class="ttdoc">Owner-thread coordinator that welds combat runtimes for one arena tick.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00053">CombatLoop.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_a4cd03c7905eed5dc0ec2fc4814aae9c8"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#a4cd03c7905eed5dc0ec2fc4814aae9c8">eve::combat::CombatLoopRuntime::setFeel</a></div><div class="ttdeci">void setFeel(HitFeelRuntime *feel) noexcept</div><div class="ttdoc">Sets the feel.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00064">CombatLoop.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_a6c4a680493a8fc1c5cd63e17352432fb"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#a6c4a680493a8fc1c5cd63e17352432fb">eve::combat::CombatLoopRuntime::setGuards</a></div><div class="ttdeci">void setGuards(const GuardWindowState *guards) noexcept</div><div class="ttdoc">Sets the guards.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00062">CombatLoop.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_a747eb95203ad22e07131b6fd34824dd5"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#a747eb95203ad22e07131b6fd34824dd5">eve::combat::CombatLoopRuntime::setWindows</a></div><div class="ttdeci">void setWindows(const CombatActionWindowState *windows) noexcept</div><div class="ttdoc">Sets the windows.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00060">CombatLoop.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_a8dc48f9778631b1e77c2c204041c6d29"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#a8dc48f9778631b1e77c2c204041c6d29">eve::combat::CombatLoopRuntime::setCancelSubject</a></div><div class="ttdeci">void setCancelSubject(SubjectRef subject) noexcept</div><div class="ttdoc">Sets the cancel subject.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00074">CombatLoop.h:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_ab3bc6a97177bb92c118ed7c89d57a088"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#ab3bc6a97177bb92c118ed7c89d57a088">eve::combat::CombatLoopRuntime::setCancelAbility</a></div><div class="ttdeci">void setCancelAbility(LogicalId ability) noexcept</div><div class="ttdoc">Sets the cancel ability.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00076">CombatLoop.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_abd8286f961c7239eb9afc5d14d605c30"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#abd8286f961c7239eb9afc5d14d605c30">eve::combat::CombatLoopRuntime::setTargets</a></div><div class="ttdeci">void setTargets(CombatTargetRuntime *targets) noexcept</div><div class="ttdoc">Sets the targets.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00066">CombatLoop.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_ac340d380b19cdd8b9653e4aaab08e1c9"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#ac340d380b19cdd8b9653e4aaab08e1c9">eve::combat::CombatLoopRuntime::setMelee</a></div><div class="ttdeci">void setMelee(MeleeHitRuntime &amp;melee) noexcept</div><div class="ttdoc">Sets the melee.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00058">CombatLoop.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_ac6f9f159e7388805e09d674a3b2744c0"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#ac6f9f159e7388805e09d674a3b2744c0">eve::combat::CombatLoopRuntime::setCameraFocus</a></div><div class="ttdeci">void setCameraFocus(SubjectRef player) noexcept</div><div class="ttdoc">Sets the camera focus.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00068">CombatLoop.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_ad615c96e259476493c8c682291976d59"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#ad615c96e259476493c8c682291976d59">eve::combat::CombatLoopRuntime::setCharacters</a></div><div class="ttdeci">void setCharacters(CombatCharacterRuntime &amp;characters) noexcept</div><div class="ttdoc">Sets the characters.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00056">CombatLoop.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_ad9933b1ece2047db622f7c1c8c1472fd"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#ad9933b1ece2047db622f7c1c8c1472fd">eve::combat::CombatLoopRuntime::setCancelResolver</a></div><div class="ttdeci">void setCancelResolver(CombatCancelResolver *cancels) noexcept</div><div class="ttdoc">Sets the cancel resolver.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00072">CombatLoop.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_ae81e6227e1bc97f1832b0427fa35fb21"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#ae81e6227e1bc97f1832b0427fa35fb21">eve::combat::CombatLoopRuntime::setDamageStates</a></div><div class="ttdeci">void setDamageStates(std::map&lt; std::string, CombatState, std::less&lt;&gt; &gt; *states) noexcept</div><div class="ttdoc">Borrow the map of CombatState values mutated by melee hits.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00070">CombatLoop.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatLoopRuntime_html_ae84464dfc99301efeb14ec6f356f07dd"><div class="ttname"><a href="classeve_1_1combat_1_1CombatLoopRuntime.html#ae84464dfc99301efeb14ec6f356f07dd">eve::combat::CombatLoopRuntime::setEnemyAI</a></div><div class="ttdeci">void setEnemyAI(CombatEnemyIntentSource *enemies) noexcept</div><div class="ttdoc">Sets the enemy ai.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00078">CombatLoop.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1CombatTargetRuntime_html"><div class="ttname"><a href="classeve_1_1combat_1_1CombatTargetRuntime.html">eve::combat::CombatTargetRuntime</a></div><div class="ttdoc">Owner-thread lock-on authority.</div><div class="ttdef"><b>Definition</b> <a href="CombatTarget_8h_source.html#l00039">CombatTarget.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1GuardWindowState_html"><div class="ttname"><a href="classeve_1_1combat_1_1GuardWindowState.html">eve::combat::GuardWindowState</a></div><div class="ttdoc">Authoritative projection of active block/parry Montage windows.</div><div class="ttdef"><b>Definition</b> <a href="GuardWindowState_8h_source.html#l00043">GuardWindowState.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1HitFeelRuntime_html"><div class="ttname"><a href="classeve_1_1combat_1_1HitFeelRuntime.html">eve::combat::HitFeelRuntime</a></div><div class="ttdoc">Owner-thread hitstop/hitstun coordinator.</div><div class="ttdef"><b>Definition</b> <a href="HitFeel_8h_source.html#l00061">HitFeel.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1MeleeHitRuntime_html"><div class="ttname"><a href="classeve_1_1combat_1_1MeleeHitRuntime.html">eve::combat::MeleeHitRuntime</a></div><div class="ttdoc">Owner-thread authority for hurtboxes, hitbox catalogs and sweep hits.</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8h_source.html#l00132">MeleeHit.h:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00024">StrongUint64.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html"><div class="ttname"><a href="namespaceeve_1_1combat.html">eve::combat</a></div><div class="ttdef"><b>Definition</b> <a href="ActionDamageSink_8cpp_source.html#l00009">ActionDamageSink.cpp:9</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00158">Time.h:158</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatCameraView_html"><div class="ttname"><a href="structeve_1_1combat_1_1CombatCameraView.html">eve::combat::CombatCameraView</a></div><div class="ttdoc">Owning eye/look-at pair; camera modules apply this without owning combat state.</div><div class="ttdef"><b>Definition</b> <a href="CombatCamera_8h_source.html#l00027">CombatCamera.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatCharacterAdvance_html"><div class="ttname"><a href="structeve_1_1combat_1_1CombatCharacterAdvance.html">eve::combat::CombatCharacterAdvance</a></div><div class="ttdoc">Complete owning result of one character advance.</div><div class="ttdef"><b>Definition</b> <a href="CombatCharacter_8h_source.html#l00088">CombatCharacter.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html">eve::combat::CombatLoopFrame</a></div><div class="ttdoc">Owning audit of one composed combat frame.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00033">CombatLoop.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html_a0974a5b75d59f949c02e0d3e2c811141"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html#a0974a5b75d59f949c02e0d3e2c811141">eve::combat::CombatLoopFrame::enemySteering</a></div><div class="ttdeci">std::vector&lt; CombatEnemySteering &gt; enemySteering</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00041">CombatLoop.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html_a6cbf81021979bd0a4d78b8b67009d245"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html#a6cbf81021979bd0a4d78b8b67009d245">eve::combat::CombatLoopFrame::guards</a></div><div class="ttdeci">std::vector&lt; GuardEvaluation &gt; guards</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00038">CombatLoop.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html_a7b604c6dd567f3de77d0ac36e9a69d34"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html#a7b604c6dd567f3de77d0ac36e9a69d34">eve::combat::CombatLoopFrame::perfectDodges</a></div><div class="ttdeci">std::vector&lt; CombatPerfectDodge &gt; perfectDodges</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00039">CombatLoop.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html_a9da0c2b4eab4460c6f3f8f04534257f4"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html#a9da0c2b4eab4460c6f3f8f04534257f4">eve::combat::CombatLoopFrame::tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00034">CombatLoop.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html_aa5d11e06ea0e813e65d5c8fe26b01a44"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html#aa5d11e06ea0e813e65d5c8fe26b01a44">eve::combat::CombatLoopFrame::outcomes</a></div><div class="ttdeci">std::vector&lt; DamageOutcome &gt; outcomes</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00037">CombatLoop.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html_aac792a109d48a5718d7b74691b57f141"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html#aac792a109d48a5718d7b74691b57f141">eve::combat::CombatLoopFrame::melee</a></div><div class="ttdeci">MeleeHitFrame melee</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00036">CombatLoop.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html_adefc25e0d311021a31709828ae314d19"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html#adefc25e0d311021a31709828ae314d19">eve::combat::CombatLoopFrame::camera</a></div><div class="ttdeci">CombatCameraView camera</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00042">CombatLoop.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html_ae3a566e76ce792ebd617a52c1c58d5fb"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html#ae3a566e76ce792ebd617a52c1c58d5fb">eve::combat::CombatLoopFrame::locomotion</a></div><div class="ttdeci">CombatCharacterAdvance locomotion</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00035">CombatLoop.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLoopFrame_html_af3778649b345839ddb8706ba660aae33"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLoopFrame.html#af3778649b345839ddb8706ba660aae33">eve::combat::CombatLoopFrame::cancels</a></div><div class="ttdeci">std::vector&lt; CombatCancelResolution &gt; cancels</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00040">CombatLoop.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatPerfectDodge_html"><div class="ttname"><a href="structeve_1_1combat_1_1CombatPerfectDodge.html">eve::combat::CombatPerfectDodge</a></div><div class="ttdoc">Owning audit that a dodging i-frame negated a melee hit.</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00026">CombatLoop.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatPerfectDodge_html_a76833a9c4cd25dafb9139bad7d9c547c"><div class="ttname"><a href="structeve_1_1combat_1_1CombatPerfectDodge.html#a76833a9c4cd25dafb9139bad7d9c547c">eve::combat::CombatPerfectDodge::defender</a></div><div class="ttdeci">SubjectRef defender</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00027">CombatLoop.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatPerfectDodge_html_a786e3a0dc1d47e24e2ce78943c3134dc"><div class="ttname"><a href="structeve_1_1combat_1_1CombatPerfectDodge.html#a786e3a0dc1d47e24e2ce78943c3134dc">eve::combat::CombatPerfectDodge::hitboxId</a></div><div class="ttdeci">std::string hitboxId</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00029">CombatLoop.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatPerfectDodge_html_af2f5bb78b1b8693663345e0526f3ecb4"><div class="ttname"><a href="structeve_1_1combat_1_1CombatPerfectDodge.html#af2f5bb78b1b8693663345e0526f3ecb4">eve::combat::CombatPerfectDodge::attacker</a></div><div class="ttdeci">SubjectRef attacker</div><div class="ttdef"><b>Definition</b> <a href="CombatLoop_8h_source.html#l00028">CombatLoop.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatState_html"><div class="ttname"><a href="structeve_1_1combat_1_1CombatState.html">eve::combat::CombatState</a></div><div class="ttdoc">Mutable combat state owned by the gameplay domain for one subject.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00037">Damage.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1MeleeHitFrame_html"><div class="ttname"><a href="structeve_1_1combat_1_1MeleeHitFrame.html">eve::combat::MeleeHitFrame</a></div><div class="ttdoc">Complete owning result of one melee advance.</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8h_source.html#l00101">MeleeHit.h:101</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

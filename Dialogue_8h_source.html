@@ -1,0 +1,500 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/dialogue/Dialogue.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9d7eb5392a4fb7dccc4284e89fdc9c92.html">dialogue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Dialogue.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Dialogue_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="StateValue_8h.html">common/StateValue.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;squirrel.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1avatar.html">eve::avatar</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>AvatarInstance;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacessq.html">ssq</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b">Object</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dialogue.html">eve::dialogue</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dialogue.html#ad091f586a0286bae4ad89c5f8de51be5">   36</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Value.html">DataValue</a> = <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dialogue.html#ad73d148174f279c9dc8af7681a5c12e8">   37</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Value.html">VarValue</a>  = <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html">   46</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> <a class="code hl_class" href="classeve_1_1dialogue_1_1Dialogue.html">Dialogue</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="comment">// Keep the historical nested names as zero-cost aliases for C++ callers.</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#aa892c847f0a77ee9e42aae7b73d3b165">   49</a></span>    <span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Value.html">DataValue</a> = <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#a53875a13e9acd82a8bebf95789439f65">   50</a></span>    <span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Value.html">VarValue</a>  = <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#a3a11f28f50cd5c497074496c94e323dc">   52</a></span>    <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#a3a11f28f50cd5c497074496c94e323dc">Module_REG</a>(<a class="code hl_class" href="classeve_1_1dialogue_1_1Dialogue.html">Dialogue</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1Dialogue.html">Dialogue</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1Dialogue.html">~Dialogue</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">bool</span> registerCharacter(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keyword">const</span> std::string &amp;displayName);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span> hasCharacter(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::string getDisplayName(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">bool</span> bindAvatar(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <a class="code hl_class" href="classeve_1_1avatar_1_1AvatarInstance.html">avatar::AvatarInstance</a> *av);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_class" href="classeve_1_1avatar_1_1AvatarInstance.html">avatar::AvatarInstance</a> *getAvatar(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">int</span> getCharacterCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::string getCharacterId(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">bool</span> show(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keyword">const</span> std::string &amp;slot);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">bool</span> hide(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">bool</span> isShown(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    std::string getSlot(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">void</span> setSlotX(<span class="keyword">const</span> std::string &amp;slot, <span class="keywordtype">float</span> xNorm);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">float</span> getSlotX(<span class="keyword">const</span> std::string &amp;slot) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">bool</span> setExpression(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keyword">const</span> std::string &amp;expression);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">bool</span> setMotion(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keyword">const</span> std::string &amp;motion);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> syncStage(<span class="keywordtype">float</span> stageWidth, <span class="keywordtype">float</span> stageHeight);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">void</span> say(<span class="keyword">const</span> std::string &amp;speakerId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">void</span> narrate(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">void</span> setTypeSpeed(<span class="keywordtype">float</span> charsPerSecond);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#af0d3978236bf4408b1f5d2233c22b959">  100</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#af0d3978236bf4408b1f5d2233c22b959">getTypeSpeed</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> typeSpeed_; }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">void</span> skipTyping();</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">bool</span> isTyping() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">bool</span> isWaitingAdvance() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordtype">bool</span> isIdle() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> advance();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#a201ac6cc95d7e36b178f9285387f832c">  113</a></span>    std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#a201ac6cc95d7e36b178f9285387f832c">getSpeakerId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> speakerId_; }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    std::string getSpeakerName() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#a36ee970ea14c7042eec757763b8041ae">  117</a></span>    std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#a36ee970ea14c7042eec757763b8041ae">getFullText</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> fullText_; }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    std::string getVisibleText() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    std::string getPhase() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">void</span> setLipSyncEnabled(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#aed5a64ae0e094615283e85bda90884a0">  126</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#aed5a64ae0e094615283e85bda90884a0">isLipSyncEnabled</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lipSyncEnabled_; }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">void</span> setLipSyncParameter(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#ab8326297090bfba1ff960d54204ba0bb">  130</a></span>    std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#ab8326297090bfba1ff960d54204ba0bb">getLipSyncParameter</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lipSyncParameter_; }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">void</span> setLipSyncAmplitude(<span class="keywordtype">float</span> amplitude);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#a1bdd0e7e7ecb5e1c3f9c37b2ac286326">  134</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#a1bdd0e7e7ecb5e1c3f9c37b2ac286326">getLipSyncAmplitude</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lipSyncAmplitude_; }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#a927bce74ef083d3c4178726d2d118236">  136</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#a927bce74ef083d3c4178726d2d118236">getLipSyncValue</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lipSyncValue_; }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">void</span> clearChoices();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">bool</span> addChoice(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="DnutCompiler_8cpp.html#a1dd28f5ea7b5b0780013e960944ddaa0">label</a>);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">void</span> presentChoices();</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">bool</span> isWaitingChoice() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">int</span> getChoiceCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    std::string getChoiceId(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    std::string getChoiceLabel(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordtype">bool</span> selectChoice(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#ad4d547fc62d864327098c4eb4dded476">  155</a></span>    std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#ad4d547fc62d864327098c4eb4dded476">getSelectedChoiceId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> selectedChoiceId_; }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="comment">// ---- variables (global / scene; scene auto-cleared on scene switch) ----</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordtype">bool</span> setVar(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, ssq::Object <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">bool</span> setVarValue(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">VarValue</a> &amp;<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <a class="code hl_class" href="classeve_1_1Value.html">VarValue</a> getVarValue(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    std::string getVarType(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordtype">int</span> getVarInt(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordtype">float</span> getVarFloat(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordtype">bool</span> getVarBool(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    std::string getVarString(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>,</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                             <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordtype">bool</span> hasVar(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordtype">bool</span> clearVar(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordtype">void</span> clearVars(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="comment">// ---- conditions ----</span></div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordtype">bool</span> registerCondition(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, ssq::Object <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordtype">bool</span> unregisterCondition(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">bool</span> evalCondition(ssq::Object table);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordtype">bool</span> evalConditionData(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">DataValue</a> &amp;cond);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="comment">// ---- content pools ----</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordtype">int</span> loadPoolsFromTable(ssq::Object table);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordtype">int</span> loadPoolsFromData(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">DataValue</a> &amp;<a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordtype">int</span> replacePoolsFromData(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">DataValue</a>&amp; <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordtype">void</span> clearPools();</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordtype">int</span> getPoolCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    std::string getPoolId(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordtype">bool</span> hasPool(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#a1996c86b17de3c351c0a59727d76a3d6">  211</a></span>    std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#a1996c86b17de3c351c0a59727d76a3d6">getLastPoolsError</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastPoolsError_; }</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="comment">// ---- rng (weighted selection determinism) ----</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">void</span> setRandomSeed(<span class="keywordtype">int</span> <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#ab152752b9e2ca58a69136438a4a8e548">  218</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#ab152752b9e2ca58a69136438a4a8e548">getRandomSeed</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> int(rngState_); }</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="comment">// ---- generated-line selection / play ----</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    std::string pickLine(<span class="keyword">const</span> std::string &amp;poolId, ssq::Object <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>);</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    std::string pickLineWithParams(<span class="keyword">const</span> std::string &amp;poolId,</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>                                   <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keywordtype">bool</span> playLine(<span class="keyword">const</span> std::string &amp;lineId, ssq::Object <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keywordtype">bool</span> playLineWithParams(<span class="keyword">const</span> std::string &amp;lineId,</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>                            <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>);</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordtype">bool</span> playPool(<span class="keyword">const</span> std::string &amp;poolId, ssq::Object <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keywordtype">bool</span> playPoolWithParams(<span class="keyword">const</span> std::string &amp;poolId,</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>                            <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1Dialogue.html#a35ff5a9ddc861c809e728ed5f3f6c5ba">  237</a></span>    std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1Dialogue.html#a35ff5a9ddc861c809e728ed5f3f6c5ba">getCurrentLineId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> currentLineId_; }</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    std::string getCurrentLineMeta(<span class="keyword">const</span> std::string &amp;field) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    std::vector&lt;std::string&gt; getCurrentLineTags() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keywordtype">void</span> update(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keywordtype">void</span> reset();</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keywordtype">bool</span> captureState(<a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keywordtype">bool</span> restoreState(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; in, std::string* err = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <span class="keywordtype">bool</span> resetToDefaults();</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keywordtype">int</span> applyPoolsFromData(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">DataValue</a>&amp; <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>, <span class="keywordtype">bool</span> replace);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="keyword">struct </span>Character {</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        std::string <a class="code hl_variable" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        std::string displayName;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        <a class="code hl_class" href="classeve_1_1avatar_1_1AvatarInstance.html">avatar::AvatarInstance</a> *avatar = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        std::optional&lt;size_t&gt; avatarHook;  <span class="comment">// destroy-hook id on the bound avatar</span></div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        std::string slot;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <span class="keywordtype">bool</span> shown = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    };</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keyword">struct </span>Choice {</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        std::string <a class="code hl_variable" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        std::string <a class="code hl_variable" href="DnutCompiler_8cpp.html#a1dd28f5ea7b5b0780013e960944ddaa0">label</a>;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    };</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keyword">enum class</span> Phase { Idle, Typing, WaitingAdvance, WaitingChoice };</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span> </div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea76a40e4f974fd895a0a2598c1cee28b4">Character</a> *findCharacter(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <span class="keyword">const</span> <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea76a40e4f974fd895a0a2598c1cee28b4">Character</a> *findCharacter(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keywordtype">void</span> beginLine(<span class="keyword">const</span> std::string &amp;speakerId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    std::vector&lt;Character&gt; characters_;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    std::unordered_map&lt;std::string, float&gt; slotX_;  <span class="comment">// normalized 0..1</span></div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    Phase phase_ = Phase::Idle;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    std::string speakerId_;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    std::string fullText_;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <span class="keywordtype">float</span> typeSpeed_ = 40.f;  <span class="comment">// chars / second</span></div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <span class="keywordtype">float</span> typed_ = 0.f;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    std::vector&lt;Choice&gt; choices_;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    std::string selectedChoiceId_;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="keywordtype">bool</span> lipSyncEnabled_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    std::string lipSyncParameter_ = <span class="stringliteral">&quot;mouthOpen&quot;</span>;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    <span class="keywordtype">float</span> lipSyncAmplitude_ = 0.85f;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <span class="keywordtype">float</span> lipSyncValue_ = 0.f;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="keywordtype">float</span> lipSyncTime_ = 0.f;</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="keywordtype">void</span> updateLipSync(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <span class="keywordtype">void</span> applyLipSyncToSpeaker();</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span> </div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <span class="comment">// ---- procedural content (variables / conditions / pools) ----</span></div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="keyword">struct </span>Condition {</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keyword">enum class</span> Kind { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#affa67bdc5735184fc118ff96a43fe94ca68eec46437c384d8dad18d5464ebc35c">Always</a>, Cmp, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539ab1c94ca2fbc3e78fc30069c8d0f01680">All</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#ab2e10af633cb888e7603f55a505b205baed36a1ef76a59ee3f15180e0441188ad">Any</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0aa74c05d080620f087c4e523977230666">Not</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7af907e651164789346ae0a1e257c462d8">Script</a> };</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        Kind <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> = Kind::Always;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        std::string var;</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        std::string op;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        <a class="code hl_typedef" href="namespaceeve_1_1dialogue.html#ad73d148174f279c9dc8af7681a5c12e8">VarValue</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        std::vector&lt;Condition&gt; <a class="code hl_variable" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>;</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a0fad55270c47977e4ef96ad9671c5773">script</a>;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    };</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span> </div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <span class="keyword">struct </span><a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94a4803e6b9e63dabf04de980788d6a13c4">Line</a> {</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        std::string <a class="code hl_variable" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>;</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        std::string speaker;</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        std::string <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>;</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        std::string i18nKey;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        <span class="keywordtype">double</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a> = 1.0;</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        Condition <a class="code hl_function" href="namespaceeve_1_1scene.html#a8b11cae98fa16e2ce8075fabf7d64ab1">when</a>;</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>        std::unordered_map&lt;std::string, std::string&gt; meta;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        std::vector&lt;std::string&gt; tags;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    };</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span> </div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    <span class="keyword">struct </span>Pool {</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        std::string <a class="code hl_variable" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        <span class="keywordtype">int</span> noRepeat = 3;</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        std::vector&lt;Line&gt; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a04e3df4951a6df4882a716dce2fc166c">lines</a>;</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        std::vector&lt;size_t&gt; recent;</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    };</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    std::unordered_map&lt;std::string, VarValue&gt; *varsForScope(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>);</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; *varsForScope(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    std::unordered_map&lt;std::string, VarValue&gt; mergedVars(</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    std::unordered_map&lt;std::string, std::string&gt; stringParams(</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;vars) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    <span class="keywordtype">bool</span> parseCondition(<span class="keyword">const</span> DataValue &amp;<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, Condition &amp;out, std::string &amp;<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>);</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    <span class="keywordtype">bool</span> parseLineData(<span class="keyword">const</span> std::string &amp;poolId, <span class="keyword">const</span> DataValue &amp;<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, Line &amp;<a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>,</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>                       std::string &amp;<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>);</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>    <span class="keywordtype">bool</span> evalConditionInternal(<span class="keyword">const</span> Condition &amp;<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>,</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>                               <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;merged,</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                               <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>,</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>                               <span class="keyword">const</span> std::string &amp;lineId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    <span class="keywordtype">bool</span> evalScriptPredicate(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>,</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>                             <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;merged,</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>                             <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>,</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>                             <span class="keyword">const</span> std::string &amp;lineId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    <span class="keywordtype">bool</span> compareEq(<span class="keyword">const</span> VarValue &amp;<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keyword">const</span> VarValue &amp;<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>    <span class="keywordtype">bool</span> compareOrder(<span class="keyword">const</span> std::string &amp;op, <span class="keyword">const</span> VarValue &amp;<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keyword">const</span> VarValue &amp;<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>    std::string <a class="code hl_function" href="namespaceeve_1_1climbing_1_1detail.html#a7e0dc3ac7044ccfe2cd79be0986d5554">interpolate</a>(<span class="keyword">const</span> std::string &amp;tpl,</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>                            <span class="keyword">const</span> std::unordered_map&lt;std::string, VarValue&gt; &amp;vars) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    Pool *findPool(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    <span class="keyword">const</span> Pool *findPool(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94a4803e6b9e63dabf04de980788d6a13c4">Line</a> *findLine(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    <span class="keyword">const</span> <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94a4803e6b9e63dabf04de980788d6a13c4">Line</a> *findLine(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <span class="keywordtype">void</span> applyLineMeta(<span class="keyword">const</span> Line &amp;<a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>);</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    <span class="keywordtype">void</span> pollSceneChange();</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    uint32_t nextRandom();</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    <span class="keywordtype">double</span> nextUnit();</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span> </div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    std::unordered_map&lt;std::string, VarValue&gt; globalVars_;</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    std::unordered_map&lt;std::string, VarValue&gt; sceneVars_;</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    std::unordered_map&lt;std::string, HSQOBJECT&gt; predicates_;</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    std::vector&lt;Pool&gt; pools_;</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    std::string lastPoolsError_;</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    uint32_t rngState_ = 0x9E3779B9u;</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    std::string lastSceneName_;</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    std::string currentLineId_;</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    std::unordered_map&lt;std::string, std::string&gt; currentLineMeta_;</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    std::vector&lt;std::string&gt; currentLineTags_;</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> vm_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>};</div>
+</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span> </div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>}  <span class="comment">// namespace eve::dialogue</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00153">ActionNotifyRegistry.cpp:153</a></div></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_a3b62f50202abd219e165f5a333d5c156"><div class="ttname"><a href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a></div><div class="ttdeci">int root</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00119">AnimSmr.cpp:119</a></div></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aConversationImporter_8cpp_html_a41ebd28ef1d7c6ade45642cb6acc1039"><div class="ttname"><a href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a></div><div class="ttdeci">int line</div><div class="ttdef"><b>Definition</b> <a href="ConversationImporter_8cpp_source.html#l00019">ConversationImporter.cpp:19</a></div></div>
+<div class="ttc" id="aDnutCompiler_8cpp_html_a1dd28f5ea7b5b0780013e960944ddaa0"><div class="ttname"><a href="DnutCompiler_8cpp.html#a1dd28f5ea7b5b0780013e960944ddaa0">label</a></div><div class="ttdeci">std::string label</div><div class="ttdef"><b>Definition</b> <a href="DnutCompiler_8cpp_source.html#l00038">DnutCompiler.cpp:38</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_af85ff84ca379cb803d64a467fc5faf5a"><div class="ttname"><a href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a></div><div class="ttdeci">#define EVENGINE_API_ORCHESTRATION</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00111">Export.h:111</a></div></div>
+<div class="ttc" id="aHexRiverMesh_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00019">HexRiverMesh.cpp:19</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00068">HexSphereTopology.cpp:68</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_acca1405ad8722c85f51c891decedadda"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a></div><div class="ttdeci">JobScope scope</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00158">JobSystemThreadPool.cpp:158</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00040">McpScriptTools.cpp:40</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a0fad55270c47977e4ef96ad9671c5773"><div class="ttname"><a href="PlayHost_8cpp.html#a0fad55270c47977e4ef96ad9671c5773">script</a></div><div class="ttdeci">std::string script</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00116">PlayHost.cpp:116</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00108">PlayHost.cpp:108</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00807">PointSet.cpp:807</a></div></div>
+<div class="ttc" id="aStateValue_8h_html"><div class="ttname"><a href="StateValue_8h.html">StateValue.h</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a93ed9b546e7fadad14615c5ef0065277"><div class="ttname"><a href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a></div><div class="ttdeci">int children</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00295">TreeMesh.cpp:295</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_a99108733d00274978a4979dc072bd513"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a></div><div class="ttdeci">double weight</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00164">UnityVegetationMaterial.cpp:164</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a04e3df4951a6df4882a716dce2fc166c"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a04e3df4951a6df4882a716dce2fc166c">lines</a></div><div class="ttdeci">std::vector&lt; std::string_view &gt; lines</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00031">UnityVegetationPreset.cpp:31</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdoc">EVENGINE_API_FOUNDATION public API.</div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00046">Module.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html"><div class="ttname"><a href="classeve_1_1StateValue.html">eve::StateValue</a></div><div class="ttdoc">JSON-compatible state value tree used by state hot reload.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00020">StateValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1AvatarInstance_html"><div class="ttname"><a href="classeve_1_1avatar_1_1AvatarInstance.html">eve::avatar::AvatarInstance</a></div><div class="ttdoc">Unified avatar instance. Kind is a string: &quot;image&quot; | &quot;live2d&quot; | &quot;vroid&quot;. Script-facing API avoids ove...</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00112">AvatarInstance.h:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html">eve::dialogue::Dialogue</a></div><div class="ttdoc">Visual-novel style dialogue stage. Script: dlg &lt;- eve.Dialogue();</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00046">Dialogue.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_a1996c86b17de3c351c0a59727d76a3d6"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#a1996c86b17de3c351c0a59727d76a3d6">eve::dialogue::Dialogue::getLastPoolsError</a></div><div class="ttdeci">std::string getLastPoolsError() const</div><div class="ttdoc">Returns the last pools error.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00211">Dialogue.h:211</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_a1bdd0e7e7ecb5e1c3f9c37b2ac286326"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#a1bdd0e7e7ecb5e1c3f9c37b2ac286326">eve::dialogue::Dialogue::getLipSyncAmplitude</a></div><div class="ttdeci">float getLipSyncAmplitude() const</div><div class="ttdoc">Returns the lip sync amplitude.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00134">Dialogue.h:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_a201ac6cc95d7e36b178f9285387f832c"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#a201ac6cc95d7e36b178f9285387f832c">eve::dialogue::Dialogue::getSpeakerId</a></div><div class="ttdeci">std::string getSpeakerId() const</div><div class="ttdoc">Returns the speaker id.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00113">Dialogue.h:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_a35ff5a9ddc861c809e728ed5f3f6c5ba"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#a35ff5a9ddc861c809e728ed5f3f6c5ba">eve::dialogue::Dialogue::getCurrentLineId</a></div><div class="ttdeci">std::string getCurrentLineId() const</div><div class="ttdoc">Returns the current line id.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00237">Dialogue.h:237</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_a36ee970ea14c7042eec757763b8041ae"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#a36ee970ea14c7042eec757763b8041ae">eve::dialogue::Dialogue::getFullText</a></div><div class="ttdeci">std::string getFullText() const</div><div class="ttdoc">Returns the full text.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00117">Dialogue.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_a3a11f28f50cd5c497074496c94e323dc"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#a3a11f28f50cd5c497074496c94e323dc">eve::dialogue::Dialogue::Module_REG</a></div><div class="ttdeci">Module_REG(Dialogue)</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_a927bce74ef083d3c4178726d2d118236"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#a927bce74ef083d3c4178726d2d118236">eve::dialogue::Dialogue::getLipSyncValue</a></div><div class="ttdeci">float getLipSyncValue() const</div><div class="ttdoc">Returns the lip sync value.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00136">Dialogue.h:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_ab152752b9e2ca58a69136438a4a8e548"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#ab152752b9e2ca58a69136438a4a8e548">eve::dialogue::Dialogue::getRandomSeed</a></div><div class="ttdeci">int getRandomSeed() const</div><div class="ttdoc">Returns the random seed.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00218">Dialogue.h:218</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_ab8326297090bfba1ff960d54204ba0bb"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#ab8326297090bfba1ff960d54204ba0bb">eve::dialogue::Dialogue::getLipSyncParameter</a></div><div class="ttdeci">std::string getLipSyncParameter() const</div><div class="ttdoc">Returns the lip sync parameter.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00130">Dialogue.h:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_ad4d547fc62d864327098c4eb4dded476"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#ad4d547fc62d864327098c4eb4dded476">eve::dialogue::Dialogue::getSelectedChoiceId</a></div><div class="ttdeci">std::string getSelectedChoiceId() const</div><div class="ttdoc">Returns the selected choice id.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00155">Dialogue.h:155</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_aed5a64ae0e094615283e85bda90884a0"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#aed5a64ae0e094615283e85bda90884a0">eve::dialogue::Dialogue::isLipSyncEnabled</a></div><div class="ttdeci">bool isLipSyncEnabled() const</div><div class="ttdoc">True when lip sync enabled.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00126">Dialogue.h:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1Dialogue_html_af0d3978236bf4408b1f5d2233c22b959"><div class="ttname"><a href="classeve_1_1dialogue_1_1Dialogue.html#af0d3978236bf4408b1f5d2233c22b959">eve::dialogue::Dialogue::getTypeSpeed</a></div><div class="ttdeci">float getTypeSpeed() const</div><div class="ttdoc">Returns the type speed.</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00100">Dialogue.h:100</a></div></div>
+<div class="ttc" id="amesh_2MeshModifierGraph_8cpp_html_a7600cb1e54c2a5b89ad934e9fc6f1399"><div class="ttname"><a href="mesh_2MeshModifierGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a></div><div class="ttdeci">const char * defaultValue</div><div class="ttdef"><b>Definition</b> <a href="mesh_2MeshModifierGraph_8cpp_source.html#l00022">MeshModifierGraph.cpp:22</a></div></div>
+<div class="ttc" id="amesh_2MeshModifierGraph_8cpp_html_ac59750003266730d7d05c14393c78fbd"><div class="ttname"><a href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a></div><div class="ttdeci">std::vector&lt; ParamSpec &gt; params</div><div class="ttdef"><b>Definition</b> <a href="mesh_2MeshModifierGraph_8cpp_source.html#l00029">MeshModifierGraph.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a15137ba27b87791d29fe6d9f84bfc539ab1c94ca2fbc3e78fc30069c8d0f01680"><div class="ttname"><a href="namespaceeve_1_1animation.html#a15137ba27b87791d29fe6d9f84bfc539ab1c94ca2fbc3e78fc30069c8d0f01680">eve::animation::RootMotionLockAxes::All</a></div><div class="ttdeci">@ All</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a32b8a2d521fd3b2246975be77a5eb0cea76a40e4f974fd895a0a2598c1cee28b4"><div class="ttname"><a href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea76a40e4f974fd895a0a2598c1cee28b4">eve::animation::MotionFeatureQuery::Character</a></div><div class="ttdeci">@ Character</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7af907e651164789346ae0a1e257c462d8"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7af907e651164789346ae0a1e257c462d8">eve::asset_import::UnitySourceKind::Script</a></div><div class="ttdeci">@ Script</div></div>
+<div class="ttc" id="anamespaceeve_1_1avatar_html"><div class="ttname"><a href="namespaceeve_1_1avatar.html">eve::avatar</a></div><div class="ttdef"><b>Definition</b> <a href="Avatar_8cpp_source.html#l00012">Avatar.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_1_1detail_html_a7e0dc3ac7044ccfe2cd79be0986d5554"><div class="ttname"><a href="namespaceeve_1_1climbing_1_1detail.html#a7e0dc3ac7044ccfe2cd79be0986d5554">eve::climbing::detail::interpolate</a></div><div class="ttdeci">Vec3 interpolate(Vec3 start, Vec3 end, float amount) noexcept</div><div class="ttdoc">Interpolate.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTrajectory_8h_source.html#l00016">ClimbingTrajectory.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_ab2e10af633cb888e7603f55a505b205baed36a1ef76a59ee3f15180e0441188ad"><div class="ttname"><a href="namespaceeve_1_1climbing.html#ab2e10af633cb888e7603f55a505b205baed36a1ef76a59ee3f15180e0441188ad">eve::climbing::ClimbingSourceMode::Any</a></div><div class="ttdeci">@ Any</div></div>
+<div class="ttc" id="anamespaceeve_1_1decision_html_a66e7916dc0ddea9770ff7bf5cbb2b8f0aa74c05d080620f087c4e523977230666"><div class="ttname"><a href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0aa74c05d080620f087c4e523977230666">eve::decision::ConditionKind::Not</a></div><div class="ttdeci">@ Not</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a6040b03eff5c9d1d08de37359573fe94a4803e6b9e63dabf04de980788d6a13c4"><div class="ttname"><a href="namespaceeve_1_1dev.html#a6040b03eff5c9d1d08de37359573fe94a4803e6b9e63dabf04de980788d6a13c4">eve::dev::TraceKind::Line</a></div><div class="ttdeci">@ Line</div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html"><div class="ttname"><a href="namespaceeve_1_1dialogue.html">eve::dialogue</a></div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00012">ConversationAuthoring.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html_ad73d148174f279c9dc8af7681a5c12e8"><div class="ttname"><a href="namespaceeve_1_1dialogue.html#ad73d148174f279c9dc8af7681a5c12e8">eve::dialogue::VarValue</a></div><div class="ttdeci">eve::Value VarValue</div><div class="ttdef"><b>Definition</b> <a href="Dialogue_8h_source.html#l00037">Dialogue.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_affa67bdc5735184fc118ff96a43fe94ca68eec46437c384d8dad18d5464ebc35c"><div class="ttname"><a href="namespaceeve_1_1graphics.html#affa67bdc5735184fc118ff96a43fe94ca68eec46437c384d8dad18d5464ebc35c">eve::graphics::MeshDepthCompare::Always</a></div><div class="ttdeci">@ Always</div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html_a8b11cae98fa16e2ce8075fabf7d64ab1"><div class="ttname"><a href="namespaceeve_1_1scene.html#a8b11cae98fa16e2ce8075fabf7d64ab1">eve::scene::when</a></div><div class="ttdeci">NodeDesc when(bool cond, NodeDesc child)</div><div class="ttdoc">Conditional: include child only when cond is true (empty group otherwise).</div><div class="ttdef"><b>Definition</b> <a href="NodeDesc_8cpp_source.html#l00234">NodeDesc.cpp:234</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b"><div class="ttname"><a href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b">eve::ResourceRefKind::Object</a></div><div class="ttdeci">@ Object</div></div>
+<div class="ttc" id="anamespacessq_html"><div class="ttname"><a href="namespacessq.html">ssq</a></div><div class="ttdoc">EVEngine ECS 集成层：底层实现使用 sunxfancy/ECS.hpp https://github.com/sunxfancy/ECS.hpp</div><div class="ttdef"><b>Definition</b> <a href="ECS_8h_source.html#l00014">ECS.h:14</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00032">Settlement.cpp:32</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00031">Settlement.cpp:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
