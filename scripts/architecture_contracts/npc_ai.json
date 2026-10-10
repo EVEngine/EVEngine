@@ -12,7 +12,7 @@
       "evidence": [
         "src/modules/npc_ai/NpcAiECS.h",
         "src/modules/npc_ai/NpcAiECS.cpp",
-        "docs/dev/superpowers/specs/2026-08-30-npc-ai-framework.md"
+        "docs/usr/modules/npc_ai.md"
       ],
       "tests": [
         "test/npc_ai_ecs.cpp",
