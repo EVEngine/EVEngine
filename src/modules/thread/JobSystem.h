@@ -289,6 +289,8 @@ public:
  *
  * @param workerCount Worker thread count; <= 0 means hardware concurrency.
  * @return New JobSystem; the caller owns it and must delete it.
+ * @ownership Caller owns the returned scheduler and releases it with delete after all jobs are joined.
+ * @lifetime Valid until deleted by the caller; outstanding Job/TaskGroup handles must not outlive it.
  */
 EVENGINE_API_FOUNDATION JobSystem *createJobSystem(int workerCount = 0);
 

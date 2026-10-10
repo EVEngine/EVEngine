@@ -11,6 +11,11 @@ if(NOT EVENGINE_BUILD_PROFILE_CHECKS)
     return()
 endif()
 
+# The real crowd solver and bindings link without graphics, window or RTS.
+if(TARGET EVCrowd)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/crowd_check" "${CMAKE_BINARY_DIR}/profile/crowd")
+endif()
+
 if(TARGET eve AND TARGET EVGraphics)
     add_executable(eve_skin_palette_check
         "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
