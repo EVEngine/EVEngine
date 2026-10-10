@@ -109,18 +109,13 @@ RULE_REQUIRED = {
         "shared_contract_tests",
         "failure_injection",
     },
-    "module-interface": {
-        "provides",
-        "requires",
-        "emits",
-        "observes",
-        "binds",
-        "trim",
-        "thread_affinity",
-    },
     "debt-metadata": {
         "removal_condition",
         "max_net_growth",
+    },
+    "module-interface": {
+        "provides", "requires", "emits", "observes", "binds", "protocol",
+        "thread_affinity", "trim", "cost_notes", "hot_path",
     },
 }
 
@@ -241,6 +236,7 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
 
     seen: set[str] = set()
     covered: set[str] = set()
+    repository_files: list[Path] | None = None
     for index, entry in enumerate(entries):
         prefix = f"entries[{index}]"
         if not isinstance(entry, Mapping):
@@ -263,10 +259,14 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
                 errors.append(f"{prefix}.{field} must be a non-empty string")
         scope = entry.get("scope")
         if nonempty_string(scope):
+            # One filesystem snapshot per validation. Rewalking build/dependency
+            # trees for every contract multiplies the cost without adding evidence.
+            if repository_files is None:
+                repository_files = [candidate for candidate in ROOT.rglob("*") if candidate.is_file()]
             scoped_files = [
                 candidate
-                for candidate in ROOT.rglob("*")
-                if candidate.is_file() and path_matches(relative(candidate), scope)
+                for candidate in repository_files
+                if path_matches(relative(candidate), scope)
             ]
             if not scoped_files:
                 errors.append(f"{prefix}.scope matches no repository file: {scope}")
@@ -309,6 +309,15 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
                 if not isinstance(growth, int) or growth < 0:
                     errors.append(f"{prefix}.max_net_growth must be a non-negative integer")
             if rule == "module-interface":
+                for field in ("provides", "requires", "emits", "observes", "binds", "protocol", "cost_notes", "hot_path"):
+                    if not isinstance(entry.get(field), list):
+                        errors.append(f"{prefix}.{field} must be an array (empty when not applicable)")
+                if not isinstance(entry.get("trim"), Mapping) or not nonempty_string(
+                    entry["trim"].get("absent_profile")
+                ):
+                    errors.append(f"{prefix}.trim.absent_profile must name a profile")
+                if not nonempty_string(entry.get("thread_affinity")):
+                    errors.append(f"{prefix}.thread_affinity must be a non-empty string")
                 errors.extend(_validate_module_interface_fields(prefix, entry))
 
     missing = sorted(set(RULES) - covered)

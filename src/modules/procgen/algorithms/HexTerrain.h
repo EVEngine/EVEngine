@@ -22,6 +22,7 @@ namespace eve::procgen {
  * @param out Destination CPU mesh.
  * @param error Failure description.
  * @return True when a non-empty mesh was generated.
+ * @note Compatibility facade used by the mesh recipe registry; new APIs should return Result.
  */
 EVENGINE_API_DOMAINS bool generateHexTerrainMesh(const Params& params, MeshBuild& out, std::string& error);
 
