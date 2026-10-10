@@ -33,8 +33,8 @@ std::shared_ptr<const filesystem::FileData> readBytes(const std::string& path, s
 Result<void> replace(Graphics& graphics, Shader& shader, const std::string& vertex, const std::string& fragment,
                      const Value& descriptions, const std::string& constants, const std::string& instances = {}) {
     try {
-        if (!descriptions.isArray() || !descriptions.arraySize() || descriptions.arraySize() > 16)
-            throw std::runtime_error("Expected 1-16 image resource descriptions");
+        if (!descriptions.isArray() || descriptions.arraySize() > 16)
+            throw std::runtime_error("Expected at most 16 image resource descriptions");
         std::vector<uint32_t> vert;
         if (!vertex.empty()) {
             auto stage = readShaderStageFile(vertex);
@@ -45,16 +45,26 @@ Result<void> replace(Graphics& graphics, Shader& shader, const std::string& vert
         if (!frag) return Result<void>::failure(frag.status());
         std::vector<ShaderImageInput>                            images;
         std::vector<std::shared_ptr<const filesystem::FileData>> files;
-        constexpr std::string_view keys[] = {"binding", "format", "dimension", "width", "height", "layers",
-                                             "mips",    "path",   "filter",    "wrapU", "wrapV",  "anisotropy"};
+        constexpr std::string_view keys[] = {"binding", "format",     "dimension", "width",  "height",
+                                             "layers",  "mips",       "path",      "filter", "wrapU",
+                                             "wrapV",   "anisotropy", "depth",     "wrapW"};
         constexpr std::pair<std::string_view, ShaderImageFormat> formats[] = {
-            {"r8-unorm", ShaderImageFormat::R8},          {"rg8-unorm", ShaderImageFormat::RG8},
-            {"r16-unorm", ShaderImageFormat::R16},        {"rgba8-unorm", ShaderImageFormat::RGBA8},
-            {"bgra8-unorm", ShaderImageFormat::BGRA8},    {"rgba8-srgb", ShaderImageFormat::RGBA8Srgb},
-            {"bgra8-srgb", ShaderImageFormat::BGRA8Srgb}, {"bc3-unorm", ShaderImageFormat::BC3},
-            {"bc1-unorm", ShaderImageFormat::BC1},        {"bc1-srgb", ShaderImageFormat::BC1Srgb},
-            {"bc3-srgb", ShaderImageFormat::BC3Srgb},     {"bc7-unorm", ShaderImageFormat::BC7},
-            {"bc7-srgb", ShaderImageFormat::BC7Srgb}};
+            {"r8-unorm", ShaderImageFormat::R8},
+            {"rg8-unorm", ShaderImageFormat::RG8},
+            {"r16-unorm", ShaderImageFormat::R16},
+            {"rgba8-unorm", ShaderImageFormat::RGBA8},
+            {"bgra8-unorm", ShaderImageFormat::BGRA8},
+            {"rgba8-srgb", ShaderImageFormat::RGBA8Srgb},
+            {"bgra8-srgb", ShaderImageFormat::BGRA8Srgb},
+            {"bc3-unorm", ShaderImageFormat::BC3},
+            {"bc1-unorm", ShaderImageFormat::BC1},
+            {"bc1-srgb", ShaderImageFormat::BC1Srgb},
+            {"bc3-srgb", ShaderImageFormat::BC3Srgb},
+            {"bc7-unorm", ShaderImageFormat::BC7},
+            {"bc7-srgb", ShaderImageFormat::BC7Srgb},
+            {"rgba16-unorm", ShaderImageFormat::RGBA16Unorm},
+            {"rgba16-float", ShaderImageFormat::RGBA16Float},
+            {"rgba32-float", ShaderImageFormat::RGBA32Float}};
         size_t totalBytes = 0;
         for (size_t i = 0; i < descriptions.arraySize(); ++i) {
             const auto& row = descriptions.at(i);
@@ -80,8 +90,12 @@ Result<void> replace(Graphics& graphics, Shader& shader, const std::string& vert
                 image.dimension = ShaderImageDimension::Array2D;
             else if (dimension == "cube")
                 image.dimension = ShaderImageDimension::Cube;
+            else if (dimension == "3d")
+                image.dimension = ShaderImageDimension::Image3D;
             else
                 throw std::runtime_error("Unknown image view dimension: " + dimension);
+            if (row.find("depth") || image.dimension == ShaderImageDimension::Image3D)
+                image.depth = number(row, "depth");
             auto filter = number(row, "filter");
             auto wrapU = number(row, "wrapU"), wrapV = number(row, "wrapV");
             if (filter > 2 || wrapU > 1 || wrapV > 1) throw std::runtime_error("Unknown resource sampler mode");
@@ -91,6 +105,11 @@ Result<void> replace(Graphics& graphics, Shader& shader, const std::string& vert
                                                                          : MipmapMode::Nearest;
             image.sampler.repeatU                 = wrapU == 0;
             image.sampler.repeatV                 = wrapV == 0;
+            if (row.find("wrapW") || image.dimension == ShaderImageDimension::Image3D) {
+                const auto wrapW = number(row, "wrapW");
+                if (wrapW > 1) throw std::runtime_error("Unknown resource W sampler mode");
+                image.sampler.repeatW = wrapW == 0;
+            }
             image.sampler.maxAnisotropy           = float(number(row, "anisotropy"));
             const auto path                       = field(row, "path", Value::Type::String).asString();
             files.push_back(readBytes(path, 1024ull * 1024 * 1024));
@@ -122,33 +141,45 @@ void exposeShaderResourceBindings(ssq::Table& table, ssq::Class& cls) {
     const auto vm = table.getHandle();
     cls.addFunc("setBloomFilter", [vm](Graphics* graphics, const std::string& mode, float scatter, int iterations,
                                        float clamp) {
-        if (!graphics || (mode != "karisTent" && mode != "gaussianScatter"))
+        if (!graphics || (mode != "karisTent" && mode != "gaussianScatter" && mode != "gaussianPyramid"))
             return script::projectResult(
-                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "Expected bloom filter karisTent or gaussianScatter",
-                                                            "graphics.bloom")));
-        BloomFilterSettings settings{mode == "gaussianScatter" ? BloomFilter::GaussianScatter : BloomFilter::KarisTent,
+                vm, Result<void>::failure(Diagnostic::error(
+                        DiagnosticCode::InvalidArgument,
+                        "Expected bloom filter karisTent, gaussianScatter or gaussianPyramid", "graphics.bloom")));
+        BloomFilterSettings settings{mode == "gaussianScatter"   ? BloomFilter::GaussianScatter
+                                     : mode == "gaussianPyramid" ? BloomFilter::GaussianPyramid
+                                                                 : BloomFilter::KarisTent,
                                      scatter, iterations, clamp};
         auto valid = validateBloomFilterSettings(settings);
         if (!valid) return script::projectResult(vm, Result<void>::failure(valid.status()));
         return script::projectResult(vm, graphics->pipelineBloom()->configureFilter(settings));
     });
     cls.addFunc("getBloomFilter", [](Graphics* graphics) {
-        return std::string(graphics->pipelineBloom()->filterSettings().filter == BloomFilter::GaussianScatter
-                               ? "gaussianScatter"
-                               : "karisTent");
+        return std::string(
+            graphics->pipelineBloom()->filterSettings().filter == BloomFilter::GaussianScatter   ? "gaussianScatter"
+            : graphics->pipelineBloom()->filterSettings().filter == BloomFilter::GaussianPyramid ? "gaussianPyramid"
+                                                                                                 : "karisTent");
     });
     cls.addFunc("setSceneToneMapping", [vm](Graphics* graphics, const std::string& mode) {
-        if (!graphics || (mode != "none" && mode != "aces"))
-            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(
-                                                 DiagnosticCode::InvalidArgument,
-                                                 "Expected scene tone mapping none or aces", "graphics.presentation")));
-        return script::projectResult(vm,
-                                     graphics->setSceneToneMapping(mode == "none" ? Graphics::SceneToneMapping::None
-                                                                                  : Graphics::SceneToneMapping::Aces));
+        if (!graphics || (mode != "none" && mode != "aces" && mode != "filmic"))
+            return script::projectResult(
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "Expected scene tone mapping none, aces or filmic",
+                                                            "graphics.presentation")));
+        return script::projectResult(
+            vm, graphics->setSceneToneMapping(mode == "none"     ? Graphics::SceneToneMapping::None
+                                              : mode == "filmic" ? Graphics::SceneToneMapping::Filmic
+                                                                 : Graphics::SceneToneMapping::Aces));
     });
+    cls.addFunc("setScenePhotographicVignette", [vm](Graphics* graphics, float intensity) {
+        return script::projectResult(vm, graphics->setScenePhotographicVignette(intensity));
+    });
+    cls.addFunc("getScenePhotographicVignette",
+                [](Graphics* graphics) { return graphics->getScenePhotographicVignette(); });
     cls.addFunc("getSceneToneMapping", [](Graphics* graphics) {
-        return std::string(graphics->getSceneToneMapping() == Graphics::SceneToneMapping::None ? "none" : "aces");
+        return std::string(graphics->getSceneToneMapping() == Graphics::SceneToneMapping::None     ? "none"
+                           : graphics->getSceneToneMapping() == Graphics::SceneToneMapping::Filmic ? "filmic"
+                                                                                                   : "aces");
     });
     cls.addFunc("setDisplayOutputMode", [vm](Graphics* graphics, const std::string& mode) {
         if (!graphics)

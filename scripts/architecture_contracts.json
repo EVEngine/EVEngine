@@ -873,6 +873,46 @@
       "phase": "Combat command resolution phase."
     },
     {
+      "id": "sky-timeline-time-contract",
+      "rule": "time-rng",
+      "scope": "src/modules/daynight/sky/**",
+      "owner": "daynight::SkyTimeline",
+      "issue": "EVENGINE-ARCH-TIME-RNG-INJECTION",
+      "reason": "Independent sky weather and cloud travel use injected integer simulation duration and analytical transition integration.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/daynight/sky/SkyTimeline.h",
+        "src/modules/daynight/sky/SkyTimeline.cpp",
+        "src/modules/daynight/sky/SkySolarOrbit.h",
+        "src/modules/daynight/sky/SkySolarOrbit.cpp",
+        "src/modules/daynight/sky/SkyRuntime.h",
+        "src/modules/daynight/sky/SkyRuntime.cpp",
+        "src/modules/daynight/sky/SkyScriptBindings.cpp",
+        "docs/dev/uds-sky-runtime-contract.md"
+      ],
+      "tests": [
+        "test/SkyTimeline.cpp",
+        "test/SkySolarOrbit.cpp",
+        "test/SkyRuntime.cpp",
+        "test/SkyScriptBindings.cpp"
+      ],
+      "time_source": "Caller-supplied eve::Duration; checked accumulated integer nanoseconds.",
+      "rng_stream": "No RNG in this deterministic interpolation layer.",
+      "determinism": "Equal commands at equal simulation times preserve weather and cloud travel across frame subdivision. Authored cloud time derives from the same accumulated timeline, including explicit source speed/time/wind multipliers; only normalized phase is converted to GPU float.",
+      "tolerance": "1e-9 in ordinary-duration CPU contract tests; no cross-platform bitwise claim.",
+      "module_interface": {
+        "capability_in": "Caller injects Duration and typed weather commands; SkyRuntime preparation receives the existing Graphics provider and copied settings.",
+        "capability_out": "Validated SkyTimeline and SkySolarOrbit values; owning SkyRuntime publishes the same evaluated solar light to main-view and capture contributors.",
+        "ecs_links": "None; timeline retains only owned values.",
+        "events": "None.",
+        "script_bindings": "DayNight.prepareSky(gfx, profileJson) returns an owned SkyRuntime Result; attach/detach/advanceSeconds/frame use common Result projection and VM-owned lifetime.",
+        "tool_protocol": "SkyProfile decodes eve.sky-profile versions 1 through 6. Version 6 selects procedural-v1 via null wispsAsset and an explicit uint32 proceduralSeed; a supplied path must load successfully. Version 3 references an optional graphics-owned wisps asset loaded during preparation; no new tool endpoint.",
+        "hard_dependencies": "Common Result/Duration and daynight's already-declared graphics dependency; public runtime header uses forward declarations and Pimpl.",
+        "connection": "One simulation owner; frequent direct typed updates and copied read projections. No hot-path registry.",
+        "trim_claim": "No L2/L3/L4 trim claim."
+      }
+    },
+    {
       "id": "time-rng-policy",
       "rule": "time-rng",
       "scope": "src/**",
@@ -990,6 +1030,52 @@
       "restore_atomicity": "Stage member references and order validation before root mutation, then publish groups with the validated restored roots."
     },
     {
+      "id": "sky-profile-persistence-contract",
+      "rule": "persistence",
+      "scope": "src/modules/daynight/sky/SkyProfile.*",
+      "owner": "daynight::SkyProfile",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Authored atmospheric profiles validate completely before GPU preparation or runtime publication.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/daynight/sky/SkyProfile.h",
+        "src/modules/daynight/sky/SkyProfile.cpp",
+        "docs/dev/uds-sky-runtime-contract.md"
+      ],
+      "tests": [
+        "test/SkyProfile.cpp",
+        "test/SkyRuntime.cpp"
+      ],
+      "schema": "eve.sky-profile; explicit atmosphere mode with complete clock, weather, sun and optical parameters.",
+      "version": "Integer version 6 adds proceduralSeed and null wispsAsset selection; version 5 adds directional fog elevation range; version 4 adds cloudMotion controls (phase, speed, timeScale, windMultiplier). Version 3 adds wisps; version 2 adds background height fog. Not a simulation save.",
+      "migration": "Version 1 disables height fog; versions 1/2 disable wisps; versions 1/2/3 explicitly freeze cloud motion with speed zero. Versions 1 through 4 disable directional fog elevation fading; version 5 requires its explicit elevation range. Unsupported versions and modes fail.",
+      "unknown_fields": "Reject unknown or missing fields at every object level, wrong types, vector dimensions and nonfinite/out-of-range numbers.",
+      "restore_atomicity": "Decode creates an immutable candidate without provider calls; existing profiles and runtimes are never mutated on import failure."
+    },
+    {
+      "id": "sky-wisps-asset-persistence-contract",
+      "rule": "persistence",
+      "scope": "src/modules/graphics/sky/SkyWispsAsset.*",
+      "owner": "graphics::SkyWispsAsset",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Authored corner attributes and density texture have explicit source schemas and independent immutable ownership.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/sky/SkyWispsAsset.h",
+        "src/modules/graphics/sky/SkyWispsAsset.cpp",
+        "docs/dev/uds-sky-runtime-contract.md"
+      ],
+      "tests": [
+        "test/SkyWispsAsset.cpp",
+        "test/SkyWisps.cpp"
+      ],
+      "schema": "eve.sky-wisps/7 manifest and eve.sky-mesh/1 geometry; explicit texture dimensions and linear or sRGB R8/RGBA8 source encoding; version 5 validates daylight coefficients and both owned star textures; version 6 adds optical tints and bounded explicit RGBA8/RGBA16F mip chains; version 7 adds lunar surface, phase, glow and two owned linear RGBA16F mip chains.",
+      "version": "Manifest versions 1 through 7; geometry version 1.",
+      "migration": "Version 1 migrates to neutral parent contrast and unscaled physical sky; version 2 requires contrast controls and enables authored celestial scaling. Versions 1/2 disable the disk; version 3 adds explicit solar radiance, radius, softness and reflection scaling. Versions 1/2/3 use constant disk color; version 4 requires twelve ordered RGB elevation curve keys with constant endpoint extrapolation and unweighted cubic interpolation. Versions 1 through 5 retain static optical coefficients; version 6 requires authored optical colors and explicit mip counts. Versions 1 through 6 disable the lunar surface; version 7 requires lunar coefficients and color/normal resources. Other versions rejected.",
+      "unknown_fields": "Reject unknown or missing fields, wrong shapes, unsupported layout, invalid counts, nonfinite values and resource sizes.",
+      "restore_atomicity": "Load builds owned immutable candidates; GPU preparation validates material semantics and copies data before any contributor is published. Existing runtime state is untouched on failure."
+    },
+    {
       "id": "tactics-persistence-contract",
       "rule": "persistence",
       "scope": "src/modules/tactics/TacticsPersistence.h",
@@ -1055,6 +1141,186 @@
       "providers": "CPU reference plus production GPU/Vulkan/WebGPU providers where the profile supplies them.",
       "shared_contract_tests": "the same lifecycle and parity assertions run against each available provider.",
       "failure_injection": "prepare, commit, rollback, restore and capability-loss failures are injected and assert no partial publication."
+    },
+    {
+      "id": "module-interface-graphics-bloom-pyramid",
+      "rule": "backend-contract",
+      "scope": "src/modules/graphics/Bloom*",
+      "owner": "graphics::Bloom",
+      "issue": "EVENGINE-ARCH-BACKEND-CONTRACTS",
+      "reason": "Six weighted photographic Gaussian scales reuse the existing owned HDR bloom resources without replacing older filters.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/Bloom.h",
+        "src/modules/graphics/BloomGaussian.cpp",
+        "src/modules/graphics/shaders/bloom_gaussian.frag",
+        "src/modules/graphics/shaders/BloomGaussianWgsl.h",
+        "docs/dev/uds-sky-runtime-contract.md"
+      ],
+      "tests": [
+        "test/BloomSettings.cpp",
+        "test/BloomPyramid.cpp"
+      ],
+      "contract": "Graphics-owned targets and copied settings; render-thread builds preserve the previous canvas. GaussianPyramid adds normalized weighted scales; existing filter defaults remain unchanged.",
+      "providers": "Shared C++ orchestration with GLSL/SPIR-V and WGSL shader implementations. Runtime validation is required separately for each enabled provider.",
+      "shared_contract_tests": "Constant HDR input checks per-channel weighted DC response and edge behavior; threshold suppression and invalid enum/settings retain explicit outcomes.",
+      "failure_injection": "Invalid settings reject before mutation; target and shader allocation failures follow existing Bloom exceptions without silently selecting another filter.",
+      "module_interface": {
+        "capability_in": "Existing Graphics texture, shader and Canvas provider.",
+        "capability_out": "Existing Bloom build/apply linear HDR textures.",
+        "ecs_links": "None. Graphics owns resources; Bloom owns copied filter settings.",
+        "events": "None.",
+        "script_bindings": "Existing setBloomFilter/getBloomFilter add gaussianPyramid, preserving Result validation.",
+        "tool_protocol": "No new endpoint or persistent format.",
+        "hard_dependencies": "Existing graphics facilities only.",
+        "connection": "Direct render-thread calls; numeric phase uniforms on the GPU; no registry lookup or callbacks.",
+        "trim_claim": "No L2/L3/L4 trim claim."
+      }
+    },
+    {
+      "id": "module-interface-graphics-display",
+      "rule": "backend-contract",
+      "scope": "src/modules/graphics/SceneToneMapping.cpp",
+      "owner": "graphics::Graphics presentation",
+      "issue": "EVENGINE-ARCH-BACKEND-CONTRACTS",
+      "reason": "Explicit filmic presentation preserves the existing default and the linear HDR capture boundary.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/Graphics.h",
+        "src/modules/graphics/SceneToneMapping.cpp",
+        "src/modules/graphics/vulkan/GraphicsToneMapping.cpp",
+        "src/modules/graphics/shaders/filmic_display.glsl",
+        "docs/dev/uds-sky-runtime-contract.md"
+      ],
+      "tests": [
+        "test/SkyAtmospherePass.cpp",
+        "test/SkyScriptBindings.cpp"
+      ],
+      "contract": "Graphics owns one render-thread display mode; None, Aces and Filmic select final presentation only. Aces remains the default; independent cosine-fourth photographic vignette defaults to zero and affects presentation before tone mapping; HDR capture stays linear.",
+      "providers": "Vulkan implements all three modes and photographic vignette. Other providers retain their existing mode and zero vignette, returning Unsupported for unavailable changes.",
+      "shared_contract_tests": "Invalid native/script modes preserve state; Vulkan filmic GPU fixtures check neutral middle grey, black, highlights and distinct prior modes. The script test's alternate-provider branch requires Unsupported.",
+      "failure_injection": "Unknown enum and script string reject mutation; no resources, callbacks or partial publication are introduced by mode changes.",
+      "module_interface": {
+        "capability_in": "Existing Graphics provider; explicit typed mode or validated script string.",
+        "capability_out": "Existing scene resolve applies the selected display transform.",
+        "ecs_links": "None; mode lifetime is bounded by Graphics and has no borrowed inputs.",
+        "events": "None.",
+        "script_bindings": "setSceneToneMapping and setScenePhotographicVignette return canonical Result; corresponding getters expose current owned values.",
+        "tool_protocol": "No new endpoint or persistent format.",
+        "hard_dependencies": "Existing graphics pipeline and shader compiler; no new module or dependency.",
+        "connection": "Direct infrequent setting, render-thread read during final resolve; no registry lookup or callbacks.",
+        "trim_claim": "No L2/L3/L4 trim claim."
+      }
+    },
+    {
+      "id": "module-interface-graphics-sky-atmosphere",
+      "rule": "backend-contract",
+      "scope": "src/modules/graphics/sky/**",
+      "owner": "graphics::SkyAtmospherePass",
+      "issue": "EVENGINE-ARCH-BACKEND-CONTRACTS",
+      "reason": "Independent HDR atmospheric rendering reuses resource-program transactions and existing main-view/capture contributors.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/sky/SkyAtmospherePass.h",
+        "src/modules/graphics/sky/SkyAtmospherePass.cpp",
+        "docs/dev/uds-sky-runtime-contract.md",
+        "src/modules/graphics/sky/SkyAtmosphereLuts.cpp",
+        "src/modules/graphics/sky/SkyWispsLayer.h",
+        "src/modules/graphics/sky/SkyWispsAsset.cpp",
+        "src/modules/graphics/ViewPreparation.h",
+        "src/modules/graphics/ViewPreparation.cpp"
+      ],
+      "tests": [
+        "test/SkyAtmospherePass.cpp",
+        "test/SkyAtmosphereLuts.cpp",
+        "test/SkyWisps.cpp",
+        "test/SkyMoon.cpp",
+        "test/SkyWispsAsset.cpp",
+        "test/SkyViewPreparation.cpp"
+      ],
+      "contract": "Prepared immutable coefficients and transmission/multiple-scattering lookup tables feed a physically integrated HDR pass. No visual-parity claim until all remaining UDS stages are implemented and compared. Optional authored wisps copy corner attributes and an explicit sampled texture during preparation; atmosphere and wisps draw in fixed order with identical fog composition through the same callback. A checked view-preparation phase generates a 192x104 sky-view texture before opening the destination; identical camera/light blocks reuse it. Main and capture draws consume the same cache sequentially. Solar lighting and normalized authored-wisps phase publish atomically; validation failure leaves both unchanged. Cloud phase never invalidates the atmosphere-only view LUT.",
+      "providers": "Vulkan resource program implementation; other backends explicitly Unsupported.",
+      "shared_contract_tests": "SkyAtmospherePass captures radiance, tests energy scaling and removal; alternate backend branch requires Unsupported.",
+      "failure_injection": "Invalid coefficients and light energy reject publication; provider-first retirement returns StaleHandle and destructor detaches callbacks. View-preparation tests cover empty provider set, injected failure, recursive dispatch rejection and detachment.",
+      "module_interface": {
+        "capability_in": "Borrowed Graphics guarded by its existing weak resource lifetime. Optional SkyWispsLayer spans are synchronous borrowed upload inputs; no input pointer survives preparation.",
+        "capability_out": "Prepared pass and existing RenderSystem3D contributor tokens.",
+        "ecs_links": "No new ECS components or entity links; callbacks borrow camera snapshots during invocation only.",
+        "events": "No new events.",
+        "script_bindings": "Not exposed yet; C++ path only.",
+        "tool_protocol": "SkyWispsAsset reads eve.sky-wisps/1 through /7 and eve.sky-mesh/1 through existing prepared VFS snapshots. Import is separate from GPU preparation. SkyWispsAsset::generate(seed) creates immutable procedural-v1 resources without filesystem access; no simulation RNG or callbacks.",
+        "hard_dependencies": "Existing graphics/common dependencies only; no new module.",
+        "connection": "Infrequent atomic preparation, frequent fixed-block updates; known provider and owner-thread callbacks. ViewPreparation is a graphics-internal one-to-many synchronous ordered phase: providers are registered outside dispatch, callbacks return Result, first failure cancels the destination; no string lookup or new cross-module service.",
+        "trim_claim": "No new L2/L3/L4 trim claim."
+      }
+    },
+    {
+      "id": "module-interface-graphics-sky-images",
+      "rule": "backend-contract",
+      "scope": "src/modules/graphics/ShaderResources*",
+      "owner": "graphics resource pipeline",
+      "issue": "EVENGINE-ARCH-BACKEND-CONTRACTS",
+      "reason": "Sky source volumes and HDR LUTs use the existing transactional mesh-resource boundary without a second resource registry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/ShaderResources.h",
+        "src/modules/graphics/ShaderResourceValidation.cpp",
+        "src/modules/graphics/vulkan/GraphicsShaderResources.cpp",
+        "docs/usr/modules/graphics.md"
+      ],
+      "tests": [
+        "test/SkyTextureResources.cpp",
+        "test/SkyTextureGpu.cpp"
+      ],
+      "contract": "Packed volume mips shrink XYZ; linear HDR samples retain source precision. Validation or upload failure preserves the previously published shader resources.",
+      "providers": "Vulkan implements 3D and HDR sampled images. The existing base/WebGPU resource-program boundary returns explicit Unsupported without publication.",
+      "shared_contract_tests": "SkyTextureResources checks backend-independent packing. SkyTextureGpu checks Vulkan sampling or explicit provider absence; WebGPU rejects this resource-program capability.",
+      "failure_injection": "Truncated payloads, volume/array mismatches, unsupported compression and oversize dimensions are rejected. Failed GPU replacement preserves the committed shader handle and rendered samples.",
+      "module_interface": {
+        "capability_in": "Existing Graphics, Vulkan device and optional SPIR-V validation provider; no new capability registry.",
+        "capability_out": "Existing replaceMeshShaderResources accepts additional typed formats and volume dimension.",
+        "ecs_links": "No new ECS data or cross-frame identity. Shader owns immutable GPU images; Graphics retirement releases them.",
+        "events": "No new events or callbacks.",
+        "script_bindings": "Existing file-resource adapter accepts 3d, depth, wrapW and three HDR/UNORM formats; invalid input returns Result unchanged.",
+        "tool_protocol": "No new runtime tool protocol or persistent format.",
+        "hard_dependencies": "Unchanged graphics dependencies; same resource validation and Vulkan implementation TUs.",
+        "connection": "One synchronous preparation caller, infrequent resource upload, known provider, atomic replacement. Direct existing interface call.",
+        "trim_claim": "No new L2/L3/L4 trim claim. Runtime-3d remains the host integration profile."
+      }
+    },
+    {
+      "id": "module-interface-graphics-view-preparation",
+      "rule": "backend-contract",
+      "scope": "src/modules/graphics/ViewPreparation*",
+      "owner": "graphics::ViewPreparation",
+      "issue": "EVENGINE-ARCH-BACKEND-CONTRACTS",
+      "reason": "Checked ordered view-resource preparation before opening main or capture render targets.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/ViewPreparation.h",
+        "src/modules/graphics/ViewPreparation.cpp",
+        "src/modules/graphics/RenderSystem3D.cpp",
+        "docs/dev/uds-sky-runtime-contract.md"
+      ],
+      "tests": [
+        "test/SkyViewPreparation.cpp",
+        "test/SkyAtmospherePass.cpp"
+      ],
+      "contract": "No providers is success. Registered callbacks run synchronously before target opening; first failure cancels the view. Detachment removes future invocations. Recursive dispatch and mutation during dispatch are forbidden.",
+      "providers": "Backend-independent phase; the sky provider explicitly requires Vulkan resource programs.",
+      "shared_contract_tests": "SkyViewPreparation exercises dispatch, failure, reentrancy, removal and actual offscreen ordering.",
+      "failure_injection": "Empty callback rejected; injected provider failure prevents later providers and recursive dispatch returns failure.",
+      "module_interface": {
+        "capability_in": "Graphics and camera snapshots borrowed only through invocation.",
+        "capability_out": "Result-returning registration and checked preparation phase; token-based removal.",
+        "ecs_links": "No new ECS components or entity links; callbacks borrow camera snapshots during invocation only.",
+        "events": "No new events.",
+        "script_bindings": "No script binding.",
+        "tool_protocol": "No protocol or persistent state.",
+        "hard_dependencies": "Existing graphics/common dependencies only; no new module.",
+        "connection": "One-to-many graphics-thread synchronous phase; known registrants, ordered resource readiness, no per-frame string lookup.",
+        "trim_claim": "No new L2/L3/L4 trim claim."
+      }
     },
     {
       "id": "attributes-module-interface",

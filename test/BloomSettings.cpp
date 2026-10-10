@@ -9,6 +9,8 @@ TEST_CASE("graphics.bloom rejects invalid reconstruction settings") {
     REQUIRE(validateBloomFilterSettings(settings).ok());
     settings.filter = BloomFilter::GaussianScatter;
     REQUIRE(validateBloomFilterSettings(settings).ok());
+    settings.filter = BloomFilter::GaussianPyramid;
+    REQUIRE(validateBloomFilterSettings(settings).ok());
     settings.scatter = std::numeric_limits<float>::quiet_NaN();
     REQUIRE(!validateBloomFilterSettings(settings).ok());
     settings.scatter = 1.01f;

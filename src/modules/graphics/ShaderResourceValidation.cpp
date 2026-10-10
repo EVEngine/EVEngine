@@ -67,8 +67,10 @@ Result<void> stage(std::span<const uint32_t> words, bool vertex, const ShaderRes
             expected = found->dimension;
         } else
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Image binding is outside the resource program ABI", "shader.resources"));
-        if (t.image.dim != (expected == ShaderImageDimension::Cube ? spv::DimCube : spv::Dim2D) ||
-            bool(t.image.arrayed) != (expected == ShaderImageDimension::Array2D))
+        const auto expectedDimension = expected == ShaderImageDimension::Cube      ? spv::DimCube
+                                       : expected == ShaderImageDimension::Image3D ? spv::Dim3D
+                                                                                   : spv::Dim2D;
+        if (t.image.dim != expectedDimension || bool(t.image.arrayed) != (expected == ShaderImageDimension::Array2D))
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Shader image view dimension does not match the supplied resource", "shader.resources"));
     }
     for (const auto& buffer : r.uniform_buffers) {

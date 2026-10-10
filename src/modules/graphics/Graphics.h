@@ -1320,8 +1320,9 @@ public:
     virtual void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) = 0;
     /** @brief Upload the two dominant local reflection probes for subsequent mesh draws. */
     virtual void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) = 0;
-    /** @brief Final display mapping; None preserves linear color before display encoding. */
-    enum class SceneToneMapping { None, Aces };
+    /** @brief Final display mapping; None preserves linear color, Aces uses the fitted curve, and Filmic uses
+     * Rec.709/AP1. */
+    enum class SceneToneMapping { None, Aces, Filmic };
     /** @brief Requested swapchain present preference. */
     enum class DisplayOutputMode { Sdr, Auto, Hdr10, ScRgb };
     /** @brief Color space actually selected for the live swapchain. */
@@ -1338,8 +1339,8 @@ public:
      * are retained. This affects scene presentation, not
      * linear HDR offscreen textures.
      * Unsupported backends reject the change and retain their previous mode.
-
-     * * @return Success, InvalidArgument, or Unsupported without partial mutation.
+     * @return Success, InvalidArgument,
+     * or Unsupported without partial mutation.
      */
     [[nodiscard]] virtual Result<void> setSceneToneMapping(SceneToneMapping mode);
     /** @brief Return the current final display mapping; graphics/render thread only. */
@@ -1377,6 +1378,13 @@ public:
      * Headless and unsupported backends return only `sdr=true`.
      */
     [[nodiscard]] virtual Result<DisplayOutputSupport> queryDisplayOutputSupport() const;
+    /** @brief Set cosine-fourth photographic vignette intensity in [0,1].
+     * @details Render-thread setting owned by Graphics until destruction; no references or callbacks retained.
+     * Applies to final HDR scene presentation before tone mapping, not linear captures. Zero disables it.
+     * @return Success, InvalidArgument or Unsupported without changing the previous value. */
+    [[nodiscard]] virtual Result<void> setScenePhotographicVignette(float intensity);
+    /** @brief Return photographic vignette intensity; render thread only. */
+    virtual float getScenePhotographicVignette() const { return 0; }
     /** @brief Set linear exposure multiplier used by the final scene tone-map resolve. */
     virtual void setSceneExposure(float exposure) = 0;
     /** @brief Current linear manual exposure multiplier. */

@@ -1,4 +1,6 @@
 #version 450
+#extension GL_GOOGLE_include_directive : require
+#include "filmic_display.glsl"
 
 layout(location = 0) in vec4 fragColor;
 layout(location = 1) in vec2 fragUV;
@@ -95,7 +97,7 @@ void main() {
   float bloomPacked = mod(round(fragColor.a), 65536.0);
   float bloomIntensity = mod(bloomPacked, 256.0) * (1.0 / 32.0);
   float bloomThreshold = floor(bloomPacked * (1.0 / 256.0)) * (1.0 / 16.0);
-  int displayMode = int(round(fragColor.g));  // 0=SDR, 1=scRGB, 2=HDR10, 3=compose-linear
+  int displayMode = int(floor(fragColor.g));  // 0=SDR, 1=scRGB, 2=HDR10, 3=compose-linear
   float paperWhiteNits = 200.0;
   float peakNits = 1000.0;
   unpackNits(fragColor.b, paperWhiteNits, peakNits);
@@ -114,13 +116,21 @@ void main() {
 
   vec3 bloom = bloomIntensity > 0.0 ? sampleBloom(fragUV, bloomThreshold) : vec3(0.0);
   vec3 linearColor = (hdr.rgb + bloom * bloomIntensity) * exposure;
+  // Preserve integer present mode in green; its fractional quarter carries vignette.
+  float vignetteIntensity = clamp(fract(fragColor.g) * 4.0, 0.0, 1.0);
+  vec2 dimensions = vec2(textureSize(texSampler, 0));
+  float aspect = dimensions.y / dimensions.x;
+  vec2 circle = (fragUV * 2.0 - 1.0) * vec2(1.0, aspect) *
+                sqrt(2.0 / (1.0 + aspect * aspect)) * vignetteIntensity;
+  float cosineSquared = 1.0 / (1.0 + dot(circle, circle));
+  linearColor *= cosineSquared * cosineSquared;
   vec3 displayColor;
   if (displayMode == 0) {
-    displayColor = fragColor.r >= 0.5 ? acesFitted(linearColor)
+    displayColor = fragColor.r >= 1.5 ? filmicDisplay(linearColor) : fragColor.r >= 0.5 ? acesFitted(linearColor)
                                      : clamp(linearColor, 0.0, 1.0);
     if (encodeSrgb) displayColor = linearToSrgb(displayColor);
   } else {
-    displayColor = fragColor.r >= 0.5 ? acesToDisplayLinear(linearColor, peakRatio)
+    displayColor = fragColor.r >= 1.5 ? filmicDisplay(linearColor / peakRatio) * peakRatio : fragColor.r >= 0.5 ? acesToDisplayLinear(linearColor, peakRatio)
                                      : clamp(linearColor, vec3(0.0), vec3(peakRatio));
     // Mode 3 stays paper-white-relative for the linear compose target.
     if (displayMode == 2) displayColor = encodeHdr10(displayColor, paperWhiteNits);
