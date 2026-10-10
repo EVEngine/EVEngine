@@ -63,8 +63,13 @@ for apk_file in "${apk_files[@]}"; do
     sleep 1
   done
   if [[ "$ok" -ne 1 ]]; then
-    echo "ERROR: $apk_name did not print EVE_CI_GAME_OK (logcat tail):" >&2
-    adb logcat -d | tail -n 60 || true
+    echo "ERROR: $apk_name did not print EVE_CI_GAME_OK" >&2
+    echo "Application process state:" >&2
+    adb shell ps -A | grep -E 'com\.evengine\.example|PID' >&2 || true
+    echo "Relevant logcat entries:" >&2
+    adb logcat -d -v threadtime \
+      | grep -Ei 'com\.evengine\.example|EVEngine|SDL|AndroidRuntime|DEBUG|libc|linker|native.?bridge|EVE_CI' \
+      | tail -n 300 >&2 || true
     exit 1
   fi
   echo "OK: $apk_name printed EVE_CI_GAME_OK on the emulator"
