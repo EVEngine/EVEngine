@@ -173,7 +173,7 @@ TEST_CASE("snapshot.consumers.statePatchEnvelopeRejectsHashAndRevisionMismatch")
     auto                   batch = eve::test_support::openStatePatchBatch(store);
     REQUIRE(batch.view.isBound());
     REQUIRE(batch.view->set("actor", "value", "1"));
-    REQUIRE(store.commit(batch.view.get()));
+    REQUIRE(store.commit(batch.view.get()).ok());
 
     auto captured = store.snapshot(hash);
     REQUIRE(captured.ok());
