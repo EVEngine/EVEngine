@@ -2,6 +2,7 @@
 
 #include "common/BorrowedRef.h"
 #include "common/Export.h"
+#include "common/Result.h"
 #include "common/Subscription.h"
 #include "common/Value.h"
 
@@ -11,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eve::property_access {
@@ -92,25 +94,54 @@ struct EVENGINE_API_FOUNDATION PropertySchema {
     [[nodiscard]] eve::OptionalRef<const PropertyDescriptor> find(const std::string &path) const;
 };
 
-/** @brief Result of a model write, including a stable diagnostic code. */
-struct WriteResult {
-    bool        accepted = false;
-    std::string code;
-    std::string message;
+/** @brief Reserved DiagnosticDetails key carrying a stable property-access rule id. */
+inline constexpr const char *kRuleDiagnosticDetail = "rule";
 
-    /** @brief Success. */
-    static WriteResult success() { return {true, {}, {}}; }
-    /** @brief Reject. */
-    static WriteResult reject(std::string code, std::string message) {
-        return {false, std::move(code), std::move(message)};
-    }
-};
+/**
+ * @brief Build a rejected write/validation result with a stable rule string.
+ * @param rule Stable machine-readable rule id (for example `property_access.property.type`).
+ * @param message Human-readable explanation.
+ * @param code Coarse diagnostic category; defaults to precondition violation.
+ * @return Failed `Result<void>` with `StatusCode::Rejected`.
+ */
+[[nodiscard]] inline Result<void> rejected(std::string rule, std::string message,
+                                           DiagnosticCode code = DiagnosticCode::PreconditionViolation) {
+    DiagnosticDetails details;
+    details.emplace_back(kRuleDiagnosticDetail, std::move(rule));
+    return Result<void>::failure(Status::failure(
+        StatusCode::Rejected, Diagnostic::error(code, std::move(message), {}, std::move(details), "property_access")));
+}
+
+/**
+ * @brief Build a successful write/validation result.
+ * @return Successful `Result<void>` with `StatusCode::Ok`.
+ */
+[[nodiscard]] inline Result<void> accepted() { return Result<void>::success(); }
+
+/**
+ * @brief Return the projected property-access rule id, or empty when absent.
+ * @param diagnostic Structured diagnostic that may carry a `rule` detail.
+ */
+[[nodiscard]] inline std::string_view diagnosticRule(const Diagnostic &diagnostic) {
+    for (const auto &[key, value] : diagnostic.details())
+        if (key == kRuleDiagnosticDetail) return value;
+    return {};
+}
+
+/**
+ * @brief Return the primary rule id from a write/validation result.
+ * @param result Observed property-access Result; success yields an empty string.
+ */
+[[nodiscard]] inline std::string writeRule(const Result<void> &result) {
+    if (const Diagnostic *error = result.error()) return std::string(diagnosticRule(*error));
+    return {};
+}
 
 /**
  * @brief Validate one candidate value against the shared property contract.
  * @param property Property kind, flags, choices and numeric constraints.
  * @param value Candidate value. Floating-point values must be finite.
- * @return Accepted on success, otherwise a stable property-access property diagnostic.
+ * @return Successful Result on accept; Rejected Result with a `rule` detail otherwise.
  *
  * This is the single semantic validation entry point for property-access property
  * adapters. Host-specific adapters may translate its diagnostics, but must not
@@ -119,7 +150,8 @@ struct WriteResult {
  * Color requires an Array of 4 numeric components; Vec2/Vec3/Vec4 require 2/3/4.
  * Rejected composites use `property_access.property.arity` when the length is wrong.
  */
-EVENGINE_API_FOUNDATION WriteResult validatePropertyValue(const PropertyDescriptor &property, const Value &value);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> validatePropertyValue(const PropertyDescriptor &property,
+                                                                         const Value              &value);
 
 /** @brief Availability of a property in an immutable model snapshot. */
 enum class PropertyChangeState { Value, Mixed, Missing };
@@ -158,8 +190,12 @@ public:
     virtual const PropertySchema &schema() const = 0;
     /** @brief Read a property value, or nullopt when it is absent. */
     virtual std::optional<Value> read(const std::string &path) const = 0;
-    /** @brief Request a two-way binding write. */
-    virtual WriteResult write(const std::string &path, const Value &value) = 0;
+    /**
+     * @brief Request a two-way binding write.
+     * @return Successful Result when the write is accepted; Rejected/Failed with a
+     *         `rule` diagnostic detail when validation or the authority refuses it.
+     */
+    [[nodiscard]] virtual Result<void> write(const std::string &path, const Value &value) = 0;
     /** @brief Monotonic revision incremented after observable changes. */
     virtual std::uint64_t revision() const = 0;
     /** @brief Observe changes until the returned token is destroyed. */

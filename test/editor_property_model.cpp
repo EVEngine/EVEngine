@@ -96,7 +96,7 @@ TEST_CASE("editor.property_model_routes_runtime_writes_through_command_intent") 
     std::string changedPath;
     auto        subscription =
         model.subscribe([&](const eve::property_access::PropertyChange &change) { changedPath = change.path; });
-    CHECK(model.write("movement.speed", eve::Value(9.5)).accepted);
+    CHECK(model.write("movement.speed", eve::Value(9.5)).ok());
     CHECK(sinkCalled);
     CHECK_EQ(provider.speed, 9.5);
     CHECK_EQ(changedPath, std::string("movement.speed"));

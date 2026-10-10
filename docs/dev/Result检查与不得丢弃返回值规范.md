@@ -315,10 +315,9 @@ stage/create API。Procgen 不再提供 `buildArtifactChecked`、
 
 Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下类型的 API 自动受约束：
 
-- 未来公共 `Result<T>` / `Result<void>`
-- 迁移后的 `EditorResult<T>`
-- `presentation::WriteResult`
-- `statepatch::PatchResult` 或其公共 Result 替代
+- 公共 `Result<T>` / `Result<void>`（含 `IPropertyAccess::write` / `validatePropertyValue`）
+- 迁移后的 `EditorResult<T>`（`editing::Result` 别名）
+- `statepatch::PatchResult` 或其公共 Result 替代（待收敛）
 - ConditionResult、SettlementResult、TransferResult、CompileResult 等包含状态/诊断的结果
 
 现有 Editor API 全部属于这一类，包括但不限于：
@@ -336,7 +335,7 @@ Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下
 
 ### 必须标记：事务、异步、订阅和生命周期 token
 
-- `presentation::IPropertyModel::subscribe`
+- `property_access::IPropertyAccess::subscribe`
 - `rx::Observable::subscribe` 的全部重载
 - 后续所有 GameEvent、Capability、Asset reload listener 的 Subscription 返回值
 - `EditorTaskService::submit` 返回的 TaskId/TaskHandle
