@@ -289,9 +289,10 @@ void VmaAllocatorOwner::create(const vkb::Instance& instance, const vkb::Physica
         throw Exception("VMA could not resolve vkGetDeviceProcAddr");
     }
     createInfo.pVulkanFunctions = &vulkanFunctions;
-    // VMA requires the application's instance contract, not the physical
-    // device maximum. Use the same negotiated version used at instance creation.
-    createInfo.vulkanApiVersion = negotiatedInstanceApiVersion();
+    // VMA is compiled with VMA_VULKAN_VERSION=1.0 so Android never statically
+    // imports newer core entry points. Keep the allocator on that contract even
+    // when the application instance negotiates a newer API version.
+    createInfo.vulkanApiVersion = VK_API_VERSION_1_0;
     const VkResult result       = vmaCreateAllocator(&createInfo, &allocator_);
     if (result != VK_SUCCESS) throw Exception("vmaCreateAllocator failed: %d", int(result));
     device.attachVmaAllocator(allocator_);

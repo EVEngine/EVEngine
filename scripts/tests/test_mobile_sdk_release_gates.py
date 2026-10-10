@@ -102,6 +102,9 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
             "if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable)",
             self.vulkan_graphics,
         )
+        self.assertIn(
+            "createInfo.vulkanApiVersion = VK_API_VERSION_1_0", self.vulkan_graphics
+        )
 
 
 if __name__ == "__main__":
