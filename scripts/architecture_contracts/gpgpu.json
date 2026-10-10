@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "gpgpu-shader-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/gpgpu/ShaderSystem.h",
+      "owner": "gpgpu::ShaderSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Script-visible shader compute dispatch owns GPU binding admission and fallback boundaries.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/gpgpu/ShaderSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/tensor_gpu_contract.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "ShaderSystem"
+      ],
+      "entity_scope": "Compute shader and GPU buffer handles admitted by the gpgpu backend.",
+      "view": "Generation/backend-checked shader and buffer handles plus fixed binding slots.",
+      "read_set": "Shader bytecode, buffer bindings, dispatch dimensions and backend readiness.",
+      "write_set": "GPU dispatch submission state and explicit failure/fallback result to the caller.",
+      "structural_changes": "No ECS structural mutation; GPU resources are created/destroyed through backend ownership APIs.",
+      "events": "No gameplay events; dispatch completion/failure is observed through the compute API result.",
+      "services": "Borrowed Vulkan/gpgpu backend, shader registry and buffer registry; no callbacks retained.",
+      "phase": "GPGPU compute submission phase."
+    }
+  ]
+}

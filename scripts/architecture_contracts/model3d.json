@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "model3d-import-surface",
+      "rule": "module-interface",
+      "scope": "src/modules/model3d/**",
+      "owner": "model3d-maintainers",
+      "issue": "EVENGINE-MODULAR-ASSET-IMPORT",
+      "reason": "Changed model import face prepares foliage metadata and consumes the graphics-owned texture cache through the existing factory interface.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/model3d/Model3D.h",
+        "src/modules/model3d/ModelRenderer.cpp",
+        "docs/usr/modules/model3d.md"
+      ],
+      "tests": [
+        "test/model3d.cpp",
+        "test/resource_lifetime.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "graphics::IResourceFactory",
+          "required": true,
+          "fallback": "Import consumes ResultRef; failed upload follows the established missing-texture import path."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "model3d.Model3D",
+          "methods": [
+            "prepareFoliageDeformation"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Model preparation and texture upload on graphics owner thread.",
+      "trim": {
+        "absent_profile": "No new L1/L2/L3/L4 trim claim; graphics remains an existing mandatory dependency."
+      },
+      "cost_notes": [
+        {
+          "api": "prepareFoliageDeformation",
+          "shape": "two-step",
+          "why": "Model-load-time vertex preparation precedes rendering and per-frame wind updates."
+        }
+      ],
+      "hot_path": [
+        "src/modules/model3d/ModelRenderer.cpp"
+      ]
+    }
+  ]
+}

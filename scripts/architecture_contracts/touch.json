@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "touch-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/touch/**",
+      "owner": "touch::Touch",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Touch SDL sink caches the module owner; DPI uses SDL window ids.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/touch/sdl/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "TouchEventSink",
+          "absent_behavior": "finger events ignored when sink unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Touch",
+          "methods": [
+            "getTouchCount"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "profiles without touch drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "cost_notes": [],
+      "hot_path": [
+        "src/modules/touch/sdl/EventSink.cpp"
+      ]
+    }
+  ]
+}

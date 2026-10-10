@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "crowd-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/crowd/Crowd*",
+      "owner": "crowd-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "CPU crowd movement has an explicit simulation and scripting boundary; authoring satellites are separate modules.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/crowd/Crowd.h",
+        "src/modules/crowd/CrowdBindings.cpp",
+        "docs/dev/2026-09-22-rts-crowd-implementation.md",
+        "cmake/profile_checks.cmake"
+      ],
+      "tests": [
+        "test/crowd.cpp",
+        "test/crowd_contacts.cpp",
+        "test/crowd_script.cpp",
+        "test/crowd_interaction.cpp",
+        "test/crowd_spawn.cpp",
+        "test/crowd_avoidance.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Crowd",
+          "methods": [
+            "getName",
+            "resizeField",
+            "setBlocked",
+            "setCellCost",
+            "getCellCost",
+            "buildFlowField",
+            "addFlowGoal",
+            "clearFlowGoals",
+            "build",
+            "isFieldBuilt",
+            "isReachable",
+            "getFieldWidth",
+            "getFieldHeight",
+            "getCellSize",
+            "getFieldOriginX",
+            "getFieldOriginY",
+            "flowAtWorld",
+            "costAtWorld",
+            "flowAtCell",
+            "addAgent",
+            "addNamedAgent",
+            "hasNamedAgent",
+            "getNamedAgentIndex",
+            "getAgentStableId",
+            "removeNamedAgent",
+            "removeAgent",
+            "clearAgents",
+            "getAgentCount",
+            "setMaxAgents",
+            "getMaxAgents",
+            "setAgentAction",
+            "getAgentAction",
+            "setAgentTarget",
+            "clearAgentTarget",
+            "setAgentSpeed",
+            "setAgentAccel",
+            "setAgentTurnRate",
+            "setAgentRadius",
+            "setAgentData",
+            "getAgentData",
+            "setAgentAvoidancePriority",
+            "getAgentAvoidancePriority",
+            "setAgentInteraction",
+            "getAgentInteraction",
+            "setAgentPosition",
+            "getAgentState",
+            "setDefaultSpeed",
+            "setDefaultRadius",
+            "setDefaultTurnRate",
+            "setArriveRadius",
+            "setSeparationRadius",
+            "setPerceptionRadius",
+            "setSeparationWeight",
+            "setAlignmentWeight",
+            "setCohesionWeight",
+            "setWanderWeight",
+            "setGoalWeight",
+            "setResolveOverlaps",
+            "setClampToField",
+            "getPositions",
+            "getHeadings",
+            "step",
+            "advance",
+            "applySpawnBatch",
+            "configureAvoidance",
+            "getAvoidanceSettings"
+          ]
+        },
+        {
+          "script_class": "eve.CrowdAgentState",
+          "methods": []
+        },
+        {
+          "script_class": "eve.CrowdFlowVec",
+          "methods": []
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Simulation thread; no concurrent access or reentrant mutation.",
+      "trim": {
+        "absent_profile": "minimal",
+        "evidence": "minimal normally excludes crowd; minimal + EVENGINE_MODULE_crowd=ON builds eve_crowd_check, linking EVCrowd/EVCommon without graphics/window/RTS. Absence startup remains unverified."
+      },
+      "cost_notes": [
+        {
+          "api": "Crowd::advance",
+          "shape": "owned-result",
+          "why": "Bounded integration and neighbor/contact iterations; report owns residual observations."
+        },
+        {
+          "api": "Crowd::applySpawnBatch",
+          "shape": "batch-builder",
+          "why": "One world snapshot per caller-built batch and explicitly bounded placement/contact work before atomic publication."
+        }
+      ],
+      "hot_path": [
+        "src/modules/crowd/CrowdSimulation.cpp",
+        "src/modules/crowd/CrowdStep.cpp",
+        "src/modules/crowd/CrowdInternal.h",
+        "src/modules/crowd/CrowdAvoidance.cpp"
+      ]
+    }
+  ]
+}

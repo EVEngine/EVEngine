@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "map-tile-render-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/map/TileSystem.h",
+      "owner": "map::TileRenderSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Tile animation and render traversal are map-owned systems with graphics as a borrowed service.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/map/TileSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/map.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "TileRenderSystem"
+      ],
+      "entity_scope": "Visible TileLayer entities in the current ECS/map world.",
+      "view": "Generation-checked TileLayer view plus renderer-owned graphics batch context.",
+      "read_set": "Tile layer visibility, tile animation clocks, atlas metadata and map transforms.",
+      "write_set": "Tile animation time state and graphics batch submissions.",
+      "structural_changes": "No layer creation/destruction during traversal; callers own structural edits.",
+      "events": "No gameplay events; visible output is the rendered tile batch.",
+      "services": "Borrowed Graphics backend and injected dt for animation update.",
+      "phase": "Map update/render phase."
+    }
+  ]
+}
