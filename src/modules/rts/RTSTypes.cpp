@@ -353,10 +353,21 @@ OrderComponent::OrderComponent(const OrderComponent& other)
 OrderComponent& OrderComponent::operator=(const OrderComponent& other) {
     if (this == &other) return *this;
     impl_ = other.impl_ ? std::make_unique<Impl>(*other.impl_) : nullptr;
+    ++membershipEpoch_;
     return *this;
 }
-OrderComponent::OrderComponent(OrderComponent&& other) noexcept            = default;
-OrderComponent& OrderComponent::operator=(OrderComponent&& other) noexcept = default;
+OrderComponent::OrderComponent(OrderComponent&& other) noexcept
+    : membershipEpoch_(other.membershipEpoch_), impl_(std::move(other.impl_)) {
+    ++other.membershipEpoch_;
+}
+OrderComponent& OrderComponent::operator=(OrderComponent&& other) noexcept {
+    if (this != &other) {
+        impl_ = std::move(other.impl_);
+        ++membershipEpoch_;
+        ++other.membershipEpoch_;
+    }
+    return *this;
+}
 
 Result<std::string> OrderComponent::enqueue(const CommandSpec& command, int formationSlot) {
     auto valid = command.validate();
@@ -449,6 +460,7 @@ Result<void> OrderComponent::cancel(std::string_view orderId, std::string_view r
 bool OrderComponent::empty() const noexcept { return !impl_ || !impl_->queue.current(); }
 
 void OrderComponent::clear() noexcept {
+    ++membershipEpoch_;
     if (!impl_) return;
     impl_->queue.clear();
     impl_->extended.clear();
@@ -472,6 +484,7 @@ Result<void> OrderComponent::restore(std::string_view json) {
     if (!restored) return restored;
     impl_->queue = std::move(candidate);
     impl_->extended.clear();
+    ++membershipEpoch_;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -499,6 +512,7 @@ Result<void> OrderComponent::restoreState(const Snapshot& snapshotValue) {
     candidate->queue = std::move(queue);
     candidate->extended = snapshotValue.extended;
     impl_ = std::move(candidate);
+    ++membershipEpoch_;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 

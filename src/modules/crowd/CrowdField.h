@@ -32,7 +32,7 @@ public:
      * @param width 列数（>0）
      * @param height 行数（>0）
      * @param cellSize 每格世界尺寸（>0）
-     * @param originX 世界原点 X（格 (0,0) 中心）
+     * @param originX 世界原点 X（格 (0,0) 左下角）
      * @param originY 世界原点 Y
      */
     void resize(int width, int height, float cellSize, float originX, float originY);

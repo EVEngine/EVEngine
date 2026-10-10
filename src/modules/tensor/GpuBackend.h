@@ -48,7 +48,8 @@ private:
 /**
  * @brief GPU-accelerated reduction for large eager tensors.
  * op: 0 = sum, 1 = min, 2 = max. Returns false (caller should fall back to CPU)
- * when Vulkan/gpgpu isn't available.
+ * when Vulkan/gpgpu isn't available. This compatibility facade preserves the
+ * CPU alternative execution contract; new GPU APIs should return a named status enum or Result.
  */
 EVENGINE_API_DOMAINS bool gpuReduce(const float *data, int size, int op, float &outResult);
 
