@@ -177,6 +177,10 @@ Result<std::vector<Cell>> PathQuery::path(const BoardState& board, SubjectRef su
 
 Result<std::vector<Cell>> PathQuery::cellsInRange(const BoardState& board, Cell origin, int minimum, int maximum,
                                                   CellRangeMetric metric) {
+    if (board.topology() == BoardTopology::ExplicitGraph)
+        return Result<std::vector<Cell>>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported,
+            "coordinate range metrics do not apply to graph cell identities; use reachability", "topology"));
     if (minimum < 0 || maximum < minimum)
         return Result<std::vector<Cell>>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "tactics range bounds must be ordered and non-negative", "range"));

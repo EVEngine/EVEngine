@@ -129,6 +129,9 @@ std::string_view coverLevelName(CoverLevel level) noexcept {
 }
 
 Result<bool> GridLineOfSightPolicy::visible(const BoardState& board, Cell from, Cell to) const {
+    if (board.topology() == BoardTopology::ExplicitGraph)
+        return Result<bool>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                       "graph sight requires an explicit spatial policy", "topology"));
     if (from.layer != to.layer)
         return Result<bool>::failure(
             Diagnostic::error(DiagnosticCode::Unsupported, "line of sight does not cross layers", "from.layer"));
@@ -149,6 +152,9 @@ Result<bool> GridLineOfSightPolicy::visible(const BoardState& board, Cell from, 
 }
 
 Result<CoverLevel> GridCoverPolicy::cover(const BoardState& board, Cell attacker, Cell target) const {
+    if (board.topology() == BoardTopology::ExplicitGraph)
+        return Result<CoverLevel>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "graph cover requires an explicit spatial policy", "topology"));
     if (attacker.layer != target.layer)
         return Result<CoverLevel>::failure(
             Diagnostic::error(DiagnosticCode::Unsupported, "cover does not cross layers", "attacker.layer"));

@@ -1,0 +1,73 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/hex-planet",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 20260918,
+    "maxHostFrames": 180,
+    "mustReach": [
+      "campaign"
+    ]
+  },
+  "clock": {
+    "defaultStep": "frame"
+  },
+  "observations": [
+    {
+      "id": "campaign",
+      "kind": "script-root",
+      "path": "civilization",
+      "fields": [
+        "turn",
+        "selected",
+        "message",
+        "outcome"
+      ]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      {
+        "id": "end-turn",
+        "script": "civEndTurn()"
+      },
+      {
+        "id": "found-city",
+        "script": "civFound(1)"
+      },
+      {
+        "id": "build-granary",
+        "script": "civButtonProject(\"granary\")"
+      },
+      {
+        "id": "build-mine",
+        "script": "civButtonProject(\"mine\")"
+      },
+      {
+        "id": "build-library",
+        "script": "civButtonProject(\"library\")"
+      },
+      {
+        "id": "build-beacon",
+        "script": "civButtonProject(\"wonder\")"
+      },
+      {
+        "id": "focus-expedition",
+        "script": "civScout()"
+      }
+    ]
+  },
+  "capture": {
+    "requiredFor": [
+      "visual"
+    ],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.0001
+  }
+}

@@ -99,6 +99,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [building-3d](building-3d/README.md) | 3D 地面放置：射线求交、网格吸附、鬼影与放置会话 |
 | [climbing-playground](climbing-playground/README.md) | 攀爬与跑酷：真实物理探测、低/高跨越、翻越、空中抓边、阻挡与移动平台 |
 | [daynight](daynight/README.md) | 昼夜循环：太阳轨道、程序化天空盒、月光 / 星光 / 火焰 / 萤火虫 |
+| [uds-sky](uds-sky/README.md) | 独立天空配置与大气渲染对照场景（完整 UDS 效果开发中） |
 | [weather](weather/README.md) | 天气系统：雨 / 雪 / 雷暴 / 雾 / 风，实时滑块 |
 | [weather-daynight](weather-daynight/README.md) | 统一昼夜 + 天气：太阳轨道、程序化天空与雨雪雷暴 |
 | [snow](snow/README.md) | 可交互积雪：与高度图同尺寸的 `SnowField` 深度场驱动形变与着色 |
@@ -155,7 +156,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [topdown-procmap](topdown-procmap/README.md) | 俯视角程序化地图：噪声大陆 + 生物群系 splat + 河湖 + 植被点缀与平移浏览 |
 | [procgen-nature-quality](procgen-nature-quality/README.md) | 近景程序化树/灌木/崖石材质画廊：`tex.tree_atlas` / `tex.moss` / cliff 造型 |
 | [hex-terrain-3d](hex-terrain-3d/README.md) | 可交互 3D 六边形地图：高程台地与悬崖、水面、河流、道路、城墙与地物、战争迷雾、单位寻路、程序化地图生成、存档、相机操控与笔刷编辑 |
-| [hex-planet](hex-planet/README.md) | 球面 hex 地形：二十面体（Goldberg）六边形拓扑、径向高程与台地/悬崖、程序化大陆与海洋、轨道相机（`hexmap` 球面后端） |
+| [hex-planet](hex-planet/README.md) | 球面文明竞赛：探索、城市、粮食/金币/科研、建造与奇观胜利；economy + tactics 图拓扑 + production + ECS |
 | [terrain-preview](terrain-preview/README.md) | 直写交换链的 3D 地形预览：三种侵蚀 + 河湖水面 + 自动抓帧 |
 | [terrain-gallery](terrain-gallery/README.md) | 三个固定 seed 在相同生成参数、光照与材质下的并排对比 |
 | [mesh-modifier-lab](mesh-modifier-lab/README.md) | 13 种网格变形变体并排对照：类型化修饰图（bend / twist / FFD / 切面 / 样条 / 声波）、雕刻笔刷、粘液回弹、Mesh Fit、顶点编辑器 |

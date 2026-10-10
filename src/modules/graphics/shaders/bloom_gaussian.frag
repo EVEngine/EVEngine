@@ -12,13 +12,51 @@ vec3 linearSample(sampler2D image,vec2 uv) {
  vec3 b=texelFetch(image,clamp(lo+ivec2(1,0),ivec2(0),size-1),0).rgb;
  vec3 c=texelFetch(image,clamp(lo+ivec2(0,1),ivec2(0),size-1),0).rgb;
  vec3 d=texelFetch(image,clamp(lo+ivec2(1,1),ivec2(0),size-1),0).rgb;
+ if(u.data[2]>5.5) {
+  a*=float(all(greaterThanEqual(lo,ivec2(0)))&&all(lessThan(lo,size)));
+  b*=float(all(greaterThanEqual(lo+ivec2(1,0),ivec2(0)))&&all(lessThan(lo+ivec2(1,0),size)));
+  c*=float(all(greaterThanEqual(lo+ivec2(0,1),ivec2(0)))&&all(lessThan(lo+ivec2(0,1),size)));
+  d*=float(all(greaterThanEqual(lo+ivec2(1,1),ivec2(0)))&&all(lessThan(lo+ivec2(1,1),size)));
+ }
  return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);
 }
 vec3 sampleAt(vec2 uv,vec2 halfTexel) { return linearSample(MainTex,clamp(uv,.5*vec2(u.data[0],u.data[1]),vec2(1)-halfTexel)); }
 void main() {
  vec2 texel=vec2(u.data[0],u.data[1]);
  vec3 color=vec3(0);
- if(u.data[2]<0.5) {
+ if(u.data[2]>4.5) {
+  if(u.data[2]<5.5) {
+   color=linearSample(MainTex,fragUV);
+   if(u.data[10]<.5) {
+    color=max(vec3(0),(linearSample(MainTex,fragUV+texel*vec2(-1,-1))+
+      linearSample(MainTex,fragUV+texel*vec2(1,-1))+
+      linearSample(MainTex,fragUV+texel*vec2(-1,1))+
+      linearSample(MainTex,fragUV+texel*vec2(1,1)))*.25);
+   }
+   if(u.data[10]>.5) {
+    color=min(color,vec3(u.data[4]));
+    if(u.data[3]>0) {
+     float brightness=max(color.r,max(color.g,color.b)),knee=u.data[3]*.5;
+     float soft=clamp(brightness-u.data[3]+knee,0,2*knee);
+     soft=soft*soft/(4*knee+1e-4);
+     color=max(color*(max(brightness-u.data[3],soft)/max(brightness,1e-4)),vec3(0));
+    }
+   }
+  } else {
+   float radius=max(u.data[7],.0001), sum=0;
+   int count=int(ceil(radius));
+   vec2 axis=u.data[2]<6.5?vec2(texel.x,0):vec2(0,texel.y);
+   for(int j=-count;j<=count;++j) {
+    float dx=float(j)/radius; float weight=exp(-16.7*dx*dx);
+    color+=linearSample(MainTex,fragUV+axis*float(j))*weight;sum+=weight;
+   }
+   color/=sum;
+   if(u.data[2]>6.5) {
+    color*=u.data[8];
+    if(u.data[9]>0.5) color+=linearSample(LowTex,fragUV);
+   }
+  }
+ } else if(u.data[2]<0.5) {
   color=min(sampleAt(fragUV,texel*.5),vec3(u.data[4]));
   float brightness=max(color.r,max(color.g,color.b));
   float knee=u.data[3]*.5;
