@@ -27,6 +27,34 @@
       "stale": "World and body generation-qualified handles are both resolved before any access or destruction."
     },
     {
+      "id": "procgen-lsystem-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/procgen/algorithms/LSystem.h",
+      "owner": "procgen::LSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "The L-system recipe is a deterministic generation system with explicit seed/grammar inputs.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/algorithms/LSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/procgen.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "LSystem"
+      ],
+      "entity_scope": "Owning grammar/axiom state inside one LSystem instance.",
+      "view": "Local grammar expansion view; no ECS entities are traversed.",
+      "read_set": "Axiom, production rules, iteration count, seed and turtle interpretation parameters.",
+      "write_set": "Generated string/mesh candidates owned by the caller or recipe output.",
+      "structural_changes": "No ECS structural mutation; generated artifacts publish only through procgen artifact admission.",
+      "events": "No runtime events; diagnostics are returned through recipe error channels.",
+      "services": "Injected Params and recipe registry; no retained callbacks.",
+      "phase": "Procgen build phase."
+    },
+    {
       "id": "procgen-editor-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/procgen/editor/**",
@@ -76,10 +104,12 @@
           ]
         }
       ],
+      "protocol": [],
       "trim": {
         "absent_profile": "runtime profiles exclude the editor leaf; no procgen editing commands or automation target factory are registered"
       },
       "thread_affinity": "owner/editor composition thread; construction, command registration and teardown must not race command execution",
+      "cost_notes": [],
       "hot_path": []
     },
     {

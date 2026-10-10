@@ -52,6 +52,34 @@
       "phase": "simulation step before rendering; froxel inject/integrate and ContinuousArt run after physics transport"
     },
     {
+      "id": "graphics-render-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/graphics/RenderSystem.h",
+      "owner": "graphics::RenderSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Renderable ECS traversal is the graphics presentation system and must state read-only scene authority.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/RenderSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/graphics_headless.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "RenderSystem"
+      ],
+      "entity_scope": "Current ECS Renderable2D/Renderable3D views and the Graphics backend.",
+      "view": "Generation-checked ECS renderable views collected for one render pass.",
+      "read_set": "Renderable components, transform projections, material/texture handles and graphics frame state.",
+      "write_set": "Graphics command buffers/batches only; gameplay ECS state is not mutated by render traversal.",
+      "structural_changes": "No ECS structural mutation during render traversal.",
+      "events": "Render submission and presentation side effects stay inside Graphics; no gameplay events emitted.",
+      "services": "Borrowed Graphics backend and resource factory for the duration of the call.",
+      "phase": "Render phase after simulation state is stable."
+    },
+    {
       "id": "graphics-import-surface",
       "rule": "module-interface",
       "scope": "src/modules/graphics/**",

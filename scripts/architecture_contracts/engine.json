@@ -33,7 +33,9 @@
         "absent_profile": "devtools soft-restart remains available; IStateProvider listeners may be empty when modules are trimmed"
       },
       "thread_affinity": "main / MCP poll thread that owns the VM; forEach is not cross-thread",
-      "hot_path": []
+      "hot_path": [],
+      "protocol": [],
+      "cost_notes": []
     }
   ]
 }

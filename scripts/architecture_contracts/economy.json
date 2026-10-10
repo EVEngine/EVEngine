@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "economy-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/economy/EconomySystem.h",
+      "owner": "economy::EconomySystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Economy transfer hooks form a global resource mutation system and declare synchronous event ownership.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/economy/EconomySystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/economy.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "EconomySystem"
+      ],
+      "entity_scope": "Registered economy accounts and transfer hooks owned by the economy module.",
+      "view": "Process-local registry of accounts and hooks; no raw account pointers are retained by callers.",
+      "read_set": "Account balances, transfer requests and registered hook metadata.",
+      "write_set": "Account balances and emitted transfer event records after validation.",
+      "structural_changes": "No entity creation/destruction; registration replaces process-local hook tables synchronously.",
+      "events": "Transfer events are delivered after balance mutation through registered synchronous hooks.",
+      "services": "Injected hook functions and caller-supplied transfer requests; hooks are not invoked while mutating registry structure.",
+      "phase": "Economy command/settlement phase."
+    }
+  ]
+}

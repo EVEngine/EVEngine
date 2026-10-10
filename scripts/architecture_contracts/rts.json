@@ -43,11 +43,30 @@
         "src/modules/rts/RTSMatch.h",
         "src/modules/rts/RTSMatch.cpp",
         "src/modules/rts/RTSTech.h",
-        "src/modules/rts/RTSTech.cpp"
+        "src/modules/rts/RTSTech.cpp",
+        "src/modules/rts/RTSCrowdMotion.cpp",
+        "src/modules/rts/RTSMotion.cpp",
+        "src/modules/rts/RTSTraffic.cpp",
+        "src/modules/rts/RTSBuildingProduction.cpp",
+        "src/modules/rts/RTSProductionSpawn.cpp",
+        "src/modules/rts/RTSFormation.cpp",
+        "src/modules/rts/RTSFormationClearance.cpp",
+        "src/modules/rts/RTSFormationBindings.cpp",
+        "src/modules/rts/RTSScriptInternal.h",
+        "src/modules/rts/RTSSystemMovementInternal.h",
+        "src/modules/rts/RTSMovementGroups.cpp",
+        "src/modules/rts/RTSCommands.cpp",
+        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSSnapshotInternal.h"
       ],
       "tests": [
         "test/rts_composition.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/rts_crowd.cpp",
+        "test/rts_production.cpp",
+        "test/rts_crowd_production.cpp",
+        "test/rts_formation.cpp",
+        "test/rts_groups.cpp"
       ],
       "systems": [
         "CommandFanOutSystem",
@@ -56,16 +75,120 @@
         "BuildingProductionSystem",
         "EffectSystem",
         "MatchSystem",
-        "TechnologySystem"
+        "TechnologySystem",
+        "CrowdMotionSystem"
       ],
       "entity_scope": "live Unit, Building, ResourceNode, Faction and Match ECS roots in the current world",
       "view": "typed generation-checked RTS views; each view closes before deferred creation, destruction or relationship repair",
-      "read_set": "identity, faction links, motion, orders, production, effects, research definitions, match rules and economy queries as applicable",
-      "write_set": "motion, orders, lifecycle projections, production queues, faction research state, match participant/state/event components and affected surrender roots",
+      "read_set": "identity, faction links, motion, orders, production, effects, research definitions, match rules and economy queries as applicable; movement-group pacing reads Navigation trafficWaiting, Supply convoyWaiting and Morale/Tactics retreat-cover state",
+      "write_set": "motion, orders, lifecycle projections, production queues, faction research state, match participant/state/event components and affected surrender roots; RTS-owned movement-group membership and rebuilt Navigation formation speed projection",
       "structural_changes": "unit production and surrender collect stable handles during traversal, then create or destroy only after the relevant view closes",
       "events": "ordered command, production, effect, technology unlock, surrender and victory lifecycle facts are emitted after authoritative mutation",
       "services": "injected SimulationStep, definition registry, action executor, resource query and capability services; callbacks are synchronous and not retained",
       "phase": "owner-thread deterministic simulation after command ingestion and before presentation; match evaluation follows authoritative economy settlement"
+    },
+    {
+      "id": "rts-command-log-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rts/RTSReplay.*",
+      "owner": "rts::RTSCommandLog",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Formation orientation and layout are canonical replay inputs and must survive round trips.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSReplay.h",
+        "src/modules/rts/RTSReplay.cpp",
+        "src/modules/rts/RTSFormation.cpp",
+        "docs/usr/modules/crowd.md"
+      ],
+      "tests": [
+        "test/rts_formation.cpp",
+        "test/rts_restore.cpp",
+        "test/rts_groups.cpp"
+      ],
+      "schema": "EVERTS_COMMANDS positional text schema with explicit version header.",
+      "version": "Versions 1 through 5; v4 stores orientation/new layouts, v5 adds MovementGroup operation and groupLeadDistance.",
+      "migration": "Import v1-v3 with zero rotation and legacy enum bounds; v1-v4 cannot encode MovementGroup. Export legacy inputs at their original version; group commands select v5.",
+      "unknown_fields": "Reject unsupported header versions, malformed fields and unknown enums; positional trailing data must parse as a complete valid record.",
+      "restore_atomicity": "Parse records into a local candidate vector and validate through the canonical queue before replacing or appending target history."
+    },
+    {
+      "id": "rts-state-snapshot-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rts/RTSSnapshot.*",
+      "owner": "rts::RTS",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Movement-group members bind stable unit identities to exact order lifetimes and must survive restore.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSSnapshot.h",
+        "src/modules/rts/RTSSnapshot.cpp",
+        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSMovementGroups.cpp",
+        "docs/usr/modules/crowd.md"
+      ],
+      "tests": [
+        "test/rts_groups.cpp",
+        "test/rts_restore.cpp"
+      ],
+      "schema": "RTSStateSnapshot typed in-memory schema; canonicalStateJson is its synchronization projection.",
+      "version": "Version 2 adds stable movement-group membership and leadDistance.",
+      "migration": "Version 1 accepts no movement groups; both v1 and v2 rebuild generation-checked member handles. Derived pacing factors reset and rebuild on the next step.",
+      "unknown_fields": "Typed snapshots cannot represent unknown fields; unknown versions and invalid, duplicate or order-mismatched members are rejected.",
+      "restore_atomicity": "Stage member references and order validation before root mutation, then publish groups with the validated restored roots."
+    },
+    {
+      "id": "rts-movement-group-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/rts/RTSMovementGroups.cpp",
+      "owner": "rts-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "The movement-group boundary owns order-bound membership and publishes derived pacing and moving slots into existing motion backends. Radius-clear grid segments permit direct formation travel; constrained routes retain per-unit steering and release pacing until clearance recovers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTS.h",
+        "src/modules/rts/RTSMovementGroups.cpp",
+        "src/modules/rts/RTSFormationBindings.cpp",
+        "src/modules/rts/RTSReplay.cpp",
+        "src/modules/rts/RTSRestore.cpp",
+        "docs/dev/2026-09-22-rts-crowd-implementation.md"
+      ],
+      "tests": [
+        "test/rts_groups.cpp",
+        "test/rts_restore.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.RTS",
+          "methods": [
+            "moveGroupUnits",
+            "queueScriptGroupMove"
+          ]
+        }
+      ],
+      "protocol": [
+        "EVERTS_COMMANDS v5 MovementGroup input; RTSStateSnapshot v2 stable group membership"
+      ],
+      "thread_affinity": "RTS simulation owner thread; non-reentrant admission/restore/step, no callbacks and no retained raw pointers.",
+      "trim": {
+        "absent_profile": "minimal",
+        "evidence": "Minimal excludes RTS by default. Custom minimal+rts+crowd composition tests exercise both injected Crowd and native motion; this is runtime provider-presence evidence, not independent RTS L2 link trimming."
+      },
+      "cost_notes": [
+        {
+          "api": "RTS::submitMovementGroup",
+          "shape": "batch-builder",
+          "why": "Caller constructs one owning member batch; existing quadratic fan-out is amortized per group command."
+        }
+      ],
+      "hot_path": [
+        "src/modules/rts/RTSMovementGroups.cpp",
+        "src/modules/rts/RTSFormationClearance.cpp"
+      ]
     }
   ]
 }

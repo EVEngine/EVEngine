@@ -26,10 +26,12 @@
       "emits": [],
       "observes": [],
       "binds": [],
+      "protocol": [],
       "trim": {
         "absent_profile": "profiles without audio drop the corresponding sink/listeners"
       },
       "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "cost_notes": [],
       "hot_path": [
         "src/modules/audio/EventSink.cpp"
       ]

@@ -177,7 +177,9 @@
         "absent_profile": "policy envelope only; concrete modules declare their trim profile"
       },
       "thread_affinity": "policy envelope; concrete modules declare affinity",
-      "hot_path": []
+      "hot_path": [],
+      "protocol": [],
+      "cost_notes": []
     },
     {
       "id": "quality-debt-policy",

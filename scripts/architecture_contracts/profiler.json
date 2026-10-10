@@ -49,7 +49,9 @@
       "thread_affinity": "main / render thread that owns beginFrame; ProviderRef is not cross-thread",
       "hot_path": [
         "src/modules/profiler/Profiler.cpp"
-      ]
+      ],
+      "protocol": [],
+      "cost_notes": []
     }
   ]
 }

@@ -47,7 +47,9 @@
         "absent_profile": "profiles without statepatch leave IStateQuery/IStateMutation listener sets empty"
       },
       "thread_affinity": "main thread; capability listener register/remove is not thread-safe",
-      "hot_path": []
+      "hot_path": [],
+      "protocol": [],
+      "cost_notes": []
     }
   ]
 }
