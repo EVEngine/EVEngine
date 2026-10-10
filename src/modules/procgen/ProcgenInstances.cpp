@@ -25,6 +25,8 @@
 #include <optional>
 #include <unordered_map>
 #include <utility>
+#include <string>
+#include <unordered_set>
 #include <vector>
 #include "procgen/RuntimeGeneration.h"
 

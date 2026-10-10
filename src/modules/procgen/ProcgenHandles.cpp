@@ -1,6 +1,7 @@
 #include "procgen/Procgen.h"
 #include "procgen/ProcgenLive.h"
 #include "procgen/ProcgenScriptSupport.h"
+#include "procgen/ProcgenOwnership.h"
 
 #include "common/Capability.h"
 #include "common/ProcgenSceneSink.h"

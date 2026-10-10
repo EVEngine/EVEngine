@@ -1,6 +1,7 @@
 #include "procgen/Procgen.h"
 #include "procgen/ProcgenLive.h"
 #include "procgen/ProcgenScriptSupport.h"
+#include "procgen/ProcgenOwnership.h"
 
 #include "common/Capability.h"
 #include "common/ProcgenSceneSink.h"
@@ -73,19 +74,6 @@
 
 
 namespace eve::procgen {
-
-struct Procgen::OwnershipState {
-    eve::script::RuntimeObjectRegistry<OutputSpec, ProcgenOutputHandleTag>             outputs;
-    eve::script::RuntimeObjectRegistry<PointSet, ProcgenPointSetHandleTag>             points;
-    eve::script::RuntimeObjectRegistry<TerrainSampler, ProcgenTerrainSamplerHandleTag> samplers;
-    eve::script::RuntimeObjectRegistry<Heightmap, ProcgenHeightmapHandleTag>           heightmaps;
-    eve::script::RuntimeObjectRegistry<CloudField, ProcgenCloudFieldHandleTag>         clouds;
-    eve::script::RuntimeObjectRegistry<CloudShadow, ProcgenCloudShadowHandleTag>       shadows;
-    eve::script::RuntimeObjectRegistry<PbrTextureSet, ProcgenPbrMaterialHandleTag>     pbr;
-    eve::script::RuntimeObjectRegistry<MeshBuild, ProcgenMeshBuildHandleTag>           meshes;
-    eve::script::RuntimeObjectRegistry<image::ImageData, ProcgenImageHandleTag>        images;
-    eve::script::RuntimeObjectRegistry<image::ImageData, ProcgenNormalImageHandleTag>  normalImages;
-};
 
 Module_IMPL(Procgen, new Procgen());
 

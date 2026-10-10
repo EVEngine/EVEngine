@@ -471,7 +471,7 @@ void Procgen::expose(ssq::Class& cls) {
                     return eve::Result<void>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
                         "pbr", {}, "procgen.squirrel"));
-                return module->ownership_->pbr.erase(ref);
+                return module->releasePbrMaterial(ref);
             });
                 });
     cls.addFunc("buildMesh",
@@ -492,7 +492,7 @@ void Procgen::expose(ssq::Class& cls) {
                     return eve::Result<void>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
                         "mesh", {}, "procgen.squirrel"));
-                return module->ownership_->meshes.erase(ref);
+                return module->releaseMeshBuild(ref);
             });
                 });
     cls.addFunc("generateHeightmap", [vm = cls.getHandle()](Procgen*, ScriptProcgenParams* params) -> ssq::Table {
@@ -512,7 +512,7 @@ void Procgen::expose(ssq::Class& cls) {
                     return eve::Result<void>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
                         "heightmap", {}, "procgen.squirrel"));
-                return module->ownership_->heightmaps.erase(ref);
+                return module->releaseHeightmap(ref);
             });
     });
     cls.addFunc("newRuntimeGeneration", [vm = cls.getHandle()](Procgen* value, uint32_t worldSeed) -> ssq::Table {
@@ -525,12 +525,12 @@ void Procgen::expose(ssq::Class& cls) {
         return makeOwnedNativeProxy<RuntimeGeneration>(
             vm, value->newRuntimeGenerationHandle(worldSeed),
             [value](ProcgenRuntimeGenerationHandleRef ref) { return value->resolveRuntimeGeneration(ref); },
-            [module](ProcgenRuntimeGenerationHandleRef ref) {
-                if (liveProcgen() != module)
+            [value](ProcgenRuntimeGenerationHandleRef ref) {
+                if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
                         "runtimeGeneration", {}, "procgen.squirrel"));
-                return module->release(ref);
+                return value->release(ref);
             });
     });
     cls.addFunc("newPointGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
@@ -543,12 +543,12 @@ void Procgen::expose(ssq::Class& cls) {
         return makeOwnedNativeProxy<PointGraph>(
             vm, value->newPointGraphHandle(),
             [value](ProcgenPointGraphHandleRef ref) { return value->resolvePointGraph(ref); },
-            [module](ProcgenPointGraphHandleRef ref) {
-                if (liveProcgen() != module)
+            [value](ProcgenPointGraphHandleRef ref) {
+                if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                          "Procgen module is no longer loaded",
                                                                          "pointGraph", {}, "procgen.squirrel"));
-                return module->release(ref);
+                return value->release(ref);
             });
     });
     cls.addFunc("newMeshModifierGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
@@ -561,12 +561,12 @@ void Procgen::expose(ssq::Class& cls) {
         return makeOwnedNativeProxy<MeshModifierGraph>(
             vm, value->newMeshModifierGraphHandle(),
             [value](ProcgenMeshModifierGraphHandleRef ref) { return value->resolveMeshModifierGraph(ref); },
-            [module](ProcgenMeshModifierGraphHandleRef ref) {
-                if (liveProcgen() != module)
+            [value](ProcgenMeshModifierGraphHandleRef ref) {
+                if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
                         "meshModifierGraph", {}, "procgen.squirrel"));
-                return module->release(ref);
+                return value->release(ref);
             });
     });
     cls.addFunc("newSplinePath", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
@@ -579,12 +579,12 @@ void Procgen::expose(ssq::Class& cls) {
         return makeOwnedNativeProxy<SplinePath>(
             vm, value->newSplinePathHandle(),
             [value](ProcgenSplinePathHandleRef ref) { return value->resolveSplinePath(ref); },
-            [module](ProcgenSplinePathHandleRef ref) {
-                if (liveProcgen() != module)
+            [value](ProcgenSplinePathHandleRef ref) {
+                if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                          "Procgen module is no longer loaded",
                                                                          "splinePath", {}, "procgen.squirrel"));
-                return module->release(ref);
+                return value->release(ref);
             });
     });
     cls.addFunc("newMeshDeformationSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
@@ -599,12 +599,12 @@ void Procgen::expose(ssq::Class& cls) {
             [value](ProcgenMeshDeformationSessionHandleRef ref) {
                 return value->resolveMeshDeformationSession(ref);
             },
-            [module](ProcgenMeshDeformationSessionHandleRef ref) {
-                if (liveProcgen() != module)
+            [value](ProcgenMeshDeformationSessionHandleRef ref) {
+                if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
                         "meshDeformation", {}, "procgen.squirrel"));
-                return module->release(ref);
+                return value->release(ref);
             });
     });
     cls.addFunc("newDynamicMeshUvPaintSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
@@ -619,12 +619,12 @@ void Procgen::expose(ssq::Class& cls) {
             [value](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
                 return value->resolveDynamicMeshUvPaintSession(ref);
             },
-            [module](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
-                if (liveProcgen() != module)
+            [value](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
+                if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
                         "dynamicUvPaint", {}, "procgen.squirrel"));
-                return module->release(ref);
+                return value->release(ref);
             });
     });
     cls.addFunc("newGridGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
@@ -637,12 +637,12 @@ void Procgen::expose(ssq::Class& cls) {
         return makeOwnedNativeProxy<GridGraph>(
             vm, value->newGridGraphHandle(),
             [value](ProcgenGridGraphHandleRef ref) { return value->resolveGridGraph(ref); },
-            [module](ProcgenGridGraphHandleRef ref) {
-                if (liveProcgen() != module)
+            [value](ProcgenGridGraphHandleRef ref) {
+                if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                          "Procgen module is no longer loaded",
                                                                          "gridGraph", {}, "procgen.squirrel"));
-                return module->release(ref);
+                return value->release(ref);
             });
     });
     cls.addFunc("newMeshGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
@@ -655,12 +655,12 @@ void Procgen::expose(ssq::Class& cls) {
         return makeOwnedNativeProxy<MeshGraph>(
             vm, value->newMeshGraphHandle(),
             [value](ProcgenMeshGraphHandleRef ref) { return value->resolveMeshGraph(ref); },
-            [module](ProcgenMeshGraphHandleRef ref) {
-                if (liveProcgen() != module)
+            [value](ProcgenMeshGraphHandleRef ref) {
+                if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                          "Procgen module is no longer loaded",
                                                                          "meshGraph", {}, "procgen.squirrel"));
-                return module->release(ref);
+                return value->release(ref);
             });
     });
     cls.addFunc("newBiomeRules", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
@@ -673,12 +673,12 @@ void Procgen::expose(ssq::Class& cls) {
         return makeOwnedNativeProxy<BiomeRules>(
             vm, value->newBiomeRulesHandle(),
             [value](ProcgenBiomeRulesHandleRef ref) { return value->resolveBiomeRules(ref); },
-            [module](ProcgenBiomeRulesHandleRef ref) {
-                if (liveProcgen() != module)
+            [value](ProcgenBiomeRulesHandleRef ref) {
+                if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                          "Procgen module is no longer loaded",
                                                                          "biomeRules", {}, "procgen.squirrel"));
-                return module->release(ref);
+                return value->release(ref);
             });
     });
     cls.addFunc("boxVolume",
