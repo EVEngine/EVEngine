@@ -13,6 +13,7 @@ SDK_INSTALL = ROOT / "cmake" / "install_sdk.cmake"
 THIRD_PARTY_BUILD = ROOT / "cmake" / "third_party_build.cmake"
 ANDROID_GRADLE = ROOT / "platform" / "android" / "apk" / "app" / "build.gradle.kts"
 VULKAN_GRAPHICS = ROOT / "src" / "modules" / "graphics" / "vulkan" / "Graphics.cpp"
+SCRIPT_RUNTIME = ROOT / "src" / "engine" / "common" / "Runtime.cpp"
 
 
 def job_block(workflow: str, job: str, next_job: str | None = None) -> str:
@@ -34,6 +35,7 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         cls.third_party_build = THIRD_PARTY_BUILD.read_text(encoding="utf-8")
         cls.android_gradle = ANDROID_GRADLE.read_text(encoding="utf-8")
         cls.vulkan_graphics = VULKAN_GRAPHICS.read_text(encoding="utf-8")
+        cls.script_runtime = SCRIPT_RUNTIME.read_text(encoding="utf-8")
 
     def test_android_emulator_is_a_hard_gate_for_every_consumer_host(self) -> None:
         block = job_block(self.workflow, "run-android", "ios-sim")
@@ -104,6 +106,13 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         )
         self.assertIn(
             "createInfo.vulkanApiVersion = VK_API_VERSION_1_0", self.vulkan_graphics
+        )
+
+    def test_android_script_output_is_observable_in_logcat(self) -> None:
+        self.assertIn('__android_log_vprint(ANDROID_LOG_INFO, "EVEngine"', self.script_runtime)
+        self.assertIn(
+            "vm->setPrintFunc(&androidScriptPrint, &androidScriptError)",
+            self.script_runtime,
         )
 
 
