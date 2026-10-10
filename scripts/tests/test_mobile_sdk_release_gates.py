@@ -10,6 +10,7 @@ SDK_TEST = ROOT / ".github" / "scripts" / "test-sdk.sh"
 APK_RUNNER = ROOT / ".github" / "scripts" / "run-consumer-apks.sh"
 CONSUMER_TEST = ROOT / ".github" / "scripts" / "consumer-test.sh"
 SDK_INSTALL = ROOT / "cmake" / "install_sdk.cmake"
+THIRD_PARTY_BUILD = ROOT / "cmake" / "third_party_build.cmake"
 
 
 def job_block(workflow: str, job: str, next_job: str | None = None) -> str:
@@ -28,6 +29,7 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         cls.apk_runner = APK_RUNNER.read_text(encoding="utf-8")
         cls.consumer_test = CONSUMER_TEST.read_text(encoding="utf-8")
         cls.sdk_install = SDK_INSTALL.read_text(encoding="utf-8")
+        cls.third_party_build = THIRD_PARTY_BUILD.read_text(encoding="utf-8")
 
     def test_android_emulator_is_a_hard_gate_for_every_consumer_host(self) -> None:
         block = job_block(self.workflow, "run-android", "ios-sim")
@@ -74,6 +76,10 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn('missing lib/$lib', self.sdk_test)
         self.assertIn('bash gradlew :app:assembleDebug', self.sdk_test)
         self.assertIn('lib/arm64-v8a/libSDL2.so', self.consumer_test)
+
+    def test_x86_android_build_disables_arm_neon_probe(self) -> None:
+        self.assertIn('ANDROID_ABI MATCHES "^x86(_64)?$"', self.third_party_build)
+        self.assertIn("-DALSOFT_CPUEXT_NEON=OFF", self.third_party_build)
 
 
 if __name__ == "__main__":

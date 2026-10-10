@@ -222,6 +222,12 @@ function(check_third_party_project name repo)
             -DANDROID_NDK=${ANDROID_NDK}
             -DCMAKE_SYSTEM_NAME=Android
         )
+        # NDK 27 exposes arm_neon.h even for x86 targets, which makes this
+        # OpenAL Soft version mis-detect NEON and compile ARM intrinsics with
+        # an x86 compiler. Preserve NEON for the release arm64 build.
+        if(ANDROID_ABI MATCHES "^x86(_64)?$")
+            list(APPEND _eve_tp_cmake_args -DALSOFT_CPUEXT_NEON=OFF)
+        endif()
         if(CMAKE_MAKE_PROGRAM)
             list(APPEND _eve_tp_cmake_args -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM})
         endif()
