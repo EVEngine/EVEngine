@@ -1,6 +1,7 @@
 #include <cmath>
 #include <memory>
 #include "Fixtures.h"
+#include "common/config.h"
 #include "graphics/Bloom.h"
 #include "graphics/Canvas.h"
 #include "graphics/shaders/PostProcessWgsl.h"

@@ -4,6 +4,7 @@
 #include "Fixtures.h"
 #include "ShaderResourceSharingSpv.h"
 #include "SkyTextureGpuSpv.h"
+#include "common/config.h"
 #include "graphics/Canvas.h"
 #include "graphics/Mesh.h"
 #include "graphics/Shader.h"

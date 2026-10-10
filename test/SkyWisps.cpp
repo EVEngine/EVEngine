@@ -6,6 +6,7 @@
 #include <memory>
 #include "Fixtures.h"
 #include "SkyPreparationSupport.h"
+#include "common/config.h"
 #include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/RenderSystem3D.h"

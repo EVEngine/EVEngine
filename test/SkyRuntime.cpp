@@ -6,6 +6,7 @@
 #include "Fixtures.h"
 #include "SkyPreparationSupport.h"
 #include "common/Value.h"
+#include "common/config.h"
 #include "daynight/sky/SkyProfile.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Canvas.h"

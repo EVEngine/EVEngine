@@ -3,6 +3,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "Fixtures.h"
 #include "common/Module.h"
+#include "common/config.h"
 #include "zeroerr/unittest.h"
 
 TEST_CASE("daynight.sky script prepares an owned profile runtime and checks time commands") {

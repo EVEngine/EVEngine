@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 #include "Fixtures.h"
+#include "common/config.h"
 #include "graphics/Canvas.h"
 #include "graphics/DisplayOutputEncoding.h"
 #include "graphics/RenderSystem3D.h"

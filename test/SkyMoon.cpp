@@ -1,6 +1,7 @@
 #include <cmath>
 #include <memory>
 #include "Fixtures.h"
+#include "common/config.h"
 #include "graphics/Canvas.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
