@@ -52,7 +52,7 @@ public:
     /** @brief Reads . */
     std::optional<eve::Value>                  read(const std::string &path) const override;
     /** @brief Writes . */
-    [[nodiscard]] property_access::WriteResult write(const std::string &path, const eve::Value &value) override;
+    [[nodiscard]] eve::Result<void> write(const std::string &path, const eve::Value &value) override;
     /** @brief Revision. */
     std::uint64_t revision() const override { return revision_; }
     /** @brief Subscribe. */

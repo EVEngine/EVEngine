@@ -73,9 +73,9 @@ TEST_CASE("property.validation_presentation_and_editor_share_type_enum_range_and
 
     const auto sharedType = eve::property_access::validatePropertyValue(presentationNumber, eve::Value("fast"));
     const auto editorType = validatePropertyValue(editorNumber, EditorValue("fast"));
-    CHECK(!sharedType.accepted);
+    CHECK(!sharedType.ok());
     CHECK(!editorType.ok());
-    CHECK_EQ(sharedType.code, std::string("property_access.property.type"));
+    CHECK_EQ(eve::property_access::writeRule(sharedType), std::string("property_access.property.type"));
     REQUIRE_EQ(editorType.diagnostics().size(), static_cast<std::size_t>(1));
     CHECK_EQ(eve::editing::diagnosticRule(editorType.diagnostics().front()).value(),
              std::string("editor.property.type-mismatch"));
@@ -83,18 +83,18 @@ TEST_CASE("property.validation_presentation_and_editor_share_type_enum_range_and
     const double nonFinite    = std::numeric_limits<double>::quiet_NaN();
     const auto   sharedFinite = eve::property_access::validatePropertyValue(presentationNumber, eve::Value(nonFinite));
     const auto   editorFinite = validatePropertyValue(editorNumber, EditorValue(nonFinite));
-    CHECK(!sharedFinite.accepted);
+    CHECK(!sharedFinite.ok());
     CHECK(!editorFinite.ok());
-    CHECK_EQ(sharedFinite.code, std::string("property_access.property.finite"));
+    CHECK_EQ(eve::property_access::writeRule(sharedFinite), std::string("property_access.property.finite"));
     REQUIRE_EQ(editorFinite.diagnostics().size(), static_cast<std::size_t>(1));
     CHECK_EQ(eve::editing::diagnosticRule(editorFinite.diagnostics().front()).value(),
              std::string("editor.property.finite"));
 
     const auto sharedRange = eve::property_access::validatePropertyValue(presentationNumber, eve::Value(11.0));
     const auto editorRange = validatePropertyValue(editorNumber, EditorValue(11.0));
-    CHECK(!sharedRange.accepted);
+    CHECK(!sharedRange.ok());
     CHECK(!editorRange.ok());
-    CHECK_EQ(sharedRange.code, std::string("property_access.property.maximum"));
+    CHECK_EQ(eve::property_access::writeRule(sharedRange), std::string("property_access.property.maximum"));
     REQUIRE_EQ(editorRange.diagnostics().size(), static_cast<std::size_t>(1));
     CHECK_EQ(eve::editing::diagnosticRule(editorRange.diagnostics().front()).value(),
              std::string("editor.property.above-maximum"));
@@ -103,9 +103,9 @@ TEST_CASE("property.validation_presentation_and_editor_share_type_enum_range_and
     const eve::property_access::PropertyDescriptor presentationEnum = toPresentationDescriptor(editorEnum);
     const auto sharedEnum       = eve::property_access::validatePropertyValue(presentationEnum, eve::Value("sprint"));
     const auto editorEnumResult = validatePropertyValue(editorEnum, EditorValue("sprint"));
-    CHECK(!sharedEnum.accepted);
+    CHECK(!sharedEnum.ok());
     CHECK(!editorEnumResult.ok());
-    CHECK_EQ(sharedEnum.code, std::string("property_access.property.choice"));
+    CHECK_EQ(eve::property_access::writeRule(sharedEnum), std::string("property_access.property.choice"));
     REQUIRE_EQ(editorEnumResult.diagnostics().size(), static_cast<std::size_t>(1));
     CHECK_EQ(eve::editing::diagnosticRule(editorEnumResult.diagnostics().front()).value(),
              std::string("editor.property.invalid-enum"));
@@ -121,12 +121,12 @@ TEST_CASE("property.validation_editor_model_rejects_before_command_sink") {
     });
 
     const auto rejected = model.write("speed", eve::Value(11.0));
-    CHECK(!rejected.accepted);
-    CHECK_EQ(rejected.code, std::string("editor.property.intent"));
+    CHECK(!rejected.ok());
+    CHECK_EQ(eve::property_access::writeRule(rejected), std::string("editor.property.intent"));
     CHECK(!sinkCalled);
 
     const auto accepted = model.write("speed", eve::Value(8.0));
-    CHECK(accepted.accepted);
+    CHECK(accepted.ok());
     CHECK(sinkCalled);
 }
 
@@ -137,8 +137,8 @@ TEST_CASE("property.validation_dynamic_model_uses_shared_finite_rule") {
     TestPropertyAccess model(std::move(schema));
 
     const auto rejected = model.write("speed", eve::Value(std::numeric_limits<double>::infinity()));
-    CHECK(!rejected.accepted);
-    CHECK_EQ(rejected.code, std::string("property_access.property.finite"));
+    CHECK(!rejected.ok());
+    CHECK_EQ(eve::property_access::writeRule(rejected), std::string("property_access.property.finite"));
 }
 
 TEST_CASE("property.validation_transform_descriptor_preserves_editor_object_semantics") {
@@ -148,5 +148,5 @@ TEST_CASE("property.validation_transform_descriptor_preserves_editor_object_sema
 
     const eve::property_access::PropertyDescriptor shared = toPresentationDescriptor(transform);
     CHECK_EQ(static_cast<int>(shared.kind), static_cast<int>(eve::property_access::PropertyKind::Struct));
-    CHECK(eve::property_access::validatePropertyValue(shared, eve::Value(eve::Value::Object{})).accepted);
+    CHECK(eve::property_access::validatePropertyValue(shared, eve::Value(eve::Value::Object{})).ok());
 }

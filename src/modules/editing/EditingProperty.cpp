@@ -63,11 +63,15 @@ const char* legacyRule(const std::string& code) {
 }
 
 template <class ResultValue>
-Result<ResultValue> validationError(const property_access::WriteResult& validation,
-                                    const PropertyDescriptor&           descriptor) {
-    return failed<ResultValue>(Status::Rejected, eve::DiagnosticCode::PreconditionViolation,
-                               RuleId(legacyRule(validation.code)),
-                               validation.message + ": " + descriptor.path.value());
+Result<ResultValue> validationError(const eve::Result<void>& validation, const PropertyDescriptor& descriptor) {
+    std::string rule    = "editor.property.invalid-value";
+    std::string message = "Property value was rejected";
+    if (const eve::Diagnostic* error = validation.error()) {
+        rule    = legacyRule(std::string(property_access::diagnosticRule(*error)));
+        message = error->message();
+    }
+    return failed<ResultValue>(Status::Rejected, eve::DiagnosticCode::PreconditionViolation, RuleId(std::move(rule)),
+                               message + ": " + descriptor.path.value());
 }
 
 }  // namespace
@@ -136,12 +140,12 @@ Value toEditingValue(const eve::Value& value) {
 }
 
 Result<void> validatePropertyValue(const PropertyDescriptor& descriptor, const Value& value) {
-    const property_access::WriteResult validation =
+    eve::Result<void> validation =
         property_access::validatePropertyValue(toPresentationDescriptor(descriptor), toPresentationValue(value));
-    if (!validation.accepted) return validationError<void>(validation, descriptor);
+    if (!validation.ok()) return validationError<void>(validation, descriptor);
     if (descriptor.type == PropertyType::Action && value.type() != Value::Type::Null)
         return eve::editing::failed<void>(Status::Rejected, RuleId("editor.property.type-mismatch"),
-                                   "Value type does not match property: " + descriptor.path.value());
+                                          "Value type does not match property: " + descriptor.path.value());
     return eve::editing::applied<void>();
 }
 

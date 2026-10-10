@@ -12,17 +12,16 @@ namespace eve::editor {
 namespace {
 
 template <class T>
-property_access::WriteResult writeFailure(const Result<T>& result, std::string fallbackCode,
-                                          std::string fallbackMessage) {
+eve::Result<void> writeFailure(const Result<T>& result, std::string fallbackCode, std::string fallbackMessage) {
     if (!result.diagnostics().empty()) {
         const EditorDiagnostic& diagnostic = result.diagnostics().front();
         const RuleId            rule       = eve::editing::diagnosticRule(diagnostic);
         if (!rule.empty() && !diagnostic.message().empty())
-            return property_access::WriteResult::reject(rule.value(), diagnostic.message());
+            return property_access::rejected(rule.value(), diagnostic.message());
         if (!diagnostic.message().empty())
-            return property_access::WriteResult::reject(std::move(fallbackCode), diagnostic.message());
+            return property_access::rejected(std::move(fallbackCode), diagnostic.message());
     }
-    return property_access::WriteResult::reject(std::move(fallbackCode), std::move(fallbackMessage));
+    return property_access::rejected(std::move(fallbackCode), std::move(fallbackMessage));
 }
 
 TransactionId newPropertyTransactionId() {
@@ -140,16 +139,16 @@ std::optional<eve::Value> EditorPropertyModel::read(const std::string& path) con
     return found->second.value;
 }
 
-property_access::WriteResult EditorPropertyModel::write(const std::string& path, const eve::Value& value) {
-    if (!provider_) return property_access::WriteResult::reject("editor.property.provider", "No property provider");
+eve::Result<void> EditorPropertyModel::write(const std::string& path, const eve::Value& value) {
+    if (!provider_) return property_access::rejected("editor.property.provider", "No property provider");
     const Result<void> revisionCheck = ensureCurrentRevision();
     if (!revisionCheck.ok())
         return writeFailure(revisionCheck, "editor.property.revision", "Property revision is unavailable");
     if (transactionBackend_ && transactionBackend_->active() && pendingPaths_.contains(path))
-        return property_access::WriteResult::reject("editor.property.duplicate-path",
-                                                    "A property may be written only once per transaction");
+        return property_access::rejected("editor.property.duplicate-path",
+                                         "A property may be written only once per transaction");
 
-    const EditorValue                editorValue = toEditorValue(value);
+    const EditorValue          editorValue = toEditorValue(value);
     Result<PropertyEditIntent> intent      = [&]() {
         if (surface_ == PropertyModelSurface::Runtime) {
             RuntimePropertyPresenter presenter;
@@ -168,7 +167,7 @@ property_access::WriteResult EditorPropertyModel::write(const std::string& path,
         if (!operation.ok())
             return writeFailure(operation, "editor.property.operation", "Property operation was rejected");
         if (operation.value().target.empty())
-            return property_access::WriteResult::reject("editor.property.target", "Property operation has no target");
+            return property_access::rejected("editor.property.target", "Property operation has no target");
         if (operation.value().mergeKey.empty())
             operation.value().mergeKey = intent.value().command.value() + ":" + path;
 
@@ -181,8 +180,8 @@ property_access::WriteResult EditorPropertyModel::write(const std::string& path,
             specification.mergeKey     = operation.value().mergeKey;
             specification.baseRevision = targetRevision_.value();
             if (specification.id.empty())
-                return property_access::WriteResult::reject("editor.property.transaction-id",
-                                                            "Could not allocate a property transaction identity");
+                return property_access::rejected("editor.property.transaction-id",
+                                                 "Could not allocate a property transaction identity");
             Result<TransactionId> begun = transactionBackend_->begin(std::move(specification));
             if (!begun.ok() || !begun.ok())
                 return writeFailure(begun, "editor.property.transaction.begin", "Could not begin property transaction");
@@ -203,7 +202,7 @@ property_access::WriteResult EditorPropertyModel::write(const std::string& path,
 
         // An already-open transaction is intentionally left staged for the
         // caller's explicit preview/commit boundary.
-        if (!started) return property_access::WriteResult::success();
+        if (!started) return property_access::accepted();
 
         Result<EditorDryRunReport> previewed = transactionBackend_->preview();
         if (!previewed.ok() || !previewed.ok()) {
@@ -226,10 +225,10 @@ property_access::WriteResult EditorPropertyModel::write(const std::string& path,
         // The mutation already committed. Do not report a successful commit
         // as a rejected write; force an explicit refresh if observation fails.
         if (!refresh().ok()) bound_ = false;
-        return property_access::WriteResult::success();
+        return property_access::accepted();
     }
 
-    if (!sink_) return property_access::WriteResult::reject("editor.property.sink", "No command sink is connected");
+    if (!sink_) return property_access::rejected("editor.property.sink", "No command sink is connected");
     // The sink is a compatibility path and may not have an authority that can
     // perform a commit-time CAS. Recheck immediately before handing it the
     // intent; stale compatibility writes must fail closed as well.
@@ -243,7 +242,7 @@ property_access::WriteResult EditorPropertyModel::write(const std::string& path,
     // the pre-command baseline. If observation fails, retain command success
     // and require an explicit refresh before another write.
     if (!refresh().ok()) bound_ = false;
-    return property_access::WriteResult::success();
+    return property_access::accepted();
 }
 
 Result<void> EditorPropertyModel::setTransactionBackend(IEditorTransactionBackend* backend) {

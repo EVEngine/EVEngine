@@ -17,6 +17,12 @@ using property_access::PropertyDescriptor;
 using property_access::PropertyFlag;
 using property_access::PropertyKind;
 
+/** UI callbacks cannot surface Result diagnostics yet; rejection leaves widgets unchanged. */
+void applyWrite(property_access::IPropertyAccess &model, const std::string &path, Value value) {
+    model.write(path, std::move(value))
+        .ignore("PropertyView UI writes are best-effort until the shell can present Result diagnostics");
+}
+
 std::string sanitize(std::string value) {
     for (char &character : value)
         if (character == ' ' || character == '.' || character == '[' || character == ']' ||
@@ -135,7 +141,7 @@ WidgetDesc makeCompositeEditor(property_access::IPropertyAccess &model, const Pr
                     Value::Array              updated =
                         componentArray(current ? *current : Value(Value::Array{}), count);
                     updated[component] = Value(static_cast<double>(next));
-                    model.write(path, Value(std::move(updated)));
+                    applyWrite(model, path, Value(std::move(updated)));
                 }));
         } else {
             children.push_back(inputText(
@@ -147,7 +153,7 @@ WidgetDesc makeCompositeEditor(property_access::IPropertyAccess &model, const Pr
                     Value::Array              updated =
                         componentArray(current ? *current : Value(Value::Array{}), count);
                     updated[component] = std::move(parsed);
-                    model.write(path, Value(std::move(updated)));
+                    applyWrite(model, path, Value(std::move(updated)));
                 }));
         }
     }
@@ -174,7 +180,7 @@ WidgetDesc makeArrayEditor(property_access::IPropertyAccess &model, const Proper
                     updated = *array;
                 if (elementIndex >= updated.size()) updated.resize(elementIndex + 1);
                 updated[elementIndex] = std::move(next);
-                model.write(path, Value(std::move(updated)));
+                applyWrite(model, path, Value(std::move(updated)));
             });
         const auto onStructure = options.onStructureChange;
         rows.push_back(row(
@@ -187,7 +193,7 @@ WidgetDesc makeArrayEditor(property_access::IPropertyAccess &model, const Proper
                             updated = *array;
                         if (elementIndex < updated.size())
                             updated.erase(updated.begin() + static_cast<std::ptrdiff_t>(elementIndex));
-                        model.write(path, Value(std::move(updated)));
+                        applyWrite(model, path, Value(std::move(updated)));
                         if (onStructure) onStructure();
                     })},
             elementId + "_row"));
@@ -202,7 +208,7 @@ WidgetDesc makeArrayEditor(property_access::IPropertyAccess &model, const Proper
                     if (const auto *array = current ? current->getIf<Value::Array>() : nullptr)
                         updated = *array;
                     updated.emplace_back(std::string{});
-                    model.write(path, Value(std::move(updated)));
+                    applyWrite(model, path, Value(std::move(updated)));
                     if (onStructure) onStructure();
                 })},
         id + "_addrow"));
@@ -227,7 +233,7 @@ WidgetDesc makeMapEditor(property_access::IPropertyAccess &model, const Property
                 if (const auto *object = current ? current->getIf<Value::Object>() : nullptr)
                     updated = *object;
                 updated[fieldKey] = std::move(next);
-                model.write(path, Value(std::move(updated)));
+                applyWrite(model, path, Value(std::move(updated)));
             });
         if (allowMutate) {
             const auto onStructure = options.onStructureChange;
@@ -240,7 +246,7 @@ WidgetDesc makeMapEditor(property_access::IPropertyAccess &model, const Property
                             if (const auto *object = current ? current->getIf<Value::Object>() : nullptr)
                                 updated = *object;
                             updated.erase(fieldKey);
-                            model.write(path, Value(std::move(updated)));
+                            applyWrite(model, path, Value(std::move(updated)));
                             if (onStructure) onStructure();
                         })},
                 elementId + "_row"));
@@ -263,7 +269,7 @@ WidgetDesc makeMapEditor(property_access::IPropertyAccess &model, const Property
                         while (updated.contains(key))
                             key = "key" + std::to_string(updated.size() + (++suffix));
                         updated.emplace(key, Value(std::string{}));
-                        model.write(path, Value(std::move(updated)));
+                        applyWrite(model, path, Value(std::move(updated)));
                         if (onStructure) onStructure();
                     })},
             id + "_addrow"));
@@ -293,7 +299,7 @@ WidgetDesc makePropertyField(property_access::IPropertyAccess &model, const Prop
                 const bool current = value.getIf<bool>() ? *value.getIf<bool>() : false;
                 const std::string path = property.path;
                 result = checkbox(label, current, id, [&model, path](bool next) {
-                    model.write(path, Value(next));
+                    applyWrite(model, path, Value(next));
                 });
                 break;
             }
@@ -307,16 +313,16 @@ WidgetDesc makePropertyField(property_access::IPropertyAccess &model, const Prop
                                     static_cast<float>(*property.numeric.maximum), id,
                                     [&model, path, integer](float next) {
                                         if (integer)
-                                            model.write(path, Value(static_cast<std::int64_t>(next)));
+                                            applyWrite(model, path, Value(static_cast<std::int64_t>(next)));
                                         else
-                                            model.write(path, Value(static_cast<double>(next)));
+                                            applyWrite(model, path, Value(static_cast<double>(next)));
                                     });
                 } else {
                     result = inputText(label, valueText(value), id,
                                        [&model, path, integer](const std::string &next) {
                                            Value parsed;
                                            if (parseNumber(next, integer, parsed))
-                                               model.write(path, std::move(parsed));
+                                               applyWrite(model, path, std::move(parsed));
                                        });
                 }
                 break;
@@ -332,13 +338,13 @@ WidgetDesc makePropertyField(property_access::IPropertyAccess &model, const Prop
                                [&model, path, choices](float next) {
                                    const int index = static_cast<int>(next);
                                    if (index >= 0 && static_cast<std::size_t>(index) < choices.size())
-                                       model.write(path, Value(choices[static_cast<std::size_t>(index)]));
+                                       applyWrite(model, path, Value(choices[static_cast<std::size_t>(index)]));
                                });
                 break;
             }
             case PropertyKind::Action: {
                 const std::string path = property.path;
-                result = button(label, id, [&model, path]() { model.write(path, Value(true)); });
+                result = button(label, id, [&model, path]() { applyWrite(model, path, Value(true)); });
                 break;
             }
             case PropertyKind::String:
@@ -348,7 +354,7 @@ WidgetDesc makePropertyField(property_access::IPropertyAccess &model, const Prop
                 const std::string path = property.path;
                 result = inputText(label, valueText(value), id,
                                    [&model, path](const std::string &next) {
-                                       model.write(path, Value(next));
+                                       applyWrite(model, path, Value(next));
                                    });
                 break;
             }
