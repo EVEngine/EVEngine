@@ -49,7 +49,9 @@ struct KernelSpec {
 /**
  * Generate the specialized GLSL kernel(s) for a fused group.
  * Returns false when the group cannot be lowered (e.g. too many inputs for the
- * fixed 8-binding descriptor layout) — callers fall back to the CPU interpreter.
+ * fixed 8-binding descriptor layout) — callers use the CPU interpreter.
+ * This compatibility facade preserves the optimizer alternate-execution contract; new APIs should return a named status
+ * enum or Result.
  */
 /** @brief Generate kernel. */
 EVENGINE_API_DOMAINS bool generateKernel(const Graph &graph, const FusedGroup &group, KernelSpec &out);

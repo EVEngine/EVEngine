@@ -198,13 +198,16 @@ TEST_CASE("rts.completedProductionBoardsDispatchesAndUnloadsTransportReinforceme
     REQUIRE(factory->production()->values.enqueue("faction", "unit", "marine", duration).ok());
 
     std::vector<ecs::EntityHandle> spawned;
-    eve::rts::ProductionSpawn      spawn = [&](Building&, const eve::production::ProductionTask&) {
+    eve::rts::ProductionSpawn      spawn = [&](Building&, const eve::production::ProductionTask&,
+                                          eve::rts::WorldPosition requested) {
         Unit* unit = Unit::createUnit();
+        unit->motion()->x = requested.x;
+        unit->motion()->y = requested.y;
         auto  link = eve::rts::FactionLink::bind(ecs::handle_of(faction));
-        if (!link) return eve::Result<Unit*>::failure(link.status());
+        if (!link) return eve::Result<eve::rts::ProductionSpawnOutcome>::failure(link.status());
         unit->faction()->link = std::move(link).takeValue();
         spawned.push_back(ecs::handle_of(unit));
-        return eve::Result<Unit*>::success(unit);
+        return eve::Result<eve::rts::ProductionSpawnOutcome>::success({eve::rts::ProductionSpawnState::Created, unit});
     };
     auto first = eve::rts::BuildingProductionSystem::step({eve::SimulationTick{1}, duration}, spawn);
     REQUIRE(first.ok());
@@ -262,8 +265,10 @@ TEST_CASE("rts.factionResourceFloorsProtectHighPriorityProductionAcrossFactories
     REQUIRE(rts.setProductionResourceReserve(*faction, "minerals", 100, 10).ok());
     REQUIRE(rts.setProductionResourceReserve(*faction, "gas", 25, 10).ok());
     eve::economy::EconomyLedger ledger;
-    REQUIRE_EQ(ledger.credit("minerals", 150), 150);
-    REQUIRE_EQ(ledger.credit("gas", 25), 25);
+    const auto                  creditedMinerals = ledger.credit("minerals", 150);
+    const auto                  creditedGas      = ledger.credit("gas", 25);
+    REQUIRE_EQ(creditedMinerals, 150);
+    REQUIRE_EQ(creditedGas, 25);
     eve::rts::RTSEconomyAdapter economy(ledger);
     eve::action::ActionRuntime  action;
     const auto                  duration = eve::Duration::fromSeconds(1.0).expect("resource floor production duration");
@@ -452,10 +457,13 @@ TEST_CASE("rts.productionBlockedExitWaitsAndSpawnsAtFirstAvailablePosition") {
         return eve::Result<std::optional<eve::rts::WorldPosition>>::success(eve::rts::WorldPosition{8.0f, 9.0f});
     };
     std::vector<ecs::EntityHandle> spawned;
-    eve::rts::ProductionSpawn      spawn = [&](Building&, const eve::production::ProductionTask&) {
+    eve::rts::ProductionSpawn      spawn = [&](Building&, const eve::production::ProductionTask&,
+                                          eve::rts::WorldPosition requested) {
         Unit* unit = Unit::createUnit();
+        unit->motion()->x = requested.x;
+        unit->motion()->y = requested.y;
         spawned.push_back(ecs::handle_of(unit));
-        return eve::Result<Unit*>::success(unit);
+        return eve::Result<eve::rts::ProductionSpawnOutcome>::success({eve::rts::ProductionSpawnState::Created, unit});
     };
 
     std::vector<eve::rts::LifecycleEvent> productionEvents;
@@ -543,4 +551,38 @@ TEST_CASE("rts.rallyFacadeConfiguresLinkedReinforcementPolicyAndExclusiveTranspo
     REQUIRE(rts.clearBuildingRally(*second).ok());
     CHECK(!second->rally()->enabled);
     CHECK_EQ(second->rally()->combatGroup, std::uint64_t{0});
+}
+
+TEST_CASE("rts.productionPreservesFactoryResolvedPlacement") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    Building*        factory     = Building::createBuilding();
+    factory->placement()->worldX = 3.0f;
+    factory->placement()->worldY = 4.0f;
+    const auto duration          = eve::Duration::fromSeconds(1.0).expect("production duration");
+    auto       queued            = factory->production()->values.enqueue("faction", "unit", "marine", duration);
+    REQUIRE(queued.ok());
+    Unit*                     produced = nullptr;
+    eve::rts::ProductionSpawn spawn    = [&](Building&, const eve::production::ProductionTask&,
+                                          eve::rts::WorldPosition requested) {
+        CHECK_EQ(requested.x, 3.0f);
+        CHECK_EQ(requested.y, 4.0f);
+        produced              = Unit::createUnit();
+        produced->motion()->x = requested.x + 2.0f;
+        produced->motion()->y = requested.y - 1.0f;
+        return eve::Result<eve::rts::ProductionSpawnOutcome>::success(
+            {eve::rts::ProductionSpawnState::Created, produced});
+    };
+    auto settled = eve::rts::BuildingProductionSystem::step({eve::SimulationTick{1}, duration}, spawn);
+    REQUIRE(settled.ok());
+    REQUIRE(produced != nullptr);
+    if (produced == nullptr) {
+        factory->release();
+        return;
+    }
+    CHECK_EQ(produced->motion()->x, 5.0f);
+    CHECK_EQ(produced->motion()->y, 3.0f);
+    CHECK_EQ(factory->rally()->settledProductionTasks.size(), 1u);
+    produced->release();
+    factory->release();
 }

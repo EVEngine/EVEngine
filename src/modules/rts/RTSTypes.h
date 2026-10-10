@@ -425,6 +425,9 @@ public:
 
 private:
     friend class RTSProductionActionAdapter;
+    friend class RTS;
+    friend class CommandFanOutSystem;
+    std::uint64_t                       membershipEpoch_ = 0;
     [[nodiscard]] orders::CommandQueue* queueForComposition() noexcept;
 
     struct Impl;
@@ -575,6 +578,9 @@ public:
         bool                       trafficWaiting = false;
         bool                       unreachable = false;
         bool                       unreachableReported = false;
+        float formationSpeedFactor = 1.f;  ///< Rebuilt movement-group projection; never an independent speed authority.
+        std::optional<WorldPosition> formationTarget;  ///< Derived moving slot; rebuilt each step, excluded from saves.
+        std::optional<WorldPosition> trafficRecoveryTarget;  ///< Derived evacuation step; does not replace the order.
     };
     /** @brief Vision contribution projected into a faction-owned canonical map FOV provider. */
     struct Vision {
