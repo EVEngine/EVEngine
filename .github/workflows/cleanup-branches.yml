@@ -1,30 +1,51 @@
-# Weekly cleanup of merged release branches (vX.Y.Z / promote/* / rebase/*).
-# The release tag is never touched. Run manually via workflow_dispatch.
-
-name: Cleanup release branches
+name: Diagnostic ARM64 APK gate
 
 on:
-  schedule:
-    # Monday 02:00 UTC
-    - cron: "0 2 * * 1"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  actions: read
+  contents: read
 
 jobs:
-  cleanup:
-    name: cleanup-branches
+  apk-gate:
+    name: Reuse release APKs and run only the emulator gate
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
-      - name: Checkout
-        timeout-minutes: 10
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout diagnostic branch
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v4.2.2
 
-      - name: Clean up merged release branches
-        timeout-minutes: 15
-        run: python3 scripts/release.py cleanup-branches
+      - name: Download the three APKs from release run 38050935949
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: android-apk-*
+          path: apk
+          merge-multiple: true
+          run-id: 38050935949
+          github-token: ${{ github.token }}
+
+      - name: Enable KVM access
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Boot API 35 emulator and run every ARM64 APK
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          emulator-boot-timeout: 600
+          emulator-options: >-
+            -no-window
+            -gpu swiftshader
+            -no-snapshot
+            -noaudio
+            -no-boot-anim
+            -accel on
+          disable-linux-hw-accel: false
+          disable-animations: true
+          script: bash .github/scripts/run-consumer-apks.sh apk
