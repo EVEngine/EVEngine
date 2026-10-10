@@ -12,6 +12,7 @@ CONSUMER_TEST = ROOT / ".github" / "scripts" / "consumer-test.sh"
 SDK_INSTALL = ROOT / "cmake" / "install_sdk.cmake"
 THIRD_PARTY_BUILD = ROOT / "cmake" / "third_party_build.cmake"
 ANDROID_GRADLE = ROOT / "platform" / "android" / "apk" / "app" / "build.gradle.kts"
+VULKAN_GRAPHICS = ROOT / "src" / "modules" / "graphics" / "vulkan" / "Graphics.cpp"
 
 
 def job_block(workflow: str, job: str, next_job: str | None = None) -> str:
@@ -32,6 +33,7 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         cls.sdk_install = SDK_INSTALL.read_text(encoding="utf-8")
         cls.third_party_build = THIRD_PARTY_BUILD.read_text(encoding="utf-8")
         cls.android_gradle = ANDROID_GRADLE.read_text(encoding="utf-8")
+        cls.vulkan_graphics = VULKAN_GRAPHICS.read_text(encoding="utf-8")
 
     def test_android_emulator_is_a_hard_gate_for_every_consumer_host(self) -> None:
         block = job_block(self.workflow, "run-android", "ios-sim")
@@ -89,6 +91,17 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn('-PevengineAbi="$ANDROID_PACKAGE_ABI"', self.sdk_test)
         self.assertIn('ANDROID_ABI STREQUAL "x86_64"', self.sdk_install)
         self.assertIn('set(_eve_android_ndk_triple "x86_64-linux-android")', self.sdk_install)
+
+    def test_vulkan_feature_query_matches_negotiated_instance_version(self) -> None:
+        self.assertIn("vkEnumerateInstanceVersion(&loaderVersion)", self.vulkan_graphics)
+        self.assertIn("app.apiVersion       = apiVersion", self.vulkan_graphics)
+        self.assertIn(
+            "negotiatedInstanceApiVersion() >= VK_API_VERSION_1_2", self.vulkan_graphics
+        )
+        self.assertIn(
+            "if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable)",
+            self.vulkan_graphics,
+        )
 
 
 if __name__ == "__main__":

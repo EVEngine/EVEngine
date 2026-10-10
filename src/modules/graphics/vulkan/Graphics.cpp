@@ -131,9 +131,22 @@ void initVulkanDispatcher() {
     }
 }
 
+uint32_t negotiatedInstanceApiVersion() {
+    // Vulkan 1.0 loaders do not expose vkEnumerateInstanceVersion. Newer
+    // loaders let us advertise the highest core version used by this backend,
+    // capped at 1.2 because that is the newest feature struct queried below.
+    uint32_t loaderVersion = VK_API_VERSION_1_0;
+    if (VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumerateInstanceVersion) {
+        if (VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumerateInstanceVersion(&loaderVersion) != VK_SUCCESS)
+            loaderVersion = VK_API_VERSION_1_0;
+    }
+    return std::min(loaderVersion, static_cast<uint32_t>(VK_API_VERSION_1_2));
+}
+
 vkb::Instance createInstanceFast() {
     initVulkanDispatcher();
     disableImplicitLayersIfSafe();
+    const uint32_t apiVersion = negotiatedInstanceApiVersion();
     // Enumerate instance extensions only. vk-bootstrap's SystemInfo::query() also
     // walks every implicit layer (and each layer's extensions), which is the
     // bulk of "instance + surface" on a Windows SDK install.
@@ -143,7 +156,8 @@ vkb::Instance createInstanceFast() {
 
     if (wantVulkanValidation()) {
         vkb::InstanceBuilder builder;
-        builder.require_api_version(1, 0);
+        builder.require_api_version(VK_API_VERSION_MAJOR(apiVersion),
+                                    VK_API_VERSION_MINOR(apiVersion));
         builder.request_validation_layers();
         builder.use_default_debug_messenger();
         for (auto* e : exts) builder.enable_extension(e);
@@ -158,7 +172,7 @@ vkb::Instance createInstanceFast() {
     vk::ApplicationInfo app{};
     app.pApplicationName = "EVEngine";
     app.pEngineName      = "EVEngine";
-    app.apiVersion       = VK_MAKE_VERSION(1, 0, 0);
+    app.apiVersion       = apiVersion;
 
     vk::InstanceCreateInfo ci{};
     ci.flags                   = flags;
@@ -275,9 +289,9 @@ void VmaAllocatorOwner::create(const vkb::Instance& instance, const vkb::Physica
         throw Exception("VMA could not resolve vkGetDeviceProcAddr");
     }
     createInfo.pVulkanFunctions = &vulkanFunctions;
-    // InstanceBuilder requests Vulkan 1.0. VMA requires this value to describe
-    // the application's instance contract, not the physical device maximum.
-    createInfo.vulkanApiVersion = VK_API_VERSION_1_0;
+    // VMA requires the application's instance contract, not the physical
+    // device maximum. Use the same negotiated version used at instance creation.
+    createInfo.vulkanApiVersion = negotiatedInstanceApiVersion();
     const VkResult result       = vmaCreateAllocator(&createInfo, &allocator_);
     if (result != VK_SUCCESS) throw Exception("vmaCreateAllocator failed: %d", int(result));
     device.attachVmaAllocator(allocator_);
@@ -482,12 +496,15 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
             // universal, so treat it as present.
             gpuDrivenCaps_ = GpuDrivenCaps{};
             vk::PhysicalDeviceVulkan12Features vk12{};
-            vk::PhysicalDeviceFeatures2        features2{};
-            vk12.sType      = vk::StructureType::ePhysicalDeviceVulkan12Features;
-            features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
-            features2.pNext = &vk12;
-            phys->getFeatures2(&features2);
-            gpuDrivenCaps_.api12             = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            gpuDrivenCaps_.api12 = negotiatedInstanceApiVersion() >= VK_API_VERSION_1_2 &&
+                                   phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            if (gpuDrivenCaps_.api12) {
+                vk::PhysicalDeviceFeatures2 features2{};
+                vk12.sType      = vk::StructureType::ePhysicalDeviceVulkan12Features;
+                features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+                features2.pNext = &vk12;
+                phys->getFeatures2(&features2);
+            }
             gpuDrivenCaps_.computeShader     = true;
             gpuDrivenCaps_.multiDrawIndirect = supported.multiDrawIndirect == VK_TRUE;
             gpuDrivenCaps_.shaderSampledImageArrayDynamicIndexing =
@@ -507,7 +524,7 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         vk::PhysicalDeviceVulkan12Features vk12Enable{};
         vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
-        deviceBuilder.add_pNext(&vk12Enable);
+        if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
 #if defined(VKB_ENABLE_VMA)
         vmaAllocatorOwner_.create(inst, phys, device);
