@@ -76,13 +76,86 @@
       ],
       "tests": [
         "test/tactics_replay.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/tactics_graph.cpp"
       ],
       "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
-      "version": "SchemaVersion 1; battle Revision and SimulationTick remain separate typed envelope fields.",
-      "migration": "There is no older released tactics schema; version 1 is exact and newer/unknown versions are rejected until an explicit migration is registered.",
+      "version": "Grid boards emit schema 6; ExplicitGraph boards emit schema 7. Revision and SimulationTick remain distinct.",
+      "migration": "Versions 1-6 retain existing migrations. Version 7 adds explicit graph topology with the existing directed edge records; graph topology in older versions and unknown versions are rejected.",
       "unknown_fields": "Envelope and tactics payload objects reject unknown or missing fields; arrays validate every owning record.",
       "restore_atomicity": "Hash, identity, version, complete payload, links and invariants are validated in a local Candidate before one commit to battle/components."
+    },
+    {
+      "id": "tactics-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/tactics/**",
+      "owner": "tactics maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "A spherical hex consumer needs explicit graph adjacency without a dependency from tactics to hexmap.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/hex-planet-civilization.md",
+        "src/modules/tactics/TacticsTypes.h"
+      ],
+      "tests": [
+        "test/tactics_graph.cpp",
+        "test/tactics_script.cpp",
+        "examples/hex-planet/civilization_test.nut"
+      ],
+      "provides": [
+        {
+          "capability": "IGameplayControlProvider",
+          "impl": "tactics::Tactics",
+          "absent_behavior": "no tactics gameplay instances"
+        },
+        {
+          "capability": "IGameplayInstanceCatalog",
+          "impl": "tactics::Tactics",
+          "absent_behavior": "no tactics gameplay instances"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "ILineOfSightPolicy",
+          "required": false,
+          "fallback": "grid policy for grid boards; Unsupported for graph boards"
+        },
+        {
+          "capability": "ISnapshotContentHasher",
+          "required": false,
+          "fallback": "existing deterministic noncryptographic hasher"
+        }
+      ],
+      "emits": [
+        "BattleEvent, accepted command log; deterministic sequence, simulation phase"
+      ],
+      "observes": [],
+      "binds": [
+        "Tactics.newBattle",
+        "TacticsBattle.setTopology(graph), addCell, addEdge, reachable, move, snapshotJson, restoreJson"
+      ],
+      "protocol": [
+        "existing gameplay control observations and commands; no new protocol"
+      ],
+      "thread_affinity": "simulation/main; no unknown callbacks while holding locks",
+      "trim": {
+        "layer": "L1",
+        "absent_profile": "server",
+        "evidence": "server eve_profile_smoke compiles tactics without graphics or hexmap; capability present/absent executables run separately. No L2 tactics link claim."
+      },
+      "cost_notes": [
+        "Board setup is a builder: create battle, choose topology, add cells and edges, start. Graph neighbour lookup O(log E + degree); cache reachability between commands."
+      ],
+      "hot_path": [
+        "src/modules/tactics/TacticsPath.cpp",
+        "src/modules/tactics/TacticsBattle.cpp",
+        "src/modules/tactics/TacticsTypes.cpp"
+      ],
+      "hard_dependencies": [
+        "common",
+        "action",
+        "sensing"
+      ]
     }
   ]
 }

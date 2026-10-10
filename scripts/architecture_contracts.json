@@ -1090,11 +1090,12 @@
       ],
       "tests": [
         "test/tactics_replay.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/tactics_graph.cpp"
       ],
       "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
-      "version": "SchemaVersion 1; battle Revision and SimulationTick remain separate typed envelope fields.",
-      "migration": "There is no older released tactics schema; version 1 is exact and newer/unknown versions are rejected until an explicit migration is registered.",
+      "version": "Grid boards emit schema 6; ExplicitGraph boards emit schema 7. Revision and SimulationTick remain distinct.",
+      "migration": "Versions 1-6 retain existing migrations. Version 7 adds explicit graph topology with the existing directed edge records; graph topology in older versions and unknown versions are rejected.",
       "unknown_fields": "Envelope and tactics payload objects reject unknown or missing fields; arrays validate every owning record.",
       "restore_atomicity": "Hash, identity, version, complete payload, links and invariants are validated in a local Candidate before one commit to battle/components."
     },
@@ -1538,6 +1539,47 @@
       ]
     },
     {
+      "id": "devtools-play-host-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/PlayHost*",
+      "owner": "devtools maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "Game observation projects only declared fields and invalid protocol input returns diagnostics without unchecked Results.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/PlayHost.h",
+        "docs/dev/hex-planet-civilization.md"
+      ],
+      "tests": [
+        "test/play_host.cpp",
+        "test/play_trace.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        "Existing IRenderCapture for capture (Unsupported when absent); existing gameplay control for gameplay-domain actions. Script observation invokes neither provider."
+      ],
+      "emits": [
+        "Existing PlayTraceBuffer receipts for successful requests unless trace is off."
+      ],
+      "observes": [
+        "Declared, snapshot-policy-eligible Squirrel root fields; no ECS or native snapshot enumeration for observe."
+      ],
+      "binds": [],
+      "protocol": [
+        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 unchanged. Unknown request fields remain rejected."
+      ],
+      "thread_affinity": "Owner simulation thread; synchronous owning Value projection. Raw table path lookup invokes no getters or callbacks and retains no VM pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "This change validates the existing host tooling build and injected runtime, not a new trimmed profile.",
+        "absent_profile": "No absent-provider profile validated by this change; existing full host tooling only, with no trim claim."
+      },
+      "cost_notes": [
+        "Observe scales with selected fields and converted values, bounded by the common Squirrel conversion limits. Whole-root observation remains explicit through an empty fields list."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "devtools-soft-restart-module-interface",
       "rule": "module-interface",
       "scope": "src/engine/devtools/**",
@@ -1640,6 +1682,49 @@
       ],
       "hot_path": [
         "src/modules/graphics/RenderSystem3D.cpp"
+      ]
+    },
+    {
+      "id": "hexmap-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/hexmap/**",
+      "owner": "hexmap maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "Sphere direction queries must project native xyz arrays usable by script camera and marker consumers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/hex-planet-civilization.md",
+        "docs/usr/modules/hexmap.md"
+      ],
+      "tests": [
+        "test/hexmap_sphere_script.cpp",
+        "test/hexmap_sphere.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "HexMap.sphereDirection",
+        "HexMap.sphereCornerDirection"
+      ],
+      "protocol": [],
+      "thread_affinity": "simulation/main; no unknown callbacks while holding locks",
+      "trim": {
+        "layer": "L1",
+        "absent_profile": "server",
+        "evidence": "server profile omits hexmap and graphics; tactics graph compiles independently."
+      },
+      "cost_notes": [
+        "Direction queries copy three scalar values to a native Squirrel array; no mesh generation or borrowed pointer."
+      ],
+      "hot_path": [
+        "src/modules/hexmap/HexSphereMap.cpp",
+        "src/modules/hexmap/HexSphereTopology.cpp"
+      ],
+      "hard_dependencies": [
+        "common",
+        "graphics"
       ]
     },
     {
@@ -2149,6 +2234,78 @@
       "cost_notes": []
     },
     {
+      "id": "tactics-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/tactics/**",
+      "owner": "tactics maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "A spherical hex consumer needs explicit graph adjacency without a dependency from tactics to hexmap.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/hex-planet-civilization.md",
+        "src/modules/tactics/TacticsTypes.h"
+      ],
+      "tests": [
+        "test/tactics_graph.cpp",
+        "test/tactics_script.cpp",
+        "examples/hex-planet/civilization_test.nut"
+      ],
+      "provides": [
+        {
+          "capability": "IGameplayControlProvider",
+          "impl": "tactics::Tactics",
+          "absent_behavior": "no tactics gameplay instances"
+        },
+        {
+          "capability": "IGameplayInstanceCatalog",
+          "impl": "tactics::Tactics",
+          "absent_behavior": "no tactics gameplay instances"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "ILineOfSightPolicy",
+          "required": false,
+          "fallback": "grid policy for grid boards; Unsupported for graph boards"
+        },
+        {
+          "capability": "ISnapshotContentHasher",
+          "required": false,
+          "fallback": "existing deterministic noncryptographic hasher"
+        }
+      ],
+      "emits": [
+        "BattleEvent, accepted command log; deterministic sequence, simulation phase"
+      ],
+      "observes": [],
+      "binds": [
+        "Tactics.newBattle",
+        "TacticsBattle.setTopology(graph), addCell, addEdge, reachable, move, snapshotJson, restoreJson"
+      ],
+      "protocol": [
+        "existing gameplay control observations and commands; no new protocol"
+      ],
+      "thread_affinity": "simulation/main; no unknown callbacks while holding locks",
+      "trim": {
+        "layer": "L1",
+        "absent_profile": "server",
+        "evidence": "server eve_profile_smoke compiles tactics without graphics or hexmap; capability present/absent executables run separately. No L2 tactics link claim."
+      },
+      "cost_notes": [
+        "Board setup is a builder: create battle, choose topology, add cells and edges, start. Graph neighbour lookup O(log E + degree); cache reachability between commands."
+      ],
+      "hot_path": [
+        "src/modules/tactics/TacticsPath.cpp",
+        "src/modules/tactics/TacticsBattle.cpp",
+        "src/modules/tactics/TacticsTypes.cpp"
+      ],
+      "hard_dependencies": [
+        "common",
+        "action",
+        "sensing"
+      ]
+    },
+    {
       "id": "tags-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/tags/**",
@@ -2272,6 +2429,46 @@
       "cost_notes": [],
       "hot_path": [
         "src/modules/ui/EventSink.cpp"
+      ]
+    },
+    {
+      "id": "ui-progress-render-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/UISystem.cpp",
+      "owner": "ui maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "Retained progress rendering must honor the dimensions already owned by widget descriptors and layout.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/hex-planet-civilization.md",
+        "src/modules/ui/Layout.cpp"
+      ],
+      "tests": [
+        "test/ui_progress_size.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Existing UIHost/UINode tree; no new ECS data or links."
+      ],
+      "binds": [
+        "Existing UI.progress and UI.setItemSize; signatures unchanged."
+      ],
+      "protocol": [
+        "No protocol or persistent format change."
+      ],
+      "thread_affinity": "Existing UI/render owner thread; no new callbacks or retained pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "Existing full host UI renderer; no new trimmed-build claim.",
+        "absent_profile": "No UI-absent profile validated by this change; existing full host renderer only, with no trim claim."
+      },
+      "cost_notes": [
+        "Constant-size forwarding during the existing progress draw call."
+      ],
+      "hot_path": [
+        "src/modules/ui/UISystem.cpp"
       ]
     },
     {

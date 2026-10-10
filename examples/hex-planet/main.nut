@@ -1,3 +1,7 @@
+dofile("civilization.nut");
+dofile("civilization_view.nut");
+dofile("civilization_test.nut");
+
 // examples/hex-planet -- the hex terrain system wrapped onto a sphere, from orbit.
 //
 // This is the spherical counterpart of `examples/hex-terrain-3d`: the same module,
@@ -56,6 +60,7 @@ function createState() {
         spinning = false,
 
         dragging   = false,
+        civMouse = false,
         lastMouseX = 0,
         lastMouseY = 0,
 
@@ -94,7 +99,7 @@ function updateCamera(st, dt) {
     local x = mouse.getX();
     local y = mouse.getY();
     local down = mouse.isDown(1);
-    if (down) {
+    if (down && civMapInput(x,y)) {
         if (st.dragging) {
             st.yaw -= (x - st.lastMouseX) * ORBIT_SPEED;
             st.pitch = clampf(st.pitch + (y - st.lastMouseY) * ORBIT_SPEED, PITCH_MIN, PITCH_MAX);
@@ -107,7 +112,7 @@ function updateCamera(st, dt) {
     st.lastMouseY = y;
 
     local wheel = mouse.getWheelY();
-    if (wheel != 0.0) st.zoom = clampf(st.zoom - wheel * ZOOM_STEP, ZOOM_MIN, ZOOM_MAX);
+    if (wheel != 0.0 && civMapInput(x,y)) st.zoom = clampf(st.zoom - wheel * ZOOM_STEP, ZOOM_MIN, ZOOM_MAX);
 
     applyCamera(st);
 }
@@ -235,6 +240,7 @@ function buildPlanet(st) {
     print("hex planet: " + st.landPercent + "% land, water line " + st.waterLevel + ", spacing " +
           hexmap.sphereCellSpacing() + "\n");
     reportDistribution(st);
+    civReset(st.seed);
     print("hex planet: LMB drag orbit | wheel zoom | space spin | R new seed | [ ] subdivision | - = land\n");
     return true;
 }
@@ -247,6 +253,8 @@ function regenerate(st) {
     }
     bindMeshes(st);
     st.statusText = describePlanet(st) + ", seed " + st.seed;
+    civReset(st.seed);
+    civFocus(st);
 }
 
 // --- input ------------------------------------------------------------------
@@ -299,33 +307,6 @@ function handleKeys(st) {
 
 // --- HUD --------------------------------------------------------------------
 
-function buildHud(st) {
-    // Widgets only exist inside a window, so the panel is built once and then updated
-    // by label in `refreshHud`.
-    ui.beginBuild();
-    ui.beginWindow("HexPlanet", "root");
-    ui.text("EVEngine Hex Planet", "title");
-    ui.text("", "planet");
-    ui.text("", "view");
-    ui.separator("sep");
-    ui.text("[LMB]orbit [wheel]zoom [space]spin [R]seed", "help1");
-    ui.text("[[/]]subdivision [-/=]land [F5]shot [esc]reset", "help2");
-    ui.end();
-    ui.mountBuildAs("hud");
-    ui.select("hud");
-    ui.setHostOverlay(true);
-    ui.setHostVisible(true);
-    ui.setHostPos(12.0, 12.0, 0.0, 0.0);
-    st.uiBuilt = true;
-}
-
-function refreshHud(st) {
-    if (!st.uiBuilt) return;
-    ui.select("hud");
-    ui.setText("planet", "planet: " + st.statusText);
-    ui.setText("view", "view: yaw " + st.yaw + "  pitch " + st.pitch + "  zoom " + st.zoom);
-}
-
 // --- entry points -----------------------------------------------------------
 
 eve_init = function() {
@@ -348,7 +329,9 @@ eve_init = function() {
     createRenderables(st);
     buildPlanet(st);
     bindMeshes(st);
-    buildHud(st);
+    civHud();
+    civFocus(st);
+    print("hex civilization: initialization complete\n");
     applyCamera(st);
 };
 
@@ -357,10 +340,14 @@ eve_update = function(dt) {
     if (st == null) return;
     st.elapsed += dt;
     st.frames += 1;
+    if (st.frames == 100 && getenv("EVE_HEX_CIV_TEST") == "1") civJourney();
+
+    if (st.frames == 110 && getenv("EVE_HEX_CIV_TEST") == "1") civUiContracts();
 
     handleKeys(st);
+    civInput(st);
     updateCamera(st, dt);
-    refreshHud(st);
+    civRefresh();
 
     // Readback is enabled by the first call, so retry until the frame lands. The
     // default pose is static, so the saved frame is reproducible run to run.
@@ -371,5 +358,6 @@ eve_update = function(dt) {
 eve_render = function() {
     gfx.clear();
     gfx.render3D();
+    civRender(planet);
     ui.beginFrameAndRender();
 };

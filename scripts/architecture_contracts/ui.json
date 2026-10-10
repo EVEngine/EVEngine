@@ -63,6 +63,46 @@
       "hot_path": [
         "src/modules/ui/EventSink.cpp"
       ]
+    },
+    {
+      "id": "ui-progress-render-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/UISystem.cpp",
+      "owner": "ui maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "Retained progress rendering must honor the dimensions already owned by widget descriptors and layout.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/hex-planet-civilization.md",
+        "src/modules/ui/Layout.cpp"
+      ],
+      "tests": [
+        "test/ui_progress_size.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Existing UIHost/UINode tree; no new ECS data or links."
+      ],
+      "binds": [
+        "Existing UI.progress and UI.setItemSize; signatures unchanged."
+      ],
+      "protocol": [
+        "No protocol or persistent format change."
+      ],
+      "thread_affinity": "Existing UI/render owner thread; no new callbacks or retained pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "Existing full host UI renderer; no new trimmed-build claim.",
+        "absent_profile": "No UI-absent profile validated by this change; existing full host renderer only, with no trim claim."
+      },
+      "cost_notes": [
+        "Constant-size forwarding during the existing progress draw call."
+      ],
+      "hot_path": [
+        "src/modules/ui/UISystem.cpp"
+      ]
     }
   ]
 }

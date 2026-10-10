@@ -823,6 +823,13 @@ Result<void> Tactics::setTopology(ecs::EntityHandle battleHandle, BoardTopology 
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics topology can only change during setup", "battle.status"));
     if (battle->board()->value.topology() == topology)
         return Result<void>::success(Status::success(StatusCode::NoOp));
+    if (topology != BoardTopology::Square4 && topology != BoardTopology::Square8 &&
+        topology != BoardTopology::HexAxial && topology != BoardTopology::ExplicitGraph)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown board topology", "topology"));
+    if (!battle->board()->value.edgeRecords().empty())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "choose topology before declaring edges", "topology"));
     const auto revision = battle->turn()->revision.incremented();
     if (!revision)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics battle revision is exhausted", "battle.revision"));
@@ -1441,6 +1448,8 @@ void Tactics::expose(ssq::Table& table) {
             parsed = BoardTopology::Square8;
         else if (topology == "hex")
             parsed = BoardTopology::HexAxial;
+        else if (topology == "graph")
+            parsed = BoardTopology::ExplicitGraph;
         else
             return script::projectResult(
                 vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown tactics board topology", "topology")));
