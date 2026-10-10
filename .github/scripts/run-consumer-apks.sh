@@ -4,6 +4,7 @@ set -euo pipefail
 apk_dir="${1:-apk}"
 expected_count="${2:-3}"
 success_marker="${3:-EVE_CI_GAME_OK}"
+expected_abi="${4:-arm64-v8a}"
 mapfile -t apk_files < <(find "$apk_dir" -maxdepth 1 -type f -name '*.apk' -print | sort)
 
 if [[ "${#apk_files[@]}" -ne "$expected_count" ]]; then
@@ -33,11 +34,11 @@ for apk_file in "${apk_files[@]}"; do
   apk_name="$(basename "$apk_file")"
   echo "Testing $apk_name"
 
-  if ! unzip -Z1 "$apk_file" | grep -E '^lib/arm64-v8a/.+\.so$' >/dev/null; then
-    echo "ERROR: $apk_name does not contain ARM64 native libraries" >&2
+  if ! unzip -Z1 "$apk_file" | grep -E "^lib/${expected_abi}/.+\\.so$" >/dev/null; then
+    echo "ERROR: $apk_name does not contain $expected_abi native libraries" >&2
     exit 1
   fi
-  if unzip -Z1 "$apk_file" | grep -E '^lib/(x86|x86_64)/' >/dev/null; then
+  if [[ "$expected_abi" == "arm64-v8a" ]] && unzip -Z1 "$apk_file" | grep -E '^lib/(x86|x86_64)/' >/dev/null; then
     echo "ERROR: $apk_name unexpectedly contains x86 native libraries" >&2
     exit 1
   fi

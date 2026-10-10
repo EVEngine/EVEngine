@@ -43,6 +43,7 @@ jobs:
       - name: Build and install only the Android SDK
         run: |
           make sdk/android \
+            ANDROID_ABI=x86_64 \
             ANDROID_SDK="$ANDROID_SDK" \
             ANDROID_NDK="$ANDROID_NDK" \
             JAVA_HOME="$JAVA_HOME" \
@@ -50,7 +51,7 @@ jobs:
             ANDROID_JOBS=4
 
       - name: Assemble diagnostic APK from the installed SDK
-        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/android android 0.5.2
+        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/android android 0.5.2 x86_64
 
       - name: Stage diagnostic APK
         run: |
@@ -103,4 +104,4 @@ jobs:
             -accel on
           disable-linux-hw-accel: false
           disable-animations: true
-          script: bash .github/scripts/run-consumer-apks.sh apk 1 SDK_TEST_GAME_OK
+          script: bash .github/scripts/run-consumer-apks.sh apk 1 SDK_TEST_GAME_OK x86_64

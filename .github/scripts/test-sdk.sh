@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# test-sdk.sh <sdk-root> <platform> [expected-version]
+# test-sdk.sh <sdk-root> <platform> [expected-version] [android-abi]
 #
 # Verify a freshly-built target-platform SDK is usable by consumers, before it is
 # zipped and published to a GitHub Release. Runs on the same host as the SDK:
@@ -34,6 +34,7 @@ case "$SDK" in
 esac
 PLAT="${2:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
 EXPECTED="${3:-}"
+ANDROID_PACKAGE_ABI="${4:-arm64-v8a}"
 
 case "$PLAT" in
   win32)           RUNTIME="eve.exe" ;;
@@ -74,7 +75,7 @@ if [ "$PLAT" = "android" ]; then
     fail "android template launcher must be EVEngineActivity (EVTestActivity has MAIN)"
   fi
 
-  JNI="$TEMPLATE/app/src/main/jniLibs/arm64-v8a"
+  JNI="$TEMPLATE/app/src/main/jniLibs/$ANDROID_PACKAGE_ABI"
   mkdir -p "$JNI"
   [ -f "$SDK/lib/libmain.so" ] || fail "missing lib/libmain.so"
   cp "$SDK/lib/libmain.so" "$JNI/"
