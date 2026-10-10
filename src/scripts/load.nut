@@ -337,12 +337,12 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
 }
 _startup_ms("async runtime loaded");
 
+// The Scene binding replaces this hook when exposed. Trimmed/optional builds
+// keep a callable no-op, avoiding a per-frame string-keyed provider lookup.
+if (!("eve_scene_flush_components" in getroottable()))
+    eve_scene_flush_components <- function() {};
 eve_init <- function() {};
-eve_update <- function(dt) {
-    // Keep scene node world transforms fresh for games that mutate nodes from
-    // scripts. Clean trees skip the pass entirely (incremental transform).
-    if (has_module("scene")) scene.updateTransformsAll();
-};
+eve_update <- function(dt) {};
 eve_render <- function() {
     gfx.clear();
 };
@@ -979,6 +979,9 @@ eve_frame <- function() {
             }
             dev_notify_frame_done();
         }
+        // Prepare scene components independently of a game's eve_update override.
+        eve_scene_flush_components();
+        if (has_module("scene")) scene.updateTransformsAll();
         // Coalesce dirty declarative UI components after game logic and before
         // rendering. State changes made by dispatched UI events are therefore
         // applied at the start of the following frame.

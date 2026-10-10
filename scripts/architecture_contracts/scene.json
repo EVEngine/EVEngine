@@ -65,11 +65,15 @@
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/scene/SceneCapabilities.cpp",
-        "docs/dev/场景对象模型使用指南.md"
+        "docs/dev/场景对象模型使用指南.md",
+        "src/modules/scene/SceneComponent.h",
+        "src/modules/scene/SceneComponent.cpp",
+        "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [
         "test/scene.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/scene_component_scheduling.cpp"
       ],
       "provides": [
         {
@@ -121,7 +125,13 @@
         "src/modules/scene/TransformSystem.cpp"
       ],
       "protocol": [],
-      "cost_notes": []
+      "cost_notes": [
+        {
+          "api": "SceneComponent::markDirty",
+          "shape": "scheduled-setter",
+          "why": "One weak registration per dirty component; flush before TransformSystem traversal, preserving edits raised by build and cancelling destroyed owners."
+        }
+      ]
     }
   ]
 }

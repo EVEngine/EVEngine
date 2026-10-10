@@ -324,9 +324,11 @@ Graphics::~Graphics() {
     ownedGpuMeshes.clear();
     ownedTextures.clear();
     for (auto& g : ownedGpuTextures) {
-        if (g->sampler) device->destroySampler(g->sampler);
+        if (g->sampler && !g->sharedSampler) device->destroySampler(g->sampler);
     }
     ownedGpuTextures.clear();
+    cachedSamplers_.clear();
+    samplerChangesPending_ = false;
     texturesByPath.clear();
     for (auto& g : ownedGpuShaders) {
         if (g->swapchainPipeline) device->destroyPipeline(g->swapchainPipeline);

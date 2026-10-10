@@ -2038,97 +2038,9 @@ bool Graphics::filterHDRReflectionCubemap(Texture* cubemap, int sampleCount) {
     return true;
 }
 
-void Graphics::setTextureSampler(Texture* texture, const TextureSampler& sampler) {
-    if (!texture) return;
-    auto* gpu = gpuForTexture(texture);
-    if (!gpu) return;
-    gpu->samplerState = sampler;
-    gpu->sampler      = makeSampler(sampler, gpu->mipLevels);
-    texture->sampler  = sampler;
-}
 
 float Graphics::getMaxAnisotropy() const { return maxSamplerAnisotropy; }
 
-Texture* Graphics::newTextureFromFile(const std::string& filename) {
-    if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
-    if (!fileTextureSourceExists(filename)) throw Exception("Could not load image file: %s", filename.c_str());
-
-    auto it = texturesByPath.find(filename);
-    if (it != texturesByPath.end() && it->second) {
-        requestFileImageDecode(filename);
-        if (it->second->hasDeferredFilePixels()) return it->second;
-        auto waited = eve::ResourceManager::getInstance().waitFor(filename);
-        if (!waited.ok()) throw Exception("%s", waited.status().describe().c_str());
-        auto* data = dynamic_cast<image::ImageData*>(&waited.value().get());
-        if (!data || !updateTexture(it->second, data->getWidth(), data->getHeight(),
-                                    static_cast<const uint8_t*>(data->getData())))
-            throw Exception("newTextureFromFile: reload failed '%s'", filename.c_str());
-        return it->second;
-    }
-
-    requestFileImageDecode(filename);
-    auto tex = std::make_unique<Texture>();
-    tex->markDeferredFilePixels(this);
-    Texture* raw = tex.get();
-    ownedTextures.push_back(std::move(tex));
-    texturesByPath[filename] = raw;
-    deferredFileTextures_.push_back({filename, raw});
-    return raw;
-}
-
-bool Graphics::uploadDeferredFileTexture(Texture* texture, image::ImageData* data) {
-    if (!texture || !data) return false;
-    if (texture->gpuHandle)
-        return updateTexture(texture, data->getWidth(), data->getHeight(),
-                             static_cast<const uint8_t*>(data->getData()));
-    Texture* fresh = newTexture(data);
-    if (!fresh || !fresh->gpuHandle) return false;
-    texture->gpuHandle   = fresh->gpuHandle;
-    texture->width       = fresh->width;
-    texture->height      = fresh->height;
-    texture->pixelWidth  = fresh->pixelWidth;
-    texture->pixelHeight = fresh->pixelHeight;
-    texture->mipmapCount = fresh->mipmapCount;
-    texture->sampler     = fresh->sampler;
-    fresh->gpuHandle     = nullptr;
-    auto texIt           = std::find_if(ownedTextures.begin(), ownedTextures.end(),
-                                        [&](const std::unique_ptr<Texture>& t) { return t.get() == fresh; });
-    if (texIt == ownedTextures.end()) return false;
-    (void)texIt->release();
-    ownedTextures.erase(texIt);
-    delete fresh;
-    return true;
-}
-
-bool Graphics::reloadTextureFromFile(const std::string& filename) {
-    auto it = texturesByPath.find(filename);
-    if (it == texturesByPath.end()) return false;
-
-    ensureFileTexturesReady();
-
-    // The provider hands back a cache-owned ImageData; the pin keeps it alive until
-    // the pixels have been copied out of it.
-    image::ImageData* data = nullptr;
-    eve::ResourcePin  keepAlive;
-    try {
-        auto* imgMod = image::Image::create();
-        data         = imgMod->newImageDataFromFile(filename);
-        if (data != nullptr) {
-            auto pinned = eve::ResourceManager::getInstance().pin(data);
-            if (!pinned.ok()) return false;
-            keepAlive = std::move(pinned).takeValue();
-            // The pin is the authority from here on; the borrowed pointer may have gone
-            // stale before the pin was taken.
-            data = static_cast<image::ImageData*>(keepAlive.get());
-        }
-    } catch (...) {
-        return false;
-    }
-    if (!data) return false;
-
-    Texture* tex = it->second;
-    return updateTexture(tex, data->getWidth(), data->getHeight(), static_cast<const uint8_t*>(data->getData()));
-}
 
 bool Graphics::releaseTexture(Texture* texture) {
     if (!texture) return false;
@@ -2693,75 +2605,6 @@ bool Graphics::bakeMeshMorph(Mesh* mesh) {
     return true;
 }
 
-bool Graphics::updateMeshVertices(Mesh* mesh, const float* posXYZ, const float* nrmXYZ, const float* uvST,
-                                  int vertexCount, const uint32_t* indices, int indexCount) {
-    if (!mesh || !mesh->gpuHandle || !posXYZ || vertexCount <= 0 || indexCount < 0) return false;
-    if (indexCount > 0 && (!indices || indexCount % 3 != 0)) return false;
-    for (int i = 0; i < indexCount; ++i) {
-        if (indices[i] >= uint32_t(vertexCount)) return false;
-    }
-    auto*      gpu = static_cast<GpuMesh*>(mesh->gpuHandle);
-    const auto owned =
-        std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
-                     [gpu](const std::unique_ptr<GpuMesh>& candidate) { return candidate.get() == gpu; });
-    if (owned == ownedGpuMeshes.end()) return false;
-
-    std::vector<float> verts;
-    verts.reserve(size_t(vertexCount) * 8u);
-    for (int i = 0; i < vertexCount; ++i) {
-        verts.insert(verts.end(), posXYZ + size_t(i) * 3u, posXYZ + size_t(i) * 3u + 3u);
-        if (nrmXYZ)
-            verts.insert(verts.end(), nrmXYZ + size_t(i) * 3u, nrmXYZ + size_t(i) * 3u + 3u);
-        else
-            verts.insert(verts.end(), {0.f, 0.f, 1.f});
-        if (uvST)
-            verts.insert(verts.end(), uvST + size_t(i) * 2u, uvST + size_t(i) * 2u + 2u);
-        else
-            verts.insert(verts.end(), {0.f, 0.f});
-    }
-
-    const uint64_t vertexBytes = verts.size() * sizeof(float);
-    if (vertexBytes > gpu->vertexCapacity) {
-        WGPUBufferDescriptor desc{};
-        desc.label          = sv("eve_mesh_dynamic_vb");
-        desc.size           = vertexBytes;
-        desc.usage          = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage;
-        gpu->vertexBuffer   = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&desc));
-        gpu->vertexCapacity = vertexBytes;
-    }
-    queue.WriteBuffer(gpu->vertexBuffer, 0, verts.data(), vertexBytes);
-    gpu->vertexCount = uint32_t(vertexCount);
-
-    if (indexCount > 0) {
-        const wgpu::IndexFormat format = vertexCount <= 65535 ? wgpu::IndexFormat::Uint16 : wgpu::IndexFormat::Uint32;
-        std::vector<uint16_t>   idx16;
-        const void*             indexData  = indices;
-        uint64_t                indexBytes = uint64_t(indexCount) * sizeof(uint32_t);
-        if (format == wgpu::IndexFormat::Uint16) {
-            idx16.reserve(size_t(indexCount) + 1u);
-            for (int i = 0; i < indexCount; ++i) idx16.push_back(uint16_t(indices[i]));
-            if (idx16.size() % 2 != 0) idx16.push_back(0);
-            indexData  = idx16.data();
-            indexBytes = idx16.size() * sizeof(uint16_t);
-        }
-        if (format != gpu->indexFormat || indexBytes > gpu->indexCapacity) {
-            WGPUBufferDescriptor desc{};
-            desc.label         = sv("eve_mesh_dynamic_ib");
-            desc.size          = indexBytes;
-            desc.usage         = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index | WGPUBufferUsage_Storage;
-            gpu->indexBuffer   = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&desc));
-            gpu->indexCapacity = indexBytes;
-        }
-        queue.WriteBuffer(gpu->indexBuffer, 0, indexData, indexBytes);
-        gpu->indexFormat = format;
-        gpu->indexCount  = uint32_t(indexCount);
-    }
-
-    mesh->computeBounds(posXYZ, vertexCount);
-    mesh->gpuVertexCount = int(gpu->vertexCount);
-    mesh->indexCount     = int(gpu->indexCount);
-    return true;
-}
 
 void fillMeshAttributes(WGPUVertexAttribute (&attrs)[6]) {
     attrs[0].format         = WGPUVertexFormat_Float32x3;
@@ -3200,6 +3043,7 @@ void Graphics::setLighting2D(const Lighting2DUBO& ubo) {
 
 void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH, WGPUTextureFormat format) {
     ensureFileTexturesReady();
+    applyPendingResourceChanges();
     auto       spans     = std::move(overlaySpans);
     const bool offscreen = uint32_t(format) != uint32_t(surfaceFormat);
 
@@ -4755,6 +4599,7 @@ void Graphics::popValidationScope() {
 
 void Graphics::present() {
     ensureFileTexturesReady();
+    applyPendingResourceChanges();
     if (!device || !surface || !swapchainConfigured) return;
     pumpReadback();
     rebuildSwapchainIfNeeded();

@@ -266,6 +266,7 @@ struct GpuTexture {
     vk::UniqueImage rawCubeImage;
     vk::UniqueImageView rawCubeView;
     vk::Sampler sampler;
+    bool                   sharedSampler = false;
     vkb::BoundSet descriptorSet;
     vk::ImageView viewOverride{};
     int width = 0;
@@ -299,6 +300,7 @@ struct GpuMesh {
     /** @brief CPU index copy for dynamic meshes (also normalizes 16-bit
      *  static indices to 32-bit ring buffers). */
     std::vector<uint32_t> cpuIndices;
+    std::vector<MeshVertex> updateVertices;
     /** @brief Number of dynamic updates; ring slot = count % kDynamicVertexCopies. */
     uint64_t      dynamicWriteCount = 0;
     bool          dynamic           = false;
@@ -599,7 +601,6 @@ public:
     /** @brief Returns the max anisotropy. */
     float getMaxAnisotropy() const override;
     /** @brief Creates a texture from file. @ownership Caller deletes unless documented otherwise. */
-    Texture *newTextureFromFile(const std::string &filename) override;
     /** @brief Reloads texture from file. */
     bool reloadTextureFromFile(const std::string &filename) override;
     /** @brief Uploads deferred file texture. */
@@ -1096,6 +1097,15 @@ private:
     struct GBufferSlot;
     void createSwapchainAndPipeline();
     void applyPreferredSwapchainFormats(vkb::SwapchainBuilder &builder);
+    void                             applyPendingResourceChanges() override;
+    [[nodiscard]] ResultRef<Texture> requestFileTexture(const std::string &filename) override;
+    bool                             samplerChangesPending_ = false;
+    struct CachedSampler {
+        TextureSampler    state;
+        uint32_t          mipLevels;
+        vk::UniqueSampler sampler;
+    };
+    std::vector<CachedSampler> cachedSamplers_;
     void createTexturedPipeline();
     void createLit2DPipeline();
     void          createGpuParticlePipelines();

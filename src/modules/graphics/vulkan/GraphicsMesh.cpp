@@ -357,7 +357,9 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
         if (indices[i] >= uint32_t(vertexCount)) return false;
     }
 
-    std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
+    auto *gpu   = static_cast<GpuMesh *>(mesh->gpuHandle);
+    auto &verts = gpu->updateVertices;
+    verts.resize(static_cast<size_t>(vertexCount));
     for (int i = 0; i < vertexCount; ++i) {
         MeshVertex &v = verts[static_cast<size_t>(i)];
         v.pos = {posXYZ[size_t(i) * 3u], posXYZ[size_t(i) * 3u + 1u], posXYZ[size_t(i) * 3u + 2u]};
@@ -372,7 +374,6 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
             v.uv = {0.f, 0.f};
     }
 
-    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
     mesh->computeBounds(posXYZ, vertexCount);
     // Same ring-buffer approach as bakeMeshMorph: never wait on in-flight
     // frames, just write the next copy.
