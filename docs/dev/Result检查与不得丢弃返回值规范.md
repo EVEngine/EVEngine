@@ -317,7 +317,7 @@ Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下
 
 - 未来公共 `Result<T>` / `Result<void>`
 - 迁移后的 `EditorResult<T>`
-- `presentation::WriteResult`
+- `presentation::WriteResult`（P0.2 迁至 `IPropertyAccess::write` → `Result<void>`）
 - `Store::commit` → `Result<PatchCommitInfo>`（`PatchResult` 仅脚本兼容投影）
 - ConditionResult、SettlementResult、TransferResult、CompileResult 等包含状态/诊断的结果
 
