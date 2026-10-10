@@ -118,6 +118,11 @@ eve_declare_module(NAME physics_destruction_editing DIR physics/destruction/edit
 eve_declare_module(NAME physics_action DIR physics/action LAYER 5
                    DEPS action physics
                    GROUP 3d web)
+# Bone-bound continuous trajectory sweeps (UE5 Physics Asset / anim-notify style).
+# Samples IAttachmentPointSource and casts through World3D; no animation include.
+eve_declare_module(NAME physics_trajectory DIR physics/trajectory LAYER 5
+                   DEPS physics
+                   GROUP 3d web)
 # Optional map-backed steering provider. Keeping this bridge above both owners
 # lets headless/minimal combat builds omit the rendering-heavy map closure.
 eve_declare_module(NAME combat_navigation DIR combat/navigation LAYER 5
