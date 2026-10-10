@@ -62,7 +62,28 @@ struct PatchError {
     std::string message;
 };
 
-/** @brief Summary of the most recent batch commit attempt. */
+/**
+ * @brief Successful payload of `Store::commit`.
+ * @remarks Failure diagnostics carry the structured patch errors; this value is
+ *          only present when the commit applied or was a no-op.
+ */
+struct PatchCommitInfo {
+    int      changedCount   = 0;
+    uint64_t revisionBefore = 0;
+    uint64_t revisionAfter  = 0;
+};
+
+/**
+ * @brief Compatibility summary of the most recent batch commit attempt.
+ * @compatibility Prefer `Store::commit` → `Result<PatchCommitInfo>` for C++.
+ *                Kept for Squirrel `PatchBatch.result()` until script callers
+ *                consume Result diagnostics for per-operation errors.
+ * @owner statepatch
+ * @issue api-dedup-P0.3
+ * @reason Squirrel PatchResult/PatchError class surface still queries fields.
+ * @expiry 2026-12-31
+ * @removal Delete after script bindings project commit failures via Result only.
+ */
 struct PatchResult {
     bool                    success        = false;
     int                     changedCount   = 0;
@@ -133,8 +154,16 @@ public:
     [[nodiscard]] eve::Result<void> releaseBatch(PatchBatchHandleRef reference);
     /** @brief Reports whether a batch reference is stale for this Store. */
     [[nodiscard]] bool isBatchStale(PatchBatchHandleRef reference) const noexcept;
-    /** @brief Validates and atomically commits a batch. */
-    bool commit(PatchBatch* batch);
+    /**
+     * @brief Validates and atomically commits a batch.
+     * @param batch Borrowed batch owned by this Store (or a temporary used by
+     *              a transaction participant). Null is rejected.
+     * @return `PatchCommitInfo` on success (including no-op commits); failure
+     *         Result with diagnostics and a filled `batch->result()` summary.
+     * @remarks On failure the Store is unchanged. `batch->result()` remains a
+     *          compatibility projection for script inspection.
+     */
+    [[nodiscard]] eve::Result<PatchCommitInfo> commit(PatchBatch* batch);
     /** @brief Returns whether a subject and key currently exist. */
     bool has(const std::string& subject, const std::string& key) const;
     /** @brief Returns canonical JSON for a value, or an empty string when absent. */
