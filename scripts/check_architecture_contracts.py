@@ -54,7 +54,6 @@ RULES = (
     "ecs-system",
     "time-rng",
     "api-lifetime",
-    "module-interface",
     "persistence",
     "optional-capability",
     "backend-contract",
@@ -71,10 +70,6 @@ COMMON_REQUIRED = {
     "tests",
 }
 RULE_REQUIRED = {
-    "module-interface": {
-        "provides", "requires", "emits", "observes", "binds", "protocol",
-        "thread_affinity", "hot_path", "trim", "cost_notes",
-    },
     "api-shape": {"result_policy", "nodiscard_policy", "pointer_policy"},
     "link": {"symbols", "create", "ownership", "destroy_order", "restore", "stale"},
     "state-owner": {"state", "authoritative_owner", "projections"},

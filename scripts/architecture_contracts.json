@@ -916,6 +916,189 @@
       "lock_callback_policy": "release internal locks before invoking unknown callbacks or scripts."
     },
     {
+      "id": "persistence-contract-policy",
+      "rule": "persistence",
+      "scope": "src/**",
+      "owner": "serialization-maintainers",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Persistent formats are versioned and restore is candidate-first so failures do not publish partial state.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/Snapshot.h",
+        "src/modules/schema/Schema.h",
+        "docs/dev/Eve-Schema子集与绑定契约.md"
+      ],
+      "tests": [
+        "test/snapshot_envelope.cpp",
+        "test/schema_contract.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "schema": "stable logical schema id and content hash identify the payload.",
+      "version": "SchemaVersion and snapshot revision/tick are distinct typed fields.",
+      "migration": "known older versions migrate into a local candidate before validation and commit.",
+      "unknown_fields": "unknown fields follow the schema's explicit reject, preserve or ignore policy.",
+      "restore_atomicity": "parse, validate and migrate locally; publish once; failure leaves the observable owner unchanged."
+    },
+    {
+      "id": "rts-command-log-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rts/RTSReplay.*",
+      "owner": "rts::RTSCommandLog",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Formation orientation and layout are canonical replay inputs and must survive round trips.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSReplay.h",
+        "src/modules/rts/RTSReplay.cpp",
+        "src/modules/rts/RTSFormation.cpp",
+        "docs/usr/modules/crowd.md"
+      ],
+      "tests": [
+        "test/rts_formation.cpp",
+        "test/rts_restore.cpp",
+        "test/rts_groups.cpp"
+      ],
+      "schema": "EVERTS_COMMANDS positional text schema with explicit version header.",
+      "version": "Versions 1 through 5; v4 stores orientation/new layouts, v5 adds MovementGroup operation and groupLeadDistance.",
+      "migration": "Import v1-v3 with zero rotation and legacy enum bounds; v1-v4 cannot encode MovementGroup. Export legacy inputs at their original version; group commands select v5.",
+      "unknown_fields": "Reject unsupported header versions, malformed fields and unknown enums; positional trailing data must parse as a complete valid record.",
+      "restore_atomicity": "Parse records into a local candidate vector and validate through the canonical queue before replacing or appending target history."
+    },
+    {
+      "id": "rts-state-snapshot-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rts/RTSSnapshot.*",
+      "owner": "rts::RTS",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Movement-group members bind stable unit identities to exact order lifetimes and must survive restore.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSSnapshot.h",
+        "src/modules/rts/RTSSnapshot.cpp",
+        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSMovementGroups.cpp",
+        "docs/usr/modules/crowd.md"
+      ],
+      "tests": [
+        "test/rts_groups.cpp",
+        "test/rts_restore.cpp"
+      ],
+      "schema": "RTSStateSnapshot typed in-memory schema; canonicalStateJson is its synchronization projection.",
+      "version": "Version 2 adds stable movement-group membership and leadDistance.",
+      "migration": "Version 1 accepts no movement groups; both v1 and v2 rebuild generation-checked member handles. Derived pacing factors reset and rebuild on the next step.",
+      "unknown_fields": "Typed snapshots cannot represent unknown fields; unknown versions and invalid, duplicate or order-mismatched members are rejected.",
+      "restore_atomicity": "Stage member references and order validation before root mutation, then publish groups with the validated restored roots."
+    },
+    {
+      "id": "smooth-mountain-terraingenerationsession-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/procgen/heightmap/TerrainGenerationSession.cpp",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainGenerationSession.cpp"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp_persistence.cpp"
+      ],
+      "schema": "eve.procgen.terrain-generation-session",
+      "version": "2",
+      "migration": "Read v1 with zero smoothWidth/edgeFade; reject new operation 6 in old records.",
+      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
+      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
+    },
+    {
+      "id": "smooth-mountain-terrainspawnplancodec-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp_persistence.cpp"
+      ],
+      "schema": "eve.procgen.terrain-spawn-plan",
+      "version": "4",
+      "migration": "Read versions 0-3 with zero smoothWidth/edgeFade; preserve prior enabled migration; reject operations outside the version-supported Raise..SmoothRaise range.",
+      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
+      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
+    },
+    {
+      "id": "tactics-persistence-contract",
+      "rule": "persistence",
+      "scope": "src/modules/tactics/TacticsPersistence.h",
+      "owner": "tactics::Battle",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Battle snapshots and accepted command logs are deterministic inputs for save, replay and divergence diagnosis.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/tactics/TacticsPersistence.h",
+        "src/modules/tactics/TacticsPersistence.cpp",
+        "src/modules/tactics/TacticsReplay.cpp"
+      ],
+      "tests": [
+        "test/tactics_replay.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
+      "version": "SchemaVersion 1; battle Revision and SimulationTick remain separate typed envelope fields.",
+      "migration": "There is no older released tactics schema; version 1 is exact and newer/unknown versions are rejected until an explicit migration is registered.",
+      "unknown_fields": "Envelope and tactics payload objects reject unknown or missing fields; arrays validate every owning record.",
+      "restore_atomicity": "Hash, identity, version, complete payload, links and invariants are validated in a local Candidate before one commit to battle/components."
+    },
+    {
+      "id": "optional-capability-policy",
+      "rule": "optional-capability",
+      "scope": "src/**",
+      "owner": "platform-maintainers",
+      "issue": "EVENGINE-ARCH-OPTIONAL-CAPABILITIES",
+      "reason": "Capability absence is a tested state, not an implicit soft skip; fallback behavior is observable and classified.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "cmake/profile_checks.cmake",
+        "docs/dev/2026-08-26-profile-quality-gates.md"
+      ],
+      "tests": [
+        "test/profile/capability_present.cpp",
+        "test/profile/capability_absent.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "present_test": "provider-present profile builds and runs the capability probe.",
+      "absent_test": "provider-absent profile builds and runs the explicit absence probe.",
+      "fallback_observable": "fallback status/diagnostic is exposed to the caller and is not a silent success.",
+      "fallback_policy": "fallbacks are named, classified and tracked by the bounded quality-debt metadata gate."
+    },
+    {
+      "id": "backend-contract-policy",
+      "rule": "backend-contract",
+      "scope": "src/**",
+      "owner": "runtime-platform-maintainers",
+      "issue": "EVENGINE-ARCH-BACKEND-CONTRACTS",
+      "reason": "CPU/GPU and provider implementations share observable contracts and inject failures at lifecycle boundaries.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/物理系统分层与后端契约.md",
+        "src/modules/physics/backend/SimulationBackend.h"
+      ],
+      "tests": [
+        "test/physics_artifact_provider.cpp",
+        "test/procgen_artifact_publish.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "contract": "provider implementations expose the same Result/status, ownership, determinism and failure semantics.",
+      "providers": "CPU reference plus production GPU/Vulkan/WebGPU providers where the profile supplies them.",
+      "shared_contract_tests": "the same lifecycle and parity assertions run against each available provider.",
+      "failure_injection": "prepare, commit, rollback, restore and capability-loss failures are injected and assert no partial publication."
+    },
+    {
       "id": "attributes-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/attributes/**",
@@ -2012,189 +2195,6 @@
       "hot_path": [
         "src/modules/window/sdl/EventSink.cpp"
       ]
-    },
-    {
-      "id": "persistence-contract-policy",
-      "rule": "persistence",
-      "scope": "src/**",
-      "owner": "serialization-maintainers",
-      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
-      "reason": "Persistent formats are versioned and restore is candidate-first so failures do not publish partial state.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "src/engine/common/Snapshot.h",
-        "src/modules/schema/Schema.h",
-        "docs/dev/Eve-Schema子集与绑定契约.md"
-      ],
-      "tests": [
-        "test/snapshot_envelope.cpp",
-        "test/schema_contract.cpp",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "schema": "stable logical schema id and content hash identify the payload.",
-      "version": "SchemaVersion and snapshot revision/tick are distinct typed fields.",
-      "migration": "known older versions migrate into a local candidate before validation and commit.",
-      "unknown_fields": "unknown fields follow the schema's explicit reject, preserve or ignore policy.",
-      "restore_atomicity": "parse, validate and migrate locally; publish once; failure leaves the observable owner unchanged."
-    },
-    {
-      "id": "rts-command-log-persistence",
-      "rule": "persistence",
-      "scope": "src/modules/rts/RTSReplay.*",
-      "owner": "rts::RTSCommandLog",
-      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
-      "reason": "Formation orientation and layout are canonical replay inputs and must survive round trips.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "src/modules/rts/RTSReplay.h",
-        "src/modules/rts/RTSReplay.cpp",
-        "src/modules/rts/RTSFormation.cpp",
-        "docs/usr/modules/crowd.md"
-      ],
-      "tests": [
-        "test/rts_formation.cpp",
-        "test/rts_restore.cpp",
-        "test/rts_groups.cpp"
-      ],
-      "schema": "EVERTS_COMMANDS positional text schema with explicit version header.",
-      "version": "Versions 1 through 5; v4 stores orientation/new layouts, v5 adds MovementGroup operation and groupLeadDistance.",
-      "migration": "Import v1-v3 with zero rotation and legacy enum bounds; v1-v4 cannot encode MovementGroup. Export legacy inputs at their original version; group commands select v5.",
-      "unknown_fields": "Reject unsupported header versions, malformed fields and unknown enums; positional trailing data must parse as a complete valid record.",
-      "restore_atomicity": "Parse records into a local candidate vector and validate through the canonical queue before replacing or appending target history."
-    },
-    {
-      "id": "rts-state-snapshot-persistence",
-      "rule": "persistence",
-      "scope": "src/modules/rts/RTSSnapshot.*",
-      "owner": "rts::RTS",
-      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
-      "reason": "Movement-group members bind stable unit identities to exact order lifetimes and must survive restore.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "src/modules/rts/RTSSnapshot.h",
-        "src/modules/rts/RTSSnapshot.cpp",
-        "src/modules/rts/RTSRestore.cpp",
-        "src/modules/rts/RTSMovementGroups.cpp",
-        "docs/usr/modules/crowd.md"
-      ],
-      "tests": [
-        "test/rts_groups.cpp",
-        "test/rts_restore.cpp"
-      ],
-      "schema": "RTSStateSnapshot typed in-memory schema; canonicalStateJson is its synchronization projection.",
-      "version": "Version 2 adds stable movement-group membership and leadDistance.",
-      "migration": "Version 1 accepts no movement groups; both v1 and v2 rebuild generation-checked member handles. Derived pacing factors reset and rebuild on the next step.",
-      "unknown_fields": "Typed snapshots cannot represent unknown fields; unknown versions and invalid, duplicate or order-mismatched members are rejected.",
-      "restore_atomicity": "Stage member references and order validation before root mutation, then publish groups with the validated restored roots."
-    },
-    {
-      "id": "smooth-mountain-terraingenerationsession-persistence",
-      "rule": "persistence",
-      "scope": "src/modules/procgen/heightmap/TerrainGenerationSession.cpp",
-      "owner": "procgen-maintainers",
-      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
-      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
-        "src/modules/procgen/heightmap/TerrainGenerationSession.cpp"
-      ],
-      "tests": [
-        "test/terrain_smooth_stamp_persistence.cpp"
-      ],
-      "schema": "eve.procgen.terrain-generation-session",
-      "version": "2",
-      "migration": "Read v1 with zero smoothWidth/edgeFade; reject new operation 6 in old records.",
-      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
-      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
-    },
-    {
-      "id": "smooth-mountain-terrainspawnplancodec-persistence",
-      "rule": "persistence",
-      "scope": "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp",
-      "owner": "procgen-maintainers",
-      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
-      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
-        "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp"
-      ],
-      "tests": [
-        "test/terrain_smooth_stamp_persistence.cpp"
-      ],
-      "schema": "eve.procgen.terrain-spawn-plan",
-      "version": "4",
-      "migration": "Read versions 0-3 with zero smoothWidth/edgeFade; preserve prior enabled migration; reject operations outside the version-supported Raise..SmoothRaise range.",
-      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
-      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
-    },
-    {
-      "id": "tactics-persistence-contract",
-      "rule": "persistence",
-      "scope": "src/modules/tactics/TacticsPersistence.h",
-      "owner": "tactics::Battle",
-      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
-      "reason": "Battle snapshots and accepted command logs are deterministic inputs for save, replay and divergence diagnosis.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "src/modules/tactics/TacticsPersistence.h",
-        "src/modules/tactics/TacticsPersistence.cpp",
-        "src/modules/tactics/TacticsReplay.cpp"
-      ],
-      "tests": [
-        "test/tactics_replay.cpp",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
-      "version": "SchemaVersion 1; battle Revision and SimulationTick remain separate typed envelope fields.",
-      "migration": "There is no older released tactics schema; version 1 is exact and newer/unknown versions are rejected until an explicit migration is registered.",
-      "unknown_fields": "Envelope and tactics payload objects reject unknown or missing fields; arrays validate every owning record.",
-      "restore_atomicity": "Hash, identity, version, complete payload, links and invariants are validated in a local Candidate before one commit to battle/components."
-    },
-    {
-      "id": "optional-capability-policy",
-      "rule": "optional-capability",
-      "scope": "src/**",
-      "owner": "platform-maintainers",
-      "issue": "EVENGINE-ARCH-OPTIONAL-CAPABILITIES",
-      "reason": "Capability absence is a tested state, not an implicit soft skip; fallback behavior is observable and classified.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "cmake/profile_checks.cmake",
-        "docs/dev/2026-08-26-profile-quality-gates.md"
-      ],
-      "tests": [
-        "test/profile/capability_present.cpp",
-        "test/profile/capability_absent.cpp",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "present_test": "provider-present profile builds and runs the capability probe.",
-      "absent_test": "provider-absent profile builds and runs the explicit absence probe.",
-      "fallback_observable": "fallback status/diagnostic is exposed to the caller and is not a silent success.",
-      "fallback_policy": "fallbacks are named, classified and tracked by the bounded quality-debt metadata gate."
-    },
-    {
-      "id": "backend-contract-policy",
-      "rule": "backend-contract",
-      "scope": "src/**",
-      "owner": "runtime-platform-maintainers",
-      "issue": "EVENGINE-ARCH-BACKEND-CONTRACTS",
-      "reason": "CPU/GPU and provider implementations share observable contracts and inject failures at lifecycle boundaries.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "docs/dev/物理系统分层与后端契约.md",
-        "src/modules/physics/backend/SimulationBackend.h"
-      ],
-      "tests": [
-        "test/physics_artifact_provider.cpp",
-        "test/procgen_artifact_publish.cpp",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "contract": "provider implementations expose the same Result/status, ownership, determinism and failure semantics.",
-      "providers": "CPU reference plus production GPU/Vulkan/WebGPU providers where the profile supplies them.",
-      "shared_contract_tests": "the same lifecycle and parity assertions run against each available provider.",
-      "failure_injection": "prepare, commit, rollback, restore and capability-loss failures are injected and assert no partial publication."
     },
     {
       "id": "quality-debt-policy",
