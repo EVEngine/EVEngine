@@ -318,7 +318,7 @@ Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下
 - 未来公共 `Result<T>` / `Result<void>`
 - 迁移后的 `EditorResult<T>`
 - `presentation::WriteResult`
-- `statepatch::PatchResult` 或其公共 Result 替代
+- `Store::commit` → `Result<PatchCommitInfo>`（`PatchResult` 仅脚本兼容投影）
 - ConditionResult、SettlementResult、TransferResult、CompileResult 等包含状态/诊断的结果
 
 现有 Editor API 全部属于这一类，包括但不限于：
