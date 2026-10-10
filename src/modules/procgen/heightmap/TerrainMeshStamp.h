@@ -17,7 +17,7 @@ class Heightmap;
  * @note Apply model transforms before setSource. Undercuts, UVs and materials are discarded.
  * Repeated bakes are deterministic on one toolchain; compare platforms with float tolerance.
  */
-class TerrainMeshStampBuilder {
+class EVENGINE_API_DOMAINS TerrainMeshStampBuilder {
 public:
     /**
      * @brief Validate and copy a CPU triangle mesh; failure preserves the prior source.
