@@ -1,4 +1,5 @@
 #include "ui/UISystem.h"
+#include "ui/Component.h"
 
 #include "ui/Layout.h"
 #include "ui/Icons.h"
@@ -1713,6 +1714,7 @@ UIHostHandle UISystem::findHostByOwner(uint32_t ownerId) {
 }
 
 void UISystem::render() {
+    detail::flushPendingComponents();
     EV_PROFILE_MODULE("ui", "UISystem::render");
     if (ecs::current()->getManager<UIHost>() == nullptr) return;
 

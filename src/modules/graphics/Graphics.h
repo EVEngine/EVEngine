@@ -683,21 +683,33 @@ public:
     [[nodiscard]] virtual eve::Result<void> updateTextureRegions(Texture*                             texture,
                                                                  std::span<const TextureRegionUpload> regions) = 0;
 
-    /**
-     * @brief Recreate the sampler for an existing texture (keeps image / mip chain).
-     * No-op when texture is null or not owned by this Graphics.
-     */
+    /** @brief Set desired sampler state; equal state is a no-op and repeated edits coalesce.
+     * @thread Graphics thread, non-reentrant; inputs copied, no callbacks.
+     * @details Published before the next consuming draw. Releasing a texture drops pending state.
+     * @cost Equal setter is constant-time; changed state checks factory ownership; publication may create a cached
+     * sampler and drain in-flight descriptor use once per batch on Vulkan. Keep continuously varying sampler state out
+     * of hot loops. */
     virtual void setTextureSampler(Texture *texture, const TextureSampler &sampler) = 0;
 
     /** @brief Device max supported anisotropy (1 if unsupported). Valid after initWithWindow. */
     virtual float getMaxAnisotropy() const = 0;
 
-    /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure.
-     *  Same path returns the same Texture* and reloads pixels in place on repeat calls.
-     *  CPU decode is queued on the thread pool; GPU upload is coalesced automatically
-     *  before the texture is sampled or its size is queried. */
-    /** @brief Creates a texture from file. @ownership Caller deletes unless documented otherwise. */
-    virtual Texture *newTextureFromFile(const std::string &filename) = 0;
+    /** @brief Load a path-cached file texture; cache hits return the same resource without I/O or upload.
+     * @ownership Graphics owns the returned facade; releaseTexture transfers it to the caller.
+     * @lifetime Until explicit release or graphics shutdown. Store the resource instead of loading per frame.
+     * @thread Graphics thread, no callbacks. Legacy pointer/exception projection of the resource provider.
+     * @cost Cache miss requests decode; GPU realization occurs at the first consuming draw.
+     * Cache hit performs path lookup only. Reload is explicit through reloadTextureFromFile. */
+    Texture *newTextureFromFile(const std::string &filename) override;
+    /** @brief Load a ready cached texture through the same file-resource owner as the legacy facade.
+     * @param filename Synchronously consumed path.
+     * @return Structured failure, or a borrow of the Graphics-owned resident texture.
+     * @ownership Graphics owns the result; releaseTexture transfers its facade to the caller.
+     * @lifetime Until release or graphics shutdown; reload preserves facade identity.
+     * @thread Graphics owner thread; no callbacks.
+     * @cost Named load: misses finish decode/upload before returning; resident hits only query the cache.
+     * Store the texture for frame loops; successful result size getters never prepare resources. */
+    [[nodiscard]] ResultRef<Texture> loadTexture(const std::string &filename) override;
     /** Load a texture from disk with wrap/repeat sampling (for tiling structures).
      *  Non-virtual helper (same pattern as newTextureFromImageData); reads + decodes
      *  via Filesystem/Image then uploads with the requested repeat modes. */
@@ -863,15 +875,17 @@ public:
 
     /**
      * @brief In-place update of a mesh's vertex/index data (CPU -> host-visible VBO).
-     * Mirrors bakeMeshMorph: the update synchronizes with in-flight GPU work,
-     * so prefer rebuilding only when content actually changes. The mesh's
+     * Only call when content changes: conversion and upload remain linear in vertex count.
+     * Vulkan uses frame-safe ring buffers; WebGPU queues writes into retained buffers. The mesh's
      * buffer is reused while it fits (stable GPU handle) and reallocated when
      * the new size grows. Returns false when unsupported by a backend.
      * posXYZ/nrmXYZ follow newMeshFromArrays layout (uvST may be null);
      * indices/indexCount may be null/0 to keep the mesh's existing indices.
      */
     /** @compatibility Legacy boolean mesh update facade. */
-    /** @brief Updates mesh vertices. */
+    /** @brief Updates mesh vertices.
+     * @cost Linear conversion/upload per changed vertex/index stream; CPU scratch and fitting GPU buffers are reused.
+     */
     virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
                                     const float *uvST, int vertexCount, const uint32_t *indices,
                                     int indexCount) = 0;
@@ -2235,6 +2249,13 @@ protected:
     void dropDeferredFileTexture(Texture *texture);
     /** @brief Uploads deferred file texture. */
     virtual bool uploadDeferredFileTexture(Texture *texture, image::ImageData *data);
+    /** @brief Publish queued resource state before its next consuming draw.
+     * @thread Graphics thread; no callbacks. Backend failures propagate through the draw boundary.
+     * @cost No work without pending changes; changed descriptors may require one batch GPU drain. */
+    virtual void applyPendingResourceChanges() {}
+    /** @brief Canonical checked cache request; pixel realization is performed by loadTexture or legacy consumers.
+     * @ownership Result borrows the graphics cache; owner thread only, no callbacks. */
+    [[nodiscard]] virtual ResultRef<Texture> requestFileTexture(const std::string &filename) = 0;
 
     std::vector<DeferredFileTexture> deferredFileTextures_;
     bool realizingFileTextures_ = false;

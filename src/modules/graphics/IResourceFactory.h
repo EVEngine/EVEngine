@@ -144,10 +144,34 @@ public:
                                            bool generateMipmaps, float maxAnisotropy,
                                            const std::string &filter, const std::string &mipmap,
                                            float lodBias = 0.f) = 0;
-    /** @brief Sets the texture sampler. */
+    /** @brief Set desired sampler state; equal state is a no-op and repeated edits coalesce.
+     * @thread Graphics thread, non-reentrant; inputs copied, no callbacks.
+     * @details Published before the next consuming draw. Releasing a texture drops pending state.
+     * @cost Equal setter is constant-time; changed state checks factory ownership; publication may create a cached
+     * sampler and drain in-flight descriptor use once per batch on Vulkan. Keep continuously varying sampler state out
+     * of hot loops. */
     virtual void setTextureSampler(Texture *texture, const TextureSampler &sampler) = 0;
-    /** @brief Creates a texture from file. @ownership Caller deletes unless documented otherwise. */
+    /** @brief Load a path-cached file texture; cache hits return the same resource without I/O or upload.
+     * @ownership Graphics owns the returned facade; releaseTexture transfers it to the caller.
+     * @lifetime Until explicit release or graphics shutdown. Store the resource instead of loading per frame.
+     * @thread Graphics thread, no callbacks. Legacy pointer/exception projection of the resource provider.
+     * @cost Cache miss requests decode; GPU realization occurs at the first consuming draw.
+     * Cache hit performs path lookup only. Reload is explicit through reloadTextureFromFile. */
     virtual Texture *newTextureFromFile(const std::string &filename) = 0;
+    /** @brief Load a ready path-cached texture without requiring caller-managed tasks.
+     * @param filename File path consumed synchronously; not retained as a borrowed string.
+     * @return Factory-owned resident texture or an explicit diagnostic; default provider is Unsupported.
+     * @ownership Borrowed result; factory retains ownership.
+     * @lifetime Until releaseTexture or factory destruction; reload preserves facade identity.
+     * @thread Graphics owner thread; no callbacks.
+     * @cost Named load: first use decodes/uploads before returning; resident hits only query the path cache.
+     * Store the result for frame loops. Size queries on successful results perform no preparation. */
+    [[nodiscard]] virtual ResultRef<Texture> loadTexture(const std::string &filename) {
+        (void)filename;
+        return ResultRef<Texture>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                             "resident file texture loading is unavailable", {}, {},
+                                                             "graphics.texture.load"));
+    }
     /** @brief Creates a texture from file repeated. @ownership Caller deletes unless documented otherwise. */
     virtual Texture *newTextureFromFileRepeated(const std::string &filename, bool repeatU,
                                                 bool repeatV) = 0;
@@ -175,7 +199,8 @@ public:
     virtual Mesh *newMeshFromArraysColored(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                                            const float *colorRGBA, int vertexCount,
                                            const uint32_t *indices, int indexCount) = 0;
-    /** @brief Updates mesh vertices. */
+    /** @brief Updates mesh vertices.
+     * @cost Linear conversion/upload per changed stream; amortize by submitting only changed geometry. */
     virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
                                     const float *uvST, int vertexCount, const uint32_t *indices,
                                     int indexCount) = 0;

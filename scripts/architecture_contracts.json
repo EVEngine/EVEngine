@@ -826,11 +826,14 @@
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/ui/UISystem.h",
-        "docs/dev/重构代码质量与系统完整性规范.md"
+        "docs/dev/重构代码质量与系统完整性规范.md",
+        "src/modules/ui/Component.cpp",
+        "src/modules/ui/UIComponentScript.cpp"
       ],
       "tests": [
         "test/ui_control_semantics.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/UIComponentScheduling.cpp"
       ],
       "systems": [
         "UISystem"
@@ -839,7 +842,7 @@
       "view": "Generation-checked UI component tree plus per-frame input state.",
       "read_set": "Widget state, layout inputs, input events and backend availability.",
       "write_set": "Widget interaction state, dirty flags, layout/render submissions.",
-      "structural_changes": "Widget structural edits are queued by UI owner; traversal does not mutate tree topology directly.",
+      "structural_changes": "Dirty native components flush before the widget View is opened; widget structural edits never occur during traversal.",
       "events": "UI input/change events are emitted after state mutation; backend callbacks are not retained.",
       "services": "Borrowed UIBackend, injected input frame and script bindings on the owner thread.",
       "phase": "UI input/layout/render phase."
@@ -1621,22 +1624,26 @@
       "scope": "src/modules/graphics/**",
       "owner": "graphics-maintainers",
       "issue": "EVENGINE-MODULAR-ASSET-IMPORT",
-      "reason": "Changed import faces retain backend-owned shared textures and explicit foliage material state; existing faces are unchanged.",
+      "reason": "Resource factory owns cached file textures and samplers; groom mutations prepare once and reuse the same backend mesh.",
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/graphics/IResourceFactory.h",
         "src/modules/graphics/Graphics.h",
-        "docs/usr/modules/graphics.md"
+        "docs/usr/modules/graphics.md",
+        "src/modules/graphics/vulkan/GraphicsSampler.cpp",
+        "src/modules/graphics/webgpu/GraphicsSampler.cpp",
+        "src/modules/graphics/hair/GroomInstance.cpp"
       ],
       "tests": [
         "test/resource_lifetime.cpp",
-        "test/graphics_vegetation_translucency.cpp"
+        "test/graphics_vegetation_translucency.cpp",
+        "test/graphics_resource_reuse.cpp"
       ],
       "provides": [
         {
           "capability": "IResourceFactory",
           "impl": "vulkan::Graphics and webgpu::Graphics",
-          "absent_behavior": "Default newSharedTexture reports Unsupported; no implicit uncached allocation."
+          "absent_behavior": "Default newSharedTexture and loadTexture report Unsupported; no implicit uncached allocation."
         }
       ],
       "requires": [
@@ -1659,7 +1666,9 @@
           "script_class": "graphics",
           "methods": [
             "configureFoliageWind",
-            "setFoliageWindTime"
+            "setFoliageWindTime",
+            "loadTexture",
+            "setTextureSampler"
           ]
         }
       ],
@@ -1678,10 +1687,33 @@
           "api": "configureFoliageWind",
           "shape": "two-step",
           "why": "Prepare once, then explicit setFoliageWindTime updates per frame."
+        },
+        {
+          "api": "loadTexture",
+          "shape": "owned-result",
+          "why": "Canonical ready load returns ResultRef borrowing the graphics cache; a miss completes preparation, resident hits do not probe the source or upload."
+        },
+        {
+          "api": "newTextureFromFile",
+          "shape": "named-load",
+          "why": "Legacy facade: first use prepares pixels; resident cache hits do not probe files or upload. Reload is explicit."
+        },
+        {
+          "api": "setTextureSampler",
+          "shape": "scheduled-setter",
+          "why": "Equal state does no backend work; edits publish before consuming draws, with one Vulkan descriptor drain per changed batch."
+        },
+        {
+          "api": "GroomInstance::update",
+          "shape": "scheduled-derived",
+          "why": "Every simulation dt executes; derived geometry publishes once in view preparation or explicit draw. Mesh identity/capacity is reused."
         }
       ],
       "hot_path": [
-        "src/modules/graphics/RenderSystem3D.cpp"
+        "src/modules/graphics/RenderSystem3D.cpp",
+        "src/modules/graphics/hair/GroomInstance.cpp",
+        "src/modules/graphics/vulkan/GraphicsSampler.cpp",
+        "src/modules/graphics/webgpu/GraphicsSampler.cpp"
       ]
     },
     {
@@ -2125,11 +2157,15 @@
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/scene/SceneCapabilities.cpp",
-        "docs/dev/场景对象模型使用指南.md"
+        "docs/dev/场景对象模型使用指南.md",
+        "src/modules/scene/SceneComponent.h",
+        "src/modules/scene/SceneComponent.cpp",
+        "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [
         "test/scene.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/scene_component_scheduling.cpp"
       ],
       "provides": [
         {
@@ -2181,7 +2217,13 @@
         "src/modules/scene/TransformSystem.cpp"
       ],
       "protocol": [],
-      "cost_notes": []
+      "cost_notes": [
+        {
+          "api": "SceneComponent::markDirty",
+          "shape": "scheduled-setter",
+          "why": "One weak registration per dirty component; flush before TransformSystem traversal, preserving edits raised by build and cancelling destroyed owners."
+        }
+      ]
     },
     {
       "id": "statepatch-module-interface",
@@ -2394,6 +2436,44 @@
       "cost_notes": [],
       "hot_path": [
         "src/modules/touch/sdl/EventSink.cpp"
+      ]
+    },
+    {
+      "id": "ui-component-scheduling-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/Component*",
+      "owner": "ui::Component",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Native component edits coalesce before UI traversal; weak scheduling lifetime is owned by each component.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/ui/Component.h",
+        "src/modules/ui/Component.cpp",
+        "docs/usr/modules/ui.md",
+        "src/modules/ui/UIComponentScript.cpp"
+      ],
+      "tests": [
+        "test/UIComponentScheduling.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No new trim claim. Component scheduling is compiled only with UI; no provider or backend is required to queue/flush descriptions."
+      },
+      "thread_affinity": "UI owner thread; no locks across virtual build; component must not destroy itself during build.",
+      "cost_notes": [
+        {
+          "api": "Component::markDirty",
+          "shape": "scheduled-setter",
+          "why": "Repeated edits coalesce; build cost is paid once before UI traversal, not by getters."
+        }
+      ],
+      "hot_path": [
+        "src/modules/ui/Component.cpp"
       ]
     },
     {

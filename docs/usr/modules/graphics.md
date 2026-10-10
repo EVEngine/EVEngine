@@ -891,3 +891,13 @@ RGBA 模式任一通道命中即启用。`setMask(imageData)` 会复制像素，
 `material.setFoliageWindTime(seconds)` 返回 Result，要求已配置风；时间由调用方显式注入，
 不读墙钟。参数非法时材质状态不变；贴图借用在 Graphics 资源释放/关闭时失效，
 材质必须先停止使用这些资源。调用均为 main/render 线程同步路径，无回调。
+
+### 资源更新与每帧调用成本
+
+建议初始化时直接 `gfx.loadTexture(path)`：脚本返回可直接使用的纹理，失败抛出诊断；C++ 返回 `ResultRef<Texture>`。首次调用完成解码和上传，缓存命中复用；后续尺寸 getter 不执行准备工作。这个简单入口与兼容 `newTextureFromFile` 共用同一缓存，不维护第二套资源。
+
+- `newTextureFromFile(path)` 首次请求排队解码并在消费时上传；已缓存路径直接返回同一资源，文件删除或变化不会隐式重载。更新文件需显式 `reloadTextureFromFile(path)`。首次尺寸查询仍会完成延迟上传；每帧保存并使用已加载纹理。
+- `setTextureSampler(texture, desc)` 修改期望配置，相同配置零后端工作；首次消费前合并配置，并复用 Graphics 生命周期内已准备的 sampler。Vulkan 发布改变的描述符仍需要一次批量在途帧等待；setter 本身不等待。持续改变 LOD bias 等配置会产生新 sampler，应避免每帧构造不同描述。释放纹理取消待发布状态。
+- `updateMeshVertices` 是显式动态上传：每次调用仍有线性转换/上传成本，内部复用转换数组与 GPU 缓冲容量，不扫描全数组判断是否相同。源数据的 owner 应只在数据变化时调用；无需额外 token/commit。
+- Groom 的 `update(dt)` 完整推进模拟；参数与可见性修改只记录变化。视图准备阶段（或直接 `draw` 的准备边界）合并几何刷新并复用同一网格。`getMesh` 等 getter 不触发刷新，返回最后发布结果；`rebuild` 是兼容的显式同步刷新。`Representation::None` 隐藏但保留网格以供再次显示复用。显式可见性掩码属于调用者当前视图，多视图时在各视图绘制前更新，不能跨视图复用最后一次掩码。
+- Groom 必须在其 Graphics owner 销毁前析构；析构移除准备回调。网格、纹理与 shader 仍由 Graphics 统一回收，不产生第二套所有权。
