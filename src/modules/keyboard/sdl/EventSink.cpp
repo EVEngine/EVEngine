@@ -4,8 +4,8 @@
 // for the key-repeat setting. Owning the translation here removes that edge.
 
 #include "common/Capability.h"
-#include "common/Module.h"
 #include "keyboard/Keyboard.h"
+#include "keyboard/sdl/EventSinkOwner.h"
 #include "platform_event/PlatformEvent.h"
 #include "platform_event/PlatformEventSink.h"
 
@@ -18,6 +18,8 @@ namespace {
 using eve::platform_event::Message;
 using eve::platform_event::Variant;
 
+eve::keyboard::Keyboard *g_owner = nullptr;
+
 class KeyboardEventSink : public eve::platform_event::IPlatformEventSink {
 public:
     Message *translatePlatformEvent(const void *nativeEvent) override {
@@ -26,8 +28,7 @@ public:
             case SDL_KEYDOWN: {
                 // Repeats are dropped unless the module opted into them.
                 if (e.key.repeat) {
-                    auto *kb = eve::ModuleManager::getInstance<Keyboard>("Keyboard");
-                    if (kb && !kb->hasKeyRepeat()) return nullptr;
+                    if (g_owner && !g_owner->hasKeyRepeat()) return nullptr;
                 }
                 const char *keyName = SDL_GetKeyName(e.key.keysym.sym);
                 const char *scanName = SDL_GetScancodeName(e.key.keysym.scancode);
@@ -64,4 +65,7 @@ struct Register {
 } g_register;
 
 }  // namespace
+
+void bindKeyboardEventSinkOwner(eve::keyboard::Keyboard *owner) noexcept { g_owner = owner; }
+
 }  // namespace eve::keyboard::sdl

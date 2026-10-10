@@ -655,6 +655,85 @@
       "failure_injection": "prepare, commit, rollback, restore and capability-loss failures are injected and assert no partial publication."
     },
     {
+      "id": "attributes-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/attributes/**",
+      "owner": "attributes::AttributeSet",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Each AttributeSet publishes IStateQuery/IStateMutation listeners for dialogue world reads.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/attributes/StateAccessAdapter.h",
+        "src/modules/attributes/AttributeSet.cpp"
+      ],
+      "tests": [
+        "test/attributes.cpp",
+        "test/dialogue_state_integration.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IStateQuery",
+          "impl": "AttributeSetStateAdapter",
+          "absent_behavior": "listener removed with AttributeSet"
+        },
+        {
+          "capability": "IStateMutation",
+          "impl": "AttributeSetStateAdapter",
+          "absent_behavior": "listener removed with AttributeSet"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Attributes",
+          "methods": [
+            "newSet"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without attributes drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": []
+    },
+    {
+      "id": "audio-eventsink-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/audio/EventSink.cpp",
+      "owner": "audio::Audio",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Audio pump sink caches the Audio module owner across onPumpFinished.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/audio/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "AudioPumpSink",
+          "absent_behavior": "Audio::pump not called when unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "profiles without audio drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": [
+        "src/modules/audio/EventSink.cpp"
+      ]
+    },
+    {
       "id": "devtools-soft-restart-module-interface",
       "rule": "module-interface",
       "scope": "src/engine/devtools/**",
@@ -755,6 +834,86 @@
       ],
       "hot_path": [
         "src/modules/graphics/RenderSystem3D.cpp"
+      ]
+    },
+    {
+      "id": "joystick-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/joystick/**",
+      "owner": "joystick::Joystick",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Joystick SDL sink caches the module owner; hot path never looks up ModuleManager.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/joystick/sdl/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "JoystickEventSink",
+          "absent_behavior": "no joystick messages when sink unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Joystick",
+          "methods": [
+            "getJoystickCount"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without joystick drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": [
+        "src/modules/joystick/sdl/EventSink.cpp"
+      ]
+    },
+    {
+      "id": "keyboard-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/keyboard/**",
+      "owner": "keyboard::Keyboard",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Keyboard SDL sink caches the module owner for key-repeat checks.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/keyboard/sdl/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "KeyboardEventSink",
+          "absent_behavior": "key messages absent when sink unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Keyboard",
+          "methods": [
+            "isDown"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without keyboard drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": [
+        "src/modules/keyboard/sdl/EventSink.cpp"
       ]
     },
     {
@@ -1059,6 +1218,173 @@
       },
       "thread_affinity": "main thread; capability listener register/remove is not thread-safe",
       "hot_path": []
+    },
+    {
+      "id": "tags-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/tags/**",
+      "owner": "tags::Tags",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Tags module store publishes IStateQuery/IStateMutation listeners for dialogue world reads.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/tags/StateAccessAdapter.h",
+        "src/modules/tags/Tags.cpp"
+      ],
+      "tests": [
+        "test/tags.cpp",
+        "test/dialogue_state_integration.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IStateQuery",
+          "impl": "TagStoreStateAdapter",
+          "absent_behavior": "listener removed with Tags module"
+        },
+        {
+          "capability": "IStateMutation",
+          "impl": "TagStoreStateAdapter",
+          "absent_behavior": "listener removed with Tags module"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Tags",
+          "methods": [
+            "add",
+            "has"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without tags drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": []
+    },
+    {
+      "id": "touch-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/touch/**",
+      "owner": "touch::Touch",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Touch SDL sink caches the module owner; DPI uses SDL window ids.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/touch/sdl/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "TouchEventSink",
+          "absent_behavior": "finger events ignored when sink unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Touch",
+          "methods": [
+            "getTouchCount"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without touch drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": [
+        "src/modules/touch/sdl/EventSink.cpp"
+      ]
+    },
+    {
+      "id": "ui-eventsink-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/EventSink.cpp",
+      "owner": "ui::UI",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "UI observer sink caches the UI module owner across platform events.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/ui/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "UIEventSink",
+          "absent_behavior": "ImGui processEvent skipped when unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "profiles without ui drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": [
+        "src/modules/ui/EventSink.cpp"
+      ]
+    },
+    {
+      "id": "window-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/window/**",
+      "owner": "window::Window",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Window SDL sink caches the module owner; surface host remains a capability query on app lifecycle watches.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/window/sdl/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "WindowEventSink",
+          "absent_behavior": "resize sync skipped when sink unbound"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IWindowSurfaceHost",
+          "required": false,
+          "fallback": "surface recreate skipped when graphics absent"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Window",
+          "methods": [
+            "getWidth",
+            "getHeight"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "profiles without window drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "hot_path": [
+        "src/modules/window/sdl/EventSink.cpp"
+      ]
     },
     {
       "id": "quality-debt-policy",
