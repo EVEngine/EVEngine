@@ -3,11 +3,13 @@
 //
 // This lived in the SDL event pump, which therefore had to know about the
 // Joystick module and its Pad type. Owning it here removes that edge.
+// The Joystick module binds itself as owner at construction so the hot path
+// never looks up ModuleManager.
 
 #include "common/Capability.h"
-#include "common/Module.h"
 #include "joystick/Joystick.h"
 #include "joystick/Pad.h"
+#include "joystick/sdl/EventSinkOwner.h"
 #include "platform_event/PlatformEvent.h"
 #include "platform_event/PlatformEventSink.h"
 
@@ -22,6 +24,8 @@ namespace {
 using eve::platform_event::Message;
 using eve::platform_event::Variant;
 
+eve::joystick::Joystick *g_owner = nullptr;
+
 /** Axis values travel as thousandths so the message stays integral. */
 int64_t axisMilli(int16_t raw) {
     return static_cast<int64_t>(std::lround(clampAxis(raw / 32768.0f) * 1000.0f));
@@ -31,7 +35,7 @@ class JoystickEventSink : public eve::platform_event::IPlatformEventSink {
 public:
     Message *translatePlatformEvent(const void *nativeEvent) override {
         const auto &e = *static_cast<const SDL_Event *>(nativeEvent);
-        auto *joy = eve::ModuleManager::getInstance<Joystick>("Joystick");
+        auto       *joy = g_owner;
         if (!joy) return nullptr;
 
         switch (e.type) {
@@ -108,4 +112,7 @@ struct Register {
 } g_register;
 
 }  // namespace
+
+void bindJoystickEventSinkOwner(eve::joystick::Joystick *owner) noexcept { g_owner = owner; }
+
 }  // namespace eve::joystick::sdl

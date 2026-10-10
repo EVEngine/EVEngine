@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -153,11 +154,15 @@ struct AttributeValue {
 [[nodiscard]] EVENGINE_API_FOUNDATION double computeAttributeValue(
     const AttributeValue& attribute, const AttributeOperationRegistry* customOperations = nullptr);
 
+class AttributeSetStateAdapter;
+
 /** @brief Generic owning collection of canonical attributes and modifiers. */
 class EVENGINE_API_FOUNDATION AttributeSet {
 public:
     /** @brief Construct a set associated with an optional stable subject id. */
     explicit AttributeSet(std::string subject = {});
+    /** @brief Withdraw world-state capability listeners. */
+    ~AttributeSet();
     /** @brief Copy a set while rebuilding its internal borrowed enumeration view. */
     AttributeSet(const AttributeSet& other);
     /** @brief Copy a set while rebuilding its internal borrowed enumeration view. */
@@ -223,6 +228,8 @@ public:
 private:
     void rebuildOrder() const;
     static bool isValidOperation(const AttributeModifier& modifier) noexcept;
+    void        publishWorldAdapter();
+    void        withdrawWorldAdapter();
 
     std::string                                     subject_;
     std::unordered_map<AttributeId, AttributeValue> values_;
@@ -230,6 +237,7 @@ private:
     mutable bool                                    orderDirty_     = true;
     ModifierSequence                                nextSequence_   = 1;
     ModifierSequence                                nextModifierId_ = 1;
+    std::unique_ptr<AttributeSetStateAdapter>       worldAdapter_;
 };
 
 }  // namespace eve::attributes

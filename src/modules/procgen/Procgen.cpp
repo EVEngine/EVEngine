@@ -74,7 +74,10 @@ namespace eve::procgen {
 namespace {
 
 template <class T>
-eve::Result<T> procgenBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {});
+eve::Result<T> procgenBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
+    return eve::Result<T>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.squirrel"));
+}
 
 template <class T>
 struct NativeProxyReleases {
@@ -774,6 +777,24 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterStringAttributeHandle(Procg
             "filterStringAttribute requires a live input and attribute name", "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointStringAttribute(*view, name, value, invert)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::excludeGridMaskHandle(
+    ProcgenPointSetHandleRef input, ProcgenGridHandleRef mask, float originX, float originZ, float cellSize,
+    int semantic, float clearance, int maximumChecks) {
+    auto points = resolvePointSet(input);
+    auto grid   = resolve(mask);
+    if (!points.isBound() || !grid.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
+                                                               "excludeGridMask handle is stale", "input");
+    if (maximumChecks <= 0)
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                               "excludeGridMask requires a positive work budget",
+                                                               "maximumChecks");
+    auto filtered = excludePointsByGridMask(*points, *grid, originX, originZ, cellSize, semantic, clearance,
+                                            static_cast<std::size_t>(maximumChecks));
+    if (!filtered.ok()) return eve::Result<ProcgenPointSetHandleRef>::failure(filtered.status());
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(std::move(filtered).takeValue()));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::densityCullHandle(ProcgenPointSetHandleRef input, uint32_t seed,
@@ -4652,6 +4673,20 @@ void Procgen::expose(ssq::Class& cls) {
                         {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->filterStringAttributeHandle(*reference, name, expected, invert));
     });
+    cls.addFunc("excludeGridMask",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, Grid2D* mask, float originX, float originZ,
+                                       float cellSize, int semantic, float clearance, int maximumChecks) {
+                    const auto pointRef = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    const auto gridRef  = nativeProxyReference<ProcgenGridHandleRef>(mask);
+                    if (!value || !pointRef || !gridRef)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "excludeGridMask requires owned points and grid", "input"));
+                    return makeOwnedPointSetProxy(vm, value->excludeGridMaskHandle(
+                                                          *pointRef, *gridRef, originX, originZ, cellSize, semantic,
+                                                          clearance, maximumChecks));
+                });
     cls.addFunc(
         "densityCull", [vm = cls.getHandle()](Procgen* value, PointSet* input, uint32_t seed, float multiplier) {
             const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);

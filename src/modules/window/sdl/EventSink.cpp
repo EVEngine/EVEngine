@@ -5,10 +5,10 @@
 // callback that tears down and rebuilds the Vulkan surface on mobile.
 
 #include "common/Capability.h"
-#include "common/Module.h"
 #include "common/WindowSurfaceHost.h"
 #include "platform_event/PlatformEventSink.h"
 #include "window/Window.h"
+#include "window/sdl/EventSinkOwner.h"
 #include "window/sdl/Window.h"
 
 #include <SDL2/SDL.h>
@@ -19,9 +19,11 @@
 namespace eve::window::sdl {
 namespace {
 
+eve::window::Window *g_owner = nullptr;
+
 /** Re-reads the real window size after a resize, rotation or resume. */
 void syncWindowPixelSize() {
-    auto *win = eve::ModuleManager::getInstance<eve::window::Window>("Window");
+    auto *win = g_owner;
     if (!win) return;
     auto *sdlWin = dynamic_cast<Window *>(win);
     if (!sdlWin) return;
@@ -104,4 +106,7 @@ struct Register {
 } g_register;
 
 }  // namespace
+
+void bindWindowEventSinkOwner(eve::window::Window *owner) noexcept { g_owner = owner; }
+
 }  // namespace eve::window::sdl

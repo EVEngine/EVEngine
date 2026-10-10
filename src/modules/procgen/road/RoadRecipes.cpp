@@ -19,6 +19,11 @@ RoadBakeOptions bakeOptionsFromParams(const Params& params) {
     options.includeMarkings     = params.getBool("markings", true);
     options.includeNavigation   = params.getBool("navigation", true);
     options.includeJunctions    = params.getBool("junctions", true);
+    options.includePlacements   = params.getBool("placements", true);
+    options.junctionChordError  = params.getFloat("junctionChordError", 0.10f);
+    options.sideObjectSpacing   = params.getFloat("sideObjectSpacing", 8.f);
+    options.sideObjectOffset    = params.getFloat("sideObjectOffset", 0.5f);
+    options.sideObjectClearance = params.getFloat("sideObjectClearance", 1.5f);
     return options;
 }
 
@@ -30,13 +35,14 @@ Result<RoadNetwork> networkFromParams(const Params& params) {
 
 }  // namespace
 
-bool generateRoadNetworkMesh(const Params& params, MeshBuild& out, std::string& error) {
+Result<RoadBakeResult> bakeRoadNetworkRecipe(const Params& params) {
     auto network = networkFromParams(params);
-    if (!network.ok()) {
-        error = network.status().describe();
-        return false;
-    }
-    auto baked = bakeRoadNetwork(network.value(), bakeOptionsFromParams(params));
+    if (!network.ok()) return Result<RoadBakeResult>::failure(network.status());
+    return bakeRoadNetwork(network.value(), bakeOptionsFromParams(params));
+}
+
+bool generateRoadNetworkMesh(const Params& params, MeshBuild& out, std::string& error) {
+    auto baked = bakeRoadNetworkRecipe(params);
     if (!baked.ok()) {
         error = baked.status().describe();
         return false;
@@ -46,9 +52,7 @@ bool generateRoadNetworkMesh(const Params& params, MeshBuild& out, std::string& 
 }
 
 Result<RoadOverlay> generateRoadNetworkOverlay(const Params& params) {
-    auto network = networkFromParams(params);
-    if (!network.ok()) return Result<RoadOverlay>::failure(network.status());
-    auto baked = bakeRoadNetwork(network.value(), bakeOptionsFromParams(params));
+    auto baked = bakeRoadNetworkRecipe(params);
     if (!baked.ok()) return Result<RoadOverlay>::failure(baked.status());
     return Result<RoadOverlay>::success(std::move(baked.value().overlay));
 }
@@ -111,18 +115,31 @@ std::unique_ptr<image::ImageData> generateRoadMarkingsTexture(const Params& para
 void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
     RecipeDescriptor schema{"mesh.roadNetwork", "Procedural Road Network", "Mesh", {}};
     schema.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));
-    schema.params.push_back(
-        ParamDescriptor::choice("scene", "Scene", "straight",
-                                {"straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew",
-                                 "interchange"}));
+    schema.params.push_back(ParamDescriptor::choice("scene", "Scene", "straight",
+                                                    {"straight", "curve", "bridge", "cross", "tee", "y", "fork",
+                                                     "skew", "t-junction", "y-junction", "sloped-t", "curve-uphill",
+                                                     "tight-turn", "roundabout", "interchange"}));
     schema.params.push_back(ParamDescriptor::floating("span", "Span", 36.f, 16.f, 256.f, 1.f));
     schema.params.push_back(ParamDescriptor::floating("bridgeHeight", "Bridge Height", 6.f, 1.f, 64.f, 0.5f));
     schema.params.push_back(ParamDescriptor::integer("lanes", "Lanes", 2, 1, 4));
     schema.params.push_back(ParamDescriptor::integer("pathSegments", "Path Segments", 32, 8, 256));
     schema.params.push_back(ParamDescriptor::boolean("piers", "Piers", true));
     schema.params.push_back(ParamDescriptor::boolean("markings", "Markings", true));
-    schema.params.push_back(ParamDescriptor::boolean("navigation", "Navigation Mesh", false));
+    schema.params.push_back(ParamDescriptor::boolean("navigation", "Navigation Overlay", true));
     schema.params.push_back(ParamDescriptor::boolean("junctions", "Junctions", true));
+    schema.params.push_back(ParamDescriptor::boolean("placements", "Decoration Placements", true));
+    schema.params.push_back(
+        ParamDescriptor::floating("sideObjectSpacing", "Side Object Spacing", 8.f, 0.25f, 100.f, 0.25f));
+    schema.params.push_back(
+        ParamDescriptor::floating("sideObjectOffset", "Side Object Offset", 0.5f, 0.f, 32.f, 0.1f));
+    schema.params.push_back(
+        ParamDescriptor::floating("sideObjectClearance", "Side Object Clearance", 1.5f, 0.f, 32.f, 0.1f));
+    schema.params.push_back(
+        ParamDescriptor::floating("junctionChordError", "Junction Curve Error", 0.10f, 0.01f, 1.f, 0.01f));
+    schema.params.push_back(
+        ParamDescriptor::floating("terrainBlendDistance", "Terrain Surface Blend", 2.f, 0.f, 64.f, 0.25f));
+    schema.params.push_back(ParamDescriptor::floating("chunkSize", "Render Chunk Size", 64.f, 4.f, 1024.f, 1.f));
+    schema.params.push_back(ParamDescriptor::integer("lodCount", "LOD Count", 3, 1, 4));
     registry.registerRecipe(std::move(schema), generateRoadNetworkMesh);
 }
 
