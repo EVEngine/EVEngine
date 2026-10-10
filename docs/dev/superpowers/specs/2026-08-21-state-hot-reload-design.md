@@ -27,9 +27,8 @@
   `Dialogue`（Phase/变量/rngState_）等运行时状态没有序列化接口；devtools `Snapshot`
   只能对 Squirrel 顶层表做 JSON 快照（函数丢弃、instance 还原成 table、引擎对象按
   "无状态"跳过），且未接入重载流程。
-- 设计方向已有铺垫：`docs/dev/游戏模型设计.md` 明确"游戏=有限自动机、对象=小状态机，
-  维护核心状态即可实现代码热更新"；`docs/dev/模块编排与裁剪架构.md` 的能力机制
-  （`eve::cap::provide/query/addListener`）为跨模块解耦提供了现成底座。
+- 设计方向：把可热更状态当作数据、逻辑当作可替换代码；`docs/dev/模块编排与裁剪架构.md`
+  的能力机制（`eve::cap::provide/query/addListener`）为跨模块解耦提供现成底座。
 
 ## 2. 设计原则
 
@@ -320,8 +319,7 @@ Effect/Skill 已是 JSON 定义（`loadFromJson`），天然适合"定义重载 
 4. **PR4 推广与约束（已实施）**：rpg（冷却 + 施法状态机）、card（卡牌 phase）
    接入 `IStateProvider`；Snapshot 状态根严格校验——根内出现函数/类/userdata/
    线程/类实例等不可序列化值时报错并中止 capture（防止状态静默丢失）；
-   `游戏模型设计.md` 的"可达状态约束"留作脚本侧 `eve_after_reload` 自定义
-   校验（引擎不强加游戏语义约束）。
+   可达状态约束留作脚本侧 `eve_after_reload` 自定义校验（引擎不强加游戏语义约束）。
 
 ## 8. 风险与对策
 

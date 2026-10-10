@@ -1,7 +1,6 @@
 # Canonical material v6: vegetation surface parameters
 
-Version 6 introduced the first vegetation surface contract. The current version
-is v7; see `canonical-material-v7.md`. When v6 was current, v5
+Version 6 introduced the first vegetation surface contract. The current write format is v15; see `canonical-material-v15.md`. When v6 was current, v5
 definitions migrate by preserving every field and advancing the version. A v5
 definition containing `vegetationSurface` is rejected because that field had no
 versioned meaning before v6.

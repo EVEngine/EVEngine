@@ -1,5 +1,7 @@
 # Canonical material schema v10
 
+Historical schema: the current write format is [material v15](canonical-material-v15.md).
+
 Schema v10 extends the optional `vegetationFields` object from v9. Its exact
 nine fields are `colorsLayer`, `colorsUsePivotPosition`, `extrasLayer`,
 `extrasUsePivotPosition`, `motionLayer`, `vertexLayer`, `globalSize`,

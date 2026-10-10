@@ -23,7 +23,7 @@
 > 后端：Dear ImGui（SDL 输入 + Vulkan 绘制），由 C++ `UISystem` 每帧 walk。
 > ECS 基础库：[sunxfancy/ECS.hpp](https://github.com/sunxfancy/ECS.hpp)（`external/ECS.hpp`）。
 
-关联文档：[模块设计.md](./模块设计.md)、[依赖项.md](./依赖项.md)、[整体架构.md](./整体架构.md)、[游戏模型设计.md](./游戏模型设计.md)、[2D渲染API设计.md](./2D渲染API设计.md)
+关联文档：[模块设计.md](./模块设计.md)、[依赖项.md](./依赖项.md)、[整体架构.md](./整体架构.md)、[2D渲染API设计.md](./2D渲染API设计.md)
 代码落点：[`src/modules/ui/`](../../src/modules/ui/)（抽象 [`UIBackend`](../../src/modules/ui/UIBackend.h)；ImGui 实现 [`ui/imgui/`](../../src/modules/ui/imgui/)）
 
 
@@ -96,9 +96,7 @@ flowchart TB
 | `ui/imgui/ImGuiBackend` | SDL 输入、Vulkan present overlay | 脚本 API |
 | `graphics` | present 前调用 overlay 钩子 | UI 树语义 |
 
-### 2.2 与交互层（游戏模型）的关系
-
-对齐 [游戏模型设计.md](./游戏模型设计.md) 四层模型中的 **交互层**：
+### 2.2 与交互层的关系
 
 - UI 是 ViewModel 的可视化：改数据 → 改显示；用户操作 → 事件 → 改模型
 - 交互对象可作为 component 挂到模型实体上（`UIHost`），与声明式渲染同表
@@ -461,7 +459,7 @@ sequenceDiagram
 
 ### C — DevTools
 
-- [x] 同一 `UISystem`；反射属性面板（见 [界面设计.md](./界面设计.md)）
+- [x] 同一 `UISystem`；反射属性面板（见下文 `ui.inspect` / DevTools）
 - [x] 脚本类/属性自动扫描：`Runtime::scanClasses()` 随时扫描根表（含
       `dofile`/`compilestring` 加载的类，热重载自动刷新）；
       实例级反射 API：`createInstance` / `reflectInstance` / `readProperty` /

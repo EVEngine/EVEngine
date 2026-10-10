@@ -26,7 +26,7 @@
 
 与引擎既有模块（`map`/`particles`/`scene`）保持同一套设计语言：ECS 组件为数据、`*System`
 静态类为行为、`Module` facade 做脚本绑定；参考 [模块设计.md](./模块设计.md) 与
-[游戏模型设计.md](./游戏模型设计.md)。
+[领域短根继承与跨域组合架构.md](./领域短根继承与跨域组合架构.md)。
 
 ## 为什么不用固定枚举
 
@@ -68,8 +68,8 @@ RPGActor : ecs::Entity
   Skills     { unordered_map<string, SkillRuntime> known; CastingState casting }
 ```
 
-游戏可以直接用 `RPGActor`，也可以仿照 `docs/dev/游戏模型设计.md` 的示例从它派生出
-`Player`/`Monster` 等子类，追加自己的组件——三大组件与配套 System 天然复用。
+游戏可以直接用 `RPGActor`，也可以从它派生出 `Player`/`Monster` 等子类并追加自己的
+组件——三大组件与配套 System 天然复用。
 
 `RPGActor::createActor()` 是推荐的工厂方法：除了创建实体外，还会把它加入
 `RPGActor::liveActors()` 跟踪列表，`StatusSystem::update` / `SkillSystem::update`
