@@ -105,6 +105,36 @@ TEST_CASE("procgen.smoothStamp.spawnPlanSnapshotAndLegacy") {
     CHECK_EQ(migrated, defaults.snapshotJson().value());
 }
 
+TEST_CASE("procgen.smoothStamp.spawnPlanRejectsInvalidOperation") {
+    const auto       paint = filled(2, 1);
+    auto             s     = settings(TerrainStampOperation::Raise);
+    TerrainSpawnPlan plan;
+    REQUIRE(plan.addSplat("splat", paint, 0, s).ok());
+    auto snapshot = plan.snapshotJson();
+    REQUIRE(snapshot.ok());
+    const auto baseline = snapshot.value();
+
+    auto value = eve::Value::fromJson(baseline);
+    REQUIRE(value.ok());
+    auto payload = value.value().find("payload")->asString();
+    // count(4) + kind(1) + idLen(4) + "splat"(5) + enabled(1) + heightmap + stamp prefix.
+    const std::size_t stampStart =
+        4 + 1 + 4 + 5 + 1 + 8 + paint.data().size() * sizeof(float);
+    const std::size_t operationOffset = stampStart + 9 * sizeof(double) + 3 * sizeof(float);
+    const std::size_t hexOffset       = operationOffset * 2;
+    REQUIRE(payload.size() > hexOffset + 8);
+    // Corrupt the stamp operation to an unsupported enum (99).
+    payload.replace(hexOffset, 8, "63000000");
+    value.value().set("payload", payload);
+    auto corrupted = value.value().toJson();
+    REQUIRE(corrupted.ok());
+
+    TerrainSpawnPlan restored;
+    REQUIRE(restored.restoreJson(baseline).ok());
+    CHECK(!restored.restoreJson(corrupted.value()).ok());
+    CHECK_EQ(restored.snapshotJson().value(), baseline);
+}
+
 TEST_CASE("procgen.smoothStamp.spawnPlanV0DetailMigration") {
     const auto raster = filled(2, 1);
     auto       s      = settings(TerrainStampOperation::Raise);

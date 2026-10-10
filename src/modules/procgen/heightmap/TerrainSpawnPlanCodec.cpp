@@ -131,7 +131,10 @@ void writeStamp(Writer& writer, const TerrainStampSettings& value) {
 }
 bool readStamp(Reader& reader, TerrainStampSettings& value, int version) {
     STAMP_FIELDS(READ_MEMBER)
-    if (version < 4) return value.operation <= TerrainStampOperation::Subtract;
+    const auto maximum =
+        version < 4 ? TerrainStampOperation::Subtract : TerrainStampOperation::SmoothRaise;
+    if (value.operation < TerrainStampOperation::Raise || value.operation > maximum) return false;
+    if (version < 4) return true;
     return reader.scalar(value.smoothWidth) && reader.scalar(value.edgeFade) && value.smoothWidth >= 0 &&
            value.edgeFade >= 0;
 }

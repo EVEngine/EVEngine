@@ -28,7 +28,8 @@ function baseTerrain() {
     return map;
 }
 function showTerrain(map, offsetX, offsetZ, smooth) {
-    local chunk = retain(procgen.buildTerrainChunk(map, null, 0, 0, 64, 64, 0, 0.5, 1.0, 0.0));
+    local layers = retain(procgen.analyzeTerrain(map, 200.0, 0.12, 0.4));
+    local chunk = retain(procgen.buildTerrainChunk(map, layers, 0, 0, 64, 64, 0, 0.5, 1.0, 0.0));
     local mesh = retain(procgen.generateTerrainChunkMesh(chunk, gfx));
     local image = retain(procgen.generateTerrainSplatMap(chunk));
     local texture = retain(gfx.newTexture(image, false, false));

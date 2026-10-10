@@ -22,7 +22,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("module-interface", contracts.RULES)
 
     def test_module_interface_requires_explicit_empty_faces_and_trim_profile(self):
-        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
         reduced = copy.deepcopy(metadata)
         entry = next(item for item in reduced["entries"] if item["rule"] == "module-interface")
         del entry["provides"]
@@ -42,11 +42,12 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertTrue(any("missing trim" in error for error in errors))
 
     def test_module_interface_requires_explicit_surface_arrays(self):
-        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
-        entry = next(item for item in metadata["entries"] if item["rule"] == "module-interface")
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
+        reduced = copy.deepcopy(metadata)
+        entry = next(item for item in reduced["entries"] if item["rule"] == "module-interface")
         del entry["binds"]
         entry["provides"] = "none"
-        errors = contracts.validate_catalogue(metadata, today=date(2026, 8, 26))
+        errors = contracts.validate_catalogue(reduced, today=date(2026, 8, 26))
         self.assertTrue(any("missing binds" in error for error in errors))
         self.assertTrue(any("provides must be an array" in error for error in errors))
 
