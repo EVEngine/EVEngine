@@ -45,6 +45,8 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn("^lib/(x86|x86_64)/", self.apk_runner)
         self.assertIn("EVE_CI_GAME_OK", self.apk_runner)
         self.assertIn('"${#apk_files[@]}" -ne 3', self.apk_runner)
+        self.assertIn('"$apksigner" sign', self.apk_runner)
+        self.assertIn('adb install -r "$signed_apk"', self.apk_runner)
         self.assertEqual(3, self.workflow.count("name: android-apk-${{ env.HOST }}"))
 
     def test_ios_artifact_and_simulator_are_hard_gates(self) -> None:
