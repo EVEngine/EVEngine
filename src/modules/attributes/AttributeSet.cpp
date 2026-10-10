@@ -1,5 +1,9 @@
 #include "attributes/AttributeSet.h"
 
+#include "attributes/StateAccessAdapter.h"
+#include "common/Capability.h"
+#include "common/StateAccess.h"
+
 #include <algorithm>
 #include <cmath>
 #include <utility>
@@ -141,13 +145,31 @@ double computeAttributeValue(const AttributeValue& attribute, const AttributeOpe
     return result;
 }
 
-AttributeSet::AttributeSet(std::string subject) : subject_(std::move(subject)) {}
+void AttributeSet::publishWorldAdapter() {
+    if (worldAdapter_) return;
+    worldAdapter_ = std::make_unique<AttributeSetStateAdapter>(*this);
+    eve::cap::addListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(worldAdapter_.get()));
+    eve::cap::addListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(worldAdapter_.get()));
+}
+
+void AttributeSet::withdrawWorldAdapter() {
+    if (!worldAdapter_) return;
+    eve::cap::removeListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(worldAdapter_.get()));
+    eve::cap::removeListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(worldAdapter_.get()));
+    worldAdapter_.reset();
+}
+
+AttributeSet::AttributeSet(std::string subject) : subject_(std::move(subject)) { publishWorldAdapter(); }
+
+AttributeSet::~AttributeSet() { withdrawWorldAdapter(); }
 
 AttributeSet::AttributeSet(const AttributeSet& other)
     : subject_(other.subject_),
       values_(other.values_),
       nextSequence_(other.nextSequence_),
-      nextModifierId_(other.nextModifierId_) {}
+      nextModifierId_(other.nextModifierId_) {
+    publishWorldAdapter();
+}
 
 AttributeSet& AttributeSet::operator=(const AttributeSet& other) {
     if (this == &other) return *this;
@@ -157,6 +179,7 @@ AttributeSet& AttributeSet::operator=(const AttributeSet& other) {
     nextModifierId_ = other.nextModifierId_;
     order_.clear();
     orderDirty_ = true;
+    if (!worldAdapter_) publishWorldAdapter();
     return *this;
 }
 
@@ -164,16 +187,22 @@ AttributeSet::AttributeSet(AttributeSet&& other) noexcept
     : subject_(std::move(other.subject_)),
       values_(std::move(other.values_)),
       nextSequence_(other.nextSequence_),
-      nextModifierId_(other.nextModifierId_) {}
+      nextModifierId_(other.nextModifierId_) {
+    other.withdrawWorldAdapter();
+    publishWorldAdapter();
+}
 
 AttributeSet& AttributeSet::operator=(AttributeSet&& other) noexcept {
     if (this == &other) return *this;
+    withdrawWorldAdapter();
     subject_        = std::move(other.subject_);
     values_         = std::move(other.values_);
     nextSequence_   = other.nextSequence_;
     nextModifierId_ = other.nextModifierId_;
     order_.clear();
     orderDirty_ = true;
+    other.withdrawWorldAdapter();
+    publishWorldAdapter();
     return *this;
 }
 
