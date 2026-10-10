@@ -7,6 +7,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github" / "workflows" / "sdk-release.yml"
 SDK_TEST = ROOT / ".github" / "scripts" / "test-sdk.sh"
+APK_RUNNER = ROOT / ".github" / "scripts" / "run-consumer-apks.sh"
 
 
 def job_block(workflow: str, job: str, next_job: str | None = None) -> str:
@@ -22,6 +23,7 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.workflow = WORKFLOW.read_text(encoding="utf-8")
         cls.sdk_test = SDK_TEST.read_text(encoding="utf-8")
+        cls.apk_runner = APK_RUNNER.read_text(encoding="utf-8")
 
     def test_android_emulator_is_a_hard_gate_for_every_consumer_host(self) -> None:
         block = job_block(self.workflow, "run-android", "ios-sim")
@@ -37,11 +39,12 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn("-accel on", block)
         self.assertIn("disable-linux-hw-accel: false", block)
         self.assertIn("Enable KVM access", block)
-        self.assertIn("^lib/arm64-v8a/", block)
-        self.assertIn("^lib/(x86|x86_64)/", block)
-        self.assertIn("for apk_file in apk/*.apk", block)
-        self.assertIn("EVE_CI_GAME_OK", block)
-        self.assertIn('if [ "$found" -ne 3 ]', block)
+        self.assertIn("actions/checkout@", block)
+        self.assertIn("bash .github/scripts/run-consumer-apks.sh apk", block)
+        self.assertIn("^lib/arm64-v8a/", self.apk_runner)
+        self.assertIn("^lib/(x86|x86_64)/", self.apk_runner)
+        self.assertIn("EVE_CI_GAME_OK", self.apk_runner)
+        self.assertIn('"${#apk_files[@]}" -ne 3', self.apk_runner)
         self.assertEqual(3, self.workflow.count("name: android-apk-${{ env.HOST }}"))
 
     def test_ios_artifact_and_simulator_are_hard_gates(self) -> None:
