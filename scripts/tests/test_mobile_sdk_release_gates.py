@@ -71,6 +71,7 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn('foreach(_eve_required_lib IN ITEMS libSDL2.so)', self.sdk_install)
         self.assertIn('message(FATAL_ERROR', self.sdk_install)
         self.assertIn('missing lib/$lib', self.sdk_test)
+        self.assertIn('bash gradlew :app:assembleDebug', self.sdk_test)
         self.assertIn('lib/arm64-v8a/libSDL2.so', self.consumer_test)
 
 
