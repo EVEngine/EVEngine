@@ -15,11 +15,11 @@ for apk_file in "${apk_files[@]}"; do
   apk_name="$(basename "$apk_file")"
   echo "Testing $apk_name"
 
-  if ! unzip -Z1 "$apk_file" | grep -Eq '^lib/arm64-v8a/.+\.so$'; then
+  if ! unzip -Z1 "$apk_file" | grep -E '^lib/arm64-v8a/.+\.so$' >/dev/null; then
     echo "ERROR: $apk_name does not contain ARM64 native libraries" >&2
     exit 1
   fi
-  if unzip -Z1 "$apk_file" | grep -Eq '^lib/(x86|x86_64)/'; then
+  if unzip -Z1 "$apk_file" | grep -E '^lib/(x86|x86_64)/' >/dev/null; then
     echo "ERROR: $apk_name unexpectedly contains x86 native libraries" >&2
     exit 1
   fi
@@ -31,7 +31,7 @@ for apk_file in "${apk_files[@]}"; do
 
   ok=0
   for _ in $(seq 1 90); do
-    if adb logcat -d | grep -q EVE_CI_GAME_OK; then
+    if adb logcat -d | grep -F EVE_CI_GAME_OK >/dev/null; then
       ok=1
       break
     fi
