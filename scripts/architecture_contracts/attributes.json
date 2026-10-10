@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "attributes-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/attributes/**",
+      "owner": "attributes::AttributeSet",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Each AttributeSet publishes IStateQuery/IStateMutation listeners for dialogue world reads.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/attributes/StateAccessAdapter.h",
+        "src/modules/attributes/AttributeSet.cpp"
+      ],
+      "tests": [
+        "test/attributes.cpp",
+        "test/dialogue_state_integration.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IStateQuery",
+          "impl": "AttributeSetStateAdapter",
+          "absent_behavior": "listener removed with AttributeSet"
+        },
+        {
+          "capability": "IStateMutation",
+          "impl": "AttributeSetStateAdapter",
+          "absent_behavior": "listener removed with AttributeSet"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Attributes",
+          "methods": [
+            "newSet"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "profiles without attributes drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "cost_notes": [],
+      "hot_path": []
+    }
+  ]
+}

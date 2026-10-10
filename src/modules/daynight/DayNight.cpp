@@ -1,4 +1,5 @@
 #include "daynight/DayNight.h"
+#include "daynight/sky/SkyScriptBindings.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Volumetric.h"
@@ -870,6 +871,7 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
 void DayNight::expose(ssq::Table &table) {
     auto cls = table.addClass(name, DayNight::create, false);
     expose(cls);
+    exposeSkyScriptBindings(table, cls);
 }
 
 void DayNight::expose(ssq::Class &cls) {

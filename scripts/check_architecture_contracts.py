@@ -43,7 +43,9 @@ from typing import Any, Iterable, Mapping
 import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_METADATA = ROOT / "scripts" / "architecture_contracts.json"
+DEFAULT_METADATA_DIR = ROOT / "scripts" / "architecture_contracts"
+DEFAULT_METADATA = DEFAULT_METADATA_DIR
+COMPOSED_METADATA = ROOT / "scripts" / "architecture_contracts.json"
 
 RULES = (
     "api-shape",
@@ -174,11 +176,90 @@ class Finding:
         }
 
 
+def compose_catalogue(directory: Path) -> dict[str, Any]:
+    """Merge per-module JSON shards into one catalogue.
+
+    Shards live under ``scripts/architecture_contracts/*.json``.  Global
+    (cross-module) rules use ``_global.json``.  Entry order is the canonical
+    rule/id order so reviewers and CI see one composed view without editing a
+    shared blob when a single module's contracts change.
+    """
+
+    if not directory.is_dir():
+        raise ValueError(f"catalogue directory missing: {directory}")
+    shard_paths = sorted(directory.glob("*.json"))
+    if not shard_paths:
+        raise ValueError(f"catalogue directory has no shards: {directory}")
+
+    schema_version: Any = None
+    entries: list[Any] = []
+    seen_ids: set[str] = set()
+    for shard in shard_paths:
+        try:
+            payload = json.loads(shard.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise ValueError(f"cannot read {shard}: {error}") from error
+        if not isinstance(payload, Mapping):
+            raise ValueError(f"{shard}: catalogue shard must be an object")
+        version = payload.get("schema_version")
+        if schema_version is None:
+            schema_version = version
+        elif version != schema_version:
+            raise ValueError(
+                f"{shard}: schema_version {version!r} disagrees with {schema_version!r}"
+            )
+        shard_entries = payload.get("entries")
+        if not isinstance(shard_entries, list):
+            raise ValueError(f"{shard}: entries must be an array")
+        for entry in shard_entries:
+            if isinstance(entry, Mapping):
+                entry_id = entry.get("id")
+                if isinstance(entry_id, str) and entry_id:
+                    if entry_id in seen_ids:
+                        raise ValueError(f"duplicate catalogue id {entry_id!r} in {shard}")
+                    seen_ids.add(entry_id)
+            entries.append(entry)
+
+    ordered = sorted(
+        [entry for entry in entries if isinstance(entry, Mapping)],
+        key=catalogue_sort_key,
+    )
+    # Preserve any non-mapping leftovers at the end so validate_catalogue can reject them.
+    leftovers = [entry for entry in entries if not isinstance(entry, Mapping)]
+    return {"schema_version": schema_version, "entries": ordered + leftovers}
+
+
 def load_json(path: Path) -> Any:
     try:
+        if path.is_dir():
+            return compose_catalogue(path)
+        # Prefer module-owned shards when the composed snapshot path is requested
+        # but the shard directory exists — shards are the edit surface.
+        if path.resolve() == COMPOSED_METADATA.resolve() and DEFAULT_METADATA_DIR.is_dir():
+            return compose_catalogue(DEFAULT_METADATA_DIR)
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
         raise ValueError(f"cannot read {path}: {error}") from error
+
+
+def composed_snapshot_matches(directory: Path = DEFAULT_METADATA_DIR,
+                              composed: Path = COMPOSED_METADATA) -> list[str]:
+    """Return errors when the composed JSON drifts from the shard merge."""
+
+    if not composed.is_file() or not directory.is_dir():
+        return []
+    try:
+        from_shards = compose_catalogue(directory)
+        from_file = json.loads(composed.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, ValueError) as error:
+        return [str(error)]
+    if from_shards != from_file:
+        return [
+            f"{composed.relative_to(ROOT).as_posix()} is out of sync with "
+            f"{directory.relative_to(ROOT).as_posix()}/; run "
+            "scripts/sort_architecture_contracts.py"
+        ]
+    return []
 
 
 def relative(path: Path) -> str:
@@ -962,6 +1043,9 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as error:
         return render([], [str(error)], args.json)
     catalogue_errors = validate_catalogue(metadata)
+    metadata_path = args.metadata.resolve()
+    if metadata_path in {DEFAULT_METADATA_DIR.resolve(), COMPOSED_METADATA.resolve()}:
+        catalogue_errors.extend(composed_snapshot_matches())
     if not isinstance(metadata, Mapping):
         return render([], catalogue_errors, args.json)
     if args.all:

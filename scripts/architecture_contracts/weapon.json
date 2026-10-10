@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "weapon-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/weapon/WeaponSystem.h",
+      "owner": "weapon::WeaponSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Weapon logic registration and firing resolution are gameplay systems with explicit logic ownership.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/weapon/WeaponSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/weapon.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "WeaponSystem"
+      ],
+      "entity_scope": "Registered weapon logic implementations and weapon-bearing subjects.",
+      "view": "Process-local logic registry plus caller-supplied weapon command context.",
+      "read_set": "Weapon definitions, cooldown/ammo state, targets and registered logic callbacks.",
+      "write_set": "Weapon state transitions and emitted WeaponEvent records after validation.",
+      "structural_changes": "No ECS structural mutation in registry operations; firing side effects are returned/emitted for caller-owned application.",
+      "events": "WeaponEventSink receives post-mutation facts synchronously.",
+      "services": "Registered IWeaponLogic observers are borrowed; registration replacement is synchronous.",
+      "phase": "Combat command resolution phase."
+    }
+  ]
+}

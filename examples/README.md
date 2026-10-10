@@ -99,6 +99,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [building-3d](building-3d/README.md) | 3D 地面放置：射线求交、网格吸附、鬼影与放置会话 |
 | [climbing-playground](climbing-playground/README.md) | 攀爬与跑酷：真实物理探测、低/高跨越、翻越、空中抓边、阻挡与移动平台 |
 | [daynight](daynight/README.md) | 昼夜循环：太阳轨道、程序化天空盒、月光 / 星光 / 火焰 / 萤火虫 |
+| [uds-sky](uds-sky/README.md) | 独立天空配置与大气渲染对照场景（完整 UDS 效果开发中） |
 | [weather](weather/README.md) | 天气系统：雨 / 雪 / 雷暴 / 雾 / 风，实时滑块 |
 | [weather-daynight](weather-daynight/README.md) | 统一昼夜 + 天气：太阳轨道、程序化天空与雨雪雷暴 |
 | [snow](snow/README.md) | 可交互积雪：与高度图同尺寸的 `SnowField` 深度场驱动形变与着色 |

@@ -248,6 +248,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "simplesquirrel;scripts"
     "squirrel_binding;scripts"
 
+    "SkyScriptBindings;weather"
     "decal_script;graphics"
     "graphic;graphics"
     "graphics_primitive_script;graphics"

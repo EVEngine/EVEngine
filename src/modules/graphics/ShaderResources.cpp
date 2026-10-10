@@ -19,15 +19,21 @@ Result<std::vector<ShaderImageRegion>> shaderImageRegions(const ShaderImageInput
             Diagnostic::error(DiagnosticCode::InvalidArgument, message, "image"));
     };
     if (!image.width || !image.height || image.width > 32768 || image.height > 32768 || !image.layers ||
-        image.layers > 2048 || !image.mipLevels ||
-        image.mipLevels > static_cast<uint32_t>(std::bit_width(std::max(image.width, image.height))) ||
+        image.layers > 2048 || !image.depth || image.depth > 2048 || !image.mipLevels ||
+        image.mipLevels > static_cast<uint32_t>(std::bit_width(std::max({image.width, image.height, image.depth}))) ||
         image.binding > 31)
         return invalid("Invalid shader image dimensions, mip count or binding");
+    if (image.dimension != ShaderImageDimension::Image3D && image.depth != 1)
+        return invalid("Non-volume images require depth one");
     switch (image.dimension) {
         case ShaderImageDimension::Image2D:
             if (image.layers != 1) return invalid("A 2D image must have one layer");
             break;
         case ShaderImageDimension::Array2D: break;
+        case ShaderImageDimension::Image3D:
+            if (image.layers != 1 || image.width > 2048 || image.height > 2048)
+                return invalid("A volume requires one layer and at most 2048 texels per dimension");
+            break;
         case ShaderImageDimension::Cube:
             if (image.layers != 6 || image.width != image.height) return invalid("A cube image needs six square faces");
             break;
@@ -42,6 +48,9 @@ Result<std::vector<ShaderImageRegion>> shaderImageRegions(const ShaderImageInput
         case ShaderImageFormat::BGRA8:
         case ShaderImageFormat::RGBA8Srgb:
         case ShaderImageFormat::BGRA8Srgb: stride = 4; break;
+        case ShaderImageFormat::RGBA16Unorm:
+        case ShaderImageFormat::RGBA16Float: stride = 8; break;
+        case ShaderImageFormat::RGBA32Float: stride = 16; break;
         case ShaderImageFormat::BC1:
         case ShaderImageFormat::BC1Srgb:
             block  = 4;
@@ -56,6 +65,8 @@ Result<std::vector<ShaderImageRegion>> shaderImageRegions(const ShaderImageInput
             break;
         default: return invalid("Unknown image format");
     }
+    if (image.dimension == ShaderImageDimension::Image3D && block != 1)
+        return invalid("Block-compressed volume images are unsupported");
     if (!std::isfinite(image.sampler.maxAnisotropy) || image.sampler.maxAnisotropy < 1 ||
         !std::isfinite(image.sampler.lodBias) || !std::isfinite(image.sampler.minLod) ||
         !std::isfinite(image.sampler.maxLod) || image.sampler.minLod < 0 || image.sampler.maxLod < image.sampler.minLod)
@@ -66,11 +77,13 @@ Result<std::vector<ShaderImageRegion>> shaderImageRegions(const ShaderImageInput
         for (std::uint32_t mip = 0; mip < image.mipLevels; ++mip) {
             const auto width  = std::max(1u, image.width >> mip);
             const auto height = std::max(1u, image.height >> mip);
-            const auto size   = ((width + block - 1) / block) * ((height + block - 1) / block) * stride;
+            const auto     depth  = std::max(1u, image.depth >> mip);
+            const uint64_t size =
+                uint64_t((width + block - 1) / block) * ((height + block - 1) / block) * stride * depth;
             if (size > 1024ull * 1024 * 1024 || offset > 1024ull * 1024 * 1024 - size)
                 return invalid("Shader image exceeds 1 GiB upload limit");
-            result.push_back({layer, mip, width, height, offset, size});
-            offset += size;
+            result.push_back({layer, mip, width, height, offset, static_cast<size_t>(size), depth});
+            offset += static_cast<size_t>(size);
         }
     }
     if (image.bytes.size() != offset) return invalid("Shader image payload size does not match its layout");

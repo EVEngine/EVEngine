@@ -301,11 +301,12 @@ versions.
   the SDL/driver layer.
 
 ## Collaboration conventions (multi-agent parallel work)
-## Collaboration conventions (multi-agent parallel work)
 
 These rules exist to keep several agents working in the same tree without
 stepping on each other. `docs/dev/模块编排与裁剪架构.md` explains the layering
-model behind them.
+model behind them. For shrinking merge-conflict hotspots while keeping one
+composed dependency contract, see
+`docs/dev/superpowers/specs/2026-10-10-decentralize-conflict-hotspots.md`.
 
 - **Cross-module calls go through interfaces, not includes.** When a lower
   module must reach a higher one (e.g. `filesystem` reaching `graphics`), the
@@ -313,15 +314,19 @@ model behind them.
   the provider registers it via `eve::cap::provide/query`
   (`src/engine/common/Capability.h`). Do not add a new upward `#include` —
   `scripts/module_depgraph.py --check` (CI `layering` job) fails on it.
-- **One manifest, one boot list.** New modules are declared only in
-  `cmake/module_manifest.cmake`; the link list, third-party closure and
+- **One manifest, one boot list.** New modules are declared only through the
+  composed `cmake/module_manifest.cmake` tree (ordered `include` fragments
+  under `cmake/module_manifest/`); the link list, third-party closure and
   `eve.moduleList` are derived. Do not hand-edit `EVELIBS` / `ThirdParty` /
-  `load.nut` module wiring. Domain satellites live under the host package
-  (`src/modules/<host>/editing`, `editor`, `graphics`, `physics`, `fx`, …) —
-  do not add a new top-level `*_editing` / `*_editor` / `asset_*` /
-  `pixelworld_*` / `buildingfx` directory. Runtime-only profiles exclude
-  authoring directories (`editing` / `editor` / `graphics_editing`) by leaf
-  name; optional runtime satellites stay independently switchable.
+  `load.nut` module wiring, and do not add a second declaration channel.
+  Prefer putting a host package's `eve_declare_module` lines in that host's
+  fragment so unrelated modules do not edit the same file. Domain satellites
+  live under the host package (`src/modules/<host>/editing`, `editor`,
+  `graphics`, `physics`, `fx`, …) — do not add a new top-level `*_editing` /
+  `*_editor` / `asset_*` / `pixelworld_*` / `buildingfx` directory.
+  Runtime-only profiles exclude authoring directories (`editing` / `editor` /
+  `graphics_editing`) by leaf name; optional runtime satellites stay
+  independently switchable.
 - **Keep public headers free of cross-module includes.** Prefer forward
   declarations and Pimpl so a low-level type change does not recompile every
   dependent module. Check `python3 scripts/module_depgraph.py` for `*` marks
@@ -329,7 +334,15 @@ model behind them.
 - **Big files get split, not extended.** A `.cpp` over ~1000 lines is a
   single-agent-at-a-time file. Split it along existing section comments into
   multiple TUs (pure moves, no behavior change) instead of appending more
-  methods.
+  methods. The same ownership rule applies to shared catalogues: put
+  module-scoped architecture-contract entries and user-manual topics in
+  module-owned fragments (`cmake/module_manifest/modules/<host>.cmake`,
+  `scripts/architecture_contracts/<host>.json`), and keep only
+  order/composition in the hub file.
+- **Mechanical cross-module sweeps are their own PR.** Repo-wide renames,
+  export-macro annotation, and Doxygen sweeps must not ride along inside a
+  feature branch; land them alone (preferably batched by host package) so
+  they do not collide with unrelated editor/header edits.
 - **Formatting is enforced on changed lines of existing files.** `make check`
   (and CI) run `.github/scripts/check-format.sh` (clang-format-18, `.clang-format`)
   with `git clang-format`; pre-existing debt in untouched regions does not block
@@ -441,7 +454,8 @@ make check
 
 That includes architecture contracts against `CI_BASE` (default `origin/dev`).
 Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA.
-`scripts/architecture_contracts.json` is the single catalogue for contract
+`scripts/architecture_contracts/` (per-module shards; composed snapshot at
+`scripts/architecture_contracts.json`) is the single catalogue for contract
 evidence; do not silence a finding with a new baseline, allowlist, or broad
 scope. A compatibility facade may retain a legacy shape only when the public
 documentation states that it is compatibility-only and the canonical

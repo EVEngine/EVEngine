@@ -852,6 +852,10 @@ public:
     [[nodiscard]] Result<void> setDisplayHdrCalibration(float paperWhiteNits, float peakNits) override;
     /** @brief Queries display output support. */
     [[nodiscard]] Result<DisplayOutputSupport> queryDisplayOutputSupport() const override;
+    /** @brief Set the render-thread photographic vignette; inherited validation and ownership contract. */
+    [[nodiscard]] Result<void> setScenePhotographicVignette(float intensity) override;
+    /** @brief Read the current render-thread photographic vignette. */
+    float getScenePhotographicVignette() const override { return scenePhotographicVignette_; }
     /** @brief Sets the scene exposure. */
     void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
     /** @brief Returns the scene exposure. */
@@ -1356,6 +1360,7 @@ private:
     glm::vec3 sceneLift{0.f};
     glm::vec3 sceneInverseGamma{1.f};
     glm::vec3 sceneGain{1.f};
+    float                         scenePhotographicVignette_        = 0.0F;
     float sceneTransitionVignette = 0.0F;
     float sceneTransitionVignetteSmoothness = 0.2F;
     float sceneTransitionLensDistortion = 0.0F;
