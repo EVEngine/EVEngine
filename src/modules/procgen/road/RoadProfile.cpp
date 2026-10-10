@@ -50,12 +50,15 @@ const char* roadMaterialGroup(RoadMaterial material) noexcept {
 Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward, int lanesBackward) {
     auto ok = validateStyle(style);
     if (!ok.ok()) return Result<RoadProfile>::failure(ok.status());
-    if (lanesForward < 1 || lanesForward > 8)
+    if (lanesForward < 0 || lanesForward > 8)
         return Result<RoadProfile>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "lanesForward must be in [1,8]", "lanesForward"));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "lanesForward must be in [0,8]", "lanesForward"));
     if (lanesBackward < 0 || lanesBackward > 8)
         return Result<RoadProfile>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "lanesBackward must be in [0,8]", "lanesBackward"));
+    if (lanesForward + lanesBackward < 1)
+        return Result<RoadProfile>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "road must contain at least one directional lane", "lanes"));
 
     const float asphaltHalf =
         0.5f * style.laneWidth * static_cast<float>(lanesForward + lanesBackward);

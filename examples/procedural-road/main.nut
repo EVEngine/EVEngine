@@ -1,5 +1,5 @@
-// Procedural Road Lab — simple scenes (1-4) + complex interchange (5).
-// Keys 1-5 switch scenes. Headless: write scene name into scene.txt.
+// Procedural Road Lab — common road and junction regression scenes.
+// Keys 1-0 plus R switch scenes. Headless: write scene name into scene.txt.
 
 persist roadParts = []
 persist roadGround = null
@@ -10,7 +10,10 @@ persist roadReady = false
 persist roadMaterials = {}
 persist roadPrevKeys = {}
 persist roadSceneName = "straight"
-persist roadSceneList = ["straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew", "interchange"]
+persist roadSceneList = ["straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew", "t-junction",
+                         "y-junction", "sloped-t", "curve-uphill", "tight-turn", "roundabout", "interchange"]
+persist roadGalleryMode = false
+persist roadGalleryIndex = 0
 
 function roadRequire(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
@@ -36,10 +39,28 @@ function roadStyleForGroup(name) {
     return [0.55, 0.55, 0.52, 0.75, 0.0, true];
 }
 
+function roadBuildAsphaltMaterial(style) {
+    local params = roadRequire(procgen.newParams(), "new asphalt params").value;
+    roadRequire(params.setSeed(23), "asphalt seed");
+    roadRequire(params.setSize(256, 256), "asphalt size");
+    local generated = roadRequire(procgen.generatePbrMaterial("pbr.asphalt", params), "generate asphalt PBR").value;
+    local material = gfx.newMaterial();
+    material.setTint(1.0, 1.0, 1.0, 1.0);
+    material.setAlbedoTexture(gfx.newTexture(generated.getAlbedo(), true, true));
+    material.setNormalTexture(gfx.newTexture(generated.getNormal(), true, true));
+    material.setHeightTexture(gfx.newTexture(generated.getHeight(), true, true));
+    material.setRoughness(style[3]);
+    material.setMetallic(style[4]);
+    material.setReceiveLight(style[5]);
+    material.setTexCellBomb(3.0, 0.32, 0.30);
+    material.setParallax(0.012, 8.0, 18.0);
+    generated.destroy();
+    return material;
+}
+
 function roadClearParts() {
     foreach (part in roadParts) {
         part.setVisible(false);
-        part.setMesh(null);
     }
     roadParts = [];
 }
@@ -54,12 +75,25 @@ function roadCameraForScene(name) {
     } else if (name == "bridge") {
         roadCamera.setEye(20.0, 12.0, 18.0);
         roadCamera.setTarget(0.0, 2.5, 0.0);
-    } else if (name == "cross" || name == "tee" || name == "y" || name == "fork" || name == "skew") {
+    } else if (name == "cross") {
         roadCamera.setEye(0.0, 28.0, 18.0);
         roadCamera.setTarget(0.0, 0.3, 0.0);
+    } else if (name == "tee" || name == "y" || name == "fork" || name == "skew" || name == "t-junction" ||
+               name == "y-junction") {
+        roadCamera.setEye(25.0, 27.0, 28.0);
+        roadCamera.setTarget(0.0, 0.4, 0.0);
+    } else if (name == "sloped-t" || name == "curve-uphill") {
+        roadCamera.setEye(28.0, 22.0, 29.0);
+        roadCamera.setTarget(-1.0, 3.3, 0.0);
+    } else if (name == "tight-turn") {
+        roadCamera.setEye(-2.0, 14.0, 12.0);
+        roadCamera.setTarget(-4.2, 0.15, 0.0);
+    } else if (name == "roundabout") {
+        roadCamera.setEye(33.0, 34.0, 31.0);
+        roadCamera.setTarget(0.0, 0.5, 0.0);
     } else {
-        // interchange — overview showing ground cross, ring, and ramps
-        roadCamera.setEye(42.0, 34.0, 18.0);
+        // interchange — overview showing ground cross, diagonal deck, and ramps
+        roadCamera.setEye(56.0, 48.0, 52.0);
         roadCamera.setTarget(0.0, 4.0, 0.0);
     }
 }
@@ -73,22 +107,25 @@ function roadBuildScene(name) {
     local params = roadRequire(procgen.newParams(), "new params").value;
     roadRequire(params.setSeed(1), "seed");
     params.setString("scene", name);
-    params.setFloat("span", name == "interchange" ? 48.0 : (name == "cross" || name == "tee" || name == "y" ||
-                                                                  name == "fork" || name == "skew" ? 28.0 : 32.0));
+    params.setFloat("span", (name == "interchange" || name == "roundabout") ? 48.0 :
+                            (name == "cross" || name == "tee" || name == "y" || name == "fork" || name == "skew" ?
+                                 28.0 : 32.0));
     params.setFloat("bridgeHeight", name == "interchange" ? 8.0 : 6.0);
-    params.setInt("lanes", 2);
+    params.setInt("lanes", name == "tight-turn" ? 1 : 2);
     local segs = 28;
-    if (name == "curve" || name == "bridge") segs = 48;
+    if (name == "curve" || name == "bridge" || name == "curve-uphill") segs = 48;
     if (name == "interchange") segs = 20;
+    if (name == "roundabout") segs = 32;
     params.setInt("pathSegments", segs);
     params.setBool("piers", true);
     params.setBool("markings", true);
-    // Nav overlay is noisy on the complex scene; keep it off for the visual pass.
-    params.setBool("navigation", false);
-    params.setBool("junctions", name == "cross" || name == "tee" || name == "y" || name == "fork" ||
-                                    name == "skew" || name == "interchange");
+    // The tight-turn scene exists specifically to inspect the generated turn ribbon.
+    params.setBool("navigation", name == "tight-turn");
+    params.setBool("junctions", name != "straight" && name != "curve" && name != "bridge");
 
     local cpu = roadRequire(procgen.buildMesh("mesh.roadNetwork", params), "buildMesh").value;
+    print("PROCEDURAL_ROAD_BAKE_DONE scene=" + name + " verts=" + cpu.getVertexCount() +
+          " groups=" + cpu.getGroupCount() + "\n");
     local groupSummary = "";
     for (local i = 0; i < cpu.getGroupCount(); ++i) {
         local component = cpu.copyGroup(i);
@@ -98,12 +135,14 @@ function roadBuildScene(name) {
         local gname = cpu.getGroupName(i);
         local style = roadStyleForGroup(gname);
         if (!(gname in roadMaterials)) {
-            local material = gfx.newMaterial();
-            material.setTint(style[0], style[1], style[2], 1.0);
-            material.setRoughness(style[3]);
-            material.setMetallic(style[4]);
-            material.setReceiveLight(style[5]);
-            if (!style[5]) material.setShadingModel("unlit");
+            local material = gname == "asphalt" ? roadBuildAsphaltMaterial(style) : gfx.newMaterial();
+            if (gname != "asphalt") {
+                material.setTint(style[0], style[1], style[2], 1.0);
+                material.setRoughness(style[3]);
+                material.setMetallic(style[4]);
+                material.setReceiveLight(style[5]);
+                if (!style[5]) material.setShadingModel("unlit");
+            }
             roadMaterials[gname] <- material;
         }
         part.setMesh(mesh);
@@ -165,9 +204,14 @@ if (!roadReady) {
                     if (ch == "\n" || ch == "\r" || ch == " ") break;
                     s += ch;
                 }
-                if (s == "straight" || s == "curve" || s == "bridge" || s == "cross" || s == "tee" || s == "y" ||
-                    s == "fork" || s == "skew" || s == "interchange")
-                    boot = s;
+            foreach (candidate in roadSceneList) {
+                if (s == candidate) boot = s;
+            }
+            if (s == "gallery") {
+                roadGalleryMode = true;
+                roadGalleryIndex = 0;
+                boot = roadSceneList[0];
+            }
             }
         }
     } catch (e) {}
@@ -182,17 +226,27 @@ function eve_update(dt) {
     if (roadPressed("2")) roadBuildScene("curve");
     if (roadPressed("3")) roadBuildScene("bridge");
     if (roadPressed("4")) roadBuildScene("cross");
-    if (roadPressed("5")) roadBuildScene("tee");
-    if (roadPressed("6")) roadBuildScene("y");
-    if (roadPressed("7")) roadBuildScene("fork");
-    if (roadPressed("8")) roadBuildScene("skew");
-    if (roadPressed("9")) roadBuildScene("interchange");
+    if (roadPressed("5")) roadBuildScene("t-junction");
+    if (roadPressed("6")) roadBuildScene("y-junction");
+    if (roadPressed("7")) roadBuildScene("sloped-t");
+    if (roadPressed("8")) roadBuildScene("curve-uphill");
+    if (roadPressed("9")) roadBuildScene("tight-turn");
+    if (roadPressed("0")) roadBuildScene("interchange");
+    if (roadPressed("r")) roadBuildScene("roundabout");
+    if (roadPressed("t")) roadBuildScene("tee");
+    if (roadPressed("y")) roadBuildScene("y");
+    if (roadPressed("f")) roadBuildScene("fork");
+    if (roadPressed("k")) roadBuildScene("skew");
 
     if (!roadScreenshotSaved && roadFrame > 24) {
         local file = "procedural-road-" + roadSceneName + ".png";
         if (gfx.saveFramePng(file)) {
             roadScreenshotSaved = true;
             print("procedural-road: screenshot " + file + "\n");
+            if (roadGalleryMode && roadGalleryIndex + 1 < roadSceneList.len()) {
+                roadGalleryIndex += 1;
+                roadBuildScene(roadSceneList[roadGalleryIndex]);
+            }
         }
     }
 }

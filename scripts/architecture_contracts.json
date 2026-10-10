@@ -1022,6 +1022,62 @@
       "hot_path": []
     },
     {
+      "id": "procgen-editor-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/editor/**",
+      "owner": "procgen_editor::ProcgenEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The authoring-only procgen adapter registers domain commands with the editor host and publishes automation targets without adding runtime dependencies.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/editor/ProcgenEditorModule.h",
+        "src/modules/procgen/editor/procgen_editor.cpp"
+      ],
+      "tests": [
+        "test/editor_procgen_script_editor.cpp",
+        "test/procgen_road_editing.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "ProcgenEditorModule::TargetFactory",
+          "absent_behavior": "procgen-script and road-network automation targets are unavailable when the editor satellite is trimmed"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IEditingCommandRegistry",
+          "required": true,
+          "fallback": "module construction fails explicitly when the editor command registry is absent or rejects road command registration"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.ProcgenEditorModule",
+          "methods": [
+            "create",
+            "createMeshModifier"
+          ]
+        },
+        {
+          "script_class": "eve.ProcgenScriptEditor",
+          "methods": [
+            "loadModule",
+            "commit",
+            "undo",
+            "redo"
+          ]
+        }
+      ],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf; no procgen editing commands or automation target factory are registered"
+      },
+      "thread_affinity": "owner/editor composition thread; construction, command registration and teardown must not race command execution",
+      "hot_path": []
+    },
+    {
       "id": "procgen-module-assembly-surface",
       "rule": "module-interface",
       "scope": "src/modules/procgen/ModuleAssembly*",
