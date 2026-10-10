@@ -60,7 +60,7 @@
 10. 响应式编程 — `rx`（`eve.Rx`）
     UniRx 风格推送流：`Subject` / `BehaviorSubject` / `ReplaySubject` / `ReactiveProperty`
     + LINQ（`map` / `filter` / `take` / …）+ `fromEvent` / `pump`
-    设计：`docs/dev/superpowers/specs/2026-08-17-rx-module-design.md`
+    用户手册：`docs/usr/modules/rx.md`
 
 11. 键盘 / 鼠标 / 触摸 / 手柄 — `keyboard` `mouse` `touch` `joystick`
     输入状态查询；手柄含 SDL GameController 映射与振动

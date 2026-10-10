@@ -31,7 +31,7 @@ canvas.setPixel(10, 10, 1.0, 0.0, 0.0, 1.0);
 
 - `newImageData(data)`：解码 `fs.read()` / `fs.newFileData()` 得到的编码数据，返回新建的 `ImageData`（脚本持有）。
 - `newImageDataFromFile(path)`：从 VFS 路径经**统一资源缓存**解码——同一路径重复加载共享一份 `ImageData`，
-  文件变化时原地刷新（见 `docs/dev/superpowers/specs/2026-08-20-unified-resource-cache.md`）。
+  文件变化时原地刷新（统一 `ResourceManager` 缓存）。
   该实例由缓存持有，脚本不要自行释放；需要独立副本时用 `clone()`。
 - `newEmptyImageData(w, h, format)`：创建全透明/黑色画布，配合 `setPixel` / `getPixelR/G/B/A` 做 CPU 像素编辑，
   再用 `gfx.newTexture(imageData)` 上传为纹理。

@@ -41,6 +41,7 @@
 - [依赖项](依赖项.md)
 - [命令行设计](命令行设计.md)
 - [测试覆盖](测试覆盖.md)
+- [测试套件优化纪要](superpowers/specs/2026-08-18-test-suite-optimization.md)（CI per-case / SHARED 陷阱；`AGENTS.md` 引用）
 - [AI 与 MCP 支持](AI与MCP支持.md)
 - [AI 知识补偿](AI知识补偿.md)（推理时知识包、Binding Contract 目录、少写脚本）
 - [AI 场景导演](AI场景导演.md)（剧情 → 自动搭台 → 质检迭代 → 交付）
@@ -81,6 +82,13 @@
 - [Canonical vegetation scene v1](canonical-vegetation-scene-v1.md)
 - [Canonical vegetation conversion preset v1](canonical-vegetation-conversion-preset-v1.md)
 - [Canonical volume texture v1](canonical-volume-texture-v1.md)
+
+### 资产导入契约（仍在推进，非导航主入口）
+
+TVE / Unity 植被与天空导入的源语义契约仍散落在根目录（`vegetation-*-source-contract.*`、
+`unity-*-import.md`、`tga`/`tiff-source-admission.md`、[`uds-sky-runtime-contract.md`](uds-sky-runtime-contract.md)、
+[`2026-09-12-vegetation-port.md`](2026-09-12-vegetation-port.md)）。`uds-sky-runtime-contract.md`
+是架构契约证据，勿删；其余在对应导入路径收口进 CURRENT schema / `docs/usr` 后再删。
 
 ## 实施记录
 

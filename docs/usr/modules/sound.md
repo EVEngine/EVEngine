@@ -25,7 +25,7 @@ local src = eve.Audio().newSource(pcm);
 
 ### 从文件直接加载声音
 
-`newSoundDataFromFile(path)` 经统一资源缓存解码音频文件（同一路径重复加载共享一份 PCM，文件变化时原地刷新，见 `docs/dev/superpowers/specs/2026-08-20-unified-resource-cache.md`），返回的 SoundData 由缓存持有，不要自行释放。
+`newSoundDataFromFile(path)` 经统一资源缓存解码音频文件（同一路径重复加载共享一份 PCM，文件变化时原地刷新，见 `ResourceManager`），返回的 SoundData 由缓存持有，不要自行释放。
 
 ### 生成程序化声音
 

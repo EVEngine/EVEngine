@@ -1604,7 +1604,7 @@ Result 诊断、计划统计和缓存约定，但 mesh pin 只传递 owning `Mes
 `derivedMeshResult()` 返回 owning 派生快照（会话保持活跃，便于上传显示），
 源网格保持权威，`bakeToMesh` 可选冻结，`removeSetup` 结束会话，`isActive` 查询状态。
 完整并排示例见 [`examples/mesh-contact-fusion/`](../../../examples/mesh-contact-fusion/)。
-设计说明见 `docs/dev/superpowers/specs/2026-10-08-mesh-merge-adhere-plan.md`。
+设计与 API 以本节与 `examples/mesh-contact-fusion` 为准。
 
 连续、单消费者的逐顶点 deform 会编译成一个 CPU segment，一次遍历完成；smooth、append、
 weld 等需要邻接或拓扑处理的节点是明确的融合边界。参数或连线变更递增 revision 并使缓存失效，
