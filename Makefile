@@ -781,7 +781,14 @@ sync/android-libs:
 	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android; fi; \
 	  cp -f "$$TP_DIR/lib/libSDL2.so" $(JNI_LIBS)/; \
 	  if [ -f "$$TP_DIR/lib/libhidapi.so" ]; then cp -f "$$TP_DIR/lib/libhidapi.so" $(JNI_LIBS)/; fi
-	cp -f "$(ANDROID_NDK)/toolchains/llvm/prebuilt/"*"/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so" $(JNI_LIBS)/
+	@case "$(ANDROID_ABI)" in \
+	  arm64-v8a) ndk_triple=aarch64-linux-android ;; \
+	  armeabi-v7a) ndk_triple=arm-linux-androideabi ;; \
+	  x86_64) ndk_triple=x86_64-linux-android ;; \
+	  x86) ndk_triple=i686-linux-android ;; \
+	  *) echo "Unsupported Android ABI: $(ANDROID_ABI)" >&2; exit 1 ;; \
+	esac; \
+	cp -f "$(ANDROID_NDK)/toolchains/llvm/prebuilt/"*"/sysroot/usr/lib/$$ndk_triple/libc++_shared.so" $(JNI_LIBS)/
 	@echo "Synced native libs -> $(JNI_LIBS)"
 	ls -la $(JNI_LIBS)
 

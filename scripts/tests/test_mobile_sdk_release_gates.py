@@ -87,6 +87,8 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn('gradleProperty("evengineAbi").getOrElse("arm64-v8a")', self.android_gradle)
         self.assertIn('abiFilters += listOf(evengineAbi)', self.android_gradle)
         self.assertIn('-PevengineAbi="$ANDROID_PACKAGE_ABI"', self.sdk_test)
+        self.assertIn('ANDROID_ABI STREQUAL "x86_64"', self.sdk_install)
+        self.assertIn('set(_eve_android_ndk_triple "x86_64-linux-android")', self.sdk_install)
 
 
 if __name__ == "__main__":
