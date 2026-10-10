@@ -46,7 +46,7 @@ public:
     /** @brief Reads . */
     std::optional<eve::Value> read(const std::string &path) const override;
     /** @brief Writes . */
-    WriteResult               write(const std::string &path, const eve::Value &value) override;
+    [[nodiscard]] Result<void> write(const std::string &path, const eve::Value &value) override;
     /** @brief Revision. */
     std::uint64_t             revision() const override { return revision_; }
     /** @brief Subscribe. */
