@@ -97,7 +97,8 @@ EOF
   printf 'sdk.dir=%s\n' "$ANDROID_SDK" > "$TEMPLATE/local.properties"
 
   echo "== [test-sdk] assembling APK from $TEMPLATE =="
-  if ! ( cd "$TEMPLATE" && bash gradlew :app:assembleDebug --no-daemon --console=plain ) \
+  if ! ( cd "$TEMPLATE" && bash gradlew :app:assembleDebug \
+      -PevengineAbi="$ANDROID_PACKAGE_ABI" --no-daemon --console=plain ) \
       >"$WORK/apk-build.log" 2>&1; then
     tail -n 40 "$WORK/apk-build.log"
     fail "gradle assembleDebug failed"

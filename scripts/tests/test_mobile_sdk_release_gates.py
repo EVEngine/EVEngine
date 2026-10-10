@@ -11,6 +11,7 @@ APK_RUNNER = ROOT / ".github" / "scripts" / "run-consumer-apks.sh"
 CONSUMER_TEST = ROOT / ".github" / "scripts" / "consumer-test.sh"
 SDK_INSTALL = ROOT / "cmake" / "install_sdk.cmake"
 THIRD_PARTY_BUILD = ROOT / "cmake" / "third_party_build.cmake"
+ANDROID_GRADLE = ROOT / "platform" / "android" / "apk" / "app" / "build.gradle.kts"
 
 
 def job_block(workflow: str, job: str, next_job: str | None = None) -> str:
@@ -30,6 +31,7 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         cls.consumer_test = CONSUMER_TEST.read_text(encoding="utf-8")
         cls.sdk_install = SDK_INSTALL.read_text(encoding="utf-8")
         cls.third_party_build = THIRD_PARTY_BUILD.read_text(encoding="utf-8")
+        cls.android_gradle = ANDROID_GRADLE.read_text(encoding="utf-8")
 
     def test_android_emulator_is_a_hard_gate_for_every_consumer_host(self) -> None:
         block = job_block(self.workflow, "run-android", "ios-sim")
@@ -80,6 +82,11 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
     def test_x86_android_build_disables_arm_neon_probe(self) -> None:
         self.assertIn('ANDROID_ABI MATCHES "^x86(_64)?$"', self.third_party_build)
         self.assertIn("-DALSOFT_CPUEXT_NEON=OFF", self.third_party_build)
+
+    def test_android_apk_abi_is_overridable_for_native_emulator_gate(self) -> None:
+        self.assertIn('gradleProperty("evengineAbi").getOrElse("arm64-v8a")', self.android_gradle)
+        self.assertIn('abiFilters += listOf(evengineAbi)', self.android_gradle)
+        self.assertIn('-PevengineAbi="$ANDROID_PACKAGE_ABI"', self.sdk_test)
 
 
 if __name__ == "__main__":
