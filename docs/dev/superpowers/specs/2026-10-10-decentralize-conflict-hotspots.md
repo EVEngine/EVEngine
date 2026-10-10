@@ -1,10 +1,9 @@
 # 去中心化冲突热点：按模块拆分频繁修改面
 
-> 状态：设计 + 本 PR 落地（S1–S2；S3 见下文说明）  
-> 日期：2026-10-10  
-> 前置：[#295 reduce shared manifest conflict hotspots](https://github.com/evengine/evengine/pull/295)、`docs/dev/模块编排与裁剪架构.md`  
-> 动机：多 agent / 长寿命分支合 `dev` 时，双方同改文件集中在少数枢纽文件；见近期 merge 的 both-sides 统计（`Procgen.cpp`、`orchestration.cmake`、`ci.yml`、`Graphics*.h`、`architecture_contracts.json`）。  
-> 交付：全部改动合在**一个 PR** 内，不拆后续阶段 PR。
+> 状态：设计 + S1–S2 已合入；S3（Procgen TU 拆分）与 S5 文档 topic 拆分见 follow-up PR  
+> 日期：2026-10-10（S3/S5 跟进：2026-10-10）  
+> 前置：[#295 reduce shared manifest conflict hotspots](https://github.com/evengine/evengine/pull/295)、`docs/dev/模块编排与裁剪架构.md`、[#510 decentralize merge-conflict hotspots](https://github.com/evengine/evengine/pull/510)  
+> 动机：多 agent / 长寿命分支合 `dev` 时，双方同改文件集中在少数枢纽文件；见近期 merge 的 both-sides 统计（`Procgen.cpp`、`orchestration.cmake`、`ci.yml`、`Graphics*.h`、`architecture_contracts.json`）。
 
 ---
 
@@ -211,14 +210,15 @@ graphics/vulkan/GraphicsPipeline.h  # 已部分存在则继续外提
 ### 4.5 用户文档：完成 topic 拆分
 
 #295 已把 `graphics` rendering-effects、`procgen` pointset 拆出一页。  
-`docs/usr/modules/procgen.md` 仍 ~3300 行，继续按子域拆：
+主 `docs/usr/modules/procgen.md` 已收束为索引 + 概念；子域正文：
 
-- `docs/usr/modules/procgen/roads.md`
-- `docs/usr/modules/procgen/terrain.md`
-- `docs/usr/modules/procgen/mesh-modifiers.md`
-- 主 `procgen.md` 只留索引 + 概念 + 链到子页
+- `docs/usr/modules/procgen/pointset-pipeline.md`（既有）
+- `docs/usr/modules/procgen/guides.md`（目标导向配方）
+- `docs/usr/modules/procgen/terrain.md`（使用要点 + GTS）
+- `docs/usr/modules/procgen/mesh-modifiers.md`（Stroke / Modifier Graph / 融合）
 
-`docs/usr/MODULES.md` / 模块索引只改链接行，避免正文冲突。
+道路算法细节仍在 `docs/dev/程序化道路系统设计.md` 与 guides 城区/线性结构节，不单开 `roads.md`。  
+`docs/usr/MODULES.md` / 模块索引只链主页，避免正文冲突。
 
 ---
 
@@ -264,13 +264,13 @@ ARCHITECTURE_BASE=HEAD make check/architecture-contracts
 | **S0** | `AGENTS.md` 协作约定 + 本文 | ✅ |
 | **S1** | `orchestration` / `rendering_simulation` → `module_manifest/modules/<host>.cmake` + 入口有序 include | ✅ |
 | **S2** | `architecture_contracts/*.json` 分片 + `compose_catalogue`；composed JSON 为快照 | ✅ |
-| **S3** | `Procgen.cpp` → Bindings / PointSet / Instances TUs | 规格已写；本 PR 未落代码（见下） |
+| **S3** | `Procgen.cpp` → Bindings / PointSet / Instances TUs | ✅ follow-up：`liveProcgen` 缓存解除 G-4；拆为 Handles / PointSetApi / Instances / BindingsTable / BindingsClass / ScriptSupport |
 | **S4** | CI workflow_call 外提 | 刻意不做（CI 语义风险高） |
-| **S5** | `Graphics` API 子头 + procgen 用户手册 topic | 刻意不做（头文件迁移面过大） |
+| **S5** | `Graphics` API 子头 + procgen 用户手册 topic | 文档 topic ✅（`guides` / `terrain` / `mesh-modifiers`）；Graphics 子头仍不做（迁移面过大） |
 
-**S3 未在本 PR 落代码的原因：** 把 `expose`/`ModuleManager::getInstance` 代理助手挪到新 TU 时，changed-line 的 module-interface G-4 会把原 `Procgen.cpp` 里已存在的 runtime lookup 当成“新增”拒绝。要落地 S3，需要先把 proxy release 改成不经 `ModuleManager` 的路径（或为 script-bindings 面增加经评审的豁免），这超出“纯移动降冲突”的范围。S3 仍按 §4.3 规格在本设计内跟踪，**不另开阶段 PR**。
+**S3 解锁方式：** proxy release 与静态 handle resolve/release/isStale 不再调用 `ModuleManager::getInstance`；改为构造时 `publishLiveProcgen`、析构时 `clearLiveProcgen`，release 闭包捕获 module 指针并用 `liveProcgen() != module` 做卸载安全检查。之后纯移动 TU 不再触发 G-4。
 
-S4/S5 同理保留在本文，不拆前置 PR。
+S4 与 Graphics API 子头仍保留在本文，不拆前置 PR。
 
 ---
 
