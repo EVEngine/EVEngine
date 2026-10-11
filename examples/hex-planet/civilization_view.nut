@@ -6,8 +6,11 @@ function civCameraBasis(st) {
 }
 function civDot(a,b) { return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }
 function civProjectCell(st,cell) {
-    local b=civCameraBasis(st); local n=hexmap.sphereDirection(cell);
     local radius=st.radius+hexmap.sphereElevation(cell)*hexmap.sphereElevationStep()+1.0;
+    return civProjectDirection(st,hexmap.sphereDirection(cell),radius);
+}
+function civProjectDirection(st,n,radius) {
+    local b=civCameraBasis(st);
     local distance=fitDistance(st)*st.zoom;
     if(civDot(n,b.back)<radius/distance) return null;
     local point=[n[0]*radius,n[1]*radius,n[2]*radius];
@@ -250,6 +253,26 @@ function civMarker(st,cell,size,r,g,b) {
     gfx.drawSolidRect(p[0]-size-1,p[1]-size-1,size*2+2,size*2+2,0.02,0.03,0.06,1.0);
     gfx.drawSolidRect(p[0]-size,p[1]-size,size*2,size*2,r,g,b,1.0);
 }
+function civSelectionRing(st,cell,r=1.0,g=0.88,b=0.35) {
+    if(cell<0 || civProjectCell(st,cell)==null) return;
+    local radius=st.radius+hexmap.sphereElevation(cell)*hexmap.sphereElevationStep()+1.0;
+    local corners=hexmap.sphereCornerCount(cell);
+    for(local i=0;i<corners;i++) {
+        local a=civProjectDirection(st,hexmap.sphereCornerDirection(cell,i),radius);
+        local end=civProjectDirection(st,hexmap.sphereCornerDirection(cell,(i+1)%corners),radius);
+        if(a==null || end==null) continue;
+        local dx=end[0]-a[0]; local dy=end[1]-a[1];
+        local steps=ceil(sqrt(dx*dx+dy*dy)/1.5).tointeger();
+        if(steps<1) steps=1;
+        if(steps>2048) steps=2048;
+        for(local j=0;j<=steps;j++) {
+            local t=j.tofloat()/steps;
+            local x=a[0]+dx*t; local y=a[1]+dy*t;
+            gfx.drawSolidRect(x-3.0,y-3.0,6.0,6.0,r,g,b,0.18);
+            gfx.drawSolidRect(x-1.25,y-1.25,2.5,2.5,r,g,b,1.0);
+        }
+    }
+}
 function civLabel(st,cell,text,offset,r,g,b) {
     local p=civProjectCell(st,cell);
     if(p==null || p[0]<330 || p[1]<206 || p[1]>config.height-164) return;
@@ -278,7 +301,12 @@ function civRender(st) {
             civLabel(st,s.cell,(s.owner==1 ? "" : "Rival / ")+civCityName(s.cell)+"  ["+s.population+"]",12,0.70,0.94,0.92);
         }
     }
-    civMarker(st,civilization.selected,9.0,1.0,0.83,0.35);
+    civSelectionRing(st,civilization.selected);
+    if(civView.hover>=0 && civView.hover!=civilization.selected) {
+        local reachable=civView.preview!=null && civView.preview.ok;
+        civSelectionRing(st,civView.hover,reachable ? 0.28 : 1.0,
+            reachable ? 1.0 : 0.35,reachable ? 0.78 : 0.25);
+    }
     civMarker(st,civPosition(1),4.0,0.95,1.0,1.0);
     civLabel(st,civPosition(1),"Pathfinder  /  "+civValue(civilization.battle.unitResources(CIV_PLAYER)).movePoints+" MP",-32,0.95,0.79,0.43);
 }

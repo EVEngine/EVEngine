@@ -34,7 +34,7 @@ const ORBIT_SPEED = 0.30;   // degrees of rotation per pixel dragged
 const PITCH_MIN   = -78.0;  // never exactly +/-90: the up vector degenerates there
 const PITCH_MAX   = 78.0;
 const ZOOM_STEP   = 0.12;
-const ZOOM_MIN    = 1.12;   // as a multiple of the framing distance
+const ZOOM_MIN    = 0.42;   // close surface view, as a multiple of the framing distance
 const ZOOM_MAX    = 4.50;
 const SPIN_SPEED  = 4.0;    // degrees per second while auto-spin is on
 

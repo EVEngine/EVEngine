@@ -13,6 +13,7 @@ panel shows growth costs, building effects and rounds to completion. Disabled
 projects explain their requirements. Select **Expedition [C]** to inspect movement
 and founding, or **Cities** to cycle your settlements. Hover land for a route and
 movement-cost preview. Dispatches report completion, research and rival expansion.
+The selected cell has a gold outline; hovered destinations have a teal outline when reachable and a red outline otherwise. Scroll closer to inspect individual cells.
 **World / debug** reveals the optional terrain controls. Build three cities, discover Writing and finish the Beacon.
 Terrain regeneration starts a new campaign. Hot reload is disabled for this
 session-only campaign.
