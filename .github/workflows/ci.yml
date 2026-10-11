@@ -330,15 +330,9 @@ jobs:
 
       - name: Build win32 debug
         # A PR that changes the third-party patch/cache key must do a full cold
-        # dependency plus engine/test build. Recent windows-2025 runners can
-        # exceed 60 minutes without any compiler failure as the full test manifest
-        # grows, so retain a bounded hang guard while allowing the cold build and
-        # final unit-test link to finish. Measured on 2026-09-19: a passing cold
-        # build took 51.6 min, while two dev pushes and this PR were killed by the
-        # former 60-minute guard standing at 98% of the compile steps — the win32
-        # build genuinely needs ~62-66 min now — so keep the 80-minute guard the
-        # Dawn lane already uses.
-        timeout-minutes: 80
+        # dependency plus engine/test build. Release run 35419568563 was still
+        # compiling normally when the former 60-minute guard terminated it.
+        timeout-minutes: 100
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -504,7 +498,7 @@ jobs:
     # A cold Release build took 55 minutes and the process-isolated 3510-case
     # suite reached 3060/3510 at the former 30-minute test guard. Preserve
     # bounded hang detection while budgeting setup, build, and the full suite.
-    timeout-minutes: 120
+    timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
@@ -550,7 +544,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        timeout-minutes: 90
+        # Cold release builds reached the former 90- and 120-minute guards
+        # without a compiler failure in runs 35419568563 and 35436382201.
+        timeout-minutes: 160
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -627,6 +623,10 @@ jobs:
         with:
           version: "v0.16.0"
 
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: sccache --start-server
+
       - name: Setup Java 17
         timeout-minutes: 10
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
@@ -678,7 +678,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # The release build step alone may take up to 90 minutes on a cold runner.
+    # Leave room for toolchain setup and cache reporting at the job level.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
@@ -705,6 +707,10 @@ jobs:
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
         with:
           version: "v0.16.0"
+
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: sccache --start-server
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -755,13 +761,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    # The full isolated test suite now exceeds 30 minutes on hosted Apple
-    # Silicon, and the native Dawn lane still follows it in this job. Measured
-    # on 2026-09-21: the standard build plus its test suite took 24.8 + 31.9
-    # minutes, and a cache-cold Dawn Metal build needs more than 40 minutes on
-    # its own (sccache reported 163 hits against 2533 misses), so keep a hang
-    # guard that a cold cache can still finish inside.
-    timeout-minutes: 180
+    # The debug unit suite exceeded its former 30-minute step guard in release
+    # run 35566503055. Budget the suite and the separate Dawn lane together.
+    timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
@@ -814,10 +816,7 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        # Run 37420229018 reached 5492/5868 passing cases before the 40-minute
-        # guard terminated ctest (Linux finished the same 5868 cases). Match the
-        # Windows 50-minute margin for hosted-runner variance.
-        timeout-minutes: 50
+        timeout-minutes: 60
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
@@ -924,7 +923,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    timeout-minutes: 60
+    # The 75-minute build and 30-minute test guards must both fit inside the
+    # job budget, together with checkout and toolchain setup.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-release
@@ -1327,7 +1328,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # The 75-minute build and 30-minute test guards must both fit inside the
+    # job budget, together with checkout and toolchain setup.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-release
@@ -1543,7 +1546,9 @@ jobs:
     needs: [source-quality]
     if: ${{ needs.source-quality.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    # The build plus half of the coverage test suite consumed the former
+    # 90-minute job budget in release run 35436382201.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-coverage
