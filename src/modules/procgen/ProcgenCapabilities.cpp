@@ -13,7 +13,7 @@ namespace {
 
 class ProcgenQueryImpl final : public eve::IProcgenQuery {
 public:
-    Procgen* pg() { return eve::ModuleManager::getInstance<Procgen>("Procgen"); }
+    Procgen *pg() { return eve::ModuleManager::getInstance<Procgen>("Procgen"); }
 
     std::vector<std::string> algorithms() override {
         std::vector<std::string> out;
