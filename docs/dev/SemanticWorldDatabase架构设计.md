@@ -1,8 +1,8 @@
 # Semantic World Database 架构设计
 
-日期：2026-10-11  
-状态：架构构想 / 待评审；本文不宣告 Semantic World Database 已实现  
-核对基线：`dev` @ `e526e3b87a66cfe8b0515ab518d5d8f93f5b34e0`  
+日期：2026-10-11
+状态：架构构想 / 待评审；本文不宣告 Semantic World Database 已实现
+核对基线：`dev` @ `e526e3b87a66cfe8b0515ab518d5d8f93f5b34e0`
 存放：`docs/dev/`
 
 ## 背景与结论
