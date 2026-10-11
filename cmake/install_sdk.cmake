@@ -257,16 +257,39 @@ if(BUILD_PLATFORM STREQUAL "android")
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(_eve_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
     endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libSDL2.so")
-        install(FILES "${_eve_tp_lib}/lib/libSDL2.so" DESTINATION lib)
-    endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libhidapi.so")
-        install(FILES "${_eve_tp_lib}/lib/libhidapi.so" DESTINATION lib)
-    endif()
-    # libc++_shared.so from NDK (best-effort; packaging docs note NDK fallback)
+    # `deps` is built after the first configure on clean CI runners, so these
+    # files do not exist while install rules are being generated. Resolve them
+    # at install time and fail instead of publishing an unusable Android SDK.
+    install(CODE "
+        set(_eve_android_tp_lib \"${_eve_tp_lib}/lib\")
+        foreach(_eve_required_lib IN ITEMS libSDL2.so)
+            if(NOT EXISTS \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+                message(FATAL_ERROR
+                    \"Android SDK runtime library missing: \${_eve_android_tp_lib}/\${_eve_required_lib}\")
+            endif()
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+        endforeach()
+        if(EXISTS \"\${_eve_android_tp_lib}/libhidapi.so\")
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/libhidapi.so\")
+        endif()
+    ")
+    # libc++_shared.so from the NDK must match the SDK's configured ABI.
     if(DEFINED ANDROID_NDK AND EXISTS "${ANDROID_NDK}")
+        if(ANDROID_ABI STREQUAL "arm64-v8a")
+            set(_eve_android_ndk_triple "aarch64-linux-android")
+        elseif(ANDROID_ABI STREQUAL "armeabi-v7a")
+            set(_eve_android_ndk_triple "arm-linux-androideabi")
+        elseif(ANDROID_ABI STREQUAL "x86_64")
+            set(_eve_android_ndk_triple "x86_64-linux-android")
+        elseif(ANDROID_ABI STREQUAL "x86")
+            set(_eve_android_ndk_triple "i686-linux-android")
+        else()
+            message(FATAL_ERROR "Unsupported Android ABI for libc++_shared.so: ${ANDROID_ABI}")
+        endif()
         file(GLOB _eve_cxx_shared
-            "${ANDROID_NDK}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so")
+            "${ANDROID_NDK}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/${_eve_android_ndk_triple}/libc++_shared.so")
         if(_eve_cxx_shared)
             list(GET _eve_cxx_shared 0 _eve_cxx_one)
             install(FILES "${_eve_cxx_one}" DESTINATION lib)
