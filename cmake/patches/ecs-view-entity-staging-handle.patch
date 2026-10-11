@@ -1,32 +1,32 @@
 diff --git a/Readme.md b/Readme.md
-index ed8597c..78fdde8 100644
+index ed8597c..a78006c 100644
 --- a/Readme.md
 +++ b/Readme.md
 @@ -14,6 +14,8 @@ Entities are ordinary C++ classes. Components are plain structs accessed through
  - Inheritance-aware `View` iteration (base query includes subclasses)
  - Defer / commit command buffer for safe create/destroy during iteration
  - `EntityHandle` + generation protocol for ABA-safe references
-+- Stable staging handles: deferred create reserves the main id across commit
++- Stable staging handles: deferred create reserves main storage in place
 +- `ViewIterator::entity()` / `row()` when systems need the entity record
  - Header-only: `#include "ECS.hpp"`
  
  ## Requirements
 diff --git a/docs/API.md b/docs/API.md
-index 6346aff..f4232ee 100644
+index 6346aff..b8ecd45 100644
 --- a/docs/API.md
 +++ b/docs/API.md
-@@ -146,8 +146,9 @@ Entity *try_get(EntityHandle h);
- - `id` out of range
+@@ -147,7 +147,9 @@ Entity *try_get(EntityHandle h);
  - generation mismatch
  - entity is dead
-+- the only match is a reserved main placeholder (not yet published)
  
 -**v1 note:** handles taken from staging entities are not remapped through publish. After commit, take a new handle from the published entity (or do not rely on the old staging handle).
-+Deferred `CreateEntity` reserves the final main id before placing the staging record, so `handle_of(staged)` stays valid across `commit` (same id + generation). While deferred, `try_get` resolves staging first.
++Deferred `CreateEntity` reserves a main-storage slot marked staging, so
++`handle_of(staged)` stays valid across `commit` (same id + generation + address).
++Views skip staging-flagged entities until publish clears the flag.
  
  ---
  
-@@ -195,7 +196,9 @@ for (auto [pos, vel] : ecs::View<Node, Node::Position, Node::Velocity>(table))
+@@ -195,7 +197,9 @@ for (auto [pos, vel] : ecs::View<Node, Node::Position, Node::Velocity>(table))
    pos->x += vel->dx;
  ```
  
@@ -38,7 +38,7 @@ index 6346aff..f4232ee 100644
  ---
  
 diff --git a/docs/guide.md b/docs/guide.md
-index b4d9cd6..2930669 100644
+index b4d9cd6..5c81c67 100644
 --- a/docs/guide.md
 +++ b/docs/guide.md
 @@ -98,7 +98,18 @@ void apply_damage(ecs::Table &world)
@@ -61,30 +61,29 @@ index b4d9cd6..2930669 100644
  
  ## Safe create/destroy during iteration
  
-@@ -152,8 +163,8 @@ if (ecs::Entity *e = ecs::try_get(target))
+@@ -152,8 +163,7 @@ if (ecs::Entity *e = ecs::try_get(target))
  
  Rules of thumb:
  
 -- Do not store staging pointers past `commit`.
 -- After a deferred create commits, re-acquire a handle from a View or from a pointer you know is in main storage.
-+- Do not store staging **pointers** past `commit` (addresses move on publish).
-+- Staging **handles** stay valid across commit (deferred create reserves the main id).
++- Deferred creates reserve main storage in place: handles (and pointers) stay valid across `commit`.
  - Generation mismatch ⇒ treat as “entity gone”.
  
  ## Multi-world tips
-@@ -180,8 +191,8 @@ Subclass-only worlds are fine: creating `Enemy` without ever calling `Unit::crea
+@@ -180,8 +190,8 @@ Subclass-only worlds are fine: creating `Enemy` without ever calling `Unit::crea
  2. **Assuming ids are global**  
     Ids are per-table and reused via freelist.
  
 -3. **Using staging handles after commit**  
 -   v1 does not remap staging → main for `try_get`.
-+3. **Storing staging pointers past commit**  
-+   Handles survive publish; raw pointers into staging storage do not.
++3. **Assuming deferred creates are visible to Views before commit**  
++   Staging-flagged entities are skipped until publish.
  
  4. **Forgetting `release` / `DestroyEntity`**  
     Without destroy, slots are never reclaimed and Views keep seeing the entity.
 diff --git a/docs/testing.md b/docs/testing.md
-index bb5535f..3a50ebf 100644
+index bb5535f..e04a44d 100644
 --- a/docs/testing.md
 +++ b/docs/testing.md
 @@ -83,7 +83,7 @@ Each job configures with CMake, builds `ecs_test`, then runs `ctest --output-on-
@@ -92,262 +91,111 @@ index bb5535f..3a50ebf 100644
  - Empty / wrong-table / wrong-type / OOB handles
  - Component slot reset on freelist reuse
 -- Staging handle not remapped after publish (v1 contract)
-+- Staging handle stays valid through publish (stable reserved main id)
++- Staging handle stays valid through publish (in-place main reservation)
  - `is_entity_visible`
  - No-arg `begin_defer` / `ScopedDefer` against current table
  
 diff --git a/src/ECS.hpp b/src/ECS.hpp
-index a691afd..20731ca 100644
+index a691afd..5697128 100644
 --- a/src/ECS.hpp
 +++ b/src/ECS.hpp
-@@ -137,6 +137,14 @@ namespace ecs
-       return it->second;
-     }
+@@ -931,8 +931,29 @@ namespace ecs
  
-+    IComponentManager *getStagingManager(std::type_index type)
-+    {
-+      auto it = staging_managers_.find(type);
-+      if (it == staging_managers_.end())
-+        return nullptr;
-+      return it->second;
-+    }
-+
-     bool is_deferred() const { return defer_depth_ > 0; }
- 
-     void begin_defer() { ++defer_depth_; }
-@@ -427,10 +435,25 @@ namespace ecs
-           continue;
- 
-         uint32_t preserved_gen = se->generation ? se->generation : 1;
--        // Construct the record in place from the staging value. The staging
--        // buffers are destroyed immediately after publish_staging() returns,
--        // so moving is both safe and the only requirement placed on B.
--        uint32_t mid = m_reg->emplace(std::move(s_reg->container[sid]));
-+        // CreateEntity reserves the same id in main storage before placing the
-+        // staging record, so publish can move into that slot and keep EntityHandle
-+        // identity stable across commit. Fall back to emplace only if the reserved
-+        // slot is missing (should not happen on the normal deferred-create path).
-+        uint32_t mid = sid;
-+        const bool reserved =
-+            sid < m_reg->entity_count() && m_reg->entity_at(sid) != nullptr &&
-+            (m_reg->entity_at(sid)->flags & kEntityStaging) != 0 &&
-+            m_reg->entity_at(sid)->generation == preserved_gen;
-+        if (reserved)
-+        {
-+          B &me = m_reg->container[sid];
-+          me.~B();
-+          new (&me) B(std::move(s_reg->container[sid]));
-+        }
-+        else
-+        {
-+          mid = m_reg->emplace(std::move(s_reg->container[sid]));
-+        }
-         B &me = m_reg->container[mid];
-         me.id = mid;
-         me.flags &= ~(kEntityStaging | kEntityDead);
-@@ -777,6 +800,49 @@ namespace ecs
-       return static_cast<uint32_t>(container.size() - 1);
-     }
- 
-+    /**
-+     * @brief Reserves a main-storage id for a deferred create.
-+     *
-+     * The placeholder is marked staging so Views skip it until publish moves the
-+     * real record into the same slot (stable EntityHandle across commit).
-+     */
-+    uint32_t reserve_id()
-+    {
-+      uint32_t id = emplace();
-+      T &slot = container[id];
-+      slot.id = id;
-+      slot.flags = kEntityStaging;
-+      if (slot.generation == 0)
-+        slot.generation = 1;
-+      return id;
-+    }
-+
-+    /**
-+     * @brief Constructs a staging record at a caller-chosen id (the reserved main id).
-+     * @remarks Gaps below @p id are filled with dead placeholders so publish can
-+     *          walk the dense index range and skip them.
-+     */
-+    template <typename... Args>
-+    void emplace_at(uint32_t id, Args &&...args)
-+    {
-+      while (container.size() < id)
-+      {
-+        container.emplace_back();
-+        T &hole = container.back();
-+        hole.id = static_cast<uint32_t>(container.size() - 1);
-+        hole.flags = kEntityDead;
-+        hole.generation = 0;
-+      }
-+      if (id < container.size())
-+      {
-+        T &slot = container[id];
-+        slot.~T();
-+        new (&slot) T(std::forward<Args>(args)...);
-+        return;
-+      }
-+      container.emplace_back(std::forward<Args>(args)...);
-+    }
-+
-     uint32_t size() const override { return static_cast<uint32_t>(container.size()); }
- 
-     const std::type_info &getType() const override { return typeid(T); }
-@@ -974,20 +1040,48 @@ namespace ecs
+   inline void Table::publish_staging()
    {
-     const bool use_staging = table.is_deferred() && !force_main;
++    // Deferred creates are reserved directly in main storage with kEntityStaging.
++    // Commit promotes them in place so EntityHandle id/generation stay stable.
++    for (auto &[type, cm] : managers_)
++    {
++      (void)type;
++      if (cm == nullptr || cm->registy == nullptr)
++        continue;
++      auto *reg = dynamic_cast<IRegistryComponentBuffer *>(cm->registy);
++      if (reg == nullptr)
++        continue;
++      for (uint32_t id = 0; id < reg->entity_count(); ++id)
++      {
++        Entity *e = reg->entity_at(id);
++        if (e == nullptr || (e->flags & kEntityDead) != 0)
++          continue;
++        e->flags &= ~kEntityStaging;
++      }
++    }
++
++    // Legacy path: move any records still sitting in staging_managers_.
+     for (auto &[type, staging_cm] : staging_managers_)
+     {
++      (void)type;
+       IComponentManager *main_cm = staging_cm->ensure_main_manager(this);
+       main_cm->publish_from(staging_cm);
+     }
+@@ -962,7 +983,7 @@ namespace ecs
+    *        arguments to it.
+    *
+    * @param table Owning table.
+-   * @param force_main When true, bypasses staging and publishes immediately.
++   * @param force_main When true, creates a visible main entity even while deferred.
+    * @param args Forwarded to T's constructor; no argument means T().
+    * @return The new record, owned by @p table.
+    * @remarks T only has to be constructible from @p args and destructible. A
+@@ -972,13 +993,13 @@ namespace ecs
+   template <typename T, typename... Args>
+   T *CreateEntity(Table &table, bool force_main, Args &&...args)
+   {
+-    const bool use_staging = table.is_deferred() && !force_main;
++    // Deferred creates reserve a slot in main storage and mark it staging so
++    // Views skip it until commit. That keeps EntityHandle identity stable and
++    // avoids a second registry that would require default-constructible holes.
++    const bool mark_staging = table.is_deferred() && !force_main;
  
 -    IComponentManager &cm = use_staging
 -                                ? static_cast<IComponentManager &>(
 -                                      table.template getOrCreateStagingManager<T>())
 -                                : static_cast<IComponentManager &>(
 -                                      table.template getOrCreateManager<T>());
-+    if (use_staging)
-+    {
-+      // Reserve the final main id first so handle_of(staged) stays valid after
-+      // commit (same id + generation, published into the reserved slot).
-+      IComponentManager &main_cm =
-+          static_cast<IComponentManager &>(table.template getOrCreateManager<T>());
-+      auto *main_reg = main_cm.template getOrCreateRegistryComponentBuffer<T>();
-+      const uint32_t id = main_reg->reserve_id();
-+      const uint32_t generation = main_reg->container[id].generation;
-+
-+      IComponentManager &cm = static_cast<IComponentManager &>(
-+          table.template getOrCreateStagingManager<T>());
-+      auto *registry = cm.template getOrCreateRegistryComponentBuffer<T>();
-+      registry->emplace_at(id, std::forward<Args>(args)...);
-+      T &inst = registry->container[id];
-+      inst.id = id;
-+      inst.table = &table;
-+      inst.storage = &cm;
-+      inst.flags |= kEntityStaging;
-+      inst.generation = generation;
-+
-+      for (auto &[key, component] : cm.components)
-+      {
-+        (void)key;
-+        component->ensure_space(id + 1);
-+      }
-+      for (auto &[key, component] : main_cm.components)
-+      {
-+        (void)key;
-+        component->ensure_space(id + 1);
-+      }
-+      return &inst;
-+    }
- 
 +    IComponentManager &cm =
 +        static_cast<IComponentManager &>(table.template getOrCreateManager<T>());
+ 
      auto *registry = cm.template getOrCreateRegistryComponentBuffer<T>();
      uint32_t id = registry->emplace(std::forward<Args>(args)...);
-     T &inst = registry->container[id];
+@@ -986,7 +1007,7 @@ namespace ecs
      inst.id = id;
      inst.table = &table;
      inst.storage = &cm;
 -    if (use_staging)
--      inst.flags |= kEntityStaging;
++    if (mark_staging)
+       inst.flags |= kEntityStaging;
      if (inst.generation == 0)
        inst.generation = 1;
+@@ -1023,15 +1044,13 @@ namespace ecs
+     e->flags |= kEntityDead;
  
-@@ -1019,23 +1113,46 @@ namespace ecs
-     if (e->flags & kEntityDead)
-       return;
- 
--    e->generation++;
--    e->flags |= kEntityDead;
--
      Table *table = e->table;
-     const bool is_staging = (e->flags & kEntityStaging) != 0;
-+    const std::type_index type = e->getComponentManager().getType();
-+    const uint32_t id = e->id;
-+    const uint32_t generation = e->generation;
-+
-+    e->generation++;
-+    e->flags |= kEntityDead;
+-    const bool is_staging = (e->flags & kEntityStaging) != 0;
  
      if (table->is_deferred())
      {
-       if (!is_staging)
-       {
+-      if (!is_staging)
+-      {
 -        table->pending_destroys_.push_back(
 -            {e->getComponentManager().getType(), e->id, e->generation, false});
-+        table->pending_destroys_.push_back({type, id, e->generation, false});
-+      }
-+      else
-+      {
-+        // Drop the reserved main placeholder so the id returns to the freelist.
-+        IComponentManager *main_cm = table->getManager(type);
-+        if (main_cm != nullptr && main_cm->registy != nullptr)
-+        {
-+          auto *main_reg =
-+              dynamic_cast<IRegistryComponentBuffer *>(main_cm->registy);
-+          if (main_reg != nullptr)
-+          {
-+            Entity *reserved = main_reg->entity_at(id);
-+            if (reserved != nullptr && (reserved->flags & kEntityStaging) != 0 &&
-+                reserved->generation == generation)
-+            {
-+              reserved->generation++;
-+              reserved->flags |= kEntityDead;
-+              main_cm->reclaim(id);
-+            }
-+          }
-+        }
-       }
+-      }
++      // Staging-flagged deferred creates live in main storage, so they use the
++      // same pending reclaim path as ordinary destroys.
++      table->pending_destroys_.push_back(
++          {e->getComponentManager().getType(), e->id, e->generation, false});
      }
      else
      {
--      e->getComponentManager().reclaim(e->id);
-+      e->getComponentManager().reclaim(id);
-     }
-   }
- 
-@@ -1051,12 +1168,9 @@ namespace ecs
-     return h;
-   }
- 
--  inline Entity *try_get(EntityHandle h)
-+  inline Entity *try_get_in_manager(IComponentManager *cm, EntityHandle h,
-+                                   bool allow_staging)
-   {
--    if (h.table == nullptr)
--      return nullptr;
--
--    IComponentManager *cm = h.table->getManager(h.type);
-     if (cm == nullptr || cm->registy == nullptr)
-       return nullptr;
- 
-@@ -1074,10 +1188,27 @@ namespace ecs
+@@ -1074,6 +1093,7 @@ namespace ecs
        return nullptr;
      if (e->flags & kEntityDead)
        return nullptr;
-+    if (!allow_staging && (e->flags & kEntityStaging))
-+      return nullptr;
++    // Staging-flagged deferred creates are valid handle targets before commit.
  
      return e;
    }
- 
-+  inline Entity *try_get(EntityHandle h)
-+  {
-+    if (h.table == nullptr)
-+      return nullptr;
-+
-+    // Deferred creates live in staging at the reserved main id. Prefer staging
-+    // so a handle never resolves to an unrelated main entity (or the reserved
-+    // placeholder) while publish is pending.
-+    if (Entity *staged =
-+            try_get_in_manager(h.table->getStagingManager(h.type), h, true))
-+      return staged;
-+
-+    return try_get_in_manager(h.table->getManager(h.type), h, false);
-+  }
-+
-   // ------------------------------------------------------------------------
- 
-   template <typename T>
-@@ -1317,11 +1448,32 @@ namespace ecs
+@@ -1317,11 +1337,32 @@ namespace ecs
  
      bool operator!=(const ViewIterator &other) const { return !(*this == other); }
  
@@ -381,7 +229,7 @@ index a691afd..20731ca 100644
      bool at_end() const { return RegistryBufferIterator<B>::at_end(); }
  
 diff --git a/test/handles.cpp b/test/handles.cpp
-index b983f3a..4d89d05 100644
+index b983f3a..3ca6a36 100644
 --- a/test/handles.cpp
 +++ b/test/handles.cpp
 @@ -137,7 +137,7 @@ TEST_CASE("generation starts at 1 and bumps on destroy")
@@ -393,7 +241,7 @@ index b983f3a..4d89d05 100644
  {
    ecs::Table table;
    hd::Node *live = hd::Node::create(table);
-@@ -151,16 +151,19 @@ TEST_CASE("staging handle is not remapped through commit")
+@@ -151,16 +151,18 @@ TEST_CASE("staging handle is not remapped through commit")
      staged_ptr = hd::Node::create(table);
      staged_ptr->pos()->x = 11;
      staged_handle = ecs::handle_of(staged_ptr);
@@ -402,8 +250,7 @@ index b983f3a..4d89d05 100644
 -    // id/generation resolves to the live main entity — never the staging pointer.
 -    REQUIRE(ecs::try_get(staged_handle) == live);
 -    REQUIRE(ecs::try_get(staged_handle) != staged_ptr);
-+    // Deferred create reserves a distinct main id, so the staging handle cannot
-+    // collide with an existing live entity.
++    // Deferred create reserves a distinct main id and marks it staging.
 +    REQUIRE(staged_handle.id != live_handle.id);
 +    REQUIRE(ecs::try_get(staged_handle) == staged_ptr);
 +    REQUIRE(ecs::try_get(live_handle) == live);
@@ -411,9 +258,9 @@ index b983f3a..4d89d05 100644
  
 -  // v1: commit does not rewrite staging ids onto the handle.
 -  REQUIRE(ecs::try_get(staged_handle) == live);
-+  // After commit the same handle resolves to the published main record.
++  // Commit promotes in place: same handle and pointer remain valid.
 +  ecs::Entity *published = ecs::try_get(staged_handle);
-+  REQUIRE(published != nullptr);
++  REQUIRE(published == staged_ptr);
 +  REQUIRE(published != live);
    REQUIRE(ecs::try_get(live_handle) == live);
 +  REQUIRE(static_cast<hd::Node *>(published)->pos()->x == 11);
@@ -421,10 +268,10 @@ index b983f3a..4d89d05 100644
    int n = 0;
    int sum = 0;
 diff --git a/test/view_systems.cpp b/test/view_systems.cpp
-index 360b7d0..4db204d 100644
+index 360b7d0..978b7bd 100644
 --- a/test/view_systems.cpp
 +++ b/test/view_systems.cpp
-@@ -265,6 +265,43 @@ TEST_CASE("many entities View visits all once")
+@@ -265,6 +265,42 @@ TEST_CASE("many entities View visits all once")
    REQUIRE(sum == static_cast<float>((N - 1) * N / 2));
  }
  
@@ -453,7 +300,6 @@ index 360b7d0..4db204d 100644
 +  REQUIRE(n == 2);
 +  REQUIRE(sum == 8.f);
 +
-+  // Destroy from inside a View using entity() — deferred until view ends.
 +  {
 +    auto kill = ecs::View<vs::Node, vs::Node::Position>(table);
 +    for (auto it = kill.begin(); it != kill.end(); ++it)
