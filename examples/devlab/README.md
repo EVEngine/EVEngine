@@ -1,5 +1,8 @@
 # DevLab — 开发者体验实验室
 
+[English](README.en.md)
+
+
 把 EVEngine「运行时即编辑器」的开发循环浓缩成一个 5 分钟可跑的示例。
 **必须用 `--debug` 运行**（`make devlab` 已带该参数），否则 DevTools 不加载。
 

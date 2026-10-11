@@ -1045,67 +1045,18 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 - 3D 布料网格为双面渲染：正/背面各一份顶点，背面法线翻转、winding 反向，两侧光照都正确。
 - 3D 物体尺寸建议贴近真实尺度（约 0.1–10 m）；过大过小会降低求解稳定性。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`World3D`、`Body3D`、`Cloth`、`Cloth3D`、`Fluid2D`）的方法也列在这里。
-
-- `applyAngularImpulse()`、`applyForce()`、`applyForceAt()`、`applyLinearImpulse()`、`clear()`、`clearBounds()`、`destroy()`、`destroyBody()`
-- `draw()`、`drawDebug()`、`emit()`、`getAngle()`、`getAngularVelocity()`、`getAngularVelocityX()`、`getAngularVelocityY()`、`getAngularVelocityZ()`、`getBody()`、`getCapacity()`、`getCols()`
-- `getAirDensity()`、`getCollideWorld()`、`getDamping()`、`getDensity()`、`getDragCoefficient()`、`getFoldStiffness()`、`getFriction()`、`getGrabIndex()`、`getGravityX()`、`getGravityY()`、`getGravityZ()`、`getId()`、`getIterations()`、`getLiftCoefficient()`
-- `getLinearVelocityX()`、`getLinearVelocityY()`、`getLinearVelocityZ()`、`getMass()`、`getMeter()`、`getName()`、`getNearPressureStiffness()`、`getParticleCount()`、`getParticleMass()`、`getParticleSize()`、`getParticleVx()`
-- `getMaxFoldAngle()`、`getParticleVy()`、`getParticleVx()`、`getParticleX()`、`getParticleY()`、`getParticleZ()`、`getPressureStiffness()`、`getQueryBodyId()`、`getQueryCount()`、`getRayHitBodyId()`、`getRayHitFraction()`
-- `getRayHitNormalX()`、`getRayHitNormalY()`、`getRayHitNormalZ()`、`getRayHitX()`、`getRayHitY()`、`getRayHitZ()`、`getRestDensity()`、`getRestitution()`、`getRotW()`、`getRotX()`、`getRotY()`、`getRotZ()`、`getRows()`、`getSmoothingRadius()`
-- `getOriginX()`、`getOriginY()`、`getOriginZ()`、`getSelfCollision()`、`getSpacing()`、`getStiffness()`、`getType()`、`getViscosity()`、`getWindVelocityX()`、`getWindVelocityY()`、`getWindVelocityZ()`、`getX()`、`getY()`、`getZ()`、`grabAt()`、`hasRayHit()`
-- `interactAt()`、`isActive()`、`isAwake()`、`isBullet()`、`isFixedRotation()`、`isGrabbing()`、`isPinned()`、`isSensor()`
-- `moveGrab()`、`newBody()`、`newBoxShape()`、`newCapsuleShape()`、`newCircleFixture()`、`newCloth()`、`newCloth3D()`、`newClothGPU()`、`newFluid2D()`、`newRectangleFixture()`、`newSphereShape()`、`newWorld()`、`newWorld3D()`、`pin()`
-- `pinTopRow()`、`queryAABB()`、`rayCast()`、`releaseGrab()`、`reset()`、`setActive()`、`setAngle()`、`setAngularVelocity()`、`setAwake()`
-- `setAerodynamics()`、`setBounds()`、`setBullet()`、`setCollideWorld()`、`setColor()`、`setDamping()`、`setDensity()`、`setFixedRotation()`、`setFoldStiffness()`、`setFriction()`、`setGravity()`、`setWindVelocity()`
-- `setIterations()`、`setLinearVelocity()`、`setMeter()`、`setMaxFoldAngle()`、`setNearPressureStiffness()`、`setParticleMass()`、`setParticlePosition()`、`setParticleSize()`、`setPosition()`、`setPressureStiffness()`
-- `setRestDensity()`、`setRestitution()`、`setRotation()`、`setSensor()`、`setSmoothingRadius()`、`setStiffness()`、`setType()`、`setViscosity()`、`testPoint()`
-- `setSelfCollision()`、`unpin()`、`update()`、`updateFull()`
+## 绑定与行为说明
 
 ### 3D 高级接口补充索引
 
 以下方法补充了 3D 碰撞查询结果、接触事件、关节状态、距离场采样、材质参数和世界诊断的脚本索引。坐标分量方法按 `X/Y/Z` 成组使用；索引类 getter 的有效范围由对应的 `*Count()` 返回值决定。
 
-- `areHitEventsEnabled()`、`didMoverHitWall()`、`getAngularDamping()`、`getAngularSeparation()`、`getAwakeBodyCount()`、`getAwakeContactCount()`、`getBeginContactShapeAId()`、`getBeginContactShapeATag()`
-- `getBeginContactShapeBId()`、`getBeginContactShapeBTag()`、`getBeginTriggerSensorBodyId()`、`getBeginTriggerSensorShapeId()`、`getBeginTriggerSensorShapeTag()`、`getBeginTriggerVisitorBodyId()`、`getBeginTriggerVisitorShapeId()`、`getBeginTriggerVisitorShapeTag()`
-- `getBodyAId()`、`getBodyBId()`、`getBoundsMaxX()`、`getBoundsMaxY()`、`getBoundsMaxZ()`、`getBoundsMinX()`、`getBoundsMinY()`、`getBoundsMinZ()`
-- `getBoxDepth()`、`getBoxHeight()`、`getClosestBodyId()`、`getClosestNormalX()`、`getClosestNormalY()`、`getClosestNormalZ()`、`getClosestShapeTag()`、`getClosestY()`
-- `getClosestZ()`、`getCollideConnected()`、`getCollisionX()`、`getCollisionZ()`、`getConstraintForceX()`、`getConstraintForceY()`、`getConstraintForceZ()`、`getConstraintTorqueX()`
-- `getConstraintTorqueY()`、`getConstraintTorqueZ()`、`getContactDampingRatio()`、`getContactHertz()`、`getContactPointCount()`、`getContactPointNormalZ()`、`getContactPointShapeTag()`、`getContactPointY()`
-- `getContactPointZ()`、`getContactPushOutSpeed()`、`getContactRecycleDistance()`、`getDepth()`、`getDistanceLength()`、`getDynamicTreeHeight()`、`getEndContactShapeAId()`、`getEndContactShapeATag()`
-- `getEndContactShapeBId()`、`getEndContactShapeBTag()`、`getEndTriggerSensorBodyId()`、`getEndTriggerSensorShapeId()`、`getEndTriggerSensorShapeTag()`、`getEndTriggerVisitorBodyId()`、`getEndTriggerVisitorShapeId()`、`getEndTriggerVisitorShapeTag()`
-- `getExplosionResultCount()`、`getExplosionResultDeltaAngularVelocityX()`、`getExplosionResultDeltaAngularVelocityY()`、`getExplosionResultDeltaAngularVelocityZ()`、`getExplosionResultDeltaVelocityY()`、`getExplosionResultDeltaVelocityZ()`、`getForceThreshold()`、`getFrictionCombineMode()`
-- `getGravityScale()`、`getHeightFieldCellSizeZ()`、`getHeightFieldCountZ()`、`getHeightFieldGlobalMax()`、`getHitBodyAId()`、`getHitBodyBId()`、`getHitEventThreshold()`、`getHitNormalY()`
-- `getHitNormalZ()`、`getHitPointY()`、`getHitPointZ()`、`getHitShapeAId()`、`getHitShapeATag()`、`getHitShapeBId()`、`getHitShapeBTag()`、`getInertiaXY()`
-- `getInertiaXZ()`、`getInertiaYY()`、`getInertiaYZ()`、`getInertiaZZ()`、`getIslandCount()`、`getJointCount()`、`getJointStressBodyAId()`、`getJointStressBodyBId()`
-- `getJointStressKind()`、`getJointStressTorqueY()`、`getJointStressTorqueZ()`、`getLinearDamping()`、`getLinearSeparation()`、`getLocalCenterY()`、`getLocalCenterZ()`、`getLocalRotW()`
-- `getLocalRotX()`、`getLocalRotY()`、`getLocalRotZ()`、`getLocalX()`、`getLocalY()`、`getLocalZ()`、`getMaterialId()`、`getMaximumLinearSpeed()`
-- `getMoverGroundSnap()`、`getMoverNormalY()`、`getMoverNormalZ()`、`getMoverSkinWidth()`、`getMoverStepHeight()`、`getNormalY()`、`getNormalZ()`、`getOutsideDistance()`
-- `getPenetrationDepth()`、`getQueryCategoryBits()`、`getQueryIgnoredBodyId()`、`getQueryIgnoredShapeId()`、`getQueryMaskBits()`、`getRayHitShapeTag()`、`getRayResultNormalY()`、`getRayResultNormalZ()`
-- `getRayResultY()`、`getRayResultZ()`、`getRecycledContactCount()`、`getRestitutionCombineMode()`、`getRestitutionThreshold()`、`getRevoluteAngle()`、`getRevoluteMotorTorque()`、`getRollingResistance()`
-- `getShapeCastBodyId()`、`getShapeCastNormalY()`、`getShapeCastNormalZ()`、`getShapeCastResultNormalY()`、`getShapeCastResultNormalZ()`、`getShapeCastResultY()`、`getShapeCastResultZ()`、`getShapeCastY()`
-- `getShapeCastZ()`、`getShapeContactX()`、`getShapeContactZ()`、`getShapeCount()`、`getSleepThreshold()`、`getSphericalConeAngle()`、`getSphericalTwistAngle()`、`getStaticTreeHeight()`
-- `getSurfaceX()`、`getSurfaceZ()`、`getTangentVelocityX()`、`getTangentVelocityY()`、`getTangentVelocityZ()`、`getTorqueThreshold()`、`getTriangleMeshMaterialCount()`、`getTriangleMeshMaterialFriction()`
-- `getTriangleMeshMaterialId()`、`getTriangleMeshMaterialIndex()`、`getTriangleMeshMaterialRestitution()`、`getTriangleMeshMaterialRollingResistance()`、`getWorldCenterZ()`、`hasClosestPoint()`、`hasShapeCastHit()`、`isAngularXLocked()`
-- `isAngularYLocked()`、`isAngularZLocked()`、`isContinuousCollisionEnabled()`、`isLinearXLocked()`、`isLinearYLocked()`、`isLinearZLocked()`、`isSleepEnabled()`、`isWarmStartingEnabled()`
-- `sample()`、`sampleNormal()`、`setDistanceLength()`、`setSleepThreshold()`
 
 ### 关节与机械机构补充索引
 
 下列方法覆盖 2D `Joint2D` / `Mechanism2D` 与 3D `Joint3D` / `Mechanism3D` 的脚本绑定；
 与上文机构示例中的 `setDrive` / `getDriveAngle` / `getSpinSpeed` / `getDriveJoint` /
 `getSliderTranslation` 一并使用。
-
-- `clearDrive()`、`getCrankPinJoint()`、`getDistanceDampingRatio()`、`getDistanceFrequency()`、`getGearJoint1()`、`getGearJoint2()`、`getGearRatio()`
-- `getMotorAngularOffset()`、`getMotorAngularVelocityX()`、`getMotorAngularVelocityY()`、`getMotorAngularVelocityZ()`、`getMotorLinearOffsetX()`、`getMotorLinearOffsetY()`
-- `getMotorLinearVelocityX()`、`getMotorLinearVelocityY()`、`getMotorLinearVelocityZ()`、`getParallelDampingRatio()`、`getParallelHertz()`、`getParallelMaxTorque()`
-- `getRatchetDirection()`、`getRatchetEngagementTorque()`、`getRevoluteSpeed()`、`getSliderJoint()`、`getSliderPinJoint()`
-- `getWeldAngularDampingRatio()`、`getWeldAngularHertz()`、`getWeldDampingRatio()`、`getWeldFrequency()`、`getWeldLinearDampingRatio()`、`getWeldLinearHertz()`
-- `getWheelSpeed()`、`getWheelTranslation()`、`isDriveEnabled()`、`isValid()`
-- `setMotorAngularOffset()`、`setMotorAngularSpring()`、`setMotorAngularVelocity()`、`setMotorLimits()`、`setMotorLinearOffset()`、`setMotorLinearSpring()`
-- `setMotorLinearVelocity()`、`setMotorVelocityLimits()`、`setParallelSpring()`、`setRatchetDirection()`、`setRatchetEngagementTorque()`、`setWheelMotor()`、`setWheelSpring()`
 
 ## 等待流送地形后激活刚体
 
@@ -1124,7 +1075,6 @@ Body3D 都由调用者持有，函数不保存指针、不调用未知回调；�
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/physics/`](../../../src/modules/physics/)
 **相关测试：** [`test/box2d.cpp`](../../../test/box2d.cpp)、[`test/box3d.cpp`](../../../test/box3d.cpp)、[`test/softbody.cpp`](../../../test/softbody.cpp)
