@@ -151,7 +151,7 @@
         "src/modules/rts/RTSFormationBindings.cpp",
         "src/modules/rts/RTSReplay.cpp",
         "src/modules/rts/RTSRestore.cpp",
-        "docs/dev/2026-09-22-rts-crowd-implementation.md"
+        "docs/dev/群体行为与流场模块设计.md"
       ],
       "tests": [
         "test/rts_groups.cpp",

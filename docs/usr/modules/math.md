@@ -27,6 +27,34 @@ local n = math.noise2(p.getX(), p.getY());
 
 用 lerp/smoothstep/ease 做相机与 UI 插值；`noise2()` / fractal noise 适合高度图，输入坐标乘 frequency 控制尺度。Vec/Mat 对象用于变换组合，热点循环避免反复分配临时对象。
 
+### 山体与地形的平滑融合
+
+`math.smoothMax(a, b, width)` 对两个高度取平滑最大值。`a`、`b` 必须有限且使用
+相同的坐标基准和高度单位；`width` 是有限、非负的**高度差融合带宽**，不是水平距离。
+宽度为 0 时返回普通 max；高度差达到 width 后也精确返回 max，因此不会影响远处地形。
+带内公式为 `max(a,b) + width * (1 - abs(a-b)/width)^2 / 4`，函数及一阶导数连续
+（C1，二阶导数不连续）。两高度相等时会抬高 `width/4`，可据此选择宽度。
+
+```squirrel
+local math = eve.Math();
+function sampleMountainBlend(math, x, z) {
+    local terrain = 3.0 + 2.0 * math.noise2(x * 0.02, z * 0.02);
+    local mountain = 25.0 - 0.01 * (x * x + z * z);
+    return math.smoothMax(terrain, mountain, 4.0);
+}
+```
+
+在生成高度图时对每个世界坐标采样该函数。山体边缘必须降到地形以下至少 width，
+再裁切其覆盖范围；直接截断仍可能产生接缝。若使用局部遮罩，需让遮罩在边缘平滑降到
+零。输入高度场本身应连续，并从融合后的高度重新计算法线；分块地形共享同一世界坐标
+采样规则。此函数不修改网格、碰撞或现有 TerrainStamp 操作。
+
+C++ 核心入口为 `eve::math::smoothMax`（`common/SmoothMax.h`），脚本入口委托同一实现。
+每次采样仅固定数量运算，无分配、状态、时间、RNG 或回调；线程安全，不保留输入。
+参数前置条件由启用断言的构建检查。内部用 double 避免有限 float 的高度差溢出；
+结果超出 float 范围时返回正无穷。跨平台按浮点容差比较；多座山逐次融合时固定顺序，
+因为此运算满足交换律但不满足结合律。
+
 ### 2D/3D steering 数学
 
 `steeringSeek2/3`、`steeringFlee2/3`、`steeringArrive2/3` 和

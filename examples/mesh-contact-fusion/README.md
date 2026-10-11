@@ -16,7 +16,7 @@
 - 动态路径默认 soft-snap；源抬升必须落在 `edgeRadius` 内，否则查询打不中。
 
 设计说明见
-[`docs/dev/superpowers/specs/2026-10-08-mesh-merge-adhere-plan.md`](../../docs/dev/superpowers/specs/2026-10-08-mesh-merge-adhere-plan.md)。
+[`docs/usr/modules/procgen.md`](../../docs/usr/modules/procgen.md)（MeshMerge / MeshAdhereLive）。
 
 ## 运行
 

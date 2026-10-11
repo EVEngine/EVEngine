@@ -130,9 +130,10 @@ public:
     int getOperationCount() const noexcept;
     /** @brief Count commands in the applied prefix, including disabled commands. */
     int getAppliedCount() const noexcept;
-    /** @brief Serialize schema version 1 with the complete replayable operation history. */
+    /** @brief Serialize schema version 2 with the complete replayable operation history. */
     [[nodiscard]] Result<std::string> snapshotJson() const;
-    /** @brief Atomically restore schema version 1 and rebuild the applied prefix before publication. */
+    /** @brief Atomically restore schema versions 1/2 (v1 migrates with zero smoothWidth/edgeFade) and rebuild the
+     * applied prefix before publication. */
     [[nodiscard]] Result<void> restoreJson(const std::string& json);
 
 private:
