@@ -600,37 +600,38 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
 TEST_CASE("devtools.sceneQuery.getSetReportStructuredFailure") {
     ClosedLoopScene scene;
     auto            missing = scene.getNode("missing");
-    REQUIRE(!missing);
+    REQUIRE(!missing.ok());
     REQUIRE(missing.status().primaryDiagnostic() != nullptr);
     CHECK_EQ(missing.status().primaryDiagnostic()->code(), eve::DiagnosticCode::NotFound);
 
     auto badSet = scene.setNodeTransform("missing", 0.f, 0.f, 0.f);
-    REQUIRE(!badSet);
+    REQUIRE(!badSet.ok());
     REQUIRE(badSet.status().primaryDiagnostic() != nullptr);
     CHECK_EQ(badSet.status().primaryDiagnostic()->code(), eve::DiagnosticCode::NotFound);
 
     auto ok = scene.getNode("player");
-    REQUIRE(ok);
+    REQUIRE(ok.ok());
     CHECK_EQ(std::move(ok).value().id, "player");
-    CHECK(scene.setNodeVisible("player", false));
+    auto visible = scene.setNodeVisible("player", false);
+    REQUIRE(visible.ok());
     CHECK(!scene.node.visible);
 }
 
 TEST_CASE("devtools.renderCapture.savePngReportsStructuredFailure") {
     ClosedLoopCapture capture;
     auto              saved = capture.savePng("unused.png");
-    REQUIRE(!saved);
+    REQUIRE(!saved.ok());
     REQUIRE(saved.status().primaryDiagnostic() != nullptr);
     CHECK_EQ(saved.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
     CHECK_EQ(saved.status().primaryDiagnostic()->path(), "capture");
 
     auto mask = capture.entityIdMaskPng("unused_id.png");
-    REQUIRE(!mask);
+    REQUIRE(!mask.ok());
     REQUIRE(mask.status().primaryDiagnostic() != nullptr);
     CHECK_EQ(mask.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
 
     auto gbuf = capture.gbufferPng("depth", "unused_depth.png");
-    REQUIRE(!gbuf);
+    REQUIRE(!gbuf.ok());
     REQUIRE(gbuf.status().primaryDiagnostic() != nullptr);
     CHECK_EQ(gbuf.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
 }
