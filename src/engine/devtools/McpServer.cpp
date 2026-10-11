@@ -918,8 +918,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (id.empty()) return "error: node not found: " + id;
         bool changed = false;
         if (args && args->has("x") && args->has("y") && args->has("z")) {
-            if (scene->setNodeTransform(id, getArgFloat(args, "x"), getArgFloat(args, "y"),
-                                        getArgFloat(args, "z")))
+            if (scene->setNodeTransform(id, getArgFloat(args, "x"), getArgFloat(args, "y"), getArgFloat(args, "z")))
                 changed = true;
         }
         if (args && args->has("visible")) {

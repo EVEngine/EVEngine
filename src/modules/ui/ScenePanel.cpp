@@ -120,44 +120,38 @@ WidgetDesc ScenePanel::build() {
             children.push_back(row(
                 {
                     text("x", base + "_lx"),
-                    inputText("##" + base + "_x", std::to_string(info.x),
-                              base + "_x",
+                    inputText("##" + base + "_x", std::to_string(info.x), base + "_x",
                               [id = info.id, scene](const std::string& t) {
                                   auto cur = scene->getNode(id);
                                   if (!cur) return;
                                   eve::SceneNodeInfo node = std::move(cur).value();
-                                  node.x = static_cast<float>(std::atof(t.c_str()));
+                                  node.x                  = static_cast<float>(std::atof(t.c_str()));
                                   scene->setNodeTransform(id, node.x, node.y, node.z).ignore();
                               }),
                     text("y", base + "_ly"),
-                    inputText("##" + base + "_y", std::to_string(info.y),
-                              base + "_y",
+                    inputText("##" + base + "_y", std::to_string(info.y), base + "_y",
                               [id = info.id, scene](const std::string& t) {
                                   auto cur = scene->getNode(id);
                                   if (!cur) return;
                                   eve::SceneNodeInfo node = std::move(cur).value();
-                                  node.y = static_cast<float>(std::atof(t.c_str()));
+                                  node.y                  = static_cast<float>(std::atof(t.c_str()));
                                   scene->setNodeTransform(id, node.x, node.y, node.z).ignore();
                               }),
                     text("z", base + "_lz"),
-                    inputText("##" + base + "_z", std::to_string(info.z),
-                              base + "_z",
+                    inputText("##" + base + "_z", std::to_string(info.z), base + "_z",
                               [id = info.id, scene](const std::string& t) {
                                   auto cur = scene->getNode(id);
                                   if (!cur) return;
                                   eve::SceneNodeInfo node = std::move(cur).value();
-                                  node.z = static_cast<float>(std::atof(t.c_str()));
+                                  node.z                  = static_cast<float>(std::atof(t.c_str()));
                                   scene->setNodeTransform(id, node.x, node.y, node.z).ignore();
                               }),
                 },
                 base + "_transform"));
             children.push_back(row(
                 {
-                    checkbox("visible##" + base + "_vis", info.visible,
-                             base + "_visible",
-                             [id = info.id, scene](bool v) {
-                                 scene->setNodeVisible(id, v).ignore();
-                             }),
+                    checkbox("visible##" + base + "_vis", info.visible, base + "_visible",
+                             [id = info.id, scene](bool v) { scene->setNodeVisible(id, v).ignore(); }),
                     spacer(base + "_vis_spacer"),
                     button("Pick##" + base + "_pick", base + "_pick",
                            [this, id = info.id]() {

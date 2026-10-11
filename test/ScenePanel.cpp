@@ -48,18 +48,17 @@ public:
         for (const eve::SceneNodeInfo& n : all) {
             if (n.id == id) return eve::Result<eve::SceneNodeInfo>::success(n);
         }
-        return eve::Result<eve::SceneNodeInfo>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        return eve::Result<eve::SceneNodeInfo>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
     }
-    eve::Result<eve::SceneNodeInfo> getNodeIn(const std::string&,
-                                              const std::string& id) const override {
+    eve::Result<eve::SceneNodeInfo> getNodeIn(const std::string&, const std::string& id) const override {
         return getNode(id);
     }
 
     eve::Result<void> setNodeTransform(const std::string& id, float x, float y, float z) override {
         if (id != "hero") {
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
         }
         setX = x;
         setY = y;
@@ -68,8 +67,8 @@ public:
     }
     eve::Result<void> setNodeVisible(const std::string& id, bool visible) override {
         if (id != "hero") {
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
         }
         setVisible = visible;
         return eve::Result<void>::success();

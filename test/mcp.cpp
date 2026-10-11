@@ -112,21 +112,18 @@ public:
     std::vector<eve::SceneNodeInfo> nodesOf(const std::string& host, int) const override {
         return host == "world" ? std::vector<eve::SceneNodeInfo>{node} : std::vector<eve::SceneNodeInfo>{};
     }
-    eve::Result<eve::SceneNodeInfo> getNode(const std::string& id) const override {
-        return getNodeIn("world", id);
-    }
-    eve::Result<eve::SceneNodeInfo> getNodeIn(const std::string& host,
-                                              const std::string& id) const override {
+    eve::Result<eve::SceneNodeInfo> getNode(const std::string& id) const override { return getNodeIn("world", id); }
+    eve::Result<eve::SceneNodeInfo> getNodeIn(const std::string& host, const std::string& id) const override {
         if (host != "world" || id != node.id) {
-            return eve::Result<eve::SceneNodeInfo>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+            return eve::Result<eve::SceneNodeInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
         }
         return eve::Result<eve::SceneNodeInfo>::success(node);
     }
     eve::Result<void> setNodeTransform(const std::string& id, float x, float y, float z) override {
         if (id != node.id) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
         }
         node.x = x;
         node.y = y;
@@ -135,8 +132,8 @@ public:
     }
     eve::Result<void> setNodeVisible(const std::string& id, bool visible) override {
         if (id != node.id) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
         }
         node.visible = visible;
         return eve::Result<void>::success();
