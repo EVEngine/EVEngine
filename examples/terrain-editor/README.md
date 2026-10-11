@@ -1,5 +1,8 @@
 # Terrain Editor — 运行时生成的地形编辑器
 
+[English](README.en.md)
+
+
 演示"运行时即编辑器"：脚本用 `editor` + `ui` 构件在游戏进程内生成一个地形编辑器——
 主窗口实时渲染 3D 地形，工具面板控制抬升 / 下陷笔刷，高度图网格原地更新。
 示例现在还会把高度图编码为版本化的 `eve.terrain-editor-document/1`，原子保存到

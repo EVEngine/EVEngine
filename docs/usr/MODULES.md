@@ -1,6 +1,10 @@
 # 模块使用手册
 
-本目录按模块说明 EVEngine 面向 Squirrel 游戏脚本公开的能力。每篇包含入口、最小示例、至少两个目标导向任务、当前绑定的 API 快查和生命周期注意事项。
+[English](../en/usr/MODULES.md)
+
+本目录按模块说明 EVEngine 面向 Squirrel 游戏脚本公开的能力，重点是入口、示例、游戏开发任务与生命周期注意事项。
+完整 C++ 接口由 [Doxygen](https://evengine.github.io/EVEngine/) 自动生成；精确的脚本签名查 SDK 的
+`share/eve/ai/eve-api.json`、编辑器补全或 MCP `eve_api_search` / `eve_api_get`。不再重复维护只有方法名的长清单。
 
 > 使用前提：从[官网发布页](https://github.com/EVEngine/EVEngine/releases)下载并解压对应平台的 SDK（无需编译引擎），然后用 `eve run <游戏目录>` 运行；本手册适用于 SDK 中的全部模块。
 

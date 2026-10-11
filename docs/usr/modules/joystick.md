@@ -63,22 +63,15 @@ local y = pad.getGamepadAxis("lefty");
 - mapping 数据库格式错误：使用 SDL 标准映射文本。
 - 保存映射覆盖随包文件：写入用户存档目录。
 
-## API 快查
+## 绑定与行为说明
 
 - `Joystick`：`getName()`、`getJoystickCount()`、`getJoystick(index)`、`getJoystickFromID(instanceID)`、
-  `getIndex(pad)`、`addJoystick(deviceIndex)`、`removeJoystick(pad)`、`loadGamepadMappings(mappings)`、
-  `saveGamepadMappings()`、`getGamepadMappingString(guid)`
 - `Pad`：`getName()`、`getAxisCount()`、`getButtonCount()`、`getHatCount()`、`getAxis(index)`、`getAxes()`、
-  `getHat(index)`、`isDown(index)`、`isGamepad()`、`getGamepadAxis(name)`、`isGamepadDown(name)`、
-  `getGamepadMappingString()`、`getGUID()`、`getInstanceID()`、`getID()`、`getVendorID()`、`getProductID()`、
-  `getProductVersion()`、`isVibrationSupported()`、`setVibration(left, right)`、
-  `setVibrationTimed(left, right, seconds)`、`stopVibration()`、`getVibrationLeft()`、`getVibrationRight()`
 
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/joystick/`](../../../src/modules/joystick/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `joystick`。

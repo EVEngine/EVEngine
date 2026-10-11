@@ -65,7 +65,7 @@ queue.advance(simulationTick, fixedDt);
 脚本 binding 的 `advance(tick, dt)` 要求 tick 严格递增；不要使用墙钟。duration 必须为
 正数，context 必须是合法 JSON。暂停任务不占运行槽；恢复后重新参与确定性调度。
 
-## API 快查
+## 绑定与行为说明
 
 | 对象 | API | 说明 |
 |---|---|---|

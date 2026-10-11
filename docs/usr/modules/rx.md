@@ -83,9 +83,7 @@ rx.pump(ev);
 - 混淆 `subscribe` 与 `subscribe3`：前者只有 onNext 回调；后者是
   `subscribe3(onNext, onError, onCompleted)`，全部必填（不需要就传 `null`）。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
+## 绑定与行为说明
 
 **模块 `Rx`：**
 
@@ -110,15 +108,10 @@ rx.pump(ev);
 - `BehaviorSubject` 额外：`getValue()` / `setValue(v)`
 - `ReactiveProperty`：`get()` / `set(v)` / `subscribe` / `subscribe3`
 
-**`Subscription`：**
-
-- `dispose()` / `isDisposed()`
-
 ## 使用要点
 
 - 流对象和订阅对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 默认回调在当前线程同步执行；跨线程需求先回到主线程再推送。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 ## 引擎内的 Editor 观察会话
 

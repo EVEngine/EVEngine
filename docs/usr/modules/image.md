@@ -95,24 +95,17 @@ CPU 编辑器与 GPU Canvas 喷涂共享 `newUvPaintRegion()` 创建的可复用
 - 修改 `newImageDataFromFile` 返回的像素：它由缓存共享，修改会影响同路径后续引用；需要独立副本先 `clone()`。
 - 每帧把字形重新转纹理：应缓存 ImageData/Texture。
 
-## API 快查
+## 绑定与行为说明
 
 - `Image`：`getName()`、`newImageData(data)`、`newImageDataFromFile(path)`、`newEmptyImageData(width, height, format)`、`newUvPaintRegion()`、`isCompressed(data)`
 - `ImageData`：`getWidth()`、`getHeight()`、`getFormat()`、`getSize()`、`getPixelSize()`、`isSRGB()`、`inside(x, y)`、
-  `clone()`、`paste(src, dx, dy, sx, sy, sw, sh)`、`rotate(radians, filter, expand)`、
-  `scalePcg(width, height, filter)`、
-  `getPixelR(x, y)`、`getPixelG(x, y)`、`getPixelB(x, y)`、`getPixelA(x, y)`、`setPixel(x, y, r, g, b, a)`、
-  `paintCircleUv(u, v, radiusPixels, r, g, b, a, wrapU, wrapV)`
 - `UvPaintSession`：`initialize(image)`、`paintCircle(...)`、`undo()`、`restore()`、`bake()`、
-  `currentImageResult()`、`copyCurrentTo(image)`、`getRevision()`、`getUndoCount()`、`isInitialized()`
 - `UvPaintRegion`：`getCenterX()`、`getCenterY()`、`getX()`、`getY()`、`getWidth()`、
-  `getHeight()`、`getR()`、`getG()`、`getB()`、`getA()`、`prepare(...)`
 
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/image/`](../../../src/modules/image/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `image`。

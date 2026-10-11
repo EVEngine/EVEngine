@@ -25,7 +25,7 @@ local advanced = runtime.advanceAbilities(2, 0.10);
 `ActionRuntime` 与借用它的 `AbilityRuntime`。冷却与 phase 只接受调用者注入的
 tick / delta，不读取墙钟。所有易失败方法返回统一 Result 投影。
 
-## API 快查
+## 绑定与行为说明
 
 | 方法 | 说明 |
 | --- | --- |

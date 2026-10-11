@@ -1,5 +1,8 @@
 # 示例渲染画廊（Example Render Gallery）
 
+[English](README.en.md)
+
+
 这里收录 EVEngine 自带示例的**真实渲染截图**：每张图都由引擎加载对应示例后，
 把交换链上刚呈现的一帧通过 `gfx.saveFramePng()` 原样输出，没有经过外部截图工具，
 也没有任何后期处理。截图在 Windows + 原生 GPU 环境下生成。

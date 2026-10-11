@@ -42,7 +42,7 @@ procedural 求值，再分别上传三个 GPU 通道。切换预设、seed、分
 使用相同的 preset、seed 和 resolution。烘焙会分配纹理，不能放在 `eve_render` 或
 每帧更新中。
 
-## API 快查
+## 绑定与行为说明
 
 | API | 说明 |
 |---|---|
