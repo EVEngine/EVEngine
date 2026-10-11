@@ -88,7 +88,7 @@ std::optional<Ref> nativeProxyReference(T* native) {
 
 template <class T>
 SQInteger releaseNativeProxy(SQUserPointer pointer, SQInteger) {
-    auto* native = static_cast<T*>(pointer);
+    auto native = static_cast<T*>(pointer);
     if (!native) return 0;
 
     std::function<eve::Result<void>()> release;
@@ -131,7 +131,7 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
                     .status());
     }
     sq_remove(vm, -2);
-    auto* native = view.get();
+    auto native = view.get();
     {
         std::lock_guard lock(NativeProxyReleases<T>::mutex);
         NativeProxyReleases<T>::records.emplace(

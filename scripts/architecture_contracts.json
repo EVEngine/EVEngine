@@ -2150,6 +2150,57 @@
       ]
     },
     {
+      "id": "procgen-script-binding-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/Procgen*.cpp",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Script-facing instance publish and PointSet world projection optionally query scene/physics capabilities; absent providers return structured Result failures.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/ProcgenInstances.cpp",
+        "src/modules/procgen/ProcgenPointSetApi.cpp",
+        "docs/usr/modules/procgen/pointset-pipeline.md"
+      ],
+      "tests": [
+        "test/procgen_scene_sink.cpp",
+        "test/procgen_spatial_data.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IProcgenSceneSink",
+          "required": false,
+          "fallback": "publish/remove/reconcile instance APIs return Failed when the scene sink is absent"
+        },
+        {
+          "capability": "IProcgenWorldQuery",
+          "required": false,
+          "fallback": "projectToWorld returns Unsupported when no world-query provider is registered"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Procgen",
+          "methods": [
+            "publishInstances",
+            "removeInstances",
+            "projectToWorld"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime without scene/physics drops the matching capability; script APIs stay linked and fail with structured Result"
+      },
+      "thread_affinity": "Squirrel owning thread / module owner thread; capability pointers are not retained across calls",
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
       "id": "profiler-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/profiler/**",
