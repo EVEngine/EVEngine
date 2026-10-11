@@ -1452,6 +1452,49 @@
       ]
     },
     {
+      "id": "binding-architecture-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/ScriptCompiler*",
+      "owner": "foundation binding contracts; scene owns reviewed domain metadata",
+      "issue": "EVENGINE-SEMANTIC-WORLD-PHASE1",
+      "reason": "Existing API query returns generated implementation and bounded owner evidence without live state reads.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/ScriptCompiler.h",
+        "src/engine/common/ScriptCompiler.cpp",
+        "scripts/binding_architecture.py",
+        "src/modules/scene/binding_architecture.json",
+        "docs/dev/脚本契约架构映射.md"
+      ],
+      "tests": [
+        "test/scene_binding_architecture.cpp",
+        "test/mcp_binding_architecture.cpp",
+        "scripts/tests/test_binding_architecture.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Build-time static registration and reviewed owner/test references; no world state reads."
+      ],
+      "binds": [
+        "Existing eve_api_get/eve_api_search serialize the generated BindingContract."
+      ],
+      "protocol": [
+        "eve.binding-api v1 additive source/cppSymbol/architecture; mapped architecture schemaVersion 1; unknown coverage explicit."
+      ],
+      "cost_notes": [
+        "Generation scans source; serialization scales with contract metadata, outside simulation hot paths."
+      ],
+      "hot_path": [],
+      "thread_affinity": "Registry/main MCP poll thread; owning immutable metadata; no script callbacks.",
+      "trim": {
+        "claim": "Catalogue presence only; no general binary trim claim",
+        "absent_profile": "Scene-disabled generation omits scene contracts entirely.",
+        "evidence": "scripts/tests/test_binding_architecture.py"
+      }
+    },
+    {
       "id": "crowd-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/crowd/Crowd*",

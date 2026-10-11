@@ -360,7 +360,31 @@ std::string BindingContract::toJson() const {
         if (i != 0) json << ',';
         json << '"' << jsonEscape(platforms[i]) << '"';
     }
-    json << "],\"documentationId\":\"" << jsonEscape(documentationId) << "\"}";
+    json << "],\"documentationId\":\"" << jsonEscape(documentationId) << "\",\"source\":\"" << jsonEscape(source)
+         << "\",\"cppSymbol\":\"" << jsonEscape(cppSymbol) << "\",\"architecture\":";
+    if (architecture) {
+        const auto& mapping = *architecture;
+        json << "{\"status\":\"mapped\",\"schemaVersion\":1,\"cppSymbol\":\"" << jsonEscape(cppSymbol)
+             << "\",\"implementationSource\":\"" << jsonEscape(mapping.implementationSource) << "\",\"stateOwner\":\""
+             << jsonEscape(mapping.stateOwner) << "\",\"ownerSource\":\"" << jsonEscape(mapping.ownerSource)
+             << "\",\"inputHash\":\"" << jsonEscape(mapping.inputHash)
+             << "\",\"evidence\":\"static-binding+reviewed-owner+test-reference\",\"limitations\":\""
+             << jsonEscape(mapping.limitations) << '"';
+        const auto writeArray = [&json](const char* name, const std::vector<std::string>& values) {
+            json << ",\"" << name << "\":[";
+            for (size_t index = 0; index < values.size(); ++index) {
+                if (index != 0) json << ',';
+                json << '"' << jsonEscape(values[index]) << '"';
+            }
+            json << ']';
+        };
+        writeArray("writes", mapping.writes);
+        writeArray("tests", mapping.tests);
+        json << '}';
+    } else {
+        json << "{\"status\":\"unknown\",\"reason\":\"No reviewed owner mapping for this binding\"}";
+    }
+    json << '}';
     return json.str();
 }
 
