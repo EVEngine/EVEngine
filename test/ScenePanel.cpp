@@ -43,32 +43,36 @@ public:
         return nodes(0);
     }
 
-    bool getNode(const std::string& id, eve::SceneNodeInfo* out) const override {
+    eve::Result<eve::SceneNodeInfo> getNode(const std::string& id) const override {
         const std::vector<eve::SceneNodeInfo> all = nodes(0);
         for (const eve::SceneNodeInfo& n : all) {
-            if (n.id == id) {
-                if (out) *out = n;
-                return true;
-            }
+            if (n.id == id) return eve::Result<eve::SceneNodeInfo>::success(n);
         }
-        return false;
+        return eve::Result<eve::SceneNodeInfo>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "scene node not found", "node"));
     }
-    bool getNodeIn(const std::string&, const std::string& id,
-                   eve::SceneNodeInfo* out) const override {
-        return getNode(id, out);
+    eve::Result<eve::SceneNodeInfo> getNodeIn(const std::string&,
+                                              const std::string& id) const override {
+        return getNode(id);
     }
 
-    bool setNodeTransform(const std::string& id, float x, float y, float z) override {
-        if (id != "hero") return false;
+    eve::Result<void> setNodeTransform(const std::string& id, float x, float y, float z) override {
+        if (id != "hero") {
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
         setX = x;
         setY = y;
         setZ = z;
-        return true;
+        return eve::Result<void>::success();
     }
-    bool setNodeVisible(const std::string& id, bool visible) override {
-        if (id != "hero") return false;
+    eve::Result<void> setNodeVisible(const std::string& id, bool visible) override {
+        if (id != "hero") {
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
         setVisible = visible;
-        return true;
+        return eve::Result<void>::success();
     }
     void syncTransforms() override {}
 

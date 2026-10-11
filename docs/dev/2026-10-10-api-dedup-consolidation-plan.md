@@ -1,7 +1,7 @@
 # API 重复与相似面收敛计划
 
 > 日期：2026-10-10  
-> 状态：**实施中**（P0.2 / P0.3 / P0.4·IRenderCapture 已落地；后续阶段继续合入同一 PR）  
+> 状态：**实施中**（P0.2 / P0.3 / P0.4·IRenderCapture·ISceneQuery 已落地；后续阶段继续合入同一 PR）  
 > 来源：对 `common` / graphics-asset / gameplay 公共 API 的重复面审计  
 > 关联：`2026-08-26-architecture-consolidation-checklist.md`、`Result检查与不得丢弃返回值规范.md`、`领域短根继承与跨域组合架构.md`、`2026-09-15-模块边界审查台账.md`
 
@@ -119,7 +119,7 @@
 **范围（同一收敛 PR 内按接口分提交，避免拆多 PR）**
 
 1. `IRenderCapture`（`savePng` / mask / gbuffer）— **已完成**（`Result<CaptureImageInfo>` / `Result<void>`；契约测试 `devtools.renderCapture.savePngReportsStructuredFailure`）
-2. `ISceneQuery` 变更类方法（get/set 中需要失败原因者）
+2. `ISceneQuery` get/set — **已完成**（`Result<SceneNodeInfo>` / `Result<void>`；契约测试 `devtools.sceneQuery.getSetReportStructuredFailure`）
 3. `IProcgenQuery` err outs
 4. 与 P0.1 对齐的 `IStateProvider`
 

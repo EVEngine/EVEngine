@@ -112,25 +112,34 @@ public:
     std::vector<eve::SceneNodeInfo> nodesOf(const std::string& host, int) const override {
         return host == "world" ? std::vector<eve::SceneNodeInfo>{node} : std::vector<eve::SceneNodeInfo>{};
     }
-    bool getNode(const std::string& id, eve::SceneNodeInfo* out) const override {
-        return getNodeIn("world", id, out);
+    eve::Result<eve::SceneNodeInfo> getNode(const std::string& id) const override {
+        return getNodeIn("world", id);
     }
-    bool getNodeIn(const std::string& host, const std::string& id, eve::SceneNodeInfo* out) const override {
-        if (host != "world" || id != node.id || !out) return false;
-        *out = node;
-        return true;
+    eve::Result<eve::SceneNodeInfo> getNodeIn(const std::string& host,
+                                              const std::string& id) const override {
+        if (host != "world" || id != node.id) {
+            return eve::Result<eve::SceneNodeInfo>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
+        return eve::Result<eve::SceneNodeInfo>::success(node);
     }
-    bool setNodeTransform(const std::string& id, float x, float y, float z) override {
-        if (id != node.id) return false;
+    eve::Result<void> setNodeTransform(const std::string& id, float x, float y, float z) override {
+        if (id != node.id) {
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
         node.x = x;
         node.y = y;
         node.z = z;
-        return true;
+        return eve::Result<void>::success();
     }
-    bool setNodeVisible(const std::string& id, bool visible) override {
-        if (id != node.id) return false;
+    eve::Result<void> setNodeVisible(const std::string& id, bool visible) override {
+        if (id != node.id) {
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
         node.visible = visible;
-        return true;
+        return eve::Result<void>::success();
     }
     void syncTransforms() override {}
 
@@ -589,6 +598,25 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
 
     mcp.stop();
     dt.detach();
+}
+
+TEST_CASE("devtools.sceneQuery.getSetReportStructuredFailure") {
+    ClosedLoopScene scene;
+    auto            missing = scene.getNode("missing");
+    REQUIRE(!missing);
+    REQUIRE(missing.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(missing.status().primaryDiagnostic()->code(), eve::DiagnosticCode::NotFound);
+
+    auto badSet = scene.setNodeTransform("missing", 0.f, 0.f, 0.f);
+    REQUIRE(!badSet);
+    REQUIRE(badSet.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(badSet.status().primaryDiagnostic()->code(), eve::DiagnosticCode::NotFound);
+
+    auto ok = scene.getNode("player");
+    REQUIRE(ok);
+    CHECK_EQ(std::move(ok).value().id, "player");
+    CHECK(scene.setNodeVisible("player", false));
+    CHECK(!scene.node.visible);
 }
 
 TEST_CASE("devtools.renderCapture.savePngReportsStructuredFailure") {

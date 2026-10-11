@@ -368,13 +368,18 @@ Poco::JSON::Object::Ptr sceneNodeObservation(eve::ISceneQuery& scene, const std:
     output->set("observer", "scene-node");
     output->set("host", host.empty() ? scene.activeHost() : host);
     output->set("node", node);
-    eve::SceneNodeInfo info;
-    const bool found = host.empty() ? scene.getNode(node, &info) : scene.getNodeIn(host, node, &info);
-    if (node.empty() || !found) {
+    if (node.empty()) {
         output->set("status", "not-found");
         output->set("error", "Scene node is missing from the observed host");
         return output;
     }
+    auto lookedUp = host.empty() ? scene.getNode(node) : scene.getNodeIn(host, node);
+    if (!lookedUp) {
+        output->set("status", "not-found");
+        output->set("error", "Scene node is missing from the observed host");
+        return output;
+    }
+    const eve::SceneNodeInfo info = std::move(lookedUp).value();
     output->set("status", "ok");
     output->set("id", info.id);
     output->set("name", info.name);
@@ -880,9 +885,11 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_scene_node_get") {
         auto* scene = mcpScene();
         if (!scene || scene->activeHost().empty()) return "error: no active scene host";
-        const std::string  id = getArgString(args, "id");
-        eve::SceneNodeInfo n;
-        if (id.empty() || !scene->getNode(id, &n)) return "error: node not found: " + id;
+        const std::string id = getArgString(args, "id");
+        if (id.empty()) return "error: node not found: " + id;
+        auto lookedUp = scene->getNode(id);
+        if (!lookedUp) return "error: node not found: " + id;
+        const eve::SceneNodeInfo n = std::move(lookedUp).value();
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("id", n.id);
         o->set("name", n.name);
@@ -911,11 +918,12 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (id.empty()) return "error: node not found: " + id;
         bool changed = false;
         if (args && args->has("x") && args->has("y") && args->has("z")) {
-            changed =
-                scene->setNodeTransform(id, getArgFloat(args, "x"), getArgFloat(args, "y"), getArgFloat(args, "z"));
+            if (scene->setNodeTransform(id, getArgFloat(args, "x"), getArgFloat(args, "y"),
+                                        getArgFloat(args, "z")))
+                changed = true;
         }
         if (args && args->has("visible")) {
-            changed = scene->setNodeVisible(id, getArgBool(args, "visible")) || changed;
+            if (scene->setNodeVisible(id, getArgBool(args, "visible"))) changed = true;
         }
         return changed ? "ok" : "error: node not found: " + id;
     }

@@ -46,8 +46,7 @@ void ScenePanel::refresh() {
 bool ScenePanel::selectNode(const std::string& id) {
     eve::ISceneQuery* scene = eve::cap::query<eve::ISceneQuery>();
     if (!scene || id.empty()) return false;
-    eve::SceneNodeInfo info;
-    if (!scene->getNode(id, &info)) return false;
+    if (!scene->getNode(id)) return false;
     selectedId_ = id;
     rebuildHost();
     return true;
@@ -111,8 +110,9 @@ WidgetDesc ScenePanel::build() {
 
     // Selected node property sheet.
     if (!selectedId_.empty()) {
-        eve::SceneNodeInfo info;
-        if (scene->getNode(selectedId_, &info)) {
+        auto selected = scene->getNode(selectedId_);
+        if (selected) {
+            const eve::SceneNodeInfo info = std::move(selected).value();
             const std::string base = "node_" + info.id;
             children.push_back(separator("scene_sel_sep"));
             children.push_back(text("id: " + info.id, base + "_id"));
@@ -123,28 +123,31 @@ WidgetDesc ScenePanel::build() {
                     inputText("##" + base + "_x", std::to_string(info.x),
                               base + "_x",
                               [id = info.id, scene](const std::string& t) {
-                                  eve::SceneNodeInfo cur;
-                                  if (!scene->getNode(id, &cur)) return;
-                                  cur.x = static_cast<float>(std::atof(t.c_str()));
-                                  scene->setNodeTransform(id, cur.x, cur.y, cur.z);
+                                  auto cur = scene->getNode(id);
+                                  if (!cur) return;
+                                  eve::SceneNodeInfo node = std::move(cur).value();
+                                  node.x = static_cast<float>(std::atof(t.c_str()));
+                                  scene->setNodeTransform(id, node.x, node.y, node.z).ignore();
                               }),
                     text("y", base + "_ly"),
                     inputText("##" + base + "_y", std::to_string(info.y),
                               base + "_y",
                               [id = info.id, scene](const std::string& t) {
-                                  eve::SceneNodeInfo cur;
-                                  if (!scene->getNode(id, &cur)) return;
-                                  cur.y = static_cast<float>(std::atof(t.c_str()));
-                                  scene->setNodeTransform(id, cur.x, cur.y, cur.z);
+                                  auto cur = scene->getNode(id);
+                                  if (!cur) return;
+                                  eve::SceneNodeInfo node = std::move(cur).value();
+                                  node.y = static_cast<float>(std::atof(t.c_str()));
+                                  scene->setNodeTransform(id, node.x, node.y, node.z).ignore();
                               }),
                     text("z", base + "_lz"),
                     inputText("##" + base + "_z", std::to_string(info.z),
                               base + "_z",
                               [id = info.id, scene](const std::string& t) {
-                                  eve::SceneNodeInfo cur;
-                                  if (!scene->getNode(id, &cur)) return;
-                                  cur.z = static_cast<float>(std::atof(t.c_str()));
-                                  scene->setNodeTransform(id, cur.x, cur.y, cur.z);
+                                  auto cur = scene->getNode(id);
+                                  if (!cur) return;
+                                  eve::SceneNodeInfo node = std::move(cur).value();
+                                  node.z = static_cast<float>(std::atof(t.c_str()));
+                                  scene->setNodeTransform(id, node.x, node.y, node.z).ignore();
                               }),
                 },
                 base + "_transform"));
@@ -153,7 +156,7 @@ WidgetDesc ScenePanel::build() {
                     checkbox("visible##" + base + "_vis", info.visible,
                              base + "_visible",
                              [id = info.id, scene](bool v) {
-                                 scene->setNodeVisible(id, v);
+                                 scene->setNodeVisible(id, v).ignore();
                              }),
                     spacer(base + "_vis_spacer"),
                     button("Pick##" + base + "_pick", base + "_pick",
