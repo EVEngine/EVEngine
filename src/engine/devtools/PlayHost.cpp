@@ -775,14 +775,12 @@ public:
         if (!capture)
             return Result<Value>::failure(
                 Diagnostic::error(DiagnosticCode::Unsupported, "IRenderCapture is not available", "capture"));
-        int         width = 0, height = 0;
-        std::string error;
-        if (!capture->savePng(path, &width, &height, &error))
-            return Result<Value>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, error.empty() ? "engine screenshot failed" : error, "capture"));
-        return Result<Value>::success(Value(Value::Object{{"height", Value(static_cast<std::int64_t>(height))},
+        auto captured = capture->savePng(path);
+        if (!captured) return Result<Value>::failure(captured.status());
+        const CaptureImageInfo info = std::move(captured).value();
+        return Result<Value>::success(Value(Value::Object{{"height", Value(static_cast<std::int64_t>(info.height))},
                                                           {"path", Value(std::move(path))},
-                                                          {"width", Value(static_cast<std::int64_t>(width))}}));
+                                                          {"width", Value(static_cast<std::int64_t>(info.width))}}));
     }
 
     Result<std::string> captureCheckpoint() override {

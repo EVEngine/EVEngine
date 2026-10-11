@@ -1073,25 +1073,25 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             if (c == '\\') c = '/';
         }
 
-        const eve::RenderStatusInfo status = cap->status();
-        int                         w      = 0;
-        int                         h      = 0;
-        std::string                 err;
-        if (!cap->savePng(path, &w, &h, &err)) {
+        const eve::RenderStatusInfo status   = cap->status();
+        auto                        captured = cap->savePng(path);
+        if (!captured) {
             // Enabling readback and reading it back cannot happen inside one
             // presented frame: the swapchain copy is recorded by the next
             // present. Report that as a retryable state instead of a failure so
             // an unattended loop keeps polling instead of giving up.
             const bool              retryable = !status.readbackEnabled;
+            const auto*             diag      = captured.status().primaryDiagnostic();
             Poco::JSON::Object::Ptr o         = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
             o->set("ok", false);
             o->set("retryable", retryable);
             o->set("reason", retryable ? "no-presented-frame" : "capture-failed");
             o->set("readbackEnabled", status.readbackEnabled);
-            o->set("message", err);
+            o->set("message", diag ? diag->message() : captured.status().describe());
             const std::string payload = mcpStringify(Poco::Dynamic::Var(o));
             return retryable ? payload : "error: " + payload;
         }
+        const eve::CaptureImageInfo info = std::move(captured).value();
 
         std::error_code         sizeError;
         const auto              bytes = std::filesystem::file_size(path, sizeError);
@@ -1099,8 +1099,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         o->set("ok", true);
         o->set("path", path);
         o->set("bytes", sizeError ? Poco::Int64(0) : static_cast<Poco::Int64>(bytes));
-        o->set("width", w);
-        o->set("height", h);
+        o->set("width", info.width);
+        o->set("height", info.height);
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 

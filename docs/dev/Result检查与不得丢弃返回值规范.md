@@ -318,6 +318,7 @@ Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下
 - 公共 `Result<T>` / `Result<void>`（含 `IPropertyAccess::write` / `validatePropertyValue`）
 - 迁移后的 `EditorResult<T>`（`editing::Result` 别名）
 - `Store::commit` → `Result<PatchCommitInfo>`（`PatchResult` 仅脚本兼容投影）
+- `IRenderCapture::savePng` → `Result<CaptureImageInfo>`；`entityIdMaskPng` / `gbufferPng` → `Result<void>`
 - ConditionResult、SettlementResult、TransferResult、CompileResult 等包含状态/诊断的结果
 
 现有 Editor API 全部属于这一类，包括但不限于：

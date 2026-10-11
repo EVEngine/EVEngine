@@ -42,7 +42,10 @@ class ClosedLoopCapture final : public eve::IRenderCapture {
 public:
     eve::RenderStatusInfo status() const override { return {}; }
     void setReadbackEnabled(bool) override {}
-    bool savePng(const std::string&, int*, int*, std::string*) override { return false; }
+    eve::Result<eve::CaptureImageInfo> savePng(const std::string&) override {
+        return eve::Result<eve::CaptureImageInfo>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "ClosedLoopCapture has no framebuffer", "capture"));
+    }
     std::string capturePngDataUrl() override { return {}; }
     bool ensureCamera() override { return false; }
     bool setCameraPose(float, float, float, float, float, float, float) override { return false; }
@@ -60,8 +63,14 @@ public:
         return "{}";
     }
     std::string entityIdMaskJson(int*, int*, bool*) override { return "{}"; }
-    bool entityIdMaskPng(const std::string&, std::string*) override { return false; }
-    bool gbufferPng(const std::string&, const std::string&, std::string*) override { return false; }
+    eve::Result<void> entityIdMaskPng(const std::string&) override {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "ClosedLoopCapture has no id mask", "id_mask"));
+    }
+    eve::Result<void> gbufferPng(const std::string&, const std::string&) override {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "ClosedLoopCapture has no gbuffer", "gbuffer"));
+    }
 
     eve::Renderable3DInfo info{42, 7, 1.f, 2.f, 3.f, 0.1f, 0.2f, 0.3f, 1.f};
 };
@@ -580,6 +589,25 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
 
     mcp.stop();
     dt.detach();
+}
+
+TEST_CASE("devtools.renderCapture.savePngReportsStructuredFailure") {
+    ClosedLoopCapture capture;
+    auto              saved = capture.savePng("unused.png");
+    REQUIRE(!saved);
+    REQUIRE(saved.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(saved.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
+    CHECK_EQ(saved.status().primaryDiagnostic()->path(), "capture");
+
+    auto mask = capture.entityIdMaskPng("unused_id.png");
+    REQUIRE(!mask);
+    REQUIRE(mask.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(mask.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
+
+    auto gbuf = capture.gbufferPng("depth", "unused_depth.png");
+    REQUIRE(!gbuf);
+    REQUIRE(gbuf.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(gbuf.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
 }
 
 TEST_CASE("devtools.mcp.executeObserveCorrelatesEditorTransactionWithLiveRuntime") {
