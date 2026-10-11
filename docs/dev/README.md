@@ -43,7 +43,7 @@
 - [测试覆盖](测试覆盖.md)
 - [测试套件优化纪要](superpowers/specs/2026-08-18-test-suite-optimization.md)（CI per-case / SHARED 陷阱；`AGENTS.md` 引用）
 - [AI 与 MCP 支持](AI与MCP支持.md)
-- [Semantic World Database 架构设计](SemanticWorldDatabase架构设计.md)（待评审构想：ECS 权威状态、混合索引、事务与多 Agent 协作；区分现有基础与拟议能力）
+- [Semantic World Database 架构设计](SemanticWorldDatabase架构设计.md)（待评审构想：ECS 权威状态、混合索引、事务、多 Agent 协作与跨类型大型游戏开发闭环；区分现有基础与拟议能力）
 - [AI 知识补偿](AI知识补偿.md)（推理时知识包、Binding Contract 目录、少写脚本）
 - [AI 场景导演](AI场景导演.md)（剧情 → 自动搭台 → 质检迭代 → 交付）
 - [游戏开发系统与工具差距分析](游戏开发系统与工具差距分析.md)
