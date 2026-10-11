@@ -55,6 +55,48 @@
       "phase": "Procgen build phase."
     },
     {
+      "id": "smooth-mountain-terraingenerationsession-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/procgen/heightmap/TerrainGenerationSession.cpp",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainGenerationSession.cpp"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp_persistence.cpp"
+      ],
+      "schema": "eve.procgen.terrain-generation-session",
+      "version": "2",
+      "migration": "Read v1 with zero smoothWidth/edgeFade; reject new operation 6 in old records.",
+      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
+      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
+    },
+    {
+      "id": "smooth-mountain-terrainspawnplancodec-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp_persistence.cpp"
+      ],
+      "schema": "eve.procgen.terrain-spawn-plan",
+      "version": "4",
+      "migration": "Read versions 0-3 with zero smoothWidth/edgeFade; preserve prior enabled migration; reject operations outside the version-supported Raise..SmoothRaise range.",
+      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
+      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
+    },
+    {
       "id": "procgen-editor-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/procgen/editor/**",
@@ -227,46 +269,55 @@
       ]
     },
     {
-      "id": "smooth-mountain-terraingenerationsession-persistence",
-      "rule": "persistence",
-      "scope": "src/modules/procgen/heightmap/TerrainGenerationSession.cpp",
+      "id": "procgen-script-binding-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/Procgen*.cpp",
       "owner": "procgen-maintainers",
-      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
-      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Script-facing instance publish and PointSet world projection optionally query scene/physics capabilities; absent providers return structured Result failures.",
       "expiry": "2027-12-31",
       "evidence": [
-        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
-        "src/modules/procgen/heightmap/TerrainGenerationSession.cpp"
+        "src/modules/procgen/ProcgenInstances.cpp",
+        "src/modules/procgen/ProcgenPointSetApi.cpp",
+        "docs/usr/modules/procgen/pointset-pipeline.md"
       ],
       "tests": [
-        "test/terrain_smooth_stamp_persistence.cpp"
+        "test/procgen_scene_sink.cpp",
+        "test/procgen_spatial_data.cpp",
+        "scripts/tests/test_architecture_contracts.py"
       ],
-      "schema": "eve.procgen.terrain-generation-session",
-      "version": "2",
-      "migration": "Read v1 with zero smoothWidth/edgeFade; reject new operation 6 in old records.",
-      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
-      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
-    },
-    {
-      "id": "smooth-mountain-terrainspawnplancodec-persistence",
-      "rule": "persistence",
-      "scope": "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp",
-      "owner": "procgen-maintainers",
-      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
-      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
-        "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp"
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IProcgenSceneSink",
+          "required": false,
+          "fallback": "publish/remove/reconcile instance APIs return Failed when the scene sink is absent"
+        },
+        {
+          "capability": "IProcgenWorldQuery",
+          "required": false,
+          "fallback": "projectToWorld returns Unsupported when no world-query provider is registered"
+        }
       ],
-      "tests": [
-        "test/terrain_smooth_stamp_persistence.cpp"
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Procgen",
+          "methods": [
+            "publishInstances",
+            "removeInstances",
+            "projectToWorld"
+          ]
+        }
       ],
-      "schema": "eve.procgen.terrain-spawn-plan",
-      "version": "4",
-      "migration": "Read versions 0-3 with zero smoothWidth/edgeFade; preserve prior enabled migration; reject operations outside the version-supported Raise..SmoothRaise range.",
-      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
-      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime without scene/physics drops the matching capability; script APIs stay linked and fail with structured Result"
+      },
+      "thread_affinity": "Squirrel owning thread / module owner thread; capability pointers are not retained across calls",
+      "cost_notes": [],
+      "hot_path": []
     }
   ]
 }
