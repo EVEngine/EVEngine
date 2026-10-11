@@ -89,6 +89,36 @@ public:
 """
         self.assertEqual(len(self.scan(header)), 1)
 
+    def test_export_macro_before_the_class_name_is_skipped(self) -> None:
+        # The link-group export scheme spells `class EVENGINE_API_WORLD Foo {`. Reading the
+        # macro as the class name silently emptied the whole scan -- every real binding then
+        # looked like a method of an unknown class -- so the macro form is pinned here.
+        header = """
+class EVENGINE_API_WORLD Foo {
+public:
+    void bar(int a, int b = 1);
+};
+"""
+        offenders = self.scan(header)
+        self.assertEqual(len(offenders), 1)
+        self.assertEqual(offenders[0].class_name, "Foo")
+
+    def test_inline_export_macro_before_the_class_name_is_skipped(self) -> None:
+        header = """
+class EVENGINE_API_FOUNDATION_INLINE IAudioQuery {
+public:
+    virtual void bar(int a, int b = 1);
+};
+"""
+        cpp = """
+void expose(ssq::Class& cls) {
+    cls.addFunc("bar", &IAudioQuery::bar);
+}
+"""
+        offenders = self.scan(header, cpp)
+        self.assertEqual(len(offenders), 1)
+        self.assertEqual(offenders[0].class_name, "IAudioQuery")
+
 
 class BaselineTest(unittest.TestCase):
     def test_repository_is_clean_against_its_baseline(self) -> None:

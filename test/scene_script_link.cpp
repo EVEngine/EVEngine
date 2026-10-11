@@ -315,11 +315,12 @@ TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.rejectedPullKeepsNodeIntact"
 TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.brokenTargetDoesNotStallSiblings") {
     // A raising follower is reported once and skipped; the next node still syncs.
     // The broken one is linked first on purpose, so a stall would be visible.
-    SceneHost* host = mount("scriptlink_broken", node("root", {node("bad").withPosition(1.f, 1.f, 1.f),
-                                                              node("good").withPosition(2.f, 2.f, 2.f)}));
+    SceneHost* host =
+        mount("scriptlink_broken",
+              node("root", {node("bad").withPosition(1.f, 1.f, 1.f), node("good").withPosition(2.f, 2.f, 2.f)}));
 
-    REQUIRE(module->linkScriptAt("scriptlink_broken", "bad", publish("link.raising", "raisingFollower").name, "node")
-                .ok());
+    REQUIRE(
+        module->linkScriptAt("scriptlink_broken", "bad", publish("link.raising", "raisingFollower").name, "node").ok());
     REQUIRE(module->linkScriptAt("scriptlink_broken", "good", publish("link.follower", "follower").name, "node").ok());
 
     const ssq::Object follower = vm.find("follower");
@@ -337,10 +338,11 @@ TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.scriptBindingReportsResult")
     SceneHost* host = mount("scriptlink_api", node("root", {node("child").withPosition(3.f, 0.f, 0.f)}));
     publish("link.follower", "follower");
 
-    vm.run(vm.compileSource("local scene = eve.Scene()\n"
-                            "linked <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"link.follower\", \"node\")\n"
-                            "missing <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"nope\", \"node\")\n"
-                            "orphanHost <- scene.linkScriptAt(\"nowhere\", \"child\", \"link.follower\", \"node\")\n"));
+    vm.run(
+        vm.compileSource("local scene = eve.Scene()\n"
+                         "linked <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"link.follower\", \"node\")\n"
+                         "missing <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"nope\", \"node\")\n"
+                         "orphanHost <- scene.linkScriptAt(\"nowhere\", \"child\", \"link.follower\", \"node\")\n"));
 
     ssq::Object linked = vm.find("linked");
     CHECK_EQ(linked.getType(), ssq::Type::TABLE);

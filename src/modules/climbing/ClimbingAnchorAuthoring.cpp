@@ -12,12 +12,6 @@
 namespace eve::climbing {
 namespace {
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.anchor_baker"));
-}
-
 bool finite(float value) { return std::isfinite(value); }
 bool finite(Vec3 value) { return finite(value.x) && finite(value.y) && finite(value.z); }
 Vec3 add(Vec3 lhs, Vec3 rhs) { return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z}; }
@@ -31,10 +25,13 @@ Vec3 cross(Vec3 lhs, Vec3 rhs) {
 float length(Vec3 value) { return std::sqrt(dot(value, value)); }
 
 eve::Result<Vec3> normalized(Vec3 value, std::string path) {
-    if (!finite(value)) return failure<Vec3>(eve::DiagnosticCode::InvalidArgument, "vector must be finite", path);
+    if (!finite(value))
+        return eve::Result<Vec3>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "vector must be finite", path, {}, "climbing.anchor_baker"));
     const float magnitude = length(value);
     if (magnitude <= 0.0001f)
-        return failure<Vec3>(eve::DiagnosticCode::InvalidArgument, "vector must be non-zero", path);
+        return eve::Result<Vec3>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "vector must be non-zero", path, {}, "climbing.anchor_baker"));
     return eve::Result<Vec3>::success(multiply(value, 1.f / magnitude));
 }
 
@@ -289,8 +286,8 @@ eve::Result<eve::Value> encodeClimbingAnchorBakeRequest(const ClimbingAnchorBake
 eve::Result<ClimbingAnchorBakeRequest> decodeClimbingAnchorBakeRequest(const eve::Value& value) {
     const auto* root = value.getIf<eve::Value::Object>();
     if (!root)
-        return failure<ClimbingAnchorBakeRequest>(eve::DiagnosticCode::ParseError,
-                                                   "anchor bake request must be an object");
+        return eve::Result<ClimbingAnchorBakeRequest>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "anchor bake request must be an object", {}, {}, "climbing.anchor_baker"));
     ClimbingAnchorBakeRequest request;
     std::string schemaId;
     std::int64_t schemaVersion = -1;
@@ -312,11 +309,12 @@ eve::Result<ClimbingAnchorBakeRequest> decodeClimbingAnchorBakeRequest(const eve
         !readFloat(*settings, "ladderMountOffset", request.settings.ladderMountOffset) ||
         !readUInt32(*settings, "occupancySlots", request.settings.occupancySlots)) {
         if (schemaVersion > ClimbingAnchorBakeRequest::SchemaVersion)
-            return failure<ClimbingAnchorBakeRequest>(eve::DiagnosticCode::UnknownVersion,
-                                                       "anchor bake request schema version is unsupported",
-                                                       "schemaVersion");
-        return failure<ClimbingAnchorBakeRequest>(eve::DiagnosticCode::ParseError,
-                                                   "anchor bake request has missing or invalid fields");
+            return eve::Result<ClimbingAnchorBakeRequest>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::UnknownVersion, "anchor bake request schema version is unsupported",
+                "schemaVersion", {}, "climbing.anchor_baker"));
+        return eve::Result<ClimbingAnchorBakeRequest>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "anchor bake request has missing or invalid fields",
+                                   {}, {}, "climbing.anchor_baker"));
     }
     request.ledges.reserve(ledges->size());
     for (std::size_t index = 0; index < ledges->size(); ++index) {
@@ -326,9 +324,9 @@ eve::Result<ClimbingAnchorBakeRequest> decodeClimbingAnchorBakeRequest(const eve
             !readVecField(*object, "localNormal", source.localNormal) ||
             !readVecArray(*object, "localNormals", source.localNormals) ||
             !readBool(*object, "closed", source.closed) || !readStrings(*object, "tags", source.tags))
-            return failure<ClimbingAnchorBakeRequest>(eve::DiagnosticCode::ParseError,
-                                                       "ledge bake source has missing or invalid fields",
-                                                       "ledges." + std::to_string(index));
+            return eve::Result<ClimbingAnchorBakeRequest>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "ledge bake source has missing or invalid fields",
+                "ledges." + std::to_string(index), {}, "climbing.anchor_baker"));
         request.ledges.push_back(std::move(source));
     }
     request.ladders.reserve(ladders->size());
@@ -341,9 +339,9 @@ eve::Result<ClimbingAnchorBakeRequest> decodeClimbingAnchorBakeRequest(const eve
             !readVecField(*object, "localNormal", source.localNormal) ||
             !readFloat(*object, "rungSpacing", source.rungSpacing) || !readFloat(*object, "width", source.width) ||
             !readUInt32(*object, "rungCount", source.rungCount) || !readStrings(*object, "tags", source.tags))
-            return failure<ClimbingAnchorBakeRequest>(eve::DiagnosticCode::ParseError,
-                                                       "ladder bake source has missing or invalid fields",
-                                                       "ladders." + std::to_string(index));
+            return eve::Result<ClimbingAnchorBakeRequest>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "ladder bake source has missing or invalid fields",
+                "ladders." + std::to_string(index), {}, "climbing.anchor_baker"));
         request.ladders.push_back(std::move(source));
     }
     return eve::Result<ClimbingAnchorBakeRequest>::success(std::move(request));
@@ -351,17 +349,20 @@ eve::Result<ClimbingAnchorBakeRequest> decodeClimbingAnchorBakeRequest(const eve
 
 eve::Result<ClimbingAnchorBakeResult> bakeClimbingAnchorGraph(const ClimbingAnchorBakeRequest& request) {
     if (request.graphId.empty() || request.sourceGeometryContentId.empty())
-        return failure<ClimbingAnchorBakeResult>(eve::DiagnosticCode::InvalidArgument,
-                                                  "graph and source geometry ids are required", "identity");
+        return eve::Result<ClimbingAnchorBakeResult>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "graph and source geometry ids are required",
+                                   "identity", {}, "climbing.anchor_baker"));
     if (!finite(request.settings.handSpacing) || request.settings.handSpacing <= 0.f ||
         !finite(request.settings.hangingFeetDrop) || request.settings.hangingFeetDrop <= 0.f ||
         !finite(request.settings.ladderMountOffset) || request.settings.ladderMountOffset < 0.f ||
         request.settings.occupancySlots == 0 || request.settings.occupancySlots > 8)
-        return failure<ClimbingAnchorBakeResult>(eve::DiagnosticCode::InvalidArgument,
-                                                  "bake settings are outside supported bounds", "settings");
+        return eve::Result<ClimbingAnchorBakeResult>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "bake settings are outside supported bounds",
+                                   "settings", {}, "climbing.anchor_baker"));
     if (request.ledges.empty() && request.ladders.empty())
-        return failure<ClimbingAnchorBakeResult>(eve::DiagnosticCode::InvalidArgument,
-                                                  "at least one ledge or ladder source is required", "sources");
+        return eve::Result<ClimbingAnchorBakeResult>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "at least one ledge or ladder source is required", "sources", {},
+            "climbing.anchor_baker"));
 
     ClimbingAnchorBakeResult result;
     result.graph.id = request.graphId;
@@ -375,14 +376,16 @@ eve::Result<ClimbingAnchorBakeResult> bakeClimbingAnchorGraph(const ClimbingAnch
         if (source.id.empty() || !sourceIds.emplace(source.id).second || source.points.size() < 2 ||
             (!source.localNormals.empty() && source.localNormals.size() != source.points.size()) ||
             !uniqueNonEmpty(source.tags))
-            return failure<ClimbingAnchorBakeResult>(eve::DiagnosticCode::InvalidArgument,
-                                                      "ledge id/tags/normals are invalid or it needs two points", path);
+            return eve::Result<ClimbingAnchorBakeResult>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "ledge id/tags/normals are invalid or it needs two points", path,
+                {}, "climbing.anchor_baker"));
         std::vector<std::string> ids;
         ids.reserve(source.points.size());
         for (std::size_t index = 0; index < source.points.size(); ++index) {
             if (!finite(source.points[index]))
-                return failure<ClimbingAnchorBakeResult>(eve::DiagnosticCode::InvalidArgument,
-                                                          "ledge points must be finite", path + ".points");
+                return eve::Result<ClimbingAnchorBakeResult>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "ledge points must be finite",
+                                           path + ".points", {}, "climbing.anchor_baker"));
             const std::size_t previous = index == 0 ? (source.closed ? source.points.size() - 1 : 0) : index - 1;
             const std::size_t next = index + 1 == source.points.size() ? (source.closed ? 0 : index) : index + 1;
             const Vec3 normalValue = source.localNormals.empty() ? source.localNormal : source.localNormals[index];
@@ -435,8 +438,9 @@ eve::Result<ClimbingAnchorBakeResult> bakeClimbingAnchorGraph(const ClimbingAnch
             !finite(source.rungSpacing) || source.rungSpacing <= 0.f || !finite(source.width) ||
             source.width <= 0.f || source.rungCount < 2 || source.rungCount > 1024 ||
             !uniqueNonEmpty(source.tags))
-            return failure<ClimbingAnchorBakeResult>(eve::DiagnosticCode::InvalidArgument,
-                                                      "ladder source is outside supported bounds", path);
+            return eve::Result<ClimbingAnchorBakeResult>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "ladder source is outside supported bounds", path, {}, "climbing.anchor_baker"));
         auto upResult = normalized(source.localUp, path + ".localUp");
         auto normalResult = normalized(source.localNormal, path + ".localNormal");
         if (!upResult) return eve::Result<ClimbingAnchorBakeResult>::failure(upResult.status());

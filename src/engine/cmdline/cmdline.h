@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <functional>
@@ -19,6 +21,7 @@ struct Register;
 
 /** @brief One `eve <subcommand>` handler: CLI setup + argument parsing. */
 struct Handler {
+    /** @brief Releases Handler resources. */
     virtual ~Handler() {}
     /** @brief Registers options on the CLI11 sub-app. */
     virtual void setup(CLI::App&, std::shared_ptr<CLI::Formatter>) = 0;
@@ -27,8 +30,7 @@ struct Handler {
 };
 
 /** @brief 命令行模块（eve.cmd）：run / build / package / test / zip / dev-server 等子命令入口。 */
-class Cmdline : public Module {
-
+class EVENGINE_API_FOUNDATION Cmdline : public Module {
 public:
     Module_REG(Cmdline);
 
@@ -77,6 +79,7 @@ public:
     std::string getArgv(unsigned i) {
         return (argv && i < argc && argv[i]) ? argv[i] : std::string{};
     }
+    /** @brief Returns the argc. */
     unsigned getArgc() { return argc; }
 
     /** @brief 子命令剩余位置参数。 */
@@ -84,12 +87,14 @@ public:
 
     friend Register;
 protected:
+    /** @brief Cmdline. */
     Cmdline();
 
     unsigned argc;
     char** argv;
 
     static std::vector<std::function<Handler*()>>& handers();
+    /** @brief Registers cmd. */
     static void registerCmd(std::function<Handler*()> handler);
 };
 
@@ -99,7 +104,9 @@ protected:
 
 /** @brief 子命令静态注册器（CMD_REG 宏使用）。 */
 struct Register {
+    /** @brief Constructs a Register. */
     Register(std::function<Handler*()> handler) {
+        /** @brief Registers cmd. */
         Cmdline::registerCmd(handler);
     }
 };

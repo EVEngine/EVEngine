@@ -1,6 +1,6 @@
 # Dialogue + Avatar 示例
 
-视觉小说风格最小演示：Squirrel **generator** 写剧情，`eve.Dialogue` 管台词/选项，
+视觉小说风格最小演示：统一块式 **dnut** 写剧情与台词池，`DialogueFlow` 管跨帧执行，`eve.Dialogue` 管台词/选项呈现，
 `eve.Avatar` 的 Image 分层角色站在舞台槽位上。
 
 ## 运行
@@ -21,11 +21,11 @@ make run/linux-debug GAME=examples/dialogue
 
 ## 要点
 
-- **没有新脚本语言**——`scene_intro` 就是普通 Squirrel generator，`yield "wait"` / `yield "choice"` 与 C++ 状态机握手。
+- **单一正式剧情路径**——`pools.dnut` 同时声明 schema/version、pool、参数化 conversation、branch、choice、call、wait 与 async command；Squirrel 只把当前节点投影到 UI。
 - **对话文案走 i18n 翻译表**——台词、角色名、选项、UI 提示都来自 `locales/en.json` / `locales/zh.json`，支持运行时热切换与热重载。
 - Image Avatar：两张生成的写实透明人物立绘，使用 `portrait` 纹理层；当前为静态立绘，不演示表情贴图切换或口型。素材与生成提示词见 `assets/README.md`。
 - Live2D / VRoid 工厂在本例未加载真实模型；API 见 `docs/对话与Avatar模块设计.md`。
-- **程序化对话（.dnut）**——`pools.dnut` 由 C++ 解析器 `dlg.loadPoolsFromDnutFile` 解析注册；`mood` / `hour` 变量驱动加权选词，`meta` 自动切表情/动作，修改 `pools.dnut` 触发资产热重载。
+- **事务式内容工作区**——`dialogueFlow.loadDnutFileChecked` 原子提交 pool 与 conversation；示例在异步 command 暂停点执行存档/恢复，再用稳定 request ID 恢复，并演示失败热重载保持旧状态。
 
 ## 呈现扩展与验证
 

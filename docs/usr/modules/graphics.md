@@ -4,6 +4,34 @@
 
 清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。Camera2D/Camera3D 提供屏幕与世界坐标换算，供 2D/3D 拾取使用；形状命中测试见 [Math](math.md)，物理体查询见 [Physics](physics.md)。
 
+高级光照 / AO / GI / AA / 体积雾等见 [高级渲染与屏幕空间效果](graphics/rendering-effects.md)。实时雾气专册见 [graphics_fog](graphics_fog.md)。
+
+## 0.6 已知边界
+
+下列能力在 0.6 **可以宣称并写进游戏**；未完成项保持显式 Unsupported / 文档边界，不得静默假实现。
+
+| 主题 | 0.6 已支持 | 已知边界（勿当作完成） |
+|------|------------|------------------------|
+| 光照模式 | `RenderControl.setLightingMode("forwardPlus"\|"hybrid")`；桌面 preset 可切 Hybrid；半透明仍 Forward+ | ClassicScenes 像素对比与 FrameGraph 录制仍待补；Lavapipe/CI 默认 ForwardPlus |
+| 体积雾 / 体积光 | `Volumetric`、[实时雾气](graphics_fog.md)（MAC / ray march / froxel） | 可选：Froxel 绑真实 CSM shadow map、物体空间 AO / RTAO |
+| 显示器 HDR | Vulkan `setDisplayOutputMode`（`sdr`/`auto`/`hdr10`/`scrgb`）；无 HDR 表面软回退 SDR | WebGPU 仅 `sdr`/`auto`；真 HDR 显示器端到端验收仍待做 |
+| 反射探针 | 采集、Registry 调度、sky backup、发布后 `applyToCamera` | **逐像素天空/大气 capture pass**未完成；Vulkan GGX/irradiance **compute filter** 在缺嵌入 SPIR-V 时返回 Unsupported，且**不得**把未 filter 的 staging 当已发布反射 |
+| 抗锯齿 | FXAA 等经 `AntiAliasing` / RenderControl `"aa"` | 硬件 MSAA + 完整多 Pass SMAA LUT + TAA 仍为可选后期 |
+| 其他后端 | 部分资源 Shader / 实例绘制路径仅 Vulkan | 非 Vulkan 返回结构化 `Unsupported`，无静默 CPU 假路径 |
+
+API 细节：光照模式见 [rendering-effects](graphics/rendering-effects.md)；HDR present 与探针绑定见下文「显示器 HDR」「HDR、景深与反射探针绑定」。设计进度见 [`HDR与反射链AAA升级.md`](../../dev/HDR与反射链AAA升级.md)。
+
+`gfx.setSceneToneMapping("none" | "aces" | "filmic")` 返回标准 Result；
+`getSceneToneMapping()` 读取当前模式。默认仍为 `aces`。Vulkan 的 `filmic`
+使用固定 Rec.709/AP1 电影式曲线、蓝色修正和色域扩展，仅影响最终显示，
+不会把线性 HDR 反射或离屏纹理提前映射到 SDR。不支持切换的后端返回
+Unsupported 并保留原模式。曝光、暗角和其他镜头效果仍由各自组件控制。
+
+`gfx.setScenePhotographicVignette(intensity)` 返回 Result，强度范围 `[0,1]`，
+默认 `0` 关闭；`getScenePhotographicVignette()` 读取当前值。Vulkan 在最终
+色调映射前应用余弦四次方摄影暗角，不改变线性 HDR 捕获。非法参数保留旧值；
+未支持此效果的后端只接受 `0`。此选项与原来的过渡暗角独立。
+
 ## 基本用法
 
 ```squirrel
@@ -32,25 +60,44 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 ```squirrel
 local sprite = gfx.newSprite2D();
 sprite.setTexture(sheet.getTexture());
+sprite.setNormalTexture(normalMap); // optional; enables GPU lit2d with Light2D
 sprite.setQuad(quad);
 sprite.setPosition(400, 270);
 sprite.setScale(2.0, 2.0);
 sprite.setRotation(30.0); // degree, rotate around rect center
 sprite.setAnchor(0.25, 0.75); // normalized rotation pivot
 sprite.setFlip(true, false);  // mirror UV without negative scale
+sprite.setReceiveLight(true);
 sprite.setBlend("alpha"); // alpha | premultiplied | additive | multiply
 
 // eve_render: clear/draw background first, then submit all live Sprite2D objects
 gfx.renderSprites();
 ```
 
-`Sprite2D` 还提供 size、color、layer、visible、receiveLight、castOcclusion 等属性。
+`Sprite2D` 还提供 size、color、layer、visible、receiveLight、castOcclusion、normalTexture 等属性。
+当 `setReceiveLight(true)` 且同时设置了 albedo（`setTexture`）与切线空间法线贴图（`setNormalTexture`）、且未挂自定义 2D shader 时，走 GPU `lit2d` 路径，与 `Light2D`（`point` / `dir` / `spot`，每 canvas 最多 8 盏）和 `Camera2D.setAmbient` 配合；只有 albedo 时则为 CPU 近似调制。旋转精灵时 lit2d 会按屏幕/UV 导数重建切线帧，法线贴图随几何一起旋转。
+
+手电式聚光：`setType("spot")`，用 `setPosition` + `setDirection` 对准光束，`setRadius` 控制射程，`setSpotAngle(degrees)` 为外半角（整锥 ≈ 2×半角），`setSpotSoftness(0..1)` 控制边缘软硬；可用 `getSpotAngle()` / `getSpotSoftness()` 读取。开启 `setVolumetric(true)` 后，`scatterFromSceneLights2D` 会按同一锥角裁剪屏幕空间光柱。Tilemap 需 `layer.setReceiveLight(true)` 才会受光（默认关闭以保持旧图不受影响）；有纹理的格子走 lit2d（缺法线时用平坦法线）。
+
+```squirrel
+local flash = eve.Light2D();
+flash.setType("spot");
+flash.setPosition(heroX, heroY);
+flash.setDirection(facingX, facingY); // 光束中心轴
+flash.setColor(1.0, 0.95, 0.8, 2.5);
+flash.setRadius(220.0);
+flash.setSpotAngle(28.0);   // 半角（度）
+flash.setSpotSoftness(0.4);
+layer.setReceiveLight(true);
+```
 裁边动画通常由 `SpriteAnim.bindSprite(sprite)` 自动调用 `setFrameLayout`，无需游戏代码逐帧修正偏移。
 不再使用时调用 `destroy()`；`renderSprites()` 是聚合提交接口，不要再把同一精灵加入另一条 2D 队列，以免重复绘制。
 
 ### 渲染带光照的 3D 对象
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
+
+`Light3D` 支持 `point` / `dir` / `spot`。聚光用 `setType("spot")`、`setSpotAngle` / `setSpotSoftness`（与 2D 锥体语义相同）。实时阴影通过 `setCastShadow(true)` 与 `setShadowMethod("auto"|"none"|"csm"|"perspective"|"cube")` / `getShadowMethod()` 选择技术；有向光走 CSM，聚光走 perspective 本地 atlas。进程级方案用 `gfx.setShadowSchemeDirectionalEnabled` / `setShadowSchemeSpotEnabled` / `setShadowSchemePointEnabled`、`setShadowSchemeMaxSpotCasters` / `getShadowSchemeMaxSpotCasters`，以及本地分页 `setShadowSchemePagingEnabled`、`setShadowSchemeMaxLocalUpdates` / `getShadowSchemeMaxLocalUpdates`、`setShadowSchemeHysteresisBonus`（固定 atlas 槽位按重要性租用，更新预算可时间切片重绘）。
 
 `Camera3D` 默认使用透视投影。等距视图可调用 `setOrthographic(height)`，其中
 `height` 是世界空间中的垂直可视范围；`setPerspective()` 恢复透视投影。
@@ -139,6 +186,28 @@ if (!result.ok) {
 阶段；调用必须发生在 Graphics 所属的渲染线程。GLSL 是 Vulkan 开发路径，WGSL 是
 WebGPU 开发路径；当前后端不支持对应源码格式时会返回 `Unsupported` 和诊断信息。
 
+运行期 GLSL→SPIR-V 由引擎自带编译器完成（`graphics/vulkan/GlslCompiler.cpp`，唯一实现）：
+Windows 构建在配置时能找到 `VULKAN_SDK` 就链接 shaderc 静态库，发布出去的包不需要外部
+`glslc.exe`；没有链接 shaderc 的构建才回退到 PATH 上的 `glslc`。C++ 侧用
+`Graphics::supportsRuntimeGlslCompilation()` 查询该能力（WebGPU 固定为 false）；希望完全不依赖
+运行期编译时，改用随包提交的 SPIR-V：`gfx.newShaderFromSpvFile` / `gfx.loadMeshShaderSpv`。
+
+自定义网格着色器可用 `Shader.setMeshTexture(slot, texture)` 绑定 0..3 四个可移植纹理槽；
+传入 `null` 清除对应槽，越界会抛出脚本异常。纹理由调用方持有，必须存活到解除绑定且
+相关绘制结束；该接口只能在 Graphics 所属的渲染线程调用。
+
+### 植被全局字段与细节设置
+
+`gfx.newVegetationField()` 创建脚本拥有的 `VegetationField`，返回带 `ok`、`value` 和
+`ownership="owned"` 的 Result 表。字段可以通过 `restore(document)` 原子恢复，并用
+`snapshot()` 保存。`field.sample(x, y, z, colorLayer, extrasLayer, motionLayer, vertexLayer)`
+在世界坐标采样四个通道；各层编号必须在 0..8，成功结果的 `value` 包含 `color`、
+`extras`、`motion` 和 `vertex` 四个四元向量。
+
+`gfx.newVegetationDetails()` 同样返回脚本拥有的 `VegetationDetails` Result，用于保存和恢复
+全局颜色、覆盖、湿润及顶点阶段参数。创建和恢复失败不会发布部分状态；调用方必须检查
+Result 的 `ok`。
+
 ### 纹理过滤（mipmap / 各向异性 / LOD）
 
 默认 `newTexture` 仍为线性过滤、单级 mip（兼容旧行为）。需要三线性与各向异性时：
@@ -189,6 +258,7 @@ mat.setSurfaceMode("transparent"); // opaque | masked | transparent
 mat.setBlendMode("alpha");         // alpha | premultiplied | additive | multiply
 mat.setDepthWrite(false);
 mat.setDoubleSided(true);
+mat.setCameraFacing(false);         // true：草卡片绕世界 Y 轴朝向活动相机
 mat.setSortPriority(0);             // 同优先级按相机深度从后向前排序
 mat.setMetallic(0.2);
 mat.setRoughness(0.5);
@@ -204,7 +274,9 @@ local effectiveOrder = r.getPartSortPriority(0);
 遮罩材质使用 `setSurfaceMode("masked")`、`setAlphaCutoff()` 和
 `setAlphaTechnique("cutoff" | "dither" | "coverage")`。对应查询接口为
 `getSurfaceMode()`、`getBlendMode()`、`getDepthWrite()`、`getDoubleSided()`、
-`getSortPriority()`、`getAlphaCutoff()` 和 `getAlphaTechnique()`。纹理 Alpha 数据可用
+`getCameraFacing()`、`getSortPriority()`、`getAlphaCutoff()` 和 `getAlphaTechnique()`。
+`setCameraFacing(true)` 为 GPU-driven 草片启用保持底部锚定的圆柱公告板，使顶点仅绕世界 Y 轴
+朝向活动相机；关闭时保留实例原始朝向。纹理 Alpha 数据可用
 `Texture.setAlphaConvention("straight" | "premultiplied")` 声明，并通过
 `Texture.getAlphaConvention()` 查询。
 
@@ -307,22 +379,22 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 
 - `bakeMeshMorph()`、`newMeshFromArrays()`、`updateMeshVertices()`、`clear()`、`clearMorphWeights()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`
 - `drawSolidRect()`、`drawTexturedRect()`、`drawTexturedRectRotated()`、`drawOcclusionSolid()`、`drawOcclusionTexture()`、`getCastShadow()`、`getCastOcclusion()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getEyeX()`、`getEyeY()`、`getEyeZ()`、`getFov()`、`getHeight()`、`getMorphCount()`
-- `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
-- `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
-- `getTargetX()`、`getTargetY()`、`getTargetZ()`、`getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
-- `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newGroomInstance()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
+- `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getSpotAngle()`、`getSpotSoftness()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
+- `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowMethod()`、`getShadowSchemeMaxLocalUpdates()`、`getShadowSchemeMaxSpotCasters()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
+- `getTargetX()`、`getTargetY()`、`getTargetZ()`、`getVolumetric()`、`getVolumetricIntensity()`、`getVolumetricOnly()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
+- `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newGroomInstance()`、`newHairShader()`、`newMeshCube()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
 - `GroomInstance`：`setForcedLod`、`getForcedLod`、`setScreenSize`、`getScreenSize`、`setWidthScale`、`getWidthScale`、`setSideHint`、`setClusterCullingEnabled`、`isClusterCullingEnabled`、`getActiveLodIndex`、`getActiveRepresentation`、`getClusterCount`、`getVisibleCurveCount`、`setMarschnerLobes`、`getMarschnerR`、`getMarschnerTT`、`getMarschnerTRT`、`setSelfShadow`、`getSelfShadowStrength`、`getSelfShadowBias`、`getRootAoStrength`、`getCurveCount`、`getPointCount`、`getGroupCount`、`isGuideSimulationEnabled`
-- `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureWithSampler()`、`setRenderableTextureFromImageData()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`replaceShaderFromGlsl()`、`replaceShaderFromWgsl()`、`newTexture()`、`newTextureFromFile()`、`newTextureWithSampler()`、`setRenderableTextureFromImageData()`、`updateTextureFromImageData()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setCloudShadows()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`getMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPackedNormalMask()`、`setHeightTexture()`、`setPosition()`、`setRadius()`
-- `setReceiveLight()`、`setCustomLightProbe()`、`setCustomLightProbeCoefficient()`、`clearCustomLightProbe()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setHair()`、`getHair()`、`setShadowBias()`、`setShadowStrength()`
-- `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setParallax()`、`getParallaxScale()`、`getParallaxMinLayers()`、`getParallaxMaxLayers()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
+- `setReceiveLight()`、`setCustomLightProbe()`、`setCustomLightProbeCoefficient()`、`clearCustomLightProbe()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setHair()`、`getHair()`、`setShadowBias()`、`setShadowMethod()`、`setShadowSchemeDirectionalEnabled()`、`setShadowSchemeHysteresisBonus()`、`setShadowSchemeMaxLocalUpdates()`、`setShadowSchemeMaxSpotCasters()`、`setShadowSchemePagingEnabled()`、`setShadowSchemePointEnabled()`、`setShadowSchemeSpotEnabled()`、`setShadowStrength()`
+- `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setParallax()`、`getParallaxScale()`、`getParallaxMinLayers()`、`getParallaxMaxLayers()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setVolumetricOnly()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
 - 字体：`newFont()`、`setFont()`、`getFont()`、`drawText()`、`print()`、`getAscent()`、`getBaseline()`、`hasGlyph()`
 - `AlphaMask`：`newAlphaMask()`、`setThreshold()`、`getThreshold()`、`setSoftness()`、`getSoftness()`、`setInverted()`、`getInverted()`
 - `MapFog`：`newMapFog()`、`update()`、`setTime()`、`getTime()`、`setCloudTexture()`、`getCloudTexture()`、`setMaskTexture()`、`getMaskTexture()`、`setCloudTiling()`、`setCloudSpeed()`、`setDistort()`、`setDistortFix()`、`setFogColor()`、`setFogAlpha()`、`setEdgeSoftness()`、`setShadowEnabled()`、`setShadow()`、`setSelectStrength()`、`setDissolveScale()`、`setCloudMix()`、`setCloudDensity()`、`getCloudTileA()`、`getCloudTileB()`、`getFogAlpha()`、`getShadowEnabled()`、`makeCloudTexture()`、`draw()`（大地图迷雾：双层云 + mask R/G/B）
-- `Sprite2D`：`setPosition()`、`getX()`、`getY()`、`setRotation()`、`getRotation()`、`setScale()`、`getScaleX()`、`getScaleY()`、`setSize()`、`getWidth()`、`getHeight()`、`setTexture()`、`getTexture()`、`setQuad()`、`getQuad()`、`setColor()`、`setLayer()`、`getLayer()`、`setVisible()`、`getVisible()`、`setReceiveLight()`、`getReceiveLight()`、`setBlend()`、`getBlend()`、`setAnchor()`、`getAnchorX()`、`getAnchorY()`、`setFlip()`、`getFlipX()`、`getFlipY()`、`setFrameLayout()`、`setCastOcclusion()`、`getCastOcclusion()`、`destroy()`
+- `Sprite2D`：`setPosition()`、`getX()`、`getY()`、`setRotation()`、`getRotation()`、`setScale()`、`getScaleX()`、`getScaleY()`、`setSize()`、`getWidth()`、`getHeight()`、`setTexture()`、`getTexture()`、`setNormalTexture()`、`getNormalTexture()`、`setQuad()`、`getQuad()`、`setColor()`、`setLayer()`、`getLayer()`、`setVisible()`、`getVisible()`、`setReceiveLight()`、`getReceiveLight()`、`setBlend()`、`getBlend()`、`setAnchor()`、`getAnchorX()`、`getAnchorY()`、`setFlip()`、`getFlipX()`、`getFlipY()`、`setFrameLayout()`、`setCastOcclusion()`、`getCastOcclusion()`、`destroy()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
 - `FogVolume`：`setShape/getShape`、`setPosition`、`setSize`、`setExtinction/getExtinction`、`setAlbedo`、`setEmissive`、`setAnisotropy/getAnisotropy`、`setEdgeFalloff/getEdgeFalloff`。`setNoise(amount, scale, seed)` 可加入确定性的世界空间密度变化，`getNoiseAmount/getNoiseScale/getNoiseSeed` 返回当前设置；调用 `Volumetric.setCamera()` 后，通过 `injectFroxelLocalVolume(volume)` 按当前视锥注入 froxel 网格。
 - `Volumetric` froxel：`configureFroxelGrid`、`clearFroxelGrid`、
@@ -376,6 +448,13 @@ constantsPath 可为空。images 每项包含 `binding, path, format, dimension,
 layers, mips, filter, wrapU, wrapV, anisotropy`。格式支持 `r8-unorm`、`rg8-unorm`、
 `r16-unorm`、`rgba8-unorm`、`bgra8-unorm` 以及 RGBA/BGRA/BC1/BC3/BC7 对应
 `-srgb` 格式；BC1/3/7 也支持 `-unorm`。dimension 为 `2d/array2d/cube`。
+另支持 `rgba16-unorm`、`rgba16-float`、`rgba32-float`，浮点通道保留原始
+IEEE-754 小端字节，不裁剪 HDR 数值。`dimension = "3d"` 时必须提供正整数
+`depth` 和 `wrapW`，且 `layers = 1`；体纹理按 mip、Z 切片、行的顺序排列，
+每级 mip 同时将 XYZ 尺寸减半并下限为 1。体纹理不接受 BC 压缩，XYZ 各不超过
+2048，单纹理仍受 1 GiB 限制及设备能力约束。其他维度的 depth 省略或为 1。
+纯常量缓冲或实例矩阵程序可提供空 images；图片、常量、实例矩阵不能同时为空。
+wrapW 与 wrapU/V 同样使用 0 repeat、1 clamp；不提供时保持既有 2D 行为。
 字节严格按 layer-major、mip-major 紧密排列，不经过图片解码、预乘或缩放。
 filter 为 0 最近、1 双线性加最近 mip、2 三线性；wrapU/V 为 0 repeat、1 clamp。
 Cube 必须是六个等宽高面；最多 16 个图像，binding 在 0..31，常量使用 binding 32，
@@ -428,19 +507,46 @@ xyz 是导入的对象空间切线，w 是相对于 `cross(normal, tangent)` 的
 生成近似切线。带场景变换的导入会变换并归一化切线/副切线，保留镜像手性。
 该输入目前属于 Vulkan 资源 Shader ABI；未实现此资源路径的后端仍返回 Unsupported。
 
-`gfx.setSceneToneMapping("none" | "aces")` 返回 Result；默认 `aces` 保持既有输出。
+`gfx.setSceneToneMapping("none" | "aces" | "filmic")` 返回 Result；默认 `aces` 保持既有输出。
 `gfx.getSceneToneMapping()` 返回当前模式。`none` 仅在最终场景显示时将曝光后的
 线性 RGB 裁剪到显示范围，然后执行需要的 sRGB 编码，不应用 ACES 曲线。
 Bloom、曝光和 HDR 离屏纹理保持各自的职责；二维 UI 不经过此场景映射。
 设置属于 Graphics 的显示状态，在 graphics/render 线程修改，不持有调用者引用
-或触发回调。非法模式不改变旧值。Vulkan 支持两种模式；其他后端当前仅接受保留
+或触发回调。非法模式不改变旧值。Vulkan 支持三种模式；其他后端当前仅接受保留
 默认模式的空操作，切换返回 Unsupported，不静默使用不同映射。
+
+### 显示器 HDR（swapchain 输出）
+
+渲染侧 HDR（线性 `RGBA16F` scene color、曝光、Bloom、ACES）与显示器 HDR 是两层。
+下列 API 控制 **present 色彩空间**：
+
+- `gfx.setDisplayOutputMode("sdr" | "auto" | "hdr10" | "scrgb")` → Result。
+  `auto` 优先 HDR10，其次 scRGB，否则 SDR。`hdr10` / `scrgb` 在 Vulkan 上写入偏好并
+  重建 swapchain；表面不支持时软回退到 SDR（不失败）。WebGPU 仅接受 `sdr`/`auto`。
+- `gfx.getDisplayOutputMode()` / `gfx.getActiveDisplayColorSpace()` /
+  `gfx.isDisplayHdrActive()` 区分“请求”与“实际选中”。
+- `gfx.setDisplayHdrCalibration(paperWhiteNits, peakNits)`：纸白默认 200 nits、峰值 1000；
+  用于 HDR10 PQ 与 scRGB 高光上限。
+  `gfx.getDisplayPaperWhiteNits()` / `gfx.getDisplayPeakNits()` 读取当前校准值。
+- `gfx.queryDisplayOutputSupport()` → `{sdr, hdr10, scRgb}`；需要已初始化的窗口 surface。
+
+HDR10 使用 `A2B10G10R10` + `HDR10_ST2084`（PQ）；scRGB 使用 `RGBA16F` +
+`EXTENDED_SRGB_LINEAR`（数值 1.0 = 80 nits，引擎按 `paperWhite/80` 缩放）。切换
+模式时会按新 attachment format 重建 present render pass 与 pipelines。HDR 路径先在
+线性 compose 目标上合成 scene + 2D/UI overlays（纸白相对 display-linear），再一次
+fullscreen encode 到 swapchain；避免透明 UI 用不透明 encode pipeline 盖住场景，也避免
+overlays 直接写入未编码的 HDR swapchain。Lavapipe / 无 HDR 显示器环境会保持 SDR。
 # Gaussian scatter bloom
 
 `gfx.setBloomFilter("gaussianScatter", 0.68, 6, 65472.0)` returns a checked Result
 and selects half-resolution prefiltering, separable Gaussian downsampling, and
 linear interpolation between pyramid levels. `"karisTent"` restores the default
 four-level filter. `gfx.getBloomFilter()` returns the selected name.
+`"gaussianPyramid"` selects up to six additively weighted photographic Gaussian
+scales instead; it uses fixed stage sizes and weights, with `maxIterations`
+capped at six. Its scatter argument does not alter those fixed kernels.
+Zero threshold passes the whole scene. Camera intensity multiplies the weighted
+sum once; the default filter remains `"karisTent"`.
 Camera bloom intensity and linear threshold remain controlled by `Camera3D.setBloom`.
 Scatter must be finite in [0,1], maximum iterations an integer in [1,16], and
 clamp finite in (0,65504]. Invalid settings leave the previous filter unchanged.
@@ -762,3 +868,36 @@ RGBA 模式任一通道命中即启用。`setMask(imageData)` 会复制像素，
 清除遮罩。`evaluate(playerX,playerZ,terrainX,terrainZ,width,depth,reflectionSettings)` 返回 0 Unchanged、
 1 Enabled 或 2 Disabled，并在状态变化时同步 `WaterPlanarReflectionSettings.enabled`。
 `getEnabled()`、`getHeightFeaturesEnabled()`、`getSampleX()` 和 `getSampleY()` 返回最近状态与采样坐标。
+
+独立天空的 `eve.sky-wisps/3` 资源增加 `sunDisk.color`（线性 HDR RGB）和
+`sunDisk.shape`（弧度半径、正柔化指数、非负反射倍率）。旧版本禁用圆盘。
+参数随资源准备复制，太阳方向复用独立帧快照；绘制不推进模拟时间。
+主视图和反射复用同一材质，圆盘在薄云混合、父材质对比度和高度雾之前合成。
+圆盘颜色目前是明确的配置常量，尚未接入昼夜颜色曲线或二维动态云遮罩。
+
+`eve.sky-wisps/4` 进一步要求十二个 `sunDiskCurve` 键（RGB 各四个）：
+`[height,value,arriveTangent,leaveTangent]`，每通道高度严格递增，末键值为正。
+按独立太阳方向计算高度，采用无权重三次 Hermite 插值及常量端点外推；
+颜色相对于末键缩放。准备阶段验证并复制所有数据，绘制期间不读取文件或推进时钟。
+版本 1—3 保留原有恒定圆盘颜色。该路径尚不包含日食、天气衰减或曲线 HSV 调整。
+
+## 导入植被的原生 PBR
+
+`material.setFoliageTranslucency(r,g,b,intensity,strength,normalDistortion,scattering,direct,ambient,shadow)`
+返回 Result；验证完整候选 PBR 状态后才提交，并启用双面背面法线翻转，不替换已导入贴图。
+`gfx.configureFoliageWind(material,dirX,dirZ,strength,bending,bendingSpeed,branch,branchSpeed,flutter,flutterSpeed,fadeDistance,bendFactor)`
+返回 Result，在渲染线程复用 Graphics-owned 风场纹理，首次调用含纹理上传成本。
+先调用 `model3d.prepareFoliageDeformation` 为匹配的静态网格建立变形数据。
+`material.setFoliageWindTime(seconds)` 返回 Result，要求已配置风；时间由调用方显式注入，
+不读墙钟。参数非法时材质状态不变；贴图借用在 Graphics 资源释放/关闭时失效，
+材质必须先停止使用这些资源。调用均为 main/render 线程同步路径，无回调。
+
+### 资源更新与每帧调用成本
+
+建议初始化时直接 `gfx.loadTexture(path)`：脚本返回可直接使用的纹理，失败抛出诊断；C++ 返回 `ResultRef<Texture>`。首次调用完成解码和上传，缓存命中复用；后续尺寸 getter 不执行准备工作。这个简单入口与兼容 `newTextureFromFile` 共用同一缓存，不维护第二套资源。
+
+- `newTextureFromFile(path)` 首次请求排队解码并在消费时上传；已缓存路径直接返回同一资源，文件删除或变化不会隐式重载。更新文件需显式 `reloadTextureFromFile(path)`。首次尺寸查询仍会完成延迟上传；每帧保存并使用已加载纹理。
+- `setTextureSampler(texture, desc)` 修改期望配置，相同配置零后端工作；首次消费前合并配置，并复用 Graphics 生命周期内已准备的 sampler。Vulkan 发布改变的描述符仍需要一次批量在途帧等待；setter 本身不等待。持续改变 LOD bias 等配置会产生新 sampler，应避免每帧构造不同描述。释放纹理取消待发布状态。
+- `updateMeshVertices` 是显式动态上传：每次调用仍有线性转换/上传成本，内部复用转换数组与 GPU 缓冲容量，不扫描全数组判断是否相同。源数据的 owner 应只在数据变化时调用；无需额外 token/commit。
+- Groom 的 `update(dt)` 完整推进模拟；参数与可见性修改只记录变化。视图准备阶段（或直接 `draw` 的准备边界）合并几何刷新并复用同一网格。`getMesh` 等 getter 不触发刷新，返回最后发布结果；`rebuild` 是兼容的显式同步刷新。`Representation::None` 隐藏但保留网格以供再次显示复用。显式可见性掩码属于调用者当前视图，多视图时在各视图绘制前更新，不能跨视图复用最后一次掩码。
+- Groom 必须在其 Graphics owner 销毁前析构；析构移除准备回调。网格、纹理与 shader 仍由 Graphics 统一回收，不产生第二套所有权。

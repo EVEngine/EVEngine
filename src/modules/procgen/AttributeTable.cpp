@@ -6,24 +6,6 @@
 namespace eve::procgen {
 namespace {
 
-template <class T>
-std::vector<std::optional<T>> makeColumn(std::size_t rows) {
-    return std::vector<std::optional<T>>(rows);
-}
-
-Result<void> invalidAttribute(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
-Result<void> attributeTypeMismatch(std::string_view name, ProcgenAttributeType expected, ProcgenAttributeType actual) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch,
-                                                   "attribute '" + std::string(name) + "' has schema type " +
-                                                       std::string(procgenAttributeTypeName(actual)) + ", not " +
-                                                       std::string(procgenAttributeTypeName(expected)),
-                                                   "name"));
-}
-
 }  // namespace
 
 std::size_t AttributeTable::rowCount() const noexcept { return rows_; }
@@ -69,7 +51,8 @@ Result<std::size_t> AttributeTable::appendRowFrom(const AttributeTable& source, 
     return Result<std::size_t>::success(row);
 }
 Result<void> AttributeTable::clearRow(std::size_t row) {
-    if (row >= rows_) return invalidAttribute("attribute row is out of range", "row");
+    if (row >= rows_) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute row is out of range", "row"));
     for (auto& entry : columns_) std::visit([row](auto& values) { values[row].reset(); }, entry.second.storage);
     return Result<void>::success();
 }
@@ -93,11 +76,14 @@ bool AttributeTable::has(std::size_t row, std::string_view name) const {
 }
 
 Result<void> AttributeTable::renameColumn(std::string_view from, std::string_view to) {
-    if (from.empty() || to.empty()) return invalidAttribute("attribute name must not be empty", "name");
+    if (from.empty() || to.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute name must not be empty", "name"));
     if (!from.empty() && from.front() == '$')
-        return invalidAttribute("builtin selectors cannot be renamed", "from");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "builtin selectors cannot be renamed", "from"));
     if (!to.empty() && to.front() == '$')
-        return invalidAttribute("builtin selectors cannot be rename targets", "to");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "builtin selectors cannot be rename targets", "to"));
     if (from == to) return Result<void>::success();
     const std::string fromKey(from);
     const std::string toKey(to);
@@ -123,8 +109,10 @@ Result<void> AttributeTable::renameColumn(std::string_view from, std::string_vie
 }
 
 Result<void> AttributeTable::removeColumn(std::string_view name) {
-    if (name.empty()) return invalidAttribute("attribute name must not be empty", "name");
-    if (name.front() == '$') return invalidAttribute("builtin selectors cannot be deleted", "name");
+    if (name.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute name must not be empty", "name"));
+    if (name.front() == '$') return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "builtin selectors cannot be deleted", "name"));
     const std::string key(name);
     if (columns_.find(key) == columns_.end())
         return Result<void>::failure(
@@ -138,9 +126,11 @@ Result<void> AttributeTable::removeColumn(std::string_view name) {
 }
 
 Result<void> AttributeTable::copyColumn(std::string_view from, std::string_view to) {
-    if (from.empty() || to.empty()) return invalidAttribute("attribute name must not be empty", "name");
+    if (from.empty() || to.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute name must not be empty", "name"));
     if (from.front() == '$' || to.front() == '$')
-        return invalidAttribute("copyColumn only supports metadata column names", "name");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "copyColumn only supports metadata column names", "name"));
     if (from == to) return Result<void>::success();
     const std::string fromKey(from);
     const std::string toKey(to);
@@ -169,7 +159,11 @@ Result<AttributeTable::Column*> AttributeTable::ensureColumn(std::string_view na
     auto              found = columns_.find(key);
     if (found != columns_.end()) {
         if (found->second.type != type) {
-            auto mismatch = attributeTypeMismatch(name, type, found->second.type);
+            auto mismatch = Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch,
+                                                   "attribute '" + std::string(name) + "' has schema type " +
+                                                       std::string(procgenAttributeTypeName(found->second.type)) + ", not " +
+                                                       std::string(procgenAttributeTypeName(type)),
+                                                   "name"));
             return Result<Column*>::failure(mismatch.status());
         }
         return Result<Column*>::success(&found->second);
@@ -177,11 +171,13 @@ Result<AttributeTable::Column*> AttributeTable::ensureColumn(std::string_view na
     Column replacement;
     replacement.type = type;
     switch (type) {
-        case ProcgenAttributeType::Float: replacement.storage = makeColumn<float>(rows_); break;
-        case ProcgenAttributeType::Int: replacement.storage = makeColumn<std::int64_t>(rows_); break;
-        case ProcgenAttributeType::Bool: replacement.storage = makeColumn<bool>(rows_); break;
-        case ProcgenAttributeType::Vector: replacement.storage = makeColumn<ProcgenAttributeVector>(rows_); break;
-        case ProcgenAttributeType::String: replacement.storage = makeColumn<std::string>(rows_); break;
+        case ProcgenAttributeType::Float: replacement.storage = std::vector<std::optional<float>>(rows_); break;
+        case ProcgenAttributeType::Int: replacement.storage = std::vector<std::optional<std::int64_t>>(rows_); break;
+        case ProcgenAttributeType::Bool: replacement.storage = std::vector<std::optional<bool>>(rows_); break;
+        case ProcgenAttributeType::Vector:
+            replacement.storage = std::vector<std::optional<ProcgenAttributeVector>>(rows_);
+            break;
+        case ProcgenAttributeType::String: replacement.storage = std::vector<std::optional<std::string>>(rows_); break;
     }
     auto inserted = columns_.emplace(key, std::move(replacement));
     try {
@@ -195,8 +191,10 @@ Result<AttributeTable::Column*> AttributeTable::ensureColumn(std::string_view na
 
 template <class T>
 Result<void> AttributeTable::set(std::size_t row, std::string_view name, ProcgenAttributeType type, T value) {
-    if (name.empty()) return invalidAttribute("attribute name must not be empty", "name");
-    if (row >= rows_) return invalidAttribute("attribute row is out of range", "row");
+    if (name.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute name must not be empty", "name"));
+    if (row >= rows_) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute row is out of range", "row"));
     auto column = ensureColumn(name, type);
     if (!column.ok()) return Result<void>::failure(column.status());
     std::get<std::vector<std::optional<T>>>(column.value()->storage)[row] = std::move(value);

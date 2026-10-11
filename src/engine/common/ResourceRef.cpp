@@ -7,7 +7,7 @@ namespace {
 
 template <typename T>
 [[nodiscard]] Result<T> parseFailure(std::string message, std::string_view path) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(message), std::string(path)));
+    return Result<T>::failure(Diagnostic::error(DiagnosticCode::ParseError, message, std::string(path)));
 }
 
 template <typename T>

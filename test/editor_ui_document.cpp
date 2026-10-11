@@ -38,7 +38,7 @@ TEST_CASE("editor.ui.style_inspector_preview_pick_and_anchor_gizmo_are_revision_
 
 namespace {
 
-EditorResult<TransactionReceipt> commitUi(UiDocumentTarget& target,
+Result<TransactionReceipt> commitUi(UiDocumentTarget& target,
                                           LocalTransactionBackend& transactions,
                                           const DomainOperation& operation,
                                           const std::string& id) {

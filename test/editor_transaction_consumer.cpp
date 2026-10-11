@@ -22,7 +22,6 @@ using eve::Result;
 using eve::StatusCode;
 using eve::editor::DomainOperation;
 using eve::editor::EditorCommitState;
-using eve::editor::EditorResult;
 using eve::editor::EditorStatus;
 using eve::editor::EditorTransactionConsumer;
 using eve::editor::IEditAuthority;
@@ -101,21 +100,21 @@ private:
 
 class RejectingAuthority final : public IEditAuthority {
 public:
-    EditorResult<eve::editor::AuthorityPlan> preflight(const TransactionSpec&,
+    Result<eve::editor::AuthorityPlan> preflight(const TransactionSpec&,
                                                        std::span<const DomainOperation>) override {
         ++preflightCount;
         return eve::editing::failed<eve::editor::AuthorityPlan>(
             EditorStatus::Conflict, eve::editor::RuleId("test.preflight.rejected"), "injected preflight rejection");
     }
 
-    EditorResult<TransactionReceipt> commit(const eve::editor::AuthorityPlan&) override {
+    Result<TransactionReceipt> commit(const eve::editor::AuthorityPlan&) override {
         ++commitCount;
         return eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
                                                        eve::editor::RuleId("test.commit.unexpected"),
                                                        "commit must not be called after preflight rejection");
     }
 
-    EditorResult<TransactionReceipt> compensate(const TransactionReceipt&) override {
+    Result<TransactionReceipt> compensate(const TransactionReceipt&) override {
         ++compensateCount;
         return eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
                                                        eve::editor::RuleId("test.compensate.unexpected"),

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "building-placement-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/building/PlacementSystem.h",
+      "owner": "building::PlacementSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Placement validation and restore are visible gameplay system surfaces and document their world/query authority.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/building/PlacementSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/building.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "PlacementSystem"
+      ],
+      "entity_scope": "PlacementWorld cells and placement queries supplied by the building module owner.",
+      "view": "Caller-provided PlacementWorld snapshot plus generation-independent placement query value.",
+      "read_set": "PlacementWorld occupancy, PlacementQuery footprint, validator callbacks and placement snapshots.",
+      "write_set": "Placement result candidates and exact restore status; authoritative world mutation remains with the building owner.",
+      "structural_changes": "No ECS structural mutation inside validation; callers apply accepted placements through their own deferred mutation path.",
+      "events": "Validation failure reason and restore status are returned synchronously; no retained event callbacks.",
+      "services": "Injected ValidateFn callbacks and caller-owned world data; callbacks are invoked synchronously and not retained.",
+      "phase": "Placement admission or restore phase before authoritative building publication."
+    }
+  ]
+}

@@ -56,6 +56,21 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
 - Meshes: thin front card for classic POM; extruded slab for SilPOM/SSDM
 - `gl_FragDepth` only pulls toward the camera (Vulkan RH_ZO)
 
+### Regenerating the shader
+
+The fragment stage ships as **committed SPIR-V** (`shaders/compare.frag.spv`),
+loaded with `gfx.loadMeshShaderSpv`, so the example needs no runtime compiler and
+renders the same stages on every host. After editing `shaders/compare.frag`,
+regenerate the committed artifact with:
+
+```sh
+glslc -o shaders/compare.frag.spv shaders/compare.frag
+```
+
+Hot reload (`eve_asset_reload`) recompiles the GLSL live through the engine's own
+compiler; where that is unavailable the panels keep the committed SPIR-V and the
+status line reports it.
+
 ## Honesty bound
 
 True screen-space SSDM as a deferred/post pass (pyramid mip + screen warp over

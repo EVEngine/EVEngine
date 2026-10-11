@@ -373,6 +373,31 @@ TEST_CASE("resource.gameplay.rtsBuildUsesSharedActionOrdersProductionPayment") {
     CHECK_EQ(orders.orderCount(), ordersBeforeActionFailure);
 }
 
+TEST_CASE("resource.gameplay.rtsGenericProductionCompletesWithoutDomainSettlementConsumer") {
+    eve::economy::EconomyLedger ledger;
+    REQUIRE_EQ(ledger.credit("gold", 10), 10);
+    eve::rts::RTSEconomyAdapter economy(ledger);
+    eve::production::WorkQueue production;
+    eve::orders::CommandQueue orders;
+    eve::action::ActionRuntime action;
+    eve::rts::RTSBuildRequest request;
+    request.production = &production;
+    request.orders = &orders;
+    request.action = &action;
+    request.account = &economy.account();
+    request.cost = makeCost("gold", 1);
+    request.owner = "faction:generic";
+    request.product = "custom_job";
+    request.duration = eve::Duration::fromNanoseconds(1);
+    request.transactionId = "rts.generic.custom-job";
+    auto built = eve::rts::RTSProductionActionAdapter::build(std::move(request));
+    REQUIRE(built.ok());
+    const auto taskId = built.value().productionTaskId;
+    CHECK(!production.find(taskId)->get().settlementRequired);
+    REQUIRE(production.advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(1)}).ok());
+    CHECK_EQ(production.find(taskId)->get().state, eve::production::TaskState::Completed);
+}
+
 TEST_CASE("resource.gameplay.rtsProductionCancellationRefundsAllResourcesAtomically") {
     eve::economy::EconomyLedger ledger;
     REQUIRE_EQ(ledger.credit("gold", 20), 20);

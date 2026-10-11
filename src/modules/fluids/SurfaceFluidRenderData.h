@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "fluids/SurfaceDropletSimulation.h"
 
@@ -55,7 +57,7 @@ struct SurfaceFluidRenderParams {
  * preserves area while velocity changes aspect ratio, avoiding billboard-like
  * circles and keeping the data usable by Vulkan, WebGPU and CPU references.
  */
-class SurfaceFluidRenderData {
+class EVENGINE_API_DOMAINS SurfaceFluidRenderData {
 public:
     /** @brief Rebuild attached droplet instances from the latest simulation pose. */
     void update(const FluidSurfaceBinding& binding, const SurfaceDropletSimulation& simulation,
@@ -67,6 +69,7 @@ public:
         const WetSurfaceMaterialParams& params = {});
 
     /** @return current oriented droplet instances. */
+    /** @brief Droplets. */
     const std::vector<SurfaceDropletRenderInstance>& droplets() const { return droplets_; }
 
 private:

@@ -58,7 +58,7 @@ UiPreviewSnapshot UiDocumentPreviewService::build(const UiDocumentTarget& docume
     return result;
 }
 
-EditorResult<ObjectId> UiDocumentPreviewService::pick(const UiPreviewSnapshot& preview, double x, double y) const {
+Result<ObjectId> UiDocumentPreviewService::pick(const UiPreviewSnapshot& preview, double x, double y) const {
     if (!std::isfinite(x) || !std::isfinite(y))
         return eve::editing::failed<ObjectId>(EditorStatus::Rejected, RuleId("editor.ui.invalid-pick-point"),
                                               "UI pick coordinates must be finite");
@@ -76,7 +76,7 @@ EditorResult<ObjectId> UiDocumentPreviewService::pick(const UiPreviewSnapshot& p
     return eve::editing::applied<ObjectId>(best->id);
 }
 
-EditorResult<EditorValue> UiDocumentPreviewService::anchorGizmo(const UiDocumentTarget&  document,
+Result<EditorValue> UiDocumentPreviewService::anchorGizmo(const UiDocumentTarget&  document,
                                                                 const UiPreviewSnapshot& preview,
                                                                 const ObjectId&          id) const {
     if (preview.documentRevision != document.revision())

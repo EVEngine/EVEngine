@@ -19,13 +19,13 @@ SelectionSnapshot select(const BiomeDocumentTarget& target, const ObjectId& id,
         {SelectionDomain::Asset, TargetId(target.targetId()), StableId(id.value()), type});
     return selection;
 }
-void apply(BiomeDocumentTarget& target, EditorResult<DomainOperation> operation) {
+void apply(BiomeDocumentTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }
 class SpatialResolver final : public IBiomeSpatialResolver {
 public:
-    EditorResult<eve::procgen::SpatialData*> resolve(const std::string& asset) const override {
+    Result<eve::procgen::SpatialData*> resolve(const std::string& asset) const override {
         const auto found = assets.find(asset);
         if (found == assets.end())
             return eve::editing::failed<eve::procgen::SpatialData*>(

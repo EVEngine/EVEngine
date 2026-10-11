@@ -623,13 +623,20 @@ Unity Terrain/Prefab 的 runtime journey 也必须终止于领域对象，而不
 已覆盖 TerrainData/Prefab 导入、双平台 Cook、地形采样、坐标变换后的场景树，以及
 definition/bulk 不一致和循环 hierarchy 的拒绝。
 
-`asset_procgen::EvpackInstanceSetLoader` 是 `eve.instance-set/1` 的 typed runtime consumer：
+`asset_procgen::EvpackInstanceSetLoader` 是 `eve.instance-set/5` 的 typed runtime consumer，并保留
+`eve.instance-set/4`、`/3`、`/2` 与 `/1` 的直接读取兼容。v5 的 `prototypes` 数组是地形植被原型元数据的唯一持久化所有者；
+每项记录来源原型 ID、渲染模式、mesh/texture 类型、实例化选择、宽高范围、噪声种子与扩散、密度、
+贴地权重、位置抖动、健康/干燥 RGBA、弯曲、洞边距、密度缩放选择和强类型 `resourceAsset`。Unity texture Detail 指向导入后的 `eve.image`，mesh Detail
+指向 prefab scene；加载器在返回任何实例前验证 AssetRef、原型 ID 唯一性、数值范围及 Unity
+mesh/texture 身份前缀，并拒绝引用未声明 Detail 原型的实例。根级 `wavingGrass` 唯一保存 Unity TerrainData 的
+amount、speed、strength 和归一化 tint；v4 到 v5 迁移补入禁用风动的中性值。v3 到 v4 迁移为旧定义补充白色、零弯曲、
+零洞边距和启用密度缩放的中性值；v1-v4 直接读取不推测旧数据中未记录的目标。定义对象忽略未知字段并在迁移时保留它们。
 它在分配前校验 EVINST header、记录数量与最小字节下界，并对每条记录验证
 UTF-8 prototype、有限 TRS、单位四元数、非零缩放与精确尾部。UE M4 和 Unity
 Terrain 纵向测试都从各自源坐标系导入，经 `.eva`/Cook/`.evpack` 后读回并校验
 米制右手坐标和轴重排后的实例。
 
-`asset_procgen::EvpackTerrainMaterialLoader` 将 `eve.terrain-material/1` EVDEF 终止于
+`asset_procgen::EvpackTerrainMaterialLoader` 将 `eve.terrain-material/2` EVDEF 终止于
 owning `RuntimeTerrainLayer`，严格验证层数、UTF-8 source locator、有限正 tiling
 及 `opengl|directx` normal convention。UE M4 和 Unity journey 分别验证 DirectX/
 OpenGL 法线语义和米制 tiling，不再以“能读回 metadata”作为材质验收。

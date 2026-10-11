@@ -25,6 +25,7 @@ class GpuBuffer;
  * submit() ends the command buffer, submits once with a fence and waits;
  * submitAsync() exposes the same fence through poll()/wait().
  */
+/** @brief VulkanSequence public API. */
 struct VulkanSequence {
     graphics::vulkan::Graphics *vkg = nullptr;
     vk::Queue queue{};
@@ -46,28 +47,43 @@ struct VulkanSequence {
     SequenceStatus               status    = SequenceStatus::Idle;
     std::vector<ComputeShader *> usedShaders;  // dispatched during this cycle
 
+    /** @brief Ready. */
     bool ready() const;
 
+    /** @brief Ensure ready. */
     void ensureReady();
+    /** @brief Ensure command buffer. */
     void ensureCommandBuffer();
+    /** @brief Destroys destroy. */
     void destroy();
 };
 
+/** @brief Vulkan sequence create. */
 VulkanSequence *vulkanSequenceCreate();
+/** @brief Vulkan sequence begin. */
 void vulkanSequenceBegin(VulkanSequence *seq);
+/** @brief Vulkan sequence record upload. */
 void vulkanSequenceRecordUpload(VulkanSequence *seq, GpuBuffer *dst,
                                 const void *src, uint64_t nbytes,
                                 uint64_t dstOffset);
+/** @brief Vulkan sequence record download. */
 void vulkanSequenceRecordDownload(VulkanSequence *seq, GpuBuffer *src,
                                   GpuBuffer *staging, uint64_t nbytes,
                                   uint64_t srcOffset);
+/** @brief Vulkan sequence record dispatch. */
 void vulkanSequenceRecordDispatch(VulkanSequence *seq, ComputeShader *shader,
                                   int groupsX, int groupsY, int groupsZ);
+/** @brief Vulkan sequence submit. */
 void vulkanSequenceSubmit(VulkanSequence *seq);
+/** @brief Vulkan sequence submit async. */
 SequenceStatus  vulkanSequenceSubmitAsync(VulkanSequence *seq);
+/** @brief Vulkan sequence poll. */
 SequenceStatus  vulkanSequencePoll(VulkanSequence *seq);
+/** @brief Vulkan sequence wait. */
 SequenceStatus  vulkanSequenceWait(VulkanSequence *seq);
+/** @brief Vulkan sequence status. */
 SequenceStatus  vulkanSequenceStatus(const VulkanSequence *seq);
+/** @brief Vulkan sequence destroy. */
 void vulkanSequenceDestroy(VulkanSequence *seq);
 
 }  // namespace eve::gpgpu

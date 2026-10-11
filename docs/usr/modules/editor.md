@@ -292,6 +292,9 @@ process 全局主题。
 
 启用 `ui_editor` 时，`eve.UiEditorModule().create(targetId)` 返回脚本拥有的 `UiThemeEditor`。
 `configureWorkspace` 安装 Themes / Theme Preview / Theme Inspector（capability `ui.theme`）。
+原子 getter（`getSelectedId` / `getActiveId` / `getThemeCount` / `getRevision` 等）保持兼容；
+加法 API `getState()` 返回 Result 投影，`value` 为含 `selectedId`、`activeId`、
+`previewRuntimeName`、`revision`、`previewRevision`、`themeCount` 的快照对象。
 完整可运行示例见 [`examples/ui-theme-editor`](../../../examples/ui-theme-editor)。
 
 ## 流体表面与湿润材质（C++）
@@ -967,6 +970,7 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 - Biome 规则：`eve.BiomeEditorModule().create` / `configureWorkspace` / `selectLayer` / `selectAsset` / `setLayerDensity` / `setLayerPriority` / `setAssetWeight` / `addExclusion` / `removeExclusion` / `setSeed` / `undo` / `redo` / `getPoint*` / `getLayer*` / `getAsset*` / `getExclusion*`
 - Procgen 脚本生成器：`eve.ProcgenEditorModule().create` / `configureWorkspace` / `loadModule` / `setInt` / `setFloat` / `setBool` / `setString` / `publishPreview` / `publishStage` / `failPreview` / `selectStage` / `undo` / `redo` / `getParam*` / `getPoint*` / `getStage*`
 - Voxel catalog：`eve.VoxelEditorModule().create` / `configureWorkspace` / `selectPart` / `selectPrefab` / `selectFace` / `setPartVoxel` / `setSelectedSocket` / `setPrefabCell` / `createPart` / `deleteSelectedPart` / `undo` / `redo` / `getPart*` / `getPrefab*` / `getPreviewCell*` / `getSelectedSocket*` / `getJoinPartner*`
+- UI Theme：`eve.UiEditorModule().create` / `configureWorkspace` / `selectTheme` / `createFromPreset` / `duplicateSelected` / `deleteSelected` / `setActiveSelected` / `resetSelectedToBase` / `setColor` / `setFloat` / `applyPreviewHost` / `undo` / `redo` / `getSelectedId` / `getActiveId` / `getTheme*` / `getColor*` / `getFloat` / `getState`
 - 会话：`addTool` / `addFieldTool` / `addVolumeTool` / `removeTool` / `clearTools` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `dispatchPointer3D` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `canUndo` / `canRedo` / `clearHistory` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`。领域 Target 通过各自模块的 `bind(session, target)` 接入。
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - 字段工具：`setRadius` / `setStrength` / `getRadius` / `getStrength` / `setCircleKernel` / `setBoxKernel` / `setPaintIntOperation` / `setAddScalarOperation`

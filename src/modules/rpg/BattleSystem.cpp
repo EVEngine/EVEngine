@@ -171,7 +171,7 @@ struct FormulaParser {
 
     void fail(std::string message) {
         if (error) return;
-        error = eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message),
+        error = eve::Diagnostic::error(eve::DiagnosticCode::ParseError, message,
                                        "formula[" + std::to_string(pos) + "]");
     }
 };

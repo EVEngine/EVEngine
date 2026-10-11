@@ -27,7 +27,7 @@ namespace {
  * 逐个取值双向验证——加一个枚举值而忘了这里会立刻红。
  */
 struct DomainName {
-    PhotoModeDomain domain;
+    PhotoModeDomain  domain;
     std::string_view name;
 };
 
@@ -93,7 +93,7 @@ public:
     [[nodiscard]] const ScriptProviderHandle& handle() const noexcept { return handle_; }
 
     Result<void> applyPhotoModeAssignment(const PhotoModeAssignment& assignment) override {
-        const std::string_view name = domainName(assignment.domain);
+        const std::string_view name   = domainName(assignment.domain);
         const ScriptArg        args[] = {ScriptArg::fromTable({{"field", Value::string(assignment.field)},
                                                                {"domain", Value::string(std::string(name))},
                                                                {"value", photoModeValueToScript(assignment.value)}})};
@@ -134,19 +134,18 @@ void declareScriptPhotoModeApplySeam() {
                 recordLogEvent("warn", "script photo-mode provider '" + handle.name +
                                            "' replaced the provider that owned IPhotoModeApplySink");
             }
-            auto                          adapter = std::make_unique<ScriptPhotoModeApplySink>(handle);
-            ScriptPhotoModeApplySink*     raw     = adapter.get();
+            auto                      adapter = std::make_unique<ScriptPhotoModeApplySink>(handle);
+            ScriptPhotoModeApplySink* raw     = adapter.get();
             // 先注册再交所有权：从这一刻起能力槽位持有裸指针，`owned.live` 是让它有效的唯一原因。
             cap::provide<IPhotoModeApplySink>(raw);
             owned.live.push_back(std::move(adapter));
             return Result<void>::success();
         },
         [&owned](const ScriptProviderHandle& handle) -> Result<void> {
-            const auto match = std::find_if(
-                owned.live.begin(), owned.live.end(),
-                [&handle](const std::unique_ptr<ScriptPhotoModeApplySink>& adapter) {
-                    return adapter->handle() == handle;
-                });
+            const auto match = std::find_if(owned.live.begin(), owned.live.end(),
+                                            [&handle](const std::unique_ptr<ScriptPhotoModeApplySink>& adapter) {
+                                                return adapter->handle() == handle;
+                                            });
             if (match == owned.live.end()) {
                 // 幂等：后置条件是"这一代没有适配器"，模块退出时可能已经撤过了。
                 return Result<void>::success();

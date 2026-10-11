@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file SkillCondition.h
@@ -41,7 +43,7 @@ struct SkillConditionQueries {
  * AttributeSet. Tags include both skill-definition tags and active RPG status
  * tags.
  */
-class SkillConditionContext final : public decision::EvaluationContext {
+class EVENGINE_API_PLATFORM SkillConditionContext final : public decision::EvaluationContext {
 public:
     /**
      * @brief Bind a read-only actor/skill pair for one synchronous evaluation.
@@ -52,18 +54,25 @@ public:
     SkillConditionContext(const RPGActor* actor, const SkillDefinition& definition, SkillConditionQueries queries = {});
 
     /** @copydoc decision::EvaluationContext::value */
+    /** @brief Value. */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::hasTag */
+    /** @brief True when tag. */
     [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override;
     /** @copydoc decision::EvaluationContext::attribute */
+    /** @brief Attribute. */
     [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::resource */
+    /** @brief Resource. */
     [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::state */
+    /** @brief State. */
     [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::authority */
+    /** @brief Authority. */
     [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
     /** @copydoc decision::EvaluationContext::policy */
+    /** @brief Policy. */
     [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
                                                                   const eve::Value& arguments) const override;
 
@@ -74,7 +83,7 @@ private:
 };
 
 /** @brief Evaluates a condition using RPG Skill state without mutating it. */
-class SkillConditionAdapter {
+class EVENGINE_API_PLATFORM SkillConditionAdapter {
 public:
     /**
      * @brief Evaluate one skill condition against an actor and definition.

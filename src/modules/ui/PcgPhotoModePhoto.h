@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/PcgPhotoModeApply.h"
 
@@ -27,8 +29,9 @@ struct PcgPhotoModePhotoState {
 };
 
 /** @brief Explicit owner for Pcg's Photo domain fields. */
-class PcgPhotoModePhotoAuthority final : public IPhotoModeFieldSink {
+class EVENGINE_API_WORLD PcgPhotoModePhotoAuthority final : public IPhotoModeFieldSink {
 public:
+    /** @brief Pcg photo mode photo authority. */
     ~PcgPhotoModePhotoAuthority() override;
     /** @brief Register or revoke this instance as the unique Photo-domain owner. */
     void setAuthority(bool enabled);
@@ -45,7 +48,9 @@ public:
      */
     const char* screenshotExtension() const noexcept;
 
+    /** @brief Accepts photo mode field. */
     PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment& assignment) const noexcept override;
+    /** @brief Applies photo mode field. */
     [[nodiscard]] Result<void> applyPhotoModeField(const PhotoModeAssignment& assignment) override;
 
 private:

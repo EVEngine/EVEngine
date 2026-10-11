@@ -5,18 +5,14 @@
 namespace eve::rpg {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 eve::Result<eve::LogicalId> skillActionId(const SkillDefinition& skill) {
     if (skill.id.empty())
-        return failure<eve::LogicalId>(eve::DiagnosticCode::InvalidArgument, "skill id must not be empty", "skill.id");
+        return eve::Result<eve::LogicalId>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "skill id must not be empty", "skill.id"));
     const auto id = eve::LogicalId::fromParts("rpg", "skill." + skill.id);
     if (!id)
-        return failure<eve::LogicalId>(eve::DiagnosticCode::InvalidArgument,
-                                       "skill id cannot form a valid action logical id", "skill.id");
+        return eve::Result<eve::LogicalId>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "skill id cannot form a valid action logical id", "skill.id"));
     return eve::Result<eve::LogicalId>::success(*id);
 }
 
@@ -28,8 +24,8 @@ eve::Result<eve::Duration> seconds(float value, const char* path) {
         return eve::Result<eve::Duration>::failure(duration.status());
     }
     if (duration.value().nanoseconds() < 0)
-        return failure<eve::Duration>(eve::DiagnosticCode::InvalidArgument,
-                                      "skill action duration must be non-negative", path);
+        return eve::Result<eve::Duration>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "skill action duration must be non-negative", path));
     return duration;
 }
 
@@ -72,11 +68,12 @@ eve::Result<action::ActionRequest> SkillActionAdapter::makeRequest(const SkillDe
     auto checkedDefinition = std::move(definition).takeValue();
 
     if (checkedDefinition.targetingMode == action::TargetingMode::None && target)
-        return failure<action::ActionRequest>(eve::DiagnosticCode::InvalidArgument,
-                                              "self skill request cannot carry an explicit target", "target");
+        return eve::Result<action::ActionRequest>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "self skill request cannot carry an explicit target", "target"));
     if (checkedDefinition.targetingMode == action::TargetingMode::Explicit && !target)
-        return failure<action::ActionRequest>(eve::DiagnosticCode::PreconditionViolation,
-                                              "non-self skill request requires an explicit target", "target");
+        return eve::Result<action::ActionRequest>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "non-self skill request requires an explicit target", "target"));
 
     action::ActionRequest request;
     request.actionId      = checkedDefinition.id;

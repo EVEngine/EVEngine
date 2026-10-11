@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "particles-sim-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/particles/ParticleSystem.h",
+      "owner": "particles::ParticleSimSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Particle simulation advances emitter components from an injected deterministic step.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/particles/ParticleSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/particles.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "ParticleSimSystem"
+      ],
+      "entity_scope": "ParticleEmitter simulation components in the current ECS world.",
+      "view": "Generation-checked emitter view for the current scheduler step.",
+      "read_set": "Emitter spawn state, particle lifetimes, simulation step and configured randomness stream.",
+      "write_set": "Emitter particle buffers and derived alive/dead counts.",
+      "structural_changes": "No ECS structural mutation while iterating emitters.",
+      "events": "Particle lifecycle remains internal to emitter buffers; external events are emitted only after mutation if configured.",
+      "services": "Injected SimulationStep and optional scheduler services; no wall-clock reads.",
+      "phase": "Particle simulation phase."
+    },
+    {
+      "id": "particles-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/particles/**",
+      "owner": "particles",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Particle emitters publish query, VFX-duration, action-notify and asset-reload capabilities, while the per-frame emitter cull and simulation path must not re-resolve a module by string key.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/particles/ParticleSystem.cpp",
+        "src/modules/particles/ParticlesCapabilities.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IActionNotifyProvider",
+        "IActionPreviewSinkProvider",
+        "IActionVfxDurationProvider",
+        "IAssetReloader",
+        "IParticlesQuery"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Particles (plus ParticleEmitter, PcgMaterialSelector, ParticleEffect)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Particles owner thread; the per-frame emitter cull and simulation read a pointer resolved once at the composition boundary and never re-resolve a module by string key",
+      "trim": {
+        "absent_profile": "minimal and other profiles without particles drop every capability listed here; remaining modules that queried them fall back to their documented absent behavior",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The emitter cull and simulation run per frame, so their dependencies are resolved once at the composition boundary instead of per frame."
+      ],
+      "hot_path": [
+        "src/modules/particles/ParticleSystem.cpp"
+      ]
+    }
+  ]
+}

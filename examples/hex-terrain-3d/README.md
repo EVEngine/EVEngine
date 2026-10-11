@@ -111,9 +111,9 @@ fits the view whatever the map size.
 
 ## Shaders
 
-The five fragment shaders are shipped as SPIR-V next to their GLSL sources
-because runtime GLSL compilation is unavailable on Windows. The engine's
-built-in Mesh3D vertex stage already produces the varyings they consume, so no
+The five fragment shaders are shipped as SPIR-V next to their GLSL sources so no
+runtime compiler is needed. The engine's built-in Mesh3D vertex stage already
+produces the varyings they consume, so no
 vertex stage is shipped. Regenerate them after editing a `.frag`:
 
 ```sh

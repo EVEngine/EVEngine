@@ -31,7 +31,7 @@ struct MeshModifierGraphPreviewResult {
  * GraphDocument owns authoring state. Preview compiles an isolated runtime graph,
  * binds a copied input mesh, and publishes an owning output only after success.
  */
-class MeshModifierGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_ORCHESTRATION MeshModifierGraphDomain final : public IGraphDomainProvider {
 public:
     /** @brief Stable graph document domain id. */
     [[nodiscard]] std::string domain() const override { return "procgen.meshModifier"; }
@@ -39,7 +39,7 @@ public:
     [[nodiscard]] GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                                      const GraphPinRecord& to) const override;
     /** @brief Construct an editor node from the runtime operation catalogue. */
-    [[nodiscard]] EditorResult<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& operation) const;
+    [[nodiscard]] Result<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& operation) const;
     /** @brief Validate schema, node properties, edges, and graph topology without executing. */
     [[nodiscard]] MeshModifierGraphCompileResult compile(const GraphDocumentData& graph) const;
     /**

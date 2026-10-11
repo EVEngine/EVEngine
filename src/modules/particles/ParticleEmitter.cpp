@@ -8,6 +8,7 @@
 #include "animation/SpineSkeleton.h"
 #include "animation/SpineSkeletonData.h"
 #include "common/Module.h"
+#include "common/ParticleSdf.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
 #include "graphics/Texture.h"
@@ -68,15 +69,15 @@ std::string normalizePlane(const std::string &plane) {
 const char* gpuFeatureFallbackReason(const ParticleEmitter::Config& cfg, const ParticleEmitter::Draw& draw) {
     if (draw.canvas != nullptr) return "canvas";
     if (draw.shader != nullptr) return "custom_shader";
-    if (cfg.collisionMode != "none" || cfg.collisionBoundsEnabled || cfg.worldCollision) return "collision";
+    if (cfg.sdfField != nullptr) return "sdf";
+    if (cfg.collisionMode != "none" || cfg.collisionBoundsEnabled || cfg.worldCollision)
+        return "collision";
     if (!cfg.forceFields.empty()) return "force_fields";
     if (!cfg.subEmitters.empty()) return "sub_emitters";
     if (cfg.lights.enabled) return "particle_lights";
     if (!cfg.velocityCurve.empty() || !cfg.sizeCurve.empty() || !cfg.rotationCurve.empty() ||
         !cfg.colorGradient.empty())
         return "curves";
-    if (cfg.sortMode != "none") return "sorting";
-    if (cfg.renderMode == "ribbon") return "ribbon";
     if (cfg.materialMode == "distortion") return "distortion_material";
     if (cfg.materialMode != "unlit") return "lit_material";
     return "";
@@ -429,7 +430,8 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
     const float dampFactor = damp > 0.f ? std::max(0.f, 1.f - damp * dt) : 1.f;
     const float noiseFreq = cfg.noiseFrequency > 0.f ? cfg.noiseFrequency : 1.f;
     const bool hasCollision =
-        cfg.collisionMode != "none" && (cfg.worldCollision || cfg.collisionBoundsEnabled);
+        cfg.collisionMode != "none" &&
+        (cfg.worldCollision || cfg.collisionBoundsEnabled || cfg.sdfField != nullptr);
     const bool bounce = cfg.collisionMode == "bounce";
     const bool killMode = cfg.collisionMode == "kill";
     const bool stopMode = cfg.collisionMode == "stop";
@@ -528,6 +530,23 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
             if (cfg.worldCollision) {
                 if (WorldCollisionFn fn = getWorldCollisionResolver())
                     if (fn(p.x, p.y, rad, nx, ny)) hit = true;
+            }
+            if (!hit && cfg.sdfField != nullptr) {
+                const float distance = cfg.sdfField->sample(p.x, p.y);
+                if (std::isfinite(distance) && distance < rad) {
+                    float gx = 0.f, gy = 0.f;
+                    if (cfg.sdfField->gradient(p.x, p.y, gx, gy) ==
+                        eve::ParticleSdfGradientStatus::Defined) {
+                        nx = gx;
+                        ny = gy;
+                        const float push = rad - distance;
+                        p.x += nx * push;
+                        p.y += ny * push;
+                        hit = true;
+                    } else {
+                        hit = true;
+                    }
+                }
             }
             if (!hit && cfg.collisionBoundsEnabled) {
                 if (p.x - rad < cfg.boundsMinX) {
@@ -959,6 +978,26 @@ void ParticleEmitter::setCollisionBounds(bool enabled, float minX, float minY, f
 }
 
 void ParticleEmitter::setWorldCollision(bool enabled) { config()->worldCollision = enabled; }
+
+void ParticleEmitter::setSdfField(eve::IParticleSdfField* field) { config()->sdfField = field; }
+
+eve::IParticleSdfField* ParticleEmitter::getSdfField() { return config()->sdfField; }
+
+void ParticleEmitter::setMotionVectorPolicy(const std::string& policy) {
+    config()->motionVectorPolicy =
+        (policy == "velocity" || policy == "spawn_delta") ? policy : "none";
+}
+
+std::string ParticleEmitter::getMotionVectorPolicy() {
+    const auto& policy = config()->motionVectorPolicy;
+    return (policy == "velocity" || policy == "spawn_delta") ? policy : "none";
+}
+
+bool ParticleEmitter::isMotionVectorActive() {
+    // Policy is authored and queryable; the graphics velocity-buffer path is not
+    // wired yet, so activation stays false until a backend writes motion vectors.
+    return false;
+}
 
 void ParticleEmitter::setRenderMode(const std::string &mode, float stretchFactor) {
     auto c = config();

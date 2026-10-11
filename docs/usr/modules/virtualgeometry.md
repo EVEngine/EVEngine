@@ -58,6 +58,7 @@ function eve_render() {
 
 ## 生命周期
 
-- Vulkan 与 WebGPU 后端均可用；WebGPU 使用 WGSL compute 和 storage buffer。
+- Vulkan 与 WebGPU（含浏览器 `web` 档）后端均可用；WebGPU 使用 WGSL compute
+  和 storage buffer。
 - `resolve()` 返回的 ByteData 归调用方；每次相机/模型变化后需重新 `update()`
   再 resolve。

@@ -16,6 +16,7 @@
 #include "common/StartupTiming.h"
 #include "common/WindowSurfaceHost.h"
 #include "common/config.h"
+#include "window/sdl/EventSinkOwner.h"
 
 #ifdef EVENGINE_ANDROID
 #include "android/android.h"
@@ -49,6 +50,7 @@ Uint32 messageBoxFlag(const std::string& type) {
 }  // namespace
 
 Window::Window() : open(false) {
+    bindWindowEventSinkOwner(this);
 #if defined(__EMSCRIPTEN__)
     // Bind SDL keyboard to the render canvas instead of the whole window, so
     // typing in the playground editor / REPL never reaches the game. The
@@ -59,7 +61,10 @@ Window::Window() : open(false) {
         throw Exception("Could not initialize SDL video subsystem (%s)", SDL_GetError());
 }
 
-Window::~Window() { SDL_QuitSubSystem(SDL_INIT_VIDEO); }
+Window::~Window() {
+    bindWindowEventSinkOwner(nullptr);
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
 
 void Window::setSize(int w, int h) {
     WindowSettings f = settings;

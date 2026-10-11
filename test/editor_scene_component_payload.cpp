@@ -41,7 +41,7 @@ public:
         return {{scene, object, StableId("hero.health"), componentType(), generation_, revision_}};
     }
 
-    EditorResult<IDomainOperationTarget*> payloadOperationTarget(
+    Result<IDomainOperationTarget*> payloadOperationTarget(
         const SelectionSnapshot&) const override {
         return eve::editing::applied<IDomainOperationTarget*>(
             const_cast<HealthPayloadProvider*>(this));
@@ -80,7 +80,7 @@ public:
         return {PropertyReadState::Value, points_, {}};
     }
 
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection,
                                           const PropertyPath& path, const EditorValue& value,
                                           PropertySetMode mode) const override {
         if (mode != PropertySetMode::Absolute || selection.items.size() != 1 ||
@@ -89,7 +89,7 @@ public:
             return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
                 RuleId("test.health.selection"), "Invalid health component selection");
         const auto validation = validatePropertyValue(schema(selection).properties.front(), value);
-        if (!validation.ok()) return EditorResult<DomainOperation>::failure(validation.status());
+        if (!validation.ok()) return Result<DomainOperation>::failure(validation.status());
         DomainOperation operation;
         operation.type = "test.health.set.v1";
         operation.target = TargetId(id_);
@@ -102,12 +102,12 @@ public:
         return eve::editing::applied<DomainOperation>(std::move(operation));
     }
 
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override {
         return makeSet(selection, path, 100.0, PropertySetMode::Absolute);
     }
 
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override {
+    Result<void> applyDomainOperation(const DomainOperation& operation) override {
         if (operation.target != TargetId(id_) || operation.type != "test.health.set.v1")
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("test.health.operation"),
                                              "Invalid health operation");
@@ -127,7 +127,7 @@ public:
         return std::make_unique<HealthPayloadProvider>(*this);
     }
 
-    EditorResult<void> commitDomainState(
+    Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override {
         auto* typed = dynamic_cast<HealthPayloadProvider*>(candidate.get());
         if (!typed)
@@ -149,7 +149,7 @@ private:
 
 class RecordingAudioSink final : public IAudioSourceRuntimeSink {
 public:
-    EditorResult<void> publish(const AudioSourceTarget& candidate) override {
+    Result<void> publish(const AudioSourceTarget& candidate) override {
         if (reject)
             return eve::editing::failed<void>(EditorStatus::Rejected,
                                              RuleId("test.audio.runtime-rejected"),
@@ -177,7 +177,7 @@ public:
 
 class RecordingMaterialSink final : public IMaterialRuntimeSink {
 public:
-    EditorResult<void> publish(const MaterialDocumentTarget& candidate) override {
+    Result<void> publish(const MaterialDocumentTarget& candidate) override {
         if (reject)
             return eve::editing::failed<void>(EditorStatus::Rejected,
                                              RuleId("test.material.runtime-rejected"),
@@ -203,7 +203,7 @@ public:
     int publishes = 0;
 };
 
-EditorResult<TransactionReceipt> commit(IDomainOperationTarget& target,
+Result<TransactionReceipt> commit(IDomainOperationTarget& target,
                                         LocalTransactionBackend& transactions,
                                         const DomainOperation& operation,
                                         Revision baseRevision,

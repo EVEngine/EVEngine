@@ -46,7 +46,7 @@ using Array = Poco::JSON::Array;
 
 eve::Result<MaterialCatalog> malformed(std::string message, std::string path = "document") {
     return eve::Result<MaterialCatalog>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::SerializationError, std::move(message), std::move(path), {},
+        eve::DiagnosticCode::SerializationError, message, path, {},
         "pixelworld.catalog-codec"));
 }
 

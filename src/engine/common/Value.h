@@ -28,7 +28,7 @@ namespace eve {
  * deterministic. Native pointers, ECS handles, renderer objects and other
  * domain-specific values are intentionally not part of this protocol.
  */
-class EVENGINE_API Value {
+class EVENGINE_API_FOUNDATION Value {
 public:
     using Array   = std::vector<Value>;
     using Object  = std::map<std::string, Value>;

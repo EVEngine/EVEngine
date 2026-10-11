@@ -58,7 +58,8 @@ bool decodeComponentId(std::string_view text, std::string& nodeId, std::string& 
     const std::size_t nodeEnd = text.find(kNodeSeparator);
     if (nodeEnd == std::string_view::npos || nodeEnd == 0) return false;
     const std::size_t versionPos = text.rfind(kVersionSeparator);
-    if (versionPos == std::string_view::npos || versionPos <= nodeEnd + 1 || versionPos + 1 >= text.size()) return false;
+    if (versionPos == std::string_view::npos || versionPos <= nodeEnd + 1 || versionPos + 1 >= text.size())
+        return false;
     nodeId = std::string(text.substr(0, nodeEnd));
     name   = std::string(text.substr(nodeEnd + 1, versionPos - nodeEnd - 1));
     if (name.empty()) return false;
@@ -285,8 +286,7 @@ std::vector<scene_editing::EditorDiagnostic> ScriptComponentPayloadProvider::val
     if (component.type != payloadType() || !decodeComponentId(component.component.value(), nodeId, name, version))
         return {eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument,
                                              RuleId("editor.scene.script-component.reference"),
-                                             DiagnosticSeverity::Error,
-                                             "Script component reference is malformed")};
+                                             DiagnosticSeverity::Error, "Script component reference is malformed")};
 
     scene::Scene* sceneModule = scene::Scene::create();
     if (sceneModule == nullptr)
@@ -300,15 +300,13 @@ std::vector<scene_editing::EditorDiagnostic> ScriptComponentPayloadProvider::val
         for (const ScriptComponentInstanceState& state : states.value()) {
             if (state.name != name || state.version.value() != version) continue;
             if (state.generation.value() != component.generation)
-                return {eve::editing::ruleDiagnostic(eve::DiagnosticCode::Conflict,
-                                                     RuleId("editor.scene.script-component.stale"),
-                                                     DiagnosticSeverity::Error,
-                                                     "Script component generation changed since the reference")};
+                return {eve::editing::ruleDiagnostic(
+                    eve::DiagnosticCode::Conflict, RuleId("editor.scene.script-component.stale"),
+                    DiagnosticSeverity::Error, "Script component generation changed since the reference")};
             return {};
         }
     }
-    return {eve::editing::ruleDiagnostic(eve::DiagnosticCode::NotFound,
-                                         RuleId("editor.scene.script-component.missing"),
+    return {eve::editing::ruleDiagnostic(eve::DiagnosticCode::NotFound, RuleId("editor.scene.script-component.missing"),
                                          DiagnosticSeverity::Error, "Script component is no longer on this node")};
 }
 

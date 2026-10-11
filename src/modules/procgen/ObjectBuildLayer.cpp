@@ -11,12 +11,6 @@
 namespace eve::procgen {
 namespace {
 
-template <class T>
-Result<T> fail(std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path),
-                                                {}, "procgen.objectBuild"));
-}
-
 bool finiteRange(float minimum, float maximum) {
     return std::isfinite(minimum) && std::isfinite(maximum) && minimum <= maximum;
 }
@@ -25,10 +19,14 @@ Result<void> validateRange(const ObjectTransformRange& range) {
     if (!finiteRange(range.minPitch, range.maxPitch) || !finiteRange(range.minYaw, range.maxYaw) ||
         !finiteRange(range.minRoll, range.maxRoll) || !finiteRange(range.minScaleX, range.maxScaleX) ||
         !finiteRange(range.minScaleY, range.maxScaleY) || !finiteRange(range.minScaleZ, range.maxScaleZ))
-        return fail<void>("random transform ranges must be finite and ordered", "transform");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "random transform ranges must be finite and ordered",
+                                                       "transform", {}, "procgen.objectBuild"));
     if (range.minScaleX == 0.f || range.maxScaleX == 0.f || range.minScaleY == 0.f || range.maxScaleY == 0.f ||
         range.minScaleZ == 0.f || range.maxScaleZ == 0.f)
-        return fail<void>("random scale bounds must be non-zero", "transform.scale");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "random scale bounds must be non-zero", "transform.scale", {},
+                                                       "procgen.objectBuild"));
     return Result<void>::success();
 }
 
@@ -107,8 +105,13 @@ Result<void> tagPoint(PointSet& output, int index, const std::string& asset, std
 }  // namespace
 
 Result<void> ObjectBuildLayer::addAsset(std::string asset, float weight) {
-    if (asset.empty()) return fail<void>("asset id is empty", "asset");
-    if (!std::isfinite(weight) || weight <= 0.f) return fail<void>("asset weight must be finite and positive", asset);
+    if (asset.empty())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "asset id is empty", "asset",
+                                                       {}, "procgen.objectBuild"));
+    if (!std::isfinite(weight) || weight <= 0.f)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "asset weight must be finite and positive", asset, {},
+                                                       "procgen.objectBuild"));
     assets_.push_back({std::move(asset), weight});
     return Result<void>::success();
 }
@@ -123,7 +126,9 @@ void ObjectBuildLayer::setLayerOffset(float x, float y, float z) noexcept {
 
 Result<void> ObjectBuildLayer::setLayerScale(float x, float y, float z) {
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || x == 0.f || y == 0.f || z == 0.f)
-        return fail<void>("layer scale must be finite and non-zero", "scale");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "layer scale must be finite and non-zero", "scale", {},
+                                                       "procgen.objectBuild"));
     scaleX_ = x;
     scaleY_ = y;
     scaleZ_ = z;
@@ -131,7 +136,10 @@ Result<void> ObjectBuildLayer::setLayerScale(float x, float y, float z) {
 }
 
 Result<void> ObjectBuildLayer::setPositionRadius(float radius) {
-    if (!std::isfinite(radius) || radius < 0.f) return fail<void>("position radius must be finite and non-negative");
+    if (!std::isfinite(radius) || radius < 0.f)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "position radius must be finite and non-negative", {}, {},
+                                                       "procgen.objectBuild"));
     positionRadius_ = radius;
     return Result<void>::success();
 }
@@ -169,8 +177,12 @@ Result<void> ObjectBuildLayer::setRandomScale(float minX, float maxX, float minY
 }
 
 Result<void> ObjectBuildLayer::setOrientation(float cellSize, float yawOffset, bool invert) {
-    if (!std::isfinite(cellSize) || cellSize <= 0.f) return fail<void>("orientation cell size must be positive");
-    if (!std::isfinite(yawOffset)) return fail<void>("orientation yaw offset must be finite");
+    if (!std::isfinite(cellSize) || cellSize <= 0.f)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "orientation cell size must be positive", {}, {}, "procgen.objectBuild"));
+    if (!std::isfinite(yawOffset))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "orientation yaw offset must be finite", {}, {}, "procgen.objectBuild"));
     orient_               = true;
     orientationCellSize_  = cellSize;
     orientationYawOffset_ = yawOffset;
@@ -188,10 +200,16 @@ void ObjectBuildLayer::setPlaceOnTop(bool enabled, bool useLowest, float topOffs
 
 Result<void> ObjectBuildLayer::addChildRule(std::string asset, int count, float radius,
                                             const ObjectTransformRange& range) {
-    if (asset.empty()) return fail<void>("child asset id is empty", "child.asset");
-    if (count < 0) return fail<void>("child count must be non-negative", asset);
+    if (asset.empty())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "child asset id is empty",
+                                                       "child.asset", {}, "procgen.objectBuild"));
+    if (count < 0)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "child count must be non-negative", asset, {}, "procgen.objectBuild"));
     if (!std::isfinite(radius) || radius < 0.f)
-        return fail<void>("child radius must be finite and non-negative", asset);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "child radius must be finite and non-negative", asset, {},
+                                                       "procgen.objectBuild"));
     auto valid = validateRange(range);
     if (!valid.ok()) return valid;
     children_.push_back({std::move(asset), count, radius, range});
@@ -216,11 +234,18 @@ Result<void> ObjectBuildLayer::addChild(std::string asset, int count, float radi
 void ObjectBuildLayer::clearChildRules() { children_.clear(); }
 
 Result<PointSet> ObjectBuildLayer::build(const PointSet& source, const PointSet* orientation) const {
-    if (assets_.empty()) return fail<PointSet>("object build layer has no assets", "assets");
-    if (orient_ && !orientation) return fail<PointSet>("orientation is enabled but no orientation layer was supplied");
+    if (assets_.empty())
+        return Result<PointSet>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "object build layer has no assets", "assets", {}, "procgen.objectBuild"));
+    if (orient_ && !orientation)
+        return Result<PointSet>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "orientation is enabled but no orientation layer was supplied", {}, {},
+            "procgen.objectBuild"));
     float totalWeight = 0.f;
     for (const auto& asset : assets_) totalWeight += asset.weight;
-    if (!std::isfinite(totalWeight) || totalWeight <= 0.f) return fail<PointSet>("total asset weight is invalid");
+    if (!std::isfinite(totalWeight) || totalWeight <= 0.f)
+        return Result<PointSet>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "total asset weight is invalid", {}, {}, "procgen.objectBuild"));
 
     std::size_t childCount = 0;
     for (const auto& child : children_) childCount += std::size_t(child.count);
@@ -326,7 +351,8 @@ Result<void> ObjectBuildLayer::deserializeDefinition(std::string_view definition
     std::string        magic;
     int                version = 0;
     if (!(input >> magic >> version) || magic != "EVPCG_OBJECT_LAYER" || version != 1)
-        return fail<void>("invalid object layer header");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid object layer header",
+                                                       {}, {}, "procgen.objectBuild"));
     std::string line;
     std::getline(input, line);
     bool ended = false;
@@ -341,21 +367,28 @@ Result<void> ObjectBuildLayer::deserializeDefinition(std::string_view definition
         }
         if (kind == "SEED") {
             std::uint32_t seed = 0;
-            if (!(record >> seed)) return fail<void>("invalid SEED record");
+            if (!(record >> seed))
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid SEED record",
+                                                               {}, {}, "procgen.objectBuild"));
             replacement.setSeed(seed);
         } else if (kind == "OFFSET") {
             float x = 0.f, y = 0.f, z = 0.f;
             if (!(record >> x >> y >> z) || !std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
-                return fail<void>("invalid OFFSET record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid OFFSET record",
+                                                               {}, {}, "procgen.objectBuild"));
             replacement.setLayerOffset(x, y, z);
         } else if (kind == "SCALE") {
             float x = 0.f, y = 0.f, z = 0.f;
-            if (!(record >> x >> y >> z)) return fail<void>("invalid SCALE record");
+            if (!(record >> x >> y >> z))
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid SCALE record",
+                                                               {}, {}, "procgen.objectBuild"));
             auto applied = replacement.setLayerScale(x, y, z);
             if (!applied.ok()) return applied;
         } else if (kind == "POSITION_RADIUS") {
             float radius = 0.f;
-            if (!(record >> radius)) return fail<void>("invalid POSITION_RADIUS record");
+            if (!(record >> radius))
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "invalid POSITION_RADIUS record", {}, {}, "procgen.objectBuild"));
             auto applied = replacement.setPositionRadius(radius);
             if (!applied.ok()) return applied;
         } else if (kind == "RANDOM") {
@@ -365,7 +398,8 @@ Result<void> ObjectBuildLayer::deserializeDefinition(std::string_view definition
                   range.maxRoll >> range.minScaleX >> range.maxScaleX >> range.minScaleY >> range.maxScaleY >>
                   range.minScaleZ >> range.maxScaleZ >> uniform) ||
                 (uniform != 0 && uniform != 1))
-                return fail<void>("invalid RANDOM record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid RANDOM record",
+                                                               {}, {}, "procgen.objectBuild"));
             range.uniformScale = uniform != 0;
             auto applied       = replacement.setRandomTransform(range);
             if (!applied.ok()) return applied;
@@ -374,7 +408,8 @@ Result<void> ObjectBuildLayer::deserializeDefinition(std::string_view definition
             float cell = 0.f, offset = 0.f;
             if (!(record >> enabled >> cell >> offset >> invert) || (enabled != 0 && enabled != 1) ||
                 (invert != 0 && invert != 1))
-                return fail<void>("invalid ORIENTATION record");
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "invalid ORIENTATION record", {}, {}, "procgen.objectBuild"));
             if (enabled) {
                 auto applied = replacement.setOrientation(cell, offset, invert != 0);
                 if (!applied.ok()) return applied;
@@ -384,12 +419,15 @@ Result<void> ObjectBuildLayer::deserializeDefinition(std::string_view definition
             float offset = 0.f;
             if (!(record >> enabled >> lowest >> offset) || (enabled != 0 && enabled != 1) ||
                 (lowest != 0 && lowest != 1) || !std::isfinite(offset))
-                return fail<void>("invalid PLACE record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid PLACE record",
+                                                               {}, {}, "procgen.objectBuild"));
             replacement.setPlaceOnTop(enabled != 0, lowest != 0, offset);
         } else if (kind == "ASSET") {
             std::string asset;
             float       weight = 0.f;
-            if (!(record >> std::quoted(asset) >> weight)) return fail<void>("invalid ASSET record");
+            if (!(record >> std::quoted(asset) >> weight))
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid ASSET record",
+                                                               {}, {}, "procgen.objectBuild"));
             auto applied = replacement.addAsset(std::move(asset), weight);
             if (!applied.ok()) return applied;
         } else if (kind == "CHILD") {
@@ -401,17 +439,24 @@ Result<void> ObjectBuildLayer::deserializeDefinition(std::string_view definition
                   range.maxYaw >> range.minRoll >> range.maxRoll >> range.minScaleX >> range.maxScaleX >>
                   range.minScaleY >> range.maxScaleY >> range.minScaleZ >> range.maxScaleZ >> uniform) ||
                 (uniform != 0 && uniform != 1))
-                return fail<void>("invalid CHILD record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid CHILD record",
+                                                               {}, {}, "procgen.objectBuild"));
             range.uniformScale = uniform != 0;
             auto applied       = replacement.addChildRule(std::move(asset), count, radius, range);
             if (!applied.ok()) return applied;
         } else {
-            return fail<void>("unknown object layer record: " + kind);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "unknown object layer record: " + kind, {}, {},
+                                                           "procgen.objectBuild"));
         }
         record >> std::ws;
-        if (!record.eof()) return fail<void>("trailing object layer record data");
+        if (!record.eof())
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "trailing object layer record data", {}, {}, "procgen.objectBuild"));
     }
-    if (!ended) return fail<void>("object layer END record is missing");
+    if (!ended)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "object layer END record is missing", {}, {}, "procgen.objectBuild"));
     *this = std::move(replacement);
     return Result<void>::success();
 }

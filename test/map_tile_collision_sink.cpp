@@ -136,8 +136,8 @@ public:
 
     /** 发布一个脚本提供方；返回结果表，测试据此断言接线成没成。 */
     ssq::Object publish(const char* name, const char* instance) {
-        const std::string source = std::string("published <- eve.provider.publishFor(\"ITileCollisionSink\", \"") + name +
-                                   "\", " + instance + ")";
+        const std::string source = std::string("published <- eve.provider.publishFor(\"ITileCollisionSink\", \"") +
+                                   name + "\", " + instance + ")";
         vm.run(vm.compileSource(source.c_str()));
         return vm.find("published");
     }
@@ -211,8 +211,7 @@ TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkCanTellLaye
     REQUIRE_EQ(secondRects, 2);
 
     // 层身份进得来，所以脚本分得清两次发布属于哪一层（这正是换掉 `const void*` 的收益）。
-    const std::string expectedLayers =
-        formatLayer(first->layerRef()) + formatLayer(second->layerRef());
+    const std::string expectedLayers = formatLayer(first->layerRef()) + formatLayer(second->layerRef());
     REQUIRE_EQ(vm.find("recordedLayers").toString(), expectedLayers);
     REQUIRE_EQ(vm.find("recordedSlots").toString(), std::string("1,2,"));
 }
@@ -241,9 +240,11 @@ TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkFailureIsCo
     REQUIRE_EQ(eve::map::scriptTileCollisionSinkFailures(), std::uint64_t{2});
 
     // 换一个能用的脚本 sink：派发恢复，计数不再变。
-    REQUIRE(eve::ScriptProviderRegistry::instance().unload(eve::ScriptProviderHandle{
+    REQUIRE(
+        eve::ScriptProviderRegistry::instance()
+            .unload(eve::ScriptProviderHandle{
                 "test.collision.broken", eve::ScriptProviderRegistry::instance().generationOf("test.collision.broken")})
-                .ok());
+            .ok());
     REQUIRE(publish("test.collision.good", "sink").find("ok").toBool());
     const int recoveredRects = map.publishCollision(layer);
     REQUIRE_EQ(recoveredRects, 1);

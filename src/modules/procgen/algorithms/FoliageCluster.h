@@ -66,7 +66,7 @@ struct FoliageClusterDesc {
     /** @brief Blend from the flat plane normal (0) to the cluster sphere normal (1). */
     float normalRounding = 1.f;
     /** @brief Start of the foliage band in the shared tree/bush atlas, on U. */
-    float uvMin = 0.55f;
+    float uvMin = 0.52f;
     /** @brief End of the foliage band in the shared tree/bush atlas, on U. */
     float uvMax = 1.f;
     /**
@@ -88,6 +88,6 @@ struct FoliageClusterDesc {
  * @param desc Cluster description; out-of-range fields are clamped, never rejected.
  * @return Number of leaves appended (0 when the description degenerates).
  */
-int addFoliageCluster(MeshBuild &out, const FoliageClusterDesc &desc);
+EVENGINE_API_DOMAINS int addFoliageCluster(MeshBuild &out, const FoliageClusterDesc &desc);
 
 }  // namespace eve::procgen

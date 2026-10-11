@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -21,10 +23,12 @@ class ScriptComponentPayloadProvider;
  * 注册表与"目标 id → 宿主名"的映射都只在这个模块里存在（目标 id 是自动化调用方选的，不等于宿主名），
  * 所以接线也归它。
  */
-class SceneEditorModule final : public Module {
+class EVENGINE_API_EDITORS SceneEditorModule final : public Module {
 public:
     Module_REG(SceneEditorModule);
+    /** @brief Scene editor module. */
     SceneEditorModule();
+    /** @brief Scene editor module. */
     ~SceneEditorModule() override;
 
 private:

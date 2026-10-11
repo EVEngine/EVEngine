@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Runtime.h"
 #include "property_access/PropertyAccess.h"
@@ -12,24 +13,43 @@ namespace eve::property_access {
  * @brief Adapts one live Squirrel instance to the renderer-independent property model.
  *
  * Reflection metadata defines the schema while Runtime owns all reads and writes.
- * Scalar properties are editable; arrays, tables and nested instances are exposed
- * as read-only structured values for generic views and automation.
+ * Scalars, enums, Color/Vec composites (`editor="color"|"vec2"|"vec3"|"vec4"`),
+ * arrays and tables are editable through `write()`. Nested instances stay
+ * ObjectRef as a class-name string and remain read-only; hosts navigate them
+ * separately.
  *
  * This adapter is compiled with `property_access` but is not part of the L0
  * contract: `PropertyAccess.h` stays free of the script runtime. Include this
  * header only from script-aware hosts such as the Inspector.
  */
-class EVENGINE_API ReflectedPropertyModel final : public IPropertyAccess {
+class EVENGINE_API_FOUNDATION ReflectedPropertyModel final : public IPropertyAccess {
 public:
+    /**
+     * @brief Bind one live script instance to the shared property-access contract.
+     * @param runtime Borrowed Runtime that performs reflection reads and writes.
+     * @param instance Live Squirrel instance retained by this model.
+     * @ownership Does not own `runtime`; retains `instance` for the model lifetime.
+     * @lifetime `runtime` must outlive this model; do not keep the model across
+     *           Runtime stop/unload. `instance` stays rooted until destruction.
+     * @thread Call on the UI/script thread that owns the Runtime.
+     * @reentrancy Construction reads reflection metadata; do not invoke unknown
+     *             callbacks while constructing.
+     */
     ReflectedPropertyModel(Runtime &runtime, ssq::Object instance);
+    /** @brief Reflected property model. */
     ~ReflectedPropertyModel() override;
     ReflectedPropertyModel(const ReflectedPropertyModel &) = delete;
     ReflectedPropertyModel &operator=(const ReflectedPropertyModel &) = delete;
 
+    /** @brief Schema. */
     const PropertySchema &schema() const override { return schema_; }
+    /** @brief Reads . */
     std::optional<eve::Value> read(const std::string &path) const override;
-    WriteResult               write(const std::string &path, const eve::Value &value) override;
+    /** @brief Writes . */
+    [[nodiscard]] Result<void> write(const std::string &path, const eve::Value &value) override;
+    /** @brief Revision. */
     std::uint64_t             revision() const override { return revision_; }
+    /** @brief Subscribe. */
     Subscription              subscribe(ChangeCallback callback) override;
 
     /** @brief Rebuild reflection metadata after a script reload. */

@@ -88,8 +88,9 @@ struct ScriptComponentInstanceState {
  *          里，序列化与哈希输入因此是字典序。同一份状态两次快照得到同一个哈希，也不含墙钟字段。
  * @cost 与存储里的条目数成正比（一次全量拷贝 + 一次 JSON 规范化）；只在存档/编辑器读时调用。
  */
-[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> snapshotScriptComponents(
-    PersistentId instanceId, Revision revision, SimulationTick tick, const SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> snapshotScriptComponents(PersistentId instanceId, Revision revision,
+                                                                             SimulationTick              tick,
+                                                                             const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief 用快照里的数据**整体替换**当前的脚本组件数据。

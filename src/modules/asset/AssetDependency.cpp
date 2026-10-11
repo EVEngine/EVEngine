@@ -8,11 +8,6 @@
 
 namespace eve::asset {
 namespace {
-template <class T>
-Result<T> fail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.dependency"));
-}
 bool requiresPresence(EvaDependencyKind kind) {
     return kind == EvaDependencyKind::RuntimeRequired || kind == EvaDependencyKind::Build ||
            kind == EvaDependencyKind::Platform;
@@ -47,19 +42,20 @@ Result<EvaDependencyValidation> validateEvaDependencies(
     }
     for (const auto& external : available) {
         if (external.asset.id().isNil() || external.type.empty() || external.schemaVersion.isZero())
-            return fail<EvaDependencyValidation>(DiagnosticCode::InvalidArgument,
-                                                 "external dependency fact is invalid");
+            return Result<EvaDependencyValidation>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "external dependency fact is invalid", {}, {}, "asset.dependency"));
         const auto [found, inserted] = types.emplace(
             external.asset.id(), TypeIdentity{external.type, external.schemaVersion});
         if (!inserted && found->second != TypeIdentity{external.type, external.schemaVersion})
-            return fail<EvaDependencyValidation>(DiagnosticCode::TypeMismatch,
-                                                 "dependency resolver reports conflicting types",
-                                                 external.asset.format());
+            return Result<EvaDependencyValidation>::failure(
+                Diagnostic::error(DiagnosticCode::TypeMismatch, "dependency resolver reports conflicting types",
+                                  external.asset.format(), {}, "asset.dependency"));
     }
     for (const auto& [name, entrypoint] : manifest.entrypoints)
         if (!local.contains(entrypoint.id()))
-            return fail<EvaDependencyValidation>(DiagnosticCode::NotFound,
-                                                 "entrypoint does not resolve to a local asset", name);
+            return Result<EvaDependencyValidation>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "entrypoint does not resolve to a local asset", name, {},
+                                  "asset.dependency"));
 
     using EdgeKey = std::tuple<PersistentId, PersistentId, EvaDependencyKind, std::string>;
     std::set<EdgeKey> edges;
@@ -67,32 +63,32 @@ Result<EvaDependencyValidation> validateEvaDependencies(
     EvaDependencyValidation result;
     for (const auto& dependency : manifest.dependencies) {
         if (!validFallback(dependency))
-            return fail<EvaDependencyValidation>(DiagnosticCode::InvalidArgument,
-                                                 "dependency fallback policy is invalid",
-                                                 dependency.path);
+            return Result<EvaDependencyValidation>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                              "dependency fallback policy is invalid",
+                                                                              dependency.path, {}, "asset.dependency"));
         if (!local.contains(dependency.from.id()))
-            return fail<EvaDependencyValidation>(DiagnosticCode::NotFound,
-                                                 "dependency source is not locally authoritative",
-                                                 dependency.from.format());
+            return Result<EvaDependencyValidation>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "dependency source is not locally authoritative",
+                                  dependency.from.format(), {}, "asset.dependency"));
         if (!edges.emplace(dependency.from.id(), dependency.to.id(), dependency.kind,
                            dependency.path).second)
-            return fail<EvaDependencyValidation>(DiagnosticCode::Conflict,
-                                                 "duplicate dependency edge", dependency.path);
+            return Result<EvaDependencyValidation>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "duplicate dependency edge", dependency.path, {}, "asset.dependency"));
         const auto target = types.find(dependency.to.id());
         if (target == types.end()) {
             if (requiresPresence(dependency.kind))
-                return fail<EvaDependencyValidation>(DiagnosticCode::NotFound,
-                                                     "required dependency is unavailable",
-                                                     dependency.to.format());
+                return Result<EvaDependencyValidation>::failure(
+                    Diagnostic::error(DiagnosticCode::NotFound, "required dependency is unavailable",
+                                      dependency.to.format(), {}, "asset.dependency"));
             result.omittedOptionalAssets.push_back(dependency.to.id());
             continue;
         }
         const std::string resolvedType = target->second.first + "/" +
                                          std::to_string(target->second.second.value());
         if (!dependency.expectedType.empty() && resolvedType != dependency.expectedType)
-            return fail<EvaDependencyValidation>(DiagnosticCode::TypeMismatch,
-                                                 "dependency resolved to the wrong asset type",
-                                                 dependency.path);
+            return Result<EvaDependencyValidation>::failure(
+                Diagnostic::error(DiagnosticCode::TypeMismatch, "dependency resolved to the wrong asset type",
+                                  dependency.path, {}, "asset.dependency"));
         result.presentAssets.push_back(dependency.to.id());
         if (dependency.kind == EvaDependencyKind::RuntimeRequired && local.contains(dependency.to.id()))
             graph[dependency.from.id()].push_back(dependency.to.id());

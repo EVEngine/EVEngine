@@ -64,16 +64,37 @@ void addTaperedCylinder(MeshBuild& out, V3 a, V3 b, float r0, float r1, int side
 void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist) {
     V3 right, up;
     basisFor(norm(direction), right, up);
-    right = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
-    up    = norm(cross(norm(direction), right));
-    const V3       r = mul(right, size * 0.5f), u = mul(up, size);
-    const V3       normal    = norm(cross(right, up));
-    const uint32_t base      = uint32_t(out.getVertexCount());
-    const V3       points[4] = {sub(sub(c, r), u), add(sub(c, u), r), add(add(c, r), u), add(sub(c, r), u)};
-    const float    uv[4][2]  = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+    right           = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
+    up              = norm(cross(norm(direction), right));
+    const V3 normal = norm(cross(right, up));
+    const float card  = size * 1.25f;
+    const float halfW = card * 0.62f;
+    const float halfH = card * 0.62f;
+    const V3 r = mul(right, halfW), h = mul(up, halfH);
+    const V3 center = add(c, mul(normal, size * 0.04f));
+    const V3 points[4] = {sub(sub(center, r), h), add(sub(center, h), r), add(add(center, r), h),
+                          add(sub(center, r), h)};
+
+    // Deterministic panel from twist among the six leaf-card variants.
+    constexpr float kCardU0 = 0.52f;
+    constexpr float kCardU1 = 1.00f;
+    constexpr int   kCols   = 2;
+    constexpr int   kRows   = 3;
+    const float     phase   = twist * 0.318309886f;
+    const int       panel   = int(std::floor(std::fabs(phase) * float(kCols * kRows))) % (kCols * kRows);
+    const int       col     = panel % kCols;
+    const int       row     = panel / kCols;
+    const float     inset   = 0.04f;
+    const float     cellWU  = (kCardU1 - kCardU0) / float(kCols);
+    const float     cellWV  = 1.f / float(kRows);
+    const float     u0      = kCardU0 + (float(col) + inset) * cellWU;
+    const float     u1      = kCardU0 + (float(col) + 1.f - inset) * cellWU;
+    const float     v0      = (float(row) + inset) * cellWV;
+    const float     v1      = (float(row) + 1.f - inset) * cellWV;
+    const float     uv[4][2] = {{u0, v0}, {u1, v0}, {u1, v1}, {u0, v1}};
+    const uint32_t  base    = uint32_t(out.getVertexCount());
     for (int i = 0; i < 4; ++i)
-        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, 0.55f + uv[i][0] * 0.45f,
-                      uv[i][1]);
+        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, uv[i][0], uv[i][1]);
     out.addTriangle(base, base + 1, base + 2);
     out.addTriangle(base, base + 2, base + 3);
     out.addTriangle(base + 2, base + 1, base);

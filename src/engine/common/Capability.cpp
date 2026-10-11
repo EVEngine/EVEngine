@@ -2,7 +2,6 @@
 #include "common/Capability.h"
 
 #include <algorithm>
-#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -29,28 +28,6 @@ struct Slot {
 std::unordered_map<std::string, Slot>& slots() {
     static std::unordered_map<std::string, Slot> table;
     return table;
-}
-
-/** One registry-owned provider generation. `generation` 0 means "never published". */
-struct OwnedSlot {
-    std::shared_ptr<void> provider;
-    std::uint64_t         generation = 0;
-};
-
-/**
- * Registry-owned providers live in their own table so the caller-owned path above
- * keeps its exact semantics (raw pointers, no lock, lifetime is the caller's).
- * This table is mutated at publish/unload time only, so a mutex is affordable
- * here and absent from the hot caller-owned lookups.
- */
-std::unordered_map<std::string, OwnedSlot>& ownedSlots() {
-    static std::unordered_map<std::string, OwnedSlot> table;
-    return table;
-}
-
-std::mutex& ownedMutex() {
-    static std::mutex mutex;
-    return mutex;
 }
 
 }  // namespace
@@ -113,49 +90,11 @@ void* listenerAtRaw(const char* name, size_t index) {
     return it->second.listeners[index].impl;
 }
 
+void clearOwnedRaw();  // CapabilityOwned.cpp
+
 void clearAllRaw() {
     slots().clear();
-    std::lock_guard<std::mutex> guard(ownedMutex());
-    ownedSlots().clear();
-}
-
-std::uint64_t publishOwnedRaw(const char* name, std::shared_ptr<void> provider) {
-    if (!name || !provider) return 0;
-    std::lock_guard<std::mutex> guard(ownedMutex());
-    OwnedSlot&                  slot = ownedSlots()[name];
-    slot.provider                    = std::move(provider);
-    // Generation 0 is reserved for "never published", so the first publish is 1.
-    return ++slot.generation;
-}
-
-std::shared_ptr<void> acquireOwnedRaw(const char* name, std::uint64_t generation) {
-    if (!name || generation == 0) return {};
-    std::lock_guard<std::mutex> guard(ownedMutex());
-    auto                        it = ownedSlots().find(name);
-    if (it == ownedSlots().end() || it->second.generation != generation) return {};
-    // Returns empty after a retirement, so the caller reports StaleHandle rather
-    // than handing out a destroyed implementation.
-    return it->second.provider;
-}
-
-bool unloadOwnedRaw(const char* name, std::uint64_t generation) {
-    if (!name || generation == 0) return false;
-    std::lock_guard<std::mutex> guard(ownedMutex());
-    auto                        it = ownedSlots().find(name);
-    if (it == ownedSlots().end() || it->second.generation != generation) return false;
-    it->second.provider.reset();
-    // Advance past the retired generation so the retired handle never resolves
-    // again, even if the same capability is republished later.
-    ++it->second.generation;
-    return true;
-}
-
-std::uint64_t ownedGenerationRaw(const char* name) {
-    if (!name) return 0;
-    std::lock_guard<std::mutex> guard(ownedMutex());
-    auto                        it = ownedSlots().find(name);
-    if (it == ownedSlots().end() || !it->second.provider) return 0;
-    return it->second.generation;
+    clearOwnedRaw();
 }
 
 }  // namespace eve::cap::detail

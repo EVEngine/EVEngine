@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Physics()`
 
-创建 World、Body、Fixture（Box2D 2D 刚体）、World3D / Body3D / Shape3D（Box3D 3D 刚体），以及可交互的 `Cloth`（2D Verlet 布料）、`Cloth3D`（3D Verlet 布料）与 `Fluid2D`（2D 粒子流体）。2D 脚本使用像素坐标并按 meter 换算；3D 使用米（Box3D 原生单位）；2D 布料/流体在像素空间模拟，3D 布料在米制空间模拟。
+创建 World、Body、Fixture、Joint2D、Mechanism2D（Box2D 2D 刚体与机构）、World3D / Body3D / Shape3D / Joint3D / Mechanism3D（Box3D 3D 刚体与机构），以及可交互的 `Cloth`（2D Verlet 布料）、`Cloth3D`（3D Verlet 布料）与 `Fluid2D`（2D 粒子流体）。2D 脚本使用像素坐标并按 meter 换算；3D 使用米（Box3D 原生单位）；2D 布料/流体在像素空间模拟，3D 布料在米制空间模拟。
 
 ## 基本用法
 
@@ -16,6 +16,49 @@ local body = world.newBody("dynamic", 100, 60);
 body.newRectangleFixture(32, 32, 1.0, 0.3, 0.1);
 world.update(dt);
 ```
+
+### 2D 关节与机械机构
+
+`World` 拥有 `Joint2D` / `Mechanism2D`。锚点、长度与线速度使用像素空间（与 Body 一致）；角度与角速度使用弧度。支持 distance / revolute / prismatic / weld / wheel / motor / gear。
+
+```squirrel
+local hinge = world.newRevoluteJoint(frame, door, 100, 60, false);
+hinge.setRevoluteLimits(true, -0.5, 1.2);
+hinge.setRevoluteMotor(true, 2.0, 40.0);
+
+local rail = world.newPrismaticJoint(frame, platform, 200, 100, 1, 0, false);
+rail.setPrismaticLimits(true, -40, 40);
+rail.setPrismaticMotor(true, 30, 500); // 像素/秒，像素力
+
+local weld = world.newWeldJoint(bodyA, bodyB, 150, 80, false);
+weld.setWeldSpring(0.0, 1.0); // 0 Hz 为刚性
+
+local gear = world.newGearJoint(hinge, rail, 1.0);
+gear.setGearRatio(2.0);
+```
+
+在关节原语之上，`Mechanism2D` 提供转轴、棘轮与曲柄滑块。销毁机构会销毁其关节；棘轮单向锁定在每次 `world.update()` / `step()` 前自动同步。
+
+```squirrel
+local shaft = world.newShaft(bearing, rotor, 100, 100, false);
+shaft.setDrive(8.0, 60.0); // rad/s, N·m
+
+local ratchet = world.newRatchet(frame, wheel, 100, 100, 1, 200.0, false);
+ratchet.setDrive(3.0, 40.0); // 仅在自由方向驱动
+
+local cs = world.newCrankSlider(
+    frame, crank, rod, slider,
+    0, 0,       // 曲柄转轴锚点（像素）
+    40, 0,      // 曲柄销
+    120, 0,     // 滑块销
+    1, 0,       // 滑轨轴
+    false);
+cs.setDrive(4.0, 80.0);
+local stroke = cs.getSliderTranslation(); // 像素
+```
+
+`getDriveAngle()` / `getSpinSpeed()` 读取驱动铰链状态；曲柄滑块另有
+`getSliderTranslation()`。`getDriveJoint()` 等可取回底层 `Joint2D`。
 
 ### 刚体（Box3D，3D）
 
@@ -311,7 +354,7 @@ fluid.draw(gfx);
 示例：[`examples/softbody/`](../../../examples/softbody/)（2D 布料 + 流体）、[`examples/softbody3d/`](../../../examples/softbody3d/)（3D 布料）
 
 `Physics` 保存 2D 像素/米比例并创建 World / World3D / DistanceField3D / Cloth /
-Cloth3D / Fluid2D。World 管理 Body 与 Fixture；World3D 管理 Body3D、Shape3D 和 Joint3D。
+Cloth3D / Fluid2D。World 管理 Body、Fixture、Joint2D 与 Mechanism2D；World3D 管理 Body3D、Shape3D、Joint3D 与 Mechanism3D。
 布料、流体和距离场可按需组合；`Cloth.setCollideWorld(world)` /
 `Cloth3D.setCollideWorld(world3)` 可将布料接到刚体世界做碰撞。2D 碰撞消息为
 `begincontact` / `endcontact`；3D 普通碰撞为 `begincontact3d` / `endcontact3d`，Sensor
@@ -455,6 +498,43 @@ wheel.setWheelSteeringLimits(true, -0.6, 0.6);
 `getWheelSpinSpeed()` / `getWheelSpinTorque()` 可用于轮胎音效和牵引控制，
 `getWheelSteeringAngle()` / `getWheelSteeringTorque()` 可驱动视觉轮毂和反馈方向盘。
 
+`newWeldJoint(bodyA,bodyB,anchor,collideConnected)` 在共享世界锚点处焊接两刚体，并保持
+创建时的相对姿态；`setWeldLinearSpring()` / `setWeldAngularSpring()` 可配置柔度
+（0 Hz 为刚性）。`newMotorJoint()` 驱动两体相对线速度/角速度，适合舵机、传送带和
+相对位姿伺服。`newParallelJoint(bodyA,bodyB,axis,…)` 用弹簧约束两体局部 Z 轴与给定
+世界轴平行，常用于保持转轴直立。`newFilterJoint(bodyA,bodyB)` 仅禁用两体碰撞，不
+产生约束力，适合机构零件互穿过滤。
+
+### 机械机构：转轴、曲柄滑块、棘轮
+
+在关节原语之上，`Mechanism3D` 提供常用机械装配。世界拥有机构及其创建的关节；
+销毁机构会销毁其关节。棘轮的单向锁定在每次 `world3.update()` / `step()` 前自动同步。
+
+```squirrel
+// 转轴：支座 + 转子铰链，可选驱动电机
+local shaft = world3.newShaft(bearing, rotor, 0, 0, 0, 0, 0, 1, false);
+shaft.setDrive(8.0, 120.0); // rad/s, N·m
+
+// 棘轮：direction=+1 只允许正向自由转动，反向由 engagementTorque 锁止
+local ratchet = world3.newRatchet(frame, wheel, 0, 0, 0, 0, 0, 1, 1, 200.0, false);
+ratchet.setDrive(3.0, 40.0); // 仅在自由方向驱动
+
+// 曲柄滑块：机架 + 曲柄 + 连杆 + 滑块
+local cs = world3.newCrankSlider(
+    frame, crank, rod, slider,
+    0, 0, 0,        // 曲柄转轴锚点
+    0, 0, 1,        // 铰链轴（平面机构）
+    0.4, 0, 0,      // 曲柄销
+    1.2, 0, 0,      // 滑块销
+    1, 0, 0,        // 滑轨轴
+    false);
+cs.setDrive(4.0, 80.0);
+local stroke = cs.getSliderTranslation();
+```
+
+`getDriveAngle()` / `getSpinSpeed()` 读取驱动铰链状态；曲柄滑块另有
+`getSliderTranslation()`。`getDriveJoint()` 等可取回底层 `Joint3D` 做应力阈值或调试。
+
 所有关节均提供稳定 ID、连接 Body ID、`getConstraintForce*()`、
 `getConstraintTorque*()` 和分离误差，适合调试约束、声音与破坏判定。销毁任一连接 Body 或
 World 会使 Joint3D 包装器安全失效；也可显式调用 `joint.destroy()`。默认连接体互不碰撞，
@@ -463,7 +543,8 @@ World 会使 Joint3D 包装器安全失效；也可显式调用 `joint.destroy()
 需要可破坏结构时，用 `setForceThreshold(newtons)` 和
 `setTorqueThreshold(newtonMetres)` 配置关节应力事件。任一阈值被超过的物理帧会发送
 `jointstress3d`，四个整数参数依次为 Joint ID、Body A ID、Body B ID、关节类型代码
-（0 Distance、1 Revolute、2 Prismatic、3 Spherical、4 Wheel）。同一帧的精确求解器力和扭矩从
+（0 Distance、1 Revolute、2 Prismatic、3 Spherical、4 Wheel、5 Weld、6 Motor、
+7 Parallel、8 Filter）。同一帧的精确求解器力和扭矩从
 `getJointStressForceX/Y/Z()`、`getJointStressTorqueX/Y/Z()` 读取；事件缓冲会在下一次
 `world3.update()` 前清空。
 
@@ -948,6 +1029,10 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 
 3D 绳索现为可独立裁剪的 `physics_rope` 子模块，详见 `physics_rope.md`。
 
+几何破碎（预切几何集合 / 连接图 / 场驱动）为可独立裁剪的 `physics_destruction`
+子模块，详见 [`physics_destruction.md`](physics_destruction.md)；表现卫星见
+[`physics_destruction_graphics.md`](physics_destruction_graphics.md)。
+
 ## 常见问题
 
 - 每帧改变 meter：会破坏 2D 单位一致性，应启动时设置一次；3D 世界不受 `setMeter` 影响。
@@ -979,7 +1064,7 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 - `setRestDensity()`、`setRestitution()`、`setRotation()`、`setSensor()`、`setSmoothingRadius()`、`setStiffness()`、`setType()`、`setViscosity()`、`testPoint()`
 - `setSelfCollision()`、`unpin()`、`update()`、`updateFull()`
 
-+### 3D 高级接口补充索引
+### 3D 高级接口补充索引
 
 以下方法补充了 3D 碰撞查询结果、接触事件、关节状态、距离场采样、材质参数和世界诊断的脚本索引。坐标分量方法按 `X/Y/Z` 成组使用；索引类 getter 的有效范围由对应的 `*Count()` 返回值决定。
 
@@ -1006,6 +1091,21 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 - `getTriangleMeshMaterialId()`、`getTriangleMeshMaterialIndex()`、`getTriangleMeshMaterialRestitution()`、`getTriangleMeshMaterialRollingResistance()`、`getWorldCenterZ()`、`hasClosestPoint()`、`hasShapeCastHit()`、`isAngularXLocked()`
 - `isAngularYLocked()`、`isAngularZLocked()`、`isContinuousCollisionEnabled()`、`isLinearXLocked()`、`isLinearYLocked()`、`isLinearZLocked()`、`isSleepEnabled()`、`isWarmStartingEnabled()`
 - `sample()`、`sampleNormal()`、`setDistanceLength()`、`setSleepThreshold()`
+
+### 关节与机械机构补充索引
+
+下列方法覆盖 2D `Joint2D` / `Mechanism2D` 与 3D `Joint3D` / `Mechanism3D` 的脚本绑定；
+与上文机构示例中的 `setDrive` / `getDriveAngle` / `getSpinSpeed` / `getDriveJoint` /
+`getSliderTranslation` 一并使用。
+
+- `clearDrive()`、`getCrankPinJoint()`、`getDistanceDampingRatio()`、`getDistanceFrequency()`、`getGearJoint1()`、`getGearJoint2()`、`getGearRatio()`
+- `getMotorAngularOffset()`、`getMotorAngularVelocityX()`、`getMotorAngularVelocityY()`、`getMotorAngularVelocityZ()`、`getMotorLinearOffsetX()`、`getMotorLinearOffsetY()`
+- `getMotorLinearVelocityX()`、`getMotorLinearVelocityY()`、`getMotorLinearVelocityZ()`、`getParallelDampingRatio()`、`getParallelHertz()`、`getParallelMaxTorque()`
+- `getRatchetDirection()`、`getRatchetEngagementTorque()`、`getRevoluteSpeed()`、`getSliderJoint()`、`getSliderPinJoint()`
+- `getWeldAngularDampingRatio()`、`getWeldAngularHertz()`、`getWeldDampingRatio()`、`getWeldFrequency()`、`getWeldLinearDampingRatio()`、`getWeldLinearHertz()`
+- `getWheelSpeed()`、`getWheelTranslation()`、`isDriveEnabled()`、`isValid()`
+- `setMotorAngularOffset()`、`setMotorAngularSpring()`、`setMotorAngularVelocity()`、`setMotorLimits()`、`setMotorLinearOffset()`、`setMotorLinearSpring()`
+- `setMotorLinearVelocity()`、`setMotorVelocityLimits()`、`setParallelSpring()`、`setRatchetDirection()`、`setRatchetEngagementTorque()`、`setWheelMotor()`、`setWheelSpring()`
 
 ## 等待流送地形后激活刚体
 

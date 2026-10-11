@@ -22,9 +22,37 @@ ui.mountBuildAs("hud");
 ## 自定义组件
 
 脚本组件拥有实例级 `props` 与 `state` 表；`setProps(table)` / `setState(table)` 会合并
-变更并标记脏状态，`updateIfDirty()` 通过稳定 ID 协调旧树。持久化的子组件实例可用
-`renderChild(child, props)` 嵌入，子组件 `markDirty()` 会自动向父组件传播。首次挂载和后续
-重建分别调用 `onMount()`、`onUpdated()`。
+变更并标记脏状态。已挂载的根组件会进入帧调度队列，在下一次渲染前通过稳定 ID
+自动协调旧树；同一帧的多次变更只重建一次，通常不需要手动调用 `updateIfDirty()`。
+持久化的子组件实例可用 `renderChild(child, props)` 嵌入，子组件 `markDirty()` 会自动向
+父组件传播。首次挂载和后续重建分别调用 `onMount()`、`onUpdated()`；显式 `unmount()`
+会递归卸载子组件并调用 `onUnmount()`，同时隐藏对应 Host。
+
+`renderChild(child, props, replaceProps=false)` 默认与 `setProps()` 一样合并属性；第三个
+参数为 `true` 时先清空旧属性表再应用新属性。`updateIfDirty()` 仍可用于测试或确实需要
+同步刷新的工具代码。
+
+组件可用 `bindClick(id, fn)` / `bindChange(id, fn)` 声明事件处理器；同一组件内相同
+类型与 ID 的绑定会被替换而不是累加，组件卸载时自动注销。动态列表使用
+`renderKeyed(key, factory, props)`：稳定 key 会复用原组件实例，移除 key 会触发子组件
+`onUnmount()` 并释放其事件处理器。
+
+`componentOnClick`、`componentOnChange` 与 `componentClearHandlers` 是
+`UIComponent` 实现事件所有权的内部桥接函数；游戏脚本应使用上述 `bindClick` /
+`bindChange`，不要直接调用这些桥接函数。
+
+## 布局
+
+`beginRow()` / `beginColumn()` 支持 `setItemFlexGrow()`、`setItemFlexShrink()`、
+`setItemFlexBasis()`、`setItemAlignSelf()` 与 `setFlexWrap()`。独立的横纵间距使用
+`setLayoutGaps(columnGap, rowGap)`；`setLayoutOverflow("visible" | "clip" | "scroll")`
+控制超出内容的显示方式。`beginGrid(columns, id, columnGap, rowGap)` 创建等宽列网格，
+`setItemGridColumnSpan()` 设置最后一个子项的跨列数，`setItemAspectRatio()` 可让 Flex
+或 Grid 根据宽高比推导另一轴尺寸。
+
+`saveTreeJson()` 写出 `schema: "eve.ui.tree"` 与当前 `version: 4`。加载器把无版本文档
+视为版本 1，接受版本 1–4，拒绝未知 schema 和未来版本；未知字段会被忽略，新增字段
+均有向后兼容默认值。
 
 ```squirrel
 class Label extends eve.UIComponent {
@@ -233,6 +261,49 @@ ui.setItemAccessibility("button", "Save scene", "");
 对于刚通过 `beginWindow`、`beginCard`、`beginGroup` 等打开且仍在构建的当前容器，使用
 `setThemeScope()`；这样根 Window 也能拥有独立于全局预设的主题。
 
+可复用的局部视觉样式使用命名 StyleClass。先用 `defineStyleClass(name, parent)` 声明类，
+再用 `setStyleClassColor(name, "text"|"background"|"border"|"accent", r, g, b, a)` 和
+`setStyleClassMetric(name, "padding"|"rounding"|"alpha", x, y)` 配置稀疏 token。三个修改
+接口返回稳定状态字符串（如 `applied`、`unknown-parent`、`inheritance-cycle`），不会静默
+接受无效定义。`setItemStyleClass()` 设置最近控件，`setStyleScope()` 设置当前容器并通过
+ImGui 样式栈自然作用于子树；子节点只覆盖自己声明的 token。命名继承在建树或 patch 时
+解析为节点快照，因此逐帧渲染不做字符串注册表查询。类名随 version 4 JSON 保存；注册表
+由应用启动脚本重新声明，加载旧版资产时缺失字段按无样式处理，未知字段仍忽略。
+
+保留树和 MCP `EditorHost` 的 Button、Checkbox、单值 Slider、Combo 与文本输入共享同一组
+原生控件原语，因此尺寸、禁用态和编辑结果语义一致。文本输入持有 UTF-8 `std::string` 并在
+ImGui 请求扩容时增长，不再使用 1 KiB/512 字节固定缓冲；SDL/ImGui 后端继续负责平台 IME。
+
+轻量动效由 `UiTweenDriver` 驱动，在 `beginFrameAndRender()` / `tickTweens(nowMs)` 中推进：
+
+- `animateHostPos(x, y, durationMs, ease = "smoothstep", delayMs = 0)` — 宿主窗口位置
+- `animateHostSize(w, h, durationMs, ease, delayMs)` — 宿主显式尺寸
+- `animateHostOverlayAlpha(alpha, durationMs, ease, delayMs)` — 叠加层背景透明度
+- `animateItemOpacity(id, opacity, durationMs, ease, delayMs)` — 节点瞬态 opacity（不写 JSON / StyleClass）
+- `animateItemPos(id, x, y, durationMs, ease, delayMs)` — 绝对定位节点偏移（自动 `absolute`）
+
+`durationMs <= 0` 且无 delay 时立即跳到终点；再次对同一属性调用会替换未完成的补间。
+`cancelHostTweens()` / `cancelItemTweens(id)` / `cancelAllTweens()` 取消选中宿主上的待定补间。
+缓动名与 Motion/Math 对齐（`smoothstep` 为默认，另有 linear、Quad/Cubic/Sine/Expo、Back/Elastic/Bounce）；
+未知名称按 linear 处理。
+
+需要 loops / Sequence / Punch，或与 `SimulationStep` 同拍时，用 `eve.Animation()` 的 Motion
+经 UI 侧 sink 推送写回（animation 模块启用时编译 `UiMotionSinks`）：
+
+```cpp
+UiHostPosSink posSink(hostHandle);
+UiNodeOpacitySink opacitySink(hostHandle, "panel");
+anim->motionVec2({0,0}, {120,60}, 0.35f).ease("outQuad").bind(posSink);
+anim->motion(0.f, 1.f, 0.25f).ease("outCubic").bind(opacitySink);
+anim->advance(step);  // 与游戏时钟同泵
+```
+
+无 animation 的裁剪构建仍保留上方 `animate*` 便利路径；sink 桥接 TU 会被排除。
+
+`getLayoutDiagnostics()` 输出各节点测量尺寸和横纵溢出，
+`getAccessibilitySnapshot()` 输出语义节点的 role/name/description、enabled 与 focused 状态，
+供调试器和自动化读取而不触碰 ImGui 内部对象。
+
 ## 常见问题
 
 - 每帧重新 mount，丢失输入焦点与控件状态。
@@ -244,14 +315,22 @@ ui.setItemAccessibility("button", "Save scene", "");
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `beginBuild()`、`beginCard()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginMenu()`、`beginMenuBar()`、`beginNinePatch()`、`beginRow()`、`beginSidebar()`、`beginSplitPane()`、`beginStatusBar()`、`beginScrollList()`、`beginToolbar()`、`beginToolbox()`、`beginWindow()`、`bindOwner()`
-- `animateHostPos()`、`badge()`、`button()`、`checkbox()`、`colorPalette()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getColorA()`、`getColorB()`、`getColorG()`、`getColorR()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
+- `animateHostPos()`、`animateHostSize()`、`animateHostOverlayAlpha()`、`animateItemOpacity()`、`animateItemPos()`、`cancelHostTweens()`、`cancelItemTweens()`、`cancelAllTweens()`、`tickTweens()`、`getHostTweenCount()`、`getItemTweenCount()`、`badge()`、`button()`、`checkbox()`、`colorPalette()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getColorA()`、`getColorB()`、`getColorG()`、`getColorR()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
 - `getFocusedId()`、`getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`、`moveFocus()`
 - `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
-- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemSelected()`、`setItemFlexGrow()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
-- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setThemeScope()`、`setColor()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
+- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemAlignSelf()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemSelected()`、`setItemFlexBasis()`、`setItemFlexGrow()`、`setItemFlexShrink()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
+- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setThemeScope()`、`defineStyleClass()`、`setStyleClassColor()`、`setStyleClassMetric()`、`clearStyleClasses()`、`setItemStyleClass()`、`setStyleScope()`、`setColor()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
 - `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`、`setImageNinePatchFile()`
-- `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`
+- `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`、`getLayoutDiagnostics()`、`getAccessibilitySnapshot()`
 - `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
+- `inspect()`、`inspectClose()`、`inspectRefresh()`、`inspectSelectClass()`、`inspectObject()`、`inspectSetPickHandler()`、`inspectPickScene()`、`inspectAddInstance()`、`propertySchema()`
+- `dbOpen()`、`dbClose()`、`dbRefresh()`、`dbSelectClass()`、`dbRegister()`、`dbCreateInstance()`、`dbUnregister()`
+- `editorOpen()`、`editorClose()`、`editorSelectPanel()`、`sceneOpen()`、`sceneClose()`、`sceneSelectNode()`、`sceneSetPickHandler()`
+
+`propertySchema(instance)` 返回脚本实例经反射派生的属性 schema 表（`typeId` /
+`version` / `properties[]`，含 `path`、`kind`、`displayName`、`readOnly`、数值约束与
+`choices`）。`editor="color"|"vec2"|"vec3"|"vec4"|slider|combo` 等 attribute 决定 kind；
+可编辑面板请用 `inspectObject(instance)`，不要把 schema 表当成第二权威状态。
 
 ## 引擎纹理控件
 
@@ -449,3 +528,9 @@ PcgPhotoModeApplyPlan 比较两个完整 PcgPhotoModeValues 快照，按 Pcg 源
 ### Pcg Lighting profile 身份
 
 PhotoMode 的 `m_isUsingPcgLighting` 与 `m_selectedPcgLightingProfile` 由 `PcgPhotoModePhotoAuthority` 作为持久化身份联合保存。`lightingProfileMatches(currentProfile)` 同时比较 profile 索引和 Pcg/custom 模式；`PcgPhotoModeSession.begin()` 也使用这两个条件与场景名、渲染管线共同决定是否允许加载旧设置。
+
+### 组件修改自动合并
+
+C++ `Component::markDirty()` / `setState()` 将组件加入一次性弱注册队列；`UISystem::render` 在开始 host/widget 遍历前刷新。脚本 `UIComponent` 沿用自动队列。重复标脏合并一次；`build()` 内再次标脏留到下一批，失败保留脏状态与剩余队列，组件销毁取消注册。简单 `setText` 直接更新节点，相同文本跳过赋值。
+
+Getter 不构建树。`rebuild(forceFull)` 保留为兼容的显式同步入口，其成本是完整描述树构建；常规代码只修改状态。组件不可复制或移动，不允许在其 `build()` 回调中销毁自己。

@@ -37,6 +37,6 @@ class DialogueEditorComponent {
     }
 
     function apply(flow) {
-        return document.validate() && flow.applyDocument(document);
+        return document.validate() && flow.applyDocumentChecked(document).ok;
     }
 }

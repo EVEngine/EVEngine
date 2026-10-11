@@ -1,7 +1,10 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/Result.h"
+#include "graphics/GpuDrivenTypes.h"
 #include "graphics/Material.h"
 #include "graphics/MeshInstanceRange.h"
 #include "zeroerr/assert.h"
@@ -12,6 +15,7 @@
 #include <glm/mat4x4.hpp>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace eve::graphics {
 
@@ -21,14 +25,19 @@ class Mesh;
 class Shader;
 class Texture;
 
-class Camera3D : public ecs::Entity {
+/** @brief EVENGINE_API_BACKENDS public API. */
+class EVENGINE_API_BACKENDS Camera3D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Camera3D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Data public API. */
     struct Data {
         static constexpr int kMaxReflectionProbes = 8;
+        /** @brief ReflectionProbe public API. */
         struct ReflectionProbe {
             Texture*  cubemap = nullptr;
             glm::vec3 center{0.f};
@@ -191,12 +200,16 @@ public:
     float getScreenRayDirZ();
 };
 
-class Renderable3D : public ecs::Entity {
+/** @brief EVENGINE_API_BACKENDS public API. */
+class EVENGINE_API_BACKENDS Renderable3D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Renderable3D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Transform3D public API. */
     struct Transform3D {
         float x = 0, y = 0, z = 0;
         float yaw = 0, pitch = 0, roll = 0;  // radians
@@ -266,6 +279,7 @@ public:
         float lodDistances[kMaxLodLevels - 1] = {25.f, 60.f, 120.f};
         /** @brief Distance beyond which the complete LOD chain is culled; zero disables. */
         float lodCullDistance = 0.f;
+        /** @brief LodRendererState public API. */
         struct LodRendererState {
             bool configured = false;
             int  skinQuality = 0;
@@ -287,6 +301,7 @@ public:
 
         /** @brief Pick LOD mesh for a camera distance; falls back to `mesh` when LOD disabled. */
         /** @ownership Returns a borrowed mesh. @lifetime Same as the selected Graphics resource. */
+        /** @brief Mesh for distance. */
         Mesh *meshForDistance(float distance) const {
             if (lodCullDistance > 0.f && distance >= lodCullDistance) return nullptr;
             if (lodCount <= 0) return mesh;
@@ -296,6 +311,7 @@ public:
             return picked ? picked : mesh;
         }
 
+        /** @brief Lod level for distance. */
         int lodLevelForDistance(float distance) const {
             if (lodCullDistance > 0.f && distance >= lodCullDistance) return -1;
             if (lodCount <= 0) return 0;
@@ -307,13 +323,16 @@ public:
         /** @brief Select primary/secondary levels and secondary weight for the active fade policy. */
         void lodBlendForDistance(float distance, int& primary, int& secondary, float& secondaryWeight) const;
 
+        /** @brief Uses parts. */
         bool usesParts() const { return partCount > 0; }
 
+        /** @brief Effective hair. */
         bool effectiveHair() const {
             if (material) return material->isTransparentHair();
             return isHair;
         }
 
+        /** @brief Effective cast shadow. */
         bool effectiveCastShadow() const {
             if (material) return material->getCastShadow();
             return castShadow;
@@ -473,8 +492,10 @@ public:
     int  getMeshLodLevelAtDistance(float distance);
 };
 
-class RenderSystem3D {
+/** @brief EVENGINE_API_BACKENDS public API. */
+class EVENGINE_API_BACKENDS RenderSystem3D {
 public:
+    /** @brief Renders . */
     static void render(Graphics& gfx);
 
     /**
@@ -521,13 +542,51 @@ public:
     static void removeCaptureExtraDrawer(uint64_t token);
 
     /**
+     * @brief Draw custom opaque geometry after the main scene pass is open.
+     * @thread Register, unregister and invoke on the graphics thread.
+     * @reentrancy The callback must not mutate this contributor registry.
+     */
+    using ForwardExtraDrawer =
+        /** @brief Void. */
+        std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect)>;
+
+    /** @brief Register a main forward-pass contributor. @return Non-zero removal token, or zero when empty. */
+    [[nodiscard]] static uint64_t addForwardExtraDrawer(ForwardExtraDrawer drawer);
+
+    /** @brief Unregister a main forward-pass contributor. @param token Token returned by addForwardExtraDrawer. */
+    static void removeForwardExtraDrawer(uint64_t token);
+
+    /**
+     * @brief Collect non-ECS geometry for the normal GPU-driven opaque submission.
+     * @param gfx Graphics backend receiving the eventual instance batch.
+     * @param cam Active default camera; borrowed for this callback only.
+     * @param viewProj Active camera view-projection matrix.
+     * @param aspect Active render-target aspect ratio.
+     * @param instances Frame-local destination; appended records are copied by the backend.
+     * @thread Register, unregister and invoke on the graphics thread.
+     * @reentrancy The callback must not mutate this contributor registry.
+     */
+    using GpuOpaqueCollector =
+        /** @brief Void. */
+        std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect,
+                           std::vector<GpuInstance>& instances)>;
+
+    /** @brief Register a GPU-driven opaque contributor. @return Non-zero removal token, or zero for an empty callback. */
+    [[nodiscard]] static uint64_t addGpuOpaqueCollector(GpuOpaqueCollector collector);
+
+    /** @brief Unregister a GPU-driven opaque contributor. @param token Token returned by addGpuOpaqueCollector. */
+    static void removeGpuOpaqueCollector(uint64_t token);
+
+    /**
      * @brief Register a callback that fills the G-buffer (depth/normal/albedo) for
      * geometry outside the Renderable3D ECS (e.g. sprite-stack slices). Called
      * inside the GBuffer pass after opaque meshes, before endGBufferPass.
      * The camera data and view-projection match the pass camera.
      */
     using GBufferExtraDrawer =
+        /** @brief Void. */
         std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect)>;
+    /** @brief Adds g buffer extra drawer. */
     static void addGBufferExtraDrawer(GBufferExtraDrawer drawer);
 
     /**
@@ -537,7 +596,9 @@ public:
      * gfx.drawDecal(...) there (optionally gfx.setDecalCamera first).
      */
     using DecalExtraDrawer =
+        /** @brief Void. */
         std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect)>;
+    /** @brief Adds decal extra drawer. */
     static void addDecalExtraDrawer(DecalExtraDrawer drawer);
 
     /**
@@ -561,8 +622,10 @@ public:
      * Registration performs no per-frame allocation.
      */
     using ShadowExtraDrawer =
+        /** @brief Void. */
         std::function<void(Graphics &gfx, const glm::mat4 &lightVP,
                            const Camera3D::Data &cam)>;
+    /** @brief Adds shadow extra drawer. */
     [[nodiscard]] static uint64_t addShadowExtraDrawer(ShadowExtraDrawer drawer);
 
     /**

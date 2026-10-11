@@ -13,7 +13,7 @@ const EditorValue* field(const EditorValue& value, const char* key) {
 }
 }
 
-EditorResult<EnvironmentAssetCard> EnvironmentAssetBrowser::card(const AssetRecord& record) const {
+Result<EnvironmentAssetCard> EnvironmentAssetBrowser::card(const AssetRecord& record) const {
     EnvironmentAssetCard result;
     result.asset = record.guid; result.logicalUri = record.logicalUri; result.status = record.status;
     result.diagnostics = record.diagnostics;
@@ -57,12 +57,12 @@ EditorResult<EnvironmentAssetCard> EnvironmentAssetBrowser::card(const AssetReco
                    diagnostic.severity() == DiagnosticSeverity::Fatal;
         });
     if (error)
-        return EditorResult<EnvironmentAssetCard>::failure(
+        return Result<EnvironmentAssetCard>::failure(
             eve::Status(EditorStatus::Rejected, result.diagnostics));
     return eve::editing::applied<EnvironmentAssetCard>(std::move(result));
 }
 
-EditorResult<EnvironmentAssetPage> EnvironmentAssetBrowser::query(
+Result<EnvironmentAssetPage> EnvironmentAssetBrowser::query(
     std::string text, std::size_t offset, std::size_t limit,
     std::optional<std::uint64_t> generation) const {
     if (!database_ || limit == 0)
@@ -71,7 +71,7 @@ EditorResult<EnvironmentAssetPage> EnvironmentAssetBrowser::query(
     AssetQuery filter; filter.typeIds = {"cubemap", "image.cubemap", "environment-map"};
     filter.text = std::move(text);
     auto page = database_->query(filter, offset, limit, generation);
-    if (!page.ok()) return EditorResult<EnvironmentAssetPage>::failure(page.status());
+    if (!page.ok()) return Result<EnvironmentAssetPage>::failure(page.status());
     EnvironmentAssetPage result; result.nextOffset = page.value().nextOffset;
     result.hasMore = page.value().hasMore; result.generation = page.value().generation;
     for (const auto& record : page.value().values) {
@@ -81,11 +81,11 @@ EditorResult<EnvironmentAssetPage> EnvironmentAssetBrowser::query(
     return eve::editing::applied<EnvironmentAssetPage>(std::move(result));
 }
 
-EditorResult<EnvironmentAssetCard> EnvironmentAssetBrowser::select(const AssetGuid& asset) const {
+Result<EnvironmentAssetCard> EnvironmentAssetBrowser::select(const AssetGuid& asset) const {
     if (!database_ || asset.empty()) return eve::editing::failed<EnvironmentAssetCard>(EditorStatus::Rejected,
         RuleId("editor.environment.invalid-selection"), "Environment selection requires AssetDB and asset id");
     auto found = database_->find(asset);
-    if (!found.ok()) return EditorResult<EnvironmentAssetCard>::failure(found.status());
+    if (!found.ok()) return Result<EnvironmentAssetCard>::failure(found.status());
     return card(found.value());
 }
 

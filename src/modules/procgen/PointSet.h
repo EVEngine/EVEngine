@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "procgen/AttributeTable.h"
 
@@ -9,6 +10,7 @@
 
 namespace eve::procgen {
 
+class Grid2D;
 class Heightmap;
 
 /** @brief One deterministic sample used by script-first procedural pipelines. */
@@ -54,10 +56,13 @@ struct ProcgenPoint {
  * mutating their input, so named intermediate values remain inspectable after
  * a hot reload and can safely be reused by more than one pipeline branch.
  */
-class PointSet {
+class EVENGINE_API_DOMAINS PointSet {
 public:
+    /** @brief Returns the count. */
     int  getCount() const;
+    /** @brief Empty. */
     bool empty() const;
+    /** @brief Clears . */
     void clear();
 
     /** @brief Reserve point storage without changing point or attribute row counts. */
@@ -74,17 +79,27 @@ public:
     [[nodiscard]] Result<void> clearPointAttributes(std::size_t index);
 
     int   add(float x, float y, float z);
+    /** @brief Sets the position. */
     void  setPosition(int index, float x, float y, float z);
+    /** @brief Returns the x. */
     float getX(int index) const;
+    /** @brief Returns the y. */
     float getY(int index) const;
+    /** @brief Returns the z. */
     float getZ(int index) const;
 
+    /** @brief Sets the normal. */
     void  setNormal(int index, float x, float y, float z);
+    /** @brief Returns the normal x. */
     float getNormalX(int index) const;
+    /** @brief Returns the normal y. */
     float getNormalY(int index) const;
+    /** @brief Returns the normal z. */
     float getNormalZ(int index) const;
 
+    /** @brief Sets the yaw. */
     void  setYaw(int index, float yaw);
+    /** @brief Returns the yaw. */
     float getYaw(int index) const;
     /** @brief Set the point's local Euler rotation in degrees. */
     void setRotation(int index, float pitch, float yaw, float roll);
@@ -92,9 +107,13 @@ public:
     float getPitch(int index) const;
     /** @brief Return the point's local roll in degrees. */
     float getRoll(int index) const;
+    /** @brief Sets the scale. */
     void  setScale(int index, float x, float y, float z);
+    /** @brief Returns the scale x. */
     float getScaleX(int index) const;
+    /** @brief Returns the scale y. */
     float getScaleY(int index) const;
+    /** @brief Returns the scale z. */
     float getScaleZ(int index) const;
 
     /** @brief Set local-space point bounds before scale and rotation are applied. */
@@ -127,9 +146,13 @@ public:
     /** @brief Return normalized point steepness metadata. */
     float getSteepness(int index) const;
 
+    /** @brief Sets the density. */
     void     setDensity(int index, float density);
+    /** @brief Returns the density. */
     float    getDensity(int index) const;
+    /** @brief Sets the point seed. */
     void     setPointSeed(int index, uint32_t seed);
+    /** @brief Returns the point seed. */
     uint32_t getPointSeed(int index) const;
     /** @brief Return the stable point identity, or zero when it has not been assigned. */
     std::uint64_t getPointId(int index) const;
@@ -142,7 +165,9 @@ public:
     [[nodiscard]] Result<void> trySetFloatAttribute(int index, const std::string& name, float value);
     /** @brief Compatibility-only unchecked script setter; canonical code uses trySetFloatAttribute. */
     void        setFloatAttribute(int index, const std::string& name, float value);
+    /** @brief Returns the float attribute. */
     float       getFloatAttribute(int index, const std::string& name, float fallback) const;
+    /** @brief True when float attribute. */
     bool        hasFloatAttribute(int index, const std::string& name) const;
     /** @brief Canonical checked signed integer metadata write. */
     [[nodiscard]] Result<void> trySetIntAttribute(int index, const std::string& name, std::int64_t value);
@@ -176,7 +201,9 @@ public:
     [[nodiscard]] Result<void> trySetStringAttribute(int index, const std::string& name, const std::string& value);
     /** @brief Compatibility-only unchecked script setter; canonical code uses trySetStringAttribute. */
     void        setStringAttribute(int index, const std::string& name, const std::string& value);
+    /** @brief Returns the string attribute. */
     std::string getStringAttribute(int index, const std::string& name, const std::string& fallback) const;
+    /** @brief True when string attribute. */
     bool        hasStringAttribute(int index, const std::string& name) const;
     /** @brief Return float, int, bool, vector, string, or empty when the attribute is absent. */
     std::string getAttributeType(int index, const std::string& name) const;
@@ -220,42 +247,71 @@ private:
 };
 
 /** @brief Stable label-based seed derivation; independent pipeline branches do not perturb each other. */
-uint32_t deriveSeed(uint32_t parent, const std::string& scope);
+EVENGINE_API_DOMAINS uint32_t deriveSeed(uint32_t parent, const std::string& scope);
 /** @brief Deterministically derive a non-zero stable point identity. */
-std::uint64_t derivePointId(std::uint64_t namespaceId, std::uint64_t ordinal);
+EVENGINE_API_DOMAINS std::uint64_t derivePointId(std::uint64_t namespaceId, std::uint64_t ordinal);
 
-PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, float jitter);
+/** @brief Sample grid points. */
+EVENGINE_API_DOMAINS PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, float jitter);
 /** @brief Bridson blue-noise (Poisson disk) samples in a width x depth area (XZ, y=0). */
 PointSet poissonDiskPoints(int width, int depth, float radius, uint32_t seed, int maxPoints);
-PointSet filterPointHeight(const PointSet& input, float minHeight, float maxHeight);
+/** @brief Filter point height. */
+EVENGINE_API_DOMAINS PointSet filterPointHeight(const PointSet& input, float minHeight, float maxHeight);
+/** @brief Filter point density. */
 PointSet filterPointDensity(const PointSet& input, float minDensity, float maxDensity);
+/** @brief Filter point box. */
 PointSet filterPointBox(const PointSet& input, float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
                         bool invert);
+/** @brief Filter point slope. */
 PointSet filterPointSlope(const PointSet& input, float minDegrees, float maxDegrees);
+/** @brief Filter points by polygon. */
 PointSet filterPointsByPolygon(const PointSet& input, const PointSet& polygon, bool invert);
+/** @brief Filter points by spline distance. */
 PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& controlPoints, float minDistance,
                                       float maxDistance);
+/** @brief Exclude point radius. */
 PointSet excludePointRadius(const PointSet& input, float x, float z, float radius);
-PointSet jitterPointPositions(const PointSet& input, uint32_t seed, float amountX, float amountZ);
+/**
+ * @brief Remove points covered by a semantic grid mask plus optional world-space clearance.
+ * @param input Immutable attributed input points.
+ * @param mask Immutable semantic grid.
+ * @param originX World X coordinate of mask cell (0,0).
+ * @param originZ World Z coordinate of mask cell (0,0).
+ * @param cellSize Positive square-cell size in world units.
+ * @param semantic Non-negative cell value treated as occupied.
+ * @param clearance Non-negative world-space expansion around occupied cells.
+ * @param maximumChecks Hard upper bound on examined mask cells.
+ * @return Filtered owning set, or a structured validation/budget diagnostic.
+ * @cost Linear in point count times the clearance-radius cell area, bounded by maximumChecks.
+ */
+[[nodiscard]] EVENGINE_API_DOMAINS Result<PointSet>
+excludePointsByGridMask(const PointSet& input, const Grid2D& mask, float originX, float originZ, float cellSize,
+                        int semantic, float clearance, std::size_t maximumChecks);
+/** @brief Jitter point positions. */
+EVENGINE_API_DOMAINS PointSet jitterPointPositions(const PointSet& input, uint32_t seed, float amountX, float amountZ);
+/** @brief Self prune points. */
 PointSet selfPrunePoints(const PointSet& input, float radius);
+/** @brief Project points to heightmap. */
 PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& heightmap, float originX, float originZ,
                                   float cellSize, float heightScale);
+/** @brief Sample polyline points. */
 PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint32_t seed, float lateralJitter);
 /** @brief Concatenate two attributed point collections while preserving order. */
-PointSet mergePointSets(const PointSet& first, const PointSet& second);
+EVENGINE_API_DOMAINS PointSet mergePointSets(const PointSet& first, const PointSet& second);
 /** @brief Stable union by non-zero point id, with legacy position-and-seed fallback. */
-PointSet unionPointSets(const PointSet& first, const PointSet& second);
+EVENGINE_API_DOMAINS PointSet unionPointSets(const PointSet& first, const PointSet& second);
 /** @brief Keep first-set points whose stable or legacy identity occurs in the second set. */
-PointSet intersectPointSets(const PointSet& first, const PointSet& second);
+EVENGINE_API_DOMAINS PointSet intersectPointSets(const PointSet& first, const PointSet& second);
 /** @brief Remove first-set points whose stable or legacy identity occurs in the second set. */
 PointSet differencePointSets(const PointSet& first, const PointSet& second);
 /** @brief Apply translation, yaw rotation and non-uniform scale to points and their transforms. */
-PointSet transformPointSet(const PointSet& input, float translateX, float translateY, float translateZ,
-                           float yawDegrees, float scaleX, float scaleY, float scaleZ);
+EVENGINE_API_DOMAINS PointSet transformPointSet(const PointSet& input, float translateX, float translateY,
+                                                float translateZ, float yawDegrees, float scaleX, float scaleY,
+                                                float scaleZ);
 /** @brief Apply translation, pitch/yaw/roll rotation and non-uniform scale. */
-PointSet transformPointSet3D(const PointSet& input, float translateX, float translateY, float translateZ,
-                             float pitchDegrees, float yawDegrees, float rollDegrees, float scaleX, float scaleY,
-                             float scaleZ);
+EVENGINE_API_DOMAINS PointSet transformPointSet3D(const PointSet& input, float translateX, float translateY,
+                                                  float translateZ, float pitchDegrees, float yawDegrees,
+                                                  float rollDegrees, float scaleX, float scaleY, float scaleZ);
 /** @brief Instantiate source points relative to targets in stable target-major order. */
 PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets, bool inheritTargetAttributes);
 /** @brief Linearly remap point density between ranges with optional output clamping. */
@@ -265,12 +321,13 @@ PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax
 
 /** @brief Ensure PointSet @Data domain has exactly one row for metadata writes. */
 void ensurePointSetDataRow(PointSet& points);
+/** @brief True when point float selector. */
 [[nodiscard]] bool isPointFloatSelector(std::string_view name) noexcept;
 /** @brief Return whether `name` is a valid float channel (builtin selector or metadata name). */
 [[nodiscard]] bool isPointFloatChannel(std::string_view name) noexcept;
 /** @brief Read a float metadata column or closed `$` point-field selector. */
-[[nodiscard]] Result<float> readPointFloatChannel(const PointSet& points, int index, std::string_view name,
-                                                    float defaultValue);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<float> readPointFloatChannel(const PointSet& points, int index,
+                                                                       std::string_view name, float defaultValue);
 /** @brief Write a float metadata column or closed `$` point-field selector. */
 [[nodiscard]] Result<void> writePointFloatChannel(PointSet& points, int index, std::string_view name, float value);
 /** @brief Apply one scalar operation to a float metadata attribute or `$` selector. */
@@ -278,11 +335,11 @@ PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attri
                                  const std::string& outputAttribute, const std::string& operation, float operand,
                                  float defaultValue);
 /** @brief Select points whose named float attribute or `$` selector lies in an inclusive range. */
-PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue, float maxValue,
-                                   bool invert);
+EVENGINE_API_DOMAINS PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue,
+                                                        float maxValue, bool invert);
 /** @brief Select points whose named string attribute equals a value. */
-PointSet filterPointStringAttribute(const PointSet& input, const std::string& name, const std::string& value,
-                                    bool invert);
+EVENGINE_API_DOMAINS PointSet filterPointStringAttribute(const PointSet& input, const std::string& name,
+                                                         const std::string& value, bool invert);
 /** @brief Select points whose named int attribute lies in an inclusive range. */
 PointSet filterPointIntAttribute(const PointSet& input, const std::string& name, std::int64_t minValue,
                                  std::int64_t maxValue, bool invert);
@@ -320,7 +377,7 @@ PointSet setPointVectorAttribute(const PointSet& input, const std::string& attri
                                                          const std::string& outputAttribute, float trueDefault,
                                                          float falseDefault);
 /** @brief Deterministically keep points according to density and a root seed. */
-PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplier);
+EVENGINE_API_DOMAINS PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplier);
 /**
  * @brief Remap surface slope (from normals) into density.
  *
@@ -352,11 +409,11 @@ PointSet assignWeightedMeshAttribute(const PointSet& input, uint32_t seed, const
                                      const std::string* meshes, const float* weights, int entryCount);
 
 /** @brief Assign partition indices from a string/int attribute (mode: value|hash). */
-PointSet partitionPointAttribute(const PointSet& input, const std::string& attribute,
-                                 const std::string& outputAttribute, const std::string& mode);
+EVENGINE_API_DOMAINS PointSet partitionPointAttribute(const PointSet& input, const std::string& attribute,
+                                                      const std::string& outputAttribute, const std::string& mode);
 /** @brief Write deterministic float noise into a metadata attribute. */
-PointSet noisePointFloatAttribute(const PointSet& input, const std::string& attribute, uint32_t seed,
-                                  float frequency, float amplitude, float offset);
+EVENGINE_API_DOMAINS PointSet noisePointFloatAttribute(const PointSet& input, const std::string& attribute,
+                                                       uint32_t seed, float frequency, float amplitude, float offset);
 /** @brief Apply integer math to an int metadata column. */
 PointSet mathPointIntAttribute(const PointSet& input, const std::string& attribute,
                                const std::string& outputAttribute, const std::string& operation, std::int64_t operand,
@@ -366,7 +423,8 @@ PointSet mathPointVectorAttribute(const PointSet& input, const std::string& attr
                                   const std::string& outputAttribute, const std::string& operation, float operandX,
                                   float operandY, float operandZ, float defaultX, float defaultY, float defaultZ);
 /** @brief Write a float into the PointSet @Data domain. */
-[[nodiscard]] Result<void> setPointDataFloatAttribute(PointSet& points, const std::string& attribute, float value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> setPointDataFloatAttribute(PointSet&          points,
+                                                                           const std::string& attribute, float value);
 /** @brief Write an int into the PointSet @Data domain. */
 [[nodiscard]] Result<void> setPointDataIntAttribute(PointSet& points, const std::string& attribute, std::int64_t value);
 /** @brief Write a string into the PointSet @Data domain. */

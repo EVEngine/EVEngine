@@ -1,6 +1,8 @@
-# 可交互积雪（Snow）
+# 天气模块：可交互积雪
 
-**脚本入口：** `eve.Snow()`
+**所属模块：** `weather`
+
+**脚本入口：** `eve.Snow()`（兼容的天气子服务）
 
 深度场积雪：雪面用一张与地形高度图同尺寸的 `SnowField` 浮点网格表达
 （1 = 满雪，0 = 露地）。同一份数据驱动两条渲染路径：
@@ -81,7 +83,7 @@ snow.updateTexture(sf, texH, gfx, "height");
 
 ## 参数与 API
 
-### Snow 模块
+### Weather 的 Snow 服务
 
 | API | 说明 |
 |---|---|
@@ -103,8 +105,9 @@ snow.updateTexture(sf, texH, gfx, "height");
 
 ## 实现方式
 
-- **数据**：纯 CPU 浮点网格（`src/modules/snow/SnowField.h`），无图形依赖，
-  便于单元测试；渲染桥接在 `Snow` 模块（`uploadTexture` / `applyToHeightmap`）。
+- **数据**：纯 CPU 浮点网格（`src/modules/weather/SnowField.h`），便于单元测试；
+  渲染与高度图桥接由 `weather` 模块中的 `Snow` 服务提供
+  （`uploadTexture` / `applyToHeightmap`）。
 - **位移**：复用 `heightmapTargets.newSmoothMesh / updateSmoothMesh`
   的高度图网格（顶点法线 = 高度场梯度，坑壁连续着色、无平直三角片），
   雪深直接加到高度值上，法线随重建自动重算。

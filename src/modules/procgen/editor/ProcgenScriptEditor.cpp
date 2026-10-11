@@ -12,7 +12,7 @@ namespace eve::procgen_editor {
 namespace {
 
 template <class T = void>
-procgen_editing::EditorResult<T> editorError(procgen_editing::EditorStatus status, std::string rule,
+procgen_editing::Result<T> editorError(procgen_editing::EditorStatus status, std::string rule,
                                              std::string message) {
     return eve::editing::failed<T>(status, eve::editing::RuleId(std::move(rule)), std::move(message));
 }
@@ -22,7 +22,7 @@ procgen_editing::EditorResult<T> editorError(procgen_editing::EditorStatus statu
 ProcgenScriptEditor::ProcgenScriptEditor(std::string targetId)
     : target_(std::move(targetId)), authority_(&target_), transactions_(&authority_) {}
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::configureWorkspace(
+procgen_editing::Result<void> ProcgenScriptEditor::configureWorkspace(
     editor::EditorWorkspace& workspace) const {
     editor::EditorWorkspace candidate = workspace;
     struct Panel {
@@ -65,9 +65,9 @@ editor::SelectionSnapshot ProcgenScriptEditor::selection() const {
     return snapshot;
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::commit(
-    procgen_editing::EditorResult<editing::DomainOperation> operation, std::string label) {
-    if (!operation.ok()) return procgen_editing::EditorResult<void>::failure(operation.status());
+procgen_editing::Result<void> ProcgenScriptEditor::commit(
+    procgen_editing::Result<editing::DomainOperation> operation, std::string label) {
+    if (!operation.ok()) return procgen_editing::Result<void>::failure(operation.status());
     editor::TransactionSpec spec;
     spec.id           = editor::TransactionId("procgen.script.tx." + std::to_string(++txSequence_));
     spec.label        = std::move(label);
@@ -80,53 +80,53 @@ procgen_editing::EditorResult<void> ProcgenScriptEditor::commit(
     if (!appended.ok()) {
         auto discarded = transactions_.discard();
         if (!discarded.ok()) discarded.ignore("pending procgen script transaction already inactive");
-        return procgen_editing::EditorResult<void>::failure(appended.status());
+        return procgen_editing::Result<void>::failure(appended.status());
     }
     auto committed = transactions_.commit();
-    if (!committed.ok()) return procgen_editing::EditorResult<void>::failure(committed.status());
+    if (!committed.ok()) return procgen_editing::Result<void>::failure(committed.status());
     dirty_     = true;
     previewFailureSummary_.clear();
     return eve::editing::applied<void>();
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::loadModule(procgen_editing::ProcgenScriptModuleSpec spec) {
+procgen_editing::Result<void> ProcgenScriptEditor::loadModule(procgen_editing::ProcgenScriptModuleSpec spec) {
     return commit(target_.makeLoadModule(std::move(spec)), "Load generator module");
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::loadModule(std::string uri, std::string id,
+procgen_editing::Result<void> ProcgenScriptEditor::loadModule(std::string uri, std::string id,
                                                                    std::string displayName, std::string kind,
                                                                    const procgen_editing::EditorValue& schema) {
     auto parsed = procgen_editing::ProcgenScriptDocumentTarget::parseSpec(std::move(uri), std::move(id),
                                                                           std::move(displayName), std::move(kind),
                                                                           schema);
-    if (!parsed.ok()) return procgen_editing::EditorResult<void>::failure(parsed.status());
+    if (!parsed.ok()) return procgen_editing::Result<void>::failure(parsed.status());
     return loadModule(std::move(parsed).takeValue());
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::setParam(std::string key,
+procgen_editing::Result<void> ProcgenScriptEditor::setParam(std::string key,
                                                                  procgen_editing::EditorValue value) {
     return commit(target_.makeSet(selection(), editing::PropertyPath("param." + key), std::move(value),
                                   editing::PropertySetMode::Absolute),
                   "Set generator parameter");
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::setInt(std::string key, int value) {
+procgen_editing::Result<void> ProcgenScriptEditor::setInt(std::string key, int value) {
     return setParam(std::move(key), procgen_editing::EditorValue(std::int64_t{value}));
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::setFloat(std::string key, double value) {
+procgen_editing::Result<void> ProcgenScriptEditor::setFloat(std::string key, double value) {
     return setParam(std::move(key), procgen_editing::EditorValue(value));
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::setBool(std::string key, bool value) {
+procgen_editing::Result<void> ProcgenScriptEditor::setBool(std::string key, bool value) {
     return setParam(std::move(key), procgen_editing::EditorValue(value));
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::setString(std::string key, std::string value) {
+procgen_editing::Result<void> ProcgenScriptEditor::setString(std::string key, std::string value) {
     return setParam(std::move(key), procgen_editing::EditorValue(std::move(value)));
 }
 
-procgen_editing::EditorResult<std::vector<ProcgenScriptEditor::PreviewPoint>> ProcgenScriptEditor::copyPoints(
+procgen_editing::Result<std::vector<ProcgenScriptEditor::PreviewPoint>> ProcgenScriptEditor::copyPoints(
     const procgen::PointSet* points) const {
     if (!points)
         return editorError<std::vector<PreviewPoint>>(procgen_editing::EditorStatus::Rejected,
@@ -147,14 +147,14 @@ procgen_editing::EditorResult<std::vector<ProcgenScriptEditor::PreviewPoint>> Pr
     return eve::editing::applied(std::move(next));
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::publishPreview(const procgen::PointSet* points,
+procgen_editing::Result<void> ProcgenScriptEditor::publishPreview(const procgen::PointSet* points,
                                                                         std::string stage,
                                                                         std::uint64_t expectedRevision) {
     if (expectedRevision != target_.revision())
         return editorError(procgen_editing::EditorStatus::Conflict, "editor.procgen.stale-preview",
                            "Preview revision does not match the generator document");
     auto copied = copyPoints(points);
-    if (!copied.ok()) return procgen_editing::EditorResult<void>::failure(copied.status());
+    if (!copied.ok()) return procgen_editing::Result<void>::failure(copied.status());
     if (stage.empty()) stage = "output";
     if (std::find(stageOrder_.begin(), stageOrder_.end(), stage) == stageOrder_.end())
         stageOrder_.push_back(stage);
@@ -166,20 +166,20 @@ procgen_editing::EditorResult<void> ProcgenScriptEditor::publishPreview(const pr
     return eve::editing::applied<void>();
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::publishStage(const procgen::PointSet* points,
+procgen_editing::Result<void> ProcgenScriptEditor::publishStage(const procgen::PointSet* points,
                                                                      std::string stage) {
     if (stage.empty())
         return editorError(procgen_editing::EditorStatus::Rejected, "editor.procgen.stage",
                            "Debug stage name must not be empty");
     auto copied = copyPoints(points);
-    if (!copied.ok()) return procgen_editing::EditorResult<void>::failure(copied.status());
+    if (!copied.ok()) return procgen_editing::Result<void>::failure(copied.status());
     if (std::find(stageOrder_.begin(), stageOrder_.end(), stage) == stageOrder_.end())
         stageOrder_.push_back(stage);
     stages_[stage] = std::move(copied).takeValue();
     return eve::editing::applied<void>();
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::failPreview(std::string message,
+procgen_editing::Result<void> ProcgenScriptEditor::failPreview(std::string message,
                                                                     std::uint64_t expectedRevision) {
     if (expectedRevision != target_.revision())
         return editorError(procgen_editing::EditorStatus::Conflict, "editor.procgen.stale-preview",
@@ -189,7 +189,7 @@ procgen_editing::EditorResult<void> ProcgenScriptEditor::failPreview(std::string
     return eve::editing::applied<void>();
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::selectStage(std::string stage) {
+procgen_editing::Result<void> ProcgenScriptEditor::selectStage(std::string stage) {
     if (stages_.find(stage) == stages_.end())
         return editorError(procgen_editing::EditorStatus::NotFound, "editor.procgen.stage",
                            "Debug stage was not found");
@@ -197,7 +197,7 @@ procgen_editing::EditorResult<void> ProcgenScriptEditor::selectStage(std::string
     return eve::editing::applied<void>();
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::setPointBudget(int budget) {
+procgen_editing::Result<void> ProcgenScriptEditor::setPointBudget(int budget) {
     if (budget < 0)
         return editorError(procgen_editing::EditorStatus::Rejected, "editor.procgen.point-budget",
                            "Point budget must not be negative");
@@ -205,12 +205,12 @@ procgen_editing::EditorResult<void> ProcgenScriptEditor::setPointBudget(int budg
     return eve::editing::applied<void>();
 }
 
-procgen_editing::EditorResult<void> ProcgenScriptEditor::setLive(bool enabled) {
+procgen_editing::Result<void> ProcgenScriptEditor::setLive(bool enabled) {
     continuousRebuild_ = enabled;
     return eve::editing::applied<void>();
 }
 
-procgen_editing::EditorResult<editor::TransactionReceipt> ProcgenScriptEditor::undo() {
+procgen_editing::Result<editor::TransactionReceipt> ProcgenScriptEditor::undo() {
     auto result = transactions_.undo();
     if (!result.ok()) return result;
     dirty_ = true;
@@ -218,7 +218,7 @@ procgen_editing::EditorResult<editor::TransactionReceipt> ProcgenScriptEditor::u
     return result;
 }
 
-procgen_editing::EditorResult<editor::TransactionReceipt> ProcgenScriptEditor::redo() {
+procgen_editing::Result<editor::TransactionReceipt> ProcgenScriptEditor::redo() {
     auto result = transactions_.redo();
     if (!result.ok()) return result;
     dirty_ = true;

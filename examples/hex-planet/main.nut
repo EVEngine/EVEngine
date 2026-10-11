@@ -1,3 +1,7 @@
+dofile("civilization.nut");
+dofile("civilization_view.nut");
+dofile("civilization_test.nut");
+
 // examples/hex-planet -- the hex terrain system wrapped onto a sphere, from orbit.
 //
 // This is the spherical counterpart of `examples/hex-terrain-3d`: the same module,
@@ -30,7 +34,7 @@ const ORBIT_SPEED = 0.30;   // degrees of rotation per pixel dragged
 const PITCH_MIN   = -78.0;  // never exactly +/-90: the up vector degenerates there
 const PITCH_MAX   = 78.0;
 const ZOOM_STEP   = 0.12;
-const ZOOM_MIN    = 1.12;   // as a multiple of the framing distance
+const ZOOM_MIN    = 0.42;   // close surface view, as a multiple of the framing distance
 const ZOOM_MAX    = 4.50;
 const SPIN_SPEED  = 4.0;    // degrees per second while auto-spin is on
 
@@ -56,6 +60,7 @@ function createState() {
         spinning = false,
 
         dragging   = false,
+        civMouse = false,
         lastMouseX = 0,
         lastMouseY = 0,
 
@@ -94,7 +99,7 @@ function updateCamera(st, dt) {
     local x = mouse.getX();
     local y = mouse.getY();
     local down = mouse.isDown(1);
-    if (down) {
+    if (down && civMapInput(x,y)) {
         if (st.dragging) {
             st.yaw -= (x - st.lastMouseX) * ORBIT_SPEED;
             st.pitch = clampf(st.pitch + (y - st.lastMouseY) * ORBIT_SPEED, PITCH_MIN, PITCH_MAX);
@@ -107,7 +112,7 @@ function updateCamera(st, dt) {
     st.lastMouseY = y;
 
     local wheel = mouse.getWheelY();
-    if (wheel != 0.0) st.zoom = clampf(st.zoom - wheel * ZOOM_STEP, ZOOM_MIN, ZOOM_MAX);
+    if (wheel != 0.0 && civMapInput(x,y)) st.zoom = clampf(st.zoom - wheel * ZOOM_STEP, ZOOM_MIN, ZOOM_MAX);
 
     applyCamera(st);
 }
@@ -118,8 +123,8 @@ function createShaders(st) {
     if (st.terrainShader != null) return true;
 
     // The engine's built-in Mesh3D vertex stage already produces the varyings both
-    // fragment stages consume, so only the fragment stages ship -- as SPIR-V, because
-    // runtime GLSL compilation is unavailable on Windows.
+    // fragment stages consume, so only the fragment stages are shipped -- as SPIR-V,
+    // which needs no runtime compiler.
     local terrain = gfx.loadMeshShaderSpv("", "shaders/hex_planet_terrain.frag.spv");
     if (!terrain.ok) {
         print("hex planet: terrain shader failed: " + terrain.status.summary + "\n");
@@ -198,6 +203,22 @@ function reportDistribution(st) {
           (hexmap.sphereWaterMesh() != null) + "\n");
 }
 
+function fillSphereTerrain(st) {
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return paramsResult;
+    local params = paramsResult.value;
+    params.setSeed(st.seed);
+    local defaults = procgen.applyAlgorithmDefaults("hex.sphere", params);
+    if (!defaults.ok) return defaults;
+    params.setInt("subdivision", st.subdivision);
+    params.setFloat("radius", st.radius);
+    params.setInt("landPercentage", st.landPercent);
+    params.setInt("waterLevel", st.waterLevel);
+    local baked = procgen.generateHexSphere(params);
+    if (!baked.ok) return baked;
+    return hexmap.applySphereTerrain(gfx, baked.value);
+}
+
 function buildPlanet(st) {
     local created = hexmap.newSphere(gfx, st.subdivision, st.radius, st.seed);
     if (!created.ok) {
@@ -206,7 +227,7 @@ function buildPlanet(st) {
         return false;
     }
 
-    local generated = hexmap.generateSphere(gfx, st.seed, st.landPercent, st.waterLevel);
+    local generated = fillSphereTerrain(st);
     if (!generated.ok) {
         st.statusText = "generate failed: " + generated.status.summary;
         print("hex planet: " + st.statusText + "\n");
@@ -219,18 +240,21 @@ function buildPlanet(st) {
     print("hex planet: " + st.landPercent + "% land, water line " + st.waterLevel + ", spacing " +
           hexmap.sphereCellSpacing() + "\n");
     reportDistribution(st);
+    civReset(st.seed);
     print("hex planet: LMB drag orbit | wheel zoom | space spin | R new seed | [ ] subdivision | - = land\n");
     return true;
 }
 
 function regenerate(st) {
-    local generated = hexmap.generateSphere(gfx, st.seed, st.landPercent, st.waterLevel);
+    local generated = fillSphereTerrain(st);
     if (!generated.ok) {
         st.statusText = "generate failed: " + generated.status.summary;
         return;
     }
     bindMeshes(st);
     st.statusText = describePlanet(st) + ", seed " + st.seed;
+    civReset(st.seed);
+    civFocus(st);
 }
 
 // --- input ------------------------------------------------------------------
@@ -283,33 +307,6 @@ function handleKeys(st) {
 
 // --- HUD --------------------------------------------------------------------
 
-function buildHud(st) {
-    // Widgets only exist inside a window, so the panel is built once and then updated
-    // by label in `refreshHud`.
-    ui.beginBuild();
-    ui.beginWindow("HexPlanet", "root");
-    ui.text("EVEngine Hex Planet", "title");
-    ui.text("", "planet");
-    ui.text("", "view");
-    ui.separator("sep");
-    ui.text("[LMB]orbit [wheel]zoom [space]spin [R]seed", "help1");
-    ui.text("[[/]]subdivision [-/=]land [F5]shot [esc]reset", "help2");
-    ui.end();
-    ui.mountBuildAs("hud");
-    ui.select("hud");
-    ui.setHostOverlay(true);
-    ui.setHostVisible(true);
-    ui.setHostPos(12.0, 12.0, 0.0, 0.0);
-    st.uiBuilt = true;
-}
-
-function refreshHud(st) {
-    if (!st.uiBuilt) return;
-    ui.select("hud");
-    ui.setText("planet", "planet: " + st.statusText);
-    ui.setText("view", "view: yaw " + st.yaw + "  pitch " + st.pitch + "  zoom " + st.zoom);
-}
-
 // --- entry points -----------------------------------------------------------
 
 eve_init = function() {
@@ -332,7 +329,9 @@ eve_init = function() {
     createRenderables(st);
     buildPlanet(st);
     bindMeshes(st);
-    buildHud(st);
+    civHud();
+    civFocus(st);
+    print("hex civilization: initialization complete\n");
     applyCamera(st);
 };
 
@@ -341,10 +340,14 @@ eve_update = function(dt) {
     if (st == null) return;
     st.elapsed += dt;
     st.frames += 1;
+    if (st.frames == 100 && getenv("EVE_HEX_CIV_TEST") == "1") civJourney();
+
+    if (st.frames == 110 && getenv("EVE_HEX_CIV_TEST") == "1") civUiContracts();
 
     handleKeys(st);
+    civInput(st);
     updateCamera(st, dt);
-    refreshHud(st);
+    civRefresh();
 
     // Readback is enabled by the first call, so retry until the frame lands. The
     // default pose is static, so the saved frame is reproducible run to run.
@@ -355,5 +358,6 @@ eve_update = function(dt) {
 eve_render = function() {
     gfx.clear();
     gfx.render3D();
+    civRender(planet);
     ui.beginFrameAndRender();
 };

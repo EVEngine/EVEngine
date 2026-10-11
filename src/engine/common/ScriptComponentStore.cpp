@@ -32,8 +32,7 @@ Diagnostic storeDiagnostic(DiagnosticCode code, std::string message, const std::
 Result<void> setScriptComponentValues(const ScriptComponentStoreKey& key, Value values) {
     if (!values.isObject())
         return Result<void>::failure(
-            storeDiagnostic(DiagnosticCode::InvalidArgument, "script component values must be an object",
-                            key.name));
+            storeDiagnostic(DiagnosticCode::InvalidArgument, "script component values must be an object", key.name));
     scriptComponentStore()[key] = std::move(values);
     bumpScriptComponentRevision();
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -103,14 +102,14 @@ void reconcileScriptComponentValues(const std::string& name, SchemaVersion versi
                 rebuilt.emplace(fields[index], index < defaults.size() ? defaults[index] : Value::null());
             }
         }
-        values = Value::object(std::move(rebuilt));
+        values  = Value::object(std::move(rebuilt));
         touched = true;
     }
     if (touched) bumpScriptComponentRevision();
 }
 
 std::size_t removeScriptComponentValues(std::uint64_t entityId) {
-    Store&      store = scriptComponentStore();
+    Store&      store   = scriptComponentStore();
     std::size_t removed = 0;
     for (auto it = store.begin(); it != store.end();) {
         if (it->first.entityId == entityId) {

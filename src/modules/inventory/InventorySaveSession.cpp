@@ -15,11 +15,6 @@ namespace eve::inventory {
 
 namespace {
 
-template <typename T>
-eve::Result<T> inventoryFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 double number(const eve::Value &value) {
     return value.isInt64() ? static_cast<double>(value.asInt()) : value.asDouble();
 }
@@ -50,16 +45,16 @@ eve::Value encodeStack(const ItemStack &stack) {
 
 eve::Result<std::vector<std::string>> decodeStrings(const eve::Value *encoded, const std::string &path) {
     if (!encoded || !encoded->isArray())
-        return inventoryFailure<std::vector<std::string>>(eve::DiagnosticCode::ParseError,
-                                                          "expected an array of strings", path);
+        return eve::Result<std::vector<std::string>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "expected an array of strings", path));
     std::vector<std::string> result;
     std::unordered_set<std::string> seen;
     result.reserve(encoded->arraySize());
     for (std::size_t i = 0; i < encoded->arraySize(); ++i) {
         const auto &entry = encoded->at(i);
         if (!entry.isString() || entry.asString().empty() || !seen.emplace(entry.asString()).second)
-            return inventoryFailure<std::vector<std::string>>(eve::DiagnosticCode::InvalidArgument,
-                                                              "tag values must be non-empty and unique", path);
+            return eve::Result<std::vector<std::string>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "tag values must be non-empty and unique", path));
         result.push_back(entry.asString());
     }
     return eve::Result<std::vector<std::string>>::success(std::move(result));
@@ -68,14 +63,14 @@ eve::Result<std::vector<std::string>> decodeStrings(const eve::Value *encoded, c
 eve::Result<std::unordered_map<std::string, std::string>> decodeMap(const eve::Value *encoded,
                                                                     const std::string &path) {
     if (!encoded || !encoded->isObject())
-        return inventoryFailure<std::unordered_map<std::string, std::string>>(
-            eve::DiagnosticCode::ParseError, "expected a string map", path);
+        return eve::Result<std::unordered_map<std::string, std::string>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "expected a string map", path));
     std::unordered_map<std::string, std::string> result;
     for (const auto &key : encoded->keys()) {
         const eve::Value *value = encoded->find(key);
         if (key.empty() || !value || !value->isString())
-            return inventoryFailure<std::unordered_map<std::string, std::string>>(
-                eve::DiagnosticCode::InvalidArgument, "map keys and values must be strings", path);
+            return eve::Result<std::unordered_map<std::string, std::string>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "map keys and values must be strings", path));
         result.emplace(key, value->asString());
     }
     return eve::Result<std::unordered_map<std::string, std::string>>::success(std::move(result));
@@ -84,14 +79,16 @@ eve::Result<std::unordered_map<std::string, std::string>> decodeMap(const eve::V
 eve::Result<ItemStack> decodeStack(const eve::Value &encoded, const std::string &path, int &largestId,
                                    std::unordered_set<int> &instanceIds) {
     if (!encoded.isObject())
-        return inventoryFailure<ItemStack>(eve::DiagnosticCode::ParseError, "item stack must be an object", path);
+        return eve::Result<ItemStack>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "item stack must be an object", path));
     const eve::Value *instanceId = encoded.find("instanceId");
     const eve::Value *itemId = encoded.find("itemId");
     const eve::Value *quantity = encoded.find("quantity");
     const eve::Value *durability = encoded.find("durability");
     if (!instanceId || !instanceId->isInt64() || !itemId || !itemId->isString() || !quantity ||
         !quantity->isInt64() || !durability || !durability->isNumeric() || !std::isfinite(number(*durability)))
-        return inventoryFailure<ItemStack>(eve::DiagnosticCode::ParseError, "item stack fields are invalid", path);
+        return eve::Result<ItemStack>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "item stack fields are invalid", path));
 
     auto props = decodeMap(encoded.find("props"), path + ".props");
     if (!props.ok()) return eve::Result<ItemStack>::failure(props.status());
@@ -108,18 +105,19 @@ eve::Result<ItemStack> decodeStack(const eve::Value &encoded, const std::string 
     if (stack.itemId.empty() || stack.quantity <= 0) {
         if (stack.instanceId != 0 || !stack.itemId.empty() || stack.quantity != 0 || stack.durability != -1.f ||
             !stack.props.empty() || !stack.tags.empty())
-            return inventoryFailure<ItemStack>(eve::DiagnosticCode::InvalidArgument,
-                                               "empty item stack must use canonical empty values", path);
+            return eve::Result<ItemStack>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "empty item stack must use canonical empty values", path));
         return eve::Result<ItemStack>::success(std::move(stack));
     }
 
     const ItemDefinition *definition = ItemRegistry::find(stack.itemId);
     if (!definition)
-        return inventoryFailure<ItemStack>(eve::DiagnosticCode::NotFound,
-                                           "item definition referenced by snapshot is not registered", path + ".itemId");
+        return eve::Result<ItemStack>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                   "item definition referenced by snapshot is not registered", path + ".itemId"));
     if (stack.instanceId <= 0 || stack.quantity > definition->maxStack || !instanceIds.emplace(stack.instanceId).second)
-        return inventoryFailure<ItemStack>(eve::DiagnosticCode::Conflict,
-                                           "item identity or stack quantity is invalid", path);
+        return eve::Result<ItemStack>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "item identity or stack quantity is invalid", path));
     largestId = std::max(largestId, stack.instanceId);
     return eve::Result<ItemStack>::success(std::move(stack));
 }
@@ -151,8 +149,8 @@ void InventorySaveSession::bind(Bag &bag, EquipmentSet &equipment) noexcept {
 
 eve::Result<std::string> InventorySaveSession::snapshotJson() const {
     if (!bag_ || !equipment_)
-        return inventoryFailure<std::string>(eve::DiagnosticCode::PreconditionViolation,
-                                             "inventory save session requires bound participants");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "inventory save session requires bound participants", {}));
     eve::Value::Array slots;
     slots.reserve(bag_->slots_.size());
     for (const auto &stack : bag_->slots_) slots.emplace_back(encodeStack(stack));
@@ -198,8 +196,8 @@ eve::Result<std::string> InventorySaveSession::snapshotJson() const {
 eve::Result<InventorySaveSession::PreparedRestore> InventorySaveSession::prepareRestoreSnapshotJson(
     std::string_view json) const {
     if (!bag_ || !equipment_)
-        return inventoryFailure<PreparedRestore>(eve::DiagnosticCode::PreconditionViolation,
-                                                 "inventory save session requires bound participants");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "inventory save session requires bound participants", {}));
     InventorySystem::ensureBuiltins();
     auto parsed = eve::Value::fromJson(json);
     if (!parsed.ok()) return eve::Result<PreparedRestore>::failure(parsed.status());
@@ -207,16 +205,16 @@ eve::Result<InventorySaveSession::PreparedRestore> InventorySaveSession::prepare
     const eve::Value *schema = root.isObject() ? root.find("schema") : nullptr;
     const eve::Value *version = root.isObject() ? root.find("version") : nullptr;
     if (!schema || !schema->isString() || schema->asString() != "eve.inventory.save-session")
-        return inventoryFailure<PreparedRestore>(eve::DiagnosticCode::InvalidArgument,
-                                                 "snapshot does not belong to InventorySaveSession", "$.schema");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to InventorySaveSession", "$.schema"));
     if (!version || !version->isInt64() || version->asInt() != 1)
-        return inventoryFailure<PreparedRestore>(eve::DiagnosticCode::UnknownVersion,
-                                                 "unsupported inventory snapshot version", "$.version");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "unsupported inventory snapshot version", "$.version"));
     const eve::Value *bag = root.find("bag");
     const eve::Value *equipment = root.find("equipment");
     if (!bag || !bag->isObject() || !equipment || !equipment->isObject())
-        return inventoryFailure<PreparedRestore>(eve::DiagnosticCode::ParseError,
-                                                 "inventory participants must be objects", "$");
+        return eve::Result<PreparedRestore>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "inventory participants must be objects", "$"));
 
     PreparedRestore candidate;
     const eve::Value *bagId = bag->find("id");
@@ -232,13 +230,13 @@ eve::Result<InventorySaveSession::PreparedRestore> InventorySaveSession::prepare
         !std::isfinite(number(*maxWeight)) || number(*maxWeight) < 0.0 || !std::isfinite(number(*maxVolume)) ||
         number(*maxVolume) < 0.0 || !acceptRule || !acceptRule->isString() || !capacityPolicy ||
         !capacityPolicy->isString() || !stackRule || !stackRule->isString() || !slots || !slots->isArray())
-        return inventoryFailure<PreparedRestore>(eve::DiagnosticCode::ParseError,
-                                                 "bag configuration is invalid", "$.bag");
+        return eve::Result<PreparedRestore>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "bag configuration is invalid", "$.bag"));
     if (!InventorySystem::hasAcceptRule(acceptRule->asString()) ||
         !InventorySystem::hasCapacityPolicy(capacityPolicy->asString()) ||
         !InventorySystem::hasStackRule(stackRule->asString()))
-        return inventoryFailure<PreparedRestore>(eve::DiagnosticCode::NotFound,
-                                                 "bag snapshot references an unregistered policy", "$.bag");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "bag snapshot references an unregistered policy", "$.bag"));
     auto preparedBag = std::make_unique<Bag>(static_cast<int>(slots->arraySize()));
     preparedBag->id_ = bagId->asString();
     preparedBag->kind_ = kind->asString();
@@ -268,8 +266,8 @@ eve::Result<InventorySaveSession::PreparedRestore> InventorySaveSession::prepare
     const eve::Value *equipmentId = equipment->find("id");
     const eve::Value *equipmentSlots = equipment->find("slots");
     if (!equipmentId || !equipmentId->isString() || !equipmentSlots || !equipmentSlots->isArray())
-        return inventoryFailure<PreparedRestore>(eve::DiagnosticCode::ParseError,
-                                                 "equipment configuration is invalid", "$.equipment");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "equipment configuration is invalid", "$.equipment"));
     auto preparedEquipment = std::make_unique<EquipmentSet>();
     preparedEquipment->id_ = equipmentId->asString();
     std::unordered_set<std::string> slotNames;
@@ -279,8 +277,8 @@ eve::Result<InventorySaveSession::PreparedRestore> InventorySaveSession::prepare
         const eve::Value *stackValue = encoded.isObject() ? encoded.find("stack") : nullptr;
         if (!name || !name->isString() || name->asString().empty() ||
             !slotNames.emplace(name->asString()).second || !stackValue)
-            return inventoryFailure<PreparedRestore>(eve::DiagnosticCode::InvalidArgument,
-                                                     "equipment slot identity is invalid", "$.equipment.slots");
+            return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "equipment slot identity is invalid", "$.equipment.slots"));
         auto allowed = decodeStrings(encoded.find("allowedTags"), "$.equipment.slots.allowedTags");
         if (!allowed.ok()) return eve::Result<PreparedRestore>::failure(allowed.status());
         auto stack = decodeStack(*stackValue, "$.equipment.slots[" + std::to_string(index) + "].stack",
@@ -290,8 +288,8 @@ eve::Result<InventorySaveSession::PreparedRestore> InventorySaveSession::prepare
         auto allowedTags = std::move(allowed).takeValue();
         auto stackState = std::move(stack).takeValue();
         if (!stackMatchesEquipmentSlot(stackState, slotName, allowedTags))
-            return inventoryFailure<PreparedRestore>(eve::DiagnosticCode::Conflict,
-                                                     "equipped item violates its slot contract", "$.equipment.slots");
+            return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "equipped item violates its slot contract", "$.equipment.slots"));
         preparedEquipment->defineSlot(slotName);
         preparedEquipment->slots_.at(slotName).allowedTags = std::move(allowedTags);
         preparedEquipment->slots_.at(slotName).stack = std::move(stackState);

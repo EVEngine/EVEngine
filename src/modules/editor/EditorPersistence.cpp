@@ -38,13 +38,13 @@ DomainOperation decodeOperation(const EditorValue& value) {
     return operation;
 }
 
-EditorResult<EditorPersistenceSnapshot> persistenceError(EditorStatus status, const char* rule, std::string message) {
+Result<EditorPersistenceSnapshot> persistenceError(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<EditorPersistenceSnapshot>(status, RuleId(rule), std::move(message));
 }
 
 }  // namespace
 
-EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::load() const {
+Result<EditorPersistenceSnapshot> EditorPersistenceAdapter::load() const {
     if (!store_ || resourceUri_.empty())
         return persistenceError(EditorStatus::Rejected, "editor.persistence.invalid",
                                 "Persistence store and URI are required");
@@ -55,12 +55,12 @@ EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::load() const {
             empty.kind = kind_;
             return eve::editing::applied<EditorPersistenceSnapshot>(std::move(empty));
         }
-        return EditorResult<EditorPersistenceSnapshot>::failure(stored.status());
+        return Result<EditorPersistenceSnapshot>::failure(stored.status());
     }
     return decode(kind_, stored.value());
 }
 
-EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::commit(const EditorPersistenceSnapshot& base,
+Result<EditorPersistenceSnapshot> EditorPersistenceAdapter::commit(const EditorPersistenceSnapshot& base,
                                                                          EditorValue                      content,
                                                                          std::vector<DomainOperation>     journal) {
     if (!store_ || base.kind != kind_)
@@ -74,11 +74,11 @@ EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::commit(const E
     envelope["journal"]       = EditorValue(std::move(serializedJournal));
     auto stored =
         store_->compareAndSwap(resourceUri_, base.revision, base.contentHash, EditorValue(std::move(envelope)));
-    if (!stored.ok()) return EditorResult<EditorPersistenceSnapshot>::failure(stored.status());
+    if (!stored.ok()) return Result<EditorPersistenceSnapshot>::failure(stored.status());
     return decode(kind_, stored.value());
 }
 
-EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::decode(EditorPersistenceKind kind,
+Result<EditorPersistenceSnapshot> EditorPersistenceAdapter::decode(EditorPersistenceKind kind,
                                                                          const StoredDocument& stored) {
     const auto* envelope = stored.content.getIf<EditorValue::Object>();
     if (!envelope)

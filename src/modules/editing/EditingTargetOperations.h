@@ -10,6 +10,7 @@ namespace eve::editing {
 /** @brief Editable-target capability that applies owning domain operations. */
 class IDomainOperationTarget : public virtual IEditableTarget {
 public:
+    /** @brief Releases IDomainOperationTarget resources. */
     ~IDomainOperationTarget() override = default;
 
     /**
@@ -24,6 +25,7 @@ public:
 /** @brief Optional candidate/publish capability for atomic domain operations. */
 class IDomainOperationTargetStaging {
 public:
+    /** @brief Releases IDomainOperationTargetStaging resources. */
     virtual ~IDomainOperationTargetStaging() = default;
 
     /**

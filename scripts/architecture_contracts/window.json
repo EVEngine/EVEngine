@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "window-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/window/**",
+      "owner": "window::Window",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Window SDL sink caches the module owner; surface host remains a capability query on app lifecycle watches.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/window/sdl/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "WindowEventSink",
+          "absent_behavior": "resize sync skipped when sink unbound"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IWindowSurfaceHost",
+          "required": false,
+          "fallback": "surface recreate skipped when graphics absent"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Window",
+          "methods": [
+            "getWidth",
+            "getHeight"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "profiles without window drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "cost_notes": [],
+      "hot_path": [
+        "src/modules/window/sdl/EventSink.cpp"
+      ]
+    }
+  ]
+}

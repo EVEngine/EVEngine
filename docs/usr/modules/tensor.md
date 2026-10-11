@@ -45,9 +45,10 @@ CompiledFunction；run 接收 eager feed 并返回 eager 输出。shape 与 dtyp
 2. **专用 kernel 代码生成**（`KernelGen`）：每个融合组生成一份形状全部烘焙为
    常量的着色器：Vulkan 使用 GLSL，WebGPU 直接生成 WGSL。softmax/layernorm 使用两遍 kernel；SDPA 使用共享内存的融合
    attention；matmul 提供 naive 与 16x16 tiled 两种模板。
-3. **进程内 GLSL→SPIR-V 编译**：Windows 上链接 Vulkan SDK 的 shaderc
-   （glslang + SPIRV-Tools）静态库，不依赖外部 glslc.exe；找不到 shaderc 时回退
-   到调用 glslc。WebGPU 将 WGSL 直接交给 Dawn／浏览器编译，不需要 glslc。
+3. **进程内 GLSL→SPIR-V 编译**：与 graphics 共用同一实现
+   （`graphics/vulkan/GlslCompiler.cpp`）。Windows 上链接 Vulkan SDK 的 shaderc
+   （glslang + SPIRV-Tools）静态库，不依赖外部 glslc.exe；没有 shaderc 的构建才回退
+   到调用 PATH 上的 glslc。WebGPU 将 WGSL 直接交给 Dawn／浏览器编译，不需要 glslc。
 4. **matmul 自动调优**：编译时对 naive / tiled 两种变体各计时 5 次，选择更快者。
 5. **整图单次提交**（`GpuBackend` + `gpgpu::Sequence`）：一次 `run()` 把
    placeholder 上传、所有融合组的 kernel dispatch、输出回读录制进同一个

@@ -6,6 +6,7 @@
 
 namespace eve {
 namespace detail {
+/** @brief GenerationTag public API. */
 struct GenerationTag {};
 }  // namespace detail
 /** @brief Registry/object replacement generation used to reject stale handles. */

@@ -62,9 +62,8 @@ external/pylibs/
 __pycache__/
 *.pyc
 *.log
-# Hot-reload snapshot written into the working directory (ReloadSession.cpp);
-# a runtime artifact that tests leave behind, never a source file.
-eve_snapshot.json
-# Scenario round-trip dump written into the working directory by
-# test/scenario_recorder.cpp; same category.
-scenario_roundtrip_test.json
+
+# Test byproducts written into the working directory by the suites root-cwd runs.
+/eve_snapshot.json
+/scenario_repro_test.json
+/scenario_roundtrip_test.json

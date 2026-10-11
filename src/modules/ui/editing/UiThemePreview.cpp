@@ -37,9 +37,9 @@ UiThemePreviewSnapshot UiThemePreviewService::build(const UiThemeCatalogTarget& 
     return snapshot;
 }
 
-EditorResult<void> UiThemeRuntimePublisher::publish(const UiThemeCatalogTarget& catalog) const {
+Result<void> UiThemeRuntimePublisher::publish(const UiThemeCatalogTarget& catalog) const {
     auto asset = catalog.theme(catalog.activeId());
-    if (!asset.ok()) return EditorResult<void>::failure(asset.status());
+    if (!asset.ok()) return Result<void>::failure(asset.status());
     auto diagnostics = validateThemeTokens(asset.value().tokens);
     if (!diagnostics.empty())
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.publish"),

@@ -11,7 +11,7 @@
 namespace eve::editor {
 namespace {
 
-EditorResult<DiskAssetScanResult> scanError(EditorStatus status, const char* rule, std::string message) {
+Result<DiskAssetScanResult> scanError(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<DiskAssetScanResult>(status, RuleId(rule), std::move(message));
 }
 
@@ -40,7 +40,7 @@ std::filesystem::path DiskAssetCatalog::resolveContent(const std::filesystem::pa
     return candidate;
 }
 
-EditorResult<void> DiskAssetCatalog::writeSidecar(const std::filesystem::path& contentRelativePath, AssetGuid guid,
+Result<void> DiskAssetCatalog::writeSidecar(const std::filesystem::path& contentRelativePath, AssetGuid guid,
                                                   std::string typeId, std::uint32_t schemaVersion) {
     const auto source = resolveContent(contentRelativePath);
     if (source.empty() || guid.empty() || typeId.empty())
@@ -74,7 +74,7 @@ EditorResult<void> DiskAssetCatalog::writeSidecar(const std::filesystem::path& c
     return eve::editing::applied<void>();
 }
 
-EditorResult<DiskAssetScanResult> DiskAssetCatalog::scan() {
+Result<DiskAssetScanResult> DiskAssetCatalog::scan() {
     if (!database_ || contentRoot_.empty())
         return scanError(EditorStatus::Rejected, "editor.asset.catalog-invalid",
                          "Asset database and Content root are required");
@@ -139,7 +139,7 @@ EditorResult<DiskAssetScanResult> DiskAssetCatalog::scan() {
     return eve::editing::applied<DiskAssetScanResult>(std::move(result), std::move(diagnostics));
 }
 
-EditorResult<DiskAssetScanResult> DiskAssetCatalog::poll() { return scan(); }
+Result<DiskAssetScanResult> DiskAssetCatalog::poll() { return scan(); }
 
 std::string DiskAssetCatalog::fileHash(const std::filesystem::path& path) {
     std::ifstream input(path, std::ios::binary);

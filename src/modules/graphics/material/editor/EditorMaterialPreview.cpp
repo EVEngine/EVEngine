@@ -7,11 +7,6 @@
 namespace eve::editor {
 namespace {
 
-template <class T>
-EditorResult<T> previewError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 std::vector<EditorDiagnostic> validateSettings(const MaterialPreviewSettings& settings) {
     std::vector<EditorDiagnostic> diagnostics;
     const auto error = [&](const char* rule, std::string message) {
@@ -35,20 +30,20 @@ std::vector<EditorDiagnostic> validateSettings(const MaterialPreviewSettings& se
 
 }  // namespace
 
-EditorResult<TaskId> MaterialPreviewService::render(const DocumentId& document,
+Result<TaskId> MaterialPreviewService::render(const DocumentId& document,
                                                     const MaterialDocumentTarget& material,
                                                     MaterialPreviewSettings settings,
                                                     IMaterialPreviewRenderer& renderer) {
     if (document.empty())
-        return previewError<TaskId>(EditorStatus::Rejected, "editor.material.preview-document",
-                                    "Material preview document id is required");
+        return eve::editing::failed<TaskId>(EditorStatus::Rejected, RuleId("editor.material.preview-document"),
+                                            "Material preview document id is required");
     auto diagnostics = material.validate();
     auto settingsDiagnostics = validateSettings(settings);
     diagnostics.insert(diagnostics.end(), std::make_move_iterator(settingsDiagnostics.begin()),
                        std::make_move_iterator(settingsDiagnostics.end()));
     for (const EditorDiagnostic& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<TaskId>::failure(
+            return Result<TaskId>::failure(
                 Status(EditorStatus::Rejected, std::move(diagnostics)));
     const TaskId task("material-preview-" + std::to_string(++sequence_));
     MaterialPreviewRenderRequest request;
@@ -69,32 +64,32 @@ EditorResult<TaskId> MaterialPreviewService::render(const DocumentId& document,
     return eve::editing::applied<TaskId>(task);
 }
 
-EditorResult<MaterialPreviewRenderResult> MaterialPreviewService::result(const TaskId& task) const {
+Result<MaterialPreviewRenderResult> MaterialPreviewService::result(const TaskId& task) const {
     const auto found = tasks_.find(task);
     if (found == tasks_.end())
-        return previewError<MaterialPreviewRenderResult>(EditorStatus::NotFound,
-                                                         "editor.material.preview-task-not-found",
-                                                         "Material preview task was not found");
+        return eve::editing::failed<MaterialPreviewRenderResult>(EditorStatus::NotFound,
+                                                                 RuleId("editor.material.preview-task-not-found"),
+                                                                 "Material preview task was not found");
     return eve::editing::applied<MaterialPreviewRenderResult>(found->second.result);
 }
 
-EditorResult<void> MaterialPreviewService::publish(const DocumentId& document, Revision currentRevision,
+Result<void> MaterialPreviewService::publish(const DocumentId& document, Revision currentRevision,
                                                    const TaskId& task) {
     const auto found = tasks_.find(task);
     if (found == tasks_.end())
-        return previewError<void>(EditorStatus::NotFound, "editor.material.preview-task-not-found",
-                                  "Material preview task was not found");
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.material.preview-task-not-found"),
+                                          "Material preview task was not found");
     if (found->second.document != document)
-        return previewError<void>(EditorStatus::Rejected, "editor.material.preview-document-mismatch",
-                                  "Material preview belongs to another document");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.preview-document-mismatch"),
+                                          "Material preview belongs to another document");
     if (found->second.revision != currentRevision)
-        return previewError<void>(EditorStatus::Conflict, "editor.material.preview-stale",
-                                  "Material changed after the preview was rendered");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material.preview-stale"),
+                                          "Material changed after the preview was rendered");
     if (found->second.result.status != EditorStatus::Applied || found->second.result.artifact.empty()) {
         const EditorStatus status = found->second.result.status == EditorStatus::Applied
                                         ? EditorStatus::Failed
                                         : found->second.result.status;
-        return EditorResult<void>::failure(Status(status, found->second.result.diagnostics));
+        return Result<void>::failure(Status(status, found->second.result.diagnostics));
     }
     published_[document] = found->second.result.artifact;
     return eve::editing::applied<void>();

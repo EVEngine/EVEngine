@@ -26,6 +26,7 @@ inline constexpr const char* kRuleDiagnosticDetail = "rule";
                                                DiagnosticSeverity severity, std::string message) {
     eve::DiagnosticDetails details;
     details.emplace_back(kRuleDiagnosticDetail, rule.value());
+    /** @brief Diagnostic. */
     return Diagnostic(code, severity, std::move(message), {}, std::move(details), "editing");
 }
 
@@ -38,14 +39,18 @@ inline constexpr const char* kRuleDiagnosticDetail = "rule";
 
 /** @brief Construct an Applied result with an owning payload and optional diagnostics. */
 template <class T>
+/** @brief Applied. */
 [[nodiscard]] Result<T> applied(T value, std::vector<Diagnostic> diagnostics = {}) {
+    /** @brief Success. */
     return Result<T>::success(std::move(value), eve::Status(Status::Applied, std::move(diagnostics)));
 }
 
 /** @brief Construct an Applied void result with optional diagnostics. */
 template <class T = void>
     requires std::is_void_v<T>
+/** @brief Applied. */
 [[nodiscard]] Result<void> applied(std::vector<Diagnostic> diagnostics = {}) {
+    /** @brief Success. */
     return Result<void>::success(eve::Status(Status::Applied, std::move(diagnostics)));
 }
 
@@ -61,10 +66,15 @@ template <class T = void>
 
 /** @brief Construct a failed editing result with explicit status and diagnostic categories. */
 template <class T>
+/** @brief Failed. */
 [[nodiscard]] Result<T> failed(Status status, eve::DiagnosticCode code, RuleId rule, std::string message) {
+    /** @brief Ev assert. */
     EV_ASSERT(eve::Status(status, {}).isFailure(), "editing::failed requires a failure StatusCode");
+    /** @brief Failure. */
     return Result<T>::failure(
+        /** @brief Failure. */
         eve::Status::failure(status, ruleDiagnostic(code, std::move(rule), DiagnosticSeverity::Error,
+                                                   /** @brief Moves move. */
                                                    std::move(message))));
 }
 
@@ -87,12 +97,14 @@ template <class T>
 
 /** @brief Migration convenience using the canonical coarse category for the failure status. */
 template <class T>
+/** @brief Failed. */
 [[nodiscard]] Result<T> failed(Status status, RuleId rule, std::string message) {
     return failed<T>(status, diagnosticCodeForStatus(status), std::move(rule), std::move(message));
 }
 
 /** @brief Construct a Rejected result for invalid editing input or preconditions. */
 template <class T>
+/** @brief Rejected. */
 [[nodiscard]] Result<T> rejected(RuleId rule, std::string message,
                                  eve::DiagnosticCode code = eve::DiagnosticCode::PreconditionViolation) {
     return failed<T>(Status::Rejected, code, std::move(rule), std::move(message));

@@ -12,13 +12,13 @@ bool selected(const std::vector<Id>& values, const Id& id) {
     return std::find(values.begin(), values.end(), id) != values.end();
 }
 
-EditorResult<RuntimeEditorPackage> manifestError(const char* rule, std::string message) {
+Result<RuntimeEditorPackage> manifestError(const char* rule, std::string message) {
     return eve::editing::failed<RuntimeEditorPackage>(EditorStatus::Rejected, RuleId(rule), std::move(message));
 }
 
 }  // namespace
 
-EditorResult<RuntimeEditorPackage> RuntimeEditorPublisher::publish(const RuntimeEditorManifest&   manifest,
+Result<RuntimeEditorPackage> RuntimeEditorPublisher::publish(const RuntimeEditorManifest&   manifest,
                                                                    const EditorCommandService&    commands,
                                                                    const EditorExtensionRegistry& extensions,
                                                                    const MemoryAssetDatabase&     assets) const {

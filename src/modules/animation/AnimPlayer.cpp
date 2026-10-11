@@ -1,6 +1,7 @@
 #include "animation/AnimPlayer.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/RootMotionPolicy.h"
 
 #include "common/Exception.h"
 
@@ -8,6 +9,22 @@
 #include <cmath>
 
 namespace eve::animation {
+namespace {
+
+TransformTRS rootMotionDelta(const TransformTRS& from, const TransformTRS& to) {
+    TransformTRS delta = TransformTRS::identity();
+    delta.px           = to.px - from.px;
+    delta.py           = to.py - from.py;
+    delta.pz           = to.pz - from.pz;
+    delta.qx           = from.qw * to.qx - from.qx * to.qw - from.qy * to.qz + from.qz * to.qy;
+    delta.qy           = from.qw * to.qy + from.qx * to.qz - from.qy * to.qw - from.qz * to.qx;
+    delta.qz           = from.qw * to.qz - from.qx * to.qy + from.qy * to.qx - from.qz * to.qw;
+    delta.qw           = from.qw * to.qw + from.qx * to.qx + from.qy * to.qy + from.qz * to.qz;
+    delta.normalizeRotation();
+    return delta;
+}
+
+}  // namespace
 
 AnimPlayer::AnimPlayer(AnimSkeleton* skeleton) : skeleton_(skeleton) {
     if (!skeleton_) throw Exception("AnimPlayer: skeleton is null");
@@ -102,6 +119,21 @@ void AnimPlayer::setRootMotionBone(int boneIndex) {
     rootMotionBone_ = boneIndex;
 }
 
+eve::Result<void> AnimPlayer::setRootMotionPolicy(const RootMotionPolicy& policy) {
+    auto validated = validateRootMotionPolicy(policy);
+    if (!validated) return validated;
+    rootMotionPolicy_ = policy;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> AnimPlayer::setRootMotionCharacterYaw(float yawRadians) {
+    if (!std::isfinite(yawRadians))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "root motion characterYaw must be finite"));
+    rootMotionPolicy_.characterYaw = yawRadians;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
 std::string AnimPlayer::consumeEvent() {
     if (pendingEvents_.empty()) return {};
     std::string event = std::move(pendingEvents_.front());
@@ -175,11 +207,9 @@ void AnimPlayer::updateUnchecked(float dt) {
     }
 
     clip_->sample(time_, &sampledPose_, skeleton_);
-    const TransformTRS& fromRoot = rootPreviousPose_.local(rootMotionBone_);
-    const TransformTRS& toRoot   = sampledPose_.local(rootMotionBone_);
-    rootMotion_.px               = toRoot.px - fromRoot.px;
-    rootMotion_.py               = toRoot.py - fromRoot.py;
-    rootMotion_.pz               = toRoot.pz - fromRoot.pz;
+    const TransformTRS& fromRoot  = rootPreviousPose_.local(rootMotionBone_);
+    const TransformTRS& toRoot    = sampledPose_.local(rootMotionBone_);
+    TransformTRS        rawMotion = rootMotionDelta(fromRoot, toRoot);
     if (effectiveLoop() && clip_->getDuration() > 1e-8f) {
         const float duration = clip_->getDuration();
         const int   cycles   = static_cast<int>(std::floor(time_ / duration) - std::floor(previousTime / duration));
@@ -188,20 +218,11 @@ void AnimPlayer::updateUnchecked(float dt) {
             clip_->sampleClamped(duration, &rootEndPose_, skeleton_);
             const TransformTRS& startRoot = rootStartPose_.local(rootMotionBone_);
             const TransformTRS& endRoot   = rootEndPose_.local(rootMotionBone_);
-            rootMotion_.px += static_cast<float>(cycles) * (endRoot.px - startRoot.px);
-            rootMotion_.py += static_cast<float>(cycles) * (endRoot.py - startRoot.py);
-            rootMotion_.pz += static_cast<float>(cycles) * (endRoot.pz - startRoot.pz);
+            rawMotion.px += static_cast<float>(cycles) * (endRoot.px - startRoot.px);
+            rawMotion.py += static_cast<float>(cycles) * (endRoot.py - startRoot.py);
+            rawMotion.pz += static_cast<float>(cycles) * (endRoot.pz - startRoot.pz);
         }
     }
-    rootMotion_.qx =
-        fromRoot.qw * toRoot.qx - fromRoot.qx * toRoot.qw - fromRoot.qy * toRoot.qz + fromRoot.qz * toRoot.qy;
-    rootMotion_.qy =
-        fromRoot.qw * toRoot.qy + fromRoot.qx * toRoot.qz - fromRoot.qy * toRoot.qw - fromRoot.qz * toRoot.qx;
-    rootMotion_.qz =
-        fromRoot.qw * toRoot.qz - fromRoot.qx * toRoot.qy + fromRoot.qy * toRoot.qx - fromRoot.qz * toRoot.qw;
-    rootMotion_.qw =
-        fromRoot.qw * toRoot.qw + fromRoot.qx * toRoot.qx + fromRoot.qy * toRoot.qy + fromRoot.qz * toRoot.qz;
-    rootMotion_.normalizeRotation();
 
     if (blending_ && prevClip_) {
         blendElapsed_ += dt;
@@ -211,15 +232,20 @@ void AnimPlayer::updateUnchecked(float dt) {
             prevClip_ = nullptr;
             pose_.copyFrom(&sampledPose_);
         } else {
-            // Advance previous clip time during fade for continuity.
+            const TransformTRS outgoingFrom = prevPose_.local(rootMotionBone_);
             prevTime_ += dt * speed_;
             prevClip_->sample(prevTime_, &prevPose_, skeleton_);
+            const TransformTRS outgoingDelta = rootMotionDelta(outgoingFrom, prevPose_.local(rootMotionBone_));
             if (blendCurve_ == AnimBlendCurve::EaseInOut) t = t * t * (3.0f - 2.0f * t);
             pose_.blendFrom(&prevPose_, &sampledPose_, t);
+            rawMotion = blendTRS(outgoingDelta, rawMotion, t);
         }
     } else {
         pose_.copyFrom(&sampledPose_);
     }
+    rootMotion_ = applyRootMotionPolicy(rawMotion, rootMotionPolicy_);
+    bakeRootMotionIntoPose(pose_, rootMotionBone_, skeleton_->bindLocal(rootMotionBone_), rootMotionPolicy_)
+        .ignore("root motion bake skipped when bone/policy leaves pose unchanged");
 }
 
 eve::Result<void> AnimPlayer::advance(const eve::SimulationStep& step) {

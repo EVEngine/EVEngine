@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 
@@ -16,26 +18,29 @@ using editing::Revision;
 using editing::TargetId;
 
 /** @brief Non-owning IIntFieldTarget adapter for TileBuffer. */
-class TileBufferTarget final : public IEditableTarget, public IIntFieldTarget {
+class EVENGINE_API_DOMAINS TileBufferTarget final : public ::eve::editing::EditableTargetState,
+                                                    public virtual IEditableTarget,
+                                                    public IIntFieldTarget {
 public:
     /** @brief Adapt a borrowed buffer that must outlive this target. @thread Owner-thread only. */
     TileBufferTarget(std::string id, TileBuffer *buffer);
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    /** @brief Target id. */
+    TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Width. */
     int width() const override;
+    /** @brief Height. */
     int height() const override;
+    /** @brief True if cell. */
     bool containsCell(int x, int y) const override;
+    /** @brief Reads int. */
     int readInt(int x, int y) const override;
+    /** @brief Writes int. */
     FieldWriteStatus writeInt(int x, int y, int value) override;
     /** @brief Return the borrowed buffer; its lifetime remains owned by the target creator. */
     TileBuffer *buffer() const { return buffer_; }
 private:
     std::string id_;
     TileBuffer *buffer_ = nullptr;
-    unsigned long long revision_ = 0;
-    EditRegion dirty_;
 };
 
 }  // namespace eve::level_editing

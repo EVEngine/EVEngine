@@ -17,13 +17,13 @@ class Message;
 namespace eve::dev {
 
 /** @brief One serializable event payload recorded from the event queue. */
-struct EVENGINE_API ScenarioEvent {
+struct EVENGINE_API_FOUNDATION_INLINE ScenarioEvent {
     std::string              name;  /**< @brief Event/message name ("keypressed", ...). */
     std::vector<std::string> args;  /**< @brief String payloads (non-string payloads dropped). */
 };
 
 /** @brief All events consumed during one game frame. */
-struct EVENGINE_API ScenarioFrame {
+struct EVENGINE_API_FOUNDATION_INLINE ScenarioFrame {
     int                          frame = 0;  /**< @brief Frame index within the scenario. */
     std::vector<ScenarioEvent>   events;     /**< @brief Events consumed that frame, in order. */
 };
@@ -44,8 +44,9 @@ struct EVENGINE_API ScenarioFrame {
  * one recorded frame's events into the event queue; the caller advances one game
  * frame between calls and watches for the error to reproduce.
  */
-class EVENGINE_API ScenarioRecorder {
+class EVENGINE_API_FOUNDATION ScenarioRecorder {
 public:
+    /** @brief Instance. */
     static ScenarioRecorder& instance();
 
     ScenarioRecorder(const ScenarioRecorder&)            = delete;
@@ -95,9 +96,13 @@ public:
     void detachObserver();
 
     // ---- accessors --------------------------------------------------------
+    /** @brief Baseline. */
     const std::string& baseline() const { return baseline_; }
+    /** @brief Frames. */
     const std::vector<ScenarioFrame>& frames() const { return frames_; }
+    /** @brief Error report. */
     const std::string& errorReport() const { return errorReport_; }
+    /** @brief Error site. */
     const std::string& errorSite() const { return errorSite_; }
 
     /** @brief Persist a scenario to a JSON file (used for both record and replay paths). */

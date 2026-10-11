@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "common/ECS.h"
@@ -49,10 +51,17 @@ enum class NodeType : uint8_t {
     SplitPane = 31,      // two resizable panes
     NinePatchPanel = 32, // .9.png-backed stretchable content container
     ColorPalette = 33,   // color editor + swatch grid; RGBA lives in tint*
+    Grid = 34,           // fixed-column retained grid container
 };
 
 /** @brief Main-axis direction for Flex containers. */
 enum class FlexDirection : uint8_t { Row = 0, Column = 1 };
+
+/** @brief Whether Flex children remain on one line or wrap onto additional lines. */
+enum class FlexWrap : uint8_t { NoWrap = 0, Wrap = 1 };
+
+/** @brief Behavior when arranged children exceed the retained layout box. */
+enum class OverflowMode : uint8_t { Visible = 0, Clip = 1, Scroll = 2 };
 
 /** @brief Cross-axis alignment of Flex children. */
 enum class FlexAlign : uint8_t { Start = 0, Center = 1, End = 2, Stretch = 3 };
@@ -130,6 +139,10 @@ struct UINode {
     FocusMode focusMode = FocusMode::All;
     MouseFilter mouseFilter = MouseFilter::Stop;
     ThemePreset themePreset = ThemePreset::Inherit;
+    std::string styleClass;
+    StyleClass resolvedStyle;
+    bool hasResolvedStyle = false;
+    float opacity = 1.f;  // transient visual state; animation never changes persistent style data
     int tabIndex = 0;
     std::string focusNext;
     std::string focusPrevious;
@@ -167,6 +180,7 @@ struct UINode {
     float maxSizeY = 0.f;
     float percentW = 0.f;  // 0..1 fraction of parent content width; overrides basis
     float percentH = 0.f;  // 0..1 fraction of parent content height
+    float aspectRatio = 0.f; // width / height; 0 disables ratio-derived sizing
     float anchorX = 0.f;   // absolute placement inside Flex: anchor point in parent (0..1)
     float anchorY = 0.f;
     float posX = 0.f;      // absolute placement offset (relative to anchor edge)
@@ -197,8 +211,19 @@ struct UINode {
     FlexAlign alignItems = FlexAlign::Start;
     FlexJustify justifyContent = FlexJustify::Start;
     float gap = -1.f;  // <0 → theme ItemSpacing on that axis
+    float columnGap = -1.f;
+    float rowGap = -1.f;
+    FlexWrap flexWrap = FlexWrap::NoWrap;
+    OverflowMode overflow = OverflowMode::Visible;
+    int gridColumns = 1;
     // Flex item props (any child inside Flex)
     float flexGrow = 0.f;
+    float flexShrink = 1.f;
+    float flexBasis = -1.f;  // <0 = measured/automatic basis
+    int alignSelf = -1;      // <0 = inherit parent alignItems
+    int gridColumnSpan = 1;
+    float layoutOverflowX = 0.f;
+    float layoutOverflowY = 0.f;
     int parent = -1;
     int firstChild = -1;
     int nextSibling = -1;
@@ -215,12 +240,15 @@ struct WidgetDesc;
  * Subclass to attach UI to game entities, e.g. `class Hud : public UIHost`.
  * UISystem walks `ecs::View<UIHost, Meta, Tree>` (includes subclasses).
  */
-class UIHost : public ecs::Entity {
+class EVENGINE_API_WORLD UIHost : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(UIHost, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Meta public API. */
     struct Meta {
         bool visible = true;
         int layer = 0;
@@ -228,12 +256,16 @@ public:
         bool overlay = false;  // no title bar / chrome (HUD-style)
         bool hasPos = false;
         bool lockPos = true;       // false: initial position only; user may move/persist it
+        /** @brief When true, renderer applies pos with Always for this frame (tween/Motion). */
+        bool  animDrivePos = false;
         float posX = 0.f;
         float posY = 0.f;
         float pivotX = 0.f;
         float pivotY = 0.f;
         bool hasSize = false;      // explicit window size
         bool lockSize = true;      // false: initial size only; user may resize/persist it
+        /** @brief When true, renderer applies size with Always for this frame (tween/Motion). */
+        bool         animDriveSize = false;
         float sizeX = 0.f;
         float sizeY = 0.f;
         float percentW = 0.f;      // 0..1 of display width; overrides sizeX
@@ -253,9 +285,13 @@ public:
         bool dirty = true;
         std::vector<UINode> nodes;
         int root = -1;
+        /** @brief Void. */
         std::vector<std::function<void()>> clickHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(bool)>> toggleHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(float)>> valueHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(const std::string &)>> textHandlers;
     };
 

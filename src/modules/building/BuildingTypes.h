@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 建筑放置模块的核心数据结构：定义、实例、变更事件、鬼影状态。
@@ -29,6 +31,7 @@ struct EdgeAddress {
     int y = 0;
     EdgeAxis axis = EdgeAxis::Horizontal;
 
+    /** @brief Operator ==. */
     bool operator==(const EdgeAddress &) const = default;
 };
 
@@ -37,6 +40,7 @@ struct CornerAddress {
     int x = 0;
     int y = 0;
 
+    /** @brief Operator ==. */
     bool operator==(const CornerAddress &) const = default;
 };
 
@@ -44,7 +48,9 @@ struct CornerAddress {
 struct EdgeCurveGroupId {
     uint64_t value = 0;
 
+    /** @brief Bool. */
     explicit operator bool() const { return value != 0; }
+    /** @brief Operator ==. */
     bool operator==(const EdgeCurveGroupId &) const = default;
 };
 
@@ -53,6 +59,7 @@ struct EdgeCurveControlPoint {
     float x = 0.f;
     float y = 0.f;
 
+    /** @brief Operator ==. */
     bool operator==(const EdgeCurveControlPoint &) const = default;
 };
 
@@ -65,6 +72,7 @@ struct EdgeCurveSurfaceSample {
     float normalY = 1.f;
     float normalZ = 0.f;
 
+    /** @brief Operator ==. */
     bool operator==(const EdgeCurveSurfaceSample &) const = default;
 };
 
@@ -84,11 +92,12 @@ struct EdgeCurveGroup {
     /** @brief Owning subdivisions+1 centerline frames for deterministic surface conformance. */
     std::vector<EdgeCurveSurfaceSample> surfaceSamples;
 
+    /** @brief Operator ==. */
     bool operator==(const EdgeCurveGroup &) const = default;
 };
 
 /** @brief 建筑模板（进程级注册表中的定义）。 */
-struct BuildingDefinition {
+struct EVENGINE_API_WORLD BuildingDefinition {
     std::string id;
     std::string displayName;
     std::string category;
@@ -146,9 +155,13 @@ struct BuildingDefinition {
 
     /** @brief 查询辅助。 */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the extra. */
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
+    /** @brief Returns the visual 2 d. */
     std::string getVisual2d(const std::string &key, const std::string &fallback = {}) const;
+    /** @brief Returns the visual 3 d. */
     std::string getVisual3d(const std::string &key, const std::string &fallback = {}) const;
+    /** @brief Returns the cost. */
     int getCost(const std::string &resource, int fallback = 0) const;
     /** @brief 占地掩码在局部坐标 (localX, localY) 处是否占用。 */
     bool maskAt(int localX, int localY) const;
@@ -168,7 +181,7 @@ struct GarrisonMember {
 };
 
 /** @brief 已放置的建筑实例。 */
-struct PlacedBuilding {
+struct EVENGINE_API_WORLD PlacedBuilding {
     int instanceId = 0;
     std::string buildingId;
     /** @brief Placement domain snapshot: `cell`, `edge`, `corner`, or `free`. */
@@ -221,8 +234,11 @@ struct PlacedBuilding {
     /** @brief Revision used by the garrison container adapter for stale checks. */
     eve::Revision garrisonRevision = eve::Revision::zero();
 
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the prop. */
     std::string getProp(const std::string &key, const std::string &fallback = {}) const;
+    /** @brief Sets the prop. */
     void setProp(const std::string &key, const std::string &value);
 };
 

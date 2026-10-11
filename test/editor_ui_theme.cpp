@@ -16,7 +16,7 @@ using eve::editor::LocalWorldAuthority;
 
 namespace {
 
-EditorResult<eve::editor::TransactionReceipt> commitTheme(UiThemeCatalogTarget& target,
+Result<eve::editor::TransactionReceipt> commitTheme(UiThemeCatalogTarget& target,
                                                           LocalTransactionBackend& transactions,
                                                           const DomainOperation& operation,
                                                           const std::string& id) {

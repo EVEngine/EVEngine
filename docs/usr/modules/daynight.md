@@ -17,6 +17,20 @@ IBL 环境光，使**天空盒角度与反射天空都跟随太阳转动**。
 
 演示场景见 `examples/daynight`（`eve run examples/daynight`）。
 
+独立天空路径见 `examples/uds-sky`。`daynight.prepareSky(gfx, profileJson)`
+返回拥有独立时钟和 GPU 大气资源的 `Result<SkyRuntime>`，不初始化或更新上面的旧系统。
+配置格式为 `eve.sky-profile`、版本 4（版本 1 按关闭高度雾迁移，版本 1/2 不启用薄云资源）、模式 `atmosphere`；版本 3 的 `wispsAsset` 指向 VFS 中的薄云资源清单。准备会读取资源、烘焙查找表并创建
+GPU 资源，应在初始化阶段调用。检查结果的 `ok` 后，通过 `value.attach()` 挂接，
+每帧调用 `value.advanceSeconds(dt)`（浮点秒数）；`value.frame()` 返回状态结果，
+`value.detach()` 移除渲染贡献。以上方法返回的 Result 都需要检查。
+版本 4 增加 `cloudMotion`：`phase`、`speed`、`timeScale`、`windMultiplier`。
+云时间按注入的累计秒数乘后三个值，再叠加初相位和资源初始时间；归一化的形变相位与太阳光照原子发布。
+版本 1–3 的云速显式迁移为零。`frame()` 的值包含 `cloudTime` 与 `wispsMorphPhase`，渲染和反射采集不会推进它们。
+`sky-animated.json` 使用插件独立天空的默认云速 0.35；在示例顶部选择该文件即可启用形变动画。
+对象由脚本拥有，垃圾回收时移除贡献并释放网格和着色器；固定尺寸 Canvas 遵循 Graphics 的既有所有权。
+当前实现大气、背景高度雾与导入薄云的时间形变，完整云雾、天气及
+UDS 像素一致性仍在开发中；不要把此示例视为完整 UDS 替代品。
+
 ## 基本用法
 
 ```squirrel
@@ -102,3 +116,7 @@ GPU 分配。当前图形后端的环境贴图格式仍为 RGBA8，模块使用 
 ### PR #287 新增绑定
 
 - 反射链、HDR 与探针相关 API：`applyReflectionProbeSky`
+
+天空配置版本 5 要求 `heightFog.directionalElevationRange`：两个有限、递增或相等的
+太阳方向 Y 值，范围 [-1,1]。递增时将雾的定向颜色从零线性增至配置值；
+相等则禁用衰减。版本 1—4 迁移为禁用，不改变原有输出。该参数不控制物理大气透射项。

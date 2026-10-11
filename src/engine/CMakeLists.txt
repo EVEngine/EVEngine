@@ -14,12 +14,16 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 # of headers one translation unit included, not thousands of repo paths.
 string(REPLACE ";" "," _eve_binding_contract_modules "${EVE_ENABLED_MODULES}")
 set(_eve_binding_contract_cpp "${CMAKE_CURRENT_BINARY_DIR}/common/BindingContracts.generated.cpp")
+set(_eve_binding_contract_json "${CMAKE_CURRENT_BINARY_DIR}/common/eve-api.json")
+set(_eve_binding_contract_dts "${CMAKE_CURRENT_BINARY_DIR}/common/eve-api.d.ts")
 add_custom_command(
-    OUTPUT "${_eve_binding_contract_cpp}"
+    OUTPUT "${_eve_binding_contract_cpp}" "${_eve_binding_contract_json}" "${_eve_binding_contract_dts}"
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
             --modules "${_eve_binding_contract_modules}"
             --platform "${BUILD_PLATFORM}"
             --output "${_eve_binding_contract_cpp}"
+            --json-output "${_eve_binding_contract_json}"
+            --dts-output "${_eve_binding_contract_dts}"
     DEPENDS "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
     COMMENT "Generating strict EveScript Binding Contracts"
     VERBATIM)
@@ -118,7 +122,9 @@ message(STATUS "Third-party groups: ${EVE_THIRDPARTY_GROUPS}")
 
 # Module link list, derived from the module manifest; EVCommon, EVCmdLine and
 # EVDevTools are declared there too, so only the embedded scripts are added here.
-set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
+# EVE_LINK_TARGETS is the module libraries in OBJECT mode and the link-group
+# shared libraries in SHARED mode (see cmake/link_groups.cmake).
+set(EVELIBS EVScripts ${EVE_LINK_TARGETS})
 if(_has_devtools)
     # DevTools ImGui host panels (AI + console) compile into the host binary --
     # not EVDevTools, which avoids imgui.h to protect MSVC export limits.

@@ -15,13 +15,13 @@ SelectionSnapshot select(const SpriteStackDocumentTarget& target) {
                        "spritestack.asset"});
     return s;
 }
-void apply(SpriteStackDocumentTarget& target, EditorResult<DomainOperation> operation) {
+void apply(SpriteStackDocumentTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }
 class MissingModelResolver final : public ISpriteStackModelResolver {
 public:
-    EditorResult<eve::model3d::ModelData*> resolveModel(const std::string&) const override {
+    Result<eve::model3d::ModelData*> resolveModel(const std::string&) const override {
         return eve::editing::failed<eve::model3d::ModelData*>(EditorStatus::NotFound, RuleId("test.model"),
                                                               "missing model");
     }

@@ -17,10 +17,7 @@ namespace {
     return Result<HexPath>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "hexmap"));
 }
 
-[[nodiscard]] Result<void> voidInvalidArgument(const std::string& message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "hexmap"));
-}
-
+[[nodiscard]] 
 [[nodiscard]] Result<HexPath> unreachable(const std::string& message) {
     return Result<HexPath>::failure(Diagnostic::error(DiagnosticCode::NotFound, message, "hexmap"));
 }
@@ -162,7 +159,18 @@ Result<HexPath> findPath(const HexMap& map, HexSearchContext& scratch, HexCoordi
     const HexCoordinates goalCoord = to;
     const std::int32_t phase       = scratch.beginPhase();
 
-    scratch.data(start).searchPhase = phase;
+    // The origin has to be written completely, not just tagged with the new phase.
+    // `beginPhase` only bumps the phase and clears the buckets, so a reused context
+    // (the module owns exactly one `scratch_`) still holds the previous search's
+    // `distance`, `heuristic` and `pathFrom` here. `enqueue` derives the bucket from
+    // `priority()`, and the first relaxation reads `data(start).distance`, so a stale
+    // origin shifted every turn number and could pick a different route. The start
+    // cell is never relaxed as a neighbour, so nothing else can fix it up.
+    HexSearchData& startData = scratch.data(start);
+    startData.searchPhase    = phase;
+    startData.distance       = 0;
+    startData.pathFrom       = -1;
+    startData.heuristic      = from.distanceTo(goalCoord);
     scratch.enqueue(start);
 
     bool found = false;
@@ -242,10 +250,10 @@ Result<HexPath> findPath(const HexMap& map, HexSearchContext& scratch, HexCoordi
 Result<void> collectVisibleCells(const HexMap& map, HexSearchContext& scratch, HexCoordinates from,
                                  std::int32_t range, std::vector<std::int32_t>& out) {
     out.clear();
-    if (map.empty()) return voidInvalidArgument("cannot collect visibility from an empty hex map");
-    if (!map.contains(from)) return voidInvalidArgument("view origin is outside the hex map");
+    if (map.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "cannot collect visibility from an empty hex map", "hexmap"));
+    if (!map.contains(from)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "view origin is outside the hex map", "hexmap"));
     if (scratch.cellCount() != map.cellCount())
-        return voidInvalidArgument("search scratch must be resized to map.cellCount() before collectVisibleCells");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "search scratch must be resized to map.cellCount() before collectVisibleCells", "hexmap"));
 
     const std::int32_t searchRange = range + map.values(from).viewElevation();
     const std::int32_t start       = map.indexOf(from);

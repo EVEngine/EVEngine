@@ -12,12 +12,6 @@
 namespace eve::card {
 namespace {
 
-template <class T>
-eve::Result<T> invalid(std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
-                                                          std::move(path), {}, "card.definition_runtime"));
-}
-
 eve::Result<eve::definition::DefinitionHandle> currentHandle(eve::definitions::DefinitionRegistry& registry,
                                                              const eve::DefinitionRef&             reference) {
     const auto& logical = reference.id();
@@ -45,47 +39,70 @@ eve::Result<CardRuntimeState> parseState(const eve::definitions::Definition& def
     if (!parsed) return eve::Result<CardRuntimeState>::failure(parsed.status());
     auto        value  = std::move(parsed).takeValue();
     const auto* object = value.getIf<eve::Value::Object>();
-    if (!object) return invalid<CardRuntimeState>("card definition payload must be an object", "json");
+    if (!object)
+        return eve::Result<CardRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card definition payload must be an object",
+                                   "json", {}, "card.definition_runtime"));
 
     CardRuntimeState state;
     state.name = std::string(reference.id().name());
     if (const auto* value = field(*object, "name")) {
         const auto* text = value->getIf<std::string>();
-        if (!text) return invalid<CardRuntimeState>("card name must be a string", "name");
+        if (!text)
+            return eve::Result<CardRuntimeState>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 "card name must be a string", "name",
+                                                                                 {}, "card.definition_runtime"));
         state.name = *text;
     }
     if (const auto* value = field(*object, "kind")) {
         const auto* text = value->getIf<std::string>();
-        if (!text) return invalid<CardRuntimeState>("card kind must be a string", "kind");
+        if (!text)
+            return eve::Result<CardRuntimeState>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 "card kind must be a string", "kind",
+                                                                                 {}, "card.definition_runtime"));
         state.kind = *text;
     }
     if (!readInt(*object, "cost", state.cost) || !readInt(*object, "attack", state.attack) ||
         !readInt(*object, "health", state.maxHealth))
-        return invalid<CardRuntimeState>("card cost, attack and health must be Int64 fields", "stats");
+        return eve::Result<CardRuntimeState>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "card cost, attack and health must be Int64 fields", "stats", {},
+            "card.definition_runtime"));
     if (state.cost < 0 || state.attack < 0 || state.maxHealth < 0)
-        return invalid<CardRuntimeState>("card stats must not be negative", "stats");
+        return eve::Result<CardRuntimeState>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "card stats must not be negative", "stats",
+                                                                             {}, "card.definition_runtime"));
     state.currentHealth = state.maxHealth;
 
     if (const auto* value = field(*object, "tint")) {
         const auto* array = value->getIf<eve::Value::Array>();
         if (!array || array->size() < 3)
-            return invalid<CardRuntimeState>("card tint must contain three numeric channels", "tint");
+            return eve::Result<CardRuntimeState>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "card tint must contain three numeric channels", "tint", {},
+                "card.definition_runtime"));
         float* channels[] = {&state.tint.r, &state.tint.g, &state.tint.b};
         for (std::size_t i = 0; i < 3; ++i) {
             const auto*  number  = (*array)[i].getIf<double>();
             const auto*  integer = (*array)[i].getIf<std::int64_t>();
             const double channel = number ? *number : integer ? static_cast<double>(*integer) : -1.0;
             if (!std::isfinite(channel) || channel < 0.0 || channel > 1.0)
-                return invalid<CardRuntimeState>("card tint channel must be finite in [0,1]", "tint");
+                return eve::Result<CardRuntimeState>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "card tint channel must be finite in [0,1]", "tint", {},
+                    "card.definition_runtime"));
             *channels[i] = static_cast<float>(channel);
         }
     }
     if (const auto* value = field(*object, "tags")) {
         const auto* array = value->getIf<eve::Value::Array>();
-        if (!array) return invalid<CardRuntimeState>("card tags must be an array", "tags");
+        if (!array)
+            return eve::Result<CardRuntimeState>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 "card tags must be an array", "tags",
+                                                                                 {}, "card.definition_runtime"));
         for (const auto& item : *array) {
             const auto* tag = item.getIf<std::string>();
-            if (!tag || tag->empty()) return invalid<CardRuntimeState>("card tag must be a non-empty string", "tags");
+            if (!tag || tag->empty())
+                return eve::Result<CardRuntimeState>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card tag must be a non-empty string",
+                                           "tags", {}, "card.definition_runtime"));
             state.tags.push_back(*tag);
         }
         std::sort(state.tags.begin(), state.tags.end());
@@ -130,17 +147,24 @@ eve::Value encodeState(const CardRuntimeState& state) {
 
 eve::Result<CardRuntimeState> decodeState(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
-    if (object == nullptr) return invalid<CardRuntimeState>("card runtime state must be an object", "state");
+    if (object == nullptr)
+        return eve::Result<CardRuntimeState>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "card runtime state must be an object",
+                                                                             "state", {}, "card.definition_runtime"));
     static const std::set<std::string> fields = {"attack",    "cost", "currentHealth", "kind",
                                                  "maxHealth", "name", "tags",          "tint"};
     for (const auto& [name, unused] : *object) {
         (void)unused;
         if (!fields.contains(name))
-            return invalid<CardRuntimeState>("unknown card runtime state field", "state." + name);
+            return eve::Result<CardRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unknown card runtime state field",
+                                       "state." + name, {}, "card.definition_runtime"));
     }
     for (const auto& name : fields)
         if (!object->contains(name))
-            return invalid<CardRuntimeState>("card runtime state is missing a field", "state." + name);
+            return eve::Result<CardRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card runtime state is missing a field",
+                                       "state." + name, {}, "card.definition_runtime"));
     CardRuntimeState result;
     const auto       readIntField = [&](const char* name, int& output) {
         const auto* integer = object->at(name).getIf<std::int64_t>();
@@ -157,23 +181,31 @@ eve::Result<CardRuntimeState> decodeState(const eve::Value& value) {
     if (name == nullptr || kind == nullptr || tags == nullptr || tint == nullptr || tint->size() != 3 ||
         !readIntField("attack", result.attack) || !readIntField("cost", result.cost) ||
         !readIntField("currentHealth", result.currentHealth) || !readIntField("maxHealth", result.maxHealth))
-        return invalid<CardRuntimeState>("card runtime state field is invalid", "state");
+        return eve::Result<CardRuntimeState>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "card runtime state field is invalid",
+                                                                             "state", {}, "card.definition_runtime"));
     result.name = *name;
     result.kind = *kind;
     if (result.cost < 0 || result.attack < 0 || result.maxHealth < 0 || result.currentHealth < 0 ||
         result.currentHealth > result.maxHealth)
-        return invalid<CardRuntimeState>("card runtime health/stat values are invalid", "state");
+        return eve::Result<CardRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card runtime health/stat values are invalid",
+                                   "state", {}, "card.definition_runtime"));
     float* channels[] = {&result.tint.r, &result.tint.g, &result.tint.b};
     for (std::size_t index = 0; index < 3; ++index) {
         const auto* number = (*tint)[index].getIf<double>();
         if (number == nullptr || !std::isfinite(*number) || *number < 0.0 || *number > 1.0)
-            return invalid<CardRuntimeState>("card tint channel is invalid", "state.tint");
+            return eve::Result<CardRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card tint channel is invalid",
+                                       "state.tint", {}, "card.definition_runtime"));
         *channels[index] = static_cast<float>(*number);
     }
     for (const auto& tag : *tags) {
         const auto* text = tag.getIf<std::string>();
         if (text == nullptr || text->empty())
-            return invalid<CardRuntimeState>("card runtime tag is invalid", "state.tags");
+            return eve::Result<CardRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card runtime tag is invalid",
+                                       "state.tags", {}, "card.definition_runtime"));
         result.tags.push_back(*text);
     }
     return eve::Result<CardRuntimeState>::success(std::move(result));
@@ -185,7 +217,10 @@ eve::Result<CardDefinitionRuntime> CardDefinitionRuntime::create(eve::definition
                                                                  eve::DefinitionRef                    definition,
                                                                  eve::PersistentId                     instanceId,
                                                                  eve::definition::ReloadPolicy         policy) {
-    if (!definition.id().isValid()) return invalid<CardDefinitionRuntime>("card definition reference is invalid");
+    if (!definition.id().isValid())
+        return eve::Result<CardDefinitionRuntime>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card definition reference is invalid", {}, {},
+                                   "card.definition_runtime"));
     auto handle = currentHandle(registry, definition);
     if (!handle) return eve::Result<CardDefinitionRuntime>::failure(handle.status());
     auto state = resolveState(registry, definition, handle.value());
@@ -245,7 +280,9 @@ eve::Result<void> CardDefinitionRuntime::applyTo(CardData* card) const {
 
 eve::Result<eve::definition::ReloadOutcome> CardDefinitionRuntime::reload(eve::definition::ReloadPolicy policy) {
     if (registry_ == nullptr)
-        return invalid<eve::definition::ReloadOutcome>("card definition registry is not bound", "registry");
+        return eve::Result<eve::definition::ReloadOutcome>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card definition registry is not bound",
+                                   "registry", {}, "card.definition_runtime"));
     auto next = currentHandle(*registry_, identity().definition);
     if (!next) return eve::Result<eve::definition::ReloadOutcome>::failure(next.status());
     auto defaults = resolveState(*registry_, identity().definition, next.value());
@@ -281,7 +318,10 @@ eve::Result<std::string> CardDefinitionRuntime::snapshotJson(eve::Revision revis
 
 eve::Result<void> CardDefinitionRuntime::restore(const eve::SnapshotEnvelope&     snapshotValue,
                                                  const eve::SnapshotHashProvider& hashProvider) {
-    if (registry_ == nullptr) return invalid<void>("card definition registry is not bound", "registry");
+    if (registry_ == nullptr)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "card definition registry is not bound", "registry",
+                                                                 {}, "card.definition_runtime"));
     auto current = currentHandle(*registry_, identity().definition);
     if (!current) return eve::Result<void>::failure(current.status());
     if (current.value() != definitionHandle())

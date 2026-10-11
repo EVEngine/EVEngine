@@ -5,10 +5,6 @@
 #include <utility>
 namespace eve::biome_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
 const EditorValue* field(const EditorValue& v, const char* k) {
     const auto* o = v.getIf<EditorValue::Object>();
     if (!o) return nullptr;
@@ -26,14 +22,15 @@ EditorValue layerValue(const BiomeLayerValue& v) {
                                {"spatial", v.spatialAsset}, {"priority", int64_t{v.priority}},
                                {"density", v.density},      {"assets", std::move(a)}};
 }
-EditorResult<BiomeAssetValue> parseAsset(const EditorValue& v) {
+Result<BiomeAssetValue> parseAsset(const EditorValue& v) {
     BiomeAssetValue o;
     const auto *    id = field(v, "id"), *asset = field(v, "asset"), *yaw = field(v, "randomYaw");
     const auto*     ids    = id ? id->getIf<std::string>() : nullptr;
     const auto*     assets = asset ? asset->getIf<std::string>() : nullptr;
     const auto*     yaws   = yaw ? yaw->getIf<bool>() : nullptr;
     if (!ids || ids->empty() || !assets || !yaws)
-        return fail<BiomeAssetValue>(EditorStatus::Rejected, "editor.biome.asset", "Biome asset identity is invalid");
+        return eve::editing::failed<BiomeAssetValue>(EditorStatus::Rejected, RuleId("editor.biome.asset"),
+                                                     "Biome asset identity is invalid");
     o.id                 = ObjectId(*ids);
     o.asset              = *assets;
     o.randomYaw          = *yaws;
@@ -43,13 +40,13 @@ EditorResult<BiomeAssetValue> parseAsset(const EditorValue& v) {
         const auto* x = field(v, fields[i]);
         const auto* n = x ? x->getIf<double>() : nullptr;
         if (!n || !std::isfinite(*n))
-            return fail<BiomeAssetValue>(EditorStatus::Rejected, "editor.biome.asset-number",
-                                         "Biome asset number is invalid");
+            return eve::editing::failed<BiomeAssetValue>(EditorStatus::Rejected, RuleId("editor.biome.asset-number"),
+                                                         "Biome asset number is invalid");
         *values[i] = static_cast<float>(*n);
     }
     return eve::editing::applied<BiomeAssetValue>(std::move(o));
 }
-EditorResult<BiomeLayerValue> parseLayer(const EditorValue& v) {
+Result<BiomeLayerValue> parseLayer(const EditorValue& v) {
     BiomeLayerValue o;
     const auto *    id = field(v, "id"), *name = field(v, "name"), *spatial = field(v, "spatial"),
                *priority = field(v, "priority"), *density = field(v, "density"), *assets = field(v, "assets");
@@ -60,7 +57,8 @@ EditorResult<BiomeLayerValue> parseLayer(const EditorValue& v) {
     const auto* densities  = density ? density->getIf<double>() : nullptr;
     const auto* a          = assets ? assets->getIf<EditorValue::Array>() : nullptr;
     if (!ids || ids->empty() || !names || !spatials || !priorities || !densities || !std::isfinite(*densities) || !a)
-        return fail<BiomeLayerValue>(EditorStatus::Rejected, "editor.biome.layer", "Biome layer is invalid");
+        return eve::editing::failed<BiomeLayerValue>(EditorStatus::Rejected, RuleId("editor.biome.layer"),
+                                                     "Biome layer is invalid");
     o.id           = ObjectId(*ids);
     o.name         = *names;
     o.spatialAsset = *spatials;
@@ -69,8 +67,8 @@ EditorResult<BiomeLayerValue> parseLayer(const EditorValue& v) {
     for (const auto& x : *a) {
         auto parsed = parseAsset(x);
         if (!parsed.ok())
-            return fail<BiomeLayerValue>(EditorStatus::Rejected, "editor.biome.asset",
-                                         "Biome layer contains invalid asset");
+            return eve::editing::failed<BiomeLayerValue>(EditorStatus::Rejected, RuleId("editor.biome.asset"),
+                                                         "Biome layer contains invalid asset");
         o.assets.push_back(std::move(parsed.value()));
     }
     return eve::editing::applied<BiomeLayerValue>(std::move(o));
@@ -100,7 +98,7 @@ BiomeDocumentTarget::BiomeDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor BiomeDocumentTarget::describe() const {
     return {TargetId(id_),
             "biome-rules",
-            revision_,
+            revisionValue(),
             false,
             {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -133,7 +131,7 @@ eve::Result<eve::Revision> BiomeDocumentTarget::currentRevision(const SelectionS
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Biome selection mismatch", "editor.biome.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema BiomeDocumentTarget::schema(const SelectionSnapshot& s) const {
     PropertySchema schema;
@@ -196,7 +194,7 @@ EditorValue BiomeDocumentTarget::contentValue() const {
     for (const auto& v : exclusions_) exclusions.push_back(v);
     return EditorValue::Object{{"layers", std::move(layers)}, {"exclusions", std::move(exclusions)}};
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::replacement(EditorValue c, std::string p) const {
+Result<DomainOperation> BiomeDocumentTarget::replacement(EditorValue c, std::string p) const {
     DomainOperation op;
     op.type        = "biome.document.replace.v1";
     op.inverseType = op.type;
@@ -208,12 +206,13 @@ EditorResult<DomainOperation> BiomeDocumentTarget::replacement(EditorValue c, st
     op.mergeKey = "biome:" + id_ + ":" + (p.empty() ? "structure" : p);
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> BiomeDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                            const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
     if (!matches(s) || !d || mode != PropertySetMode::Absolute || !validatePropertyValue(*d, value).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.biome.set", "Biome property edit is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.set"),
+                                                     "Biome property edit is invalid");
     auto c = *this;
     for (const auto& i : s.items)
         if (i.type == "biome.layer") {
@@ -242,50 +241,56 @@ EditorResult<DomainOperation> BiomeDocumentTarget::makeSet(const SelectionSnapsh
                     f->randomYaw = *value.getIf<bool>();
             }
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.biome.invalid",
-                                     "Biome edit produces invalid rules");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.invalid"),
+                                                     "Biome edit produces invalid rules");
     return replacement(c.contentValue(), p.value());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> BiomeDocumentTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
-    if (!d) return fail<DomainOperation>(EditorStatus::Unsupported, "editor.biome.property", "Unknown Biome property");
+    if (!d)
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.biome.property"),
+                                                     "Unknown Biome property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeCreateLayer(const BiomeLayerValue& v) const {
+Result<DomainOperation> BiomeDocumentTarget::makeCreateLayer(const BiomeLayerValue& v) const {
     if (v.id.empty() ||
         std::any_of(layers_.begin(), layers_.end(), [&](const auto& x) { return x.id == v.id || x.name == v.name; }))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.biome.layer-id",
-                                     "Biome layer ID and name must be unique");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.layer-id"),
+                                                     "Biome layer ID and name must be unique");
     auto c = *this;
     c.layers_.push_back(v);
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.biome.layer", "Biome layer is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.layer"),
+                                                     "Biome layer is invalid");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeDeleteLayer(const ObjectId& id) const {
+Result<DomainOperation> BiomeDocumentTarget::makeDeleteLayer(const ObjectId& id) const {
     if (std::none_of(layers_.begin(), layers_.end(), [&](const auto& v) { return v.id == id; }))
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.biome.layer", "Biome layer does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.biome.layer"),
+                                                     "Biome layer does not exist");
     auto c = *this;
     std::erase_if(c.layers_, [&](const auto& v) { return v.id == id; });
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeCreateAsset(const ObjectId&        layer,
+Result<DomainOperation> BiomeDocumentTarget::makeCreateAsset(const ObjectId&        layer,
                                                                    const BiomeAssetValue& v) const {
     auto c = *this;
     auto l = std::find_if(c.layers_.begin(), c.layers_.end(), [&](const auto& x) { return x.id == layer; });
     if (l == c.layers_.end() || v.id.empty())
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.biome.layer", "Biome target layer is missing");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.biome.layer"),
+                                                     "Biome target layer is missing");
     for (const auto& x : c.layers_)
         for (const auto& a : x.assets)
             if (a.id == v.id)
-                return fail<DomainOperation>(EditorStatus::Rejected, "editor.biome.asset-id",
-                                             "Biome asset ID must be globally unique");
+                return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.asset-id"),
+                                                             "Biome asset ID must be globally unique");
     l->assets.push_back(v);
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.biome.asset", "Biome asset is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.asset"),
+                                                     "Biome asset is invalid");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeDeleteAsset(const ObjectId& id) const {
+Result<DomainOperation> BiomeDocumentTarget::makeDeleteAsset(const ObjectId& id) const {
     auto c       = *this;
     bool removed = false;
     for (auto& l : c.layers_) {
@@ -294,14 +299,16 @@ EditorResult<DomainOperation> BiomeDocumentTarget::makeDeleteAsset(const ObjectI
         removed |= l.assets.size() != before;
     }
     if (!removed)
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.biome.asset", "Biome asset does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.biome.asset"),
+                                                     "Biome asset does not exist");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeSetExclusions(std::vector<std::string> v) const {
+Result<DomainOperation> BiomeDocumentTarget::makeSetExclusions(std::vector<std::string> v) const {
     auto c        = *this;
     c.exclusions_ = std::move(v);
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.biome.exclusions", "Biome exclusions are invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.exclusions"),
+                                                     "Biome exclusions are invalid");
     return replacement(c.contentValue(), "exclusions");
 }
 std::vector<EditorDiagnostic> BiomeDocumentTarget::validate() const {
@@ -342,59 +349,67 @@ std::vector<EditorDiagnostic> BiomeDocumentTarget::validate() const {
         d.push_back(diagnostic("editor.biome.empty", DiagnosticSeverity::Warning, "Biome has no layers"));
     return d;
 }
-EditorResult<void> BiomeDocumentTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> BiomeDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "biome.document.replace.v1" ||
         !op.payload.isWithinLimits(8, 200000, 8 * 1024 * 1024))
-        return fail<void>(EditorStatus::Rejected, "editor.biome.operation", "Biome operation is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.operation"),
+                                          "Biome operation is invalid");
     const auto *layers = field(op.payload, "layers"), *exclusions = field(op.payload, "exclusions");
     const auto* la = layers ? layers->getIf<EditorValue::Array>() : nullptr;
     const auto* ea = exclusions ? exclusions->getIf<EditorValue::Array>() : nullptr;
     if (!la || !ea || la->size() > 256 || ea->size() > 256)
-        return fail<void>(EditorStatus::Rejected, "editor.biome.payload", "Biome payload exceeds limits");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.payload"),
+                                          "Biome payload exceeds limits");
     BiomeDocumentTarget c(id_);
     for (const auto& v : *la) {
         auto parsed = parseLayer(v);
         if (!parsed.ok())
-            return fail<void>(EditorStatus::Rejected, "editor.biome.layer", "Biome layer cannot be parsed");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.layer"),
+                                              "Biome layer cannot be parsed");
         c.layers_.push_back(std::move(parsed.value()));
     }
     for (const auto& v : *ea) {
         const auto* s = v.getIf<std::string>();
-        if (!s) return fail<void>(EditorStatus::Rejected, "editor.biome.exclusion", "Biome exclusion is invalid");
+        if (!s)
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.exclusion"),
+                                              "Biome exclusion is invalid");
         c.exclusions_.push_back(*s);
     }
     if (errors(c.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.biome.invalid", "Biome document validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.invalid"),
+                                          "Biome document validation failed");
     layers_     = std::move(c.layers_);
     exclusions_ = std::move(c.exclusions_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> BiomeDocumentTarget::cloneDomainState() const {
     return std::make_unique<BiomeDocumentTarget>(*this);
 }
-EditorResult<void> BiomeDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
+Result<void> BiomeDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<BiomeDocumentTarget*>(c.get());
     if (!t || t->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.biome.candidate", "Biome candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.biome.candidate"),
+                                          "Biome candidate mismatch");
     *this = *t;
     return eve::editing::applied<void>();
 }
 EditorValue BiomeDocumentTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> BiomeDocumentTarget::loadSnapshot(const EditorValue& s) {
+Result<void> BiomeDocumentTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.biome.snapshot", "Unsupported Biome snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.biome.snapshot"),
+                                          "Unsupported Biome snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "biome.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 }  // namespace eve::biome_editing

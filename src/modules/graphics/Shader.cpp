@@ -5,9 +5,22 @@
 
 namespace eve::graphics {
 
+Result<void> Shader::setMeshTexture(std::size_t slot, Texture *texture) {
+    if (slot >= meshTextures_.size())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "custom mesh texture slot is outside [0,4)", {}, {}, "graphics.shader"));
+    meshTextures_[slot] = texture;
+    return Result<void>::success();
+}
+
 Shader::Shader() = default;
 
 Shader::~Shader() = default;
+
+void Shader::setPushConstantBlock(const std::array<float, kMaxFloats> &values) noexcept {
+    floats_     = values;
+    usedFloats_ = kMaxFloats;
+}
 
 int Shader::declareUniform(const std::string &name, int floatCount) {
     if (name.empty()) throw Exception("Shader::declare: empty uniform name");

@@ -11,10 +11,6 @@
 
 namespace eve::agent {
 namespace {
-template <class T>
-Result<T> gpuError(const std::string& message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::Unsupported, message, {}, {}, "agent.gpu"));
-}
 class GpuBackend final : public IGpuPolicyBackend {
 public:
     std::string  name() const override { return "tensor-gpu"; }
@@ -22,9 +18,11 @@ public:
         try {
             auto* device = gpgpu::Gpgpu::create();
             if (device && device->isAvailable()) return Result<void>::success();
-            return gpuError<void>("GPU requires an initialized compute-capable Graphics device");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported,
+                                  "GPU requires an initialized compute-capable Graphics device", {}, {}, "agent.gpu"));
         } catch (const std::exception& e) {
-            return gpuError<void>(e.what());
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, e.what(), {}, {}, "agent.gpu"));
         }
     }
     Result<std::vector<double>> evaluate(const Policy& p, const Observation& o) override {
@@ -60,7 +58,9 @@ private:
                 auto optimized = tensor::optimizeGraph(recipe.graph, recipe.output);
                 program.reset(tensor::GpuProgram::tryBuild(recipe.graph, optimized, recipe.output));
                 if (!program)
-                    return gpuError<std::vector<double>>("Policy graph cannot execute on this GPU; no CPU fallback");
+                    return Result<std::vector<double>>::failure(Diagnostic::error(
+                        DiagnosticCode::Unsupported, "Policy graph cannot execute on this GPU; no CPU fallback", {}, {},
+                        "agent.gpu"));
             }
             std::vector<float> weights;
             weights.reserve(p.weights.size());
@@ -76,14 +76,18 @@ private:
             }
             auto output = program->run(feeds);
             if (output.size() != (training ? p.weights.size() : p.actionCount))
-                return gpuError<std::vector<double>>("GPU returned an invalid output shape");
+                return Result<std::vector<double>>::failure(Diagnostic::error(
+                    DiagnosticCode::Unsupported, "GPU returned an invalid output shape", {}, {}, "agent.gpu"));
             for (auto value : output)
-                if (!std::isfinite(value)) return gpuError<std::vector<double>>("GPU returned non-finite values");
+                if (!std::isfinite(value))
+                    return Result<std::vector<double>>::failure(Diagnostic::error(
+                        DiagnosticCode::Unsupported, "GPU returned non-finite values", {}, {}, "agent.gpu"));
             return Result<std::vector<double>>::success({output.begin(), output.end()});
         } catch (const std::exception& e) {
             inference_.reset();
             training_.reset();
-            return gpuError<std::vector<double>>(e.what());
+            return Result<std::vector<double>>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, e.what(), {}, {}, "agent.gpu"));
         }
     }
     std::uint32_t                       f_ = 0, h_ = 0, a_ = 0;

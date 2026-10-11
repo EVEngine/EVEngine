@@ -36,13 +36,14 @@ std::string entityIdText(std::uint64_t entityId) { return std::to_string(entityI
 
 Result<std::uint64_t> parseEntityId(const Value& value, std::size_t index) {
     if (!value.isString())
-        return Result<std::uint64_t>::failure(Diagnostic::error(DiagnosticCode::ParseError,
-                                                                "script component snapshot entity id must be a decimal string",
-                                                                std::to_string(index), {}, "ecs.snapshot"));
+        return Result<std::uint64_t>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "script component snapshot entity id must be a decimal string",
+            std::to_string(index), {}, "ecs.snapshot"));
     const std::string& text = value.asString();
-    if (text.empty()) return Result<std::uint64_t>::failure(Diagnostic::error(
-                          DiagnosticCode::ParseError, "script component snapshot entity id must not be empty",
-                          std::to_string(index), {}, "ecs.snapshot"));
+    if (text.empty())
+        return Result<std::uint64_t>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "script component snapshot entity id must not be empty",
+                                                                std::to_string(index), {}, "ecs.snapshot"));
     std::uint64_t parsed = 0;
     for (const char digit : text) {
         if (digit < '0' || digit > '9')
@@ -51,9 +52,8 @@ Result<std::uint64_t> parseEntityId(const Value& value, std::size_t index) {
                 "ecs.snapshot"));
         const std::uint64_t next = parsed * 10u + static_cast<std::uint64_t>(digit - '0');
         if (next < parsed)
-            return Result<std::uint64_t>::failure(Diagnostic::error(DiagnosticCode::ParseError,
-                                                                    "script component snapshot entity id overflows",
-                                                                    text, {}, "ecs.snapshot"));
+            return Result<std::uint64_t>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "script component snapshot entity id overflows", text, {}, "ecs.snapshot"));
         parsed = next;
     }
     return Result<std::uint64_t>::success(parsed);
@@ -90,8 +90,7 @@ Result<SnapshotEnvelope> snapshotScriptComponents(PersistentId instanceId, Revis
                                 Value::object(std::move(payload)), hashProvider);
 }
 
-Result<void> restoreScriptComponents(const SnapshotEnvelope&     snapshot,
-                                     const SnapshotHashProvider& hashProvider) {
+Result<void> restoreScriptComponents(const SnapshotEnvelope& snapshot, const SnapshotHashProvider& hashProvider) {
     if (snapshot.type != kScriptComponentSnapshotType || snapshot.schema != scriptComponentSnapshotSchema())
         return snapshotFailure(DiagnosticCode::InvalidArgument,
                                "snapshot does not belong to the script component store");
@@ -125,8 +124,8 @@ Result<void> restoreScriptComponents(const SnapshotEnvelope&     snapshot,
             return snapshotFailure(DiagnosticCode::ParseError, "script component snapshot entry has an empty name",
                                    std::to_string(index));
         if (!version->isInt64() || version->asInt() <= 0)
-            return snapshotFailure(DiagnosticCode::ParseError,
-                                   "script component snapshot entry has an invalid version", name->asString());
+            return snapshotFailure(DiagnosticCode::ParseError, "script component snapshot entry has an invalid version",
+                                   name->asString());
         if (!fields->isObject())
             return snapshotFailure(DiagnosticCode::ParseError,
                                    "script component snapshot entry fields must be an object", name->asString());
@@ -134,8 +133,8 @@ Result<void> restoreScriptComponents(const SnapshotEnvelope&     snapshot,
         auto entityId = parseEntityId(*entity, index);
         if (!entityId.ok()) return Result<void>::failure(entityId.status());
 
-        const std::string  componentName    = name->asString();
-        const SchemaVersion componentVersion(static_cast<std::uint64_t>(version->asInt()));
+        const std::string            componentName = name->asString();
+        const SchemaVersion          componentVersion(static_cast<std::uint64_t>(version->asInt()));
         const ScriptComponentRecord* record = findScriptComponent(componentName, componentVersion);
         if (record == nullptr)
             return snapshotFailure(DiagnosticCode::NotFound,
@@ -175,12 +174,10 @@ Result<std::string> serializeScriptComponentSnapshot(PersistentId instanceId, Re
                                                      const SnapshotHashProvider& hashProvider) {
     auto envelope = snapshotScriptComponents(instanceId, revision, tick, hashProvider);
     if (!envelope.ok()) return Result<std::string>::failure(envelope.status());
-    return std::move(envelope).andThen(
-        [](SnapshotEnvelope&& value) { return serializeSnapshotEnvelope(value); });
+    return std::move(envelope).andThen([](SnapshotEnvelope&& value) { return serializeSnapshotEnvelope(value); });
 }
 
-Result<void> restoreScriptComponentSnapshotJson(std::string_view            json,
-                                                const SnapshotHashProvider& hashProvider) {
+Result<void> restoreScriptComponentSnapshotJson(std::string_view json, const SnapshotHashProvider& hashProvider) {
     auto parsed = parseSnapshotEnvelope(json, hashProvider);
     if (!parsed.ok()) return Result<void>::failure(parsed.status());
     return restoreScriptComponents(parsed.value(), hashProvider);

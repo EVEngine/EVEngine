@@ -17,14 +17,19 @@ namespace eve::graphics::vulkan {
  */
 class FrameArena {
 public:
+    /** @brief Releases FrameArena resources. */
     ~FrameArena();
 
     FrameArena(const FrameArena &) = delete;
     FrameArena &operator=(const FrameArena &) = delete;
+    /** @brief Constructs a FrameArena. */
     FrameArena() = default;
+    /** @brief Constructs a FrameArena. */
     FrameArena(FrameArena &&o) noexcept { *this = std::move(o); }
+    /** @brief Operator =. */
     FrameArena &operator=(FrameArena &&o) noexcept;
 
+    /** @brief Alloc public API. */
     struct Alloc {
         vk::DeviceSize offset = 0;
         vk::DeviceSize size = 0;

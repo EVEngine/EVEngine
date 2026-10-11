@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief Fluids module — interactive surface fluid simulation.
@@ -39,14 +41,16 @@ class Sequence;
 namespace eve::fluids {
 
 /** @brief GPU-backed surface fluid simulator (falls back to the CPU solver). */
-class FluidSimulator : public eve::physics::ISimulationBackend {
+class EVENGINE_API_DOMAINS FluidSimulator : public eve::physics::ISimulationBackend {
 public:
     /**
      * @param maxParticles particle buffer capacity.
      * @param params initial tuning parameters.
      * @param preferGpu use the gpgpu compute path when a device is available.
      */
+    /** @brief Fluid simulator. */
     FluidSimulator(int maxParticles, const FluidParams& params, bool preferGpu);
+    /** @brief Fluid simulator. */
     ~FluidSimulator();
 
     FluidSimulator(const FluidSimulator&)            = delete;
@@ -56,6 +60,7 @@ public:
     void setSdf(const MeshSdf& sdf);
 
     /** @return the currently bound SDF. */
+    /** @brief Sdf. */
     const MeshSdf& sdf() const { return sim_.sdf(); }
 
     /**
@@ -96,12 +101,15 @@ public:
     }
 
     /** @return live particle count. */
+    /** @brief Returns the particle count. */
     int getParticleCount() const { return sim_.particleCount(); }
 
     /** @return particle buffer capacity. */
+    /** @brief Returns the max particles. */
     int getMaxParticles() const { return sim_.maxParticles(); }
 
     /** @return true when the GPU compute path is active. */
+    /** @brief Using gpu. */
     bool usingGpu() const { return gpuOk_; }
 
     /** @brief Copy live particle positions out (CPU mirror; GPU path downloads). */
@@ -111,9 +119,11 @@ public:
     void readDensities(std::vector<float>& out) const;
 
     /** @return mutable tuning parameters. */
+    /** @brief Params. */
     FluidParams& params() { return sim_.params(); }
 
     /** @return tuning parameters (read-only). */
+    /** @brief Params. */
     const FluidParams& params() const { return sim_.params(); }
 
     /** @brief Set the gravity vector. */
@@ -190,11 +200,24 @@ private:
 };
 
 /** @brief Fluids module — factory + script binding. */
-class Fluids : public Module {
+class EVENGINE_API_DOMAINS Fluids : public Module {
 public:
     Module_REG(Fluids);
+    /** @brief Fluids. */
     Fluids();
+    /** @brief Fluids. */
     ~Fluids() override;
+
+    // The two `vector<unique_ptr<...>>` members make the implicit copy operations
+    // ill-formed (C2280) the moment a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // a module instance was never copyable or assignable in practice.
+    Fluids(const Fluids&)            = delete;
+    Fluids& operator=(const Fluids&) = delete;
+    /** @brief Fluids. */
+    Fluids(Fluids&&)                 = default;
+    /** @brief Operator =. */
+    Fluids& operator=(Fluids&&)      = default;
 
     /**
      * @brief Create a surface fluid simulator.
@@ -218,9 +241,11 @@ public:
     FluidSurfaceRenderer* newSurfaceRenderer(int width = 160, int height = 160);
 
     /** @return number of live simulators owned by the module. */
+    /** @brief Returns the simulator count. */
     int getSimulatorCount() const;
 
     /** @return number of live renderers owned by the module. */
+    /** @brief Returns the renderer count. */
     int getRendererCount() const;
 
 private:

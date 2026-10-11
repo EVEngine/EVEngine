@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingSelection.h"
 #include "editor/EditorIds.h"
@@ -26,19 +28,19 @@ using SelectionSnapshot = eve::editing::SelectionSnapshot;
 using EditorFocusSnapshot = eve::editing::FocusSnapshot;
 
 /** @brief Channelled selection/focus state shared by editor and in-game presentations. */
-class EditorSelectionService {
+class EVENGINE_API_ORCHESTRATION EditorSelectionService {
 public:
     using Listener = std::function<void(const SelectionSnapshot&)>;
 
     /** @brief Atomically replace a channel selection and optional primary item. */
-    EditorResult<SelectionSnapshot> set(std::string channel, std::vector<SelectionItem> items,
+    Result<SelectionSnapshot> set(std::string channel, std::vector<SelectionItem> items,
                                         std::optional<SelectionItem> primary = std::nullopt);
     /** @brief Clear a channel while retaining a monotonic sequence. */
-    EditorResult<SelectionSnapshot> clear(const std::string& channel);
+    Result<SelectionSnapshot> clear(const std::string& channel);
     /** @brief Read one channel, returning an empty sequence-zero snapshot when absent. */
     SelectionSnapshot snapshot(const std::string& channel) const;
     /** @brief Subscribe an owner callback; owner replacement and unload are deterministic. */
-    EditorResult<void> subscribe(std::string owner, Listener listener);
+    Result<void> subscribe(std::string owner, Listener listener);
     /** @brief Remove one listener owner. */
     bool unsubscribe(const std::string& owner);
 
@@ -49,10 +51,10 @@ private:
 };
 
 /** @brief Shared semantic focus service for docked editor and game HUD surfaces. */
-class EditorFocusService {
+class EVENGINE_API_ORCHESTRATION EditorFocusService {
 public:
     /** @brief Set the focused surface/item for one channel. */
-    EditorResult<EditorFocusSnapshot> focus(std::string channel, StableId surface, StableId item = {});
+    Result<EditorFocusSnapshot> focus(std::string channel, StableId surface, StableId item = {});
     /** @brief Read the current focus of one channel. */
     EditorFocusSnapshot snapshot(const std::string& channel) const;
 

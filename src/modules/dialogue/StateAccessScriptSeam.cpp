@@ -103,7 +103,7 @@ private:
     std::optional<eve::Value> ask(const char* method, std::string_view subject, std::string_view key) const {
         const eve::ScriptArg args[] = {eve::ScriptArg::fromText(std::string(subject)),
                                        eve::ScriptArg::fromText(std::string(key))};
-        auto answer = eve::ScriptProviderRegistry::instance().callValue(handle_, method, args);
+        auto                 answer = eve::ScriptProviderRegistry::instance().callValue(handle_, method, args);
         if (answer.ok()) return std::move(answer).takeValue();
         // 缺方法 = 这一类问题不归我（接口语义允许），不算失败。
         if (answer.code() != eve::StatusCode::Unsupported)
@@ -141,12 +141,12 @@ public:
         eve::Value::Array encoded;
         encoded.reserve(mutations.size());
         for (const eve::StateMutation& mutation : mutations) {
-            encoded.push_back(eve::Value::object(
-                {{"subject", eve::Value::string(mutation.subject)},
-                 {"key", eve::Value::string(mutation.key)},
-                 {"kind", eve::Value::string(std::string(mutationKindName(mutation.kind)))},
-                 {"persistent", eve::Value::boolean(mutation.persistent)},
-                 {"value", mutation.value}}));
+            encoded.push_back(
+                eve::Value::object({{"subject", eve::Value::string(mutation.subject)},
+                                    {"key", eve::Value::string(mutation.key)},
+                                    {"kind", eve::Value::string(std::string(mutationKindName(mutation.kind)))},
+                                    {"persistent", eve::Value::boolean(mutation.persistent)},
+                                    {"value", mutation.value}}));
         }
         const eve::ScriptArg args[] = {
             eve::ScriptArg::fromTable({{"transactionId", eve::Value::string(context.transactionId)},
@@ -208,11 +208,9 @@ void declareScriptStateQuerySeam() {
             return eve::Result<void>::success();
         },
         [&owned](const eve::ScriptProviderHandle& handle) -> eve::Result<void> {
-            const auto match =
-                std::find_if(owned.liveQueries.begin(), owned.liveQueries.end(),
-                             [&handle](const std::unique_ptr<ScriptStateQuery>& adapter) {
-                                 return adapter->handle() == handle;
-                             });
+            const auto match = std::find_if(
+                owned.liveQueries.begin(), owned.liveQueries.end(),
+                [&handle](const std::unique_ptr<ScriptStateQuery>& adapter) { return adapter->handle() == handle; });
             if (match == owned.liveQueries.end()) {
                 // 幂等：后置条件是"这一代没有适配器"，模块退出时可能已经撤过了。
                 return eve::Result<void>::success();
@@ -253,11 +251,9 @@ void declareScriptStateMutationSeam() {
             return eve::Result<void>::success();
         },
         [&owned](const eve::ScriptProviderHandle& handle) -> eve::Result<void> {
-            const auto match =
-                std::find_if(owned.liveMutations.begin(), owned.liveMutations.end(),
-                             [&handle](const std::unique_ptr<ScriptStateMutation>& adapter) {
-                                 return adapter->handle() == handle;
-                             });
+            const auto match = std::find_if(
+                owned.liveMutations.begin(), owned.liveMutations.end(),
+                [&handle](const std::unique_ptr<ScriptStateMutation>& adapter) { return adapter->handle() == handle; });
             if (match == owned.liveMutations.end()) {
                 return eve::Result<void>::success();
             }

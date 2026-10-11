@@ -102,7 +102,7 @@ namespace {
 class ParticlePresenter final : public IParticleOffscreenPresenter {
 public:
     int draws = 0;
-    EditorResult<void> draw(const ParticleOffscreenPreviewRequest& request,
+    Result<void> draw(const ParticleOffscreenPreviewRequest& request,
                             const eve::particles_editing::ParticleGraphCompileResult& compiled,
                             const eve::particles_editing::ParticleGraphPreviewResult& estimate,
                             eve::graphics::Graphics*, eve::graphics::Canvas*) override {
@@ -133,7 +133,7 @@ namespace {
 class SurfaceFluidRenderer final : public ISurfaceFluidPreviewRenderer {
 public:
     int draws = 0;
-    EditorResult<void> draw(const SurfaceFluidPreviewSnapshot& snapshot) override {
+    Result<void> draw(const SurfaceFluidPreviewSnapshot& snapshot) override {
         CHECK_EQ(static_cast<int>(snapshot.status), static_cast<int>(EditorStatus::Applied));
         ++draws; return eve::editing::applied<void>();
     }

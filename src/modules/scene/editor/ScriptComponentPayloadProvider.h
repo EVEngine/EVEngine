@@ -128,9 +128,14 @@ public:
 
     const std::string& componentType() const override;
 
-    /** @brief 节点上每个脚本实体实例的**已登记**组件各一条；未登记组件不出现（§9.62.1）。 */
-    std::vector<scene_editing::SceneComponentPayloadRef> components(const scene_editing::TargetId& scene,
-                                                                    const scene_editing::ObjectId& object) const override;
+    /**
+     * @brief 节点上每个脚本实体实例的**已登记**组件各一条；未登记组件不出现（§9.62.1）。
+     * @return 每次调用返回一个**拥有**的 vector：调用方持有结果，提供方不保留指针。
+     * @cost 与节点上挂着的脚本实例×其已登记组件数成正比，每次调用一次 vector 分配；编辑器只在
+     *       选中/刷新 inspector 时调用，不在逐帧路径上。
+     */
+    std::vector<scene_editing::SceneComponentPayloadRef> components(
+        const scene_editing::TargetId& scene, const scene_editing::ObjectId& object) const override;
 
     /**
      * @brief 选中组件的域操作目标（写回的唯一入口）。
@@ -142,7 +147,12 @@ public:
     scene_editing::EditorResult<scene_editing::IDomainOperationTarget*> payloadOperationTarget(
         const scene_editing::SelectionSnapshot& selection) const override;
 
-    /** @brief 引用还在不在：组件名+版本还登记着、且实例上仍挂着它。 */
+    /**
+     * @brief 引用还在不在：组件名+版本还登记着、且实例上仍挂着它。
+     * @return 每次调用返回一个**拥有**的 vector：每条诊断说明一项为何失效（空 vector = 有效）。
+     * @cost 与 1 + 该组件的祖先链长度 成正比（登记表一次哈希查找 + 实例槽位比对），每次调用
+     *       一次 vector 分配；只在保存/校验路径上调用。
+     */
     std::vector<scene_editing::EditorDiagnostic> validateComponent(
         const scene_editing::SceneComponentPayloadRef& component) const override;
 

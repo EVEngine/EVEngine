@@ -18,7 +18,7 @@ struct MeshInstanceRange {
     float                maximumHorizontalDistance = 0;
 };
 /** @brief Worker-safe validation of value-owned range and culling metadata. */
-[[nodiscard]] Result<void> validateMeshInstanceRange(const MeshInstanceRange& range);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> validateMeshInstanceRange(const MeshInstanceRange& range);
 /** @brief Test transformed bounds against Vulkan clip planes and horizontal distance.
  * @param range Previously validated value; read-only, not retained.
  * @param model Finite affine instance-to-world transform.
@@ -26,6 +26,6 @@ struct MeshInstanceRange {
  * @param eye World-space camera origin.
  * @return Whether any of the supplied bounds can be visible. Worker-safe.
  */
-bool meshInstanceRangeVisible(const MeshInstanceRange& range, const glm::mat4& model, const glm::mat4& viewProjection,
-                              const glm::vec3& eye);
+EVENGINE_API_BACKENDS bool meshInstanceRangeVisible(const MeshInstanceRange& range, const glm::mat4& model,
+                                                    const glm::mat4& viewProjection, const glm::vec3& eye);
 }  // namespace eve::graphics

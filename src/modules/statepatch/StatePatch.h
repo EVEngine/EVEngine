@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -13,9 +15,12 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::statepatch {
+
+class StatePatchStateAdapter;
 
 /** @brief Handle domain for module-owned state-patch stores. */
 struct StateStoreHandleTag {};
@@ -57,7 +62,28 @@ struct PatchError {
     std::string message;
 };
 
-/** @brief Summary of the most recent batch commit attempt. */
+/**
+ * @brief Successful payload of `Store::commit`.
+ * @remarks Failure diagnostics carry the structured patch errors; this value is
+ *          only present when the commit applied or was a no-op.
+ */
+struct PatchCommitInfo {
+    int      changedCount   = 0;
+    uint64_t revisionBefore = 0;
+    uint64_t revisionAfter  = 0;
+};
+
+/**
+ * @brief Compatibility summary of the most recent batch commit attempt.
+ * @compatibility Prefer `Store::commit` → `Result<PatchCommitInfo>` for C++.
+ *                Kept for Squirrel `PatchBatch.result()` until script callers
+ *                consume Result diagnostics for per-operation errors.
+ * @owner statepatch
+ * @issue api-dedup-P0.3
+ * @reason Squirrel PatchResult/PatchError class surface still queries fields.
+ * @expiry 2026-12-31
+ * @removal Delete after script bindings project commit failures via Result only.
+ */
 struct PatchResult {
     bool                    success        = false;
     int                     changedCount   = 0;
@@ -78,7 +104,7 @@ struct ChangeEvent {
 };
 
 /** @brief Ordered collection of set and remove operations committed atomically. */
-class PatchBatch {
+class EVENGINE_API_FOUNDATION PatchBatch {
 public:
     /** @brief Appends an unconditional set operation. */
     bool set(const std::string& subject, const std::string& key, const std::string& jsonValue);
@@ -111,7 +137,7 @@ private:
 };
 
 /** @brief Deterministic subject-and-key JSON value store with atomic patching. */
-class Store {
+class EVENGINE_API_FOUNDATION Store {
 public:
     /** @brief Creates an empty store with an optional persistent identity. */
     explicit Store(eve::PersistentId instanceId = {});
@@ -128,8 +154,16 @@ public:
     [[nodiscard]] eve::Result<void> releaseBatch(PatchBatchHandleRef reference);
     /** @brief Reports whether a batch reference is stale for this Store. */
     [[nodiscard]] bool isBatchStale(PatchBatchHandleRef reference) const noexcept;
-    /** @brief Validates and atomically commits a batch. */
-    bool commit(PatchBatch* batch);
+    /**
+     * @brief Validates and atomically commits a batch.
+     * @param batch Borrowed batch owned by this Store (or a temporary used by
+     *              a transaction participant). Null is rejected.
+     * @return `PatchCommitInfo` on success (including no-op commits); failure
+     *         Result with diagnostics and a filled `batch->result()` summary.
+     * @remarks On failure the Store is unchanged. `batch->result()` remains a
+     *          compatibility projection for script inspection.
+     */
+    [[nodiscard]] eve::Result<PatchCommitInfo> commit(PatchBatch* batch);
     /** @brief Returns whether a subject and key currently exist. */
     bool has(const std::string& subject, const std::string& key) const;
     /** @brief Returns canonical JSON for a value, or an empty string when absent. */
@@ -222,7 +256,7 @@ private:
  * This class is synchronous and not thread-safe. It must be used on the same
  * thread as its Store, and must not be retained for a later frame or task.
  */
-class StoreTransactionParticipant final : public transaction::ITransactionParticipant {
+class EVENGINE_API_FOUNDATION StoreTransactionParticipant final : public transaction::ITransactionParticipant {
 public:
     /**
      * @brief Bind one patch batch to a Store transaction.
@@ -230,6 +264,7 @@ public:
      * @param batch Borrowed batch whose operations are staged and validated.
      */
     StoreTransactionParticipant(Store& store, PatchBatch& batch) : store_(store), batch_(batch) {}
+    /** @brief Store transaction participant. */
     ~StoreTransactionParticipant() override = default;
 
     /** @brief Stable participant name used in transaction diagnostics. */
@@ -266,13 +301,17 @@ private:
 class StatePatch : public Module {
 public:
     Module_REG(StatePatch);
-    StatePatch()           = default;
-    ~StatePatch() override = default;
+    /** @brief Constructs a StatePatch. */
+    StatePatch() = default;
+    /** @brief Withdraw world-state capability listeners before owned stores are destroyed. */
+    ~StatePatch() override;
 
     /**
      * @brief Allocates a state store and returns its ownership reference.
      * @return A generation-qualified reference; the current StatePatch module owns the store.
      * @remarks The reference becomes stale after release, module unload, or reload.
+     *          Each live store is also registered as an `IStateQuery` / `IStateMutation`
+     *          listener so dialogue and other consumers can discover it via `cap::`.
      */
     [[nodiscard]] static eve::Result<StateStoreHandleRef> newStore();
     /** @brief Resolves a live store as a non-owning observation. */
@@ -290,7 +329,11 @@ public:
     [[nodiscard]] static bool isBatchStale(StateBatchHandleRef reference) noexcept;
 
 private:
+    void attachWorldAdapter(Store& store);
+    void detachWorldAdapter(Store& store);
+
     eve::script::RuntimeObjectRegistry<Store, StateStoreHandleTag> stores_;
+    std::unordered_map<Store*, std::unique_ptr<StatePatchStateAdapter>> worldAdapters_;
 };
 
 }  // namespace eve::statepatch

@@ -151,10 +151,16 @@ InspectCapture SceneInspect::capture(const std::string& outDir, const std::strin
     const std::string idPngPath     = dir + "/" + safeTag + "_id.png";
     const std::string idJsonPath    = dir + "/" + safeTag + "_id.json";
 
-    std::string err;
-    if (!cap->savePng(pngPath, &result.width, &result.height, &err)) {
-        result.error = err;
+    auto captured = cap->savePng(pngPath);
+    if (!captured) {
+        const auto* diag = captured.status().primaryDiagnostic();
+        result.error     = diag ? diag->message() : captured.status().describe();
         return result;
+    }
+    {
+        const eve::CaptureImageInfo info = std::move(captured).value();
+        result.width                     = info.width;
+        result.height                    = info.height;
     }
 
     const std::string geoJson = visibleEntitiesJson();
@@ -167,15 +173,13 @@ InspectCapture SceneInspect::capture(const std::string& outDir, const std::strin
     if (pos != std::string::npos) result.entityCount = std::atoi(geoJson.c_str() + pos + 9);
 
     if (wantDepth) {
-        std::string berr;
-        if (cap->gbufferPng("depth", depthPngPath, &berr))
+        if (cap->gbufferPng("depth", depthPngPath))
             result.depthPngPath = depthPngPath;
         else
             result.unsupported.push_back("depth");
     }
     if (wantNormal) {
-        std::string berr;
-        if (cap->gbufferPng("normal", normalPngPath, &berr))
+        if (cap->gbufferPng("normal", normalPngPath))
             result.normalPngPath = normalPngPath;
         else
             result.unsupported.push_back("normal");
@@ -189,8 +193,7 @@ InspectCapture SceneInspect::capture(const std::string& outDir, const std::strin
         if (!ok) {
             result.unsupported.push_back("id");
         } else {
-            std::string perr;
-            if (cap->entityIdMaskPng(idPngPath, &perr)) result.idPngPath = idPngPath;
+            if (cap->entityIdMaskPng(idPngPath)) result.idPngPath = idPngPath;
             if (writeTextFile(idJsonPath, idJson).empty()) result.idJsonPath = idJsonPath;
         }
     }

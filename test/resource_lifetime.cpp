@@ -26,6 +26,7 @@
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
 #include "graphics/shaders/aa_fxaa_frag_spv.inc"
+#include "image/ImageData.h"
 #include "window/Window.h"
 
 // ---------------------------------------------------------------------------
@@ -100,6 +101,33 @@ TEST_CASE("graphics.resourceLifetime.textureHandleIsBorrowedUntilReleased") {
     // Null handles are rejected.
     CHECK(!gfx->releaseTexture(nullptr));
 
+    win->close();
+}
+
+TEST_CASE("graphics.resourceLifetime.sharedTextureReusesContentKeyAndEvictsOnRelease") {
+    eve::window::Window     *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openWindow(win, gfx);
+
+    auto                  pixels = rgbaPixels(8, 8, 40, 90, 170, 255);
+    eve::image::ImageData image(8, 8, "RGBA8", pixels.data(), false);
+    CHECK(!gfx->newSharedTexture(nullptr, "invalid").ok());
+    CHECK(!gfx->newSharedTexture(&image, "").ok());
+    auto firstResult  = gfx->newSharedTexture(&image, "resource-lifetime-blue-v1");
+    auto secondResult = gfx->newSharedTexture(&image, "resource-lifetime-blue-v1");
+    REQUIRE(firstResult.ok());
+    REQUIRE(secondResult.ok());
+    auto *first  = &firstResult.value().get();
+    auto *second = &secondResult.value().get();
+    CHECK(second == first);
+
+    REQUIRE(gfx->releaseTexture(first));
+    delete first;
+    auto replacementResult = gfx->newSharedTexture(&image, "resource-lifetime-blue-v1");
+    REQUIRE(replacementResult.ok());
+    auto *replacement = &replacementResult.value().get();
+    REQUIRE(gfx->releaseTexture(replacement));
+    delete replacement;
     win->close();
 }
 

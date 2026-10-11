@@ -126,3 +126,12 @@ options 是严格的布尔值表，可包含 `triangulate`、`generateNormalsIfM
 未知字段和非布尔值均拒绝。选项参与缓存键，预加载和读取必须传相同选项。
 对已经建立索引的导出网格，可显式关闭 joinIdenticalVertices 和 improveCacheLocality，
 保留导出器的顶点/三角形顺序；这不会改变普通模型加载的默认选项。
+
+## 静态植被变形
+
+`model3d.prepareFoliageDeformation(modelData, meshIndex, renderable)` 返回 Result，
+为由同一模型/网格创建的未蒙皮 Renderable 生成拥有自身存储的静止形态变形数据。
+检查索引、顶点数量、有限坐标和正高度后一次提交；失败不替换原数据。
+调用成本随顶点数线性增长，只在准备资产时执行，不能每帧重复。
+在 main/render 线程同步调用，不保留 modelData 借用，不执行回调。
+配合 Graphics 的 configureFoliageWind 与显式时间使用，保留导入 PBR 纹理。

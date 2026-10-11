@@ -14,10 +14,11 @@ namespace eve {
  * common layer stays graphics-free; providers reinterpret it as
  * graphics::Texture*.
  */
-class EVENGINE_API IDecalQuery {
+class EVENGINE_API_FOUNDATION_INLINE IDecalQuery {
 public:
     static constexpr const char* capabilityName = "IDecalQuery";
 
+    /** @brief I decal query. */
     virtual ~IDecalQuery() = default;
 
     /**
@@ -27,9 +28,13 @@ public:
     virtual int project(float x, float y, float z, float nx, float ny, float nz,
                         void *albedoTexture, const std::string &kind, float size, float depth,
                         bool randomYaw, int seed, float fadeIn, float lifetime, float fadeOut) = 0;
+    /** @brief Removes . */
     virtual bool remove(int id) = 0;
+    /** @brief Clears all. */
     virtual void clearAll() = 0;
+    /** @brief Returns the number of . */
     virtual int count() = 0;
+    /** @brief Sets the limit. */
     virtual void setLimit(const std::string &kind, int limit) = 0;
 };
 

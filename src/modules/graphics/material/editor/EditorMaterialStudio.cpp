@@ -6,12 +6,7 @@
 namespace eve::editor {
 namespace {
 
-template <class T>
-EditorResult<T> studioError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
-EditorResult<void> noStudioChange() {
+Result<void> noStudioChange() {
     return eve::editing::noOp();
 }
 
@@ -26,21 +21,21 @@ MaterialStudioController::MaterialStudioController(DocumentId document, Material
       previews_(previews),
       renderer_(renderer) {}
 
-EditorResult<void> MaterialStudioController::setPreviewSettings(MaterialPreviewSettings settings) {
+Result<void> MaterialStudioController::setPreviewSettings(MaterialPreviewSettings settings) {
     settings_     = std::move(settings);
     previewDirty_ = true;
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> MaterialStudioController::beginInteraction(PropertyPath path) {
+Result<void> MaterialStudioController::beginInteraction(PropertyPath path) {
     if (activeProperty_ || transactions_.active())
-        return studioError<void>(EditorStatus::Conflict, "editor.material.studio-interaction-active",
-                                 "Finish or cancel the active material edit first");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material.studio-interaction-active"),
+                                          "Finish or cancel the active material edit first");
     const auto selection  = selectionFor(target_.authoringTarget());
     const auto descriptor = target_.authoringTarget().schema(selection).find(path);
     if (!descriptor)
-        return studioError<void>(EditorStatus::NotFound, "editor.material.studio-property",
-                                 "Material property is not present in the schema: " + path.value());
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.material.studio-property"),
+                                          "Material property is not present in the schema: " + path.value());
     draft_          = std::make_unique<MaterialDocumentTarget>(target_.authoringTarget());
     activeProperty_ = std::move(path);
     finalValue_.reset();
@@ -48,14 +43,14 @@ EditorResult<void> MaterialStudioController::beginInteraction(PropertyPath path)
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> MaterialStudioController::updateInteraction(EditorValue value) {
+Result<void> MaterialStudioController::updateInteraction(EditorValue value) {
     if (!draft_ || !activeProperty_)
-        return studioError<void>(EditorStatus::Rejected, "editor.material.studio-no-interaction",
-                                 "Begin a material interaction before updating it");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.studio-no-interaction"),
+                                          "Begin a material interaction before updating it");
     auto operation = draft_->makeSet(selectionFor(*draft_), *activeProperty_, value, PropertySetMode::Absolute);
     if (!operation.ok()) {
         diagnostics_ = operation.diagnostics();
-        return EditorResult<void>::failure(operation.status());
+        return Result<void>::failure(operation.status());
     }
     auto applied = draft_->applyDomainOperation(operation.value());
     if (!applied.ok()) {
@@ -68,14 +63,15 @@ EditorResult<void> MaterialStudioController::updateInteraction(EditorValue value
     return eve::editing::applied<void>();
 }
 
-EditorResult<TransactionReceipt> MaterialStudioController::commitInteraction() {
+Result<TransactionReceipt> MaterialStudioController::commitInteraction() {
     if (!draft_ || !activeProperty_ || !finalValue_)
-        return studioError<TransactionReceipt>(EditorStatus::Rejected, "editor.material.studio-no-final-value",
-                                               "The material interaction has no value to commit");
+        return eve::editing::failed<TransactionReceipt>(EditorStatus::Rejected,
+                                                        RuleId("editor.material.studio-no-final-value"),
+                                                        "The material interaction has no value to commit");
     auto operation = target_.authoringTarget().makeSet(selectionFor(target_.authoringTarget()), *activeProperty_,
                                                        *finalValue_, PropertySetMode::Absolute);
     if (!operation.ok())
-        return EditorResult<TransactionReceipt>::failure(operation.status());
+        return Result<TransactionReceipt>::failure(operation.status());
     TransactionSpec specification;
     specification.id           = TransactionId("material-studio-" + std::to_string(++transactionSequence_));
     specification.label        = "Edit material " + activeProperty_->value();
@@ -84,19 +80,19 @@ EditorResult<TransactionReceipt> MaterialStudioController::commitInteraction() {
     specification.mergeKey     = operation.value().mergeKey;
     auto begun                 = transactions_.begin(std::move(specification));
     if (!begun.ok())
-        return studioError<TransactionReceipt>(begun.code(), "editor.material.studio-begin",
-                                               "Could not begin the material transaction");
+        return eve::editing::failed<TransactionReceipt>(begun.code(), RuleId("editor.material.studio-begin"),
+                                                        "Could not begin the material transaction");
     auto appended = transactions_.append(std::move(operation).takeValue());
     if (!appended.ok()) {
         [[maybe_unused]] auto discarded = transactions_.discard();
-        return studioError<TransactionReceipt>(appended.code(), "editor.material.studio-append",
-                                               "Could not append the material edit");
+        return eve::editing::failed<TransactionReceipt>(appended.code(), RuleId("editor.material.studio-append"),
+                                                        "Could not append the material edit");
     }
     auto previewed = transactions_.preview();
     if (!previewed.ok()) {
         [[maybe_unused]] auto discarded = transactions_.discard();
-        return studioError<TransactionReceipt>(previewed.code(), "editor.material.studio-preflight",
-                                               "Material transaction preflight failed");
+        return eve::editing::failed<TransactionReceipt>(previewed.code(), RuleId("editor.material.studio-preflight"),
+                                                        "Material transaction preflight failed");
     }
     auto committed = transactions_.commit();
     if (!committed.ok()) return committed;
@@ -105,7 +101,7 @@ EditorResult<TransactionReceipt> MaterialStudioController::commitInteraction() {
     return committed;
 }
 
-EditorResult<void> MaterialStudioController::cancelInteraction() {
+Result<void> MaterialStudioController::cancelInteraction() {
     if (!draft_) return noStudioChange();
     clearInteraction();
     previewDirty_ = true;
@@ -113,11 +109,11 @@ EditorResult<void> MaterialStudioController::cancelInteraction() {
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> MaterialStudioController::tick(std::uint64_t monotonicMilliseconds) {
+Result<void> MaterialStudioController::tick(std::uint64_t monotonicMilliseconds) {
     if (!previewDirty_) return noStudioChange();
     if (hasPreviewTimestamp_ && monotonicMilliseconds < lastPreviewMilliseconds_)
-        return studioError<void>(EditorStatus::Rejected, "editor.material.studio-time-regressed",
-                                 "Material preview time must be monotonic");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.studio-time-regressed"),
+                                          "Material preview time must be monotonic");
     if (hasPreviewTimestamp_ && monotonicMilliseconds - lastPreviewMilliseconds_ < previewIntervalMilliseconds_)
         return noStudioChange();
     auto rendered = refreshPreview();
@@ -128,14 +124,14 @@ EditorResult<void> MaterialStudioController::tick(std::uint64_t monotonicMillise
     return rendered;
 }
 
-EditorResult<void> MaterialStudioController::refreshPreview() {
+Result<void> MaterialStudioController::refreshPreview() {
     return renderPreview(draft_ ? *draft_ : target_.authoringTarget());
 }
 
-EditorResult<void> MaterialStudioController::setPreviewRate(double framesPerSecond) {
+Result<void> MaterialStudioController::setPreviewRate(double framesPerSecond) {
     if (!std::isfinite(framesPerSecond) || framesPerSecond < 1.0 || framesPerSecond > 240.0)
-        return studioError<void>(EditorStatus::Rejected, "editor.material.studio-preview-rate",
-                                 "Material preview rate must be between 1 and 240 Hz");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.studio-preview-rate"),
+                                          "Material preview rate must be between 1 and 240 Hz");
     previewIntervalMilliseconds_ = static_cast<std::uint64_t>(std::ceil(1000.0 / framesPerSecond));
     return eve::editing::applied<void>();
 }
@@ -165,18 +161,18 @@ SelectionSnapshot MaterialStudioController::selectionFor(const MaterialDocumentT
     return selection;
 }
 
-EditorResult<void> MaterialStudioController::renderPreview(const MaterialDocumentTarget& material) {
+Result<void> MaterialStudioController::renderPreview(const MaterialDocumentTarget& material) {
     auto task = previews_.render(document_, material, settings_, renderer_);
     if (!task.ok()) {
         diagnostics_ = task.diagnostics();
-        return studioError<void>(task.code(), "editor.material.studio-preview",
-                                 "Material preview request was rejected");
+        return eve::editing::failed<void>(task.code(), RuleId("editor.material.studio-preview"),
+                                          "Material preview request was rejected");
     }
     auto result = previews_.result(task.value());
     if (!result.ok()) {
         diagnostics_ = result.diagnostics();
-        return studioError<void>(result.code(), "editor.material.studio-preview-result",
-                                 "Material preview result is unavailable");
+        return eve::editing::failed<void>(result.code(), RuleId("editor.material.studio-preview-result"),
+                                          "Material preview result is unavailable");
     }
     auto published = previews_.publish(document_, material.revision(), task.value());
     diagnostics_   = result.value().diagnostics;

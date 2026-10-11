@@ -21,14 +21,19 @@ struct HexVec3 {
     float z = 0.f;
 };
 
+/** @brief Operator +. */
 [[nodiscard]] constexpr HexVec3 operator+(HexVec3 a, HexVec3 b) noexcept {
     return HexVec3{a.x + b.x, a.y + b.y, a.z + b.z};
 }
+/** @brief Operator -. */
 [[nodiscard]] constexpr HexVec3 operator-(HexVec3 a, HexVec3 b) noexcept {
     return HexVec3{a.x - b.x, a.y - b.y, a.z - b.z};
 }
+/** @brief Operator *. */
 [[nodiscard]] constexpr HexVec3  operator*(HexVec3 a, float s) noexcept { return HexVec3{a.x * s, a.y * s, a.z * s}; }
+/** @brief Operator *. */
 [[nodiscard]] constexpr HexVec3  operator*(float s, HexVec3 a) noexcept { return a * s; }
+/** @brief Operator +=. */
 [[nodiscard]] constexpr HexVec3& operator+=(HexVec3& a, HexVec3 b) noexcept {
     a = a + b;
     return a;
@@ -100,8 +105,8 @@ enum class HexEdgeType : std::int32_t { Flat = 0, Slope = 1, Cliff = 2 };
  *
  * The layout matches the Catlike Coding "Hex Map" reference project: pointy-top
  * hexes on the XZ plane, +X east, +Z north, odd rows shifted half a cell to the
- * right, Y up. All radii are expressed in world units; `outerRadius` is settable
- * so a caller can rescale the whole map without touching the derived ratios.
+ * right, Y up. All radii are expressed in world units and are compile-time
+ * constants, so a different scale needs a different build rather than a setter.
  */
 class HexMetrics {
 public:
@@ -233,6 +238,7 @@ public:
     /** @brief Interpolates terrain weights along a terraced slope. */
     [[nodiscard]] static HexVec3 terraceLerpWeights(HexVec3 a, HexVec3 b, int step) noexcept {
         const float h = static_cast<float>(step) * kHorizontalTerraceStepSize;
+        /** @brief Lerp. */
         return lerp(a, b, h);
     }
 
@@ -280,6 +286,7 @@ struct EdgeVertices {
     HexVec3 v4;
     HexVec3 v5;
 
+    /** @brief Constructs a EdgeVertices. */
     EdgeVertices() = default;
 
     /** @brief Evenly samples the segment `c1 -> c2` at 0, 0.25, 0.5, 0.75 and 1. */

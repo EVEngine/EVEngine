@@ -21,6 +21,7 @@ class EditorAutomationProvider final : public eve::IEditorAutomation {
 public:
     /** @brief Bind borrowed services that outlive this provider. */
     EditorAutomationProvider(EditorCommandService& commands, EditorTargetCoordinator& targets);
+    /** @brief Releases EditorAutomationProvider resources. */
     ~EditorAutomationProvider() override;
 
     /** @brief Invoke discovery, inspect, execute, plan, commit, undo or redo. */
@@ -34,7 +35,8 @@ private:
 
     void refreshProfile();
     std::string commandsJson();
-    EditorResult<void> bindRequestedTarget(const EditorValue::Object& request);
+    std::string        targetList() const;
+    Result<void> bindRequestedTarget(const EditorValue::Object& request);
     std::string createTarget(const EditorValue::Object& request);
     std::string closeTarget(const EditorValue::Object& request);
     std::string startObservation(const EditorValue::Object& request);

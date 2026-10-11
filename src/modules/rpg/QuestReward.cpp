@@ -16,7 +16,7 @@ namespace {
 eve::Result<int> rewardFailure(eve::DiagnosticCode code, std::string message,
                                std::string path, std::string questId) {
     return eve::Result<int>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path), {{"questId", std::move(questId)}},
+        code, message, path, {{"questId", questId}},
         "rpg.quest-reward"));
 }
 

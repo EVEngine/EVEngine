@@ -113,7 +113,7 @@ QuestDefinition parseQuestObject(Value o) {
 
 eve::Result<int> strictFailure(std::string message, std::string path) {
     return eve::Result<int>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::ParseError, std::move(message), std::move(path), {}, "rpg.quest-content"));
+        eve::DiagnosticCode::ParseError, message, path, {}, "rpg.quest-content"));
 }
 
 bool validContentId(const std::string &id) {

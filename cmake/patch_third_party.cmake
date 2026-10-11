@@ -11,6 +11,12 @@
 # fails loudly instead of silently compiling different third-party code.
 # In particular, do not relax whitespace matching here: that can turn a real
 # source drift into an apparently successful but different third-party build.
+#
+# Line endings: git apply compares patch and target bytes, and a vendored checkout
+# is not line-ending uniform (external/ECS.hpp commits CRLF), so a patch targeting
+# such a file must be checked out with CRLF on every host. The .gitattributes
+# entry for cmake/patches/ecs-shared-default-table.patch does that. Do not reach
+# for --ignore-whitespace here: that would mask real source drift.
 
 if(NOT DEFINED PATCH OR NOT DEFINED PATCH_DIR)
     message(FATAL_ERROR "patch_third_party.cmake requires -DPATCH=... and -DPATCH_DIR=...")

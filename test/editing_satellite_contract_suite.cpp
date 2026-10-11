@@ -60,7 +60,7 @@ SelectionSnapshot physicsSelection(const eve::physics_editing::PhysicsColliderPu
 
 class AudioSink final : public eve::audio_editing::IAudioSourceRuntimeSink {
 public:
-    eve::audio_editing::EditorResult<void> publish(
+    eve::audio_editing::Result<void> publish(
         const eve::audio_editing::AudioSourceTarget&) override {
         return reject ? eve::editing::failed<void>(
                             Status::Failed, RuleId("test.contract.audio-publication"), "injected failure")
@@ -71,7 +71,7 @@ public:
 
 class PhysicsSink final : public eve::physics_editing::IPhysicsColliderRuntimeSink {
 public:
-    eve::physics_editing::EditorResult<void> publish(
+    eve::physics_editing::Result<void> publish(
         const eve::physics_editing::PhysicsColliderTarget&) override {
         return reject ? eve::editing::failed<void>(
                             Status::Failed, RuleId("test.contract.physics-publication"), "injected failure")

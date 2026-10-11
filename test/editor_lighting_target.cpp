@@ -34,6 +34,7 @@ TEST_CASE("editor.lighting.light3d_properties_validate_snapshot_and_apply_runtim
     set(document, "light.color", EditorValue::Array{1.0, 0.8, 0.6, 1.0});
     set(document, "light.intensity", 4.0);
     set(document, "shadow.cast", true);
+    set(document, "shadow.method", "csm");
     set(document, "shadow.strength", 0.75);
     CHECK(document.validate().empty());
 
@@ -45,12 +46,45 @@ TEST_CASE("editor.lighting.light3d_properties_validate_snapshot_and_apply_runtim
     CHECK_EQ(light->getDirY(), -1.f);
     CHECK_EQ(light->data()->intensity, 4.f);
     CHECK(light->getCastShadow());
+    CHECK_EQ(light->getShadowMethod(), "csm");
     CHECK_EQ(light->getShadowStrength(), 0.75f);
 
     const EditorValue snapshot = document.snapshotValue();
     Light3DDocumentTarget restored("restored-light");
     REQUIRE(restored.loadSnapshot(snapshot).ok());
     CHECK_EQ(restored.snapshotValue(), snapshot);
+}
+
+TEST_CASE("editor.lighting.light3d_spot_applies_cone_and_perspective_shadow") {
+    Light3DDocumentTarget document("spot-light");
+    set(document, "light.type", "spot");
+    set(document, "transform.position", EditorValue::Array{1.0, 3.0, -2.0});
+    set(document, "transform.direction", EditorValue::Array{0.0, -1.0, 0.2});
+    set(document, "light.intensity", 5.0);
+    set(document, "light.spot-angle", 28.0);
+    set(document, "light.spot-softness", 0.4);
+    set(document, "shadow.cast", true);
+    set(document, "shadow.method", "perspective");
+    CHECK(document.validate().empty());
+
+    eve::graphics::Light3D* light = eve::graphics::Light3D::createLight();
+    REQUIRE(light);
+    REQUIRE(Light3DRuntimeApplier{}.apply(document, light).ok());
+    CHECK_EQ(light->getType(), "spot");
+    CHECK_EQ(light->getSpotAngle(), 28.f);
+    CHECK_EQ(light->getSpotSoftness(), 0.4f);
+    CHECK_EQ(light->getShadowMethod(), "perspective");
+    CHECK(light->getCastShadow());
+}
+
+TEST_CASE("editor.lighting.light3d_point_shadow_warns_when_cube_reserved") {
+    Light3DDocumentTarget document("point-light");
+    set(document, "light.type", "point");
+    set(document, "shadow.cast", true);
+    set(document, "shadow.method", "auto");
+    const auto diagnostics = document.validate();
+    REQUIRE(!diagnostics.empty());
+    CHECK_EQ(diagnosticRule(diagnostics.front()).value(), "editor.light.point-shadow-reserved");
 }
 
 TEST_CASE("editor.lighting.light3d_rejects_zero_direction_before_runtime_mutation") {

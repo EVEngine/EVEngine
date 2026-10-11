@@ -13,6 +13,7 @@ AssetRef ref(std::string_view text) { auto value = AssetRef::parse(text); REQUIR
 
 TEST_CASE("asset.resourceReader.selectsBackendVariantAndPreservesCanonicalDefinition") {
     const auto assetId = id("550e8400-e29b-41d4-a716-446655440000");
+    const auto secondAssetId = id("550e8400-e29b-41d4-a716-446655440001");
     EvpackBuild input;
     input.packageId = id("018f6f22-2490-7ad2-bf58-4f1dbca31040");
     input.buildId = id("018f6f22-2490-7ad2-bf58-4f1dbca31041");
@@ -20,6 +21,10 @@ TEST_CASE("asset.resourceReader.selectsBackendVariantAndPreservesCanonicalDefini
                       {"web", "wasm32", "webgpu", {"rgba8"}, "wgsl-1", "high", {}}};
     const std::vector<std::uint8_t> canonical = {'{', '"', 'v', '"', ':', '1', '}'};
     input.chunks = {{assetId, "eve.mesh", SchemaVersion(1), 0, EvpackChunkKind::Definition, 0,
+                     EvpackCodec::Zstd, 8, {}, canonical},
+                    {assetId, "eve.mesh", SchemaVersion(1), 0, EvpackChunkKind::Bulk, 1,
+                     EvpackCodec::Zstd, 8, {}, {1, 2, 3}},
+                    {secondAssetId, "eve.mesh", SchemaVersion(1), 0, EvpackChunkKind::Definition, 0,
                      EvpackCodec::Zstd, 8, {}, canonical},
                     {assetId, "eve.mesh", SchemaVersion(1), 1, EvpackChunkKind::Definition, 0,
                      EvpackCodec::Zstd, 8, {}, canonical}};
@@ -40,4 +45,15 @@ TEST_CASE("asset.resourceReader.selectsBackendVariantAndPreservesCanonicalDefini
     auto mismatch = reader.read(ref("asset://550e8400-e29b-41d4-a716-446655440000"), "eve.image/2",
                                 {"windows", "x86_64", "vulkan", {"bc"}, {"spirv-1.6"}, {"high"}, {}}, 1024);
     REQUIRE(!mismatch.ok()); CHECK_EQ(mismatch.error()->code(), DiagnosticCode::TypeMismatch);
+
+    auto windowsAssets = reader.listAssets(
+        "eve.mesh/1", {"windows", "x86_64", "vulkan", {"bc"}, {"spirv-1.6"}, {"high"}, {}}, 2);
+    REQUIRE(windowsAssets.ok());
+    REQUIRE_EQ(windowsAssets.value().size(), std::size_t(2));
+    CHECK_EQ(windowsAssets.value().at(0).id(), assetId);
+    CHECK_EQ(windowsAssets.value().at(1).id(), secondAssetId);
+    auto overBudget = reader.listAssets(
+        "eve.mesh/1", {"windows", "x86_64", "vulkan", {"bc"}, {"spirv-1.6"}, {"high"}, {}}, 1);
+    REQUIRE(!overBudget.ok());
+    CHECK_EQ(overBudget.error()->code(), DiagnosticCode::InvalidArgument);
 }

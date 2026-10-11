@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -79,7 +81,7 @@ struct MaterialReactionRule {
 };
 
 /** @brief Owning immutable material and reaction table used by one PixelWorld. */
-class MaterialCatalog {
+class EVENGINE_API_FOUNDATION MaterialCatalog {
 public:
     /** @brief Validate and own a complete catalog candidate transactionally. */
     [[nodiscard]] static eve::Result<MaterialCatalog> create(

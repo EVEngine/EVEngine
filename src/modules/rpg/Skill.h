@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 技能系统：数据驱动的 SkillDefinition（消耗、冷却、读条时间、命中后授予的效果……）。
 //
@@ -22,6 +24,7 @@
 
 namespace eve::rpg {
 
+/** @brief SkillDefinition public API. */
 struct SkillDefinition {
     std::string id;
     float cooldown = 0.f;
@@ -35,10 +38,12 @@ struct SkillDefinition {
     eve::decision::Condition                     castCondition;
     std::unordered_map<std::string, std::string> extra;  ///< 游戏自定义附加数据
 
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
 };
 
-class SkillRegistry {
+/** @brief EVENGINE_API_PLATFORM public API. */
+class EVENGINE_API_PLATFORM SkillRegistry {
 public:
     /**
      * @brief Return the common registry that owns canonical skill JSON.
@@ -58,8 +63,11 @@ public:
      * @reentrancy The lookup does not invoke callbacks and is not valid across re-entrant registry mutation.
      */
     static const SkillDefinition *find(const std::string &id);
+    /** @brief Removes . */
     static bool remove(const std::string &id);
+    /** @brief Clears . */
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
 
     /**

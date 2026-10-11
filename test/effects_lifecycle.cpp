@@ -124,3 +124,50 @@ TEST_CASE("effects.executor.advancesOnlyLifecycleAndReportsExpiry") {
     REQUIRE(container.eventAt(1) != nullptr);
     CHECK_EQ(container.eventAt(1)->kind, EffectEventKind::Expired);
 }
+
+TEST_CASE("effects.dispel.removesEligibleEffectsAtomicallyInPriorityOrder") {
+    EffectContainer  container;
+    EffectDefinition weak;
+    weak.id       = "weak-curse";
+    weak.priority = 2;
+    weak.tags     = {"dispel:magic"};
+    EffectDefinition strong = weak;
+    strong.id                 = "strong-curse";
+    strong.priority           = 5;
+    EffectDefinition locked = weak;
+    locked.id                 = "locked-curse";
+    locked.priority           = 4;
+    locked.tags.push_back("effect:undispellable");
+    EffectDefinition other = weak;
+    other.id               = "poison";
+    other.priority         = 3;
+    other.tags             = {"dispel:poison"};
+
+    auto weakId   = container.apply(weak, "unit:4", "caster");
+    auto strongId = container.apply(strong, "unit:4", "caster");
+    auto lockedId = container.apply(locked, "unit:4", "caster");
+    auto otherId  = container.apply(other, "unit:4", "caster");
+    REQUIRE(weakId.ok());
+    REQUIRE(strongId.ok());
+    REQUIRE(lockedId.ok());
+    REQUIRE(otherId.ok());
+    const auto weakValue   = std::move(weakId).takeValue();
+    const auto strongValue = std::move(strongId).takeValue();
+    const auto lockedValue = std::move(lockedId).takeValue();
+    const auto otherValue  = std::move(otherId).takeValue();
+    auto       oldHandle   = container.handleFor(strongValue);
+    REQUIRE(oldHandle.ok());
+
+    auto removed = container.dispel("unit:4", "dispel:magic", 5, 2);
+    REQUIRE(removed.ok());
+    REQUIRE_EQ(removed.value().size(), 2u);
+    CHECK_EQ(removed.value()[0], strongValue);
+    CHECK_EQ(removed.value()[1], weakValue);
+    CHECK(container.find(strongValue) == nullptr);
+    CHECK(container.find(weakValue) == nullptr);
+    CHECK(container.find(lockedValue) != nullptr);
+    CHECK(container.find(otherValue) != nullptr);
+    auto stale = container.resolve(oldHandle.value());
+    CHECK(!stale.ok());
+    CHECK_EQ(stale.status().primaryDiagnostic()->code(), eve::DiagnosticCode::StaleHandle);
+}

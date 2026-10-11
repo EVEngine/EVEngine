@@ -22,10 +22,13 @@ struct RibbonMesh {
     std::vector<float> uvST;
     std::vector<uint32_t> indices;
 
+    /** @brief Vertex count. */
     [[nodiscard]] int vertexCount() const { return int(posXYZ.size() / 3u); }
+    /** @brief Index count. */
     [[nodiscard]] int indexCount() const { return int(indices.size()); }
 };
 
+/** @brief RibbonParams public API. */
 struct RibbonParams {
     /** @brief World-space side hint used to extrude the ribbon (normalized internally). */
     glm::vec3 sideHint{1.f, 0.f, 0.f};
@@ -43,13 +46,13 @@ struct RibbonParams {
  *
  * @param strands Must already be structurally valid (or validate() is called).
  */
-[[nodiscard]] Result<RibbonMesh> buildRibbons(const StrandsDatas &strands,
-                                              const RibbonParams &params = {});
+[[nodiscard]] EVENGINE_API_BACKENDS Result<RibbonMesh> buildRibbons(const StrandsDatas &strands,
+                                                                    const RibbonParams &params = {});
 
 /**
  * @brief Append `src` into `dst`, rebasing triangle indices by `dst` vertex count.
  * @ownership Both meshes remain caller-owned; `src` is copied into `dst`.
  */
-void appendRibbonMesh(RibbonMesh &dst, const RibbonMesh &src);
+EVENGINE_API_BACKENDS void appendRibbonMesh(RibbonMesh &dst, const RibbonMesh &src);
 
 }  // namespace eve::graphics::hair

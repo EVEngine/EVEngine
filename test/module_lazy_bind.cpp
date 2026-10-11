@@ -122,12 +122,12 @@ TEST_CASE("moduleExpose.allBindingsPreserveScriptEcsOverrides") {
         lazySystem <- LazySystem()
         lazySystem.update(0.5)
         if (lazyEntity.position.x != 0.5) throw "script ECS override was lost"
-        hostSystem <- eve.HostSystem()
-        if (hostSystem.getName() != "System") throw "host System module binding was lost"
+        hostOS <- eve.OS()
+        if (hostOS.getName() != "OS") throw "OS module binding was lost"
     )", "lazy-script-ecs.nut");
 }
 
-TEST_CASE("moduleExpose.hostSystemSlotDoesNotAcceptStdlibFunction") {
+TEST_CASE("moduleExpose.osSlotUsesUnambiguousName") {
     Runtime runtime(1024, ssq::Libs::ALL);
     ModuleManager::expose(runtime);
     REQUIRE(ModuleManager::expose_pending() >= 0);
@@ -136,11 +136,11 @@ TEST_CASE("moduleExpose.hostSystemSlotDoesNotAcceptStdlibFunction") {
             return slot in getroottable() && getroottable()[slot] != null &&
                    typeof getroottable()[slot] == "instance"
         }
-        if (moduleSlotLive("system")) throw "stdlib system function was accepted as a module instance"
-        system <- eve.HostSystem()
-        if (!moduleSlotLive("system")) throw "HostSystem instance was not accepted"
-        system.limitFrame()
-    )", "host-system-slot-collision.nut");
+        if (moduleSlotLive("os")) throw "OS module slot was unexpectedly occupied"
+        os <- eve.OS()
+        if (!moduleSlotLive("os")) throw "OS instance was not accepted"
+        os.limitFrame()
+    )", "os-slot.nut");
 }
 
 TEST_CASE("moduleExpose.allBindingsPreserveRenderable3DSurface") {

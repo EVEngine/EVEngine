@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "vehicle-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/vehicle/**",
+      "owner": "vehicle",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The damage pipeline consumes the multi-listener IVehicleDamageModifier socket, which is now answerable from script through eve.provider.publishFor; recording the face makes the provider and any further consumer declare themselves.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/vehicle/VehicleTypes.h",
+        "src/modules/vehicle/Vehicle.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IVehicleDamageModifier"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Vehicle (unchanged); eve.provider.publishFor('IVehicleDamageModifier', name, instance)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Vehicle simulation owner thread; the damage modifier is called synchronously inside the damage pipeline and retains no script value between hits",
+      "trim": {
+        "absent_profile": "Profiles without vehicle drop the module and its IVehicleDamageModifier listeners; the remaining modifiers keep running in registration order",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The modifier runs once per damage application and returns an owning modified value; nothing is retained between hit resolutions."
+      ],
+      "hot_path": []
+    }
+  ]
+}

@@ -9,12 +9,12 @@ using namespace eve::editing;
 namespace {
 class RoadSink final : public IMapRoadMeshSink {
 public:
-    EditorResult<void> publishRoad(const std::string&, const StableId& road,
+    Result<void> publishRoad(const std::string&, const StableId& road,
                                    Revision revision, const EditorValue& mesh) override {
         published = road; publishedRevision = revision; value = mesh;
         return eve::editing::applied<void>();
     }
-    EditorResult<void> removeRoad(const std::string&, const StableId&) override {
+    Result<void> removeRoad(const std::string&, const StableId&) override {
         return eve::editing::applied<void>();
     }
     StableId published;

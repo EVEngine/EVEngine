@@ -1,0 +1,23 @@
+<sbspresets formatversion="1.0" count="1"><sbspreset pkgurl="pkg://EV_ProceduralDecalV1_Standard" label="" >
+<presetinput identifier="$outputsize" uid="3539185287" type="8" value="11,11" />
+<presetinput identifier="quality" uid="3168543074" type="4" value="1" />
+<presetinput identifier="ab_balance" uid="3168543084" type="0" value="0.945" />
+<presetinput identifier="ab_height_masking" uid="3168543080" type="0" value="0.645" />
+<presetinput identifier="a_amount" uid="3168543092" type="0" value="0.49" />
+<presetinput identifier="a_pattern" uid="3168543090" type="4" value="44" />
+<presetinput identifier="a_tweak" uid="3168543088" type="0" value="0.048" />
+<presetinput identifier="a_color" uid="3168543096" type="2" value="0.609375,0.609375,0.609375" />
+<presetinput identifier="a_normal" uid="3168542986" type="0" value="0.819" />
+<presetinput identifier="b_amount" uid="3168543004" type="0" value="0.956" />
+<presetinput identifier="b_pattern" uid="3168543002" type="4" value="8" />
+<presetinput identifier="b_tweak" uid="3168543000" type="0" value="0.469" />
+<presetinput identifier="b_contrast" uid="3168543010" type="0" value="0.555" />
+<presetinput identifier="b_color" uid="3168543008" type="2" value="0.189224,0.499691,0.746528" />
+<presetinput identifier="b_roughness" uid="3168543028" type="0" value="0.059" />
+<presetinput identifier="b_rough_variation" uid="3168543026" type="0" value="0.035" />
+<presetinput identifier="b_rough_variation_type" uid="3168543024" type="0" value="0.597" />
+<presetinput identifier="b_normal" uid="3168543038" type="0" value="0.647" />
+<presetinput identifier="b_normal_softness" uid="3168543036" type="0" value="0.038" />
+<presetinput identifier="b_normal_thickness" uid="3168543034" type="0" value="9.289" />
+</sbspreset>
+</sbspresets>

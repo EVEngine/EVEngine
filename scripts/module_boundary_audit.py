@@ -32,9 +32,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import utf8_stdio
 
+import utf8_stdio
+
 REPO = Path(__file__).resolve().parent.parent
 MANIFEST_DIR = REPO / "cmake" / "module_manifest"
-CONTRACT_CATALOGUE = REPO / "scripts" / "architecture_contracts.json"
+CONTRACT_CATALOGUE = REPO / "scripts" / "architecture_contracts"
 SRC = REPO / "src"
 
 DECLARE_OPEN = "eve_declare_module("

@@ -58,12 +58,16 @@ struct TerrainWorldClearSettings {
  * cannot expose a height/resource combination that never existed. Inputs are copied during calls and never retained.
  * The workspace is caller-thread affine, invokes no callback, reads no clock and uses only explicitly supplied seeds.
  */
-class TerrainWorldWorkspace {
+class EVENGINE_API_DOMAINS TerrainWorldWorkspace {
 public:
     struct Impl;
+    /** @brief Terrain world workspace. */
     TerrainWorldWorkspace();
+    /** @brief Terrain world workspace. */
     ~TerrainWorldWorkspace();
+    /** @brief Terrain world workspace. */
     TerrainWorldWorkspace(TerrainWorldWorkspace&&) noexcept;
+    /** @brief Operator =. */
     TerrainWorldWorkspace& operator=(TerrainWorldWorkspace&&) noexcept;
     TerrainWorldWorkspace(const TerrainWorldWorkspace&) = delete;
     TerrainWorldWorkspace& operator=(const TerrainWorldWorkspace&) = delete;

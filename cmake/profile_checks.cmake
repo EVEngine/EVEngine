@@ -11,6 +11,11 @@ if(NOT EVENGINE_BUILD_PROFILE_CHECKS)
     return()
 endif()
 
+# The real crowd solver and bindings link without graphics, window or RTS.
+if(TARGET EVCrowd)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/crowd_check" "${CMAKE_BINARY_DIR}/profile/crowd")
+endif()
+
 if(TARGET eve AND TARGET EVGraphics)
     add_executable(eve_skin_palette_check
         "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
@@ -29,12 +34,37 @@ if(TARGET eve AND TARGET EVGraphics)
     target_link_libraries(eve_pbr_surface_check PRIVATE ${_eve_skin_host_libraries}
         zeroerr eve_engine_includes)
     add_test(NAME profile.pbr_surface COMMAND eve_pbr_surface_check)
+    if(TARGET EVAsset_graphics)
+        add_executable(eve_texture_mip_check
+            "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+            "${CMAKE_SOURCE_DIR}/test/graphics_texture_mips.cpp")
+        target_compile_features(eve_texture_mip_check PRIVATE cxx_std_20)
+        target_link_libraries(eve_texture_mip_check PRIVATE ${_eve_skin_host_libraries}
+            zeroerr eve_engine_includes)
+        add_test(NAME profile.texture_mips COMMAND eve_texture_mip_check)
+        add_executable(eve_unity_normal_mip_graphics_probe
+            "${CMAKE_SOURCE_DIR}/test/asset_import/UnityNormalMipGraphicsProbe.cpp")
+        target_compile_features(eve_unity_normal_mip_graphics_probe PRIVATE cxx_std_20)
+        target_link_libraries(eve_unity_normal_mip_graphics_probe PRIVATE ${_eve_skin_host_libraries}
+            eve_engine_includes)
+        add_executable(eve_unity_material_graphics_probe
+            "${CMAKE_SOURCE_DIR}/test/asset_import/UnityMaterialGraphicsProbe.cpp")
+        target_compile_features(eve_unity_material_graphics_probe PRIVATE cxx_std_20)
+        target_link_libraries(eve_unity_material_graphics_probe PRIVATE ${_eve_skin_host_libraries}
+            eve_engine_includes)
+        add_executable(eve_unity_volume_graphics_probe
+            "${CMAKE_SOURCE_DIR}/test/asset_import/UnityVolumeGraphicsProbe.cpp")
+        target_compile_features(eve_unity_volume_graphics_probe PRIVATE cxx_std_20)
+        target_link_libraries(eve_unity_volume_graphics_probe PRIVATE ${_eve_skin_host_libraries}
+            eve_engine_includes)
+    endif()
     if(TARGET EVAsset_import AND TARGET EVAsset_graphics)
         add_executable(eve_material_compat_check
             "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_import_unity_native.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_import_gltf_material.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_graphics_loader.cpp"
+            "${CMAKE_SOURCE_DIR}/test/asset_graphics_material_color.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_import.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_mesh_uv.cpp")
         target_compile_definitions(eve_material_compat_check PRIVATE EVE_TEST_MESH_UPLOAD=1)
@@ -55,13 +85,15 @@ set_target_properties(eve_public_header_checks PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     EXCLUDE_FROM_ALL FALSE)
 
-set(_eve_capability_source "${CMAKE_SOURCE_DIR}/src/engine/common/Capability.cpp")
+set(_eve_capability_sources
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Capability.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/CapabilityOwned.cpp")
 add_executable(eve_capability_present_check
     "${CMAKE_SOURCE_DIR}/test/profile/capability_present.cpp"
-    ${_eve_capability_source})
+    ${_eve_capability_sources})
 add_executable(eve_capability_absent_check
     "${CMAKE_SOURCE_DIR}/test/profile/capability_absent.cpp"
-    ${_eve_capability_source})
+    ${_eve_capability_sources})
 foreach(_eve_capability_target IN ITEMS
         eve_capability_present_check eve_capability_absent_check)
     target_compile_features(${_eve_capability_target} PRIVATE cxx_std_20)
@@ -116,6 +148,9 @@ if(TARGET EVAsset)
         "${CMAKE_SOURCE_DIR}/test/asset_import_gltf_material.cpp"
         "${CMAKE_SOURCE_DIR}/test/asset_migration.cpp"
         "${CMAKE_SOURCE_DIR}/test/asset_mesh_uv.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_mesh_attributes.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_import_tiff.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_import_tga.cpp"
         "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfImporter.cpp"
         "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfAnimation.cpp"
         "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfDecode.cpp"

@@ -563,16 +563,43 @@ void exposeMotionTraitsBuilder(ssq::Table& table, const char* className) {
     using Builder = ScriptMotionBuilderT<Traits>;
     auto builder =
         table.addClass<Builder>(className, std::function<Builder*()>([]() -> Builder* { return nullptr; }), true);
-    builder.addFunc("ease", &Builder::ease);
-    builder.addFunc("delay", &Builder::delay);
-    builder.addFunc("loops", &Builder::loops);
-    builder.addFunc("cancelOnError", &Builder::cancelOnError);
+    // These are lambdas rather than `&Builder::ease` (the shape the float builder uses)
+    // because `Builder` is a template-dependent name: the binding-contract generator indexes
+    // members by concrete class, and the same method name also exists on the concrete float
+    // builder with a different parameter type, so `&Builder::ease` resolved to two shapes and
+    // was reported as an unresolved binding. A lambda states the parameters directly, which is
+    // also the shape `to`/`bind` below already use.
+    builder.addFunc("ease", [](Builder* self, std::string kind) {
+        if (!self) throw Exception("%s.ease: builder is null", Traits::kType);
+        self->ease(std::move(kind));
+    });
+    builder.addFunc("delay", [](Builder* self, float seconds) {
+        if (!self) throw Exception("%s.delay: builder is null", Traits::kType);
+        self->delay(seconds);
+    });
+    builder.addFunc("loops", [](Builder* self, int count, std::string mode) {
+        if (!self) throw Exception("%s.loops: builder is null", Traits::kType);
+        self->loops(count, std::move(mode));
+    });
+    builder.addFunc("cancelOnError", [](Builder* self, bool enabled) {
+        if (!self) throw Exception("%s.cancelOnError: builder is null", Traits::kType);
+        self->cancelOnError(enabled);
+    });
     if constexpr (Traits::kHasStyle) {
         builder.addFunc("stylePunch", &Builder::stylePunch);
         builder.addFunc("styleShake", &Builder::styleShake);
-        builder.addFunc("frequency", &Builder::frequency);
-        builder.addFunc("dampingRatio", &Builder::dampingRatio);
-        builder.addFunc("seed", &Builder::seed);
+        builder.addFunc("frequency", [](Builder* self, int count) {
+            if (!self) throw Exception("%s.frequency: builder is null", Traits::kType);
+            self->frequency(count);
+        });
+        builder.addFunc("dampingRatio", [](Builder* self, float ratio) {
+            if (!self) throw Exception("%s.dampingRatio: builder is null", Traits::kType);
+            self->dampingRatio(ratio);
+        });
+        builder.addFunc("seed", [](Builder* self, int value) {
+            if (!self) throw Exception("%s.seed: builder is null", Traits::kType);
+            self->seed(value);
+        });
     }
     builder.addFunc("to", [](Builder* self, const ssq::Object& sink) {
         if (!self) throw Exception("%s.to: builder is null", Traits::kType);
@@ -582,7 +609,10 @@ void exposeMotionTraitsBuilder(ssq::Table& table, const char* className) {
         if (!self) throw Exception("%s.bind: builder is null", Traits::kType);
         return self->bind(sink);
     });
-    builder.addFunc("run", &Builder::run);
+    builder.addFunc("run", [](Builder* self) -> ScriptMotionHandle* {
+        if (!self) throw Exception("%s.run: builder is null", Traits::kType);
+        return self->run();
+    });
 }
 
 /** @brief 注册 vec2/vec3/color/quat 四套 builder 与它们的 Animation 工厂。 */

@@ -6,19 +6,15 @@
 #include "common/SquirrelBinding.h"
 
 namespace eve::ui {
-namespace {
-Result<void> bad(const char* message) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, message, "ui.pcgDraggableWindow"));
-}
-}  // namespace
+  // namespace
 
 Result<void> PcgDraggableWindow::configure(float x, float y, float width, float height, float screenWidth,
                                            float screenHeight, float scale) {
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(width) || !std::isfinite(height) ||
         !std::isfinite(screenWidth) || !std::isfinite(screenHeight) || !std::isfinite(scale) || width <= 0 ||
         height <= 0 || screenWidth < width || screenHeight < height || scale <= 0)
-        return bad("invalid draggable-window geometry");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid draggable-window geometry", "ui.pcgDraggableWindow"));
     x_            = resetX_ = x;
     y_            = resetY_ = y;
     width_        = width;
@@ -32,8 +28,10 @@ Result<void> PcgDraggableWindow::configure(float x, float y, float width, float 
 }
 
 Result<void> PcgDraggableWindow::drag(float dx, float dy) {
-    if (!configured_) return bad("draggable window is not configured");
-    if (!std::isfinite(dx) || !std::isfinite(dy)) return bad("pointer delta must be finite");
+    if (!configured_) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "draggable window is not configured", "ui.pcgDraggableWindow"));
+    if (!std::isfinite(dx) || !std::isfinite(dy)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "pointer delta must be finite", "ui.pcgDraggableWindow"));
     const float x = x_ + dx / scale_;
     const float y = y_ + dy / scale_;
     x_            = -std::clamp(std::abs(x), width_ * .5f, screenWidth_ - width_ * .5f);

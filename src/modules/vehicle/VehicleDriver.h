@@ -28,6 +28,7 @@ struct PlayerControl {
 /** @brief 驾驶者：把某乘客的控制转成载具输入。 */
 class IVehicleDriver {
 public:
+    /** @brief Releases IVehicleDriver resources. */
     virtual ~IVehicleDriver() = default;
 
     /**

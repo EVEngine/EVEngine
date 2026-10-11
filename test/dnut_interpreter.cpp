@@ -1,7 +1,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "dnut_interpreter/DnutBlockScanner.h"
 #include "dnut_interpreter/DnutCompiler.h"
+#include "dnut_interpreter/DnutLexer.h"
 #include "dnut_interpreter/SequenceRuntime.h"
 #include "dnut_interpreter/StepKindRegistry.h"
 
@@ -49,6 +51,22 @@ StepKindRegistry makeRegistry(std::vector<std::string>* marks = nullptr) {
 const SequenceNode* findNode(const SequenceAsset& asset, const std::string& id) { return asset.findNode(id); }
 
 }  // namespace
+
+TEST_CASE("dnut.language.sharedScannerFindsMixedDialectBlocks") {
+    const std::string source =
+        "schema \"eve.dnut\"\nversion 1\n"
+        "pool greeting { guide: \"brace { stays in text\" }\n"
+        "conversation intro entry=end { node end end }\n"
+        "story arrival { end }\n";
+    auto tokens = lexDnut(source, "mixed.dnut");
+    REQUIRE(tokens.ok());
+    auto blocks = scanDnutBlocks(tokens.value(), "mixed.dnut");
+    REQUIRE(blocks.ok());
+    REQUIRE_EQ(blocks.value().size(), 3u);
+    CHECK_EQ(blocks.value()[0].kind, std::string("pool"));
+    CHECK_EQ(blocks.value()[1].kind, std::string("conversation"));
+    CHECK_EQ(blocks.value()[2].kind, std::string("story"));
+}
 
 TEST_CASE("dnut.language.compilesControlFlow") {
     StepKindRegistry     registry = makeRegistry();

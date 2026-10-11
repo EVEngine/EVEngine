@@ -51,15 +51,24 @@ local e = scene.attachEntity("player", Bouncer)   // 返回实例
 scene.hasEntity("player", Bouncer)                // true
 scene.getEntity("player", Bouncer)                // 按类查找
 scene.entitiesOf("player")                        // 该节点全部实例
-scene.detachEntity("player", e)                   // 卸载（触发 onDetach + destroy）
+scene.collectIdsWith(Bouncer)                     // 当前 host 上挂了该类的节点 id
+scene.detachEntity("player", e)                   // 立刻卸载（触发 onDetach + destroy）
+// update(dt) 内请用延迟队列，帧末统一卸载：
+//   scene.scheduleDetachEntity("player", e)
+//   scene.scheduleDetachEntityAt(hostName, "player", e)
+
+e.disable()                                       // 跳过 update；触发 onDisable
+e.enable()                                        // 恢复；触发 onEnable
+e.isEnabled()                                     // true/false
 
 local ref = scene.getNodeRef("player")            // 节点句柄
 local p = ref.getPosition()                       // [x, y, z]
 ref.getWorldPosition()                            // world 位置（需先 updateTransforms/update）
 ref.setPosition(0.0, 0.0, 0.0)
+ref.scheduleDetachEntity(e)                       // 等价于 scene.scheduleDetachEntityAt(...)
 ```
 
-生命周期：reconcile / 全量 rebuild 按节点 id 保留绑定；节点被移除时自动调用 `onDetach()` 并销毁实例。同一节点重复 attach 同 class 会先卸载旧实例。
+生命周期：reconcile / 全量 rebuild 按节点 id 保留绑定；节点被移除时自动调用 `onDetach()` 并销毁实例。同一节点重复 attach 同 class 会先卸载旧实例。`update(dt)` 中同步 `detachEntity` 不安全——请用 `scheduleDetachEntity` / `scheduleDetachEntityAt`，它们在当次 `scene.update` 的全部脚本 `update` 结束后再卸载。
 
 ### 通用 link 系统（节点 ↔ 渲染/物理/相机/音频）
 
@@ -215,7 +224,7 @@ for (local i = 0; i < octree.getResultCount(); ++i) {
 
 - `addNode()`、`beginBuild()`、`beginGroup()`、`beginNode()`、`bindOwner()`、`collectChildIds()`、`collectIds()`、`collectIdsByName()`
 - `collectIdsFrom()`、`collectIdsVisible()`、`end()`、`findIdByName()`、`findIdByPath()`、`getChildCount()`、`getChildIdAt()`、`getName()`
-- `attachEntity()`、`attachEntityAt()`、`detachEntity()`、`detachEntityAt()`、`getEntity()`、`getEntityAt()`、`hasEntity()`、`hasEntityAt()`、`entitiesOf()`、`entitiesOfAt()`、`update()`、`currentHostName()`、`getNodeRef()`、`getNodeRefAt()`、`getNodeRefByPath()`
+- `attachEntity()`、`attachEntityAt()`、`detachEntity()`、`detachEntityAt()`、`scheduleDetachEntity()`、`scheduleDetachEntityAt()`、`collectIdsWith()`、`getEntity()`、`getEntityAt()`、`hasEntity()`、`hasEntityAt()`、`entitiesOf()`、`entitiesOfAt()`、`update()`、`currentHostName()`、`getNodeRef()`、`getNodeRefAt()`、`getNodeRefByPath()`
 - `linkRenderable2D()`、`linkRenderable3D()`、`linkPhysics2D()`、`linkPhysics3D()`、`linkCamera3D()`、`linkAudio3D()`、`unlinkNodeKind()`、`linkCount()`（及 host-scoped `*At` 变体）
 - `getNodePosition()`、`getNodeRotation()`、`getNodeScale()`、`getNodeVisible()`、`getNodeWorldPosition()`、`getNodeWorldRotation()`、`getNodeWorldScale()`、`localToWorld()`、`worldToLocal()`、`setNodeParent()`、`removeNode()`、`addNodeChild()`、`removeNodeChild()`、`setNodeQuaternion()`、`getNodeQuaternion()`、`setNodeLookAt()`、`addNodeTag()`、`removeNodeTag()`、`hasNodeTag()`、`getNodeTags()`、`collectIdsByTag()`、`setNodeLayer()`、`getNodeLayer()`（及 host-scoped `*At` 变体）
 - `setNodeBounds()`、`hasNodeBounds()`、`getNodeBounds()`、`serializeHost()`、`deserializeHost()`、`pickRay()`、`pickScreen()`、`collectFrustumIds()`、`syncSpatialIndex()`、`nodeIdFromSpatialId()`（及 host-scoped `*At` 变体）
@@ -228,8 +237,8 @@ Pcg `Growth` 由 `eve.PcgGrowth()` 承接。`configure(startScale,endScale,varia
 
 辅助对象：
 
-- `eve.SceneEntity`：`scene()` / `node()` / `onAttach()` / `onDetach()` / `update(dt)`，组件槽字段与 `eve.Entity` 一致。
-- `eve.SceneNodeRef`（节点句柄）：`getNodeId()`、`getPersistentId()`、`getHostName()`、`isValid()`、`getScene()`、`setPosition()` / `getPosition()`、`setRotation()` / `getRotation()`、`setScale()` / `getScale()`、`setVisible()` / `isVisible()`、`getWorldPosition*()`、`getWorldMatrix()`、`getForward()/getRight()/getUp()`、`getParentId()`、`getChildCount()`、`getChildIdAt()`、`getPath()`、`attachEntity()`、`detachEntity()`、`getEntity()`、`hasEntity()`、`entitiesOf()`、`linkRenderable2D/3D()`、`linkPhysics2D/3D()`、`linkCamera3D()`、`linkAudio3D()`、`unlinkNode()`、`unlinkNodeKind()`、`linkCount()`、`localToWorld()`、`worldToLocal()`、`setParent()`、`removeNode()`、`setQuaternion()`、`getQuaternion()`、`lookAt()`、`addTag()`、`removeTag()`、`hasTag()`、`getTags()`、`setLayer()`、`getLayer()`、`setBounds()`、`hasBounds()`、`getBounds()`。
+- `eve.SceneEntity`：`scene()` / `node()` / `onAttach()` / `onDetach()` / `onEnable()` / `onDisable()` / `enable()` / `disable()` / `setEnabled()` / `isEnabled()` / `update(dt)`，组件槽字段与 `eve.Entity` 一致。
+- `eve.SceneNodeRef`（节点句柄）：`getNodeId()`、`getPersistentId()`、`getHostName()`、`isValid()`、`getScene()`、`setPosition()` / `getPosition()`、`setRotation()` / `getRotation()`、`setScale()` / `getScale()`、`setVisible()` / `isVisible()`、`getWorldPositionX()`、`getWorldPositionY()`、`getWorldPositionZ()`、`getWorldMatrix()`、`getForward()/getRight()/getUp()`、`getParentId()`、`getChildCount()`、`getChildIdAt()`、`getPath()`、`attachEntity()`、`detachEntity()`、`scheduleDetachEntity()`、`getEntity()`、`hasEntity()`、`entitiesOf()`、`linkRenderable2D/3D()`、`linkPhysics2D/3D()`、`linkCamera3D()`、`linkAudio3D()`、`unlinkNode()`、`unlinkNodeKind()`、`linkCount()`、`localToWorld()`、`worldToLocal()`、`setParent()`、`removeNode()`、`setQuaternion()`、`getQuaternion()`、`lookAt()`、`addTag()`、`removeTag()`、`hasTag()`、`getTags()`、`setLayer()`、`getLayer()`、`setBounds()`、`hasBounds()`、`getBounds()`。
 
 ## 跟随玩家的环境对象
 
@@ -278,3 +287,9 @@ Y<1 时额外抬高 70，否则抬高 10，再减 offsetY。`useScale` 独立发
 `eve.PcgBuildConfig()` 对应 Pcg ResourcesSystem 的 `BuildConfig`。发布类型为 Addressables=0、RegularBuild=1；`addHistory(category,sceneName,timestamp)` 按调用顺序记录七类构建事件，category 为 0..6。使用 `getHistoryCount/Category/SceneName/Timestamp` 查询，越界或非法枚举返回结构化错误。
 
 脚本方法：`setPublicationType()`、`getPublicationType()`、`addHistory()`、`clearHistory()`、`getHistoryCount()`、`getHistoryCategory()`、`getHistorySceneName()`、`getHistoryTimestamp()`。
+
+### 组件修改自动合并
+
+C++ `SceneComponent::markDirty()` / `setState()` 自动排队，在 `TransformSystem::updateAll` 开始 ECS View 前刷新；脚本组件在引擎每帧的绘制准备阶段自动刷新，不依赖游戏保留默认 eve_update。无需每帧主动 `rebuild()`。构建期间的新修改留到下一批，失败保留脏状态与未处理队列。
+
+组件仅保存 host 的 ECS generation handle；host 先销毁时解析失败、排队更新跳过，组件先销毁时弱注册失效。重新 attach 后重新标脏。Getter 不构建树；兼容 `rebuild(forceFull)` 保留显式同步刷新语义。组件不可复制或移动，不允许在自己的 build 回调中销毁自己。

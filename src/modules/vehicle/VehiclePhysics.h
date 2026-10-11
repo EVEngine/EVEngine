@@ -23,6 +23,7 @@ enum class VehiclePhysicsStatus : uint8_t {
     Unavailable,  ///< No physics module, no body, or invalid arguments.
 };
 
+/** @brief VehiclePhysics public API. */
 class VehiclePhysics {
 public:
     /** @brief Attach a 2D dynamic body when physics is in the build. */

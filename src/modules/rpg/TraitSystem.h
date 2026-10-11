@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::rpg {
 
 class RPGActor;
@@ -21,7 +23,7 @@ class RPGActor;
  * @brief 特征系统。
  * @thread 调用线程应与 RPGActor 的 ECS 线程一致。
  */
-class TraitSystem {
+class EVENGINE_API_PLATFORM TraitSystem {
 public:
     /**
      * @brief 施加一个特征。
@@ -39,9 +41,13 @@ public:
     /** @brief 是否已施加某特征。 */
     static bool hasTrait(RPGActor *actor, const std::string &traitId);
 
+    /** @brief Returns the count. */
     static int getCount(RPGActor *actor);
+    /** @brief Returns the instance id at. */
     static int getInstanceIdAt(RPGActor *actor, int index);
+    /** @brief Returns the trait id at. */
     static std::string getTraitIdAt(RPGActor *actor, int index);
+    /** @brief Returns the source at. */
     static std::string getSourceAt(RPGActor *actor, int index);
 
     /** @brief 参数倍率乘积（如 attack → 1.5 表示 +50%）。 */

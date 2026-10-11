@@ -11,7 +11,9 @@ namespace eve::attributes {
 class Attributes : public Module {
 public:
     Module_REG(Attributes);
+    /** @brief Constructs a Attributes. */
     Attributes()           = default;
+    /** @brief Releases Attributes resources. */
     ~Attributes() override = default;
 
     /** @brief Create a caller-owned set associated with an optional stable subject id. */

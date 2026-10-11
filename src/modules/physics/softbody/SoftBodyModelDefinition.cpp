@@ -8,12 +8,6 @@
 
 namespace eve::physics {
 namespace {
-template <typename T>
-eve::Result<T> invalid(std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -46,20 +40,28 @@ std::string_view volumeName(SoftBodyVolumeSampling value) {
 }  // namespace
 
 eve::Result<void> SoftBodyModelDefinition::validate() const {
-    if (sourceMesh.empty()) return invalid<void>("sourceMesh must not be empty", "sourceMesh");
+    if (sourceMesh.empty())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "sourceMesh must not be empty", "sourceMesh"));
     if (surfaceName(surfaceSampling).empty())
-        return invalid<void>("unsupported surface sampling mode", "surfaceSampling");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "unsupported surface sampling mode", "surfaceSampling"));
     if (volumeName(volumeSampling).empty())
-        return invalid<void>("unsupported volume sampling mode", "volumeSampling");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "unsupported volume sampling mode", "volumeSampling"));
     if (surfaceResolution < 2 || surfaceResolution > 128 || volumeResolution < 2 || volumeResolution > 128 ||
         shapeResolution < 2 || shapeResolution > 128)
-        return invalid<void>("sampling resolutions must be in [2, 128]", "resolution");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "sampling resolutions must be in [2, 128]", "resolution"));
     if (!std::isfinite(maxAnisotropy) || maxAnisotropy < 1.f || maxAnisotropy > 5.f)
-        return invalid<void>("maxAnisotropy must be in [1, 5]", "maxAnisotropy");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "maxAnisotropy must be in [1, 5]", "maxAnisotropy"));
     if (!std::isfinite(smoothing) || smoothing < 0.f || smoothing > 1.f)
-        return invalid<void>("smoothing must be in [0, 1]", "smoothing");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "smoothing must be in [0, 1]", "smoothing"));
     if (surfaceSampling == SoftBodySurfaceSampling::None && volumeSampling == SoftBodyVolumeSampling::None)
-        return invalid<void>("at least one sampling mode must be enabled", "sampling");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "at least one sampling mode must be enabled", "sampling"));
     return eve::Result<void>::success();
 }
 
@@ -82,33 +84,43 @@ eve::Result<eve::Value> SoftBodyModelDefinition::toValue() const {
 
 eve::Result<SoftBodyModelDefinition> SoftBodyModelDefinition::fromValue(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
-    if (!object) return invalid<SoftBodyModelDefinition>("soft-body model must be an object", "softbodyModel");
+    if (!object)
+        return eve::Result<SoftBodyModelDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "soft-body model must be an object", "softbodyModel"));
     const std::initializer_list<std::string_view> names = {
         "schema",          "schemaVersion",     "sourceMesh",       "surfaceSampling", "surfaceResolution",
         "volumeSampling",  "volumeResolution", "shapeResolution", "maxAnisotropy",   "smoothing"};
     if (!hasExactFields(*object, names))
-        return invalid<SoftBodyModelDefinition>("soft-body model fields do not match version 1", "softbodyModel");
+        return eve::Result<SoftBodyModelDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "soft-body model fields do not match version 1", "softbodyModel"));
     const auto* schema = field(*object, "schema");
     const auto* version = field(*object, "schemaVersion");
     const auto* mesh = field(*object, "sourceMesh");
     const auto* surface = field(*object, "surfaceSampling");
     const auto* volume = field(*object, "volumeSampling");
     if (!schema || !schema->isString() || schema->asString() != SchemaId)
-        return invalid<SoftBodyModelDefinition>("unexpected soft-body model schema", "schema");
+        return eve::Result<SoftBodyModelDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "unexpected soft-body model schema", "schema"));
     if (!version || !version->isInt64() || version->asInt() != SchemaVersion)
-        return invalid<SoftBodyModelDefinition>("unsupported soft-body model version", "schemaVersion");
+        return eve::Result<SoftBodyModelDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "unsupported soft-body model version", "schemaVersion"));
     if (!mesh || !mesh->isString() || !surface || !surface->isString() || !volume || !volume->isString())
-        return invalid<SoftBodyModelDefinition>("model string field has the wrong type", "softbodyModel");
+        return eve::Result<SoftBodyModelDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "model string field has the wrong type", "softbodyModel"));
 
     SoftBodyModelDefinition result;
     result.sourceMesh = mesh->asString();
     if (surface->asString() == "none") result.surfaceSampling = SoftBodySurfaceSampling::None;
     else if (surface->asString() == "vertices") result.surfaceSampling = SoftBodySurfaceSampling::Vertices;
     else if (surface->asString() == "voxels") result.surfaceSampling = SoftBodySurfaceSampling::Voxels;
-    else return invalid<SoftBodyModelDefinition>("unsupported surface sampling mode", "surfaceSampling");
+    else
+        return eve::Result<SoftBodyModelDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "unsupported surface sampling mode", "surfaceSampling"));
     if (volume->asString() == "none") result.volumeSampling = SoftBodyVolumeSampling::None;
     else if (volume->asString() == "voxels") result.volumeSampling = SoftBodyVolumeSampling::Voxels;
-    else return invalid<SoftBodyModelDefinition>("unsupported volume sampling mode", "volumeSampling");
+    else
+        return eve::Result<SoftBodyModelDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "unsupported volume sampling mode", "volumeSampling"));
 
     auto integer = [&](std::string_view name, int& destination) -> bool {
         const auto* item = field(*object, name);
@@ -127,7 +139,8 @@ eve::Result<SoftBodyModelDefinition> SoftBodyModelDefinition::fromValue(const ev
     if (!integer("surfaceResolution", result.surfaceResolution) ||
         !integer("volumeResolution", result.volumeResolution) || !integer("shapeResolution", result.shapeResolution) ||
         !number("maxAnisotropy", result.maxAnisotropy) || !number("smoothing", result.smoothing))
-        return invalid<SoftBodyModelDefinition>("model numeric field has the wrong type", "softbodyModel");
+        return eve::Result<SoftBodyModelDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "model numeric field has the wrong type", "softbodyModel"));
     auto valid = result.validate();
     if (!valid) return eve::Result<SoftBodyModelDefinition>::failure(valid.status());
     return eve::Result<SoftBodyModelDefinition>::success(std::move(result));

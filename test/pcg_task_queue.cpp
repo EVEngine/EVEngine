@@ -1,6 +1,6 @@
-#include "system/PcgTaskQueue.h"
+#include "procgen/PcgTaskQueue.h"
 #include <zeroerr/unittest.h>
-using namespace eve::system;
+using namespace eve::procgen;
 TEST_CASE("Pcg task queue waits then publishes a task without invoking callbacks") {
     PcgTaskQueue q; auto id=q.add(); REQUIRE(id.ok());
     auto state=q.tick(0.24); REQUIRE(state.ok()); CHECK(state.value()==PcgTaskQueueStatus::Waiting);

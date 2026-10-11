@@ -4,6 +4,7 @@
 
 namespace eve::animation::detail {
 
+/** @brief Mul trs. */
 inline TransformTRS mulTRS(const TransformTRS& parent, const TransformTRS& local) {
     // world = parent * local (TRS, scale ignored in rotation path for FK positions)
     TransformTRS out;

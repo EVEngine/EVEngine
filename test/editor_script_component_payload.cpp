@@ -146,7 +146,7 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_pay
     REQUIRE(callScript("buildInspectorScene"));
 
     eve::scene_editor::ScriptComponentPayloadProvider provider;
-    SceneComponentPayloadRegistry                          registry;
+    SceneComponentPayloadRegistry                     registry;
     REQUIRE(registry.registerProvider(&provider).ok());
     // 一类槽只允许一个提供方（脚本组件刻意共用一个类型槽）。
     REQUIRE_EQ(static_cast<int>(registry.registerProvider(&provider).code()), static_cast<int>(EditorStatus::Conflict));
@@ -194,7 +194,7 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_pay
     REQUIRE_EQ(*y.value.getIf<double>(), 2.5);
     // 没声明的字段是 Missing，不是"读到空值"。
     REQUIRE_EQ(static_cast<int>(properties.value()->read(selection.value(), PropertyPath("nope")).state),
-             static_cast<int>(PropertyReadState::Missing));
+               static_cast<int>(PropertyReadState::Missing));
 
     // 声明成 null 的字段：只读（没有类型可校验），但声明 schema 与当前值都看得见。
     auto untypedReferences = registry.componentPayloads(sceneTarget, ObjectId("untyped"));

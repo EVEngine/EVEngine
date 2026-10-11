@@ -1,0 +1,26 @@
+{
+  "source": "The Vegetation Engine 12.6.0 Plant Standard generated shader",
+  "sourceSemantics": {
+    "mesh": "IN.ase_color.g",
+    "mask": "saturate((clamp(mesh, 0.0001, 0.9999) - _VertexOcclusionMinValue) / (_VertexOcclusionMaxValue - _VertexOcclusionMinValue + 0.0001))",
+    "color": "lerp(_VertexOcclusionColor.rgb, 1, mask)",
+    "baseOutput": "baseColor.rgb * occlusionColor",
+    "colorsGate": "lerp(_VertexOcclusionColor.a, 1, optionalInvert(mask, _VertexOcclusionColorsMode))",
+    "overlayGate": "lerp(_VertexOcclusionColor.a, 1, optionalInvert(mask, _VertexOcclusionOverlayMode))"
+  },
+  "nativeOwnership": {
+    "materialLocal": [
+      "eve.material/14 vegetationSurface vertexOcclusionColor",
+      "alpha, min/max and independent Colors/Overlay inversion"
+    ],
+    "meshLocal": [
+      "canonical vegetation occlusion factor"
+    ]
+  },
+  "evidence": [
+    "strict Unity property import through canonical cook and runtime load",
+    "negative HDR colors reject atomically",
+    "validation-layer Vulkan Canvas comparison at both remap endpoints",
+    "v13 to v14 migration rejects an unversioned nested color"
+  ]
+}

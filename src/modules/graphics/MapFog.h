@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::graphics {
 
@@ -13,10 +15,11 @@ class Texture;
  * Presentation only: gameplay unlock state should live in map::Fov / game data;
  * upload that state into the mask R channel and call draw() after the map.
  */
-class MapFog {
+class EVENGINE_API_BACKENDS MapFog {
 public:
     /** @brief Create a fog overlay renderer backed by the supplied graphics device. */
     explicit MapFog(Graphics *graphics);
+    /** @brief Map fog. */
     ~MapFog();
 
     MapFog(const MapFog &)            = delete;
@@ -85,14 +88,23 @@ public:
     /** @brief Shape cloud alpha: contrast (soft→hard) and bias (coverage). */
     void setCloudDensity(float contrast, float bias);
 
+    /** @brief Returns the cloud tile a. */
     float getCloudTileA() const { return tileA_; }
+    /** @brief Returns the cloud tile b. */
     float getCloudTileB() const { return tileB_; }
+    /** @brief Returns the cloud speed a. */
     float getCloudSpeedA() const { return speedA_; }
+    /** @brief Returns the cloud speed b. */
     float getCloudSpeedB() const { return speedB_; }
+    /** @brief Returns the distort. */
     float getDistort() const { return distort_; }
+    /** @brief Returns the fog alpha. */
     float getFogAlpha() const { return fogAlpha_; }
+    /** @brief Returns the edge softness. */
     float getEdgeSoftness() const { return edgeSoft_; }
+    /** @brief Returns the shadow enabled. */
     bool  getShadowEnabled() const { return shadowEnabled_; }
+    /** @brief Returns the select strength. */
     float getSelectStrength() const { return selectStrength_; }
 
     /**

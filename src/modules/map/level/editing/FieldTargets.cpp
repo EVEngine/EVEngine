@@ -15,8 +15,8 @@ FieldWriteStatus TileBufferTarget::writeInt(int x, int y, int value) {
     if (!containsCell(x, y)) return FieldWriteStatus::Rejected;
     if (buffer_->getGid(x, y) == value) return FieldWriteStatus::Unchanged;
     buffer_->setGid(x, y, value);
-    ++revision_;
-    dirty_.include(x, y);
+    bumpRevision();
+    widenDirty(x, y);
     return FieldWriteStatus::Applied;
 }
 

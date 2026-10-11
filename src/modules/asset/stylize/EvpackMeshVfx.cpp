@@ -9,12 +9,7 @@
 #include "stylize/MeshVfxAsset.h"
 
 namespace eve::asset_stylize {
-namespace {
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {}, "asset.mesh-vfx"));
-}
-}  // namespace
+namespace {}  // namespace
 struct EvpackMeshVfx::Impl {
     graphics::Graphics&                                        graphics;
     std::unique_ptr<stylize::MeshVfxAssetInstance>             playback;
@@ -29,8 +24,8 @@ Result<std::unique_ptr<EvpackMeshVfx>> EvpackMeshVfx::load(const asset::EvpackRe
     auto payload = reader.read(asset, "eve.stylize.mesh-vfx/1", capabilities, 1024 * 1024);
     if (!payload) return Result<std::unique_ptr<EvpackMeshVfx>>::failure(payload.status());
     if (payload.value().chunks.size() != 1 || payload.value().chunks[0].kind != asset::EvpackChunkKind::Definition)
-        return failure<std::unique_ptr<EvpackMeshVfx>>(DiagnosticCode::InvalidArgument,
-                                                       "Effect requires one definition");
+        return Result<std::unique_ptr<EvpackMeshVfx>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Effect requires one definition", {}, {}, "asset.mesh-vfx"));
     auto value = asset::decodeRuntimeDefinition(payload.value().chunks[0].bytes);
     if (!value) return Result<std::unique_ptr<EvpackMeshVfx>>::failure(value.status());
     auto json = value.value().toJson();
@@ -40,29 +35,32 @@ Result<std::unique_ptr<EvpackMeshVfx>> EvpackMeshVfx::load(const asset::EvpackRe
     if (definition.value().layers.size() > 32 || definition.value().trail || definition.value().trailBinding ||
         !definition.value().animationTriggers.play.empty() || !definition.value().animationTriggers.stop.empty() ||
         !definition.value().animationTriggers.trailBreak.empty())
-        return failure<std::unique_ptr<EvpackMeshVfx>>(
+        return Result<std::unique_ptr<EvpackMeshVfx>>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported,
-            "Package renderer supports up to 32 mesh layers; trail/animation attachments require a gameplay adapter");
+            "Package renderer supports up to 32 mesh layers; trail/animation attachments require a gameplay adapter",
+            {}, {}, "asset.mesh-vfx"));
     std::map<std::string, std::map<std::string, float>> defaults;
     std::vector<AssetRef>                               references;
     for (const auto& layer : definition.value().layers) {
         const float cycle = layer.playback.fadeIn + layer.playback.duration + layer.playback.fadeOut;
         if (!std::isfinite(cycle) || (layer.playback.loop && cycle <= 0))
-            return failure<std::unique_ptr<EvpackMeshVfx>>(DiagnosticCode::InvalidArgument, "Invalid playback cycle");
+            return Result<std::unique_ptr<EvpackMeshVfx>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid playback cycle", {}, {}, "asset.mesh-vfx"));
         auto reference = AssetRef::parse(layer.style);
         if (!reference) return Result<std::unique_ptr<EvpackMeshVfx>>::failure(reference.status());
         auto shader = asset::loadShaderAsset(reader, reference.value(), capabilities);
         if (!shader) return Result<std::unique_ptr<EvpackMeshVfx>>::failure(shader.status());
         if (shader.value().interface != asset::ShaderAssetInterface::Mesh3D)
-            return failure<std::unique_ptr<EvpackMeshVfx>>(DiagnosticCode::InvalidArgument,
-                                                           "Mesh effect requires mesh shader");
+            return Result<std::unique_ptr<EvpackMeshVfx>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "Mesh effect requires mesh shader", {}, {}, "asset.mesh-vfx"));
         auto layout = asset_graphics::validateShaderAssetGpu(shader.value());
         if (!layout) return Result<std::unique_ptr<EvpackMeshVfx>>::failure(layout.status());
         auto& parameters = defaults[layer.style];
         for (const auto& parameter : shader.value().parameters) {
             if (parameter.defaults.size() != 1)
-                return failure<std::unique_ptr<EvpackMeshVfx>>(DiagnosticCode::Unsupported,
-                                                               "Mesh VFX curves require scalar shader parameters");
+                return Result<std::unique_ptr<EvpackMeshVfx>>::failure(
+                    Diagnostic::error(DiagnosticCode::Unsupported, "Mesh VFX curves require scalar shader parameters",
+                                      {}, {}, "asset.mesh-vfx"));
             parameters[parameter.name] = parameter.defaults.front();
         }
         references.push_back(std::move(reference).takeValue());
@@ -81,25 +79,32 @@ Result<std::unique_ptr<EvpackMeshVfx>> EvpackMeshVfx::load(const asset::EvpackRe
 }
 void         EvpackMeshVfx::play() noexcept { impl_->playback->play(); }
 Result<void> EvpackMeshVfx::advance(float dt) {
-    if (!std::isfinite(dt) || dt < 0) return failure<void>(DiagnosticCode::InvalidArgument, "Invalid dt");
+    if (!std::isfinite(dt) || dt < 0)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid dt", {}, {}, "asset.mesh-vfx"));
     // Bound accumulated time before changing any layer.
     for (std::size_t i = 0; i < impl_->playback->layerCount(); ++i)
         if (!std::isfinite(impl_->playback->layer(i).elapsed() + dt))
-            return failure<void>(DiagnosticCode::InvalidArgument, "Playback time overflow");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Playback time overflow", {}, {}, "asset.mesh-vfx"));
     impl_->playback->update(dt);
     return Result<void>::success();
 }
 Result<void> EvpackMeshVfx::stop(float fadeOutSeconds) {
     if (!std::isfinite(fadeOutSeconds) || fadeOutSeconds < 0)
-        return failure<void>(DiagnosticCode::InvalidArgument, "Invalid fade");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid fade", {}, {}, "asset.mesh-vfx"));
     impl_->playback->stop(fadeOutSeconds);
     return Result<void>::success();
 }
 Result<void> EvpackMeshVfx::setFloat(std::size_t layer, std::string_view name, float value) {
     if (layer >= impl_->playback->layerCount() || !std::isfinite(value))
-        return failure<void>(DiagnosticCode::InvalidArgument, "Invalid layer/value");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid layer/value", {}, {}, "asset.mesh-vfx"));
     auto& style = impl_->playback->layer(layer).style();
-    if (!style.hasParam(std::string(name))) return failure<void>(DiagnosticCode::NotFound, "Parameter not found");
+    if (!style.hasParam(std::string(name)))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Parameter not found", {}, {}, "asset.mesh-vfx"));
     style.setFloat(std::string(name), value);
     return Result<void>::success();
 }

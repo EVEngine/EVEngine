@@ -15,18 +15,15 @@
 namespace eve::hexmap {
 namespace {
 
-[[nodiscard]] Result<void> visibilityInvalidArgument(std::string message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap"));
-}
-
+[[nodiscard]] 
 /**
  * @brief Checks the two arguments `increase`/`decrease` share.
  * @return Success, or the InvalidArgument failure both entry points raise.
  */
 [[nodiscard]] Result<void> validateView(const HexMap& map, const HexVisibility& visibility, HexCoordinates from) {
-    if (!map.contains(from)) return visibilityInvalidArgument("view origin is outside the hex map");
+    if (!map.contains(from)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "view origin is outside the hex map", "hexmap"));
     if (visibility.cellCount() != map.cellCount())
-        return visibilityInvalidArgument("visibility counters must be reset to map.cellCount() before a view update");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "visibility counters must be reset to map.cellCount() before a view update", "hexmap"));
     return Result<void>::success();
 }
 
@@ -102,9 +99,14 @@ Result<void> HexVisibility::decrease(HexMap& map, HexSearchContext& scratch, Hex
     return Result<void>::success();
 }
 
-void HexVisibility::clear() noexcept {
+void HexVisibility::clear(HexMap& map) noexcept {
+    // Every cell that loses its last viewer changes the fog overlay's shade, so each
+    // touched cell's chunk has to be rebuilt. `increase`/`decrease` already do this;
+    // leaving it out here meant dropping the viewers left stale fog geometry on screen
+    // until an unrelated edit happened to dirty the same chunk.
     for (const std::int32_t index : touched_) {
         counts_[static_cast<std::size_t>(index)] = 0;
+        map.markChunkDirtyAndNeighbors(map.chunkIndexOf(map.coordinatesAt(index)));
     }
     // The map's explored flags are a one-way latch and stay untouched.
     touched_.clear();

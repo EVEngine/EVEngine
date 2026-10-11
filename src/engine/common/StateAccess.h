@@ -76,9 +76,10 @@ struct MutationReceipt {
  * outlive the query context; it is not retained by the capability registry
  * after `revoke`.
  */
-class EVENGINE_API IStateQuery {
+class EVENGINE_API_FOUNDATION_INLINE IStateQuery {
 public:
     static constexpr const char* capabilityName = "eve.state.IStateQuery";
+    /** @brief I state query. */
     virtual ~IStateQuery()                      = default;
 
     /** @brief Query a generic world value. */
@@ -103,9 +104,10 @@ public:
  * and must not retain the span or values after returning. A failed Result
  * promises that no observable world state was changed.
  */
-class EVENGINE_API IStateMutation {
+class EVENGINE_API_FOUNDATION_INLINE IStateMutation {
 public:
     static constexpr const char* capabilityName = "eve.state.IStateMutation";
+    /** @brief I state mutation. */
     virtual ~IStateMutation()                   = default;
 
     /** @brief Apply a complete mutation set atomically. */

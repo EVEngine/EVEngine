@@ -19,7 +19,8 @@ namespace {
 /** Payload = a per-path generation counter observed at load time. */
 class TestResource : public eve::Resource {
 public:
-    TestResource() : eve::Resource("") {}
+    TestResource() : eve::Resource("") { ++alive; }
+    ~TestResource() override { --alive; }
 
     void adopt(eve::Resource &replacement) override {
         auto &other = static_cast<TestResource &>(replacement);
@@ -29,6 +30,9 @@ public:
 
     int  value = 0;
     bool failOnAdopt = false;
+
+    /** @brief Live instances, so a case can assert "destroyed exactly once". */
+    static int alive;
 };
 
 /** Fake asset provider: claims "*.dat" and serves a fresh generation each load. */
@@ -49,6 +53,9 @@ public:
 
     eve::Resource *load(const std::string &key) override {
         if (!handlesPath(key)) return nullptr;
+        // Failure injection: throw before any allocation, so the cache must end up
+        // unchanged and no half-built candidate may leak.
+        if (throwing.count(key)) throw std::runtime_error("injected provider failure");
         if (failures.count(key)) return nullptr;
         auto *r = new TestResource();
         r->value = ++generation[key];
@@ -59,11 +66,14 @@ public:
     static std::map<std::string, int> generation;
     static std::set<std::string>      failures;
     static std::set<std::string>      adoptFailures;
+    static std::set<std::string>      throwing;
 };
 
 std::map<std::string, int> TestProvider::generation;
 std::set<std::string> TestProvider::failures;
 std::set<std::string> TestProvider::adoptFailures;
+std::set<std::string>      TestProvider::throwing;
+int                        TestResource::alive = 0;
 
 /** Every case starts from an empty cache + empty capability registry. */
 struct Reset {
@@ -85,6 +95,7 @@ TestProvider &provider() {
     TestProvider::generation.clear();
     TestProvider::failures.clear();
     TestProvider::adoptFailures.clear();
+    TestProvider::throwing.clear();
     return p;
 }
 
@@ -145,11 +156,13 @@ TEST_CASE("resource.unloadDropsEntryButKeepsHoldersAlive") {
 
     eve::Resource *a = get("a.dat");
     REQUIRE(a != nullptr);
-    eve::ref<eve::Resource> holder(a);  // an external holder keeps it alive
+    // An external holder pins the payload; the pin is what survives unload() now.
+    auto holder = eve::ResourceManager::getInstance().pin(a);
+    REQUIRE(holder.ok());
+    eve::ResourcePin keepAlive = std::move(holder).takeValue();
     eve::ResourceManager::getInstance().unload("a.dat");
     CHECK_EQ(eve::ResourceManager::getInstance().count(), 0u);
-    // The holder's ref keeps the object alive and usable.
-    CHECK_EQ(static_cast<TestResource *>(a)->value, 1);
+    CHECK_EQ(static_cast<TestResource *>(keepAlive.get())->value, 1);
 
     // A later get() loads a fresh instance.
     eve::Resource *b = get("a.dat");
@@ -204,7 +217,7 @@ TEST_CASE("resource.reloadTriggersDependents") {
     eve::Resource *b = get("b.dat");
     REQUIRE(a != nullptr);
     REQUIRE(b != nullptr);
-    b->addDependency(eve::ref<eve::Resource>(a));
+    CHECK(b->addDependency(*a).ok());
     CHECK_EQ(static_cast<TestResource *>(a)->value, 1);
     CHECK_EQ(static_cast<TestResource *>(b)->value, 1);
 
@@ -225,8 +238,8 @@ TEST_CASE("resource.reloadDependencyCycleIsSafe") {
     eve::Resource *b = get("b.dat");
     REQUIRE(a != nullptr);
     REQUIRE(b != nullptr);
-    a->addDependency(eve::ref<eve::Resource>(b));
-    b->addDependency(eve::ref<eve::Resource>(a));
+    CHECK(a->addDependency(*b).ok());
+    CHECK(b->addDependency(*a).ok());
 
     auto result = eve::ResourceManager::getInstance().reload("a.dat");
     CHECK(result.ok());
@@ -260,7 +273,7 @@ TEST_CASE("resource.reloadDependentFailureRollsBackWholeGraph") {
     auto *derived = static_cast<TestResource *>(get("derived.dat"));
     REQUIRE(source != nullptr);
     REQUIRE(derived != nullptr);
-    derived->addDependency(eve::ref<eve::Resource>(source));
+    CHECK(derived->addDependency(*source).ok());
     TestProvider::failures.insert("derived.dat");
 
     auto result = eve::ResourceManager::getInstance().reload("source.dat");
@@ -371,4 +384,124 @@ TEST_CASE("resource.getJoinsInFlightRequest") {
     eve::Resource *loaded = get("join.dat");
     REQUIRE(loaded != nullptr);
     CHECK_EQ(static_cast<TestResource *>(loaded)->value, 1);
+}
+
+TEST_CASE("resource.pinKeepsPayloadAliveAcrossUnload") {
+    Reset reset;
+    provider();
+
+    auto *sound = static_cast<TestResource *>(get("sound.dat"));
+    REQUIRE(sound != nullptr);
+    const int liveBefore = TestResource::alive;
+
+    auto pinned = eve::ResourceManager::getInstance().pin(sound);
+    REQUIRE(pinned.ok());
+    eve::ResourcePin keepAlive = std::move(pinned).takeValue();
+    CHECK_EQ(keepAlive.get(), sound);
+
+    // The cache entry is gone, but the payload survives for the pin holder: this is
+    // what keeps a SoundData alive while a Source still plays it (regression #1 of
+    // the migration plan, which the previous ref<T> graph provided).
+    eve::ResourceManager::getInstance().unload("sound.dat");
+    CHECK(!eve::ResourceManager::getInstance().peek("sound.dat").has_value());
+    CHECK_EQ(static_cast<TestResource *>(keepAlive.get())->value, 1);
+    CHECK_EQ(TestResource::alive, liveBefore);
+
+    // Releasing the last pin destroys the orphaned payload exactly once.
+    keepAlive = eve::ResourcePin();
+    CHECK_EQ(TestResource::alive, liveBefore - 1);
+}
+
+TEST_CASE("resource.pinRejectsUncachedResource") {
+    Reset reset;
+    provider();
+
+    TestResource detached;
+    auto         pinned = eve::ResourceManager::getInstance().pin(&detached);
+    CHECK(!pinned.ok());
+    CHECK_EQ(pinned.code(), eve::StatusCode::NotFound);
+}
+
+TEST_CASE("resource.dependencyPinOutlivesDependencyCacheEntry") {
+    Reset reset;
+    provider();
+
+    auto *source  = static_cast<TestResource *>(get("source.dat"));
+    auto *derived = static_cast<TestResource *>(get("derived.dat"));
+    REQUIRE(source != nullptr);
+    REQUIRE(derived != nullptr);
+    CHECK(derived->addDependency(*source).ok());
+    const int liveBefore = TestResource::alive;
+
+    // Dropping the dependency's own cache entry must not destroy it while the
+    // dependent entry is alive (regression #2 of the migration plan).
+    eve::ResourceManager::getInstance().unload("source.dat");
+    CHECK_EQ(TestResource::alive, liveBefore);
+    auto dependencies = derived->getDependencies();
+    REQUIRE(dependencies.size() == 1u);
+    CHECK_EQ(dependencies.front(), source);
+
+    // clear() retires every slot, so the two keep-alives resolve in either slot
+    // order and each payload is destroyed exactly once.
+    eve::ResourceManager::getInstance().clear();
+    CHECK_EQ(TestResource::alive, liveBefore - 2);
+}
+
+TEST_CASE("resource.providerThrowLeavesCacheEmpty") {
+    Reset reset;
+    provider();
+
+    // Failure injection: the provider throws where it would normally hand over a
+    // candidate. The cache must stay empty, nothing may leak, and get() must surface
+    // the failure instead of silently returning a stale entry.
+    TestProvider::throwing.insert("boom.dat");
+    bool threw = false;
+    try {
+        (void)get("boom.dat");
+    } catch (const std::exception &) {
+        threw = true;
+    }
+    CHECK(threw);
+    CHECK_EQ(eve::ResourceManager::getInstance().count(), 0u);
+    CHECK_EQ(TestResource::alive, 0);
+
+    // The retry path still works once the injection is removed.
+    TestProvider::throwing.erase("boom.dat");
+    CHECK(get("boom.dat") != nullptr);
+    CHECK_EQ(eve::ResourceManager::getInstance().count(), 1u);
+}
+
+TEST_CASE("resource.asyncLoadFailureSurfacesInWaitFor") {
+    Reset reset;
+    provider();
+
+    // Failure injection on the asynchronous path: the worker fails to produce the
+    // resource, so waitFor must report a failure and leave no pending job behind.
+    TestProvider::failures.insert("async-fail.dat");
+    std::mutex gate;
+    gate.lock();
+    class DelayedExecutor final : public eve::caps::IAsyncWorkExecutor {
+    public:
+        explicit DelayedExecutor(std::mutex *gate) : gate_(gate) {}
+        eve::Result<void> submit(std::function<void()> work) override {
+            std::thread([work = std::move(work), gate = gate_]() {
+                std::lock_guard<std::mutex> hold(*gate);
+                work();
+            }).detach();
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        }
+        std::mutex *gate_ = nullptr;
+    } executor{&gate};
+    eve::cap::provide<eve::caps::IAsyncWorkExecutor>(&executor);
+
+    auto queued = eve::ResourceManager::getInstance().request("async-fail.dat");
+    CHECK(queued.ok());
+    CHECK_EQ(eve::ResourceManager::getInstance().pendingCount(), 1u);
+
+    gate.unlock();
+    auto ready = eve::ResourceManager::getInstance().waitFor("async-fail.dat");
+    CHECK(!ready.ok());
+    CHECK_EQ(eve::ResourceManager::getInstance().pendingCount(), 0u);
+    CHECK_EQ(eve::ResourceManager::getInstance().count(), 0u);
+    CHECK(!eve::ResourceManager::getInstance().peek("async-fail.dat").has_value());
 }

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "joystick-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/joystick/**",
+      "owner": "joystick::Joystick",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Joystick SDL sink caches the module owner; hot path never looks up ModuleManager.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/joystick/sdl/EventSink.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        {
+          "capability": "IPlatformEventSink",
+          "impl": "JoystickEventSink",
+          "absent_behavior": "no joystick messages when sink unbound"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Joystick",
+          "methods": [
+            "getJoystickCount"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "profiles without joystick drop the corresponding sink/listeners"
+      },
+      "thread_affinity": "main / owner thread for module construction; event sinks run on the platform pump thread affinity",
+      "cost_notes": [],
+      "hot_path": [
+        "src/modules/joystick/sdl/EventSink.cpp"
+      ]
+    }
+  ]
+}

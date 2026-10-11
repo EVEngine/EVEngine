@@ -34,12 +34,11 @@
     worker 勿碰 Squirrel VM
 
 3. 计时器 — `timer`（`eve.Timer`）
-    启动后高精度时间与帧间隔；帧计时用它，不用 HostSystem。
+    启动后高精度时间与帧间隔；帧计时用它，不用 OS。
 
-4. 管理系统 — `system`（`eve.HostSystem`，槽 `system`）
+4. 操作系统 — `os`（`eve.OS`，槽 `os`）
     `getOS` / `getProcessorCount` / `getSystemRAM` / `getProcessMemoryMB` /
     `getWallTime` / `sleepMilliseconds` / 剪贴板 / 电量 / GPU 查询
-    脚本里 `eve.System` 是 ECS System 基类，不要混用。
 
 5. 性能剖析 — `profiler`（`eve.Profiler`）
     按模块/zone 的 CPU 调用树；GPU 帧时间来自 Vulkan timestamp。关闭时零开销。
@@ -61,7 +60,7 @@
 10. 响应式编程 — `rx`（`eve.Rx`）
     UniRx 风格推送流：`Subject` / `BehaviorSubject` / `ReplaySubject` / `ReactiveProperty`
     + LINQ（`map` / `filter` / `take` / …）+ `fromEvent` / `pump`
-    设计：`docs/dev/superpowers/specs/2026-08-17-rx-module-design.md`
+    用户手册：`docs/usr/modules/rx.md`
 
 11. 键盘 / 鼠标 / 触摸 / 手柄 — `keyboard` `mouse` `touch` `joystick`
     输入状态查询；手柄含 SDL GameController 映射与振动
@@ -115,7 +114,7 @@
     NPR：cartoon / watercolor / ink / pixel；`StylePass` / `StyleChain` / 网格着色
     设计：`docs/风格化渲染模块设计.md`
 
-25. 昼夜 / 天气 / 贴花 / 积雪 — `daynight` `weather` `decal` `snow`
+25. 昼夜 / 天气（含积雪）/ 贴花 — `daynight` `weather` `decal`
     太阳与 IBL 天空；降水/闪电/风场；投影贴花；深度场积雪（脚印 / 弹坑 / 回填）
 
 26. 体素 — `voxel`（`eve.Voxel`）
@@ -163,11 +162,11 @@
     QuadTree / Octree / SpatialHash / BSPTree：AABB 宽相查询
     设计：`docs/dev/空间索引模块设计.md`
 
-39. 程序化生成 — `procgen`（`eve.Procgen`）
-    算法注册表：地图 / 贴图 recipe / 网格（marching cubes 等）
+39. 程序化生成 — `procgen`（`eve.Procgen`，兼容 `eve.HouseGen`）
+    算法注册表：地图 / 贴图 recipe / 网格（marching cubes 等）/ 房屋组件库
 
-40. 程序化房屋 — `housegen`（`eve.HouseGen`）
-    组件库 + 请求 → 布局 JSON
+40. 程序化房屋领域 — `procgen/house`（`eve.HouseGen`）
+    procgen 内部领域：组件库 + 请求 → 布局 JSON，并导出 canonical `Grid2D` / `PointSet`
 
 41. 像素物质世界 — `pixelworld`（`eve.PixelWorldModule`）
     64×64 分块确定性沙/水/火等；配套 `pixelworld_graphics` / `pixelworld_physics` /
@@ -176,8 +175,12 @@
 42. 群体 — `crowd`（`eve.Crowd`）
     连续流场寻路 + 海量单位转向；Boids；与渲染解耦
 
-43. 转向 — `steering`（`eve.Steering`）
-    独立转向力 / 行为，给单位移动用
+42b. GPU Agents — `gpuagents`（`eve.GpuAgents`）
+    鱼群 / 生命网格 / 鸟群 / 花瓣：共享 AgentState + World/SDF + 固定步长 Solver
+    设计：`docs/dev/2026-10-05-gpu-agents-simulation-framework.md`
+
+43. 转向数学 — `math/Steering`（`eve.Math().steering*2/steering*3`）
+    无状态 2D/3D seek、flee、arrive、separation、path target 与 avoidance 计算
 
 ### 玩法框架
 

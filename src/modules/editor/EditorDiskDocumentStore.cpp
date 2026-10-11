@@ -33,7 +33,7 @@ Revision revisionMember(const EditorValue& value, const char* key) {
     return integer && *integer >= 0 ? static_cast<Revision>(*integer) : 0;
 }
 
-EditorResult<AutosaveDraft> draftFailure(const char* rule, std::string message) {
+Result<AutosaveDraft> draftFailure(const char* rule, std::string message) {
     return eve::editing::failed<AutosaveDraft>(EditorStatus::Rejected, RuleId(rule), std::move(message));
 }
 
@@ -69,7 +69,7 @@ std::filesystem::path DiskAtomicDocumentStore::resolve(const std::string& resour
     return candidate;
 }
 
-EditorResult<StoredDocument> DiskAtomicDocumentStore::read(const std::string& resourceUri) const {
+Result<StoredDocument> DiskAtomicDocumentStore::read(const std::string& resourceUri) const {
     const std::filesystem::path path = resolve(resourceUri);
     if (path.empty()) return failure(EditorStatus::Rejected, "editor.document.invalid-uri", "Rejected resource URI");
     std::ifstream input(path, std::ios::binary);
@@ -77,7 +77,7 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::read(const std::string& re
         return failure(EditorStatus::NotFound, "editor.document.store-not-found",
                        "Document resource is not persisted: " + resourceUri);
     const std::string         json{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
-    EditorResult<EditorValue> parsed = editorValueFromJson(json);
+    Result<EditorValue> parsed = editorValueFromJson(json);
     if (!parsed.ok() || !parsed.ok())
         return failure(EditorStatus::Failed, "editor.document.invalid-envelope", "Document JSON envelope is invalid");
 
@@ -96,7 +96,7 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::read(const std::string& re
     return eve::editing::applied<StoredDocument>(std::move(stored));
 }
 
-EditorResult<StoredDocument> DiskAtomicDocumentStore::compareAndSwap(const std::string& resourceUri,
+Result<StoredDocument> DiskAtomicDocumentStore::compareAndSwap(const std::string& resourceUri,
                                                                      Revision           expectedRevision,
                                                                      const std::string& expectedContentHash,
                                                                      const EditorValue& content) {
@@ -104,7 +104,7 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::compareAndSwap(const std::
     if (path.empty()) return failure(EditorStatus::Rejected, "editor.document.invalid-uri", "Rejected resource URI");
 
     StoredDocument               current;
-    EditorResult<StoredDocument> existing = read(resourceUri);
+    Result<StoredDocument> existing = read(resourceUri);
     if (existing.ok())
         current = existing.value();
     else if (existing.code() != EditorStatus::NotFound)
@@ -147,7 +147,7 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::compareAndSwap(const std::
     return eve::editing::applied<StoredDocument>(std::move(next));
 }
 
-EditorResult<StoredDocument> DiskAtomicDocumentStore::failure(EditorStatus status, const char* rule,
+Result<StoredDocument> DiskAtomicDocumentStore::failure(EditorStatus status, const char* rule,
                                                               std::string message) {
     return eve::editing::failed<StoredDocument>(status, RuleId(rule), std::move(message));
 }
@@ -171,14 +171,14 @@ std::string AutosaveService::draftUri(const DocumentId& document) const {
     return "autosave://" + projectId_ + "/" + safeDocument + ".draft";
 }
 
-EditorResult<StoredDocument> AutosaveService::writeDraft(const DocumentSnapshot& snapshot, const EditorValue& content) {
+Result<StoredDocument> AutosaveService::writeDraft(const DocumentSnapshot& snapshot, const EditorValue& content) {
     if (!store_ || snapshot.id.empty())
         return eve::editing::failed<StoredDocument>(EditorStatus::Rejected, RuleId("editor.autosave.invalid"),
                                                    "Autosave store and document are required");
     const std::string                  uri      = draftUri(snapshot.id);
     Revision                           revision = 0;
     std::string                        hash;
-    EditorResult<StoredDocument> existing = store_->read(uri);
+    Result<StoredDocument> existing = store_->read(uri);
     if (existing.ok()) {
         revision = existing.value().revision;
         hash     = existing.value().contentHash;
@@ -194,10 +194,10 @@ EditorResult<StoredDocument> AutosaveService::writeDraft(const DocumentSnapshot&
     return store_->compareAndSwap(uri, revision, hash, EditorValue(std::move(draft)));
 }
 
-EditorResult<AutosaveDraft> AutosaveService::readDraft(const DocumentId& document) const {
+Result<AutosaveDraft> AutosaveService::readDraft(const DocumentId& document) const {
     if (!store_ || document.empty()) return draftFailure("editor.autosave.invalid", "Autosave store is required");
-    const EditorResult<StoredDocument> stored = store_->read(draftUri(document));
-    if (!stored.ok()) return EditorResult<AutosaveDraft>::failure(stored.status());
+    const Result<StoredDocument> stored = store_->read(draftUri(document));
+    if (!stored.ok()) return Result<AutosaveDraft>::failure(stored.status());
     const EditorValue& root    = stored.value().content;
     const EditorValue* content = member(root, "content");
     if (!content || revisionMember(root, "schemaVersion") != 1)

@@ -18,36 +18,46 @@ namespace eve::graphics::webgpu {
  */
 class PipelineBuilder {
 public:
+    /** @brief Constructs a PipelineBuilder. */
     PipelineBuilder() = default;
 
+    /** @brief Label. */
     PipelineBuilder &label(const char *l) {
         label_ = l;
         return *this;
     }
+    /** @brief Layout. */
     PipelineBuilder &layout(wgpu::PipelineLayout l) {
         layout_ = l;
         return *this;
     }
+    /** @brief Vertex layout. */
     PipelineBuilder &vertexLayout(uint64_t stride, wgpu::VertexStepMode stepMode,
                                   const wgpu::VertexAttribute *attrs, size_t attrCount);
+    /** @brief Shader. */
     PipelineBuilder &shader(wgpu::ShaderModule vert, const char *vertEntry,
                             wgpu::ShaderModule frag, const char *fragEntry);
+    /** @brief Topology. */
     PipelineBuilder &topology(wgpu::PrimitiveTopology t) {
         topology_ = t;
         return *this;
     }
+    /** @brief Cull. */
     PipelineBuilder &cull(wgpu::CullMode c) {
         cullMode_ = c;
         return *this;
     }
+    /** @brief Front face. */
     PipelineBuilder &frontFace(wgpu::FrontFace f) {
         frontFace_ = f;
         return *this;
     }
     /** @brief Set color target format + blend mode (Alpha default = no blend state override risk). */
     PipelineBuilder &colorTarget(WGPUTextureFormat format, eve::graphics::BlendMode mode);
+    /** @brief Depth. */
     PipelineBuilder &depth(WGPUTextureFormat format, wgpu::CompareFunction compare,
                            bool writeEnabled);
+    /** @brief Sample count. */
     PipelineBuilder &sampleCount(uint32_t count) {
         sampleCount_ = count;
         return *this;

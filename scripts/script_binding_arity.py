@@ -47,7 +47,14 @@ BASELINE = REPO / "scripts" / "script_binding_arity_baseline.json"
 
 # `addFunc("name", &Class::method)` and `addFunc("name", &Class::method, priority)`.
 BINDING = re.compile(r'addFunc\(\s*"([^"]+)"\s*,\s*&?([A-Za-z_]\w*(?:::\w+)*)::([A-Za-z_]\w*)\s*[,)]')
-CLASS_OPEN = re.compile(r"\b(?:class|struct)\s+([A-Za-z_]\w*)\b[^;{]*\{")
+# `class Foo {`, and the export-macro spellings the link-group scheme introduced:
+# `class EVENGINE_API_WORLD Graphics {`. Leading attribute/macro tokens are skipped; an
+# all-caps token cannot swallow a CamelCase class name, because `[_A-Z][_A-Z0-9]*` matches
+# only the first letter of `Graphics` and the skipped-token alternative requires whitespace
+# after it.
+CLASS_OPEN = re.compile(
+    r"\b(?:class|struct)\s+(?:(?:\[\[[^\]]*\]\]|[_A-Z][_A-Z0-9]*)\s+)*([A-Za-z_]\w*)\b[^;{]*\{"
+)
 # A method declaration or definition, capturing the parameter list.
 METHOD = re.compile(
     r"\b([A-Za-z_]\w*)\s*\(([^;{)]*)\)\s*(?:const\s*)?(?:override\s*)?(?:noexcept\s*)?[;{]"
@@ -77,7 +84,7 @@ def _defaulted_methods(headers: Iterable[Path]) -> set[tuple[str, str]]:
         # so a same-named method on another class cannot produce a false positive.
         spans: list[tuple[int, str | None]] = []
         stack: list[str | None] = []
-        for match in re.finditer(r"[{}]|\b(?:class|struct)\s+([A-Za-z_]\w*)\b[^;{]*\{", text):
+        for match in re.finditer(r"[{}]|" + CLASS_OPEN.pattern, text):
             token = match.group(0)
             if token == "{":
                 stack.append(None)

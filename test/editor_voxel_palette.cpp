@@ -5,7 +5,7 @@
 using namespace eve::voxel_editing;
 using namespace eve::editing;
 namespace{
-void apply(VoxelPaletteTarget&t,EditorResult<DomainOperation>op){REQUIRE(op.ok());REQUIRE(t.applyDomainOperation(op.value()).ok());}
+void apply(VoxelPaletteTarget&t,Result<DomainOperation>op){REQUIRE(op.ok());REQUIRE(t.applyDomainOperation(op.value()).ok());}
 VoxelPaletteEntryValue cube(const std::string&id,bool directional=false){VoxelPaletteEntryValue v;v.id=ObjectId("editor-"+id);v.type.name=id;v.type.directional=directional;for(int i=0;i<6;++i)v.type.faceTex[i]=static_cast<std::uint8_t>(i+1);return v;}
 SelectionSnapshot select(const VoxelPaletteTarget&t,const char*id){SelectionSnapshot s;s.channel="voxel-palette";s.items.push_back({SelectionDomain::Asset,TargetId(t.targetId()),StableId(id),"voxel.cube-type"});return s;}
 }

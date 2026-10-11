@@ -190,8 +190,23 @@ void CameraController::setOffset(float x, float y, float z) { offset_ = glm::vec
 
 void CameraController::setLookAhead(float x, float y, float z) { lookAhead_ = glm::vec3(x, y, z); }
 
+void CameraController::setSecondaryTarget(float x, float y, float z) {
+    secondaryTarget_    = glm::vec3(x, y, z);
+    hasSecondaryTarget_ = true;
+}
+
+void CameraController::clearSecondaryTarget() {
+    secondaryTarget_    = glm::vec3(0.f);
+    hasSecondaryTarget_ = false;
+}
+
+float CameraController::getSecondaryTargetX() const { return secondaryTarget_.x; }
+float CameraController::getSecondaryTargetY() const { return secondaryTarget_.y; }
+float CameraController::getSecondaryTargetZ() const { return secondaryTarget_.z; }
+
 bool CameraController::validMode(const std::string& mode) {
-    return mode == "follow" || mode == "orbit" || mode == "topdown" || mode == "firstperson" || mode == "cinematic";
+    return mode == "follow" || mode == "orbit" || mode == "topdown" || mode == "firstperson" || mode == "cinematic" ||
+           mode == "lockon";
 }
 
 void CameraController::setMode(const std::string& mode) {
@@ -814,6 +829,27 @@ CameraController::View CameraController::desired() const {
             v.target = target_ + lookAhead_;
             v.eye    = v.target + offset_;
         }
+    } else if (mode_ == "lockon") {
+        glm::vec3 back(offset_.x, 0.f, offset_.z);
+        float     distance = glm::length(glm::vec2(back.x, back.z));
+        if (distance > 1e-5f)
+            back /= distance;
+        else
+            distance = std::max(radius_, 0.01f);
+        if (glm::length(glm::vec2(back.x, back.z)) < 1e-5f) {
+            const float yaw = glm::radians(yawDeg_);
+            back            = glm::vec3(-std::sin(yaw), 0.f, -std::cos(yaw));
+        }
+        glm::vec3 look = target_ + glm::vec3(0.f, lookAhead_.y, 0.f);
+        if (hasSecondaryTarget_) {
+            look               = 0.5f * (target_ + secondaryTarget_) + glm::vec3(0.f, lookAhead_.y, 0.f);
+            glm::vec3 toTarget = secondaryTarget_ - target_;
+            toTarget.y         = 0.f;
+            const float length = glm::length(toTarget);
+            if (length > 1e-5f) back = -toTarget / length;
+        }
+        v.target = look;
+        v.eye    = target_ + glm::vec3(back.x * distance, offset_.y, back.z * distance);
     } else {  // follow (默认)
         v.target = target_ + lookAhead_;
         v.eye    = v.target + offset_;
@@ -938,6 +974,12 @@ void Camera::expose(ssq::Table& table) {
     cc.addFunc("getTargetZ", &CameraController::getTargetZ);
     cc.addFunc("setOffset", &CameraController::setOffset);
     cc.addFunc("setLookAhead", &CameraController::setLookAhead);
+    cc.addFunc("setSecondaryTarget", &CameraController::setSecondaryTarget);
+    cc.addFunc("clearSecondaryTarget", &CameraController::clearSecondaryTarget);
+    cc.addFunc("hasSecondaryTarget", [](const CameraController* self) { return self->hasSecondaryTarget(); });
+    cc.addFunc("getSecondaryTargetX", &CameraController::getSecondaryTargetX);
+    cc.addFunc("getSecondaryTargetY", &CameraController::getSecondaryTargetY);
+    cc.addFunc("getSecondaryTargetZ", &CameraController::getSecondaryTargetZ);
 
     cc.addFunc("setMode", &CameraController::setMode);
     cc.addFunc("getMode", &CameraController::getMode);

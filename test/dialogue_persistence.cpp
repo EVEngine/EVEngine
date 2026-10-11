@@ -1,4 +1,7 @@
 #include "dialogue/ConversationPersistence.h"
+#include "dialogue/DialogueSequence.h"
+#include "dialogue/DialogueState.h"
+#include "dnut_interpreter/SequenceRuntime.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -7,12 +10,12 @@ using namespace eve::dialogue;
 
 namespace {
 
-ConversationAsset makeAsset(std::string id, int version, std::string line) {
-    ConversationAsset asset;
+eve::dnut::SequenceAsset makeAsset(std::string id, int version, std::string line) {
+    eve::dnut::SequenceAsset asset;
     asset.id      = std::move(id);
     asset.version = version;
     asset.entry   = line;
-    asset.nodes   = {{line, ConversationAsset::Node::Kind::Line, "end"}, {"end", ConversationAsset::Node::Kind::End}};
+    asset.nodes   = {{line, "line", "end"}, {"end", "end"}};
     return asset;
 }
 
@@ -26,47 +29,62 @@ TEST_CASE("dialoguePersistence.jsonRoundtrip") {
     array.pushBack(StateValue::boolean(true));
     array.pushBack(StateValue::number(2.5));
     state.set("values", std::move(array));
-    std::string error;
-    const auto  json = conversationStateToJson(state, &error);
-    REQUIRE(!json.empty());
-    StateValue restored;
-    CHECK(conversationStateFromJson(json, restored, &error));
+    auto encoded = conversationStateToJson(state);
+    REQUIRE(encoded.ok());
+    const auto json = std::move(encoded).takeValue();
+    auto decoded = conversationStateFromJson(json);
+    REQUIRE(decoded.ok());
+    StateValue restored = std::move(decoded).takeValue();
     CHECK(restored == state);
 }
 
 TEST_CASE("dialoguePersistence.migratesCurrentAndCallFrames") {
-    ConversationAsset currentParent = makeAsset("scene.parent", 4, "after-renamed");
-    ConversationAsset currentChild  = makeAsset("common.child.v2", 3, "line-renamed");
-    ConversationAsset oldParent     = makeAsset("scene.parent", 1, "call");
-    ConversationAsset oldChild      = makeAsset("common.child", 1, "line");
-    oldParent.nodes[0].kind         = ConversationAsset::Node::Kind::Call;
-    oldParent.nodes[0].target       = oldChild.id;
-    oldParent.nodes[0].next         = "after";
-    oldParent.nodes.push_back({"after", ConversationAsset::Node::Kind::Line, "end"});
-    ConversationRunner runner;
-    runner.setAssetResolver([&](const std::string& id) -> const ConversationAsset* {
+    eve::dnut::SequenceAsset currentParent = makeAsset("scene.parent", 4, "after-renamed");
+    eve::dnut::SequenceAsset currentChild  = makeAsset("common.child.v2", 3, "line-renamed");
+    eve::dnut::SequenceAsset oldParent     = makeAsset("scene.parent", 1, "call");
+    eve::dnut::SequenceAsset oldChild      = makeAsset("common.child", 1, "line");
+    oldParent.nodes[0].type                = "call";
+    oldParent.nodes[0].payload.set("target", Value(oldChild.id));
+    oldParent.nodes[0].payload.set("return", Value("after"));
+    oldParent.nodes.push_back({"after", "line", "end"});
+    eve::dnut::StepKindRegistry registry;
+    registerDialogueSequenceSteps(registry).expect("dialogue sequence vocabulary");
+    eve::dnut::SequenceRuntime runner;
+    runner.setStepRegistry(&registry);
+    runner.setAssetResolver([&](const std::string& id) -> const eve::dnut::SequenceAsset* {
         if (id == oldParent.id) return &oldParent;
         if (id == oldChild.id) return &oldChild;
         return nullptr;
     });
-    std::string error;
-    REQUIRE(runner.start(&oldParent, StateValue::object(), &error));
-    StateValue saved;
-    REQUIRE(runner.captureState(saved));
+    REQUIRE(runner.start(&oldParent).ok());
+    Value captured;
+    REQUIRE(runner.captureState(captured).ok());
+    StateValue saved = toDialogueStateValue(captured);
 
     ConversationSaveMigrations migrations;
-    CHECK(migrations.registerMigration("common.child", 1, "common.child.v2", "line:line-renamed", &error));
-    CHECK(migrations.registerMigration("scene.parent", 1, "scene.parent", "after:after-renamed", &error));
-    const auto resolveCurrent = [&](const std::string& id) -> const ConversationAsset* {
+    CHECK(migrations.registerMigration("common.child", 1, "common.child.v2", "line:line-renamed").ok());
+    CHECK(migrations.registerMigration("scene.parent", 1, "scene.parent", "after:after-renamed").ok());
+    const auto resolveCurrent = [&](const std::string& id) -> const eve::dnut::SequenceAsset* {
         if (id == currentParent.id) return &currentParent;
         if (id == currentChild.id) return &currentChild;
         return nullptr;
     };
-    CHECK(migrations.migrate(saved, resolveCurrent, &error));
-    ConversationRunner restored;
+    auto migrated = migrations.migrate(saved, resolveCurrent);
+    REQUIRE(migrated.ok());
+    saved = std::move(migrated).takeValue();
+    eve::dnut::SequenceRuntime restored;
+    restored.setStepRegistry(&registry);
     restored.setAssetResolver(resolveCurrent);
-    CHECK(restored.restoreState(saved, &error));
+    CHECK(restored.restoreState(toCanonicalValue(saved)).ok());
     CHECK(restored.currentNodeId() == "line-renamed");
-    CHECK(restored.advance(&error));
+    CHECK(restored.advance().ok());
     CHECK(restored.currentNodeId() == "after-renamed");
+}
+
+TEST_CASE("dialoguePersistence.rejectsLegacyUnversionedState") {
+    eve::dnut::SequenceRuntime runner;
+    Value                      legacy   = Value::Object{{"active", Value(false)}};
+    auto                       rejected = runner.restoreState(legacy);
+    CHECK(!rejected.ok());
+    CHECK_EQ(static_cast<int>(rejected.error()->code()), static_cast<int>(eve::DiagnosticCode::UnknownVersion));
 }

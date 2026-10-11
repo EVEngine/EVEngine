@@ -172,9 +172,9 @@ Value stringsValue(const std::vector<std::string>& values) {
 /** @brief 区域 → 脚本表；没有区域约束时给 `null`。 */
 Value areaValue(const TargetingSpec& spec) {
     if (spec.worldArea) {
-        const WorldArea&    area  = *spec.worldArea;
-        const std::string   shape = std::string(nameOf(kWorldAreaShapes, area.shape()));
-        Value::Object       out{{"shape", Value::string(shape)}};
+        const WorldArea&  area  = *spec.worldArea;
+        const std::string shape = std::string(nameOf(kWorldAreaShapes, area.shape()));
+        Value::Object     out{{"shape", Value::string(shape)}};
         switch (area.shape()) {
             case WorldArea::Shape::Circle2D:
             case WorldArea::Shape::Sphere3D:
@@ -271,8 +271,7 @@ Result<TargetLocation> locationFromScript(const Value& value, CoordinateSpace qu
                                                  "grid candidate location requires integral x/y", "candidate.location");
         if (space == CoordinateSpace::Grid2D)
             return Result<TargetLocation>::success(TargetLocation(GridPoint::grid2D(int32_t(x), int32_t(y))));
-        return Result<TargetLocation>::success(
-            TargetLocation(GridPoint::grid3D(int32_t(x), int32_t(y), int32_t(z))));
+        return Result<TargetLocation>::success(TargetLocation(GridPoint::grid3D(int32_t(x), int32_t(y), int32_t(z))));
     }
 
     double x = 0.0;
@@ -294,14 +293,14 @@ Result<TargetLocation> locationFromScript(const Value& value, CoordinateSpace qu
 
 Result<TargetCandidate> candidateFromScript(const Value& entry, CoordinateSpace querySpace) {
     if (entry.type() != Value::Type::Object)
-        return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument,
-                                              "every candidate must be a table", "candidate");
+        return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument, "every candidate must be a table",
+                                              "candidate");
 
     const Value* subjectField = field(entry, "subject");
     const auto*  subjectText  = subjectField != nullptr ? subjectField->getIf<std::string>() : nullptr;
     if (subjectText == nullptr)
-        return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument,
-                                              "candidate requires a 'subject' string", "candidate.subject");
+        return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument, "candidate requires a 'subject' string",
+                                              "candidate.subject");
     const auto subjectId = PersistentId::parse(*subjectText);
     if (!subjectId)
         return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument,
@@ -310,8 +309,8 @@ Result<TargetCandidate> candidateFromScript(const Value& entry, CoordinateSpace 
 
     const Value* locationField = field(entry, "location");
     if (locationField == nullptr)
-        return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument,
-                                              "candidate requires a 'location' table", "candidate.location");
+        return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument, "candidate requires a 'location' table",
+                                              "candidate.location");
     auto location = locationFromScript(*locationField, querySpace);
     if (!location.ok()) return Result<TargetCandidate>::failure(location.status());
 
@@ -320,11 +319,11 @@ Result<TargetCandidate> candidateFromScript(const Value& entry, CoordinateSpace 
     candidate.location = std::move(location).takeValue();
 
     if (const Value* domainField = field(entry, "domain"); !isNull(domainField)) {
-        const auto* domainText = domainField->getIf<std::string>();
-        TargetDomain domain    = TargetDomain::Neutral;
+        const auto*  domainText = domainField->getIf<std::string>();
+        TargetDomain domain     = TargetDomain::Neutral;
         if (domainText == nullptr || !parseName(kTargetDomains, *domainText, &domain))
-            return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument,
-                                                  "candidate has an unknown domain", "candidate.domain");
+            return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument, "candidate has an unknown domain",
+                                                  "candidate.domain");
         candidate.domain = domain;
     }
     if (!readStrings(field(entry, "tags"), candidate.tags))
@@ -344,9 +343,8 @@ Result<TargetCandidate> candidateFromScript(const Value& entry, CoordinateSpace 
                                                   "candidate.zones");
         const auto zone = ZoneRef::fromLogicalId(*parsed);
         if (!zone)
-            return scriptFailure<TargetCandidate>(DiagnosticCode::InvalidArgument,
-                                                  "candidate zone is not a valid ZoneRef: " + zoneId,
-                                                  "candidate.zones");
+            return scriptFailure<TargetCandidate>(
+                DiagnosticCode::InvalidArgument, "candidate zone is not a valid ZoneRef: " + zoneId, "candidate.zones");
         candidate.zones.push_back(*zone);
     }
     return Result<TargetCandidate>::success(std::move(candidate));
@@ -413,19 +411,18 @@ void declareScriptSensingCandidateSeam() {
                 recordLogEvent("warn", "script sensing candidate provider '" + handle.name +
                                            "' replaced the provider that owned ISensingCandidateProvider");
             }
-            auto                              adapter = std::make_unique<ScriptSensingCandidateProvider>(handle);
-            ScriptSensingCandidateProvider*   raw     = adapter.get();
+            auto                            adapter = std::make_unique<ScriptSensingCandidateProvider>(handle);
+            ScriptSensingCandidateProvider* raw     = adapter.get();
             // 先注册再交所有权：从这一刻起能力槽位持有裸指针，`owned.live` 是让它有效的唯一原因。
             cap::provide<ISensingCandidateProvider>(raw);
             owned.live.push_back(std::move(adapter));
             return Result<void>::success();
         },
         [&owned](const ScriptProviderHandle& handle) -> Result<void> {
-            const auto match = std::find_if(
-                owned.live.begin(), owned.live.end(),
-                [&handle](const std::unique_ptr<ScriptSensingCandidateProvider>& adapter) {
-                    return adapter->handle() == handle;
-                });
+            const auto match = std::find_if(owned.live.begin(), owned.live.end(),
+                                            [&handle](const std::unique_ptr<ScriptSensingCandidateProvider>& adapter) {
+                                                return adapter->handle() == handle;
+                                            });
             if (match == owned.live.end()) {
                 // 幂等：后置条件是"这一代没有适配器"，模块退出时可能已经撤过了。
                 return Result<void>::success();

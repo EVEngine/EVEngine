@@ -22,12 +22,6 @@ V3    normalized(V3 a) {
     return magnitude > 1e-8f ? a * (1.f / magnitude) : V3{1.f, 0.f, 0.f};
 }
 
-template <typename T>
-Result<T> strokeFailure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.geometryStroke"));
-}
-
 void emitTriangle(MeshBuild& mesh, V3 a, V3 b, V3 c, float u0 = 0.f, float u1 = 1.f, float u2 = 1.f) {
     const V3       normal = normalized(cross(b - a, c - a));
     const uint32_t base   = static_cast<uint32_t>(mesh.getVertexCount());
@@ -46,8 +40,9 @@ void emitQuad(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 d) {
 
 Result<void> GeometryStroke::setShapeResult(std::string_view shape) {
     if (shape != "quad" && shape != "triangularPrism" && shape != "cube")
-        return strokeFailure<void>(DiagnosticCode::InvalidArgument,
-                                   "geometry stroke shape must be quad, triangularPrism, or cube", "shape");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "geometry stroke shape must be quad, triangularPrism, or cube",
+                                                       "shape", {}, "procgen.geometryStroke"));
     shape_ = shape;
     ++revision_;
     return Result<void>::success();
@@ -55,10 +50,13 @@ Result<void> GeometryStroke::setShapeResult(std::string_view shape) {
 
 Result<void> GeometryStroke::setInputSpaceResult(std::string_view inputSpace, float planeY) {
     if (inputSpace != "spatial" && inputSpace != "planar")
-        return strokeFailure<void>(DiagnosticCode::InvalidArgument,
-                                   "geometry stroke input space must be spatial or planar", "inputSpace");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "geometry stroke input space must be spatial or planar",
+                                                       "inputSpace", {}, "procgen.geometryStroke"));
     if (!std::isfinite(planeY))
-        return strokeFailure<void>(DiagnosticCode::InvalidArgument, "geometry stroke planeY must be finite", "planeY");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "geometry stroke planeY must be finite", "planeY", {},
+                                                       "procgen.geometryStroke"));
     inputSpace_ = inputSpace;
     planeY_     = planeY;
     if (inputSpace_ == "planar")
@@ -69,8 +67,9 @@ Result<void> GeometryStroke::setInputSpaceResult(std::string_view inputSpace, fl
 
 Result<void> GeometryStroke::setSizeResult(float width, float depth) {
     if (!std::isfinite(width) || !std::isfinite(depth) || width <= 0.f || depth <= 0.f)
-        return strokeFailure<void>(DiagnosticCode::InvalidArgument,
-                                   "geometry stroke width and depth must be finite and positive", "size");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "geometry stroke width and depth must be finite and positive",
+                                                       "size", {}, "procgen.geometryStroke"));
     width_ = width;
     depth_ = depth;
     ++revision_;
@@ -79,8 +78,9 @@ Result<void> GeometryStroke::setSizeResult(float width, float depth) {
 
 Result<void> GeometryStroke::setMinimumSpacingResult(float spacing) {
     if (!std::isfinite(spacing) || spacing < 0.f)
-        return strokeFailure<void>(DiagnosticCode::InvalidArgument,
-                                   "geometry stroke minimum spacing must be finite and non-negative", "spacing");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "geometry stroke minimum spacing must be finite and non-negative",
+            "spacing", {}, "procgen.geometryStroke"));
     spacing_ = spacing;
     ++revision_;
     return Result<void>::success();
@@ -88,9 +88,13 @@ Result<void> GeometryStroke::setMinimumSpacingResult(float spacing) {
 
 Result<bool> GeometryStroke::addPointResult(float x, float y, float z) {
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
-        return strokeFailure<bool>(DiagnosticCode::InvalidArgument, "geometry stroke point must be finite", "point");
+        return Result<bool>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "geometry stroke point must be finite", "point", {},
+                                                       "procgen.geometryStroke"));
     if (points_.size() >= 65536)
-        return strokeFailure<bool>(DiagnosticCode::InvalidArgument, "geometry stroke point budget exceeded", "point");
+        return Result<bool>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "geometry stroke point budget exceeded", "point", {},
+                                                       "procgen.geometryStroke"));
     GeometryStrokePoint point{x, inputSpace_ == "planar" ? planeY_ : y, z};
     if (!points_.empty()) {
         const auto& previous = points_.back();
@@ -104,7 +108,8 @@ Result<bool> GeometryStroke::addPointResult(float x, float y, float z) {
 
 Result<void> GeometryStroke::undoResult() {
     if (points_.empty())
-        return strokeFailure<void>(DiagnosticCode::NotFound, "geometry stroke has no point to undo", "points");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "geometry stroke has no point to undo",
+                                                       "points", {}, "procgen.geometryStroke"));
     points_.pop_back();
     ++revision_;
     return Result<void>::success();
@@ -118,8 +123,9 @@ void GeometryStroke::clear() noexcept {
 
 Result<MeshBuild> GeometryStroke::buildMeshResult() const {
     if (points_.size() < 2)
-        return strokeFailure<MeshBuild>(DiagnosticCode::InvalidArgument,
-                                        "geometry stroke requires at least two accepted points", "points");
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "geometry stroke requires at least two accepted points",
+                                                            "points", {}, "procgen.geometryStroke"));
     MeshBuild output;
     output.setActiveGroup(shape_);
     std::vector<std::vector<V3>> rings;

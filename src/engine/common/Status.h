@@ -65,7 +65,7 @@ inline std::ostream& operator<<(std::ostream& stream, StatusCode code) { return 
  * @brief Structured status and zero or more diagnostics for an operation.
  * @note A Status returned by value is itself a nodiscard value.
  */
-class [[nodiscard("Status must be inspected or explicitly passed onward")]] EVENGINE_API Status {
+class [[nodiscard("Status must be inspected or explicitly passed onward")]] EVENGINE_API_FOUNDATION Status {
 public:
     /** @brief Construct a successful `Ok` status with no diagnostics. */
     Status() = default;
@@ -84,11 +84,13 @@ public:
     static Status failure(StatusCode code, Diagnostic diagnostic) {
         std::vector<Diagnostic> diagnostics;
         diagnostics.emplace_back(std::move(diagnostic));
+        /** @brief Status. */
         return Status(code, std::move(diagnostics));
     }
 
     /** @brief Construct the matching failure category from a diagnostic code. */
     static Status failure(Diagnostic diagnostic) {
+        /** @brief Failure. */
         return failure(statusCodeFor(diagnostic.code()), std::move(diagnostic));
     }
 
@@ -139,6 +141,7 @@ public:
      * @return Status code followed by the first diagnostic message, if any.
      */
     std::string describe() const {
+        /** @brief Result. */
         std::string result(statusCodeName(code_));
         if (const Diagnostic* diagnostic = primaryDiagnostic()) {
             result += ": ";

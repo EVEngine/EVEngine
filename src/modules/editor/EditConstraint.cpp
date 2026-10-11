@@ -33,7 +33,7 @@ void EditConstraintPipeline::clear() {
 bool EditConstraintPipeline::evaluate(EditorContext &context, IEditCommand &command) {
     return evaluateChecked(context, command).ok();
 }
-EditorResult<void> EditConstraintPipeline::evaluateChecked(EditorContext &context, IEditCommand &command) {
+Result<void> EditConstraintPipeline::evaluateChecked(EditorContext &context, IEditCommand &command) {
     diagnostics_.clear();
     structuredDiagnostics_.clear();
     rejected_ = false;
@@ -51,7 +51,7 @@ EditorResult<void> EditConstraintPipeline::evaluateChecked(EditorContext &contex
         if (result.disposition == ConstraintDisposition::Reject) {
             rejected_ = true;
             record(DiagnosticSeverity::Error, "editor.command.constraint-rejected", std::move(result.message));
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, structuredDiagnostics_));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, structuredDiagnostics_));
         }
         if (result.disposition == ConstraintDisposition::Warning)
             record(DiagnosticSeverity::Warning, "editor.command.constraint-warning", std::move(result.message));

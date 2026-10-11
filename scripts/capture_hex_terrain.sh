@@ -11,12 +11,6 @@ if [ "${HEX_TERRAIN_CAPTURE_INSIDE_XVFB:-0}" != 1 ]; then
         --server-args="-screen 0 800x600x24" "$0" "$output"
 fi
 
-if ! command -v glslc >/dev/null 2>&1; then
-    sdk_root=${VULKAN_SDK:-/home/sunxiaofan/Downloads/vulkansdk-linux-x86_64-1.4.357.1/1.4.357.1/x86_64}
-    PATH="$sdk_root/bin:$PATH"
-    export PATH
-fi
-
 export ALSOFT_DRIVERS=null
 export VK_ICD_FILENAMES=${VK_ICD_FILENAMES:-/usr/share/vulkan/icd.d/lvp_icd.json}
 

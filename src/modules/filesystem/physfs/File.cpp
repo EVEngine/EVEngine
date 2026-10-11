@@ -10,11 +10,10 @@
 namespace eve {
 namespace filesystem {
 
-// Composition boundary: expanded from the non-runtime `getModInst` macro (R-MECH-3).
 static bool hack_setupWriteDirectory() {
-    if (auto* f = eve::ModuleManager::getInstance<filesystem::Filesystem>("Filesystem"))
-        return f->setupWriteDirectory();
-    return false;
+    if (auto* f = getModInst(filesystem,Filesystem))
+		return f->setupWriteDirectory();
+	return false;
 }
 
 namespace physfs {

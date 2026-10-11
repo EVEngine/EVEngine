@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "graphics/BlendMode.h"
@@ -30,18 +32,21 @@ enum class MaterialVirtualTextureMode { Conventional, AtlasPageTable };
  * Attach via Renderable3D::setMaterial / setPart. When a Material* is set,
  * RenderSystem3D prefers it over the scattered MeshRenderer fields.
  */
-class Material {
+class EVENGINE_API_BACKENDS Material {
 public:
     static constexpr int kMaxPartsHint = 8;
 
-    Material() = default;
+    /** @brief Material. */
+    Material()  = default;
+    /** @brief Material. */
     ~Material() = default;
 
-    Material(const Material &) = delete;
-    Material &operator=(const Material &) = delete;
+    Material(const Material&)            = delete;
+    Material& operator=(const Material&) = delete;
 
     /** @brief "pbr" | "unlit" | "hair" | "custom" (unknown → pbr). */
-    void setShadingModel(const std::string &model);
+    void        setShadingModel(const std::string& model);
+    /** @brief Returns the shading model. */
     std::string getShadingModel() const { return shadingModel_; }
 
     /** @brief Atomically replace validated PBR bindings and enable the extended forward path.
@@ -57,6 +62,49 @@ public:
     }
     /** @brief Whether full PBR texture/extension rendering is requested. */
     bool hasPbrSurface() const { return pbrEnabled_; }
+
+    /**
+     * @brief Enable validated two-sided foliage translucency while preserving imported PBR textures and
+     * factors.
+     * @param red Linear transmitted-light red multiplier.
+     * @param green Linear transmitted-light
+     * green multiplier.
+     * @param blue Linear transmitted-light blue multiplier.
+     * @param intensity Normalized
+     * translucency contribution in [0,1].
+     * @param strength Nonnegative transmitted-light strength in [0,50].
+
+     * * @param normalDistortion Normalized light-direction distortion in [0,1].
+     * @param scattering Back-light
+     * lobe exponent in [1,50].
+     * @param direct Normalized direct-light contribution in [0,1].
+     * @param
+     * ambient Normalized ambient-light contribution in [0,1].
+     * @param shadow Normalized shadow transmission in
+     * [0,1].
+     * @return Success after atomic publication, or validation failure with the material unchanged.
+     *
+     * @thread Render-thread affine; no callbacks or borrowed arguments survive the call.
+     */
+    [[nodiscard]] Result<void> setFoliageTranslucency(float red, float green, float blue, float intensity,
+                                                      float strength, float normalDistortion, float scattering,
+                                                      float direct, float ambient, float shadow);
+    /** @brief Publish object-space foliage wind while preserving the current PBR material snapshot.
+     * @param motionTexture Borrowed nine-layer motion field owned by Graphics.
+     * @param noiseTexture Borrowed repeat-addressed noise owned by Graphics.
+     * @return InvalidArgument without mutation, or a validated material snapshot.
+     * @ownership Texture pointers are borrowed and must outlive this material.
+     * @thread Render thread only; synchronous and callback-free.
+     */
+    [[nodiscard]] Result<void> setFoliageWind(Texture* motionTexture, Texture* noiseTexture, float directionX,
+                                              float directionZ, float strength, float bending, float bendingSpeed,
+                                              float branch, float branchSpeed, float flutter, float flutterSpeed,
+                                              float fadeDistance, float bendFactor);
+    /** @brief Replace only the explicit foliage-motion time in the current material snapshot.
+     * @return InvalidArgument without mutation, including when object wind is not configured.
+     * @thread Render thread only; synchronous and callback-free.
+     */
+    [[nodiscard]] Result<void> setFoliageWindTime(float seconds);
     /** @brief Set the borrowed material texture.
      * @ownership Graphics factory owns the resource.
      * @lifetime Keep alive through the material and every submitted draw; invalid after factory release.
@@ -79,8 +127,10 @@ public:
      * @thread Render-thread affine; no callbacks or retained temporary data. */
     Texture* getNormalTexture() const { return pbr_.textures[2].texture; }
 
-    void setHeightTexture(Texture *texture) { height_ = texture; }
-    Texture *getHeightTexture() const { return height_; }
+    /** @brief Sets the height texture. */
+    void     setHeightTexture(Texture* texture) { height_ = texture; }
+    /** @brief Returns the height texture. */
+    Texture* getHeightTexture() const { return height_; }
 
     /**
      * @brief Opt this material into physical-atlas virtual-texture sampling.
@@ -94,9 +144,9 @@ public:
      * @param borderFraction Border texels divided by stored physical-page extent.
      * @return Success, or a validation error without changing this material.
      */
-    [[nodiscard]] eve::Result<void> setVirtualTexture(
-        Texture *albedoAtlas, Texture *normalAtlas, Texture *pageTable, int pageCountX,
-        int pageCountY, int atlasSlotsX, int atlasSlotsY, float borderFraction);
+    [[nodiscard]] eve::Result<void> setVirtualTexture(Texture* albedoAtlas, Texture* normalAtlas, Texture* pageTable,
+                                                      int pageCountX, int pageCountY, int atlasSlotsX, int atlasSlotsY,
+                                                      float borderFraction);
 
     /** @brief Restore conventional albedo/normal/height interpretation. */
     void clearVirtualTexture();
@@ -106,51 +156,85 @@ public:
                                       : MaterialVirtualTextureMode::Conventional;
     }
 
-    /** @brief Optional Mesh3D / hair Shader. nullptr → built-in path for the shading model. */
-    void setShader(Shader *shader) { shader_ = shader; }
-    Shader *getShader() const { return shader_; }
+    /**
+     * @brief Set an optional Mesh3D / hair shader; nullptr selects the built-in shading path.
+     * @param shader Borrowed shader owned by the creating Graphics instance; it must outlive this material.
+     */
+    void setShader(Shader* shader) { shader_ = shader; }
+    /** @brief Return the borrowed shader, or nullptr when the built-in path is active.
+     * @lifetime The pointer remains valid only while its creating Graphics instance owns the shader. */
+    Shader* getShader() const { return shader_; }
 
-    void setTint(float r, float g, float b, float a = 1.f);
+    /** @brief Sets the tint. */
+    void  setTint(float r, float g, float b, float a = 1.f);
+    /** @brief Returns the tint r. */
     float getTintR() const { return r_; }
+    /** @brief Returns the tint g. */
     float getTintG() const { return g_; }
+    /** @brief Returns the tint b. */
     float getTintB() const { return b_; }
+    /** @brief Returns the tint a. */
     float getTintA() const { return a_; }
 
-    void setMetallic(float metallic);
+    /** @brief Sets the metallic. */
+    void  setMetallic(float metallic);
+    /** @brief Returns the metallic. */
     float getMetallic() const { return metallic_; }
 
-    void setRoughness(float roughness);
+    /** @brief Sets the roughness. */
+    void  setRoughness(float roughness);
+    /** @brief Returns the roughness. */
     float getRoughness() const { return roughness_; }
 
-    void setTexCellBomb(float cellScale, float strength, float rotAmount = 1.f);
+    /** @brief Sets the tex cell bomb. */
+    void  setTexCellBomb(float cellScale, float strength, float rotAmount = 1.f);
+    /** @brief Returns the tex cell bomb scale. */
     float getTexCellBombScale() const { return texBombScale_; }
+    /** @brief Returns the tex cell bomb strength. */
     float getTexCellBombStrength() const { return texBombStrength_; }
+    /** @brief Returns the tex cell bomb rotation. */
     float getTexCellBombRotation() const { return texBombRot_; }
 
-    void setParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f);
+    /** @brief Sets the parallax. */
+    void  setParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f);
+    /** @brief Returns the parallax scale. */
     float getParallaxScale() const { return parallaxScale_; }
+    /** @brief Returns the parallax min layers. */
     float getParallaxMinLayers() const { return parallaxMinLayers_; }
+    /** @brief Returns the parallax max layers. */
     float getParallaxMaxLayers() const { return parallaxMaxLayers_; }
 
+    /** @brief Sets the receive light. */
     void setReceiveLight(bool receive) { receiveLight_ = receive; }
+    /** @brief Returns the receive light. */
     bool getReceiveLight() const { return receiveLight_ && shadingModel_ != "unlit"; }
 
+    /** @brief Sets the cast shadow. */
     void setCastShadow(bool cast) { castShadow_ = cast; }
+    /** @brief Returns the cast shadow. */
     bool getCastShadow() const { return castShadow_; }
 
+    /** @brief Sets the receive shadow. */
     void setReceiveShadow(bool receive) { receiveShadow_ = receive; }
+    /** @brief Returns the receive shadow. */
     bool getReceiveShadow() const { return receiveShadow_; }
 
+    /** @brief Sets the cast occlusion. */
     void setCastOcclusion(bool cast) { castOcclusion_ = cast; }
+    /** @brief Returns the cast occlusion. */
     bool getCastOcclusion() const { return castOcclusion_; }
 
+    /** @brief Sets the hair. */
     void setHair(bool hair);
+    /** @brief Returns the hair. */
     bool getHair() const { return isHair_; }
 
     /** @brief Optional named float knobs (style / custom shader params). */
-    bool hasParam(const std::string &name) const;
-    void setFloat(const std::string &name, float value);
-    float getFloat(const std::string &name) const;
+    bool  hasParam(const std::string& name) const;
+    /** @brief Sets the float. */
+    void  setFloat(const std::string& name, float value);
+    /** @brief Returns the float. */
+    float getFloat(const std::string& name) const;
 
     /**
      * @brief Push this material onto Graphics mesh3d state for the next draw.
@@ -158,64 +242,84 @@ public:
      */
     [[nodiscard]] Result<void> bind(Graphics& gfx) const;
 
-    /** @brief Effective shader for Mesh3D draws (may be null → default PBR pipeline). */
-    Shader *effectiveShader() const;
+    /** @brief Return the borrowed effective shader, or nullptr for the default PBR pipeline.
+     * @lifetime The pointer remains valid only while its creating Graphics instance owns the shader. */
+    Shader* effectiveShader() const;
 
     /** @brief True when this material should go through the hair transparent pass. */
     bool isTransparentHair() const;
 
     /** @brief Set "opaque", "masked", or "transparent" surface classification. */
-    void setSurfaceMode(const std::string &mode);
+    void        setSurfaceMode(const std::string& mode);
+    /** @brief Returns the surface mode. */
     std::string getSurfaceMode() const;
+    /** @brief Surface mode. */
     SurfaceMode surfaceMode() const { return surfaceMode_; }
-    void setAlphaCutoff(float cutoff);
-    float getAlphaCutoff() const { return alphaCutoff_; }
+    /** @brief Sets the alpha cutoff. */
+    void        setAlphaCutoff(float cutoff);
+    /** @brief Returns the alpha cutoff. */
+    float       getAlphaCutoff() const { return alphaCutoff_; }
     /** @brief Set "alpha", "premultiplied", "additive", or "multiply". */
-    void setBlendMode(const std::string &mode);
+    void        setBlendMode(const std::string& mode);
+    /** @brief Returns the blend mode. */
     std::string getBlendMode() const;
-    BlendMode blendMode() const { return blendMode_; }
-    void setDepthWrite(bool enabled) { depthWrite_ = enabled; }
-    bool getDepthWrite() const { return depthWrite_; }
-    void setDoubleSided(bool enabled) { doubleSided_ = enabled; }
-    bool getDoubleSided() const { return doubleSided_; }
+    /** @brief Blend mode. */
+    BlendMode   blendMode() const { return blendMode_; }
+    /** @brief Sets the depth write. */
+    void        setDepthWrite(bool enabled) { depthWrite_ = enabled; }
+    /** @brief Returns the depth write. */
+    bool        getDepthWrite() const { return depthWrite_; }
+    /** @brief Sets the double sided. */
+    void        setDoubleSided(bool enabled) { doubleSided_ = enabled; }
+    /** @brief Returns the double sided. */
+    bool        getDoubleSided() const { return doubleSided_; }
+    /** @brief Keep a bottom-anchored card facing the active camera around world Y during GPU-driven draws. */
+    void setCameraFacing(bool enabled) { cameraFacing_ = enabled; }
+    /** @brief Return whether GPU-driven card vertices use cylindrical camera-facing orientation. */
+    bool getCameraFacing() const { return cameraFacing_; }
+    /** @brief Sets the sort priority. */
     void setSortPriority(int priority) { sortPriority_ = priority; }
-    int getSortPriority() const { return sortPriority_; }
+    /** @brief Returns the sort priority. */
+    int  getSortPriority() const { return sortPriority_; }
     /** @brief Optional masked transparency quality: "cutoff", "dither", "coverage". */
-    void setAlphaTechnique(const std::string &technique);
+    void        setAlphaTechnique(const std::string& technique);
+    /** @brief Returns the alpha technique. */
     std::string getAlphaTechnique() const { return alphaTechnique_; }
+
 private:
     PbrSurface                   pbr_;
     bool                         pbrEnabled_   = false;
-    std::string shadingModel_ = "pbr";
-    Texture *height_ = nullptr;
-    Shader *shader_ = nullptr;
-    float r_ = 1.f, g_ = 1.f, b_ = 1.f, a_ = 1.f;
-    float metallic_ = 0.f;
-    float roughness_ = 0.45f;
-    float texBombScale_ = 4.f;
-    float texBombStrength_ = 0.f;
-    float texBombRot_ = 1.f;
-    float parallaxScale_ = 0.f;
-    float parallaxMinLayers_ = 8.f;
-    float parallaxMaxLayers_ = 32.f;
-    bool receiveLight_ = true;
-    bool castShadow_ = true;
-    bool receiveShadow_ = true;
-    bool castOcclusion_ = true;
-    bool isHair_ = false;
-    SurfaceMode surfaceMode_ = SurfaceMode::Opaque;
-    BlendMode blendMode_ = BlendMode::Alpha;
-    float alphaCutoff_ = 0.5f;
-    bool depthWrite_ = false;
-    bool doubleSided_ = false;
-    int sortPriority_ = 0;
-    std::string alphaTechnique_ = "cutoff";
-    bool virtualTextureEnabled_ = false;
-    int virtualPageCountX_ = 0;
-    int virtualPageCountY_ = 0;
-    int virtualAtlasSlotsX_ = 0;
-    int virtualAtlasSlotsY_ = 0;
-    float virtualBorderFraction_ = 0.f;
+    std::string                  shadingModel_ = "pbr";
+    Texture*                     height_       = nullptr;
+    Shader*                      shader_       = nullptr;
+    float                        r_ = 1.f, g_ = 1.f, b_ = 1.f, a_ = 1.f;
+    float                        metallic_              = 0.f;
+    float                        roughness_             = 0.45f;
+    float                        texBombScale_          = 4.f;
+    float                        texBombStrength_       = 0.f;
+    float                        texBombRot_            = 1.f;
+    float                        parallaxScale_         = 0.f;
+    float                        parallaxMinLayers_     = 8.f;
+    float                        parallaxMaxLayers_     = 32.f;
+    bool                         receiveLight_          = true;
+    bool                         castShadow_            = true;
+    bool                         receiveShadow_         = true;
+    bool                         castOcclusion_         = true;
+    bool                         isHair_                = false;
+    SurfaceMode                  surfaceMode_           = SurfaceMode::Opaque;
+    BlendMode                    blendMode_             = BlendMode::Alpha;
+    float                        alphaCutoff_           = 0.5f;
+    bool                         depthWrite_            = false;
+    bool                         doubleSided_           = false;
+    bool                         cameraFacing_          = false;
+    int                          sortPriority_          = 0;
+    std::string                  alphaTechnique_        = "cutoff";
+    bool                         virtualTextureEnabled_ = false;
+    int                          virtualPageCountX_     = 0;
+    int                          virtualPageCountY_     = 0;
+    int                          virtualAtlasSlotsX_    = 0;
+    int                          virtualAtlasSlotsY_    = 0;
+    float                        virtualBorderFraction_ = 0.f;
     std::map<std::string, float> params_;
 };
 
@@ -225,10 +329,10 @@ private:
  */
 struct ModelPart {
     std::string name;
-    Mesh *mesh = nullptr;
-    Material *material = nullptr;
+    Mesh*       mesh     = nullptr;
+    Material*   material = nullptr;
     /** @brief Optional per-instance transparent ordering override. */
-    int  sortPriority = 0;
+    int  sortPriority    = 0;
     bool hasSortPriority = false;
 };
 

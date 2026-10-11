@@ -202,12 +202,12 @@ void pullNodeTransform(SceneNode& node, void* target) {
         return;
     }
     if (values.value().size() < kPullElementCount) {
-        reportScriptLinkFailure(*link, kPullMethod,
-                                Status::failure(Diagnostic::error(
-                                    DiagnosticCode::InvalidArgument,
-                                    "script link method '" + std::string(kPullMethod) + "' returned " +
-                                        std::to_string(values.value().size()) + " numbers; six are required",
-                                    link->provider.name)));
+        reportScriptLinkFailure(
+            *link, kPullMethod,
+            Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                              "script link method '" + std::string(kPullMethod) + "' returned " +
+                                                  std::to_string(values.value().size()) + " numbers; six are required",
+                                              link->provider.name)));
         return;
     }
 
@@ -232,21 +232,20 @@ struct Register {
 }  // namespace
 
 void exposeScriptLinkBindings(ssq::Class& cls) {
-    cls.addFunc(
-        "linkScriptAt",
-        [vm = cls.getHandle()](Scene* self, const std::string& hostName, const std::string& nodeId,
-                               const std::string& providerName, const std::string& mode) -> ssq::Table {
-            if (self == nullptr) {
-                return script::projectResult(
-                    vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                               "linkScriptAt needs a live Scene instance", nodeId)));
-            }
-            return script::projectResult(vm, self->linkScriptAt(hostName, nodeId, providerName, mode));
-        });
+    cls.addFunc("linkScriptAt",
+                [vm = cls.getHandle()](Scene* self, const std::string& hostName, const std::string& nodeId,
+                                       const std::string& providerName, const std::string& mode) -> ssq::Table {
+                    if (self == nullptr) {
+                        return script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                                                             DiagnosticCode::InvalidArgument,
+                                                             "linkScriptAt needs a live Scene instance", nodeId)));
+                    }
+                    return script::projectResult(vm, self->linkScriptAt(hostName, nodeId, providerName, mode));
+                });
 }
 
 Result<void> Scene::linkScriptAt(const std::string& hostName, const std::string& nodeId,
-                                const std::string& providerName, const std::string& mode) {
+                                 const std::string& providerName, const std::string& mode) {
     SceneHost* host = resolveHost(hostName);
     if (!host) {
         return Result<void>::failure(

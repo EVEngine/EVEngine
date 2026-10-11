@@ -7,7 +7,7 @@ using namespace eve::camera_editing;
 using namespace eve::editing;
 
 namespace {
-void apply(CameraDocumentTarget& target, EditorResult<DomainOperation> operation) {
+void apply(CameraDocumentTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }

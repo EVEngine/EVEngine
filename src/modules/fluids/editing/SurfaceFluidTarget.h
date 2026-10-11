@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -21,8 +23,7 @@ using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
 
-template <class T>
-using EditorResult           = editing::Result<T>;
+using editing::Result;
 using EditorStatus           = editing::Status;
 using EditorValue            = editing::Value;
 using IDomainOperationTarget = editing::IDomainOperationTarget;
@@ -57,30 +58,38 @@ struct SurfaceFluidSettings {
     double drySpecular = 0.35, wetSpecular = 0.92;
     double wetDarkening = 0.12, normalStrength = 0.18;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const SurfaceFluidSettings&) const = default;
 };
 
 /** @brief Reversible document for surface droplets, wet traces and material response. */
-class SurfaceFluidTarget final : public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION SurfaceFluidTarget final : public ::eve::editing::EditableTargetState,
+                                                            public virtual IEditableTarget,
+                                                            public IDomainOperationTarget,
+                                                            public IPropertyProvider {
 public:
+    /** @brief Surface fluid target. */
     explicit SurfaceFluidTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                         queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Applies domain operation. */
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    /** @brief Make set. */
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    /** @brief Make reset. */
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return immutable authored values. */
     SurfaceFluidSettings settings() const { return settings_; }
@@ -89,21 +98,20 @@ public:
     /** @brief Capture schema-version-one settings. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load and validate persisted settings. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool                 matches(const SelectionSnapshot& selection) const;
     std::string          id_;
-    Revision             revision_ = 1;
-    EditRegion           dirty_;
     SurfaceFluidSettings settings_;
 };
 
 /** @brief Optional bridge copying a validated document into live fluid components. */
-class SurfaceFluidRuntimeApplier {
+class EVENGINE_API_ORCHESTRATION SurfaceFluidRuntimeApplier {
 public:
     /** @brief Apply droplet parameters and emit matching render/wetness parameters atomically. */
-    EditorResult<void> apply(const SurfaceFluidTarget& target, fluids::SurfaceDropletSimulation* simulation,
+    Result<void> apply(const SurfaceFluidTarget& target, fluids::SurfaceDropletSimulation* simulation,
                              fluids::SurfaceFluidRenderParams* render, fluids::SurfaceWetnessParams* wetness) const;
 };
 

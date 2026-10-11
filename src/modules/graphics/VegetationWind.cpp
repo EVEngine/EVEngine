@@ -4,11 +4,6 @@
 #include <limits>
 namespace eve::graphics {
 namespace {
-template <class T>
-Result<T> invalid() {
-    return Result<T>::failure(Diagnostic::error(
-        DiagnosticCode::InvalidArgument, "vegetation.wind: finite valid globals, dimensions and transform required"));
-}
 bool finite(glm::dvec3 value) { return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z); }
 bool representable(glm::dvec3 value) {
     const double limit = std::numeric_limits<float>::max();
@@ -24,7 +19,9 @@ Result<std::array<float, 14>> packVegetationWind(const VegetationWindState& stat
                                                  double seconds) {
     if (!valid(state) || !finite(profile.flex) || !finite(profile.frequency) ||
         !std::isfinite(profile.maximumDistance) || profile.maximumDistance <= 0 || !std::isfinite(seconds))
-        return invalid<std::array<float, 14>>();
+        return Result<std::array<float, 14>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "vegetation.wind: finite valid globals, dimensions and transform required"));
     const float distance =
         !profile.enabled ? 0 : (profile.billboard ? -profile.maximumDistance : profile.maximumDistance);
     return Result<std::array<float, 14>>::success(
@@ -33,18 +30,26 @@ Result<std::array<float, 14>> packVegetationWind(const VegetationWindState& stat
          profile.frequency.z, float(std::sin(seconds * 0.25)), float(std::sin(seconds))});
 }
 Result<void> initializeVegetationWind(VegetationWindState& state, glm::vec3 forward, float strength) {
-    if (!finite(forward) || !std::isfinite(strength)) return invalid<void>();
+    if (!finite(forward) || !std::isfinite(strength))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "vegetation.wind: finite valid globals, dimensions and transform required"));
     const double     main = std::clamp(double(strength), 0.0, double(1.2F));
     const glm::dvec3 direction{
         forward.x, -std::max(double(forward.y), std::hypot(double(forward.x), double(forward.z)) * 0.5), forward.z};
     const double phase = std::pow(main * 0.5 + 0.5, 3) * 0.1;
-    if (!representable(direction) || !std::isfinite(phase)) return invalid<void>();
+    if (!representable(direction) || !std::isfinite(phase))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "vegetation.wind: finite valid globals, dimensions and transform required"));
     state = {glm::vec3(direction), float(main), float(phase), state.updatePhase};
     return Result<void>::success();
 }
 Result<void> advanceVegetationWind(VegetationWindState& state, glm::vec3 forward, float strength, float dt) {
     if (!valid(state) || !finite(forward) || !std::isfinite(strength) || !std::isfinite(dt) || dt < 0)
-        return invalid<void>();
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "vegetation.wind: finite valid globals, dimensions and transform required"));
     const double     alpha = saturate(double(dt) * 0.25);
     const glm::dvec3 target{
         forward.x, -std::max(double(forward.y), std::hypot(double(forward.x), double(forward.z)) * 0.5), forward.z};
@@ -54,7 +59,9 @@ Result<void> advanceVegetationWind(VegetationWindState& state, glm::vec3 forward
     double phase = double(state.updatePhase) + double(dt) * std::pow(main * 0.5 + 0.5, 3) * 0.1;
     if (phase > 100) phase -= 100;
     if (!representable(direction) || !std::isfinite(phase) || phase > std::numeric_limits<float>::max())
-        return invalid<void>();
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "vegetation.wind: finite valid globals, dimensions and transform required"));
     state = {glm::vec3(direction), float(main), float(phase), float(phase)};
     return Result<void>::success();
 }
@@ -63,7 +70,9 @@ Result<void> advanceVegetationWindAudio(VegetationWindAudioState& state, float w
     if (!std::isfinite(state.currentWindSpeed) || !std::isfinite(state.anchorVolume) ||
         !std::isfinite(state.volume) || state.volume < 0 || !std::isfinite(windStrength) ||
         !std::isfinite(transitionTime) || transitionTime <= 0 || !std::isfinite(dt) || dt < 0)
-        return invalid<void>();
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "vegetation.wind: finite valid globals, dimensions and transform required"));
     if (!enabled) return Result<void>::success();
     auto next = state;
     if (windStrength != next.currentWindSpeed) {
@@ -91,12 +100,20 @@ Result<glm::vec3> evaluateVegetationWind(const VegetationWindInput& in, const Ve
         !std::isfinite(in.widthHeight.y) || in.widthHeight.y <= 0 || !std::isfinite(in.maximumDistance) ||
         in.maximumDistance <= 0 || !std::isfinite(in.sinTimeQuarter) || std::abs(in.sinTimeQuarter) > 1 ||
         !std::isfinite(in.sinTimeFull) || std::abs(in.sinTimeFull) > 1)
-        return invalid<glm::vec3>();
+        return Result<glm::vec3>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "vegetation.wind: finite valid globals, dimensions and transform required"));
     glm::dmat3 matrix(in.objectToWorld);
     for (int c = 0; c < 3; ++c)
-        if (!finite(matrix[c])) return invalid<glm::vec3>();
+        if (!finite(matrix[c]))
+            return Result<glm::vec3>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "vegetation.wind: finite valid globals, dimensions and transform required"));
     const double determinant = glm::determinant(matrix);
-    if (!std::isfinite(determinant) || determinant == 0) return invalid<glm::vec3>();
+    if (!std::isfinite(determinant) || determinant == 0)
+        return Result<glm::vec3>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "vegetation.wind: finite valid globals, dimensions and transform required"));
     if (!in.enabled) return Result<glm::vec3>::success(in.position);
     const auto distance    = (glm::dvec3(in.worldOffset) - glm::dvec3(in.cameraPosition)) / double(in.maximumDistance);
     double     attenuation = 1 - saturate(glm::dot(distance, distance));
@@ -142,7 +159,10 @@ Result<glm::vec3> evaluateVegetationWind(const VegetationWindInput& in, const Ve
                  (normalization + 0.5);
     }
     const auto result = glm::inverse(matrix) * local;
-    if (!representable(result)) return invalid<glm::vec3>();
+    if (!representable(result))
+        return Result<glm::vec3>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "vegetation.wind: finite valid globals, dimensions and transform required"));
     return Result<glm::vec3>::success(glm::vec3(result));
 }
 }  // namespace eve::graphics

@@ -1,216 +1,302 @@
-#include "dialogue/Conversation.h"
+#include "dialogue/DialogueSequence.h"
+#include "dnut_interpreter/SequenceRuntime.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <string>
+#include <vector>
+
 using namespace eve;
 using namespace eve::dialogue;
+using namespace eve::dnut;
 
 namespace {
 
-ConversationAsset makeGreeting() {
-    ConversationAsset asset;
-    asset.id = "common.greeting";
+SequenceNode node(std::string id, std::string type, std::string next = {}) {
+    SequenceNode value;
+    value.id   = std::move(id);
+    value.type = std::move(type);
+    value.next = std::move(next);
+    return value;
+}
+
+SequenceRoute route(std::string label, std::string target, eve::Value condition = {}) {
+    SequenceRoute value;
+    value.label     = std::move(label);
+    value.target    = std::move(target);
+    value.condition = std::move(condition);
+    return value;
+}
+
+StepKindRegistry dialogueRegistry() {
+    StepKindRegistry registry;
+    registerDialogueSequenceSteps(registry).expect("dialogue sequence steps");
+    return registry;
+}
+
+SequenceAsset makeGreeting() {
+    SequenceAsset asset;
+    asset.id            = "common.greeting";
     asset.entry = "decide";
-    asset.parameters = {"speaker", "listener", "location"};
-    ConversationAsset::Node decide;
-    decide.id = "decide";
-    decide.kind = ConversationAsset::Node::Kind::Branch;
-    decide.routes = {{"speaker.mood == happy", "friendly"}, {"else", "formal"}};
-    ConversationAsset::Node friendly;
-    friendly.id = "friendly";
-    friendly.kind = ConversationAsset::Node::Kind::Line;
-    friendly.speaker = "speaker";
-    friendly.pool = "greeting.friendly";
-    friendly.next = "end";
-    ConversationAsset::Node formal = friendly;
+    asset.parameters    = {SequenceParameter{"speaker"}, SequenceParameter{"listener"}, SequenceParameter{"location"}};
+    SequenceNode decide = node("decide", "branch");
+    decide.routes = {route("friendly", "friendly", eve::Value("speaker.mood == happy")), route("formal", "formal")};
+    SequenceNode friendly = node("friendly", "line", "end");
+    friendly.payload.set("speaker", eve::Value("speaker"));
+    friendly.payload.set("pool", eve::Value("greeting.friendly"));
+    SequenceNode formal = friendly;
     formal.id = "formal";
-    formal.pool = "greeting.formal";
-    ConversationAsset::Node end;
-    end.id = "end";
-    end.kind = ConversationAsset::Node::Kind::End;
-    asset.nodes = {decide, friendly, formal, end};
+    formal.payload.set("pool", eve::Value("greeting.formal"));
+    asset.nodes = {decide, friendly, formal, node("end", "end")};
     return asset;
 }
 
 }  // namespace
 
-TEST_CASE("dialogueConversation.parameterizedRunner") {
-    ConversationAsset asset = makeGreeting();
-    ConversationRunner runner;
-    runner.setExpressionEvaluator([](const std::string& expression, const StateValue& bindings,
-                                     const StateValue&) {
-        if (expression != "speaker.mood == happy") return StateValue::boolean(false);
-        const StateValue* mood = bindings.get("speaker.mood");
-        return StateValue::boolean(mood && mood->isString() && mood->asString() == "happy");
+TEST_CASE("dialogueConversation.typedDefaultsAndExcessBindings") {
+    SequenceAsset asset;
+    asset.id    = "typed";
+    asset.entry = "line";
+    SequenceParameter count;
+    count.name         = "count";
+    count.type         = SequenceParameterType::Integer;
+    count.required     = false;
+    count.defaultValue = eve::Value::integer(3);
+    asset.parameters   = {count};
+    asset.nodes        = {node("line", "line", "end"), node("end", "end")};
+
+    StepKindRegistry registry = dialogueRegistry();
+    SequenceRuntime  runtime;
+    runtime.setStepRegistry(&registry);
+    REQUIRE(runtime.start(&asset).ok());
+    REQUIRE(runtime.bindings().find("count") != nullptr);
+    CHECK_EQ(runtime.bindings().find("count")->asInt(), 3);
+    runtime.stop();
+
+    eve::Value wrongType = eve::Value::Object{};
+    wrongType.set("count", eve::Value("bad"));
+    CHECK(!runtime.start(&asset, std::move(wrongType)).ok());
+    eve::Value excess = eve::Value::Object{};
+    excess.set("extra", eve::Value::integer(1));
+    CHECK(!runtime.start(&asset, std::move(excess)).ok());
+}
+
+TEST_CASE("dialogueConversation.parameterizedRuntime") {
+    SequenceAsset    asset    = makeGreeting();
+    StepKindRegistry registry = dialogueRegistry();
+    SequenceRuntime  runtime;
+    runtime.setStepRegistry(&registry);
+    runtime.setConditionEvaluator([&runtime](const eve::Value& expression) {
+        const eve::Value* speaker = runtime.bindings().find("speaker");
+        const eve::Value* mood    = speaker ? speaker->find("mood") : nullptr;
+        const bool        passed  = expression.isString() && expression.asString() == "speaker.mood == happy" && mood &&
+                            mood->isString() && mood->asString() == "happy";
+        return SequenceConditionOutcome{passed, passed ? "" : "false", {}};
     });
-    StateValue bindings = StateValue::object();
-    CHECK(bindings.setPath("speaker.mood", StateValue::string("happy")));
-    CHECK(bindings.setPath("listener.id", StateValue::string("player")));
-    std::string error;
-    CHECK(runner.start(&asset, std::move(bindings), &error));
-    CHECK(error.empty());
-    CHECK(runner.isBlocked());
-    CHECK(runner.currentNodeId() == "friendly");
-    CHECK(runner.currentNode()->pool == "greeting.friendly");
-    CHECK(runner.advance(&error));
-    CHECK(!runner.isActive());
+    eve::Value bindings = eve::Value::Object{};
+    bindings.set("speaker", eve::Value::Object{{"mood", eve::Value("happy")}});
+    bindings.set("listener", eve::Value::Object{{"id", eve::Value("player")}});
+    bindings.set("location", eve::Value("village"));
+    CHECK(runtime.start(&asset, std::move(bindings)).ok());
+    CHECK(runtime.isBlocked());
+    CHECK(runtime.currentNodeId() == "friendly");
+    CHECK(sequencePayloadString(*runtime.currentNode(), "pool") == "greeting.friendly");
+    CHECK(runtime.advance().ok());
+    CHECK(!runtime.isActive());
+}
+
+TEST_CASE("dialogueConversation.rejectsMissingAndUndeclaredBindings") {
+    SequenceAsset    asset    = makeGreeting();
+    StepKindRegistry registry = dialogueRegistry();
+    SequenceRuntime  runtime;
+    runtime.setStepRegistry(&registry);
+    eve::Value bindings = eve::Value::Object{};
+    bindings.set("speaker", eve::Value::Object{});
+    bindings.set("listener", eve::Value::Object{});
+    auto missing = runtime.start(&asset, bindings);
+    CHECK(!missing.ok());
+    CHECK(missing.status().describe().find("missing required binding 'location'") != std::string::npos);
+
+    bindings.set("location", eve::Value("village"));
+    bindings.set("unexpected", eve::Value(true));
+    auto excess = runtime.start(&asset, bindings);
+    CHECK(!excess.ok());
+    CHECK(excess.status().describe().find("undeclared binding 'unexpected'") != std::string::npos);
 }
 
 TEST_CASE("dialogueConversation.validation") {
-    ConversationAsset asset = makeGreeting();
+    SequenceAsset asset   = makeGreeting();
     asset.nodes.back().id = "friendly";
-    std::string error;
-    CHECK(!asset.validate(&error));
-    CHECK(error.find("duplicate node id") != std::string::npos);
+    auto invalid = asset.validate();
+    CHECK(!invalid.ok());
+    CHECK(invalid.status().describe().find("duplicate sequence node id") != std::string::npos);
 }
 
-TEST_CASE("dialogueConversation.callStackStateRoundtrip") {
-    ConversationAsset child;
-    child.id = "common.child";
+TEST_CASE("dialogueConversation.expressionFailureDoesNotSelectElse") {
+    SequenceAsset    asset    = makeGreeting();
+    StepKindRegistry registry = dialogueRegistry();
+    SequenceRuntime  runtime;
+    runtime.setStepRegistry(&registry);
+    runtime.setConditionEvaluator(
+        [](const eve::Value&) { return SequenceConditionOutcome{false, "failed", "expression failed"}; });
+    eve::Value bindings = eve::Value::Object{};
+    bindings.set("speaker", eve::Value::Object{});
+    bindings.set("listener", eve::Value::Object{});
+    bindings.set("location", eve::Value("village"));
+    auto failed = runtime.start(&asset, std::move(bindings));
+    CHECK(!failed.ok());
+    CHECK(failed.status().describe().find("expression failed") != std::string::npos);
+}
+
+TEST_CASE("dialogueConversation.callStackStateRoundtripUsesPayloadReturn") {
+    SequenceAsset child;
+    child.id               = "common.child";
     child.entry = "line";
-    ConversationAsset::Node childLine;
-    childLine.id = "line";
-    childLine.kind = ConversationAsset::Node::Kind::Line;
-    childLine.text = "hello";
-    childLine.next = "end";
-    ConversationAsset::Node childEnd;
-    childEnd.id = "end";
-    childEnd.kind = ConversationAsset::Node::Kind::End;
-    child.nodes = {childLine, childEnd};
+    SequenceNode childLine = node("line", "line", "end");
+    childLine.payload.set("text", eve::Value("hello"));
+    child.nodes = {childLine, node("end", "end")};
 
-    ConversationAsset parent;
-    parent.id = "scene.parent";
+    SequenceAsset parent;
+    parent.id         = "scene.parent";
     parent.entry = "call";
-    ConversationAsset::Node call;
-    call.id = "call";
-    call.kind = ConversationAsset::Node::Kind::Call;
-    call.target = child.id;
-    call.next = "after";
-    ConversationAsset::Node after;
-    after.id = "after";
-    after.kind = ConversationAsset::Node::Kind::Line;
-    after.text = "returned";
-    after.next = "end";
-    ConversationAsset::Node end;
-    end.id = "end";
-    end.kind = ConversationAsset::Node::Kind::End;
-    parent.nodes = {call, after, end};
+    SequenceNode call = node("call", "call");
+    call.payload.set("target", eve::Value(child.id));
+    call.payload.set("return", eve::Value("after"));
+    SequenceNode after = node("after", "line", "end");
+    after.payload.set("text", eve::Value("returned"));
+    parent.nodes = {call, after, node("end", "end")};
 
-    const auto resolve = [&](const std::string& id) -> const ConversationAsset* {
+    const auto resolve = [&](const std::string& id) -> const SequenceAsset* {
         if (id == parent.id) return &parent;
         if (id == child.id) return &child;
         return nullptr;
     };
-    ConversationRunner original;
+    StepKindRegistry registry = dialogueRegistry();
+    SequenceRuntime  original;
+    original.setStepRegistry(&registry);
     original.setAssetResolver(resolve);
-    std::string error;
-    CHECK(original.start(&parent, StateValue::object(), &error));
+    CHECK(original.start(&parent).ok());
     CHECK(original.currentNodeId() == "line");
-    original.locals().set("calculatedPrice", StateValue::integer(42));
-    StateValue saved;
-    CHECK(original.captureState(saved));
+    original.locals().set("calculatedPrice", eve::Value::integer(42));
+    eve::Value saved;
+    REQUIRE(original.captureState(saved).ok());
 
-    ConversationRunner restored;
+    SequenceRuntime restored;
+    restored.setStepRegistry(&registry);
     restored.setAssetResolver(resolve);
-    CHECK(restored.restoreState(saved, &error));
+    CHECK(restored.restoreState(saved).ok());
     CHECK(restored.currentNodeId() == "line");
     CHECK(restored.locals().find("calculatedPrice")->asInt() == 42);
-    CHECK(restored.advance(&error));
+    CHECK(restored.advance().ok());
     CHECK(restored.currentNodeId() == "after");
 }
 
 TEST_CASE("dialogueConversation.commandsAndEvents") {
-    ConversationAsset asset;
-    asset.id = "scene.command";
+    SequenceAsset asset;
+    asset.id             = "scene.command";
     asset.entry = "calculate";
-    ConversationAsset::Node command;
-    command.id = "calculate";
-    command.kind = ConversationAsset::Node::Kind::Command;
-    command.target = "economy.quote";
-    command.expression = "quote";
-    command.next = "line";
-    ConversationAsset::Node line;
-    line.id = "line";
-    line.kind = ConversationAsset::Node::Kind::Line;
-    line.next = "end";
-    ConversationAsset::Node end;
-    end.id = "end";
-    end.kind = ConversationAsset::Node::Kind::End;
-    asset.nodes = {command, line, end};
+    SequenceNode command = node("calculate", "command", "line");
+    command.payload.set("name", eve::Value("economy.quote"));
+    command.payload.set("resultLocal", eve::Value("quote"));
+    asset.nodes = {command, node("line", "line", "end"), node("end", "end")};
 
-    std::vector<ConversationRunner::Event::Kind> events;
-    ConversationRunner runner;
-    runner.setEventSink(
-        [&](const ConversationRunner::Event& event) { events.push_back(event.kind); });
-    runner.registerCommand(
-        "economy.quote", [](const StateValue&, const StateValue&, const StateValue&) {
-            ConversationRunner::CommandResult result;
-            result.value = StateValue::integer(125);
-            return result;
-        });
-    std::string error;
-    CHECK(runner.start(&asset, StateValue::object(), &error));
-    CHECK(runner.currentNodeId() == "line");
-    CHECK(runner.locals().find("quote")->asInt() == 125);
+    std::vector<SequenceRuntime::EventKind> events;
+    StepKindRegistry                        registry = dialogueRegistry();
+    SequenceRuntime                         runtime;
+    runtime.setStepRegistry(&registry);
+    runtime.setEventSink([&](const SequenceRuntime::Event& event) { events.push_back(event.kind); });
+    runtime.registerCommand("economy.quote", [](const SequenceCommandRequest&) {
+        SequenceCommandResponse response;
+        response.value = eve::Value::integer(125);
+        return response;
+    });
+    CHECK(runtime.start(&asset).ok());
+    CHECK(runtime.currentNodeId() == "line");
+    CHECK(runtime.locals().find("quote")->asInt() == 125);
     CHECK(events.size() >= 5);
 }
 
-TEST_CASE("dialogueConversation.asyncCommand") {
-    ConversationAsset asset;
-    asset.id = "scene.wait-command";
+TEST_CASE("dialogueConversation.asyncCommandDualResumeAndRestore") {
+    SequenceAsset asset;
+    asset.id             = "scene.wait-command";
     asset.entry = "animate";
-    ConversationAsset::Node command;
-    command.id = "animate";
-    command.kind = ConversationAsset::Node::Kind::Command;
-    command.target = "animation.play";
-    command.expression = "animationResult";
-    command.next = "end";
-    ConversationAsset::Node end;
-    end.id = "end";
-    end.kind = ConversationAsset::Node::Kind::End;
-    asset.nodes = {command, end};
-    ConversationRunner runner;
-    runner.registerCommand(
-        "animation.play", [](const StateValue&, const StateValue&, const StateValue&) {
-            ConversationRunner::CommandResult result;
-            result.status = ConversationRunner::CommandResult::Status::Blocked;
-            return result;
-        });
-    std::string error;
-    CHECK(runner.start(&asset, StateValue::object(), &error));
-    CHECK(runner.isBlocked());
-    auto resumed = runner.resumeCommand(StateValue::string("finished"));
-    REQUIRE(resumed.ok());
-    CHECK(!runner.isActive());
+    SequenceNode command = node("animate", "command", "end");
+    command.payload.set("name", eve::Value("animation.play"));
+    command.payload.set("resultLocal", eve::Value("animationResult"));
+    asset.nodes = {command, node("end", "end")};
+
+    StepKindRegistry registry = dialogueRegistry();
+    SequenceRuntime  runtime;
+    runtime.setStepRegistry(&registry);
+    runtime.registerCommand("animation.play", [](const SequenceCommandRequest&) {
+        SequenceCommandResponse response;
+        response.status = SequenceCommandResponse::Status::Blocked;
+        return response;
+    });
+    CHECK(runtime.start(&asset).ok());
+    CHECK(runtime.isBlocked());
+    CHECK(runtime.isWaitingCommand());
+    CHECK(!runtime.advance().ok());
+    const std::string requestId = runtime.pendingCommandRequestId();
+    CHECK(!requestId.empty());
+    eve::Value saved;
+    REQUIRE(runtime.captureState(saved).ok());
+
+    SequenceRuntime restored;
+    restored.setStepRegistry(&registry);
+    restored.setAssetResolver([&](const std::string& id) { return id == asset.id ? &asset : nullptr; });
+    REQUIRE(restored.restoreState(saved).ok());
+    REQUIRE(restored.lastCommandRequest() != nullptr);
+    CHECK_EQ(restored.lastCommandRequest()->requestId, requestId);
+    CHECK(!runtime.resumeCommand("stale", StateValue::string("ignored")).ok());
+    REQUIRE(runtime.resumeCommand(requestId, StateValue::string("finished")).ok());
+    CHECK(!runtime.isActive());
+
+    REQUIRE(runtime.start(&asset).ok());
+    const std::string canonicalRequestId = runtime.pendingCommandRequestId();
+    REQUIRE(runtime.resumeCommand(canonicalRequestId, eve::Value("canonical")).ok());
+    CHECK(!runtime.isActive());
 }
 
-TEST_CASE("dialogueConversation.mutationsExposeStableDiagnostics") {
-    ConversationAsset asset;
-    asset.id    = "scene.mutations";
+TEST_CASE("dialogueConversation.transactionalSelectionStableDiagnostics") {
+    SequenceAsset asset;
+    asset.id            = "scene.choice";
     asset.entry = "choice";
-    ConversationAsset::Node choice;
-    choice.id   = "choice";
-    choice.kind = ConversationAsset::Node::Kind::Choice;
-    choice.routes.emplace_back("yes", "end");
-    ConversationAsset::Node end;
-    end.id      = "end";
-    end.kind    = ConversationAsset::Node::Kind::End;
-    asset.nodes = {choice, end};
+    SequenceNode choice = node("choice", "choice");
+    choice.routes.push_back(route("yes", "end"));
+    asset.nodes = {choice, node("end", "end")};
 
-    ConversationRunner runner;
-    std::string        error;
-    REQUIRE(runner.start(&asset, StateValue::object(), &error));
-    auto missing = runner.selectRouteForTransaction("missing");
+    StepKindRegistry registry = dialogueRegistry();
+    SequenceRuntime  runtime;
+    runtime.setStepRegistry(&registry);
+    REQUIRE(runtime.start(&asset).ok());
+    auto missing = runtime.selectRouteForTransaction("missing");
     REQUIRE(!missing.ok());
-    CHECK_EQ(static_cast<int>(missing.error()->code()), static_cast<int>(eve::DiagnosticCode::DialogueRouteNotFound));
-    CHECK(runner.currentNodeId() == "choice");
-
-    auto selected = runner.selectRouteForTransaction("yes");
-    REQUIRE(selected.ok());
-    CHECK(!runner.isActive());
-
-    auto notCommand = runner.resumeCommand(eve::Value("ignored"));
+    CHECK(runtime.currentNodeId() == "choice");
+    REQUIRE(runtime.selectRouteForTransaction("yes").ok());
+    CHECK(!runtime.isActive());
+    auto notCommand = runtime.resumeCommand("missing", eve::Value("ignored"));
     REQUIRE(!notCommand.ok());
     CHECK_EQ(static_cast<int>(notCommand.error()->code()),
              static_cast<int>(eve::DiagnosticCode::DialogueNotWaitingForCommand));
+}
+
+TEST_CASE("dialogueConversation.transactionalSelectionRestoresAfterRouteFailure") {
+    SequenceAsset asset;
+    asset.id            = "scene.choice-rollback";
+    asset.entry         = "choice";
+    SequenceNode choice = node("choice", "choice");
+    choice.routes.push_back(route("broken", "command"));
+    SequenceNode command = node("command", "command", "end");
+    command.payload.set("name", eve::Value("missing.handler"));
+    asset.nodes = {choice, command, node("end", "end")};
+
+    StepKindRegistry registry = dialogueRegistry();
+    SequenceRuntime  runtime;
+    runtime.setStepRegistry(&registry);
+    REQUIRE(runtime.start(&asset).ok());
+    auto failed = runtime.selectRouteForTransaction("broken");
+    REQUIRE(!failed.ok());
+    CHECK(runtime.isBlocked());
+    CHECK_EQ(runtime.currentNodeId(), std::string("choice"));
 }

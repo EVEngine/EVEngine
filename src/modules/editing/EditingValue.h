@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <map>
@@ -14,12 +16,13 @@ namespace eve::editing {
  * Objects use std::map so serialization and equality do not depend on insertion
  * order. Native pointers and runtime handles are intentionally excluded.
  */
-class Value {
+class EVENGINE_API_PLATFORM Value {
 public:
     using Array   = std::vector<Value>;
     using Object  = std::map<std::string, Value>;
     using Storage = std::variant<std::monostate, bool, int64_t, double, std::string, Array, Object>;
 
+    /** @brief Type public API. */
     enum class Type { Null, Bool, Integer, Number, String, Array, Object };
 
     Value() = default;

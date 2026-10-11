@@ -8,7 +8,7 @@
 namespace eve::map {
 
 /** @brief One greedily merged solid tile rectangle in world coordinates. */
-struct EVENGINE_API TileCollisionRect {
+struct EVENGINE_API_WORLD_INLINE TileCollisionRect {
     float x      = 0.f;
     float y      = 0.f;
     float width  = 0.f;
@@ -26,9 +26,10 @@ struct EVENGINE_API TileCollisionRect {
  *          `void`，脚本实现走 `scriptTileCollisionSinkFailures()` 这个可观测计数，原生实现自己
  *          决定怎么报。
  */
-class EVENGINE_API ITileCollisionSink {
+class EVENGINE_API_WORLD_INLINE ITileCollisionSink {
 public:
     static constexpr const char* capabilityName = "ITileCollisionSink";
+    /** @brief I tile collision sink. */
     virtual ~ITileCollisionSink()               = default;
 
     /**

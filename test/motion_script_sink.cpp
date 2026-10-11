@@ -136,9 +136,7 @@ tableError <- ""
 
 class MotionScriptSinkTest : public ScriptTest {
 public:
-    MotionScriptSinkTest() : ScriptTest(kScriptMotionSink) {
-        ScriptProviderRegistry::instance().clearAll();
-    }
+    MotionScriptSinkTest() : ScriptTest(kScriptMotionSink) { ScriptProviderRegistry::instance().clearAll(); }
 
     ~MotionScriptSinkTest() {
         eve::animation::clearScriptMotionSinkAdapters();
@@ -146,7 +144,7 @@ public:
     }
 
     /** 推进一次动画：`Animation::advance` 是唯一的求值入口。 */
-    void advanceAnimation(eve::animation::Animation &target, double seconds, std::uint64_t tick) {
+    void advanceAnimation(eve::animation::Animation& target, double seconds, std::uint64_t tick) {
         const eve::SimulationStep step{eve::SimulationTick{tick}, eve::Duration::fromSeconds(seconds).expect("dt")};
         auto                      result = target.advance(step);
         REQUIRE(result.ok());
@@ -157,7 +155,7 @@ public:
 
 TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkReceivesEveryEvaluatedValue") {
     REQUIRE(callScript("startMotionWithSink"));
-    eve::animation::Animation *module = eve::animation::Animation::create();
+    eve::animation::Animation* module = eve::animation::Animation::create();
     REQUIRE(module != nullptr);
     REQUIRE_EQ(module->motions().activeCount(), 1);
 
@@ -185,7 +183,7 @@ TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkReceivesEver
 TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked") {
     // 不调用 `to()`：motion 照跑，脚本一次都不会被调（sink 是可选的，不是隐式默认）。
     REQUIRE(callScript("startMotionWithoutSink"));
-    eve::animation::Animation *module = eve::animation::Animation::create();
+    eve::animation::Animation* module = eve::animation::Animation::create();
     REQUIRE(module != nullptr);
     REQUIRE_EQ(module->motions().activeCount(), 1);
     advanceAnimation(*module, 0.5, 1);
@@ -227,7 +225,7 @@ TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.badValueTablesAreRejec
 }
 
 TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed") {
-    eve::animation::Animation *module = eve::animation::Animation::create();
+    eve::animation::Animation* module = eve::animation::Animation::create();
     REQUIRE(module != nullptr);
 
     // ① sink 连初始化值都拒绝：`bind` 自己失败（脚本看得见），没有 motion 留在运行中。

@@ -16,12 +16,12 @@ namespace eve::scene {
 
 eve::Result<SceneArtifactRecord> failureRecord(eve::DiagnosticCode code, std::string message) {
     return eve::Result<SceneArtifactRecord>::failure(
-        eve::Diagnostic::error(code, std::move(message), "scene.artifact"));
+        eve::Diagnostic::error(code, message, "scene.artifact"));
 }
 
 eve::Result<eve::Value> failureValue(eve::DiagnosticCode code, std::string message) {
     return eve::Result<eve::Value>::failure(
-        eve::Diagnostic::error(code, std::move(message), "scene.artifact.snapshot"));
+        eve::Diagnostic::error(code, message, "scene.artifact.snapshot"));
 }
 
 bool validBounds(const eve::artifact::Bounds& bounds) noexcept {

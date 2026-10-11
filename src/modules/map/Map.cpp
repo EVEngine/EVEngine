@@ -400,6 +400,9 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("getCellGapY", &TileLayer::getCellGapY);
     layer.addFunc("getRenderSpacingX", &TileLayer::getRenderSpacingX);
     layer.addFunc("getRenderSpacingY", &TileLayer::getRenderSpacingY);
+    layer.addFunc("setVisualScale", &TileLayer::setVisualScale);
+    layer.addFunc("getVisualScaleX", &TileLayer::getVisualScaleX);
+    layer.addFunc("getVisualScaleY", &TileLayer::getVisualScaleY);
     layer.addFunc("resize", &TileLayer::resize);
     layer.addFunc("setTile", &TileLayer::setTile);
     layer.addFunc("getTile", &TileLayer::getTile);
@@ -446,6 +449,8 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("getLayer", &TileLayer::getLayer);
     layer.addFunc("setVisible", &TileLayer::setVisible);
     layer.addFunc("isVisible", &TileLayer::isVisible);
+    layer.addFunc("setReceiveLight", &TileLayer::setReceiveLight);
+    layer.addFunc("getReceiveLight", &TileLayer::getReceiveLight);
     layer.addFunc("setTint", &TileLayer::setTint);
     layer.addFunc("applyConfig", &TileLayer::applyConfig);
     layer.addFunc("loadConfig", &TileLayer::loadConfig);

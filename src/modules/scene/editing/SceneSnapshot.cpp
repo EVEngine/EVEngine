@@ -6,7 +6,7 @@
 
 namespace eve::scene_editing {
 
-EditorResult<std::map<ObjectId, SceneObjectSnapshot>> SceneTargetBase::parseSnapshot(const EditorValue& value) {
+Result<std::map<ObjectId, SceneObjectSnapshot>> SceneTargetBase::parseSnapshot(const EditorValue& value) {
     using Objects     = std::map<ObjectId, SceneObjectSnapshot>;
     const auto reject = [](const char* message) {
         return editing::failed<Objects>(EditorStatus::Rejected, RuleId("scene.snapshot.invalid"), message);
@@ -50,7 +50,7 @@ EditorResult<std::map<ObjectId, SceneObjectSnapshot>> SceneTargetBase::parseSnap
             normalizedTransform[key] = number;
         }
         auto parsed = parseObject(normalized);
-        if (!parsed.ok()) return EditorResult<Objects>::failure(parsed.status());
+        if (!parsed.ok()) return Result<Objects>::failure(parsed.status());
         auto object = std::move(parsed.value());
         if (object.id.empty() || object.name.empty() || objects.contains(object.id))
             return reject("Object ids must be unique and names nonempty");
@@ -68,9 +68,9 @@ EditorResult<std::map<ObjectId, SceneObjectSnapshot>> SceneTargetBase::parseSnap
     return editing::applied<Objects>(std::move(objects));
 }
 
-EditorResult<DomainOperation> SceneTargetBase::makeRestore(const EditorValue& snapshot) const {
+Result<DomainOperation> SceneTargetBase::makeRestore(const EditorValue& snapshot) const {
     auto validated = parseSnapshot(snapshot);
-    if (!validated.ok()) return EditorResult<DomainOperation>::failure(validated.status());
+    if (!validated.ok()) return Result<DomainOperation>::failure(validated.status());
     DomainOperation operation;
     operation.type = operation.inverseType = "scene.snapshot.restore.v1";
     operation.target                       = targetId();

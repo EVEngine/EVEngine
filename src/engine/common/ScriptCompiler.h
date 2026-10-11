@@ -6,6 +6,7 @@
 
 #include <simplesquirrel/script.hpp>
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -27,13 +28,13 @@ class ScriptModuleResolver;
 enum class ScriptDiagnosticSeverity { Info, Warning, Error };
 
 /** @brief Original EveScript source position. Lines and columns are one-based. */
-struct EVENGINE_API ScriptSourcePosition {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptSourcePosition {
     uint32_t line   = 1;
     uint32_t column = 1;
 };
 
 /** @brief Stable structured diagnostic shared by Runtime, LSP, MCP, and editor tools. */
-struct EVENGINE_API ScriptDiagnostic {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptDiagnostic {
     std::string              code;
     ScriptDiagnosticSeverity severity = ScriptDiagnosticSeverity::Error;
     std::string              message;
@@ -44,13 +45,13 @@ struct EVENGINE_API ScriptDiagnostic {
 };
 
 /** @brief One generated-to-original mapping segment. Native syntax uses identity mappings. */
-struct EVENGINE_API ScriptSourceMapEntry {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptSourceMapEntry {
     ScriptSourcePosition generated;
     ScriptSourcePosition original;
 };
 
 /** @brief Source map for a compiled script. */
-struct EVENGINE_API ScriptSourceMap {
+struct EVENGINE_API_FOUNDATION ScriptSourceMap {
     std::string                       canonicalUri;
     std::vector<ScriptSourceMapEntry> entries;
 
@@ -61,7 +62,7 @@ struct EVENGINE_API ScriptSourceMap {
 };
 
 /** @brief Erased source-level symbol retained for tooling. */
-struct EVENGINE_API ScriptSymbolMetadata {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptSymbolMetadata {
     std::string          name;
     std::string          kind;
     std::string          erasedType;
@@ -69,7 +70,7 @@ struct EVENGINE_API ScriptSymbolMetadata {
 };
 
 /** @brief Inspector-facing metadata for one annotated script property. */
-struct EVENGINE_API ScriptPropertyMetadata {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptPropertyMetadata {
     std::string                                  name;
     std::string                                  erasedType;
     ScriptSourcePosition                         position;
@@ -78,7 +79,7 @@ struct EVENGINE_API ScriptPropertyMetadata {
 };
 
 /** @brief Metadata retained for one compiled EveScript source unit. */
-struct EVENGINE_API ScriptMetadata {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptMetadata {
     uint32_t                            languageVersion = 1;
     std::string                         sourceHash;
     std::string                         canonicalUri;
@@ -98,7 +99,7 @@ struct EVENGINE_API ScriptMetadata {
 };
 
 /** @brief Tool-neutral completion item suitable for LSP, MCP, and editor adapters. */
-struct EVENGINE_API ScriptCompletion {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptCompletion {
     std::string label;
     std::string kind;
     std::string detail;
@@ -106,7 +107,7 @@ struct EVENGINE_API ScriptCompletion {
 };
 
 /** @brief Tool-neutral hover result for one script or binding symbol. */
-struct EVENGINE_API ScriptHover {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptHover {
     std::string          symbol;
     std::string          markdown;
     ScriptSourcePosition position;
@@ -116,7 +117,7 @@ struct EVENGINE_API ScriptHover {
 enum class ScriptUnit { None, Seconds, Milliseconds, Radians, Degrees, Pixels, Meters };
 
 /** @brief One native binding parameter visible to EveScript tools and named arguments. */
-struct EVENGINE_API BindingParameterContract {
+struct EVENGINE_API_FOUNDATION_INLINE BindingParameterContract {
     std::string                name;
     std::string                type     = "dynamic";
     bool                       nullable = false;
@@ -126,7 +127,7 @@ struct EVENGINE_API BindingParameterContract {
 };
 
 /** @brief Complete script-facing contract for a native function or method. */
-struct EVENGINE_API BindingContract {
+struct EVENGINE_API_FOUNDATION BindingContract {
     std::string                           module;
     std::string                           scriptClass;
     std::string                           method;
@@ -140,10 +141,21 @@ struct EVENGINE_API BindingContract {
 
     /** @brief Stable lookup key in the form module/class.method. */
     std::string key() const;
+    /**
+     * @brief Compact JSON object for one contract (`eve.binding-api` item).
+     * @return UTF-8 JSON object with key, signatures, ownership and source.
+     */
+    std::string toJson() const;
+};
+
+/** @brief Ranked Binding Contract hit from text search. */
+struct EVENGINE_API BindingSearchHit {
+    BindingContract contract;
+    int             score = 0;
 };
 
 /** @brief Registry consumed by compiler checks and tooling protocol adapters. */
-class EVENGINE_API BindingContractRegistry {
+class EVENGINE_API_FOUNDATION BindingContractRegistry {
 public:
     /** @brief Adds or atomically replaces a binding contract by key. */
     void registerContract(BindingContract contract);
@@ -177,6 +189,16 @@ public:
     bool hasScriptClass(std::string_view scriptClass) const noexcept;
     /** @brief Returns a stable snapshot sorted by contract key. */
     std::vector<BindingContract> snapshot() const;
+    /**
+     * @brief Ranked substring/token search over keys, classes, methods and documentation ids.
+     * @param query Case-insensitive text; space-separated tokens must all match.
+     * @param moduleFilter Optional exact module id (case-insensitive).
+     * @param classFilter Optional exact script class (case-insensitive).
+     * @param limit Maximum hits; 0 uses 20, values above 64 are clamped to 64.
+     * @return Hits sorted by score descending then key ascending.
+     */
+    std::vector<BindingSearchHit> search(std::string_view query, std::string_view moduleFilter = {},
+                                         std::string_view classFilter = {}, size_t limit = 20) const;
 
 private:
     struct Storage {
@@ -188,9 +210,11 @@ private:
 };
 
 /** @brief Unified Runtime compiler facade for metadata, diagnostics, and module preparation. */
-class EVENGINE_API ScriptCompiler {
+class EVENGINE_API_FOUNDATION ScriptCompiler {
 public:
+    /** @brief Script compiler. */
     ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules);
+    /** @brief Script compiler. */
     ~ScriptCompiler();
 
     /** @brief Compiles UTF-8 source and records metadata under sourceName. */

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -14,7 +16,7 @@ class GameState;
  * GameState remains the sole authoritative owner and therefore participates in existing save-session
  * transactions without another snapshot. This adapter only standardizes stable IDs and mutation semantics.
  */
-class WorldState {
+class EVENGINE_API_PLATFORM WorldState {
 public:
     /**
      * @brief Bind an adapter to one authoritative game state.

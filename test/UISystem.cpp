@@ -103,7 +103,8 @@ TEST_CASE("UIAutomation.semanticTreeGetAndClick") {
     UIHost *host   = resolveHost(UIHost::createHost("mcp-ui-test"));
     REQUIRE(host != nullptr);
     host->setTree(window("Automation", {text("Ready", "status"),
-                                        button("Add Tree", "asset-tree", [&]() { ++clicks; })}));
+                                        button("Add Tree", "asset-tree", [&]() { ++clicks; }),
+                                        grid(2, {text("Cell", "grid-cell")}, "asset-grid")}));
 
     registerUIAutomationCapabilities();
     auto *automation = eve::cap::query<eve::IUIAutomation>();
@@ -112,6 +113,7 @@ TEST_CASE("UIAutomation.semanticTreeGetAndClick") {
     const std::string tree = automation->tree("mcp-ui-test");
     CHECK(tree.find("\"name\":\"mcp-ui-test\"") != std::string::npos);
     CHECK(tree.find("\"id\":\"asset-tree\"") != std::string::npos);
+    CHECK(tree.find("\"type\":\"grid\"") != std::string::npos);
     CHECK(tree.find("\"clickable\":true") != std::string::npos);
 
     const std::string widget = automation->get("mcp-ui-test", "asset-tree");

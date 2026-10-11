@@ -11,9 +11,9 @@ namespace eve::boot {
  * startVulkanInstanceWarmup() at the beginning of `eve run` so instance
  * creation overlaps Runtime/script boot. No-op when graphics is trimmed.
  */
-EVENGINE_API void registerVulkanInstanceWarmup(void (*start)());
+EVENGINE_API_FOUNDATION void registerVulkanInstanceWarmup(void (*start)());
 
 /** @brief Kick off asynchronous VkInstance creation if a backend registered. */
-EVENGINE_API void startVulkanInstanceWarmup();
+EVENGINE_API_FOUNDATION void startVulkanInstanceWarmup();
 
 }  // namespace eve::boot

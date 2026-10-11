@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "map-tile-render-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/map/TileSystem.h",
+      "owner": "map::TileRenderSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Tile animation and render traversal are map-owned systems with graphics as a borrowed service.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/map/TileSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/map.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "TileRenderSystem"
+      ],
+      "entity_scope": "Visible TileLayer entities in the current ECS/map world.",
+      "view": "Generation-checked TileLayer view plus renderer-owned graphics batch context.",
+      "read_set": "Tile layer visibility, tile animation clocks, atlas metadata and map transforms.",
+      "write_set": "Tile animation time state and graphics batch submissions.",
+      "structural_changes": "No layer creation/destruction during traversal; callers own structural edits.",
+      "events": "No gameplay events; visible output is the rendered tile batch.",
+      "services": "Borrowed Graphics backend and injected dt for animation update.",
+      "phase": "Map update/render phase."
+    },
+    {
+      "id": "map-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/map/TileCollisionScriptSink.cpp",
+      "owner": "map",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Map::publishCollision consumes the multi-listener ITileCollisionSink socket through cap::forEach and the new script seam answers it through cap::addListener, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself. The scope is this one file, not src/modules/map/**: the editing and level satellites are separately built modules whose faces must not be attributed to this entry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/map/TileCollisionScriptSink.cpp",
+        "src/modules/map/TileCollision.h",
+        "src/modules/map/Map.cpp"
+      ],
+      "tests": [
+        "test/map_tile_collision_sink.cpp",
+        "test/map.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ITileCollisionSink"
+      ],
+      "requires": [
+        "ITileCollisionSink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('ITileCollisionSink', name, instance) -> replaceTileCollision({ layer = { id, generation }, rects = [{ x, y, width, height }] }); eve.TileLayer.getEntityId()/getEntityGeneration()"
+      ],
+      "protocol": [],
+      "thread_affinity": "Map owner thread (the Squirrel owning thread for the instance); the sink is called synchronously from publishCollision and no script value is retained across calls",
+      "trim": {
+        "absent_profile": "Profiles without map drop the module and its sink listeners; a script that published a collision sink sees the provider go away with the module and the map keeps its own collisionRects_ authority",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "replaceTileCollision marshals one rect array per layer publication; map keeps collisionRects_ as the authority and a sink failure stays observable through scriptTileCollisionSinkFailures()."
+      ],
+      "hot_path": []
+    }
+  ]
+}

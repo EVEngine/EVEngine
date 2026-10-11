@@ -35,33 +35,17 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include "editor/EditorScriptProjection.h"
 
 namespace eve::editor {
 namespace {
 
 constexpr const char* kBindingSource = "editor.action.timeline.squirrel";
 
-Status statusFrom(const EditorResult<void>& result) { return result.status(); }
-
-template <class T>
-Status statusFrom(const EditorResult<T>& result) {
-    return result.status();
-}
-
-ssq::Table project(HSQUIRRELVM vm, const EditorResult<void>& result) {
-    return script::projectStatusResult(vm, statusFrom(result), result.ok(), false);
-}
-
-template <class T>
-ssq::Table project(HSQUIRRELVM vm, const EditorResult<T>& result, Value value) {
-    const bool hasValue = result.ok();
-    return script::projectStatusResult(vm, statusFrom(result), hasValue, hasValue, value);
-}
+using eve::editor::project;
 
 ssq::Table bindingFailure(HSQUIRRELVM vm, DiagnosticCode code, std::string message, std::string path = {}) {
-    return script::projectStatusResult(
-        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)), false,
-        false);
+    return ::eve::editor::bindingFailure(vm, kBindingSource, code, std::move(message), std::move(path));
 }
 
 Result<Duration> seconds(float value) {
@@ -114,14 +98,14 @@ public:
     explicit ScriptActionTimelineAssetCatalog(std::filesystem::path projectRoot)
         : store_(projectRoot), catalog_(std::move(projectRoot), &database_) {}
 
-    [[nodiscard]] EditorResult<std::size_t> refresh(std::string text) {
+    [[nodiscard]] Result<std::size_t> refresh(std::string text) {
         auto scanned = catalog_.scan();
-        if (!scanned.ok()) return EditorResult<std::size_t>::failure(scanned.status());
+        if (!scanned.ok()) return Result<std::size_t>::failure(scanned.status());
         AssetQuery query;
         query.typeIds = {"eve.action.timeline"};
         query.text    = std::move(text);
         auto page     = database_.query(query, 0, 512);
-        if (!page.ok()) return EditorResult<std::size_t>::failure(page.status());
+        if (!page.ok()) return Result<std::size_t>::failure(page.status());
 
         entries_.clear();
         auto diagnostics = scanned.diagnostics();
@@ -142,15 +126,15 @@ public:
         return eve::editing::applied<std::size_t>(entries_.size(), std::move(diagnostics));
     }
 
-    [[nodiscard]] EditorResult<void> registerDocument(const std::string& guid, const std::string& uri) {
+    [[nodiscard]] Result<void> registerDocument(const std::string& guid, const std::string& uri) {
         if (guid.empty() || !uri.starts_with("content://") || uri.size() <= std::string("content://").size())
             return eve::editing::failed<void>(EditorStatus::Rejected,
                                               RuleId("editor.action.asset-registration-invalid"),
                                               "Action asset registration requires a GUID and content URI");
         auto stored = store_.read(uri);
-        if (!stored.ok()) return EditorResult<void>::failure(stored.status());
+        if (!stored.ok()) return Result<void>::failure(stored.status());
         auto timeline = action::ActionTimeline::fromValue(toPresentationValue(stored.value().content));
-        if (!timeline) return EditorResult<void>::failure(timeline.status());
+        if (!timeline) return Result<void>::failure(timeline.status());
         return catalog_.writeSidecar(uri.substr(std::string("content://").size()), AssetGuid(guid),
                                      "eve.action.timeline");
     }
@@ -298,7 +282,7 @@ public:
         return !snapshot.ok() || snapshot.value().dirty() || editor_.target().revision() != savedEditorRevision_;
     }
 
-    [[nodiscard]] EditorResult<void> setMontageSettings(action::ActionMontageSettings settings) {
+    [[nodiscard]] Result<void> setMontageSettings(action::ActionMontageSettings settings) {
         const auto previous = editor_.target().timeline().montage;
         auto       edited   = editor_.setMontageSettings(settings);
         if (!edited.ok()) return edited;
@@ -310,7 +294,7 @@ public:
                     runtimeRate_ = previous.basePlayRate;
                     if (runtimeTimeline_) runtimeTimeline_->montage = previous;
                 }
-                return EditorResult<void>::failure(applied.status());
+                return Result<void>::failure(applied.status());
             }
         }
         runtimeRate_ = settings.basePlayRate;
@@ -318,7 +302,7 @@ public:
         return edited;
     }
 
-    [[nodiscard]] EditorResult<void> addSectionSplit(Duration time) {
+    [[nodiscard]] Result<void> addSectionSplit(Duration time) {
         const auto previous = editor_.target().timeline().splitTimestamps;
         auto edited = editor_.addSectionSplit(time);
         if (!edited.ok()) return edited;
@@ -328,14 +312,14 @@ public:
             if (!applied) {
                 auto rolledBack = editor_.undo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
-                return EditorResult<void>::failure(applied.status());
+                return Result<void>::failure(applied.status());
             }
         }
         if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
         return edited;
     }
 
-    [[nodiscard]] EditorResult<void> setSectionSplit(std::size_t index, Duration time) {
+    [[nodiscard]] Result<void> setSectionSplit(std::size_t index, Duration time) {
         const auto previous = editor_.target().timeline().splitTimestamps;
         auto edited = editor_.setSectionSplit(index, time);
         if (!edited.ok()) return edited;
@@ -345,14 +329,14 @@ public:
             if (!applied) {
                 auto rolledBack = editor_.undo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
-                return EditorResult<void>::failure(applied.status());
+                return Result<void>::failure(applied.status());
             }
         }
         if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
         return edited;
     }
 
-    [[nodiscard]] EditorResult<void> removeSectionSplit(std::size_t index) {
+    [[nodiscard]] Result<void> removeSectionSplit(std::size_t index) {
         const auto previous = editor_.target().timeline().splitTimestamps;
         auto edited = editor_.removeSectionSplit(index);
         if (!edited.ok()) return edited;
@@ -362,14 +346,14 @@ public:
             if (!applied) {
                 auto rolledBack = editor_.undo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
-                return EditorResult<void>::failure(applied.status());
+                return Result<void>::failure(applied.status());
             }
         }
         if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
         return edited;
     }
 
-    [[nodiscard]] EditorResult<TransactionReceipt> undo() {
+    [[nodiscard]] Result<TransactionReceipt> undo() {
         const auto previous = editor_.target().timeline().splitTimestamps;
         auto       undone   = editor_.undo();
         if (!undone.ok()) return undone;
@@ -379,14 +363,14 @@ public:
             if (!applied) {
                 auto rolledBack = editor_.redo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
-                return EditorResult<TransactionReceipt>::failure(applied.status());
+                return Result<TransactionReceipt>::failure(applied.status());
             }
         }
         if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
         return undone;
     }
 
-    [[nodiscard]] EditorResult<TransactionReceipt> redo() {
+    [[nodiscard]] Result<TransactionReceipt> redo() {
         const auto previous = editor_.target().timeline().splitTimestamps;
         auto       redone   = editor_.redo();
         if (!redone.ok()) return redone;
@@ -396,18 +380,18 @@ public:
             if (!applied) {
                 auto rolledBack = editor_.undo();
                 if (rolledBack.ok() && runtimeTimeline_) runtimeTimeline_->splitTimestamps = previous;
-                return EditorResult<TransactionReceipt>::failure(applied.status());
+                return Result<TransactionReceipt>::failure(applied.status());
             }
         }
         if (runtimeTimeline_) runtimeTimeline_->splitTimestamps = splits;
         return redone;
     }
 
-    [[nodiscard]] EditorResult<DocumentSnapshot> saveDocument() {
+    [[nodiscard]] Result<DocumentSnapshot> saveDocument() {
         auto synchronized = synchronizeDocument();
         if (!synchronized.ok()) return synchronized;
         auto ticket = documents_->requestSave(document_.id);
-        if (!ticket.ok()) return EditorResult<DocumentSnapshot>::failure(ticket.status());
+        if (!ticket.ok()) return Result<DocumentSnapshot>::failure(ticket.status());
         auto saved = documents_->executeSave(ticket.value());
         if (saved.ok()) {
             document_            = saved.value();
@@ -416,20 +400,20 @@ public:
         return saved;
     }
 
-    [[nodiscard]] EditorResult<DocumentSnapshot> reconcileDocument() {
+    [[nodiscard]] Result<DocumentSnapshot> reconcileDocument() {
         auto synchronized = synchronizeDocument();
         if (!synchronized.ok()) return synchronized;
         auto reconciled = documents_->reconcileExternal(document_.id, [](const EditorValue& content) {
             auto timeline = action::ActionTimeline::fromValue(toPresentationValue(content));
-            if (!timeline) return EditorResult<void>::failure(timeline.status());
+            if (!timeline) return Result<void>::failure(timeline.status());
             return eve::editing::applied<void>();
         });
         if (!reconciled.ok()) return reconciled;
         auto content = documents_->content(document_.id);
-        if (!content.ok()) return EditorResult<DocumentSnapshot>::failure(content.status());
+        if (!content.ok()) return Result<DocumentSnapshot>::failure(content.status());
         if (content.value() != editor_.target().snapshotValue()) {
             auto loaded = editor_.reloadDocument(content.value());
-            if (!loaded.ok()) return EditorResult<DocumentSnapshot>::failure(loaded.status());
+            if (!loaded.ok()) return Result<DocumentSnapshot>::failure(loaded.status());
             synchronizedEditorRevision_ = editor_.target().revision();
             savedEditorRevision_        = editor_.target().revision();
         }
@@ -439,42 +423,42 @@ public:
 
     const DocumentSnapshot& document() const noexcept { return document_; }
 
-    [[nodiscard]] EditorResult<void> seekPreview(Duration time) {
+    [[nodiscard]] Result<void> seekPreview(Duration time) {
         if (previewInitializationFailure_)
-            return EditorResult<void>::failure(*previewInitializationFailure_);
+            return Result<void>::failure(*previewInitializationFailure_);
         return previewController_ ? previewController_->seek(time) : editor_.seek(time);
     }
 
-    [[nodiscard]] EditorResult<void> seekPreviewAt(float x) { return seekPreview(widget_.timeAt(x)); }
+    [[nodiscard]] Result<void> seekPreviewAt(float x) { return seekPreview(widget_.timeAt(x)); }
 
-    [[nodiscard]] EditorResult<void> stopPreview() {
+    [[nodiscard]] Result<void> stopPreview() {
         if (previewInitializationFailure_)
-            return EditorResult<void>::failure(*previewInitializationFailure_);
+            return Result<void>::failure(*previewInitializationFailure_);
         return previewController_ ? previewController_->stop() : editor_.stop();
     }
 
-    [[nodiscard]] EditorResult<void> stepPreviewFrames(std::int64_t frames, double frameRate) {
+    [[nodiscard]] Result<void> stepPreviewFrames(std::int64_t frames, double frameRate) {
         if (previewInitializationFailure_)
-            return EditorResult<void>::failure(*previewInitializationFailure_);
+            return Result<void>::failure(*previewInitializationFailure_);
         return previewController_ ? previewController_->stepFrames(frames, frameRate)
                                   : editor_.stepFrames(frames, frameRate);
     }
 
-    [[nodiscard]] EditorResult<void> jumpPreviewToEnd() {
+    [[nodiscard]] Result<void> jumpPreviewToEnd() {
         if (previewInitializationFailure_)
-            return EditorResult<void>::failure(*previewInitializationFailure_);
+            return Result<void>::failure(*previewInitializationFailure_);
         return previewController_ ? previewController_->jumpToEnd() : editor_.jumpToEnd();
     }
 
-    [[nodiscard]] EditorResult<std::size_t> updatePreview(Duration delta) {
+    [[nodiscard]] Result<std::size_t> updatePreview(Duration delta) {
         if (previewInitializationFailure_)
-            return EditorResult<std::size_t>::failure(*previewInitializationFailure_);
+            return Result<std::size_t>::failure(*previewInitializationFailure_);
         return previewController_ ? previewController_->update(delta) : editor_.update(delta);
     }
 
-    [[nodiscard]] EditorResult<void> refreshPreview() {
+    [[nodiscard]] Result<void> refreshPreview() {
         if (previewInitializationFailure_)
-            return EditorResult<void>::failure(*previewInitializationFailure_);
+            return Result<void>::failure(*previewInitializationFailure_);
         return previewController_ ? previewController_->refresh() : eve::editing::noOp();
     }
 
@@ -878,7 +862,7 @@ private:
         return clips;
     }
 
-    [[nodiscard]] EditorResult<DocumentSnapshot> synchronizeDocument() {
+    [[nodiscard]] Result<DocumentSnapshot> synchronizeDocument() {
         if (!documents_ || document_.id.empty())
             return eve::editing::failed<DocumentSnapshot>(EditorStatus::Unsupported,
                                                           RuleId("editor.action.document.not-persistent"),
@@ -1009,7 +993,7 @@ std::optional<Value> itemPayloadField(ScriptActionTimelineEditor* self, const st
     return found == payload.value().end() ? std::nullopt : std::optional<Value>(found->second);
 }
 
-EditorResult<void> patchItemPayload(ScriptActionTimelineEditor* self, const std::string& itemId,
+Result<void> patchItemPayload(ScriptActionTimelineEditor* self, const std::string& itemId,
                                     Value::Object fields) {
     if (!self)
         return eve::editing::failed<void>(EditorStatus::Rejected,
@@ -1090,7 +1074,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!parsedTrack)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "track id is invalid", "trackId");
         auto parsedPayload = Value::fromJson(payloadJson);
-        if (!parsedPayload) return script::projectStatusResult(vm, parsedPayload.status(), false, false);
+        if (!parsedPayload) return script::projectStatusResult(vm, parsedPayload.status());
         const auto* payload = parsedPayload.value().getIf<Value::Object>();
         if (!payload)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "notify payload must be a JSON object",
@@ -1105,9 +1089,9 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         auto duration    = seconds(durationSeconds);
         if (!parsedTrack)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "track id is invalid", "trackId");
-        if (!duration) return script::projectStatusResult(vm, duration.status(), false, false);
+        if (!duration) return script::projectStatusResult(vm, duration.status());
         auto parsedPayload = Value::fromJson(payloadJson);
-        if (!parsedPayload) return script::projectStatusResult(vm, parsedPayload.status(), false, false);
+        if (!parsedPayload) return script::projectStatusResult(vm, parsedPayload.status());
         const auto* payload = parsedPayload.value().getIf<Value::Object>();
         if (!payload)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "notify-state payload must be a JSON object",
@@ -1125,7 +1109,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         auto parsedId   = LogicalId::parse(trackId);
         auto parsedKind = action::parseActionTrackKind(kind);
         if (!parsedId) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "track id is invalid", "trackId");
-        if (!parsedKind) return script::projectStatusResult(vm, parsedKind.status(), false, false);
+        if (!parsedKind) return script::projectStatusResult(vm, parsedKind.status());
         action::ActionTrack track;
         track.id    = std::move(*parsedId);
         track.label = label;
@@ -1178,7 +1162,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             auto offset = seconds(offsetSeconds);
             if (!parsed)
                 return bindingFailure(vm, DiagnosticCode::InvalidArgument, "track id is invalid", "trackId");
-            if (!offset) return script::projectStatusResult(vm, offset.status(), false, false);
+            if (!offset) return script::projectStatusResult(vm, offset.status());
             auto pasted = self->editor().pasteToTrack(*parsed, offset.value());
             return project(vm, pasted,
                            pasted.ok() ? Value(static_cast<std::int64_t>(pasted.value())) : Value{});
@@ -1187,7 +1171,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto interval = seconds(intervalSeconds);
-        if (!interval) return script::projectStatusResult(vm, interval.status(), false, false);
+        if (!interval) return script::projectStatusResult(vm, interval.status());
         return project(vm, self->widget().setSnapInterval(std::move(interval).takeValue()));
     });
     actionEditor.addFunc(
@@ -1196,8 +1180,8 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                 return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
             auto start = seconds(startSeconds);
             auto end   = seconds(endSeconds);
-            if (!start) return script::projectStatusResult(vm, start.status(), false, false);
-            if (!end) return script::projectStatusResult(vm, end.status(), false, false);
+            if (!start) return script::projectStatusResult(vm, start.status());
+            if (!end) return script::projectStatusResult(vm, end.status());
             return project(vm, self->widget().setVisibleRange(start.value(), end.value()));
         });
     actionEditor.addFunc("zoomTimeline", [vm](ScriptActionTimelineEditor* self, float factor, float anchor) {
@@ -1209,7 +1193,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto delta = seconds(deltaSeconds);
-        if (!delta) return script::projectStatusResult(vm, delta.status(), false, false);
+        if (!delta) return script::projectStatusResult(vm, delta.status());
         return project(vm, self->widget().pan(delta.value()));
     });
     actionEditor.addFunc("pointerDown", [vm](ScriptActionTimelineEditor* self, float x, float y, bool additive) {
@@ -1236,7 +1220,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto duration = seconds(value);
-        if (!duration) return script::projectStatusResult(vm, duration.status(), false, false);
+        if (!duration) return script::projectStatusResult(vm, duration.status());
         return project(vm, self->seekPreview(std::move(duration).takeValue()));
     });
     actionEditor.addFunc("resizeState", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
@@ -1244,9 +1228,9 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto start = seconds(startSeconds);
-        if (!start) return script::projectStatusResult(vm, start.status(), false, false);
+        if (!start) return script::projectStatusResult(vm, start.status());
         auto end = seconds(endSeconds);
-        if (!end) return script::projectStatusResult(vm, end.status(), false, false);
+        if (!end) return script::projectStatusResult(vm, end.status());
         auto parsedItemId = LogicalId::parse(itemId);
         if (!parsedItemId)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "state item id is not canonical", "itemId");
@@ -1262,8 +1246,8 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         auto end          = seconds(endSeconds);
         if (!parsedItemId)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item id is not canonical", "itemId");
-        if (!start) return script::projectStatusResult(vm, start.status(), false, false);
-        if (!end) return script::projectStatusResult(vm, end.status(), false, false);
+        if (!start) return script::projectStatusResult(vm, start.status());
+        if (!end) return script::projectStatusResult(vm, end.status());
         const auto& timeline = self->editor().target().timeline();
         if (const auto* section = findSection(timeline, itemId))
             return project(vm, self->editor().resizeAnimationSection(*parsedItemId, start.value(), end.value(),
@@ -1331,7 +1315,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item identity or type is invalid",
                                   "itemDetails");
         auto parsedPayload = Value::fromJson(payloadJson);
-        if (!parsedPayload) return script::projectStatusResult(vm, parsedPayload.status(), false, false);
+        if (!parsedPayload) return script::projectStatusResult(vm, parsedPayload.status());
         const auto* payload = parsedPayload.value().getIf<Value::Object>();
         if (!payload)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "timeline item payload must be a JSON object",
@@ -1342,7 +1326,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!state && !notify)
             return bindingFailure(vm, DiagnosticCode::NotFound, "editable notify item was not found", "itemId");
         auto descriptor = self->registry().descriptor(type);
-        if (!descriptor) return script::projectStatusResult(vm, descriptor.status(), false, false);
+        if (!descriptor) return script::projectStatusResult(vm, descriptor.status());
         const auto expected = state ? action::ActionNotifyShape::State : action::ActionNotifyShape::Instant;
         if (descriptor.value().shape != expected)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument,
@@ -1368,7 +1352,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                                           state ? state->start : notify->time,
                                           *payload};
         auto valid = self->registry().validate(event);
-        if (!valid) return script::projectStatusResult(vm, valid.status(), false, false);
+        if (!valid) return script::projectStatusResult(vm, valid.status());
         return project(vm, self->editor().updateItem(*parsedItemId, *parsedType, *payload));
     });
     actionEditor.addFunc("addParameterKey", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
@@ -1418,7 +1402,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto delta = seconds(deltaSeconds);
-        if (!delta) return script::projectStatusResult(vm, delta.status(), false, false);
+        if (!delta) return script::projectStatusResult(vm, delta.status());
         auto result = self->updatePreview(std::move(delta).takeValue());
         return project(vm, result, Value(result.ok() ? static_cast<std::int64_t>(result.value()) : 0));
     });
@@ -1441,7 +1425,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return bindingFailure(vm, DiagnosticCode::InvalidArgument,
                                   "action timeline editor must not be null");
         auto snapshot = self->editor().target().timeline().toValue();
-        if (!snapshot) return script::projectStatusResult(vm, snapshot.status(), false, false);
+        if (!snapshot) return script::projectStatusResult(vm, snapshot.status());
         auto encoded = snapshot.value().toJson();
         return script::projectResult(vm, std::move(encoded),
                                      [](std::string value) { return Value(std::move(value)); });
@@ -1472,14 +1456,14 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto delta = seconds(deltaSeconds);
-        if (!delta) return script::projectStatusResult(vm, delta.status(), false, false);
+        if (!delta) return script::projectStatusResult(vm, delta.status());
         return script::projectResult(vm, self->advanceRuntime(std::move(delta).takeValue()), montageAdvanceValue);
     });
     actionEditor.addFunc("jumpRuntimeSeconds", [vm](ScriptActionTimelineEditor* self, float targetSeconds) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto target = seconds(targetSeconds);
-        if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+        if (!target) return script::projectStatusResult(vm, target.status());
         return script::projectResult(vm, self->jumpRuntime(std::move(target).takeValue()), montageAdvanceValue);
     });
     actionEditor.addFunc("jumpRuntimeSection", [vm](ScriptActionTimelineEditor* self, int sectionIndex) {
@@ -1509,7 +1493,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             if (!self || sectionIndex < 0)
                 return bindingFailure(vm, DiagnosticCode::InvalidArgument, "runtime section index is invalid", "index");
             auto target = seconds(targetSeconds);
-            if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+            if (!target) return script::projectStatusResult(vm, target.status());
             return script::projectResult(
                 vm, self->syncRuntimeSection(static_cast<std::size_t>(sectionIndex), std::move(target).takeValue()));
         });
@@ -1519,7 +1503,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                 return bindingFailure(vm, DiagnosticCode::InvalidArgument,
                                       "runtime section index is invalid", "index");
             auto target = seconds(targetSeconds);
-            if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+            if (!target) return script::projectStatusResult(vm, target.status());
             return script::projectResult(
                 vm,
                 self->syncRuntimeSectionAndJump(static_cast<std::size_t>(sectionIndex),
@@ -1564,7 +1548,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
         auto duration = seconds(durationSeconds);
-        if (!duration) return script::projectStatusResult(vm, duration.status(), false, false);
+        if (!duration) return script::projectStatusResult(vm, duration.status());
         return script::projectResult(vm, self->beginRuntimeBlendOut(std::move(duration).takeValue()),
                                      montageAdvanceValue);
     });
@@ -1761,9 +1745,9 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         auto blendIn        = seconds(blendInSeconds);
         auto blendOut       = seconds(blendOutSeconds);
         auto blendOutOffset = seconds(blendOutOffsetSeconds);
-        if (!blendIn) return script::projectStatusResult(vm, blendIn.status(), false, false);
-        if (!blendOut) return script::projectStatusResult(vm, blendOut.status(), false, false);
-        if (!blendOutOffset) return script::projectStatusResult(vm, blendOutOffset.status(), false, false);
+        if (!blendIn) return script::projectStatusResult(vm, blendIn.status());
+        if (!blendOut) return script::projectStatusResult(vm, blendOut.status());
+        if (!blendOutOffset) return script::projectStatusResult(vm, blendOutOffset.status());
         action::ActionMontageSettings settings;
         settings.basePlayRate         = basePlayRate;
         settings.looping              = looping;
@@ -1823,7 +1807,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     actionEditor.addFunc("addSectionSplit", [vm](ScriptActionTimelineEditor* self, float timeSeconds) {
         if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor is null");
         auto time = seconds(timeSeconds);
-        if (!time) return script::projectStatusResult(vm, time.status(), false, false);
+        if (!time) return script::projectStatusResult(vm, time.status());
         return project(vm, self->addSectionSplit(time.value()));
     });
     actionEditor.addFunc("setSectionSplit", [vm](ScriptActionTimelineEditor* self, int index, float timeSeconds) {
@@ -1831,7 +1815,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             return bindingFailure(vm, DiagnosticCode::InvalidArgument,
                                   "action timeline editor and non-negative split index are required");
         auto time = seconds(timeSeconds);
-        if (!time) return script::projectStatusResult(vm, time.status(), false, false);
+        if (!time) return script::projectStatusResult(vm, time.status());
         return project(vm, self->setSectionSplit(static_cast<std::size_t>(index), time.value()));
     });
     actionEditor.addFunc("removeSectionSplit", [vm](ScriptActionTimelineEditor* self, int index) {
@@ -1887,9 +1871,9 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         auto start = seconds(startSeconds);
         auto end   = seconds(endSeconds);
         auto blend = seconds(blendInSeconds);
-        if (!start) return script::projectStatusResult(vm, start.status(), false, false);
-        if (!end) return script::projectStatusResult(vm, end.status(), false, false);
-        if (!blend) return script::projectStatusResult(vm, blend.status(), false, false);
+        if (!start) return script::projectStatusResult(vm, start.status());
+        if (!end) return script::projectStatusResult(vm, end.status());
+        if (!blend) return script::projectStatusResult(vm, blend.status());
         action::ActionAnimationSection section{*parsed, animationUri, start.value(), end.value(), blend.value()};
         return project(vm, self->editor().addAnimationSection(std::move(section)));
     });
@@ -1905,9 +1889,9 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         auto start = seconds(startSeconds);
         auto end   = seconds(endSeconds);
         auto blend = seconds(blendInSeconds);
-        if (!start) return script::projectStatusResult(vm, start.status(), false, false);
-        if (!end) return script::projectStatusResult(vm, end.status(), false, false);
-        if (!blend) return script::projectStatusResult(vm, blend.status(), false, false);
+        if (!start) return script::projectStatusResult(vm, start.status());
+        if (!end) return script::projectStatusResult(vm, end.status());
+        if (!blend) return script::projectStatusResult(vm, blend.status());
         return project(
             vm, self->editor().editAnimationSection(*parsed, start.value(), end.value(), blend.value(), animationUri));
     });
@@ -1933,8 +1917,8 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                                   "sectionSource");
         auto sourceStart = seconds(sourceStartSeconds);
         auto sourceEnd   = seconds(sourceEndSeconds);
-        if (!sourceStart) return script::projectStatusResult(vm, sourceStart.status(), false, false);
-        if (!sourceEnd) return script::projectStatusResult(vm, sourceEnd.status(), false, false);
+        if (!sourceStart) return script::projectStatusResult(vm, sourceStart.status());
+        if (!sourceEnd) return script::projectStatusResult(vm, sourceEnd.status());
         return project(
             vm, self->editor().editAnimationSectionSource(*parsed, sourceStart.value(), sourceEnd.value(), *curve));
     });
@@ -2109,7 +2093,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     actionEditor.addFunc("patchItemPayload", [vm](ScriptActionTimelineEditor* self, const std::string& itemId,
                                                    const std::string& fieldsJson) {
         auto parsed = Value::fromJson(fieldsJson);
-        if (!parsed) return script::projectStatusResult(vm, parsed.status(), false, false);
+        if (!parsed) return script::projectStatusResult(vm, parsed.status());
         const auto* fields = parsed.value().getIf<Value::Object>();
         if (!fields)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "payload patch must be a JSON object",
@@ -2280,14 +2264,8 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                                                     const std::string& projectRoot) {
         if (projectRoot.empty())
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "project root must not be empty");
-        auto object = script::makeOwnedSquirrelInstance<ScriptActionTimelineAssetCatalog>(
+        return ::eve::editor::projectOwnedInstance<ScriptActionTimelineAssetCatalog>(
             vm, std::make_unique<ScriptActionTimelineAssetCatalog>(std::filesystem::path(projectRoot)));
-        if (!object) return script::projectStatusResult(vm, object.status(), false, false);
-        ssq::Object owned  = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
-        result.set("value", owned);
-        result.set("ownership", std::string("owned"));
-        return result;
     });
     moduleClass.addFunc("create", [vm, clipboard](eve::action_editor::ActionEditorModule*, const std::string& targetId,
                                                   const ssq::Object& timelineObject) {
@@ -2297,20 +2275,14 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         script::SquirrelValueOptions options;
         options.source = kBindingSource;
         auto value     = script::valueFromSquirrel(timelineObject, options);
-        if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value) return script::projectStatusResult(vm, value.status());
         auto timeline = action::ActionTimeline::fromValue(value.value());
-        if (!timeline) return script::projectStatusResult(vm, timeline.status(), false, false);
+        if (!timeline) return script::projectStatusResult(vm, timeline.status());
         auto registry = action::ActionNotifyRegistry::withBuiltins();
-        if (!registry) return script::projectStatusResult(vm, registry.status(), false, false);
-        auto object = script::makeOwnedSquirrelInstance<ScriptActionTimelineEditor>(
+        if (!registry) return script::projectStatusResult(vm, registry.status());
+        return ::eve::editor::projectOwnedInstance<ScriptActionTimelineEditor>(
             vm, std::make_unique<ScriptActionTimelineEditor>(targetId, std::move(timeline).takeValue(),
                                                              std::move(registry).takeValue(), clipboard));
-        if (!object) return script::projectStatusResult(vm, object.status(), false, false);
-        ssq::Object owned  = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
-        result.set("value", owned);
-        result.set("ownership", std::string("owned"));
-        return result;
     });
     moduleClass.addFunc(
         "openDocument",
@@ -2323,34 +2295,27 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             script::SquirrelValueOptions options;
             options.source = kBindingSource;
             auto value     = script::valueFromSquirrel(initialTimelineObject, options);
-            if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+            if (!value) return script::projectStatusResult(vm, value.status());
             auto initialTimeline = action::ActionTimeline::fromValue(value.value());
-            if (!initialTimeline)
-                return script::projectStatusResult(vm, initialTimeline.status(), false, false);
+            if (!initialTimeline) return script::projectStatusResult(vm, initialTimeline.status());
             auto initialValue = initialTimeline.value().toValue();
-            if (!initialValue) return script::projectStatusResult(vm, initialValue.status(), false, false);
+            if (!initialValue) return script::projectStatusResult(vm, initialValue.status());
 
             auto store     = std::make_unique<DiskAtomicDocumentStore>(std::filesystem::path(projectRoot));
             auto documents = std::make_unique<DocumentService>(store.get());
             auto opened    = documents->open({DocumentKind::Timeline, AssetGuid(assetGuid)}, title, resourceUri,
                                               toEditorValue(initialValue.value()));
-            if (!opened.ok()) return script::projectStatusResult(vm, opened.status(), false, false);
+            if (!opened.ok()) return script::projectStatusResult(vm, opened.status());
             auto content = documents->content(opened.value().id);
-            if (!content.ok()) return script::projectStatusResult(vm, content.status(), false, false);
+            if (!content.ok()) return script::projectStatusResult(vm, content.status());
             auto timeline = action::ActionTimeline::fromValue(toPresentationValue(content.value()));
-            if (!timeline) return script::projectStatusResult(vm, timeline.status(), false, false);
+            if (!timeline) return script::projectStatusResult(vm, timeline.status());
             auto registry = action::ActionNotifyRegistry::withBuiltins();
-            if (!registry) return script::projectStatusResult(vm, registry.status(), false, false);
+            if (!registry) return script::projectStatusResult(vm, registry.status());
             auto instance = std::make_unique<ScriptActionTimelineEditor>(
                 assetGuid, std::move(timeline).takeValue(), std::move(registry).takeValue(), clipboard);
             instance->attachDocument(std::move(store), std::move(documents), opened.value());
-            auto object = script::makeOwnedSquirrelInstance<ScriptActionTimelineEditor>(vm, std::move(instance));
-            if (!object) return script::projectStatusResult(vm, object.status(), false, false);
-            ssq::Object owned  = std::move(object).takeValue();
-            auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
-            result.set("value", owned);
-            result.set("ownership", std::string("owned"));
-            return result;
+            return ::eve::editor::projectOwnedInstance<ScriptActionTimelineEditor>(vm, std::move(instance));
         });
 }
 

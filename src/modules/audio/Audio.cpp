@@ -3,6 +3,7 @@
 
 #include "AudioCapabilities.h"
 #include "AudioZone.h"
+#include "EventSinkOwner.h"
 #include "UnderwaterAudio.h"
 #include "common/Exception.h"
 #include "common/Profile.h"
@@ -34,9 +35,11 @@ Audio::Audio() {
         throw eve::Exception("Could not create OpenAL context");
     alListenerf(AL_GAIN, masterVolume);
     worker = std::thread([this] { workerMain(); });
+    bindAudioEventSinkOwner(this);
 }
 
 Audio::~Audio() {
+    bindAudioEventSinkOwner(nullptr);
     running = false;
     cv.notify_all();
     if (worker.joinable())

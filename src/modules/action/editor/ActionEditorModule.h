@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -16,10 +18,12 @@ namespace eve::action_editor {
  * @threadaffinity Owner/composition thread only.
  * @reentrancy Do not construct or destroy while a command planner is running.
  */
-class ActionEditorModule final : public Module {
+class EVENGINE_API_EDITORS ActionEditorModule final : public Module {
 public:
     Module_REG(ActionEditorModule);
+    /** @brief Action editor module. */
     ActionEditorModule();
+    /** @brief Action editor module. */
     ~ActionEditorModule() override;
 
 private:

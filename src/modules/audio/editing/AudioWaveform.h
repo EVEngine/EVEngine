@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioEditingTypes.h"
 
@@ -48,7 +50,7 @@ struct AudioWaveformResult {
 };
 
 /** @brief Codec-neutral waveform generation and loop QA service. */
-class AudioWaveformService {
+class EVENGINE_API_BACKENDS AudioWaveformService {
 public:
     /** @brief Build bounded per-channel envelopes from already-decoded PCM. */
     AudioWaveformResult generate(const AudioWaveformRequest& request, const EditorAudioPcm& pcm,

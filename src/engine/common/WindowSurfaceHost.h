@@ -24,10 +24,11 @@
 namespace eve {
 
 /** @brief Render-surface host for the window module (provided by graphics). */
-class EVENGINE_API IWindowSurfaceHost {
+class EVENGINE_API_FOUNDATION_INLINE IWindowSurfaceHost {
 public:
     static constexpr const char* capabilityName = "IWindowSurfaceHost";
 
+    /** @brief I window surface host. */
     virtual ~IWindowSurfaceHost() = default;
 
     /** @brief Bind the render surface to a freshly created native window. */

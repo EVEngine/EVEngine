@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/RenderTypes.h"
@@ -28,10 +30,12 @@ using eve::Color;
  * flags. A negative int is a signed transport of those bits, not an erase code.
  * Use tileGid() to inspect the identity without flags, and 0 to erase.
  */
-class TileLayer : public ecs::Entity {
+class EVENGINE_API_WORLD TileLayer : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(TileLayer, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
     /**
@@ -42,6 +46,7 @@ public:
      */
     [[nodiscard]] TileLayerRef layerRef() const noexcept { return TileLayerRef{id, generation}; }
 
+    /** @brief Config public API. */
     struct Config {
         int mapW = 0;
         int mapH = 0;
@@ -59,6 +64,7 @@ public:
     };
 
     struct Tiles {
+        /** @brief Chunk public API. */
         struct Chunk {
             int nonEmpty = 0;
         };
@@ -73,16 +79,19 @@ public:
     };
 
     struct Tileset {
+        /** @brief AnimationFrame public API. */
         struct AnimationFrame {
             int gid = 0;
             int durationMs = 100;
         };
 
+        /** @brief Animation public API. */
         struct Animation {
             int gid = 0;
             std::vector<AnimationFrame> frames;
         };
 
+        /** @brief TerrainRule public API. */
         struct TerrainRule {
             int gid = 0;
             int terrain = 0;
@@ -97,6 +106,7 @@ public:
             uint32_t    seed    = 0;
         };
 
+        /** @brief CustomData public API. */
         struct CustomData {
             int gid = 0;
             std::string name;
@@ -106,6 +116,7 @@ public:
 
         /** @brief Per-GID visual metadata emitted by a project-defined asset pipeline. */
         struct Visual {
+            /** @brief Subtile public API. */
             struct Subtile {
                 int   x       = 0;
                 int   y       = 0;
@@ -115,11 +126,13 @@ public:
                 float offsetY = 0.f;
             };
 
+            /** @brief SubtileFrame public API. */
             struct SubtileFrame {
                 std::vector<Subtile> parts;
                 int                  durationMs = 500;
             };
 
+            /** @brief CollisionShape public API. */
             struct CollisionShape {
                 float x      = 0.f;
                 float y      = 0.f;
@@ -179,7 +192,15 @@ public:
         graphics::Camera2D *camera = nullptr;
         int layer = 0;
         bool visible = true;
+        /**
+         * @brief When true, tiles receive Light2D (GPU lit2d with flat normals, or
+         * CPU modulate when drawn without a texture). Default false keeps legacy unlit maps.
+         */
+        bool receiveLight = false;
         Color tint{1.f, 1.f, 1.f, 1.f};
+        /** @brief World-size multiplier for atlas-pixel visuals (UV unchanged). */
+        float visualScaleX = 1.f;
+        float visualScaleY = 1.f;
     };
 
     struct Resource {
@@ -223,6 +244,17 @@ public:
     /** @brief Horizontal and vertical projected pitch multipliers. */
     float getRenderSpacingX();
     float getRenderSpacingY();
+    /**
+     * @brief Scales atlas-pixel tile visuals into world units when drawing.
+     * @param scaleX Horizontal multiplier. Values <= 0 are treated as 1.
+     * @param scaleY Vertical multiplier. Values <= 0 are treated as 1.
+     * @cost Cheap. Applied while collecting draw items; does not rebuild the atlas.
+     */
+    void setVisualScale(float scaleX, float scaleY);
+    /** @brief Current horizontal visual-to-world scale. */
+    float getVisualScaleX();
+    /** @brief Current vertical visual-to-world scale. */
+    float getVisualScaleY();
 
     /** @brief Resizes the tile grid (existing GIDs preserved where possible). */
     void resize(int mapW, int mapH);
@@ -320,6 +352,13 @@ public:
 
     void setVisible(bool visible);
     bool isVisible();
+    /**
+     * @brief Enable Light2D shading for this layer's tiles.
+     * @param receive When true, textured tiles use the lit2d path with a flat normal.
+     */
+    void setReceiveLight(bool receive);
+    /** @brief Whether this layer's tiles receive Light2D. */
+    bool getReceiveLight();
 
     void setTint(float r, float g, float b, float a = 1.f);
 

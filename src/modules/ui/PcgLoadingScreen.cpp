@@ -7,17 +7,14 @@
 
 namespace eve::ui {
 namespace {
-Result<void> invalidLoadingScreen(const char* message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, {}, {},
-                                                    "ui.pcgLoadingScreen"));
-}
 
 bool validName(const std::string& value) { return !value.empty() && value.find('\0') == std::string::npos; }
 }  // namespace
 
 Result<void> PcgLoadingScreen::configure(float fadeOutSpeed) {
     if (!std::isfinite(fadeOutSpeed) || fadeOutSpeed < 0.f)
-        return invalidLoadingScreen("fade-out speed must be finite and non-negative");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "fade-out speed must be finite and non-negative", {}, {},
+                                                    "ui.pcgLoadingScreen"));
     fadeOutSpeed_ = fadeOutSpeed;
     return Result<void>::success();
 }
@@ -29,7 +26,8 @@ void PcgLoadingScreen::onLoadProgressStarted() noexcept {
 }
 
 Result<void> PcgLoadingScreen::onLoadProgressUpdated(float progress) {
-    if (!std::isfinite(progress)) return invalidLoadingScreen("load progress must be finite");
+    if (!std::isfinite(progress)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "load progress must be finite", {}, {},
+                                                    "ui.pcgLoadingScreen"));
     canvasVisible_ = true;
     progress_ = progress;
     if (progress >= 1.f) onLoadProgressEnded();
@@ -61,7 +59,8 @@ Result<int> PcgLoadingScreen::addMissingScene(const std::string& terrainName, co
 Result<void> PcgLoadingScreen::addReference(int sceneIndex, const std::string& objectName, bool impostor) {
     if (!timeoutOpen_ || sceneIndex < 0 || static_cast<size_t>(sceneIndex) >= pendingMissingScenes_.size() ||
         !validName(objectName))
-        return invalidLoadingScreen("an open timeout, valid scene index and nonempty object name are required");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "an open timeout, valid scene index and nonempty object name are required", {}, {},
+                                                    "ui.pcgLoadingScreen"));
     auto& scene = pendingMissingScenes_[static_cast<size_t>(sceneIndex)];
     (impostor ? scene.impostorReferences : scene.regularReferences).push_back(objectName);
     return Result<void>::success();
@@ -76,7 +75,8 @@ Result<void> PcgLoadingScreen::addImpostorReference(int sceneIndex, const std::s
 }
 
 Result<void> PcgLoadingScreen::endTimeout() {
-    if (!timeoutOpen_) return invalidLoadingScreen("beginTimeout must be called before endTimeout");
+    if (!timeoutOpen_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "beginTimeout must be called before endTimeout", {}, {},
+                                                    "ui.pcgLoadingScreen"));
     std::string message = "Pcg Loading Screen Timeout, closing down loading screen.\r\n";
     message += "If you feel that there is no error but the terrain loading simply needs more time, try to increase the Timeout value in the Terrain Loader Manager.\r\n";
     message += "The following scenes are still not loaded:\r\n";
@@ -100,7 +100,8 @@ Result<void> PcgLoadingScreen::endTimeout() {
 
 Result<void> PcgLoadingScreen::tick(float deltaTime) {
     if (!std::isfinite(deltaTime) || deltaTime < 0.f)
-        return invalidLoadingScreen("frame delta time must be finite and non-negative");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "frame delta time must be finite and non-negative", {}, {},
+                                                    "ui.pcgLoadingScreen"));
     if (fading_) {
         backgroundAlpha_ -= deltaTime * fadeOutSpeed_;
         if (backgroundAlpha_ <= 0.f) {

@@ -3,6 +3,7 @@
 #include "common/Export.h"
 #include "common/Runtime.h"
 #include "property_access/squirrel/ReflectedPropertyModel.h"
+#include "ui/PropertyView.h"
 #include "ui/Widget.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -30,14 +31,20 @@ class UIHost;
  *     </ editor = "slider", min = 0, max = 100 />   → Slider
  *     </ editor = "checkbox" />                     → Checkbox (bool)
  *     </ editor = "combo", options = "a,b,c" />     → Combo
- *     Other controls                                     → InputText
+ *     </ editor = "color" />                        → RGBA composite (float array)
+ *     </ editor = "vec2"|"vec3"|"vec4" />           → Vector composite (float array)
+ *     Array / table members                         → Expandable PropertyView editors
+ *     Nested instance                               → Open navigation button
+ *     Other controls                                → InputText
  *
  * Inherited members are grouped under their owning (base) class header, so
  * parent properties are editable side-by-side (see docs/dev/界面设计.md).
  */
-class EVENGINE_API Inspector {
+class EVENGINE_API_WORLD Inspector {
 public:
+    /** @brief Inspector. */
     Inspector() = default;
+    /** @brief Inspector. */
     ~Inspector();
     Inspector(const Inspector&) = delete;
     Inspector& operator=(const Inspector&) = delete;
@@ -85,8 +92,10 @@ public:
     /** @brief Live script object of the selected instance (empty when none). */
     ssq::Object selectedInstance() const {
         return (selectedInstance_ >= 0 &&
+                /** @brief Returns the size of t. */
                 size_t(selectedInstance_) < instances_.size())
                    ? instances_[size_t(selectedInstance_)].object
+                   /** @brief Object. */
                    : ssq::Object();
     }
 
@@ -126,14 +135,11 @@ private:
     int currentClassIndex() const;
     void rebuildPropertyModel();
     void rebuildHost();
+    PropertyViewOptions propertyViewOptions();
     WidgetDesc propertyWidget(const std::string& ownerClass,
                               const ReflectedMember& member,
                               const ReflectedValue& value,
                               const ssq::Object& instance);
-    WidgetDesc arrayWidget(const std::string& ownerClass, const ReflectedMember& member,
-                           const ssq::Object& instance);
-    WidgetDesc tableWidget(const std::string& ownerClass, const ReflectedMember& member,
-                           const ssq::Object& instance);
 
     std::vector<std::string> classNames_;
     std::string selectedClass_;

@@ -39,7 +39,7 @@ int severityRank(DiagnosticSeverity severity) {
 
 }  // namespace
 
-EditorResult<void> EditorEventTimeline::setCapacity(std::size_t capacity) {
+Result<void> EditorEventTimeline::setCapacity(std::size_t capacity) {
     if (capacity == 0 || capacity > 1000000)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.timeline.capacity"),
                                           "Timeline capacity must be between 1 and 1,000,000");
@@ -49,7 +49,7 @@ EditorResult<void> EditorEventTimeline::setCapacity(std::size_t capacity) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<std::uint64_t> EditorEventTimeline::append(EditorTimelineEvent event,
+Result<std::uint64_t> EditorEventTimeline::append(EditorTimelineEvent event,
                                                         std::size_t maximumPayloadNodes) {
     if (event.domain.empty() || event.type.empty() || maximumPayloadNodes == 0 ||
         nodeCount(event.payload, maximumPayloadNodes) > maximumPayloadNodes)
@@ -68,7 +68,7 @@ EditorResult<std::uint64_t> EditorEventTimeline::append(EditorTimelineEvent even
     return eve::editing::applied<std::uint64_t>(sequence);
 }
 
-EditorResult<EditorTimelinePage> EditorEventTimeline::query(
+Result<EditorTimelinePage> EditorEventTimeline::query(
     const EditorTimelineQuery& filter, std::size_t offset, std::size_t limit,
     std::optional<std::uint64_t> generation) const {
     if (limit == 0 || limit > 10000)

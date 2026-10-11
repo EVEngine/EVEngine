@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/PointSet.h"
 #include "procgen/SpatialData.h"
@@ -35,27 +37,36 @@ struct BiomeLayerRule {
  * domains, assigned to the highest-priority matching layer, then deterministically
  * select a weighted asset and transform from their independent point seed.
  */
-class BiomeRules {
+class EVENGINE_API_DOMAINS BiomeRules {
 public:
     /** @brief Remove layers and exclusions. */
     void clear();
     /** @brief Add a named spatial layer. Names are unique. */
     bool addLayer(const std::string& name, SpatialData* spatial, int priority, float density);
+    /** @brief Removes layer. */
     bool removeLayer(const std::string& name);
+    /** @brief True when layer. */
     bool hasLayer(const std::string& name) const;
+    /** @brief Returns the layer count. */
     int  getLayerCount() const;
+    /** @brief Returns the layer name. */
     std::string getLayerName(int index) const;
+    /** @brief Returns the layer priority. */
     int         getLayerPriority(const std::string& name) const;
+    /** @brief Returns the layer density. */
     float       getLayerDensity(const std::string& name) const;
 
     /** @brief Add a weighted asset rule to a layer. */
     bool addAsset(const std::string& layerName, const std::string& asset, float weight,
                   float minScale, float maxScale, bool randomYaw);
+    /** @brief Returns the asset count. */
     int         getAssetCount(const std::string& layerName) const;
+    /** @brief Returns the asset name. */
     std::string getAssetName(const std::string& layerName, int index) const;
 
     /** @brief Add a copied spatial exclusion shared by every layer. */
     bool addExclusion(SpatialData* spatial);
+    /** @brief Returns the exclusion count. */
     int  getExclusionCount() const;
 
     /**
@@ -63,7 +74,9 @@ public:
      * @return Caller-owned PointSet with `biome` and `asset` string attributes.
      */
     PointSet* generate(SpatialData* domain, float spacing, uint32_t seed, float jitter);
+    /** @brief Returns the error. */
     std::string getError() const;
+    /** @brief Debug report. */
     std::string debugReport() const;
 
 private:

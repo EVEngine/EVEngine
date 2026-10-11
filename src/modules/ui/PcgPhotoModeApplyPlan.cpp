@@ -1,22 +1,21 @@
 #include "ui/PcgPhotoModeApplyPlan.h"
 #include "common/Capability.h"
 #include "common/AudioQuery.h"
+#include "common/FramePacing.h"
+#include "common/FramePresentation.h"
 #include "common/SquirrelBinding.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <unordered_set>
 
 namespace eve::ui {
 namespace {
-template<class T> Result<T> fail(const std::string& message) {
- return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,message,{},{},"ui.pcgPhotoModeApply"));
-}
 PhotoModeDomain domainFor(const std::string& n) {
- static const std::unordered_set<std::string> system={"m_vSync","m_targetFPS"};
+ static const std::unordered_set<std::string> framePacing={"m_vSync","m_targetFPS"};
  static const std::unordered_set<std::string> graphics={"m_lodBias","m_antiAliasing","m_shadowDistance","m_shadowResolution","m_shadowCascades"};
  static const std::unordered_set<std::string> camera={"m_fieldOfView","m_pcgCullinDistance","m_cameraAperture","m_cameraFocalLength","m_cameraRoll","m_farClipPlane"};
  static const std::unordered_set<std::string> streaming={"m_pcgLoadRange","m_pcgImpostorRange"};
  static const std::unordered_set<std::string> audio={"m_globalVolume","m_pcgUnderwaterVolume"};
- if(system.contains(n))return PhotoModeDomain::System;
+ if(framePacing.contains(n))return PhotoModeDomain::FramePacing;
  if(graphics.contains(n))return PhotoModeDomain::Graphics;
  if(camera.contains(n))return PhotoModeDomain::Camera;
  if(streaming.contains(n))return PhotoModeDomain::Streaming;
@@ -36,30 +35,49 @@ PhotoModeDomain domainFor(const std::string& n) {
 class RegisteredPhotoModeSink final:public IPhotoModeApplySink {
 public:
  Result<void> applyPhotoModeAssignment(const PhotoModeAssignment& assignment)override{
-  if(assignment.field=="m_globalVolume"){
+ if(assignment.field=="m_globalVolume"){
    auto* audio=cap::query<IAudioQuery>();
-   if(!audio)return unsupported("audio capability is unavailable");
+   if(!audio)return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,"audio capability is unavailable",{},{},"ui.pcgPhotoModeApply"));
    auto* value=std::get_if<float>(&assignment.value);
-   if(!value)return fail<void>("global volume requires a float value");
+   if(!value)return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"global volume requires a float value",{},{},"ui.pcgPhotoModeApply"));
    audio->setVolume(*value);return Result<void>::success();
+  }
+  if(assignment.domain==PhotoModeDomain::FramePacing){
+   auto* value=std::get_if<int64_t>(&assignment.value);
+   if(!value)return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"frame setting requires an integer value",{},{},"ui.pcgPhotoModeApply"));
+   if(assignment.field=="m_vSync"){
+    if(*value<0||*value>2)return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"VSync count must be in [0,2]",{},{},"ui.pcgPhotoModeApply"));
+    auto* presentation=cap::query<IFramePresentation>();
+    if(!presentation)return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,"frame presentation capability is unavailable",{},{},"ui.pcgPhotoModeApply"));
+    auto* pacing=cap::query<IFramePacing>();
+    if(!pacing)return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,"frame pacing capability is unavailable",{},{},"ui.pcgPhotoModeApply"));
+    auto pacingResult=pacing->setVerticalSyncCount(static_cast<int>(*value));
+    if(!pacingResult.ok())return pacingResult;
+    presentation->setVSyncCount(static_cast<int>(*value));
+    return Result<void>::success();
+   }
+   if(assignment.field=="m_targetFPS"){
+    if(*value < -1 || *value > 240)return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"target FPS must be in [-1,240]",{},{},"ui.pcgPhotoModeApply"));
+    auto* pacing=cap::query<IFramePacing>();
+    if(!pacing)return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,"frame pacing capability is unavailable",{},{},"ui.pcgPhotoModeApply"));
+    return pacing->setTargetFramesPerSecond(static_cast<int>(*value));
+   }
+   return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,"unknown frame setting: "+assignment.field,{},{},"ui.pcgPhotoModeApply"));
   }
   IPhotoModeFieldSink* selected=nullptr;
   const size_t count=cap::listenerCount<IPhotoModeFieldSink>();
   for(size_t i=0;i<count;++i){
    auto* candidate=cap::listenerAt<IPhotoModeFieldSink>(i);
    if(candidate&&candidate->acceptsPhotoModeField(assignment)==PhotoModeFieldAcceptance::Accepted){
-    if(selected)return fail<void>("multiple photo-mode providers accept field: "+assignment.field);
+    if(selected)return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"multiple photo-mode providers accept field: "+assignment.field,{},{},"ui.pcgPhotoModeApply"));
     selected=candidate;
    }
   }
-  if(!selected)return unsupported("no photo-mode provider accepts field: "+assignment.field);
+  if(!selected)return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,"no photo-mode provider accepts field: "+assignment.field,{},{},"ui.pcgPhotoModeApply"));
   return selected->applyPhotoModeField(assignment);
  }
 private:
- static Result<void> unsupported(const std::string& message){
-  return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,message,{},{},"ui.pcgPhotoModeApply"));
- }
-};
+ };
 PhotoModeValue convert(const PcgPhotoModeValue& value) {
  return std::visit([](const auto& v)->PhotoModeValue {
   using T=std::decay_t<decltype(v)>;
@@ -97,8 +115,8 @@ Result<void> PcgPhotoModeApplyPlan::execute(IPhotoModeApplySink& sink) {
     if(!rollback.ok())restored=false;
    }
    rollbackComplete_=restored;
-   return fail<void>(restored?"photo-mode assignment failed; applied assignments were rolled back":
-                              "photo-mode assignment failed and rollback was incomplete");
+   return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,restored?"photo-mode assignment failed; applied assignments were rolled back":
+                              "photo-mode assignment failed and rollback was incomplete",{},{},"ui.pcgPhotoModeApply"));
   }
   ++appliedCount_;
  }
@@ -109,11 +127,11 @@ Result<void> PcgPhotoModeApplyPlan::executeRegistered(){
  RegisteredPhotoModeSink sink;return execute(sink);
 }
 Result<std::string> PcgPhotoModeApplyPlan::getCommandField(uint64_t index)const{
- if(index>=commands_.size())return fail<std::string>("photo-mode command index is out of range");
+ if(index>=commands_.size())return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"photo-mode command index is out of range",{},{},"ui.pcgPhotoModeApply"));
  return Result<std::string>::success(commands_[index].field);
 }
 Result<int> PcgPhotoModeApplyPlan::getCommandDomain(uint64_t index)const{
- if(index>=commands_.size())return fail<int>("photo-mode command index is out of range");
+ if(index>=commands_.size())return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"photo-mode command index is out of range",{},{},"ui.pcgPhotoModeApply"));
  return Result<int>::success(static_cast<int>(commands_[index].domain));
 }
 void exposePcgPhotoModeApplyPlanBindings(ssq::Table&t){

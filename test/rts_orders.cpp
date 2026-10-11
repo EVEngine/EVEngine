@@ -117,7 +117,8 @@ TEST_CASE("rts.commandFanOutReplacesDirectCommandsAndAppendsQueuedWaypoints") {
     direct.target      = {5.0f, 0.0f};
     auto replaced      = eve::rts::CommandFanOutSystem::fanOut(selection, direct, formation);
     REQUIRE(replaced.ok());
-    CHECK_EQ(unit->orders()->values.orderCount(), 1u);
+    // Canonical queue retains the cancelled command in history.
+    CHECK_EQ(unit->orders()->values.orderCount(), 2u);
     auto current = unit->orders()->values.current();
     REQUIRE(current.ok());
     CHECK(std::abs(current.value().target.x - 5.0f) < 1e-5f);
@@ -127,10 +128,18 @@ TEST_CASE("rts.commandFanOutReplacesDirectCommandsAndAppendsQueuedWaypoints") {
     queued.append      = true;
     auto appended      = eve::rts::CommandFanOutSystem::fanOut(selection, queued, formation);
     REQUIRE(appended.ok());
-    CHECK_EQ(unit->orders()->values.orderCount(), 2u);
+    CHECK_EQ(unit->orders()->values.orderCount(), 3u);
     current = unit->orders()->values.current();
     REQUIRE(current.ok());
     CHECK(std::abs(current.value().target.x - 5.0f) < 1e-5f);
+    auto completed = unit->orders()->values.complete(current.value().id);
+    REQUIRE(completed.ok());
+    current = unit->orders()->values.current();
+    REQUIRE(current.ok());
+    CHECK_EQ(current.value().target.x, 9.0f);
+    completed = unit->orders()->values.complete(current.value().id);
+    REQUIRE(completed.ok());
+    CHECK(!unit->orders()->values.current().ok());
     unit->release();
 }
 
@@ -327,10 +336,12 @@ TEST_CASE("rts.trafficReservationsHonorPriorityAndRecoverAtNarrowCells") {
     high->motion()->x = 1.0f;
     REQUIRE(eve::rts::NavigationSystem::step(pathfinder, {}).ok());
     REQUIRE(eve::rts::TrafficReservationSystem::step(pathfinder, {}).ok());
+    CHECK(low->navigation()->trafficWaiting);
+    high->release();
+    REQUIRE(eve::rts::TrafficReservationSystem::step(pathfinder, {}).ok());
     CHECK(!low->navigation()->trafficWaiting);
 
     low->release();
-    high->release();
 }
 
 TEST_CASE("rts.arrivedMovementOrdersAdvanceTheCanonicalMixedQueue") {
@@ -435,7 +446,8 @@ TEST_CASE("rts.radarCreatesQuantizedUntargetableContactsAndJammingStopsRefresh")
     CHECK(std::abs(contact->position.x - 5.0f) < 1e-5f);
     CHECK(std::abs(contact->position.y - 3.0f) < 1e-5f);
 
-    jammer->motion()->x            = 5.2f;
+    // Keep the moved target inside the jammer radius for the blocked refresh.
+    jammer->motion()->x            = 8.0f;
     jammer->motion()->y            = 3.1f;
     jammer->vision()->jammingRange = 3.0f;
     target->motion()->x            = 9.0f;
@@ -445,6 +457,16 @@ TEST_CASE("rts.radarCreatesQuantizedUntargetableContactsAndJammingStopsRefresh")
     REQUIRE(contact != nullptr);
     CHECK(std::abs(contact->position.x - 5.0f) < 1e-5f);
     CHECK(std::abs(contact->ageSeconds - 1.0) < 1e-6);
+
+    target->motion()->x = 13.0f;
+    const eve::SimulationStep third{eve::SimulationTick{3}, second.delta};
+    auto                      refreshed = eve::rts::FogOfWarSystem::step(third, {}, fog, provider);
+    REQUIRE(refreshed.ok());
+    contact = eve::rts::FogOfWarSystem::contact(*blue, target->identity()->subject);
+    REQUIRE(contact != nullptr);
+    CHECK_EQ(contact->position.x, 13.0f);
+    CHECK_EQ(contact->ageSeconds, 0.0);
+
 
     eve::rts::FogOfWarSystem::clear(fog);
     jammer->release();

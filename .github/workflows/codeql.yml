@@ -103,7 +103,10 @@ jobs:
           cmake --build build/codeql -j "$(nproc)"
 
       - name: Perform CodeQL analysis
-        timeout-minutes: 60
+        # Run 35419569416 completed 164/182 C++ queries before the former
+        # 60-minute step limit. Keep the 180-minute job cap while allowing the
+        # security-and-quality suite enough time to finish on hosted runners.
+        timeout-minutes: 90
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"

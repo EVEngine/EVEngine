@@ -14,12 +14,6 @@
 namespace eve::vehicle {
 namespace {
 
-template <class T>
-eve::Result<T> invalid(std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
-                                                          std::move(path), {}, "vehicle.definition_runtime"));
-}
-
 eve::LogicalId vehicleSchema() {
     static const eve::LogicalId value = [] {
         const auto parsed = eve::LogicalId::parse("vehicle:runtime");
@@ -105,50 +99,76 @@ eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::De
     auto parsed = eve::Value::fromJson(source.json);
     if (!parsed) return eve::Result<VehicleDefinition>::failure(parsed.status());
     const auto* object = parsed.value().getIf<eve::Value::Object>();
-    if (object == nullptr) return invalid<VehicleDefinition>("vehicle definition must be an object", "json");
+    if (object == nullptr)
+        return eve::Result<VehicleDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle definition must be an object", "json",
+                                   {}, "vehicle.definition_runtime"));
 
     VehicleDefinition result;
     result.id = source.id;
     if (!readString(*object, "category", result.category) || !readString(*object, "mobility", result.mobility))
-        return invalid<VehicleDefinition>("vehicle category and mobility must be strings", "definition");
+        return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "vehicle category and mobility must be strings", "definition", {},
+            "vehicle.definition_runtime"));
     if (!readNumber(*object, "maxSpeed", result.maxSpeed, result.maxSpeed) ||
         !readNumber(*object, "accel", result.accel, result.accel) ||
         !readNumber(*object, "turnRate", result.turnRate, result.turnRate) ||
         !readNumber(*object, "radius", result.radius, result.radius) ||
         !readNumber(*object, "maxHealth", result.maxHealth, result.maxHealth) || result.radius <= 0.f ||
         result.maxHealth < 0.f)
-        return invalid<VehicleDefinition>("vehicle numeric definition field is invalid", "definition");
+        return eve::Result<VehicleDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle numeric definition field is invalid",
+                                   "definition", {}, "vehicle.definition_runtime"));
 
     if (const auto* physics = field(*object, "physics")) {
         const auto* physicsObject = physics->getIf<eve::Value::Object>();
-        if (physicsObject == nullptr) return invalid<VehicleDefinition>("vehicle physics must be an object", "physics");
+        if (physicsObject == nullptr)
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle physics must be an object",
+                                       "physics", {}, "vehicle.definition_runtime"));
         if (!readNumber(*physicsObject, "maxSpeed", result.maxSpeed, result.maxSpeed) ||
             !readNumber(*physicsObject, "accel", result.accel, result.accel) ||
             !readNumber(*physicsObject, "turnRate", result.turnRate, result.turnRate) ||
             !readNumber(*physicsObject, "radius", result.radius, result.radius))
-            return invalid<VehicleDefinition>("vehicle physics numeric field is invalid", "physics");
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle physics numeric field is invalid",
+                                       "physics", {}, "vehicle.definition_runtime"));
     }
 
     if (const auto* zones = field(*object, "armorZones")) {
         const auto* array = zones->getIf<eve::Value::Array>();
-        if (array == nullptr) return invalid<VehicleDefinition>("armorZones must be an array", "armorZones");
+        if (array == nullptr)
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "armorZones must be an array",
+                                       "armorZones", {}, "vehicle.definition_runtime"));
         for (std::size_t index = 0; index < array->size(); ++index) {
             const auto* item = (*array)[index].getIf<eve::Value::Object>();
-            if (item == nullptr) return invalid<VehicleDefinition>("armor zone must be an object", "armorZones");
+            if (item == nullptr)
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "armor zone must be an object",
+                                           "armorZones", {}, "vehicle.definition_runtime"));
             ArmorZone zone;
             if (!readString(*item, "name", zone.name) || !readString(*item, "node", zone.node) ||
                 !readNumber(*item, "mult", zone.mult, zone.mult) || zone.name.empty())
-                return invalid<VehicleDefinition>("armor zone fields are invalid", "armorZones");
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "armor zone fields are invalid",
+                                           "armorZones", {}, "vehicle.definition_runtime"));
             result.armorZones.push_back(std::move(zone));
         }
     }
 
     if (const auto* mounts = field(*object, "mounts")) {
         const auto* array = mounts->getIf<eve::Value::Array>();
-        if (array == nullptr) return invalid<VehicleDefinition>("mounts must be an array", "mounts");
+        if (array == nullptr)
+            return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                  "mounts must be an array", "mounts",
+                                                                                  {}, "vehicle.definition_runtime"));
         for (std::size_t index = 0; index < array->size(); ++index) {
             const auto* item = (*array)[index].getIf<eve::Value::Object>();
-            if (item == nullptr) return invalid<VehicleDefinition>("mount must be an object", "mounts");
+            if (item == nullptr)
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mount must be an object", "mounts",
+                                           {}, "vehicle.definition_runtime"));
             MountDef mount;
             mount.name = "mount" + std::to_string(index);
             if (!readString(*item, "name", mount.name) || !readString(*item, "weapon", mount.weapon) ||
@@ -159,11 +179,15 @@ eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::De
                 !readSignedNumber(*item, "pitchMax", mount.pitchMax, mount.pitchMax) ||
                 !readNumber(*item, "rotSpeed", mount.rotSpeed, mount.rotSpeed) ||
                 !readNumber(*item, "firingArc", mount.firingArc, mount.firingArc))
-                return invalid<VehicleDefinition>("mount definition field is invalid", "mounts");
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mount definition field is invalid",
+                                           "mounts", {}, "vehicle.definition_runtime"));
             if (const auto* limits = field(*item, "limits")) {
                 const auto* values = limits->getIf<eve::Value::Array>();
                 if (values == nullptr || values->size() < 4)
-                    return invalid<VehicleDefinition>("mount limits must contain four numbers", "mounts.limits");
+                    return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "mount limits must contain four numbers", "mounts.limits",
+                        {}, "vehicle.definition_runtime"));
                 float* output[] = {&mount.yawMin, &mount.yawMax, &mount.pitchMin, &mount.pitchMax};
                 for (std::size_t limit = 0; limit < 4; ++limit) {
                     const auto*  real    = (*values)[limit].getIf<double>();
@@ -173,7 +197,9 @@ eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::De
                                                      : std::numeric_limits<double>::quiet_NaN();
                     if (!std::isfinite(number) || number < -std::numeric_limits<float>::max() ||
                         number > std::numeric_limits<float>::max())
-                        return invalid<VehicleDefinition>("mount limit is not finite", "mounts.limits");
+                        return eve::Result<VehicleDefinition>::failure(
+                            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mount limit is not finite",
+                                                   "mounts.limits", {}, "vehicle.definition_runtime"));
                     *output[limit] = static_cast<float>(number);
                 }
             }
@@ -183,18 +209,28 @@ eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::De
 
     if (const auto* suspension = field(*object, "suspension")) {
         const auto* value = suspension->getIf<eve::Value::Object>();
-        if (value == nullptr) return invalid<VehicleDefinition>("suspension must be an object", "suspension");
+        if (value == nullptr)
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "suspension must be an object",
+                                       "suspension", {}, "vehicle.definition_runtime"));
         if (!readNumber(*value, "maxTravel", result.suspension.maxTravel, result.suspension.maxTravel) ||
             !readNumber(*value, "driveForce", result.suspension.driveForce, result.suspension.driveForce) ||
             !readNumber(*value, "lateralGrip", result.suspension.lateralGrip, result.suspension.lateralGrip))
-            return invalid<VehicleDefinition>("suspension numeric field is invalid", "suspension");
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "suspension numeric field is invalid",
+                                       "suspension", {}, "vehicle.definition_runtime"));
         if (const auto* wheels = field(*value, "wheels")) {
             const auto* array = wheels->getIf<eve::Value::Array>();
             if (array == nullptr)
-                return invalid<VehicleDefinition>("suspension wheels must be an array", "suspension.wheels");
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "suspension wheels must be an array",
+                                           "suspension.wheels", {}, "vehicle.definition_runtime"));
             for (std::size_t index = 0; index < array->size(); ++index) {
                 const auto* item = (*array)[index].getIf<eve::Value::Object>();
-                if (item == nullptr) return invalid<VehicleDefinition>("wheel must be an object", "suspension.wheels");
+                if (item == nullptr)
+                    return eve::Result<VehicleDefinition>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "wheel must be an object",
+                                               "suspension.wheels", {}, "vehicle.definition_runtime"));
                 SuspensionWheel wheel;
                 if (!readSignedNumber(*item, "x", wheel.x, wheel.x) ||
                     !readSignedNumber(*item, "y", wheel.y, wheel.y) ||
@@ -205,7 +241,9 @@ eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::De
                     !readNumber(*item, "damping", wheel.damping, wheel.damping) ||
                     !readBool(*item, "drive", wheel.drive, wheel.drive) ||
                     !readBool(*item, "steer", wheel.steer, wheel.steer))
-                    return invalid<VehicleDefinition>("wheel definition field is invalid", "suspension.wheels");
+                    return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "wheel definition field is invalid", "suspension.wheels",
+                        {}, "vehicle.definition_runtime"));
                 result.suspension.wheels.push_back(wheel);
             }
         }
@@ -213,20 +251,30 @@ eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::De
 
     if (const auto* seats = field(*object, "seats")) {
         const auto* array = seats->getIf<eve::Value::Array>();
-        if (array == nullptr) return invalid<VehicleDefinition>("seats must be an array", "seats");
+        if (array == nullptr)
+            return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                  "seats must be an array", "seats", {},
+                                                                                  "vehicle.definition_runtime"));
         for (std::size_t index = 0; index < array->size(); ++index) {
             const auto* item = (*array)[index].getIf<eve::Value::Object>();
-            if (item == nullptr) return invalid<VehicleDefinition>("seat must be an object", "seats");
+            if (item == nullptr)
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "seat must be an object", "seats", {},
+                                           "vehicle.definition_runtime"));
             SeatDef seat;
             seat.name = "passenger" + std::to_string(index);
             if (!readString(*item, "name", seat.name) || !readString(*item, "driver", seat.driver) ||
                 !readString(*item, "cameraMode", seat.cameraMode))
-                return invalid<VehicleDefinition>("seat definition field is invalid", "seats");
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "seat definition field is invalid",
+                                           "seats", {}, "vehicle.definition_runtime"));
             if (const auto* mount = field(*item, "mountIndex")) {
                 const auto* integer = mount->getIf<std::int64_t>();
                 if (integer == nullptr || *integer < std::numeric_limits<int>::min() ||
                     *integer > std::numeric_limits<int>::max())
-                    return invalid<VehicleDefinition>("seat mountIndex is invalid", "seats.mountIndex");
+                    return eve::Result<VehicleDefinition>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "seat mountIndex is invalid",
+                                               "seats.mountIndex", {}, "vehicle.definition_runtime"));
                 seat.mountIndex = static_cast<int>(*integer);
             }
             result.seats.push_back(std::move(seat));
@@ -234,10 +282,16 @@ eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::De
     }
     if (const auto* tags = field(*object, "tags")) {
         const auto* array = tags->getIf<eve::Value::Array>();
-        if (array == nullptr) return invalid<VehicleDefinition>("vehicle tags must be an array", "tags");
+        if (array == nullptr)
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle tags must be an array", "tags",
+                                       {}, "vehicle.definition_runtime"));
         for (const auto& item : *array) {
             const auto* text = item.getIf<std::string>();
-            if (text == nullptr || text->empty()) return invalid<VehicleDefinition>("vehicle tag is invalid", "tags");
+            if (text == nullptr || text->empty())
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle tag is invalid", "tags", {},
+                                           "vehicle.definition_runtime"));
             result.tags.push_back(*text);
         }
     }
@@ -260,16 +314,23 @@ eve::Value encodeState(const VehicleRuntimeState& state) {
 
 eve::Result<VehicleRuntimeState> decodeState(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
-    if (object == nullptr) return invalid<VehicleRuntimeState>("vehicle runtime state must be an object", "state");
+    if (object == nullptr)
+        return eve::Result<VehicleRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle runtime state must be an object",
+                                   "state", {}, "vehicle.definition_runtime"));
     static const std::set<std::string> fields = {"destroyed", "faction", "heading", "health", "speed", "x", "y"};
     for (const auto& [name, unused] : *object) {
         (void)unused;
         if (!fields.contains(name))
-            return invalid<VehicleRuntimeState>("unknown vehicle runtime state field", "state." + name);
+            return eve::Result<VehicleRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unknown vehicle runtime state field",
+                                       "state." + name, {}, "vehicle.definition_runtime"));
     }
     for (const auto& name : fields)
         if (!object->contains(name))
-            return invalid<VehicleRuntimeState>("vehicle runtime state is missing a field", "state." + name);
+            return eve::Result<VehicleRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle runtime state is missing a field",
+                                       "state." + name, {}, "vehicle.definition_runtime"));
     auto number = [&](std::string_view name, float& output, bool allowNegative) -> bool {
         const auto* real = object->at(std::string(name)).getIf<double>();
         if (real == nullptr || !std::isfinite(*real) || (!allowNegative && *real < 0.0) ||
@@ -284,7 +345,9 @@ eve::Result<VehicleRuntimeState> decodeState(const eve::Value& value) {
     if (destroyed == nullptr || faction == nullptr || !number("heading", result.heading, false) ||
         !number("health", result.health, false) || !number("speed", result.speed, false) ||
         !number("x", result.x, true) || !number("y", result.y, true))
-        return invalid<VehicleRuntimeState>("vehicle runtime state field is invalid", "state");
+        return eve::Result<VehicleRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle runtime state field is invalid",
+                                   "state", {}, "vehicle.definition_runtime"));
     result.destroyed = *destroyed;
     result.faction   = *faction;
     return eve::Result<VehicleRuntimeState>::success(std::move(result));
@@ -297,8 +360,9 @@ eve::Result<VehicleDefinitionRuntime> VehicleDefinitionRuntime::create(eve::defi
                                                                        eve::PersistentId                     instanceId,
                                                                        eve::definition::ReloadPolicy         policy) {
     if (!definition.id().isValid() || definition.id().namespaceName() != "vehicle")
-        return invalid<VehicleDefinitionRuntime>("vehicle definition reference must use vehicle namespace",
-                                                 "definition");
+        return eve::Result<VehicleDefinitionRuntime>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "vehicle definition reference must use vehicle namespace",
+            "definition", {}, "vehicle.definition_runtime"));
     auto handle = currentHandle(registry, definition);
     if (!handle) return eve::Result<VehicleDefinitionRuntime>::failure(handle.status());
     auto resolved = registry.resolveHandle(handle.value());
@@ -319,7 +383,10 @@ eve::Result<VehicleDefinitionRuntime> VehicleDefinitionRuntime::create(eve::defi
                                                                        eve::PersistentId             instanceId,
                                                                        eve::definition::ReloadPolicy policy) {
     auto logical = eve::LogicalId::fromParts("vehicle", definitionId);
-    if (!logical) return invalid<VehicleDefinitionRuntime>("vehicle id is not a valid logical name", "definitionId");
+    if (!logical)
+        return eve::Result<VehicleDefinitionRuntime>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle id is not a valid logical name",
+                                   "definitionId", {}, "vehicle.definition_runtime"));
     auto reference = eve::DefinitionRef::fromId(*logical);
     if (!reference) return eve::Result<VehicleDefinitionRuntime>::failure(reference.status());
     return create(registry, std::move(reference).takeValue(), instanceId, policy);
@@ -344,7 +411,10 @@ eve::definition::DefinitionHandle VehicleDefinitionRuntime::definitionHandle() c
 }
 
 eve::Result<VehicleDefinition> VehicleDefinitionRuntime::definition() const {
-    if (registry_ == nullptr) return invalid<VehicleDefinition>("vehicle definition registry is not bound", "registry");
+    if (registry_ == nullptr)
+        return eve::Result<VehicleDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle definition registry is not bound",
+                                   "registry", {}, "vehicle.definition_runtime"));
     auto resolved = registry_->resolveHandle(definitionHandle());
     if (!resolved) return eve::Result<VehicleDefinition>::failure(resolved.status());
     return parseVehicleDefinition(resolved.value().get());
@@ -403,7 +473,9 @@ eve::Result<void> VehicleDefinitionRuntime::applyTo(VehicleEntity* entity) const
 
 eve::Result<eve::definition::ReloadOutcome> VehicleDefinitionRuntime::reload(eve::definition::ReloadPolicy policy) {
     if (registry_ == nullptr)
-        return invalid<eve::definition::ReloadOutcome>("vehicle definition registry is not bound", "registry");
+        return eve::Result<eve::definition::ReloadOutcome>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle definition registry is not bound",
+                                   "registry", {}, "vehicle.definition_runtime"));
     auto next = currentHandle(*registry_, identity().definition);
     if (!next) return eve::Result<eve::definition::ReloadOutcome>::failure(next.status());
     auto resolved = registry_->resolveHandle(next.value());
@@ -443,7 +515,10 @@ eve::Result<std::string> VehicleDefinitionRuntime::snapshotJson(eve::Revision re
 
 eve::Result<void> VehicleDefinitionRuntime::restore(const eve::SnapshotEnvelope&     snapshotValue,
                                                     const eve::SnapshotHashProvider& hashProvider) {
-    if (registry_ == nullptr) return invalid<void>("vehicle definition registry is not bound", "registry");
+    if (registry_ == nullptr)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "vehicle definition registry is not bound", "registry",
+                                                                 {}, "vehicle.definition_runtime"));
     auto current = currentHandle(*registry_, identity().definition);
     if (!current) return eve::Result<void>::failure(current.status());
     if (current.value() != definitionHandle())

@@ -29,6 +29,9 @@ TEST_CASE("editor.ui.theme_editor_script_composes_workspace_and_transactions") {
         restoredRounding <- themeEditor.getFloat("geometry.frameRounding");
         themeCount <- themeEditor.getThemeCount();
         selected <- themeEditor.getSelectedId();
+        state <- themeEditor.getState();
+        stateSelected <- state.value.selectedId;
+        stateCount <- state.value.themeCount;
     )"));
 
     CHECK(vm.find("created").toTable().get<bool>("ok"));
@@ -45,4 +48,7 @@ TEST_CASE("editor.ui.theme_editor_script_composes_workspace_and_transactions") {
     CHECK_LT(std::abs(vm.find("restoredRounding").toFloat() - vm.find("beforeRounding").toFloat()), 0.0001F);
     CHECK_EQ(vm.find("themeCount").toInt(), 3);
     CHECK_EQ(vm.find("selected").toString(), std::string("studio"));
+    CHECK(vm.find("state").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("stateSelected").toString(), std::string("studio"));
+    CHECK_EQ(vm.find("stateCount").toInt(), 3);
 }

@@ -1,7 +1,10 @@
 #include "statepatch/StatePatch.h"
 
+#include "common/Capability.h"
 #include "common/Json.h"
+#include "common/StateAccess.h"
 #include "common/SquirrelBinding.h"
+#include "statepatch/StateAccessAdapter.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -33,34 +36,19 @@ struct ScriptStateBatch {
     StateBatchHandleRef reference;
 };
 
-template <class T>
-eve::Result<T> statePatchBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "statepatch.squirrel"));
-}
-
-template <class T>
-ssq::Table staleStateResult(HSQUIRRELVM vm, const char* objectName) {
-    return eve::script::projectResult(
-        vm,
-        statePatchBindingFailure<T>(eve::DiagnosticCode::StaleHandle,
-                                    std::string("owned state-patch ") + objectName + " handle is stale", objectName),
-        [](T value) { return eve::Value(value); });
-}
-
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned state-patch proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned state-patch allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -160,16 +148,6 @@ const eve::SnapshotMigrationChain& statePatchMigrations() {
     return chain;
 }
 
-template <class T>
-eve::Result<T> snapshotFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message)));
-}
-
-eve::Result<void> restoreFailure(std::string message, std::string path = {}) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message),
-                                                             std::move(path), {}, "statepatch.store.restoreJson"));
-}
-
 }  // namespace
 
 Store::Store(eve::PersistentId instanceId) : instanceId_(instanceId) {}
@@ -229,8 +207,42 @@ bool Store::isBatchStale(PatchBatchHandleRef reference) const noexcept {
     return batches_.isStale(reference);
 }
 
-bool Store::commit(PatchBatch* batch) {
-    if (!batch) return false;
+namespace {
+
+eve::Result<PatchCommitInfo> patchCommitFailure(const PatchResult& result) {
+    eve::StatusCode              statusCode     = eve::StatusCode::Failed;
+    eve::DiagnosticCode          diagnosticCode = eve::DiagnosticCode::Failed;
+    std::vector<eve::Diagnostic> diagnostics;
+    for (const auto& error : result.errors) {
+        if (error.code == "conflict") {
+            statusCode     = eve::StatusCode::Conflict;
+            diagnosticCode = eve::DiagnosticCode::Conflict;
+        } else if (statusCode == eve::StatusCode::Failed && error.code.starts_with("invalid_")) {
+            statusCode     = eve::StatusCode::Rejected;
+            diagnosticCode = eve::DiagnosticCode::InvalidArgument;
+        }
+        eve::DiagnosticDetails details;
+        details.emplace_back("rule", error.code);
+        details.emplace_back("operationIndex", std::to_string(error.operationIndex));
+        if (!error.subject.empty()) details.emplace_back("subject", error.subject);
+        if (!error.key.empty()) details.emplace_back("key", error.key);
+        diagnostics.push_back(eve::Diagnostic::error(
+            diagnosticCode, error.message.empty() ? "state patch batch was rejected" : error.message,
+            "statepatch[" + std::to_string(error.operationIndex) + "]", std::move(details), "statepatch.commit"));
+    }
+    if (diagnostics.empty())
+        diagnostics.push_back(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                     "state patch batch could not be prepared", "statepatch", {},
+                                                     "statepatch.commit"));
+    return eve::Result<PatchCommitInfo>::failure(eve::Status(statusCode, std::move(diagnostics)));
+}
+
+}  // namespace
+
+eve::Result<PatchCommitInfo> Store::commit(PatchBatch* batch) {
+    if (!batch)
+        return eve::Result<PatchCommitInfo>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "patch batch must not be null", "batch", {}, "statepatch.commit"));
     batch->result_                = {};
     batch->result_.revisionBefore = revision_;
     batch->result_.revisionAfter  = revision_;
@@ -262,7 +274,7 @@ bool Store::commit(PatchBatch* batch) {
             staged[operation.subject][operation.key].json = operation.value;
         }
     }
-    if (!batch->result_.errors.empty()) return false;
+    if (!batch->result_.errors.empty()) return patchCommitFailure(batch->result_);
 
     struct Pending {
         std::string subject;
@@ -293,7 +305,7 @@ bool Store::commit(PatchBatch* batch) {
         if (revision_ == std::numeric_limits<uint64_t>::max() ||
             nextSequence_ > std::numeric_limits<uint64_t>::max() - changes.size()) {
             batch->result_.errors.push_back({-1, {}, {}, "revision_exhausted", "revision or event sequence exhausted"});
-            return false;
+            return patchCommitFailure(batch->result_);
         }
         ++revision_;
         for (const auto& change : changes) {
@@ -307,7 +319,9 @@ bool Store::commit(PatchBatch* batch) {
     batch->result_.success       = true;
     batch->result_.changedCount  = static_cast<int>(changes.size());
     batch->result_.revisionAfter = revision_;
-    return true;
+    PatchCommitInfo info{batch->result_.changedCount, batch->result_.revisionBefore, batch->result_.revisionAfter};
+    return eve::Result<PatchCommitInfo>::success(
+        info, eve::Status::success(info.changedCount == 0 ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
 }
 
 bool Store::has(const std::string& subject, const std::string& key) const {
@@ -405,23 +419,29 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
     std::string parseError;
     auto        document = eve::json::Document::parse(json, &parseError);
     if (!document.valid())
-        return restoreFailure(parseError.empty() ? "invalid state patch snapshot" : std::move(parseError), "$");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, parseError.empty() ? "invalid state patch snapshot" : parseError,
+                                                             "$", {}, "statepatch.store.restoreJson"));
 
     const auto root = document.root();
-    if (!root.isObject()) return restoreFailure("snapshot root must be an object", "$");
+    if (!root.isObject()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "snapshot root must be an object",
+                                                             "$", {}, "statepatch.store.restoreJson"));
 
     uint64_t restoredRevision = 0;
     uint64_t restoredSequence = 0;
-    if (root.getInt("version") != 1) return restoreFailure("unsupported state patch snapshot version", "$.version");
+    if (root.getInt("version") != 1) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "unsupported state patch snapshot version",
+                                                             "$.version", {}, "statepatch.store.restoreJson"));
     if (!parseU64(root.get("revision"), restoredRevision))
-        return restoreFailure("snapshot revision must be a decimal string", "$.revision");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "snapshot revision must be a decimal string",
+                                                             "$.revision", {}, "statepatch.store.restoreJson"));
     if (!parseU64(root.get("nextSequence"), restoredSequence) || restoredSequence == 0)
-        return restoreFailure("snapshot nextSequence must be a non-zero decimal string", "$.nextSequence");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "snapshot nextSequence must be a non-zero decimal string",
+                                                             "$.nextSequence", {}, "statepatch.store.restoreJson"));
 
     const auto values = root.get("values");
     const auto dirty  = root.get("dirty");
     if (!values.isArray() || !dirty.isArray()) {
-        return restoreFailure("values and dirty must be arrays", "$");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "values and dirty must be arrays",
+                                                             "$", {}, "statepatch.store.restoreJson"));
     }
     Values                                        restoredValues;
     std::set<std::pair<std::string, std::string>> restoredDirty;
@@ -430,12 +450,14 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
         uint64_t   valueRevision = 0;
         if (!item.isObject() || item.getString("subject").empty() || item.getString("key").empty() ||
             !parseU64(item.get("revision"), valueRevision) || valueRevision > restoredRevision || !item.get("value")) {
-            return restoreFailure("invalid value at index " + std::to_string(i), "$.values[" + std::to_string(i) + "]");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid value at index " + std::to_string(i),
+                                                             "$.values[" + std::to_string(i) + "]", {}, "statepatch.store.restoreJson"));
         }
         const auto subject = item.getString("subject");
         const auto key     = item.getString("key");
         if (restoredValues[subject].contains(key)) {
-            return restoreFailure("duplicate subject and key", "$.values[" + std::to_string(i) + "]");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "duplicate subject and key",
+                                                             "$.values[" + std::to_string(i) + "]", {}, "statepatch.store.restoreJson"));
         }
         restoredValues[subject][key] = {canonicalJson(item.get("value")), valueRevision};
     }
@@ -443,8 +465,8 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
         const auto item = dirty.at(i);
         if (!item.isArray() || item.size() != 2 || !item.at(0).isString() || !item.at(1).isString() ||
             item.at(0).asString().empty() || item.at(1).asString().empty()) {
-            return restoreFailure("invalid dirty key at index " + std::to_string(i),
-                                  "$.dirty[" + std::to_string(i) + "]");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid dirty key at index " + std::to_string(i),
+                                                             "$.dirty[" + std::to_string(i) + "]", {}, "statepatch.store.restoreJson"));
         }
         restoredDirty.emplace(item.at(0).asString(), item.at(1).asString());
     }
@@ -469,11 +491,11 @@ eve::Result<eve::SnapshotEnvelope> Store::snapshot(const eve::SnapshotHashProvid
 eve::Result<void> Store::restoreSnapshot(const eve::SnapshotEnvelope&     source,
                                          const eve::SnapshotHashProvider& hashProvider) {
     if (source.type != "statepatch.store" || source.schema != statePatchSchema())
-        return snapshotFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "snapshot does not belong to statepatch::Store");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "snapshot does not belong to statepatch::Store"));
     if (!instanceId_.isNil() && source.instanceId != instanceId_)
-        return snapshotFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "snapshot instanceId does not match statepatch::Store");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "snapshot instanceId does not match statepatch::Store"));
     auto migrated = statePatchMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     const auto& candidateEnvelope = migrated.value();
@@ -487,8 +509,8 @@ eve::Result<void> Store::restoreSnapshot(const eve::SnapshotEnvelope&     source
     auto  restored = candidate.restoreJson(std::move(payload).takeValue());
     if (!restored.ok()) return eve::Result<void>::failure(restored.status());
     if (candidate.revision_ != candidateEnvelope.revision.value())
-        return snapshotFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "state patch payload revision disagrees with snapshot envelope");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "state patch payload revision disagrees with snapshot envelope"));
     candidate.instanceId_ = candidateEnvelope.instanceId;
     candidate.tick_       = candidateEnvelope.tick;
     *this                 = std::move(candidate);
@@ -544,32 +566,6 @@ bool Store::transactionStateEquals(const Store& other) const {
     return true;
 }
 
-namespace {
-
-eve::Result<void> patchParticipantFailure(const PatchResult& result) {
-    eve::StatusCode              statusCode     = eve::StatusCode::Failed;
-    eve::DiagnosticCode          diagnosticCode = eve::DiagnosticCode::Failed;
-    std::vector<eve::Diagnostic> diagnostics;
-    for (const auto& error : result.errors) {
-        if (error.code == "conflict") {
-            statusCode     = eve::StatusCode::Conflict;
-            diagnosticCode = eve::DiagnosticCode::Conflict;
-        } else if (statusCode == eve::StatusCode::Failed && error.code.starts_with("invalid_")) {
-            statusCode     = eve::StatusCode::Rejected;
-            diagnosticCode = eve::DiagnosticCode::InvalidArgument;
-        }
-        diagnostics.push_back(eve::Diagnostic::error(
-            diagnosticCode, error.message.empty() ? "state patch batch was rejected" : error.message,
-            "statepatch[" + std::to_string(error.operationIndex) + "]"));
-    }
-    if (diagnostics.empty())
-        diagnostics.push_back(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
-                                                     "state patch batch could not be prepared", "statepatch"));
-    return eve::Result<void>::failure(eve::Status(statusCode, std::move(diagnostics)));
-}
-
-}  // namespace
-
 bool StoreTransactionParticipant::contextMatches(const transaction::TransactionContext& context) const noexcept {
     return context.transactionId() == transactionId_ && context.correlationId() == correlationId_ &&
            context.causationId() == causationId_;
@@ -603,8 +599,9 @@ eve::Result<void> StoreTransactionParticipant::prepare(const transaction::Transa
     prepared_ = std::make_unique<Store>();
     prepared_->copyTransactionStateFrom(*before_);
 
-    if (!prepared_->commit(&batch_)) {
-        auto result = patchParticipantFailure(batch_.result());
+    auto committed = prepared_->commit(&batch_);
+    if (!committed.ok()) {
+        auto result = eve::Result<void>::failure(committed.status());
         before_.reset();
         prepared_.reset();
         phase_ = Phase::Failed;
@@ -652,9 +649,40 @@ eve::Result<void> StoreTransactionParticipant::compensate(const transaction::Tra
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
+StatePatch::~StatePatch() {
+    for (auto& [store, adapter] : worldAdapters_) {
+        (void)store;
+        if (!adapter) continue;
+        eve::cap::removeListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(adapter.get()));
+        eve::cap::removeListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(adapter.get()));
+    }
+    worldAdapters_.clear();
+}
+
+void StatePatch::attachWorldAdapter(Store& store) {
+    if (worldAdapters_.contains(&store)) return;
+    auto adapter = std::make_unique<StatePatchStateAdapter>(store);
+    eve::cap::addListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(adapter.get()));
+    eve::cap::addListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(adapter.get()));
+    worldAdapters_.emplace(&store, std::move(adapter));
+}
+
+void StatePatch::detachWorldAdapter(Store& store) {
+    const auto found = worldAdapters_.find(&store);
+    if (found == worldAdapters_.end()) return;
+    eve::cap::removeListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(found->second.get()));
+    eve::cap::removeListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(found->second.get()));
+    worldAdapters_.erase(found);
+}
+
 eve::Result<StateStoreHandleRef> StatePatch::newStore() {
     StatePatch* module = StatePatch::create();
-    return module->stores_.emplace(std::make_unique<Store>());
+    auto created = module->stores_.emplace(std::make_unique<Store>());
+    if (!created) return created;
+    auto ref = std::move(created).takeValue();
+    auto store = module->stores_.resolve(ref);
+    if (store.isBound()) module->attachWorldAdapter(*store);
+    return eve::Result<StateStoreHandleRef>::success(ref, eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::script::Borrowed<PatchBatch> StatePatch::resolveBatch(StateBatchHandleRef reference) noexcept {
@@ -668,12 +696,13 @@ eve::script::Borrowed<PatchBatch> StatePatch::resolveBatch(StateBatchHandleRef r
 eve::Result<void> StatePatch::releaseBatch(StateBatchHandleRef reference) {
     StatePatch* module = ModuleManager::getInstance<StatePatch>("StatePatch");
     if (!module)
-        return statePatchBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "StatePatch module is no longer loaded",
-                                              "batch");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "StatePatch module is no longer loaded", "batch", {},
+                                                                 "statepatch.squirrel"));
     auto store = module->stores_.resolve(reference.store);
     if (!store.isBound())
-        return statePatchBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "owning StatePatch store is stale",
-                                              "store");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "owning StatePatch store is stale", "store", {}, "statepatch.squirrel"));
     return store->releaseBatch(reference.batch);
 }
 
@@ -694,8 +723,11 @@ eve::script::Borrowed<Store> StatePatch::resolve(StateStoreHandleRef reference) 
 eve::Result<void> StatePatch::release(StateStoreHandleRef reference) {
     StatePatch* module = ModuleManager::getInstance<StatePatch>("StatePatch");
     if (!module)
-        return statePatchBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "StatePatch module is no longer loaded",
-                                              "store");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "StatePatch module is no longer loaded", "store", {},
+                                                                 "statepatch.squirrel"));
+    auto store = module->stores_.resolve(reference);
+    if (store.isBound()) module->detachWorldAdapter(*store);
     return module->stores_.erase(reference);
 }
 
@@ -762,27 +794,46 @@ void StatePatch::expose(ssq::Table& table) {
     ownedBatch.addFunc("release", [vm](ScriptStateBatch* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, statePatchBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                   "owned state batch proxy must not be null", "batch"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned state batch proxy must not be null",
+                                                                      "batch", {}, "statepatch.squirrel")));
         return eve::script::projectResult(vm, StatePatch::releaseBatch(value->reference));
     });
     ownedBatch.addFunc("set", [vm](ScriptStateBatch* value, const std::string& subject, const std::string& key,
                                    const std::string& jsonValue) {
         auto view = value ? StatePatch::resolveBatch(value->reference) : eve::script::Borrowed<PatchBatch>();
-        if (!view.isBound()) return staleStateResult<bool>(vm, "batch");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                eve::Result<bool>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, std::string("owned state-patch ") + "batch" + " handle is stale",
+                    "batch", {}, "statepatch.squirrel")),
+                [](bool value) { return eve::Value(value); });
         return eve::script::projectResult(vm, eve::Result<bool>::success(view->set(subject, key, jsonValue)),
                                           [](bool value) { return eve::Value(value); });
     });
     ownedBatch.addFunc("remove", [vm](ScriptStateBatch* value, const std::string& subject, const std::string& key) {
         auto view = value ? StatePatch::resolveBatch(value->reference) : eve::script::Borrowed<PatchBatch>();
-        if (!view.isBound()) return staleStateResult<bool>(vm, "batch");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                eve::Result<bool>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, std::string("owned state-patch ") + "batch" + " handle is stale",
+                    "batch", {}, "statepatch.squirrel")),
+                [](bool value) { return eve::Value(value); });
         return eve::script::projectResult(vm, eve::Result<bool>::success(view->remove(subject, key)),
                                           [](bool value) { return eve::Value(value); });
     });
     ownedBatch.addFunc("setExpected", [vm](ScriptStateBatch* value, const std::string& subject, const std::string& key,
                                            const std::string& jsonValue, const std::string& expectedJson) {
         auto view = value ? StatePatch::resolveBatch(value->reference) : eve::script::Borrowed<PatchBatch>();
-        if (!view.isBound()) return staleStateResult<bool>(vm, "batch");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                eve::Result<bool>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, std::string("owned state-patch ") + "batch" + " handle is stale",
+                    "batch", {}, "statepatch.squirrel")),
+                [](bool value) { return eve::Value(value); });
         return eve::script::projectResult(
             vm, eve::Result<bool>::success(view->setExpected(subject, key, jsonValue, expectedJson)),
             [](bool result) { return eve::Value(result); });
@@ -790,7 +841,13 @@ void StatePatch::expose(ssq::Table& table) {
     ownedBatch.addFunc("removeExpected", [vm](ScriptStateBatch* value, const std::string& subject,
                                               const std::string& key, const std::string& expectedJson) {
         auto view = value ? StatePatch::resolveBatch(value->reference) : eve::script::Borrowed<PatchBatch>();
-        if (!view.isBound()) return staleStateResult<bool>(vm, "batch");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                eve::Result<bool>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, std::string("owned state-patch ") + "batch" + " handle is stale",
+                    "batch", {}, "statepatch.squirrel")),
+                [](bool value) { return eve::Value(value); });
         return eve::script::projectResult(vm,
                                           eve::Result<bool>::success(view->removeExpected(subject, key, expectedJson)),
                                           [](bool result) { return eve::Value(result); });
@@ -809,7 +866,24 @@ void StatePatch::expose(ssq::Table& table) {
     });
 
     auto store = table.addClass<Store>("StateStore", std::function<Store*()>([] { return nullptr; }), false);
-    store.addFunc("commit", &Store::commit);
+    store.addFunc("commit", [vm](Store* value, PatchBatch* batch) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<PatchCommitInfo>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "state store must not be null", "store", {},
+                        "statepatch.squirrel")),
+                [](const PatchCommitInfo& info) {
+                    return eve::Value(eve::Value::Object{{"changedCount", eve::Value(static_cast<std::int64_t>(info.changedCount))},
+                                                         {"revisionBefore", eve::Value(static_cast<std::int64_t>(info.revisionBefore))},
+                                                         {"revisionAfter", eve::Value(static_cast<std::int64_t>(info.revisionAfter))}});
+                });
+        return eve::script::projectResult(
+            vm, value->commit(batch), [](const PatchCommitInfo& info) {
+                return eve::Value(eve::Value::Object{{"changedCount", eve::Value(static_cast<std::int64_t>(info.changedCount))},
+                                                     {"revisionBefore", eve::Value(static_cast<std::int64_t>(info.revisionBefore))},
+                                                     {"revisionAfter", eve::Value(static_cast<std::int64_t>(info.revisionAfter))}});
+            });
+    });
     store.addFunc("has", &Store::has);
     store.addFunc("get", &Store::get);
     store.addFunc("valueRevision", [](Store* s, const std::string& subject, const std::string& key) {
@@ -832,8 +906,9 @@ void StatePatch::expose(ssq::Table& table) {
     store.addFunc("restoreJson", [vm](Store* value, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, statePatchBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "state store must not be null",
-                                                   "store"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "state store must not be null", "store", {},
+                                                                      "statepatch.squirrel")));
         return eve::script::projectResult(vm, value->restoreJson(json));
     });
 
@@ -851,15 +926,32 @@ void StatePatch::expose(ssq::Table& table) {
     ownedStore.addFunc("release", [vm](ScriptStateStore* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, statePatchBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                   "owned state store proxy must not be null", "store"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned state store proxy must not be null",
+                                                                      "store", {}, "statepatch.squirrel")));
         return eve::script::projectResult(vm, StatePatch::release(value->reference));
     });
-    ownedStore.addFunc("commit", [](ScriptStateStore* value, ScriptStateBatch* batch) {
-        if (!value || !batch || !(batch->reference.store == value->reference)) return false;
+    ownedStore.addFunc("commit", [vm](ScriptStateStore* value, ScriptStateBatch* batch) {
+        auto projectInfo = [](const PatchCommitInfo& info) {
+            return eve::Value(eve::Value::Object{{"changedCount", eve::Value(static_cast<std::int64_t>(info.changedCount))},
+                                                 {"revisionBefore", eve::Value(static_cast<std::int64_t>(info.revisionBefore))},
+                                                 {"revisionAfter", eve::Value(static_cast<std::int64_t>(info.revisionAfter))}});
+        };
+        if (!value || !batch || !(batch->reference.store == value->reference))
+            return eve::script::projectResult(
+                vm, eve::Result<PatchCommitInfo>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "owned state store/batch commit arguments are invalid",
+                        "commit", {}, "statepatch.squirrel")),
+                projectInfo);
         auto store  = StatePatch::resolve(value->reference);
         auto staged = StatePatch::resolveBatch(batch->reference);
-        return store.isBound() && staged.isBound() && store->commit(staged.get());
+        if (!store.isBound() || !staged.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<PatchCommitInfo>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "owned state-patch store or batch handle is stale", "commit",
+                        {}, "statepatch.squirrel")),
+                projectInfo);
+        return eve::script::projectResult(vm, store->commit(staged.get()), projectInfo);
     });
     ownedStore.addFunc("revision", [](ScriptStateStore* value) {
         auto view = value ? StatePatch::resolve(value->reference) : eve::script::Borrowed<Store>();
@@ -926,28 +1018,27 @@ void StatePatch::expose(ssq::Table& table) {
         auto view = value ? StatePatch::resolve(value->reference) : eve::script::Borrowed<Store>();
         if (!view.isBound())
             return eve::script::projectResult(
-                vm, statePatchBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                   "owned state-patch store handle is stale", "store"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "owned state-patch store handle is stale",
+                                                                      "store", {}, "statepatch.squirrel")));
         return eve::script::projectResult(vm, view->restoreJson(json));
     });
     ownedStore.addFunc("newBatch", [vm](ScriptStateStore* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                statePatchBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                               "owned state store proxy must not be null", "store")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned state store proxy must not be null",
+                                                                      "store", {}, "statepatch.squirrel"))
+                        .status());
         auto store = StatePatch::resolve(value->reference);
         if (!store.isBound())
             return eve::script::projectStatusResult(
-                vm,
-                statePatchBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                               "owned state-patch store handle is stale", "store")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "owned state-patch store handle is stale",
+                                                                      "store", {}, "statepatch.squirrel"))
+                        .status());
         auto batch = store->newBatch();
-        if (!batch) return eve::script::projectStatusResult(vm, batch.status(), false, false);
+        if (!batch) return eve::script::projectStatusResult(vm, batch.status());
         const auto          batchRef = std::move(batch).takeValue();
         StateBatchHandleRef reference{value->reference, batchRef, batchRef.ownerEpoch};
         return makeOwnedProxy<StateBatchHandleRef, ScriptStateBatch>(

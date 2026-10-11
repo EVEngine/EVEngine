@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "devtools-play-host-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/PlayHost*",
+      "owner": "devtools maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "Game observation projects only declared fields and invalid protocol input returns diagnostics without unchecked Results.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/PlayHost.h",
+        "docs/dev/hex-planet-civilization.md"
+      ],
+      "tests": [
+        "test/play_host.cpp",
+        "test/play_trace.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        "Existing IRenderCapture for capture (Unsupported when absent); existing gameplay control for gameplay-domain actions. Script observation invokes neither provider."
+      ],
+      "emits": [
+        "Existing PlayTraceBuffer receipts for successful requests unless trace is off."
+      ],
+      "observes": [
+        "Declared, snapshot-policy-eligible Squirrel root fields; no ECS or native snapshot enumeration for observe."
+      ],
+      "binds": [],
+      "protocol": [
+        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 unchanged. Unknown request fields remain rejected."
+      ],
+      "thread_affinity": "Owner simulation thread; synchronous owning Value projection. Raw table path lookup invokes no getters or callbacks and retains no VM pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "This change validates the existing host tooling build and injected runtime, not a new trimmed profile.",
+        "absent_profile": "No absent-provider profile validated by this change; existing full host tooling only, with no trim claim."
+      },
+      "cost_notes": [
+        "Observe scales with selected fields and converted values, bounded by the common Squirrel conversion limits. Whole-root observation remains explicit through an empty fields list."
+      ],
+      "hot_path": []
+    },
+    {
+      "id": "devtools-soft-restart-module-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/**",
+      "owner": "devtools::SoftRestart",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Soft restart walks every registered IStateProvider via forEach so game state resets without clearing ResourceManager.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/SoftRestart.cpp",
+        "src/engine/common/IStateProvider.h",
+        "docs/dev/AI与MCP支持.md"
+      ],
+      "tests": [
+        "test/mcp_soft_restart.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IStateProvider",
+          "required": false,
+          "fallback": "empty forEach set: soft restart still reloads scripts / calls eve_init; no native providers reset"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "devtools soft-restart remains available; IStateProvider listeners may be empty when modules are trimmed"
+      },
+      "thread_affinity": "main / MCP poll thread that owns the VM; forEach is not cross-thread",
+      "hot_path": [],
+      "protocol": [],
+      "cost_notes": []
+    }
+  ]
+}

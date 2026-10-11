@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -7,7 +9,7 @@ namespace eve::economy {
 /**
  * @brief 地图上的资源节点：储量、再生、采集槽位。
  */
-class GatherNode {
+class EVENGINE_API_FOUNDATION GatherNode {
 public:
     /**
      * @param type 资源类型 id（须已在注册表中）。
@@ -15,6 +17,7 @@ public:
      * @param workerSlots 同时采集槽位上限（>0）。
      * @param regenPerTick 每 tick 再生量（0=不再生）。
      */
+    /** @brief Gather node. */
     GatherNode(std::string type, int capacity, int workerSlots = 1, int regenPerTick = 0);
 
     /** @brief 资源类型 id。 */

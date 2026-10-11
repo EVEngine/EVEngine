@@ -9,7 +9,7 @@ namespace eve::ui_editor {
 namespace {
 
 template <class T = void>
-ui_editing::EditorResult<T> editorError(ui_editing::EditorStatus status, std::string rule, std::string message) {
+ui_editing::Result<T> editorError(ui_editing::EditorStatus status, std::string rule, std::string message) {
     return eve::editing::failed<T>(status, ui_editing::RuleId(std::move(rule)), std::move(message));
 }
 
@@ -27,7 +27,7 @@ UiThemeEditor::UiThemeEditor(std::string targetId)
         previewed.ignore("ui theme editor keeps an empty preview when the seeded catalog is rejected");
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
+ui_editing::Result<void> UiThemeEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
     editor::EditorWorkspace candidate = workspace;
     struct Panel {
         const char* id;
@@ -68,10 +68,10 @@ editor::SelectionSnapshot UiThemeEditor::selection() const {
     return snapshot;
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::commit(
-    ui_editing::EditorResult<ui_editing::DomainOperation> operation, std::string label) {
+ui_editing::Result<void> UiThemeEditor::commit(
+    ui_editing::Result<ui_editing::DomainOperation> operation, std::string label) {
     if (!operation.ok())
-        return ui_editing::EditorResult<void>::failure(operation.status());
+        return ui_editing::Result<void>::failure(operation.status());
     editor::TransactionSpec spec;
     spec.id           = editor::TransactionId("ui.theme.tx." + std::to_string(++txSequence_));
     spec.label        = std::move(label);
@@ -84,29 +84,29 @@ ui_editing::EditorResult<void> UiThemeEditor::commit(
     if (!appended.ok()) {
         auto discarded = transactions_.discard();
         if (!discarded.ok()) discarded.ignore("pending theme transaction already inactive");
-        return ui_editing::EditorResult<void>::failure(appended.status());
+        return ui_editing::Result<void>::failure(appended.status());
     }
     auto committed = transactions_.commit();
     if (!committed.ok())
-        return ui_editing::EditorResult<void>::failure(committed.status());
+        return ui_editing::Result<void>::failure(committed.status());
     return refreshPreview();
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::refreshPreview() {
+ui_editing::Result<void> UiThemeEditor::refreshPreview() {
     preview_ = previews_.build(target_, ui_editing::ObjectId(selectedId_), target_.revision());
     if (preview_.status != ui_editing::EditorStatus::Applied)
         return editorError(preview_.status, "editor.ui-theme.preview", "Could not rebuild the theme preview");
     return eve::editing::applied<void>();
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::selectTheme(std::string id) {
+ui_editing::Result<void> UiThemeEditor::selectTheme(std::string id) {
     auto asset = target_.theme(ui_editing::ObjectId(id));
-    if (!asset.ok()) return ui_editing::EditorResult<void>::failure(asset.status());
+    if (!asset.ok()) return ui_editing::Result<void>::failure(asset.status());
     selectedId_ = std::move(id);
     return refreshPreview();
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::createFromPreset(std::string id, std::string name, std::string preset) {
+ui_editing::Result<void> UiThemeEditor::createFromPreset(std::string id, std::string name, std::string preset) {
     if (preset != "dark" && preset != "light")
         return editorError(ui_editing::EditorStatus::Rejected, "editor.ui-theme.preset-source",
                            "New themes must be created from dark or light");
@@ -117,7 +117,7 @@ ui_editing::EditorResult<void> UiThemeEditor::createFromPreset(std::string id, s
     return refreshPreview();
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::duplicateSelected(std::string id, std::string name) {
+ui_editing::Result<void> UiThemeEditor::duplicateSelected(std::string id, std::string name) {
     auto duplicated =
         commit(target_.makeDuplicate(ui_editing::ObjectId(selectedId_), ui_editing::ObjectId(id), std::move(name)),
                "Duplicate theme");
@@ -126,7 +126,7 @@ ui_editing::EditorResult<void> UiThemeEditor::duplicateSelected(std::string id, 
     return refreshPreview();
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::deleteSelected() {
+ui_editing::Result<void> UiThemeEditor::deleteSelected() {
     auto deleted = commit(target_.makeDelete(ui_editing::ObjectId(selectedId_)), "Delete theme");
     if (!deleted.ok()) return deleted;
     selectedId_ = target_.activeId().value();
@@ -134,7 +134,7 @@ ui_editing::EditorResult<void> UiThemeEditor::deleteSelected() {
     return refreshPreview();
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::setActiveSelected() {
+ui_editing::Result<void> UiThemeEditor::setActiveSelected() {
     auto activated = commit(target_.makeSetActive(ui_editing::ObjectId(selectedId_)), "Activate theme");
     if (!activated.ok()) return activated;
     auto published = publisher_.publish(target_);
@@ -142,36 +142,36 @@ ui_editing::EditorResult<void> UiThemeEditor::setActiveSelected() {
     return refreshPreview();
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::resetSelectedToBase() {
+ui_editing::Result<void> UiThemeEditor::resetSelectedToBase() {
     return commit(target_.makeResetToBase(ui_editing::ObjectId(selectedId_)), "Reset theme");
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::setToken(const std::string& path,
+ui_editing::Result<void> UiThemeEditor::setToken(const std::string& path,
                                                        const ui_editing::EditorValue& value) {
     return commit(target_.makeSet(selection(), ui_editing::PropertyPath(path), value,
                                   ui_editing::PropertySetMode::Absolute),
                   "Set theme token");
 }
 
-ui_editing::EditorResult<editor::TransactionReceipt> UiThemeEditor::undo() {
+ui_editing::Result<editor::TransactionReceipt> UiThemeEditor::undo() {
     auto undone = transactions_.undo();
     if (!undone.ok()) return undone;
     if (!target_.theme(ui_editing::ObjectId(selectedId_)).ok() && !target_.themes().empty())
         selectedId_ = target_.themes().front().id.value();
     auto previewed = refreshPreview();
-    if (!previewed.ok()) return ui_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+    if (!previewed.ok()) return ui_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return undone;
 }
 
-ui_editing::EditorResult<editor::TransactionReceipt> UiThemeEditor::redo() {
+ui_editing::Result<editor::TransactionReceipt> UiThemeEditor::redo() {
     auto redone = transactions_.redo();
     if (!redone.ok()) return redone;
     auto previewed = refreshPreview();
-    if (!previewed.ok()) return ui_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+    if (!previewed.ok()) return ui_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return redone;
 }
 
-ui_editing::EditorResult<void> UiThemeEditor::applyPreviewHost(const std::string& hostName) {
+ui_editing::Result<void> UiThemeEditor::applyPreviewHost(const std::string& hostName) {
     if (hostName.empty())
         return editorError(ui_editing::EditorStatus::Rejected, "editor.ui-theme.host",
                            "Preview host name must not be empty");

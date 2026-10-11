@@ -37,7 +37,7 @@ namespace eve::dev {
  *    "skipped": ["squad[0] (class instance)", ...] }` (the last key only when non-empty;
  * readers ignore it). v1 files (roots only) are still readable.
  */
-class EVENGINE_API Snapshot {
+class EVENGINE_API_FOUNDATION Snapshot {
 public:
     static Snapshot& instance();
 

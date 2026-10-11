@@ -1,8 +1,10 @@
 #include "ui/UISystem.h"
+#include "ui/Component.h"
 
 #include "ui/Layout.h"
 #include "ui/Icons.h"
 #include "ui/Theme.h"
+#include "ui/ControlPrimitives.h"
 #include "ui/UIBackend.h"
 #include "ui/WorldAnchorProjection.h"
 
@@ -490,7 +492,12 @@ void queueNinePatch(uint64_t textureId, const ImVec2 &pos, const ImVec2 &size,
 void walkFlex(UIHost *host, UIHost::Tree *tree, UINode &flex) {
     const bool row = flex.flexDirection == FlexDirection::Row;
     const ImGuiStyle &style = ImGui::GetStyle();
-    const float gap = flex.gap >= 0.f ? flex.gap : (row ? style.ItemSpacing.x : style.ItemSpacing.y);
+    const float legacyGap =
+        flex.gap >= 0.f ? flex.gap : (row ? style.ItemSpacing.x : style.ItemSpacing.y);
+    const float gap = row ? (flex.columnGap >= 0.f ? flex.columnGap : legacyGap)
+                          : (flex.rowGap >= 0.f ? flex.rowGap : legacyGap);
+    const float crossGap = row ? (flex.rowGap >= 0.f ? flex.rowGap : style.ItemSpacing.y)
+                               : (flex.columnGap >= 0.f ? flex.columnGap : style.ItemSpacing.x);
 
     // Own content box: an explicit size (set by the parent's arrange) wins;
     // otherwise use the available region (root flex inside a window/child).
@@ -525,6 +532,10 @@ void walkFlex(UIHost *host, UIHost::Tree *tree, UINode &flex) {
         s.marginCrossBefore = row ? child.marginT : child.marginL;
         s.marginCrossAfter = row ? child.marginB : child.marginR;
         s.flexGrow = child.flexGrow;
+        s.flexShrink = child.flexShrink;
+        s.flexBasis = child.flexBasis;
+        s.alignSelf = child.alignSelf;
+        s.aspectRatio = child.aspectRatio;
         s.isSpacer = child.type == NodeType::Spacer;
         s.minMain = row ? child.minSizeX : child.minSizeY;
         s.maxMain = row ? child.maxSizeX : child.maxSizeY;
@@ -539,11 +550,31 @@ void walkFlex(UIHost *host, UIHost::Tree *tree, UINode &flex) {
 
     const FlexResult res =
         flexArrange(row, gap, std::max(0.f, availMain), std::max(0.f, availCross),
-                    flex.alignItems, flex.justifyContent, specs);
+                    flex.alignItems, flex.justifyContent, specs,
+                    flex.flexWrap == FlexWrap::Wrap, crossGap);
+    flex.layoutOverflowX = std::max(
+        0.f, res.contentW - std::max(0.f, row ? availMain : availCross));
+    flex.layoutOverflowY = std::max(
+        0.f, res.contentH - std::max(0.f, row ? availCross : availMain));
+    if (row) flex.layoutOverflowX = std::max(flex.layoutOverflowX, res.overflowMain);
+    else flex.layoutOverflowY = std::max(flex.layoutOverflowY, res.overflowMain);
+    const bool scrolling = flex.overflow == OverflowMode::Scroll;
+    if (scrolling) {
+        ImGui::PushID(&flex);
+        ImGui::BeginChild("layout-scroll", ImVec2(std::max(0.f, flexW), std::max(0.f, flexH)),
+                          false, ImGuiWindowFlags_HorizontalScrollbar);
+    }
     const ImVec2 cursor = ImGui::GetCursorScreenPos();
-    ImGui::Dummy(ImVec2(std::max(0.f, flexW), std::max(0.f, flexH)));
+    const float dummyW = scrolling ? std::max(flexW, res.contentW + flex.paddingL + flex.paddingR)
+                                   : flexW;
+    const float dummyH = scrolling ? std::max(flexH, res.contentH + flex.paddingT + flex.paddingB)
+                                   : flexH;
+    ImGui::Dummy(ImVec2(std::max(0.f, dummyW), std::max(0.f, dummyH)));
     const ImVec2 flowEnd = ImGui::GetCursorScreenPos();
     const ImVec2 origin = ImVec2(cursor.x + flex.paddingL, cursor.y + flex.paddingT);
+    const bool clipped = flex.overflow == OverflowMode::Clip;
+    if (clipped)
+        ImGui::PushClipRect(cursor, ImVec2(cursor.x + flexW, cursor.y + flexH), true);
 
     for (size_t i = 0; i < kids.size(); ++i) {
         UINode &child = tree->nodes[size_t(kids[i])];
@@ -588,7 +619,112 @@ void walkFlex(UIHost *host, UIHost::Tree *tree, UINode &flex) {
         child.sizeY = oldY;
         if (w > 0.f) ImGui::PopItemWidth();
     }
+    if (clipped) ImGui::PopClipRect();
     ImGui::SetCursorScreenPos(flowEnd);
+    if (scrolling) {
+        ImGui::EndChild();
+        ImGui::PopID();
+    }
+}
+
+void walkGrid(UIHost *host, UIHost::Tree *tree, UINode &grid) {
+    const ImGuiStyle &style = ImGui::GetStyle();
+    const float columnGap = grid.columnGap >= 0.f
+                                ? grid.columnGap
+                                : (grid.gap >= 0.f ? grid.gap : style.ItemSpacing.x);
+    const float rowGap = grid.rowGap >= 0.f
+                             ? grid.rowGap
+                             : (grid.gap >= 0.f ? grid.gap : style.ItemSpacing.y);
+    const ImVec2 avail = ImGui::GetContentRegionAvail();
+    const float gridW = grid.sizeX > 0.f ? grid.sizeX : avail.x;
+    const float contentW = std::max(0.f, gridW - grid.paddingL - grid.paddingR);
+    std::vector<int> kids;
+    std::vector<int>          absKids;
+    std::vector<GridItemSpec> specs;
+    for (int c = grid.firstChild; c >= 0; c = tree->nodes[size_t(c)].nextSibling) {
+        if (c >= int(tree->nodes.size())) break;
+        UINode &child = tree->nodes[size_t(c)];
+        if (!child.visible) continue;
+        if (child.absolute) {
+            absKids.push_back(c);
+            continue;
+        }
+        kids.push_back(c);
+        GridItemSpec spec;
+        spec.basisW = child.measuredW;
+        spec.basisH = child.measuredH;
+        spec.marginL = child.marginL;
+        spec.marginT = child.marginT;
+        spec.marginR = child.marginR;
+        spec.marginB = child.marginB;
+        spec.aspectRatio = child.aspectRatio;
+        spec.columnSpan = child.gridColumnSpan;
+        specs.push_back(spec);
+    }
+    const GridResult result =
+        gridArrange(grid.gridColumns, columnGap, rowGap, contentW, specs);
+    const float naturalH = result.contentH + grid.paddingT + grid.paddingB;
+    const float gridH = grid.sizeY > 0.f ? grid.sizeY : naturalH;
+    grid.layoutOverflowX = result.overflowX;
+    grid.layoutOverflowY = std::max(0.f, naturalH - gridH);
+    const bool scrolling = grid.overflow == OverflowMode::Scroll;
+    if (scrolling) {
+        ImGui::PushID(&grid);
+        ImGui::BeginChild("grid-scroll", ImVec2(std::max(0.f, gridW), std::max(0.f, gridH)),
+                          false, ImGuiWindowFlags_HorizontalScrollbar);
+    }
+    const ImVec2 cursor = ImGui::GetCursorScreenPos();
+    ImGui::Dummy(ImVec2(std::max(0.f, gridW),
+                        std::max(0.f, scrolling ? std::max(gridH, naturalH) : gridH)));
+    const ImVec2 flowEnd = ImGui::GetCursorScreenPos();
+    const ImVec2 origin(cursor.x + grid.paddingL, cursor.y + grid.paddingT);
+    const bool clipped = grid.overflow == OverflowMode::Clip;
+    if (clipped)
+        ImGui::PushClipRect(cursor, ImVec2(cursor.x + gridW, cursor.y + gridH), true);
+    for (size_t i = 0; i < kids.size(); ++i) {
+        UINode &child = tree->nodes[size_t(kids[i])];
+        const FlexRect &rect = result.items[i];
+        ImGui::SetCursorScreenPos(ImVec2(origin.x + rect.x, origin.y + rect.y));
+        const float oldX = child.sizeX;
+        const float oldY = child.sizeY;
+        child.sizeX = rect.w;
+        child.sizeY = rect.h;
+        if (rect.w > 0.f) ImGui::PushItemWidth(rect.w);
+        walkNode(host, tree, kids[i]);
+        child.sizeX = oldX;
+        child.sizeY = oldY;
+        if (rect.w > 0.f) ImGui::PopItemWidth();
+    }
+    // Absolutely placed children are excluded from grid flow; draw on top (Flex parity).
+    for (int c : absKids) {
+        UINode &child = tree->nodes[size_t(c)];
+        float   w     = child.percentW > 0.f ? child.percentW * gridW : child.measuredW;
+        float   h     = child.percentH > 0.f ? child.percentH * gridH : child.measuredH;
+        if (child.sizeX > 0.f) w = child.sizeX;
+        if (child.sizeY > 0.f) h = child.sizeY;
+        if (child.minSizeX > 0.f) w = std::max(w, child.minSizeX);
+        if (child.minSizeY > 0.f) h = std::max(h, child.minSizeY);
+        if (child.maxSizeX > 0.f) w = std::min(w, child.maxSizeX);
+        if (child.maxSizeY > 0.f) h = std::min(h, child.maxSizeY);
+        const float x = child.anchorX * gridW + child.posX - child.anchorX * w;
+        const float y = child.anchorY * gridH + child.posY - child.anchorY * h;
+        ImGui::SetCursorScreenPos(ImVec2(origin.x + x, origin.y + y));
+        const float oldX = child.sizeX;
+        const float oldY = child.sizeY;
+        child.sizeX      = w;
+        child.sizeY      = h;
+        if (w > 0.f) ImGui::PushItemWidth(w);
+        walkNode(host, tree, c);
+        child.sizeX = oldX;
+        child.sizeY = oldY;
+        if (w > 0.f) ImGui::PopItemWidth();
+    }
+    if (clipped) ImGui::PopClipRect();
+    ImGui::SetCursorScreenPos(flowEnd);
+    if (scrolling) {
+        ImGui::EndChild();
+        ImGui::PopID();
+    }
 }
 
 void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
@@ -605,6 +741,52 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         previousFontScale = ImGui::GetIO().FontGlobalScale;
         previousConfigFlags = ImGui::GetIO().ConfigFlags;
         applyThemeToImGui(n.themePreset == ThemePreset::Dark ? Theme::dark() : Theme::light());
+    }
+
+    int styleColorCount = 0;
+    int styleVarCount = 0;
+    if (n.hasResolvedStyle) {
+        const StyleClass &style = n.resolvedStyle;
+        const auto pushColor = [&](ImGuiCol slot, const float color[4]) {
+            ImGui::PushStyleColor(slot, ImVec4(color[0], color[1], color[2], color[3]));
+            ++styleColorCount;
+        };
+        if (style.hasTextColor) pushColor(ImGuiCol_Text, style.textColor);
+        if (style.hasBackgroundColor) {
+            pushColor(ImGuiCol_Button, style.backgroundColor);
+            pushColor(ImGuiCol_FrameBg, style.backgroundColor);
+            pushColor(ImGuiCol_Header, style.backgroundColor);
+            pushColor(ImGuiCol_ChildBg, style.backgroundColor);
+        }
+        if (style.hasBorderColor) pushColor(ImGuiCol_Border, style.borderColor);
+        if (style.hasAccentColor) {
+            pushColor(ImGuiCol_ButtonHovered, style.accentColor);
+            pushColor(ImGuiCol_ButtonActive, style.accentColor);
+            pushColor(ImGuiCol_HeaderHovered, style.accentColor);
+            pushColor(ImGuiCol_HeaderActive, style.accentColor);
+            pushColor(ImGuiCol_CheckMark, style.accentColor);
+            pushColor(ImGuiCol_SliderGrab, style.accentColor);
+            pushColor(ImGuiCol_SliderGrabActive, style.accentColor);
+        }
+        const float scale = themeUiScale();
+        if (style.hasPadding) {
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
+                                ImVec2(style.paddingX * scale, style.paddingY * scale));
+            ++styleVarCount;
+        }
+        if (style.hasRounding) {
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, style.rounding * scale);
+            ++styleVarCount;
+        }
+        if (style.hasAlpha) {
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * style.alpha);
+            ++styleVarCount;
+        }
+    }
+    if (n.opacity < 0.9999f) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha,
+                            ImGui::GetStyle().Alpha * std::clamp(n.opacity, 0.f, 1.f));
+        ++styleVarCount;
     }
 
     const bool interactive = isInteractive(n.type);
@@ -659,17 +841,16 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             // a second time (a centered window moves half its width left).
             const float x = host->meta()->anchorX * display.x + host->meta()->posX;
             const float y = host->meta()->anchorY * display.y + host->meta()->posY;
-            ImGui::SetNextWindowPos(ImVec2(x, y),
-                                    host->meta()->lockPos ? ImGuiCond_Always
-                                                          : ImGuiCond_FirstUseEver,
+            const bool  drivePos = host->meta()->lockPos || host->meta()->animDrivePos;
+            ImGui::SetNextWindowPos(ImVec2(x, y), drivePos ? ImGuiCond_Always : ImGuiCond_FirstUseEver,
                                     ImVec2(host->meta()->pivotX, host->meta()->pivotY));
             if (host->meta()->lockPos) flags |= ImGuiWindowFlags_NoMove;
             if (winW <= 0.f && winH <= 0.f) flags |= ImGuiWindowFlags_AlwaysAutoResize;
         }
         if (winW > 0.f || winH > 0.f) {
-            ImGui::SetNextWindowSize(
-                ImVec2(winW > 0.f ? winW : -1.f, winH > 0.f ? winH : -1.f),
-                host && host->meta()->lockSize ? ImGuiCond_Always : ImGuiCond_FirstUseEver);
+            const bool driveSize = host && (host->meta()->lockSize || host->meta()->animDriveSize);
+            ImGui::SetNextWindowSize(ImVec2(winW > 0.f ? winW : -1.f, winH > 0.f ? winH : -1.f),
+                                     driveSize ? ImGuiCond_Always : ImGuiCond_FirstUseEver);
         } else if (n.measuredW > 0.f || n.measuredH > 0.f) {
             // Real measured size → stable auto-resize instead of ImGui's guess.
             ImGui::SetNextWindowContentSize(ImVec2(n.measuredW, n.measuredH));
@@ -735,8 +916,10 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
                                   ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
         }
-        const bool clicked = (sized || iconOnly) ? ImGui::Button(label.c_str(), buttonSize)
-                                                 : ImGui::Button(label.c_str());
+        const bool clicked = controls::button(label.c_str(),
+                                              (sized || iconOnly) ? buttonSize.x : 0.f,
+                                              (sized || iconOnly) ? buttonSize.y : 0.f) ==
+                             controls::ControlEdit::Changed;
         if (n.checked) ImGui::PopStyleColor(2);
         if (iconOnly) {
             const ImVec2 rectMin = ImGui::GetItemRectMin();
@@ -772,7 +955,8 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         break;
     case NodeType::Checkbox: {
         bool checked = n.checked;
-        if (ImGui::Checkbox(n.text.empty() ? "Check" : n.text.c_str(), &checked)) {
+        if (controls::checkbox(n.text.empty() ? "Check" : n.text.c_str(), checked) ==
+            controls::ControlEdit::Changed) {
             n.checked = checked;
             pushPending(host, n, "toggle", n.handlerToggle, checked);
         }
@@ -781,7 +965,8 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     case NodeType::Slider: {
         float v = n.value;
         const char *label = n.text.empty() ? "Slider" : n.text.c_str();
-        if (ImGui::SliderFloat(label, &v, n.minValue, n.maxValue)) {
+        if (controls::slider(label, v, n.minValue, n.maxValue) ==
+            controls::ControlEdit::Changed) {
             n.value = v;
             pushPending(host, n, "value", n.handlerValue, false, v);
         }
@@ -831,7 +1016,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::Progress: {
         const char *overlay = n.text.empty() ? nullptr : n.text.c_str();
-        ImGui::ProgressBar(n.value, ImVec2(-1.f, 0.f), overlay);
+        ImGui::ProgressBar(n.value, ImVec2(n.sizeX > 0.f ? n.sizeX : -1.f, n.sizeY > 0.f ? n.sizeY : 0.f), overlay);
         break;
     }
     case NodeType::Image: {
@@ -925,29 +1110,23 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         for (const auto &s : storage) items.push_back(s.c_str());
         int idx = int(n.value);
         const char *label = n.text.empty() ? "Combo" : n.text.c_str();
-        if (ImGui::Combo(label, &idx, items.data(), int(items.size()))) {
+        if (controls::combo(label, idx, items) == controls::ControlEdit::Changed) {
             n.value = float(idx);
             pushPending(host, n, "value", n.handlerValue, false, float(idx));
         }
         break;
     }
     case NodeType::InputText: {
-        char buf[1024];
-        std::memset(buf, 0, sizeof(buf));
-        if (!n.valueText.empty()) {
-            std::strncpy(buf, n.valueText.c_str(), sizeof(buf) - 1);
-        }
         const char *label = n.text.empty() ? "Input" : n.text.c_str();
-        if (ImGui::InputText(label, buf, sizeof(buf))) {
-            n.valueText = buf;
+        std::string edited = n.valueText;
+        if (controls::inputText(label, edited) == controls::ControlEdit::Changed) {
+            n.valueText = std::move(edited);
             pushPending(host, n, "text", n.handlerText, false, 0.f, n.valueText);
         }
         break;
     }
     case NodeType::SearchField: {
-        char buf[1024];
-        std::memset(buf, 0, sizeof(buf));
-        if (!n.valueText.empty()) std::strncpy(buf, n.valueText.c_str(), sizeof(buf) - 1);
+        std::string edited = n.valueText;
         const std::string label = "##search" + (n.id.empty() ? std::string() : "###" + n.id);
         const ImGuiStyle &style = ImGui::GetStyle();
         const std::string hint = n.text.empty() ? "Search" : n.text;
@@ -960,8 +1139,9 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
                             ImVec2(style.FramePadding.x + iconSize.x + gap,
                                    style.FramePadding.y));
-        if (ImGui::InputTextWithHint(label.c_str(), hint.c_str(), buf, sizeof(buf))) {
-            n.valueText = buf;
+        if (controls::inputTextWithHint(label.c_str(), hint.c_str(), edited) ==
+            controls::ControlEdit::Changed) {
+            n.valueText = std::move(edited);
             pushPending(host, n, "text", n.handlerText, false, 0.f, n.valueText);
         }
         ImGui::PopStyleVar();
@@ -1397,6 +1577,9 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     case NodeType::Flex:
         walkFlex(host, tree, n);
         break;
+    case NodeType::Grid:
+        walkGrid(host, tree, n);
+        break;
     case NodeType::Spacer:
         // Outside Flex: honor explicit size, otherwise a tiny dummy.
         emitSpacer(n.sizeX > 0.f ? n.sizeX : 0.f, n.sizeY > 0.f ? n.sizeY : 0.f, true);
@@ -1417,6 +1600,9 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     renderDragDrop(host, n);
     if (!n.tooltip.empty() && ImGui::IsItemHovered(ImGuiHoveredFlags_None))
         ImGui::SetTooltip("%s", n.tooltip.c_str());
+
+    if (styleVarCount > 0) ImGui::PopStyleVar(styleVarCount);
+    if (styleColorCount > 0) ImGui::PopStyleColor(styleColorCount);
 
     if (scopedTheme) {
         ImGui::GetStyle() = previousStyle;
@@ -1528,6 +1714,7 @@ UIHostHandle UISystem::findHostByOwner(uint32_t ownerId) {
 }
 
 void UISystem::render() {
+    detail::flushPendingComponents();
     EV_PROFILE_MODULE("ui", "UISystem::render");
     if (ecs::current()->getManager<UIHost>() == nullptr) return;
 
@@ -1623,6 +1810,12 @@ void UISystem::render() {
         if (item.tree->root >= 0) walk(item.host, item.tree, item.tree->root);
         const auto w1 = std::chrono::steady_clock::now();
         g_stats.walkMs += std::chrono::duration<double, std::milli>(w1 - w0).count();
+    }
+    // Animation overrides are one-frame: Motion/tweens re-assert them before the
+    // next render. Clearing here restores movable/resizable hosts after the sample.
+    for (auto &item : items) {
+        item.meta->animDrivePos  = false;
+        item.meta->animDriveSize = false;
     }
 }
 

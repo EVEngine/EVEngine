@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSEconomy.h
@@ -21,7 +23,7 @@ namespace eve::rts {
  * payment lifecycle work to AtomicResourcePayment. The ledger is borrowed and
  * must outlive the adapter; calls are synchronous on its owner thread.
  */
-class RTSEconomyAdapter final {
+class EVENGINE_API_DOMAINS RTSEconomyAdapter final {
 public:
     /** @brief Bind this adapter to a caller-owned RTS economy ledger. */
     explicit RTSEconomyAdapter(eve::economy::EconomyLedger& ledger);
@@ -30,6 +32,7 @@ public:
     RTSEconomyAdapter& operator=(const RTSEconomyAdapter&) = delete;
     RTSEconomyAdapter(RTSEconomyAdapter&&)                 = delete;
     RTSEconomyAdapter& operator=(RTSEconomyAdapter&&)      = delete;
+    /** @brief Rts economy adapter. */
     ~RTSEconomyAdapter()                                   = default;
 
     /**

@@ -6,7 +6,7 @@
 
 namespace eve::profiler_editing {
 
-EditorResult<void> EditorProfilerCollector::collect(const profiler::Profiler& profiler,
+Result<void> EditorProfilerCollector::collect(const profiler::Profiler& profiler,
                                                      EditorProfilerModel& model) const {
     auto captured = profiler.captureFrame();
     if (!captured.hasValue()) {
@@ -18,7 +18,7 @@ EditorResult<void> EditorProfilerCollector::collect(const profiler::Profiler& pr
         const EditorStatus status = captured.code() == eve::StatusCode::NotFound
                                         ? EditorStatus::NotFound
                                         : EditorStatus::Failed;
-        return EditorResult<void>::failure(eve::Status(status, std::move(diagnostics)));
+        return Result<void>::failure(eve::Status(status, std::move(diagnostics)));
     }
     auto runtimeFrame = std::move(captured).takeValue();
     EditorProfilerFrame frame;

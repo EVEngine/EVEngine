@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -29,6 +31,6 @@ struct CaveAbrasionSample {
  * @param input Passage-local position, flow exposure, curvature, sediment load, and seed.
  * @return Bounded abrasion response including the non-monotonic tools-and-cover effect.
  */
-[[nodiscard]] CaveAbrasionSample sampleCaveFloodAbrasion(const CaveAbrasionInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveAbrasionSample sampleCaveFloodAbrasion(const CaveAbrasionInput& input);
 
 }  // namespace eve::procgen

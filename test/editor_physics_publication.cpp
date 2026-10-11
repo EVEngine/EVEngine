@@ -18,7 +18,7 @@ namespace {
 
 class PolygonResolver final : public IPhysicsColliderAssetResolver {
 public:
-    EditorResult<PhysicsColliderAssetGeometry> resolve(const std::string& reference,
+    Result<PhysicsColliderAssetGeometry> resolve(const std::string& reference,
                                                         const std::string& expectedKind) const override {
         if (reference != "asset://polygon" || expectedKind != "polygon")
             return eve::editing::failed<PhysicsColliderAssetGeometry>(
@@ -40,7 +40,7 @@ SelectionSnapshot selection(const PhysicsColliderPublishingTarget& target) {
     return result;
 }
 
-EditorResult<TransactionReceipt> commit(PhysicsColliderPublishingTarget& target,
+Result<TransactionReceipt> commit(PhysicsColliderPublishingTarget& target,
                                         LocalTransactionBackend& transactions,
                                         const DomainOperation& operation,
                                         const char* id) {

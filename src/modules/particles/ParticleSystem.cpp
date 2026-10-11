@@ -11,6 +11,7 @@
 #include "common/Module.h"
 
 #include <algorithm>
+#include <bit>
 #include <chrono>
 #include <cmath>
 #include <functional>
@@ -174,15 +175,8 @@ int appendRibbonItems(const ParticleEmitter::Config& cfg, const ParticleEmitter:
     return segments;
 }
 
-/**
- * True when the emitter center is well outside the camera view (skip sim).
- *
- * @param gfx Resolved Graphics provider. This runs once per emitter per frame, so
- *            the caller resolves the provider once and passes it in; looking it up
- *            here would be a string-keyed module probe on the per-emitter path.
- *            Null skips the viewport test.
- */
-bool emitterOffscreen(graphics::Graphics* gfx, const ParticleEmitter::Config& cfg, const ParticleEmitter::Draw& draw) {
+/** True when the emitter center is well outside the camera view (skip sim). */
+bool emitterOffscreen(const ParticleEmitter::Config &cfg, const ParticleEmitter::Draw &draw) {
     auto *cam = draw.camera;
     if (!cam) return false;
     if (cfg.cullDistance > 0.f) {
@@ -190,6 +184,7 @@ bool emitterOffscreen(graphics::Graphics* gfx, const ParticleEmitter::Config& cf
         const float dy = cfg.y - cam->data()->y;
         if (dx * dx + dy * dy > cfg.cullDistance * cfg.cullDistance) return true;
     }
+    auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx) return false;
     const float viewW = draw.canvas ? float(draw.canvas->getWidth()) : float(gfx->getWidth());
     const float viewH = draw.canvas ? float(draw.canvas->getHeight()) : float(gfx->getHeight());
@@ -206,7 +201,8 @@ bool emitterOffscreen(graphics::Graphics* gfx, const ParticleEmitter::Config& cf
     return sx < -margin || sx > viewW + margin || sy < -margin || sy > viewH + margin;
 }
 
-int64_t fileModtime(eve::filesystem::Filesystem* fs, const std::string& path) {
+int64_t fileModtime(const std::string &path) {
+    auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
     if (!fs) fs = eve::filesystem::Filesystem::create();
     eve::filesystem::Filesystem::Info info{};
     if (!fs->getInfo(path, info)) return -1;
@@ -218,23 +214,24 @@ int liveParticleCount(ParticleEmitter* emitter) {
     return gpu->residentActive ? gpu->estimatedAlive + emitter->sim()->alive : emitter->sim()->alive;
 }
 
-graphics::GpuParticleSpawn gpuSpawn(const Particle& particle) {
+graphics::GpuParticleSpawn gpuSpawn(const Particle& particle, std::uint32_t birthSerial) {
     graphics::GpuParticleSpawn out;
-    out.x          = particle.x;
-    out.y          = particle.y;
-    out.vx         = particle.vx;
-    out.vy         = particle.vy;
-    out.life       = particle.life;
-    out.lifetime   = particle.lifetime;
-    out.size       = particle.size;
-    out.rotation   = particle.rot;
-    out.spin       = particle.spin;
-    out.frame      = particle.frame;
-    out.radial     = particle.radial;
-    out.tangential = particle.tangential;
-    out.ax         = particle.ax;
-    out.ay         = particle.ay;
-    out.noisePhase = particle.noisePhase;
+    out.x           = particle.x;
+    out.y           = particle.y;
+    out.vx          = particle.vx;
+    out.vy          = particle.vy;
+    out.life        = particle.life;
+    out.lifetime    = particle.lifetime;
+    out.size        = particle.size;
+    out.rotation    = particle.rot;
+    out.spin        = particle.spin;
+    out.frame       = particle.frame;
+    out.radial      = particle.radial;
+    out.tangential  = particle.tangential;
+    out.ax          = particle.ax;
+    out.ay          = particle.ay;
+    out.noisePhase  = particle.noisePhase;
+    out.birthSerial = std::bit_cast<float>(birthSerial);
     return out;
 }
 
@@ -248,6 +245,7 @@ void deactivateResidentGpu(graphics::Graphics* gfx, ParticleEmitter::GpuSim& gpu
     gpu.deathTimes.clear();
     gpu.pendingWorldOffsetX = 0.f;
     gpu.pendingWorldOffsetY = 0.f;
+    gpu.nextBirthSerial     = 1;
 }
 
 eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *emitter, const eve::SimulationStep &step,
@@ -295,7 +293,7 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
     for (int i = 0; i < accepted; ++i) {
         const Particle& particle = sim->particles[std::size_t(i)];
         if (particle.life <= 0.f) continue;
-        spawns.push_back(gpuSpawn(particle));
+        spawns.push_back(gpuSpawn(particle, gpu->nextBirthSerial++));
         gpu->deathTimes.push_back(float(gpu->timeline) + particle.life);
         std::push_heap(gpu->deathTimes.begin(), gpu->deathTimes.end(), minHeap);
     }
@@ -340,7 +338,7 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
 
 }  // namespace
 
-eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool legacyControls, graphics::Graphics* gfx) {
+eve::Result<void> runParticleSimulation(const eve::SimulationStep &step, bool legacyControls) {
     if (step.delta.nanoseconds() < 0)
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                  "particle simulation delta must be non-negative"));
@@ -397,6 +395,8 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool le
     int reservedAlive = 0;
     for (auto* emitter : emitters) reservedAlive += liveParticleCount(emitter);
 
+    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+
     int processedAlive = 0;
     for (auto *emitter : emitters) {
         auto cfg = emitter->config();
@@ -411,7 +411,7 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool le
             continue;
         }
 
-        const bool offscreen = emitterOffscreen(gfx, *cfg, *draw);
+        const bool offscreen = emitterOffscreen(*cfg, *draw);
         const bool culled    = cfg->cullingMode == "pause"    ? offscreen
                                : cfg->cullingMode == "always" ? false
                                                               : (aliveBefore <= 0 && offscreen);
@@ -494,17 +494,17 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool le
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<void> ParticleSimSystem::advance(const eve::SimulationStep& step, graphics::Graphics* gfx) {
-    return runParticleSimulation(step, false, gfx);
+eve::Result<void> ParticleSimSystem::advance(const eve::SimulationStep &step) {
+    return runParticleSimulation(step, false);
 }
 
-void ParticleSimSystem::update(float dt, graphics::Graphics* gfx) {
+void ParticleSimSystem::update(float dt) {
     auto duration = eve::Duration::fromSeconds(dt);
     if (!duration) {
         duration.ignore("legacy particle update received an invalid duration");
         return;
     }
-    runParticleSimulation({eve::SimulationTick(1), std::move(duration).takeValue()}, true, gfx)
+    runParticleSimulation({eve::SimulationTick(1), std::move(duration).takeValue()}, true)
         .ignore("legacy particle update facade");
 }
 
@@ -516,14 +516,13 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
     auto gpu = emitter.gpuSim(); const int alive = liveParticleCount(&emitter);
     if (!draw->visible || alive <= 0) return 0;
     const auto& budget = particleBudgetConfig();
-    if (respectSceneCulling && (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(&gfx, *cfg, *draw))) {
-        culled = true;
-        return 0;
+    if (respectSceneCulling &&
+        (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(*cfg, *draw))) {
+        culled = true; return 0;
     }
     if (gpu->residentActive) {
         graphics::GpuParticleDraw gpuDraw;
-        gpuDraw.texture    = draw->texture;
-        gpuDraw.sceneDepth = gfx.getSceneLinearDepthTexture();
+        gpuDraw.texture = draw->texture; gpuDraw.sceneDepth = gfx.getSceneLinearDepthTexture();
         gpuDraw.blend = draw->blend; gpuDraw.viewportWidth = float(gfx.getWidth());
         gpuDraw.viewportHeight = float(gfx.getHeight());
         if (draw->camera) { gpuDraw.cameraEnabled = true; gpuDraw.cameraX = draw->camera->data()->x;
@@ -532,9 +531,12 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
         gpuDraw.sizeStart = cfg->sizeStart; gpuDraw.sizeEnd = cfg->sizeEnd;
         gpuDraw.stretchFactor = cfg->stretchFactor;
         gpuDraw.facing = cfg->renderMode == "stretched" ? graphics::GpuParticleFacingMode::Velocity
-                       : cfg->renderMode == "axis" ? graphics::GpuParticleFacingMode::Axis
-                                                    : graphics::GpuParticleFacingMode::ParticleRotation;
+                       : cfg->renderMode == "axis"     ? graphics::GpuParticleFacingMode::Axis
+                       : cfg->renderMode == "ribbon"   ? graphics::GpuParticleFacingMode::Ribbon
+                                                       : graphics::GpuParticleFacingMode::ParticleRotation;
         gpuDraw.axisRotationRadians = cfg->renderAxisDegrees / kRad2Deg;
+        gpuDraw.ribbonWidth = cfg->ribbonWidth;
+        gpuDraw.ribbonMinSegmentLength = cfg->ribbonMinSegmentLength;
         gpuDraw.softParticles = cfg->softParticles; gpuDraw.particleDepth = cfg->softParticleDepth;
         gpuDraw.softFadeDistance = cfg->softFadeDistance;
         gpuDraw.colorStart[0]=cfg->colorStart.r; gpuDraw.colorStart[1]=cfg->colorStart.g;
@@ -542,6 +544,11 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
         gpuDraw.colorEnd[0]=cfg->colorEnd.r; gpuDraw.colorEnd[1]=cfg->colorEnd.g;
         gpuDraw.colorEnd[2]=cfg->colorEnd.b; gpuDraw.colorEnd[3]=cfg->colorEnd.a;
         gpuDraw.hframes=cfg->hframes; gpuDraw.vframes=cfg->vframes;
+        gpuDraw.sortMode = cfg->renderMode == "ribbon" ? graphics::GpuParticleSortMode::Birth
+                           : cfg->sortMode == "oldest"   ? graphics::GpuParticleSortMode::Oldest
+                           : cfg->sortMode == "youngest" ? graphics::GpuParticleSortMode::Youngest
+                           : cfg->sortMode == "distance" ? graphics::GpuParticleSortMode::Distance
+                                                         : graphics::GpuParticleSortMode::None;
         if (gfx.drawGpuParticleEmitter(gpu->residentHandle, gpuDraw)) return gpu->estimatedAlive;
         culled = true; return 0;
     }
@@ -638,7 +645,7 @@ void ParticleLightSystem::update() {
     }
 }
 
-int ParticleConfigSystem::poll(eve::filesystem::Filesystem* fs) {
+int ParticleConfigSystem::poll() {
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return 0;
 
     // Watch events are drained by load.nut / HotReload. This polling path is a
@@ -659,7 +666,7 @@ int ParticleConfigSystem::poll(eve::filesystem::Filesystem* fs) {
             continue;
         }
 
-        const int64_t mt = fileModtime(fs, res->path);
+        const int64_t mt = fileModtime(res->path);
         if (mt < 0) {
             res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimeUnavailable;
             continue;

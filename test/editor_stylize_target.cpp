@@ -15,7 +15,7 @@ SelectionSnapshot select(const StylizeRecipeTarget& target, std::initializer_lis
         s.items.push_back({SelectionDomain::Asset, TargetId(target.targetId()), StableId(id), "stylize.pass"});
     return s;
 }
-void apply(StylizeRecipeTarget& target, EditorResult<DomainOperation> operation) {
+void apply(StylizeRecipeTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }

@@ -1,11 +1,13 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cmath>
 
 namespace eve::math {
 
 /** @brief 2D float vector (script-facing math module value). */
-class Vec2 {
+class EVENGINE_API_FOUNDATION Vec2 {
 public:
     Vec2() = default;
     /** @brief Creates a vector from components. */
@@ -13,8 +15,11 @@ public:
 
     /** @brief Component accessors. */
     float getX() const { return x_; }
+    /** @brief Y component. */
     float getY() const { return y_; }
+    /** @brief Sets the X component. */
     void  setX(float x) { x_ = x; }
+    /** @brief Sets the Y component. */
     void  setY(float y) { y_ = y; }
     /** @brief Sets both components. */
     void  set(float x, float y) {
@@ -24,16 +29,21 @@ public:
 
     /** @brief Magnitude (and squared magnitude). */
     float length() const { return std::sqrt(x_ * x_ + y_ * y_); }
+    /** @brief Squared Euclidean magnitude. */
     float lengthSquared() const { return x_ * x_ + y_ * y_; }
 
     /** @brief Normalizes in place / returns a normalized copy. */
     void  normalize();
     Vec2 *normalized() const;
 
+    /** @brief Atan2 angle in radians. */
     /** @brief Dot/cross product, distance, angle (radians). */
     float  dot(const Vec2 *other) const;
+    /** @brief Cross product with other. */
     float  cross(const Vec2 *other) const;
+    /** @brief Euclidean distance to other. */
     float  distanceTo(const Vec2 *other) const;
+    /** @brief Atan2 angle in radians. */
     float  angle() const;
 
     /** @brief Arithmetic helpers returning new (caller-owned) vectors. */

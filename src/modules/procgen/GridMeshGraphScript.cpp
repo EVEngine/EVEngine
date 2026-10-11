@@ -50,23 +50,21 @@ void exposeGridMeshGraphs(ssq::Table& table) {
     });
     grid.addFunc("execute", [gridVm](GridGraph* self, const std::string& output) -> ssq::Table {
         auto result = self->execute(output);
-        if (!result.ok()) return eve::script::projectStatusResult(gridVm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(gridVm, result.status());
         auto        value = std::move(result).takeValue();
         ssq::Object object;
         if (auto* outputGrid = std::get_if<Grid2D>(&value)) {
             auto instance =
                 eve::script::makeOwnedSquirrelInstance<Grid2D>(gridVm, std::make_unique<Grid2D>(*outputGrid));
-            if (!instance.ok()) return eve::script::projectStatusResult(gridVm, instance.status(), false, false);
+            if (!instance.ok()) return eve::script::projectStatusResult(gridVm, instance.status());
             object = std::move(instance).takeValue();
         } else {
             auto instance = eve::script::makeOwnedSquirrelInstance<PointSet>(
                 gridVm, std::make_unique<PointSet>(std::get<PointSet>(std::move(value))));
-            if (!instance.ok()) return eve::script::projectStatusResult(gridVm, instance.status(), false, false);
+            if (!instance.ok()) return eve::script::projectStatusResult(gridVm, instance.status());
             object = std::move(instance).takeValue();
         }
-        auto projected = eve::script::projectStatusResult(gridVm, Status::success(), true, true);
-        projected.set("value", std::move(object));
-        return projected;
+        return eve::script::projectStatusResult(gridVm, Status::success(), std::move(object));
     });
     grid.addFunc("validate", [gridVm](GridGraph* self, const std::string& output) {
         return eve::script::projectResult(gridVm, self->validate(output));
@@ -114,13 +112,11 @@ void exposeGridMeshGraphs(ssq::Table& table) {
                  });
     mesh.addFunc("execute", [meshVm](MeshGraph* self, const std::string& output) -> ssq::Table {
         auto result = self->execute(output);
-        if (!result.ok()) return eve::script::projectStatusResult(meshVm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(meshVm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
             meshVm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(meshVm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(meshVm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(meshVm, instance.status());
+        return eve::script::projectStatusResult(meshVm, Status::success(), std::move(instance).takeValue());
     });
     mesh.addFunc("validate", [meshVm](MeshGraph* self, const std::string& output) {
         return eve::script::projectResult(meshVm, self->validate(output));
@@ -179,36 +175,28 @@ void exposeGridMeshGraphs(ssq::Table& table) {
             return eve::script::projectStatusResult(
                 objectsVm,
                 Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "source points are null"))
-                    .status(),
-                false, false);
+                    .status());
         auto result = self->build(*source);
-        if (!result.ok()) return eve::script::projectStatusResult(objectsVm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(objectsVm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<PointSet>(
             objectsVm, std::make_unique<PointSet>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(objectsVm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(objectsVm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(objectsVm, instance.status());
+        return eve::script::projectStatusResult(objectsVm, Status::success(), std::move(instance).takeValue());
     });
     objects.addFunc("buildOriented",
                     [objectsVm](ObjectBuildLayer* self, PointSet* source, PointSet* orientation) -> ssq::Table {
                         if (!source || !orientation)
                             return eve::script::projectStatusResult(
-                                objectsVm,
-                                Result<void>::failure(
-                                    Diagnostic::error(DiagnosticCode::InvalidArgument, "source or orientation is null"))
-                                    .status(),
-                                false, false);
+                                objectsVm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                                   "source or orientation is null"))
+                                               .status());
                         auto result = self->build(*source, orientation);
-                        if (!result.ok())
-                            return eve::script::projectStatusResult(objectsVm, result.status(), false, false);
+                        if (!result.ok()) return eve::script::projectStatusResult(objectsVm, result.status());
                         auto instance = eve::script::makeOwnedSquirrelInstance<PointSet>(
                             objectsVm, std::make_unique<PointSet>(std::move(result).takeValue()));
-                        if (!instance.ok())
-                            return eve::script::projectStatusResult(objectsVm, instance.status(), false, false);
-                        auto projected = eve::script::projectStatusResult(objectsVm, Status::success(), true, true);
-                        projected.set("value", std::move(instance).takeValue());
-                        return projected;
+                        if (!instance.ok()) return eve::script::projectStatusResult(objectsVm, instance.status());
+                        return eve::script::projectStatusResult(objectsVm, Status::success(),
+                                                                std::move(instance).takeValue());
                     });
 
     auto execution = table.addClass<BuildLayerExecution>(
@@ -220,23 +208,19 @@ void exposeGridMeshGraphs(ssq::Table& table) {
     execution.addFunc("getType", &BuildLayerExecution::getType);
     execution.addFunc("getMesh", [executionVm](BuildLayerExecution* self, int index) -> ssq::Table {
         auto result = self->getMesh(index);
-        if (!result.ok()) return eve::script::projectStatusResult(executionVm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(executionVm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
             executionVm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(executionVm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(executionVm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(executionVm, instance.status());
+        return eve::script::projectStatusResult(executionVm, Status::success(), std::move(instance).takeValue());
     });
     execution.addFunc("getPoints", [executionVm](BuildLayerExecution* self, int index) -> ssq::Table {
         auto result = self->getPoints(index);
-        if (!result.ok()) return eve::script::projectStatusResult(executionVm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(executionVm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<PointSet>(
             executionVm, std::make_unique<PointSet>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(executionVm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(executionVm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(executionVm, instance.status());
+        return eve::script::projectStatusResult(executionVm, Status::success(), std::move(instance).takeValue());
     });
 
     auto stack = table.addClass<BuildLayerStack>("ProcgenBuildLayerStack", ssq::Class::Ctor<BuildLayerStack()>());
@@ -267,38 +251,30 @@ void exposeGridMeshGraphs(ssq::Table& table) {
     stack.addFunc("execute", [stackVm](BuildLayerStack* self, Grid2D* grid, PointSet* points) -> ssq::Table {
         if (!grid || !points)
             return eve::script::projectStatusResult(
-                stackVm,
-                Result<void>::failure(
-                    Diagnostic::error(DiagnosticCode::InvalidArgument, "grid or points input is null"))
-                    .status(),
-                false, false);
+                stackVm, Result<void>::failure(
+                             Diagnostic::error(DiagnosticCode::InvalidArgument, "grid or points input is null"))
+                             .status());
         auto result = self->execute(*grid, *points);
-        if (!result.ok()) return eve::script::projectStatusResult(stackVm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(stackVm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<BuildLayerExecution>(
             stackVm, std::make_unique<BuildLayerExecution>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(stackVm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(stackVm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(stackVm, instance.status());
+        return eve::script::projectStatusResult(stackVm, Status::success(), std::move(instance).takeValue());
     });
     stack.addFunc(
         "executeOriented",
         [stackVm](BuildLayerStack* self, Grid2D* grid, PointSet* points, PointSet* orientation) -> ssq::Table {
             if (!grid || !points || !orientation)
                 return eve::script::projectStatusResult(
-                    stackVm,
-                    Result<void>::failure(
-                        Diagnostic::error(DiagnosticCode::InvalidArgument, "build-layer input is null"))
-                        .status(),
-                    false, false);
+                    stackVm, Result<void>::failure(
+                                 Diagnostic::error(DiagnosticCode::InvalidArgument, "build-layer input is null"))
+                                 .status());
             auto result = self->execute(*grid, *points, orientation);
-            if (!result.ok()) return eve::script::projectStatusResult(stackVm, result.status(), false, false);
+            if (!result.ok()) return eve::script::projectStatusResult(stackVm, result.status());
             auto instance = eve::script::makeOwnedSquirrelInstance<BuildLayerExecution>(
                 stackVm, std::make_unique<BuildLayerExecution>(std::move(result).takeValue()));
-            if (!instance.ok()) return eve::script::projectStatusResult(stackVm, instance.status(), false, false);
-            auto projected = eve::script::projectStatusResult(stackVm, Status::success(), true, true);
-            projected.set("value", std::move(instance).takeValue());
-            return projected;
+            if (!instance.ok()) return eve::script::projectStatusResult(stackVm, instance.status());
+            return eve::script::projectStatusResult(stackVm, Status::success(), std::move(instance).takeValue());
         });
 
     auto delta = table.addClass<IncrementalBuildDelta>(
@@ -311,13 +287,11 @@ void exposeGridMeshGraphs(ssq::Table& table) {
     delta.addFunc("isRemoved", [](IncrementalBuildDelta* self, int index) { return self->isRemoved(index); });
     delta.addFunc("getArtifacts", [deltaVm](IncrementalBuildDelta* self, int index) -> ssq::Table {
         auto result = self->getArtifacts(index);
-        if (!result.ok()) return eve::script::projectStatusResult(deltaVm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(deltaVm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<BuildLayerExecution>(
             deltaVm, std::make_unique<BuildLayerExecution>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(deltaVm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(deltaVm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(deltaVm, instance.status());
+        return eve::script::projectStatusResult(deltaVm, Status::success(), std::move(instance).takeValue());
     });
 
     auto incremental = table.addClass<IncrementalBuildExecutor>("ProcgenIncrementalBuildExecutor",
@@ -329,17 +303,14 @@ void exposeGridMeshGraphs(ssq::Table& table) {
     incremental.addFunc("getCachedArtifacts",
                         [incrementalVm](IncrementalBuildExecutor* self, int x, int z) -> ssq::Table {
                             auto result = self->getCachedArtifacts(x, z);
-                            if (!result.ok())
-                                return eve::script::projectStatusResult(incrementalVm, result.status(), false, false);
+                            if (!result.ok()) return eve::script::projectStatusResult(incrementalVm, result.status());
                             auto instance = eve::script::makeOwnedSquirrelInstance<BuildLayerExecution>(
                                 incrementalVm,
                                 std::make_unique<BuildLayerExecution>(std::move(result).takeValue()));
                             if (!instance.ok())
-                                return eve::script::projectStatusResult(incrementalVm, instance.status(), false, false);
-                            auto projected =
-                                eve::script::projectStatusResult(incrementalVm, Status::success(), true, true);
-                            projected.set("value", std::move(instance).takeValue());
-                            return projected;
+                                return eve::script::projectStatusResult(incrementalVm, instance.status());
+                            return eve::script::projectStatusResult(incrementalVm, Status::success(),
+                                                                    std::move(instance).takeValue());
                         });
     incremental.addFunc(
         "update",
@@ -347,21 +318,15 @@ void exposeGridMeshGraphs(ssq::Table& table) {
                         int clusterSizeCells, float cellSizeWorld) -> ssq::Table {
             if (!buildStack || !grid || !points)
                 return eve::script::projectStatusResult(
-                    incrementalVm,
-                    Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "incremental build input is null"))
-                        .status(),
-                    false, false);
+                    incrementalVm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "incremental build input is null"))
+                                       .status());
             auto result = self->update(*buildStack, *grid, *points, clusterSizeCells, cellSizeWorld);
-            if (!result.ok())
-                return eve::script::projectStatusResult(incrementalVm, result.status(), false, false);
+            if (!result.ok()) return eve::script::projectStatusResult(incrementalVm, result.status());
             auto instance = eve::script::makeOwnedSquirrelInstance<IncrementalBuildDelta>(
                 incrementalVm, std::make_unique<IncrementalBuildDelta>(std::move(result).takeValue()));
-            if (!instance.ok())
-                return eve::script::projectStatusResult(incrementalVm, instance.status(), false, false);
-            auto projected = eve::script::projectStatusResult(incrementalVm, Status::success(), true, true);
-            projected.set("value", std::move(instance).takeValue());
-            return projected;
+            if (!instance.ok()) return eve::script::projectStatusResult(incrementalVm, instance.status());
+            return eve::script::projectStatusResult(incrementalVm, Status::success(), std::move(instance).takeValue());
         });
     incremental.addFunc(
         "updateOriented",
@@ -369,22 +334,16 @@ void exposeGridMeshGraphs(ssq::Table& table) {
                         int clusterSizeCells, float cellSizeWorld, PointSet* orientation) -> ssq::Table {
             if (!buildStack || !grid || !points || !orientation)
                 return eve::script::projectStatusResult(
-                    incrementalVm,
-                    Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "incremental build input is null"))
-                        .status(),
-                    false, false);
+                    incrementalVm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "incremental build input is null"))
+                                       .status());
             auto result =
                 self->update(*buildStack, *grid, *points, clusterSizeCells, cellSizeWorld, orientation);
-            if (!result.ok())
-                return eve::script::projectStatusResult(incrementalVm, result.status(), false, false);
+            if (!result.ok()) return eve::script::projectStatusResult(incrementalVm, result.status());
             auto instance = eve::script::makeOwnedSquirrelInstance<IncrementalBuildDelta>(
                 incrementalVm, std::make_unique<IncrementalBuildDelta>(std::move(result).takeValue()));
-            if (!instance.ok())
-                return eve::script::projectStatusResult(incrementalVm, instance.status(), false, false);
-            auto projected = eve::script::projectStatusResult(incrementalVm, Status::success(), true, true);
-            projected.set("value", std::move(instance).takeValue());
-            return projected;
+            if (!instance.ok()) return eve::script::projectStatusResult(incrementalVm, instance.status());
+            return eve::script::projectStatusResult(incrementalVm, Status::success(), std::move(instance).takeValue());
         });
 }
 

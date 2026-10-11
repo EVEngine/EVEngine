@@ -9,10 +9,6 @@
 
 namespace eve::graphics {
 namespace {
-template<class T> Result<T> invalidMasker(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, {}, {},
-                                                 "graphics.waterReflectionMasker"));
-}
 bool finite6(float a,float b,float c,float d,float e,float f) {
     return std::isfinite(a)&&std::isfinite(b)&&std::isfinite(c)&&std::isfinite(d)&&std::isfinite(e)&&std::isfinite(f);
 }
@@ -22,14 +18,16 @@ Result<void> WaterReflectionMasker::configure(WaterReflectionMaskChannel channel
                                                bool reflectionsEnabled) {
     const int c=static_cast<int>(channel);
     if(c<0||c>4||!std::isfinite(minimum)||!std::isfinite(maximum)||minimum>maximum)
-        return invalidMasker<void>("valid channel and finite ordered thresholds are required");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "valid channel and finite ordered thresholds are required", {}, {},
+                                                 "graphics.waterReflectionMasker"));
     channel_=channel;minimum_=minimum;maximum_=maximum;enabled_=reflectionsEnabled;
     heightFeaturesEnabled_=reflectionsEnabled;return Result<void>::success();
 }
 
 Result<void> WaterReflectionMasker::setMask(const image::ImageData& mask) {
     const int width=mask.getWidth(),height=mask.getHeight();
-    if(width<=0||height<=0)return invalidMasker<void>("mask dimensions must be positive");
+    if(width<=0||height<=0)return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "mask dimensions must be positive", {}, {},
+                                                 "graphics.waterReflectionMasker"));
     std::vector<Pixel> next;next.reserve(static_cast<size_t>(width)*static_cast<size_t>(height));
     for(int y=0;y<height;++y)for(int x=0;x<width;++x){const auto c=mask.getPixel(x,y);next.push_back({c.r,c.g,c.b,c.a});}
     width_=width;height_=height;pixels_=std::move(next);sampleX_=sampleY_=-1;return Result<void>::success();
@@ -40,7 +38,8 @@ void WaterReflectionMasker::clearMask() noexcept { width_=height_=0;pixels_.clea
 Result<WaterReflectionMaskTransition> WaterReflectionMasker::evaluate(float playerX,float playerZ,
     float terrainX,float terrainZ,float terrainWidth,float terrainDepth,WaterPlanarReflectionSettings& settings) {
     if(!finite6(playerX,playerZ,terrainX,terrainZ,terrainWidth,terrainDepth)||terrainWidth<=0.f||terrainDepth<=0.f)
-        return invalidMasker<WaterReflectionMaskTransition>("finite player, terrain origin and positive terrain size are required");
+        return Result<WaterReflectionMaskTransition>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "finite player, terrain origin and positive terrain size are required", {}, {},
+                                                 "graphics.waterReflectionMasker"));
     bool next=false;sampleX_=sampleY_=-1;
     const float u=(playerX-terrainX)/terrainWidth,v=(playerZ-terrainZ)/terrainDepth;
     if(!pixels_.empty()&&u>=0.f&&u<=1.f&&v>=0.f&&v<=1.f){
@@ -60,9 +59,11 @@ Result<WaterReflectionMaskTransition> WaterReflectionMasker::evaluate(float play
 
 void exposeWaterReflectionMaskerBindings(ssq::Table& table){auto c=table.addClass("WaterReflectionMasker",ssq::Class::Ctor<WaterReflectionMasker()>());auto vm=table.getHandle();
  c.addFunc("configure",[vm](WaterReflectionMasker*s,int channel,float min,float max,bool enabled){return eve::script::projectResult(vm,s->configure(static_cast<WaterReflectionMaskChannel>(channel),min,max,enabled));});
- c.addFunc("setMask",[vm](WaterReflectionMasker*s,const image::ImageData* mask){auto r=mask?s->setMask(*mask):invalidMasker<void>("ImageData mask is required");return eve::script::projectResult(vm,std::move(r));});
+ c.addFunc("setMask",[vm](WaterReflectionMasker*s,const image::ImageData* mask){auto r=mask?s->setMask(*mask):Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "ImageData mask is required", {}, {},
+                                                 "graphics.waterReflectionMasker"));return eve::script::projectResult(vm,std::move(r));});
  c.addFunc("clearMask",[](WaterReflectionMasker*s){s->clearMask();});
- c.addFunc("evaluate",[vm](WaterReflectionMasker*s,float px,float pz,float tx,float tz,float tw,float td,WaterPlanarReflectionSettings* settings){auto r=settings?s->evaluate(px,pz,tx,tz,tw,td,*settings):invalidMasker<WaterReflectionMaskTransition>("reflection settings are required");return eve::script::projectResult(vm,std::move(r),[](WaterReflectionMaskTransition v){return eve::Value(static_cast<int>(v));});});
+ c.addFunc("evaluate",[vm](WaterReflectionMasker*s,float px,float pz,float tx,float tz,float tw,float td,WaterPlanarReflectionSettings* settings){auto r=settings?s->evaluate(px,pz,tx,tz,tw,td,*settings):Result<WaterReflectionMaskTransition>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "reflection settings are required", {}, {},
+                                                 "graphics.waterReflectionMasker"));return eve::script::projectResult(vm,std::move(r),[](WaterReflectionMaskTransition v){return eve::Value(static_cast<int>(v));});});
  c.addFunc("getEnabled",[](const WaterReflectionMasker*s){return s->getEnabled();});c.addFunc("getHeightFeaturesEnabled",[](const WaterReflectionMasker*s){return s->getHeightFeaturesEnabled();});c.addFunc("getSampleX",[](const WaterReflectionMasker*s){return s->getSampleX();});c.addFunc("getSampleY",[](const WaterReflectionMasker*s){return s->getSampleY();});}
 
 }  // namespace eve::graphics

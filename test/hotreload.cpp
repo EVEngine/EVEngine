@@ -8,9 +8,13 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
 
+#include <chrono>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <memory>
 #include <string>
+#include <thread>
 
 namespace {
 
@@ -124,4 +128,52 @@ TEST_CASE("hotreload.watchNewDirectoryRecurses") {
     f->remove("live_root/nested/deeper");
     f->remove("live_root/nested");
     f->remove("live_root");
+}
+
+TEST_CASE("hotreload.watchTree.absoluteRootRecursesAndReportsRelativePath") {
+    auto *f = fs();
+    f->unwatchAll();
+
+    const auto root = std::filesystem::temp_directory_path() / "ev_ut_hot_watch_parent";
+    std::filesystem::remove_all(root);
+    const auto editors = root / "editors";
+    REQUIRE(std::filesystem::create_directories(editors));
+    const auto file = editors / "skill.vm.nut";
+    {
+        std::ofstream out(file, std::ios::binary | std::ios::trunc);
+        REQUIRE(out.good());
+        out.write("v1", 2);
+    }
+
+    auto *hot = eve::filesystem::HotReload::create();
+    CHECK_GE(hot->watchTree(root.string()), 2);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+    while (!f->pollWatch().empty()) {
+    }
+
+    {
+        std::ofstream out(file, std::ios::binary | std::ios::trunc);
+        REQUIRE(out.good());
+        out.write("v2-changed", 10);
+        out.flush();
+    }
+
+    bool saw = false;
+    for (int i = 0; i < 60 && !saw; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        for (;;) {
+            std::string kind = f->pollWatch();
+            if (kind.empty()) break;
+            if (kind != "modified" && kind != "added") continue;
+            const std::string p = f->getLastWatchPath();
+            if (p == "editors/skill.vm.nut" || p == "editors\\skill.vm.nut" ||
+                p.find("skill.vm.nut") != std::string::npos)
+                saw = true;
+        }
+    }
+    CHECK(saw);
+
+    f->unwatchAll();
+    std::filesystem::remove_all(root);
 }

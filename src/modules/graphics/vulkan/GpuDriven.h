@@ -27,6 +27,7 @@ constexpr uint32_t kHZBHeaderWords = 16;  // uint offsets per mip, at slot start
 
 /// @brief Capabilities required for the GPU-driven path. All must be true for
 /// `gpuDrivenAvailable()`. Probing happens once at device creation.
+/** @brief GpuDrivenCaps public API. */
 struct GpuDrivenCaps {
     bool api12 = false;
     bool drawIndirectCount = false;
@@ -36,6 +37,7 @@ struct GpuDrivenCaps {
     bool samplerArrayCapacity = false;  // maxPerStageDescriptorSamplers >= array size
     bool computeShader = false;
 
+    /** @brief Gpu driven available. */
     bool gpuDrivenAvailable() const {
         // NOTE: the Vulkan SDK headers used by this toolchain omit the core
         // `drawIndirect` bit from VkPhysicalDeviceFeatures, so it is assumed
@@ -52,12 +54,14 @@ struct GpuDrivenCaps {
 
     /** @brief Stage 2: GPU frustum/HZB cull + GPU-written indirect commands. */
     bool gpuDrivenCullAvailable() const {
+        /** @brief Gpu driven available. */
         return gpuDrivenAvailable() && computeShader;
     }
 };
 
 /// @brief Cull-params UBO (std140). Mirrors GLSL CullParams in
 /// `shaders/gpu_driven_cull_common.glsl` (240 bytes).
+/** @brief GpuCullParams public API. */
 struct GpuCullParams {
     glm::mat4 viewProj;              // 0
     glm::vec4 frustumPlanes[6];      // 64 (Gribb-Hartmann, normalized, inside>0)

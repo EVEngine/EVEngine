@@ -150,7 +150,7 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptQueryAnswersCondi
 
     // 消费方就是对话的条件求值上下文：它按"单实现 → listener"的顺序问，第一个非空答案赢。
     eve::dialogue::StateEvaluationContext context("npc:blacksmith");
-    const auto                                gold = context.state("gold");
+    const auto                            gold = context.state("gold");
     REQUIRE(gold.has_value());
     REQUIRE(gold->getIf<std::int64_t>() != nullptr);
     REQUIRE_EQ(*gold->getIf<std::int64_t>(), 42);
@@ -205,7 +205,7 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptQueryDoesNotDispl
     REQUIRE(publish(eve::IStateQuery::capabilityName, "test.state.script", "stateProvider").find("ok").toBool());
 
     eve::dialogue::StateEvaluationContext context("npc:blacksmith");
-    const auto                                gold = context.state("gold");
+    const auto                            gold = context.state("gold");
     REQUIRE(gold.has_value());
     REQUIRE(gold->getIf<std::string>() != nullptr);
     REQUIRE_EQ(*gold->getIf<std::string>(), std::string("native"));  // 单实现优先于 listener
@@ -218,7 +218,8 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptQueryDoesNotDispl
     REQUIRE_EQ(*scriptAnswer->getIf<std::int64_t>(), 42);
 }
 
-TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.partialAndFailingScriptProvidersDeclineWithoutBreakingTheChain") {
+TEST_CASE_FIXTURE(ScriptStateAccessTest,
+                  "dialogue.state.partialAndFailingScriptProvidersDeclineWithoutBreakingTheChain") {
     eve::dialogue::declareScriptStateQuerySeam();
     REQUIRE(publish(eve::IStateQuery::capabilityName, "test.state.partial", "partialProvider").find("ok").toBool());
     REQUIRE(publish(eve::IStateQuery::capabilityName, "test.state.broken", "brokenProvider").find("ok").toBool());
@@ -246,7 +247,7 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptMutationAppliesTh
     REQUIRE(published.find("ok").toBool());
     REQUIRE(cap::query<eve::IStateMutation>() != nullptr);
 
-    eve::dialogue::DialogueStateContext context("npc:blacksmith");
+    eve::dialogue::DialogueStateContext   context("npc:blacksmith");
     const std::vector<eve::StateMutation> mutations = {
         eve::StateMutation{"npc:blacksmith", "gold", eve::Value(std::int64_t(25)), eve::MutationKind::AddNumber, false},
         eve::StateMutation{"npc:blacksmith", "met", eve::Value(true), eve::MutationKind::AddTag, false},
@@ -274,7 +275,7 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptMutationAppliesTh
 }
 
 TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptMutationFailuresAreStructuredAndVisible") {
-    eve::dialogue::DialogueStateContext context("npc:blacksmith");
+    eve::dialogue::DialogueStateContext   context("npc:blacksmith");
     const std::vector<eve::StateMutation> mutations = {
         eve::StateMutation{"npc:blacksmith", "gold", eve::Value(std::int64_t(1)), eve::MutationKind::Set, false}};
     const eve::MutationContext mutationContext{"tx-1", {}, {}};

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -27,7 +29,8 @@ class GpuBuffer;
  *          字段在存储里、没登记的在实例槽位里，这里不需要知道区别。行顺序必须与 `eve.view` 的
  *          稳定顺序（实体 id 升序）一致，因为回读按同一行号寻址。
  */
-int packScriptEntityFloats(ssq::Object entities, const std::string& slot, ssq::Object fields, GpuBuffer* buf);
+EVENGINE_API_WORLD int packScriptEntityFloats(ssq::Object entities, const std::string &slot, ssq::Object fields,
+                                              GpuBuffer *buf);
 
 /**
  * @brief Pack a contiguous entity range into the matching range of an existing buffer.
@@ -41,8 +44,8 @@ int packScriptEntityFloats(ssq::Object entities, const std::string& slot, ssq::O
  * @throws As `packScriptEntityFloats`.
  * @cost 与 `entityCount × 字段数` 成正比；这是 GPU-resident 的逐帧路径，只应传真正变化的那一段。
  */
-int packScriptEntityFloatsRange(ssq::Object entities, const std::string& slot, ssq::Object fields, GpuBuffer* buf,
-                                int firstEntity, int entityCount);
+EVENGINE_API_WORLD int packScriptEntityFloatsRange(ssq::Object entities, const std::string &slot, ssq::Object fields,
+                                                   GpuBuffer *buf, int firstEntity, int entityCount);
 
 /**
  * @brief Inverse of `packScriptEntityFloats`: write buffer rows back into component fields.
@@ -56,8 +59,8 @@ int packScriptEntityFloatsRange(ssq::Object entities, const std::string& slot, s
  * @cost 与 `entityCount × 字段数` 成正比，每个字段一次 Squirrel 写入；回读一帧后应当停止继续
  *       在 GPU 上迭代（见 `docs/usr/modules/gpgpu.md` 的 GPU-resident 说明）。
  */
-int unpackScriptEntityFloats(ssq::Object entities, const std::string& slot, ssq::Object fields, GpuBuffer* buf,
-                             int entityCount);
+EVENGINE_API_WORLD int unpackScriptEntityFloats(ssq::Object entities, const std::string &slot, ssq::Object fields,
+                                                GpuBuffer *buf, int entityCount);
 
 /**
  * @brief Unpack a contiguous buffer range into the matching stable ECS view range.
@@ -71,7 +74,7 @@ int unpackScriptEntityFloats(ssq::Object entities, const std::string& slot, ssq:
  * @throws As `packScriptEntityFloats`.
  * @cost 与 `entityCount × 字段数` 成正比；配合 `requestReadbackRange` 时只回读关心的区间。
  */
-int unpackScriptEntityFloatsRange(ssq::Object entities, const std::string& slot, ssq::Object fields, GpuBuffer* buf,
-                                  int firstEntity, int entityCount);
+EVENGINE_API_WORLD int unpackScriptEntityFloatsRange(ssq::Object entities, const std::string &slot, ssq::Object fields,
+                                                     GpuBuffer *buf, int firstEntity, int entityCount);
 
 }  // namespace eve::gpgpu

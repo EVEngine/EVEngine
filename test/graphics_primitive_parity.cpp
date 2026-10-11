@@ -2,10 +2,14 @@
 #include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/PrimitiveDrawList.h"
+#include "graphics/VegetationField.h"
+#include "graphics/editing/PrimitiveGizmoRenderer.h"
+#include "graphics/editing/VegetationFieldGizmo.h"
 
 #include <array>
 
 using namespace eve::graphics;
+using namespace eve::graphics_editing;
 using namespace eve::graphics::parity_test;
 
 TEST_CASE("graphics.backendParity.primitive2DAnd3DReadback") {
@@ -104,4 +108,52 @@ TEST_CASE("graphics.backendParity.primitive2DAnd3DReadback") {
     REQUIRE(blueAbove > 20u);
     REQUIRE_EQ(blueBelow, 0u);
     writeParityArtifact(*spatialImage, "primitive_3d_depth_fill_stroke", gfx->getBackendName());
+}
+
+TEST_CASE("graphics.backendParity.vegetationFieldGizmoReadback") {
+    Graphics* gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    Canvas* target = gfx->newCanvas(96, 96);
+    REQUIRE(target != nullptr);
+
+    VegetationElement ellipsoid;
+    ellipsoid.channel = VegetationChannel::Color;
+    ellipsoid.shape   = VegetationShape::Ellipsoid;
+    ellipsoid.center  = {-0.55f, 0.f, -3.f};
+    ellipsoid.extents = {0.65f, 0.9f, 0.45f};
+    ellipsoid.yaw     = 0.45f;
+    VegetationElement box;
+    box.channel = VegetationChannel::Motion;
+    box.shape   = VegetationShape::Box;
+    box.center  = {0.65f, 0.f, -3.f};
+    box.extents = {0.55f, 0.75f, 0.4f};
+    box.yaw     = -0.55f;
+    const std::array elements{ellipsoid, box};
+    VegetationField field;
+    REQUIRE(field.replace({}, elements).ok());
+
+    VegetationFieldGizmoBuilder builder;
+    auto snapshot = builder.build("field-readback", field.revision(), field);
+    REQUIRE(snapshot.ok());
+    SceneDrawContext context;
+    context.viewportSize = {96, 96};
+    context.nearPlane    = 0.1f;
+    context.farPlane     = 10.f;
+    context.projection   = perspectiveVulkanRH_ZO(glm::radians(60.f), 1.f, context.nearPlane, context.farPlane);
+    PrimitiveGizmoRenderer renderer;
+    gfx->begin3DFrameToCanvas(target);
+    auto rendered = renderer.render(snapshot.value(), context, *gfx);
+    REQUIRE(rendered.ok());
+    gfx->end3DFrameToCanvas();
+
+    std::unique_ptr<eve::image::ImageData> image(target->newImageData());
+    REQUIRE(image.get() != nullptr);
+    std::size_t colored = 0;
+    for (int y = 0; y < 96; ++y)
+        for (int x = 0; x < 96; ++x) {
+            const auto* sample = pixel(*image, x, y);
+            if (sample[0] > 40 || sample[1] > 40 || sample[2] > 40) ++colored;
+        }
+    REQUIRE(colored > 100u);
+    writeParityArtifact(*image, "vegetation_field_gizmo", gfx->getBackendName());
 }

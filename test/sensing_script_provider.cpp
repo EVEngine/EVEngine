@@ -110,9 +110,9 @@ gridOkProvider <- GridOkProvider()
 brokenProvider <- BrokenProvider()
 )SQ";
 
-constexpr const char* kOriginId   = "00000000-0000-7000-8000-000000000001";
-constexpr const char* kEnemyId    = "00000000-0000-7000-8000-000000000002";
-constexpr const char* kAllyId     = "00000000-0000-7000-8000-000000000004";
+constexpr const char* kOriginId = "00000000-0000-7000-8000-000000000001";
+constexpr const char* kEnemyId  = "00000000-0000-7000-8000-000000000002";
+constexpr const char* kAllyId   = "00000000-0000-7000-8000-000000000004";
 
 SubjectRef subject(const char* text) {
     const auto id = PersistentId::parse(text);
@@ -280,7 +280,7 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.malformedCandidateA
     TargetingSpec gridSpec;
     gridSpec.space = CoordinateSpace::Grid2D;
     TargetingQuery gridQuery{subject(kOriginId), TargetLocation(GridPoint::grid2D(0, 0)), gridSpec};
-    auto fractional = TargetingResolver{}.resolve(gridQuery);
+    auto           fractional = TargetingResolver{}.resolve(gridQuery);
     REQUIRE(!fractional.ok());
     REQUIRE_EQ(static_cast<int>(fractional.code()), static_cast<int>(StatusCode::Rejected));
     unload("test.sensing.fractional");
@@ -311,8 +311,8 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderFa
 TEST_CASE("sensing.script.coordinateSpaceSpellingMatchesTheModuleName") {
     // 脚本词表只有一份，但它必须与模块既有的 `coordinateSpaceName` 拼写一致；这条用例把两者钉在
     // 一起：任何一边改名字，这里就红。
-    const SubjectRef origin = subject(kOriginId);
-    const auto     queryFor = [&origin](CoordinateSpace space) {
+    const SubjectRef origin   = subject(kOriginId);
+    const auto       queryFor = [&origin](CoordinateSpace space) {
         TargetingSpec spec;
         spec.space = space;
         TargetLocation location;
@@ -329,8 +329,8 @@ TEST_CASE("sensing.script.coordinateSpaceSpellingMatchesTheModuleName") {
     CHECK_EQ(coordinateSpaceName(CoordinateSpace::Grid2D), std::string_view("grid2d"));
     CHECK_EQ(coordinateSpaceName(CoordinateSpace::Grid3D), std::string_view("grid3d"));
     // 四个空间都能构造出通过校验的查询：词表与校验规则对齐。
-    for (const CoordinateSpace space : {CoordinateSpace::World2D, CoordinateSpace::World3D, CoordinateSpace::Grid2D,
-                                        CoordinateSpace::Grid3D}) {
+    for (const CoordinateSpace space :
+         {CoordinateSpace::World2D, CoordinateSpace::World3D, CoordinateSpace::Grid2D, CoordinateSpace::Grid3D}) {
         REQUIRE(queryFor(space).validate().ok());
     }
 }

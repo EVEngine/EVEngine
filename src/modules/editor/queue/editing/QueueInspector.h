@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 
@@ -46,7 +48,7 @@ struct QueueInspectionSnapshot {
 };
 
 /** @brief Safely copies short-lived Orders and Production observations for editor use. */
-class RuntimeQueueInspector {
+class EVENGINE_API_BACKENDS RuntimeQueueInspector {
 public:
     /** @brief Capture an Orders queue and optionally filter by state or kind. */
     QueueInspectionSnapshot capture(const orders::CommandQueue& queue,

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "dialogue-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/dialogue/StateAccessScriptSeam.cpp",
+      "owner": "dialogue",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Dialogue is the consumer that owns these two contracts: DialogueState::queryProviders walks cap::query and then cap::forEach for IStateQuery, and DialogueStateContext::apply takes IStateMutation through cap::query. The new script seams answer the first as a listener and the second in the single-provider slot, so both faces appear here and the next provider must declare itself instead of silently displacing the slot. The scope is this one file, not src/modules/dialogue/**: the runner, parser and bindings expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/dialogue/StateAccessScriptSeam.cpp",
+        "src/modules/dialogue/DialogueState.cpp",
+        "src/engine/common/StateAccess.h"
+      ],
+      "tests": [
+        "test/dialogue_state_script_provider.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IStateQuery",
+        "IStateMutation"
+      ],
+      "requires": [
+        "IStateQuery",
+        "IStateMutation"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.state.IStateQuery', name, instance) -> value/hasTag/attribute/resource/state/authority(subject, key|tag|scope), null meaning 'not mine'; eve.provider.publishFor('eve.state.IStateMutation', name, instance) -> applyStateMutations({ transactionId, correlationId, causationId, mutations = [{ subject, key, value, kind, persistent }] }) returning the number of changed entries"
+      ],
+      "protocol": [],
+      "thread_affinity": "Squirrel owning thread; the seam answers IStateQuery and IStateMutation synchronously while a dialogue expression is evaluated and retains no VM value between calls",
+      "trim": {
+        "absent_profile": "Profiles without dialogue drop the seams; other IStateQuery/IStateMutation providers keep answering through the same forEach walk, so dialogue state resolution degrades to the remaining providers",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "Each value/hasTag/attribute/resource/state/authority call is one script call that returns null for 'not mine', so the walk continues; applyStateMutations marshals one mutation table per batch."
+      ],
+      "hot_path": []
+    }
+  ]
+}

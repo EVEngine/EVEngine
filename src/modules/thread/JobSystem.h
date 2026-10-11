@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstddef>
 #include <functional>
@@ -40,6 +42,7 @@ using ParallelForBody = std::function<void(int first, int last)>;
  */
 class Job {
 public:
+    /** @brief Releases Job resources. */
     virtual ~Job() = default;
 
     /**
@@ -105,6 +108,7 @@ public:
  */
 class TaskGroup {
 public:
+    /** @brief Releases TaskGroup resources. */
     virtual ~TaskGroup() = default;
 
     /**
@@ -152,6 +156,7 @@ public:
  */
 class JobSystem {
 public:
+    /** @brief Releases JobSystem resources. */
     virtual ~JobSystem() = default;
 
     /** @brief Number of scheduler worker threads. */
@@ -284,8 +289,10 @@ public:
  *
  * @param workerCount Worker thread count; <= 0 means hardware concurrency.
  * @return New JobSystem; the caller owns it and must delete it.
+ * @ownership Caller owns the returned scheduler and releases it with delete after all jobs are joined.
+ * @lifetime Valid until deleted by the caller; outstanding Job/TaskGroup handles must not outlive it.
  */
-JobSystem *createJobSystem(int workerCount = 0);
+EVENGINE_API_FOUNDATION JobSystem *createJobSystem(int workerCount = 0);
 
 }  // namespace thread
 }  // namespace eve

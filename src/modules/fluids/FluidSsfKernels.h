@@ -36,13 +36,21 @@ namespace eve::fluids {
 /** @brief Reset depth (0xFFFFFFFF), thickness, normal and color buffers. */
 inline const char* kSsfClear = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;
+/** @brief Layout. */
 layout(set = 0, binding = 2) buffer DepthB { uint d[]; } depthB;
+/** @brief Layout. */
 layout(set = 0, binding = 3) buffer Thick { uint t[]; } thick;
+/** @brief Layout. */
 layout(set = 0, binding = 4) buffer Normal { vec4 n[]; } normal;
+/** @brief Layout. */
 layout(set = 0, binding = 5) buffer Color { uint c[]; } color;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint total = uint(pc.d[23]) * uint(pc.d[24]);
@@ -58,19 +66,27 @@ void main() {
 /** @brief Splat particles into depth + thickness (atomic min / add). */
 inline const char* kSsfSplat = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 0) buffer Particles { vec4 p[]; } parts;
+/** @brief Layout. */
 layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;
+/** @brief Layout. */
 layout(set = 0, binding = 3) buffer Thick { uint t[]; } thick;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
 
+/** @brief Loads vp. */
 mat4 loadVP() {
+    /** @brief Mat 4. */
     return mat4(pc.d[0], pc.d[1], pc.d[2], pc.d[3],
                 pc.d[4], pc.d[5], pc.d[6], pc.d[7],
                 pc.d[8], pc.d[9], pc.d[10], pc.d[11],
                 pc.d[12], pc.d[13], pc.d[14], pc.d[15]);
 }
 
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint n = uint(pc.d[16]);
@@ -108,8 +124,10 @@ void main() {
             float cap = pc.d[25] * sqrt(1.0 - q);
             float t = clamp((depth - cap - nearZ) / (farZ - nearZ), 0.0, 1.0);
             uint key = uint(t * 16777215.0);
+            /** @brief Atomic min. */
             atomicMin(depthA.d[idx], key);
             uint contribution = uint(clamp(2.0 * cap * scale * 256.0, 0.0, 16777215.0));
+            /** @brief Atomic add. */
             atomicAdd(thick.t[idx], contribution);
         }
     }
@@ -123,9 +141,13 @@ void main() {
  */
 inline const char* kSsfColorClear = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 7) buffer Accum { uint v[]; } accum;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     if (i >= uint(pc.d[23]) * uint(pc.d[24])) return;
@@ -141,15 +163,23 @@ void main() {
  */
 inline const char* kSsfColorSplat = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 0) buffer Particles { vec4 p[]; } parts;
+/** @brief Layout. */
 layout(set = 0, binding = 6) buffer ParticleColors { vec4 c[]; } particleColors;
+/** @brief Layout. */
 layout(set = 0, binding = 7) buffer Accum { uint v[]; } accum;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
+/** @brief Loads vp. */
 mat4 loadVP() {
+    /** @brief Mat 4. */
     return mat4(pc.d[0], pc.d[1], pc.d[2], pc.d[3], pc.d[4], pc.d[5], pc.d[6], pc.d[7],
                 pc.d[8], pc.d[9], pc.d[10], pc.d[11], pc.d[12], pc.d[13], pc.d[14], pc.d[15]);
 }
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     if (i >= uint(pc.d[16])) return;
@@ -175,10 +205,15 @@ void main() {
         if (q <= 0.0) continue;
         uint scaled = max(1u, uint(q * 4095.0));
         uint at = (uint(y) * uint(W) + uint(x)) * 5u;
+        /** @brief Atomic add. */
         atomicAdd(accum.v[at + 0u], scaled);
+        /** @brief Atomic add. */
         atomicAdd(accum.v[at + 1u], uint(float(scaled) * tint.r));
+        /** @brief Atomic add. */
         atomicAdd(accum.v[at + 2u], uint(float(scaled) * tint.g));
+        /** @brief Atomic add. */
         atomicAdd(accum.v[at + 3u], uint(float(scaled) * tint.b));
+        /** @brief Atomic add. */
         atomicAdd(accum.v[at + 4u], uint(float(scaled) * tint.a));
     }
 }
@@ -187,12 +222,18 @@ void main() {
 // Splat preprojected oriented ellipsoids without expanding push constants.
 inline constexpr auto kSsfAnisotropicSplat = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 0) buffer Ellipsoids { vec4 e[]; } ellipsoids;
+/** @brief Layout. */
 layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;
+/** @brief Layout. */
 layout(set = 0, binding = 3) buffer Thick { uint t[]; } thick;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
 
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     if (i >= uint(pc.d[16])) return;
@@ -217,8 +258,10 @@ void main() {
         float centerDepth = projected.z + dot(depthSlope.xy, delta);
         float t = clamp((centerDepth - cap - nearZ) / (farZ - nearZ), 0.0, 1.0);
         uint idx = uint(yy) * uint(W) + uint(xx);
+        /** @brief Atomic min. */
         atomicMin(depthA.d[idx], uint(t * 16777215.0));
         uint contribution = uint(clamp(2.0 * cap * pc.d[27] * 256.0, 0.0, 16777215.0));
+        /** @brief Atomic add. */
         atomicAdd(thick.t[idx], contribution);
     }
 }
@@ -227,17 +270,23 @@ void main() {
 /** @brief One bilateral smoothing pass (read depthA, write depthB). */
 inline const char* kSsfSmooth = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;
+/** @brief Layout. */
 layout(set = 0, binding = 2) buffer DepthB { uint d[]; } depthB;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
 
+/** @brief Decode. */
 float decode(uint key) {
     float nearZ = max(pc.d[19], 1e-4);
     float farZ = max(pc.d[20], nearZ + 1e-3);
     return nearZ + (float(key) / 16777215.0) * (farZ - nearZ);
 }
 
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint W = uint(pc.d[23]);
@@ -286,17 +335,23 @@ void main() {
 /** @brief Reconstruct view-space normals from the smoothed depth. */
 inline const char* kSsfNormal = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;
+/** @brief Layout. */
 layout(set = 0, binding = 4) buffer Normal { vec4 n[]; } normal;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
 
+/** @brief Decode. */
 float decode(uint key) {
     float nearZ = max(pc.d[19], 1e-4);
     float farZ = max(pc.d[20], nearZ + 1e-3);
     return nearZ + (float(key) / 16777215.0) * (farZ - nearZ);
 }
 
+/** @brief Sample depth. */
 float sampleDepth(ivec2 off, uint W, uint H, uint cx, uint cy) {
     int xx = int(cx) + off.x;
     int yy = int(cy) + off.y;
@@ -305,6 +360,7 @@ float sampleDepth(ivec2 off, uint W, uint H, uint cx, uint cy) {
     return k == 0xFFFFFFFFu ? 1e30 : decode(k);
 }
 
+/** @brief Surface derivative. */
 vec3 surfaceDerivative(vec3 forward, vec3 backward, bool forwardValid, bool backwardValid) {
     if (!forwardValid && backwardValid) return backward;
     if (!backwardValid && forwardValid) return forward;
@@ -312,18 +368,22 @@ vec3 surfaceDerivative(vec3 forward, vec3 backward, bool forwardValid, bool back
     float tolerance = 2.0 * (pc.d[20] - pc.d[19]) / 16777215.0;
     if ((!forwardValid && !backwardValid) || abs(abs(forward.z) - abs(backward.z)) <= tolerance)
         return (forward + backward) * 0.5;
+    /** @brief Abs. */
     return abs(forward.z) < abs(backward.z) ? forward : backward;
 }
 
+/** @brief View pos. */
 vec3 viewPos(vec2 uv, float depth) {
     float tanHalf = max(pc.d[21], 1e-4);
     float aspect = max(pc.d[22], 1e-4);
     float scale = pc.d[17] > 0.5 ? 1.0 : depth;
     float x = (uv.x * 2.0 - 1.0) * aspect * tanHalf * scale;
     float y = (1.0 - uv.y * 2.0) * tanHalf * scale;
+    /** @brief Vec 3. */
     return vec3(x, y, -depth);
 }
 
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint W = uint(pc.d[23]);
@@ -360,14 +420,22 @@ void main() {
 /** @brief Water/mud shading from depth + normal + thickness. */
 inline const char* kSsfShade = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;
+/** @brief Layout. */
 layout(set = 0, binding = 3) buffer Thick { uint t[]; } thick;
+/** @brief Layout. */
 layout(set = 0, binding = 4) buffer Normal { vec4 n[]; } normal;
+/** @brief Layout. */
 layout(set = 0, binding = 5) buffer Color { uint c[]; } color;
+/** @brief Layout. */
 layout(set = 0, binding = 7) buffer Accum { uint v[]; } accum;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
 
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint W = uint(pc.d[23]);
@@ -399,6 +467,7 @@ void main() {
         vec4 tint = particleTint
             ? vec4(accum.v[accumulatedAt + 1u], accum.v[accumulatedAt + 2u],
                    accum.v[accumulatedAt + 3u], accum.v[accumulatedAt + 4u]) / float(accumulatedWeight)
+            /** @brief Vec 4. */
             : vec4(pc.d[0], pc.d[1], pc.d[2], pc.d[3]);
         vec3 reflectionColor = vec3(pc.d[4], pc.d[5], pc.d[6]);
         bool lighting = pc.d[7] > 0.5;
@@ -413,6 +482,7 @@ void main() {
             return;
         }
         float light = lighting ?
+            /** @brief Clamp. */
             clamp(ambient + (1.0 - min(ambient, 1.0)) * diff, 0.0, 6.0) : 1.0;
         float exponent = 4.0 + 124.0 * smoothness;
         float spec = lighting ? pow(max(n.z, 0.0), exponent) * smoothness * 0.56 : 0.0;

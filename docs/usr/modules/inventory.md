@@ -43,7 +43,6 @@ print(bag.countItem("potion.hp") + "\n");
 物品定义注册表属于内容，不写入玩家存档；读档前必须先加载相同内容版本。
 
 ### C++ 批量加入事务
-
 跨系统奖励应使用 `InventorySystem::prepareAddBatch()` 先在私有候选背包上验证完整批次，再用
 `commitAddBatch()` 提交。准备阶段不改变背包、不产生轮询事件、也不调用 hook；提交时如果背包自准备后
 发生变化，会以结构化 `Conflict` 拒绝。成功提交先一次替换权威槽位，随后才发布每项 `add` 事件，
@@ -51,6 +50,21 @@ print(bag.countItem("potion.hp") + "\n");
 
 需要和货币、任务等其他权威状态共同提交的移除操作使用 `prepareRemove()` / `commitRemove()`；它采用
 同样的候选背包、陈旧检测和提交后事件契约。RPG 商店已在此基础上提供购买与出售事务。
+
+### 把玩家背包交给 MCP / 玩法协议
+
+`publishGameplay(instanceId, ownerId, bag, equipment)` 把一个玩家背包（可带装备栏，省略或传 `null`
+则没有装备动作）发布到共享玩法协议（`eve_gameplay` 工具的 `observe/actions/submit/advance/events`），
+返回 `{ ok, message }`；`instanceId` / `ownerId` 必须是规范持久 id（UUID 文本），与请求里的
+`instance` / `session.controlledSubjects` 逐字一致。一个模块只注册一个领域适配器并服务全部已发布
+实例，因此多名玩家可同时发布；同一 `instanceId` 重复发布返回 `conflict`。
+`unpublishGameplay(instanceId)` 取消一个实例，`clearGameplayControls()` 一次清空，
+`getGameplayControlCount()` 读取当前发布数量。重建背包（例如读档后）必须重新发布，否则适配器仍指向旧容器。
+
+动作词表就是本模块自己的操作：`inventory:remove-item` / `inventory:move-slot` / `inventory:equip` /
+`inventory:unequip` 对玩家与自动化档位一致；`inventory:add-item` 是发放，只对 test-driver /
+developer-cheat 档位广播与接受。`remove-item` 沿用容器"最多取 N"语义：请求超过持有量时按实际生效量
+应用，并在收据与事件的 `quantity` 里披露，而不是谎报全额成功。
 
 ## 常见问题
 
@@ -71,6 +85,7 @@ print(bag.countItem("potion.hp") + "\n");
 - `hasSlot()`、`hasStackRule()`、`isSlotEmpty()`、`itemHasTag()`、`moveSlot()`、`newBag()`、`newEquipmentSet()`、`registerItemsFromJson()`、`removeAt()`
 - `removeItem()`、`restoreSnapshotJson()`、`setAcceptRule()`、`setCapacityPolicy()`、`setExtra()`、`setId()`、`setKind()`、`setMaxVolume()`、`setMaxWeight()`、`setSlotCount()`、`snapshotJson()`
 - `setSlotDurability()`、`setSlotProp()`、`setStackRule()`、`slotHasTag()`、`splitStack()`、`swapSlots()`、`transferItem()`、`transferSlot()`、`unequipToBag()`
+- `eve.Inventory()` 玩法协议发布：`publishGameplay(instanceId, ownerId, bag, equipment)`、`unpublishGameplay(instanceId)`、`clearGameplayControls`、`getGameplayControlCount`
 
 ## 使用要点
 

@@ -55,8 +55,8 @@ public:
     [[nodiscard]] const ScriptProviderHandle& handle() const noexcept { return handle_; }
 
     void replaceTileCollision(TileLayerRef layer, const TileCollisionRect* rects, size_t count) override {
-        const ScriptArg args[] = {ScriptArg::fromTable(collisionPayload(layer, rects, count))};
-        const auto published = ScriptProviderRegistry::instance().call(handle_, "replaceTileCollision", args);
+        const ScriptArg args[]    = {ScriptArg::fromTable(collisionPayload(layer, rects, count))};
+        const auto      published = ScriptProviderRegistry::instance().call(handle_, "replaceTileCollision", args);
         if (published.ok()) return;
 
         // 接口是 `void`：失败没有返回值可放，所以**计数 + 上报**（每一代只写一行日志，避免
@@ -64,8 +64,9 @@ public:
         ++scriptTileCollisionSinkFailureCount();
         if (reportedGeneration_ == handle_.generation) return;
         reportedGeneration_ = handle_.generation;
-        recordLogEvent("warn", "script tile collision sink '" + handle_.name + "' did not accept the geometry for layer " +
-                                   std::to_string(layer.slot) + ": " + published.status().describe());
+        recordLogEvent("warn", "script tile collision sink '" + handle_.name +
+                                   "' did not accept the geometry for layer " + std::to_string(layer.slot) + ": " +
+                                   published.status().describe());
     }
 
 private:
@@ -104,11 +105,10 @@ void declareScriptTileCollisionSinkSeam() {
             return Result<void>::success();
         },
         [&owned](const ScriptProviderHandle& handle) -> Result<void> {
-            const auto match = std::find_if(
-                owned.live.begin(), owned.live.end(),
-                [&handle](const std::unique_ptr<ScriptTileCollisionSink>& adapter) {
-                    return adapter->handle() == handle;
-                });
+            const auto match = std::find_if(owned.live.begin(), owned.live.end(),
+                                            [&handle](const std::unique_ptr<ScriptTileCollisionSink>& adapter) {
+                                                return adapter->handle() == handle;
+                                            });
             if (match == owned.live.end()) {
                 // 幂等：后置条件是"这一代没有适配器"，模块退出时可能已经撤过了。
                 return Result<void>::success();

@@ -22,7 +22,7 @@
 | Event | `src/modules/event/*/Event.cpp` | `test/event.cpp` | 区分平台 pump、一次性消息和持久状态 |
 | Rx | `src/modules/rx/Rx.cpp` | `test/rx.cpp` | 区分推送流/事件桥接；脚本闭包仅主线程调用；subscribe 与 subscribe3 参数必填 |
 | Timer | `src/modules/timer/Timer.cpp` | `test/timer.nut`、`test/timer_cpp.cpp` | 确认秒单位、单次 step 与暂停大 dt 风险 |
-| System | `src/modules/system/System.cpp` | `test/system.cpp` | 区分 wall time、帧计时和阻塞 sleep |
+| OS | `src/modules/os/OS.cpp` | `test/os.cpp` | 区分 wall time、帧计时和阻塞 sleep |
 | Keyboard | `src/modules/keyboard/Keyboard.cpp` | `test/keyboard_cpp.cpp` | 说明状态查询、边沿检测、key/scancode 和文本输入 |
 | Mouse | `src/modules/mouse/Mouse.cpp` | `test/mouse.nut`、`test/mouse_cpp.cpp` | 已补齐相对模式、可见性、位置与抓取的脚本绑定 |
 | Touch | `src/modules/touch/Touch.cpp` | `test/touch.cpp` | 明确触点索引仅当前帧有效 |
@@ -44,7 +44,7 @@
 | Animation | `src/modules/animation/Animation.cpp`、`Tween.cpp` | `test/animation.cpp` | 说明 Tween 只算值，游戏负责写回属性 |
 | RPG | `src/modules/rpg/RPG.cpp` | `examples/rpg/`、`test/rpg.cpp` | 串联 definition、actor、update、事件和 settlement |
 | Inventory | `src/modules/inventory/Inventory.cpp` | `examples/inventory/`、`test/inventory.cpp` | 串联物品定义、Bag、转移、装备与变更事件 |
-| Procgen | `src/modules/procgen/Procgen.cpp` | `examples/procgen/`、`test/procgen.cpp` | 补充 seed 可复现、Params/Grid/Output 与缓存策略 |
+| Procgen | `src/modules/procgen/Procgen*.cpp` | `examples/procgen/`、`test/procgen.cpp` | 补充 seed 可复现、Params/Grid/Output 与缓存策略 |
 | Graphics | `src/modules/graphics/Graphics.cpp` | `examples/basic/main.nut`、渲染测试 | 明确资源创建与逐帧提交边界、2D/3D/UI 顺序，以及 Camera2D/3D 拾取换算 |
 | UI | `src/modules/ui/UI.cpp` | `examples/basic/ui_demo.nut`、UI 测试 | 补充 Host、稳定 ID、事件消费和局部更新 |
 | Scene | `src/modules/scene/Scene.cpp` | `test/scene.cpp` | 补充 Host/Node、local/world TRS、link 和 build 配对 |

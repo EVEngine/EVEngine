@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/algorithms/CaveHydrology.h"
 
@@ -38,7 +40,7 @@ struct CaveConstrictionScourSample {
  * @param hydrology Hydraulic weights corresponding to trunk and branches.
  * @return Deterministically located constriction-pool-widening sites.
  */
-[[nodiscard]] std::vector<CaveConstrictionScourSite> createCaveConstrictionScourSites(
+[[nodiscard]] EVENGINE_API_DOMAINS std::vector<CaveConstrictionScourSite> createCaveConstrictionScourSites(
     const std::vector<CaveHydrologyPoint>& trunk, const std::vector<CaveHydrologyBranch>& branches,
     const CaveHydrologyWeights& hydrology);
 
@@ -48,7 +50,7 @@ struct CaveConstrictionScourSample {
  * @param sites Sites derived by createCaveConstrictionScourSites.
  * @return Maximum local scour response and contributing site.
  */
-[[nodiscard]] CaveConstrictionScourSample sampleCaveConstrictionScour(
-    CaveHydrologyVec3 point, const std::vector<CaveConstrictionScourSite>& sites);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveConstrictionScourSample
+sampleCaveConstrictionScour(CaveHydrologyVec3 point, const std::vector<CaveConstrictionScourSite>& sites);
 
 }  // namespace eve::procgen

@@ -10,20 +10,17 @@ bool valid(const VolumeFluidDiffuseParticle& p) {
     return finite(p.position) && finite(p.velocity) && glm::length(p.velocity) <= 100.f && std::isfinite(p.life) &&
            p.life > 0.f && p.life <= 86400.f;
 }
-Result<void> invalid(const char* message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "fluids.volume.diffuse"));
-}
 }  // namespace
 Result<void> VolumeFluidDiffuse::emit(std::span<const VolumeFluidDiffuseParticle> particles) {
-    if (particles.size() > availableCapacity()) return invalid("Diffuse capacity exceeded");
+    if (particles.size() > availableCapacity()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Diffuse capacity exceeded", "fluids.volume.diffuse"));
     for (const auto& particle : particles)
-        if (!valid(particle)) return invalid("Invalid diffuse particle");
+        if (!valid(particle)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid diffuse particle", "fluids.volume.diffuse"));
     particles_.insert(particles_.end(), particles.begin(), particles.end());
     return Result<void>::success();
 }
 Result<void> VolumeFluidDiffuse::advance(const VolumeFluid& fluid, float seconds, unsigned minimumNeighbors) {
     if (!std::isfinite(seconds) || seconds <= 0.f || seconds > 1.f / 30.f || minimumNeighbors > 1000000)
-        return invalid("Invalid diffuse timestep or neighbor threshold");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid diffuse timestep or neighbor threshold", "fluids.volume.diffuse"));
     candidateScratch_.clear();
     positionScratch_.clear();
     candidateScratch_.reserve(particles_.size());
@@ -47,7 +44,7 @@ Result<void> VolumeFluidDiffuse::advance(const VolumeFluid& fluid, float seconds
         auto particle     = candidateScratch_[i];
         particle.velocity = sample.velocity;
         particle.position += particle.velocity * seconds;
-        if (!valid(particle)) return invalid("Invalid diffuse advection result");
+        if (!valid(particle)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid diffuse advection result", "fluids.volume.diffuse"));
         candidateScratch_[remaining++] = particle;
     }
     candidateScratch_.resize(remaining);
@@ -60,9 +57,9 @@ VolumeFluidDiffuseSnapshot VolumeFluidDiffuse::snapshot() const {
 Result<void> VolumeFluidDiffuse::restore(const VolumeFluidDiffuseSnapshot& snapshot) {
     if (snapshot.schema != "eve.volume-fluid-diffuse" || snapshot.version != 1 || snapshot.capacity == 0 ||
         snapshot.capacity > 65536 || snapshot.particles.size() > snapshot.capacity)
-        return invalid("Invalid diffuse snapshot");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid diffuse snapshot", "fluids.volume.diffuse"));
     for (const auto& p : snapshot.particles)
-        if (!valid(p)) return invalid("Invalid diffuse snapshot particle");
+        if (!valid(p)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid diffuse snapshot particle", "fluids.volume.diffuse"));
     auto candidate = snapshot.particles;
     particles_.swap(candidate);
     capacity_ = snapshot.capacity;

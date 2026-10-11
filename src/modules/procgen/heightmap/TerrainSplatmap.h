@@ -17,13 +17,19 @@ struct TerrainTextureAlignSettings;
  * @brief Owning normalized terrain texture-layer weights with atomic mutation.
  * Layers share one finite width/height topology and each texel sums to one within float tolerance.
  */
-class TerrainSplatmap {
+class EVENGINE_API_DOMAINS TerrainSplatmap {
 public:
+    /** @brief Terrain splatmap. */
     TerrainSplatmap();
+    /** @brief Terrain splatmap. */
     ~TerrainSplatmap();
+    /** @brief Terrain splatmap. */
     TerrainSplatmap(TerrainSplatmap&&) noexcept;
+    /** @brief Operator =. */
     TerrainSplatmap& operator=(TerrainSplatmap&&) noexcept;
+    /** @brief Terrain splatmap. */
     TerrainSplatmap(const TerrainSplatmap&);
+    /** @brief Operator =. */
     TerrainSplatmap& operator=(const TerrainSplatmap&);
     /** @brief Initialize topology and assign all weight to defaultLayer. */
     [[nodiscard]] Result<int> initialize(int width, int height, int layerCount, int defaultLayer = 0);
@@ -42,12 +48,12 @@ public:
 private:
     struct Impl;
     std::unique_ptr<Impl> impl_;
-    friend Result<int> paintTerrainSplatLayer(TerrainSplatmap&, const Heightmap&, int);
-    friend Result<int> applyGtsHeightBlend(TerrainSplatmap&, const TerrainSplatmap&,
-                                           const GtsHeightBlendSet&, float);
-    friend Result<int> alignTerrainSplatTextures(TerrainSplatmap&, TerrainSplatmap&,
-                                                  const TerrainTextureAlignSettings&);
-    friend Result<TerrainMultiTileReport> paintTerrainSplatLayerMultiTile(
+    friend EVENGINE_API_DOMAINS Result<int> paintTerrainSplatLayer(TerrainSplatmap&, const Heightmap&, int);
+    friend EVENGINE_API_DOMAINS Result<int> applyGtsHeightBlend(TerrainSplatmap&, const TerrainSplatmap&,
+                                                                const GtsHeightBlendSet&, float);
+    friend EVENGINE_API_DOMAINS Result<int> alignTerrainSplatTextures(TerrainSplatmap&, TerrainSplatmap&,
+                                                                      const TerrainTextureAlignSettings&);
+    friend EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> paintTerrainSplatLayerMultiTile(
         const std::vector<struct TerrainSplatTile>&, const Heightmap&, int, const TerrainStampSettings&, bool,
         const std::vector<std::string>&);
 };
@@ -74,16 +80,20 @@ struct TerrainTextureAlignSettings {
  * @param settings Finite world geometry and blend controls, borrowed only for this call.
  * @return Total changed texels across both maps, or a structured failure with neither map modified.
  */
-[[nodiscard]] Result<int> alignTerrainSplatTextures(TerrainSplatmap& terrainA,
-                                                    TerrainSplatmap& terrainB,
-                                                    const TerrainTextureAlignSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> alignTerrainSplatTextures(TerrainSplatmap&                   terrainA,
+                                                                         TerrainSplatmap&                   terrainB,
+                                                                         const TerrainTextureAlignSettings& settings);
 
 /** @brief Owning ordered GTS layer-height rasters and their alpha-channel transforms. */
-class GtsHeightBlendSet {
+class EVENGINE_API_DOMAINS GtsHeightBlendSet {
 public:
+    /** @brief Gts height blend set. */
     GtsHeightBlendSet();
+    /** @brief Gts height blend set. */
     ~GtsHeightBlendSet();
+    /** @brief Gts height blend set. */
     GtsHeightBlendSet(GtsHeightBlendSet&&) noexcept;
+    /** @brief Operator =. */
     GtsHeightBlendSet& operator=(GtsHeightBlendSet&&) noexcept;
     GtsHeightBlendSet(const GtsHeightBlendSet&) = delete;
     GtsHeightBlendSet& operator=(const GtsHeightBlendSet&) = delete;
@@ -95,16 +105,17 @@ public:
 private:
     struct Impl;
     std::unique_ptr<Impl> impl_;
-    friend Result<int> applyGtsHeightBlend(TerrainSplatmap&, const TerrainSplatmap&,
-                                           const GtsHeightBlendSet&, float);
+    friend EVENGINE_API_DOMAINS Result<int> applyGtsHeightBlend(TerrainSplatmap&, const TerrainSplatmap&,
+                                                                const GtsHeightBlendSet&, float);
 };
 
 /**
  * @brief Recompute all splat weights using the GTS texture-height blending equation.
  * @return Changed texel count or InvalidArgument; output remains unchanged on failure.
  */
-[[nodiscard]] Result<int> applyGtsHeightBlend(TerrainSplatmap& output, const TerrainSplatmap& input,
-                                              const GtsHeightBlendSet& heights, float blendFactor);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyGtsHeightBlend(TerrainSplatmap&         output,
+                                                                   const TerrainSplatmap&   input,
+                                                                   const GtsHeightBlendSet& heights, float blendFactor);
 
 /** @brief Borrowed terrain splat owner and world geometry for one synchronous texture transaction. */
 struct TerrainSplatTile {
@@ -121,14 +132,14 @@ struct TerrainSplatTile {
  * @param targetLayer Layer index previously gathered by Pcg GetSplatmap.
  * @return Changed texel count or structured diagnostic. No references, callbacks, RNG or time survive the call.
  */
-[[nodiscard]] Result<int> paintTerrainSplatLayer(TerrainSplatmap& target, const Heightmap& paint,
-                                                int targetLayer);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> paintTerrainSplatLayer(TerrainSplatmap& target, const Heightmap& paint,
+                                                                      int targetLayer);
 
 /**
  * @brief Paint one shared Pcg Texture-domain operation raster across selected tiles atomically.
  * @return Affected-pixel mappings and changed texel total; no tile publishes on any validation failure.
  */
-[[nodiscard]] Result<TerrainMultiTileReport> paintTerrainSplatLayerMultiTile(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> paintTerrainSplatLayerMultiTile(
     const std::vector<TerrainSplatTile>& tiles, const Heightmap& operationPaint, int targetLayer,
     const TerrainStampSettings& operationSettings, bool worldMapOperation = false,
     const std::vector<std::string>& validTerrainNames = {});
@@ -138,11 +149,15 @@ struct TerrainSplatTile {
  * Input maps are copied. Paint, report and history publish through one owner-thread swap; no external references,
  * callbacks, renderer resources, RNG or time survive a call.
  */
-class TerrainMultiSplatWorkspace {
+class EVENGINE_API_DOMAINS TerrainMultiSplatWorkspace {
 public:
+    /** @brief Terrain multi splat workspace. */
     TerrainMultiSplatWorkspace();
+    /** @brief Terrain multi splat workspace. */
     ~TerrainMultiSplatWorkspace();
+    /** @brief Terrain multi splat workspace. */
     TerrainMultiSplatWorkspace(TerrainMultiSplatWorkspace&&) noexcept;
+    /** @brief Operator =. */
     TerrainMultiSplatWorkspace& operator=(TerrainMultiSplatWorkspace&&) noexcept;
     TerrainMultiSplatWorkspace(const TerrainMultiSplatWorkspace&) = delete;
     TerrainMultiSplatWorkspace& operator=(const TerrainMultiSplatWorkspace&) = delete;

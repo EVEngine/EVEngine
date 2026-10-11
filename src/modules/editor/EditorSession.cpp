@@ -20,7 +20,7 @@ bool EditorContext::execute(std::unique_ptr<IEditCommand> command) const {
     return session_ && session_->execute(std::move(command));
 }
 
-EditorResult<void> EditorContext::executeChecked(std::unique_ptr<IEditCommand> command) const {
+Result<void> EditorContext::executeChecked(std::unique_ptr<IEditCommand> command) const {
     if (!session_)
         return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.context.missing-session"),
                                          "Editor context has no dispatching session");
@@ -31,15 +31,15 @@ bool EditorSession::execute(std::unique_ptr<IEditCommand> command) {
     return executeChecked(std::move(command)).ok();
 }
 
-EditorResult<void> EditorSession::executeChecked(std::unique_ptr<IEditCommand> command) {
+Result<void> EditorSession::executeChecked(std::unique_ptr<IEditCommand> command) {
     if (!command)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.command.null"),
                                          "Editor command must not be null");
-    EditorResult<void> constrained = constraints_.evaluateChecked(context_, *command);
+    Result<void> constrained = constraints_.evaluateChecked(context_, *command);
     if (!constrained.ok()) return constrained;
     auto appended = transactions_.append(std::move(command));
-    if (!appended.ok()) return projectCommonResult(std::move(appended));
-    return EditorResult<void>::success(eve::Status(EditorStatus::Applied, constrained.diagnostics()));
+    if (!appended.ok()) return appended;
+    return Result<void>::success(eve::Status(EditorStatus::Applied, constrained.diagnostics()));
 }
 
 void EditorSession::bindTarget(IEditableTarget& target) {
@@ -110,7 +110,7 @@ IEditableTarget* EditorSession::target() const {
     return target_;
 }
 
-EditorResult<EditorValue> EditorSession::executeCommand(const CommandId& id, const EditorValue& payload,
+Result<EditorValue> EditorSession::executeCommand(const CommandId& id, const EditorValue& payload,
                                                         CommandSource source) {
     if (!commandService_)
         return eve::editing::failed<EditorValue>(EditorStatus::Failed, RuleId("editor.command.missing-service"),
@@ -120,7 +120,7 @@ EditorResult<EditorValue> EditorSession::executeCommand(const CommandId& id, con
     const bool ownsTransaction          = descriptor && descriptor->createsTransaction && !transactions_.isActive();
     if (ownsTransaction) {
         auto begun = transactions_.beginTransaction(descriptor->displayName.empty() ? id.value() : descriptor->displayName);
-        if (!begun.ok()) return projectCommonFailure<EditorValue>(begun.status());
+        if (!begun.ok()) return Result<EditorValue>::failure(begun.status());
     }
 
     CommandContext commandContext;
@@ -132,7 +132,7 @@ EditorResult<EditorValue> EditorSession::executeCommand(const CommandId& id, con
         commandContext.targetRevision = currentTarget->revision();
     }
 
-    EditorResult<EditorValue> result = commandService_->execute(id, commandContext, payload);
+    Result<EditorValue> result = commandService_->execute(id, commandContext, payload);
     if (ownsTransaction) {
         if (result.ok()) {
             auto committed = transactions_.commitTransaction();
@@ -141,17 +141,17 @@ EditorResult<EditorValue> EditorSession::executeCommand(const CommandId& id, con
                 if (!discarded.ok()) {
                     std::vector<EditorDiagnostic> diagnostics = committed.diagnostics();
                     appendProjectedDiagnostics(diagnostics, discarded.status());
-                    return EditorResult<EditorValue>::failure(
+                    return Result<EditorValue>::failure(
                         eve::Status(EditorStatus::Failed, std::move(diagnostics)));
                 }
-                return projectCommonFailure<EditorValue>(committed.status());
+                return Result<EditorValue>::failure(committed.status());
             }
         } else {
             auto discarded = transactions_.rollbackTransaction();
             if (!discarded.ok()) {
                 std::vector<EditorDiagnostic> diagnostics = result.diagnostics();
                 appendProjectedDiagnostics(diagnostics, discarded.status());
-                return EditorResult<EditorValue>::failure(
+                return Result<EditorValue>::failure(
                     eve::Status(EditorStatus::Failed, std::move(diagnostics)));
             }
         }
@@ -171,7 +171,7 @@ EditorContextSnapshot EditorSession::contextSnapshot() const {
     return snapshot;
 }
 
-EditorResult<CommandPlan> EditorSession::planCommand(const CommandId& id, const EditorValue& payload,
+Result<CommandPlan> EditorSession::planCommand(const CommandId& id, const EditorValue& payload,
                                                      CommandSource           source,
                                                      std::optional<Revision> expectedRevision) const {
     if (!commandService_)
@@ -187,7 +187,7 @@ EditorResult<CommandPlan> EditorSession::planCommand(const CommandId& id, const 
     return commandService_->plan(request, hostProfile_);
 }
 
-EditorResult<TransactionReceipt> EditorSession::executePlan(const CommandPlan& plan, const EditorValue& payload,
+Result<TransactionReceipt> EditorSession::executePlan(const CommandPlan& plan, const EditorValue& payload,
                                                             CommandSource source) {
     if (!commandService_)
         return eve::editing::failed<TransactionReceipt>(EditorStatus::Failed, RuleId("editor.command.missing-service"),
@@ -205,22 +205,22 @@ EditorResult<TransactionReceipt> EditorSession::executePlan(const CommandPlan& p
     return commandService_->executePlan(request, plan, hostProfile_);
 }
 
-EditorResult<TransactionReceipt> EditorSession::executeCommandReceipt(const CommandId& id, const EditorValue& payload,
+Result<TransactionReceipt> EditorSession::executeCommandReceipt(const CommandId& id, const EditorValue& payload,
                                                                       CommandSource source) {
     TransactionReceipt receipt;
     receipt.id             = TransactionId((sessionId_.empty() ? std::string("editor.session") : sessionId_.value()) +
                                            ".transaction." + std::to_string(++receiptSequence_));
     IEditableTarget* currentTarget = target();
     receipt.beforeRevision = currentTarget ? currentTarget->revision() : 0;
-    EditorResult<EditorValue> command = executeCommand(id, payload, source);
+    Result<EditorValue> command = executeCommand(id, payload, source);
     currentTarget                     = target();
     receipt.afterRevision             = currentTarget ? currentTarget->revision() : receipt.beforeRevision;
     receipt.diagnostics               = command.diagnostics();
     receipt.state = command.ok() ? TransactionState::Committed
                                        : (command.code() == EditorStatus::Conflict ? TransactionState::Conflicted
                                                                                    : TransactionState::Rejected);
-    if (!command.ok()) return EditorResult<TransactionReceipt>::failure(command.status());
-    return EditorResult<TransactionReceipt>::success(
+    if (!command.ok()) return Result<TransactionReceipt>::failure(command.status());
+    return Result<TransactionReceipt>::success(
         std::move(receipt), eve::Status(command.code(), command.diagnostics()));
 }
 
@@ -228,10 +228,10 @@ std::vector<CommandDescriptor> EditorSession::availableCommands() const {
     return commandService_ ? commandService_->commands(hostProfile_) : std::vector<CommandDescriptor>{};
 }
 
-EditorResult<PlanId> EditorSession::retainPlan(const CommandId& id, const EditorValue& payload, CommandSource source,
+Result<PlanId> EditorSession::retainPlan(const CommandId& id, const EditorValue& payload, CommandSource source,
                                                std::optional<Revision> expectedRevision) {
-    EditorResult<CommandPlan> planned = planCommand(id, payload, source, expectedRevision);
-    if (!planned.ok()) return EditorResult<PlanId>::failure(planned.status());
+    Result<CommandPlan> planned = planCommand(id, payload, source, expectedRevision);
+    if (!planned.ok()) return Result<PlanId>::failure(planned.status());
     const PlanId planId = planned.value().id;
     retainedPlans_.erase(std::remove_if(retainedPlans_.begin(), retainedPlans_.end(),
                                         [&](const RetainedPlan& retained) { return retained.plan.id == planId; }),
@@ -240,18 +240,18 @@ EditorResult<PlanId> EditorSession::retainPlan(const CommandId& id, const Editor
     return eve::editing::applied<PlanId>(planId);
 }
 
-EditorResult<TransactionReceipt> EditorSession::executeRetainedPlan(const PlanId& id, CommandSource source) {
+Result<TransactionReceipt> EditorSession::executeRetainedPlan(const PlanId& id, CommandSource source) {
     const auto found = std::find_if(retainedPlans_.begin(), retainedPlans_.end(),
                                     [&](const RetainedPlan& retained) { return retained.plan.id == id; });
     if (found == retainedPlans_.end())
         return eve::editing::failed<TransactionReceipt>(EditorStatus::NotFound, RuleId("editor.command.plan-not-found"),
                                                        "Retained command plan was not found");
-    EditorResult<TransactionReceipt> result = executePlan(found->plan, found->payload, source);
+    Result<TransactionReceipt> result = executePlan(found->plan, found->payload, source);
     if (result.ok()) retainedPlans_.erase(found);
     return result;
 }
 
-EditorResult<void> EditorSession::cancelRetainedPlan(const PlanId& id) {
+Result<void> EditorSession::cancelRetainedPlan(const PlanId& id) {
     const auto found = std::find_if(retainedPlans_.begin(), retainedPlans_.end(),
                                     [&](const RetainedPlan& retained) { return retained.plan.id == id; });
     if (found == retainedPlans_.end())
@@ -282,12 +282,12 @@ void EditorSession::clearDocumentServices() {
     autosaveService_ = nullptr;
 }
 
-EditorResult<DocumentSnapshot> EditorSession::bindDocument(const DocumentId& document) {
+Result<DocumentSnapshot> EditorSession::bindDocument(const DocumentId& document) {
     if (!documentService_)
         return eve::editing::failed<DocumentSnapshot>(EditorStatus::Failed,
                                                       RuleId("editor.session.missing-document-service"),
                                                       "Editor session has no document service");
-    EditorResult<DocumentSnapshot> snapshot = documentService_->snapshot(document);
+    Result<DocumentSnapshot> snapshot = documentService_->snapshot(document);
     if (!snapshot.ok() || !snapshot.ok()) return snapshot;
     activeDocument_          = document;
     autosaveElapsed_         = 0.f;
@@ -303,7 +303,7 @@ void EditorSession::unbindDocument() {
     lastAutosavedRevision_ = 0;
 }
 
-EditorResult<DocumentSnapshot> EditorSession::editDocument(EditorValue content,
+Result<DocumentSnapshot> EditorSession::editDocument(EditorValue content,
                                                            std::optional<Revision> expectedRevision) {
     if (!documentService_ || activeDocument_.empty())
         return eve::editing::failed<DocumentSnapshot>(EditorStatus::Failed,
@@ -312,14 +312,14 @@ EditorResult<DocumentSnapshot> EditorSession::editDocument(EditorValue content,
     return documentService_->edit(activeDocument_, std::move(content), expectedRevision);
 }
 
-EditorResult<DocumentSnapshot> EditorSession::saveDocument() {
+Result<DocumentSnapshot> EditorSession::saveDocument() {
     if (!documentService_ || activeDocument_.empty())
         return eve::editing::failed<DocumentSnapshot>(EditorStatus::Failed,
                                                       RuleId("editor.session.no-active-document"),
                                                       "Editor session has no active document");
-    EditorResult<SaveTicket> ticket = documentService_->requestSave(activeDocument_);
-    if (!ticket.ok()) return EditorResult<DocumentSnapshot>::failure(ticket.status());
-    EditorResult<DocumentSnapshot> result = documentService_->executeSave(ticket.value());
+    Result<SaveTicket> ticket = documentService_->requestSave(activeDocument_);
+    if (!ticket.ok()) return Result<DocumentSnapshot>::failure(ticket.status());
+    Result<DocumentSnapshot> result = documentService_->executeSave(ticket.value());
     if (result.ok()) {
         autosaveElapsed_ = 0.f;
         if (!result.value().dirty()) lastAutosavedRevision_ = result.value().revision.edit;
@@ -327,18 +327,18 @@ EditorResult<DocumentSnapshot> EditorSession::saveDocument() {
     return result;
 }
 
-EditorResult<StoredDocument> EditorSession::autosaveDocument() {
+Result<StoredDocument> EditorSession::autosaveDocument() {
     if (!documentService_ || !autosaveService_ || activeDocument_.empty())
         return eve::editing::failed<StoredDocument>(EditorStatus::Failed,
                                                    RuleId("editor.session.missing-autosave-service"),
                                                    "Editor session has no active autosave service");
-    EditorResult<DocumentSnapshot> snapshot = documentService_->snapshot(activeDocument_);
-    EditorResult<EditorValue>      content  = documentService_->content(activeDocument_);
+    Result<DocumentSnapshot> snapshot = documentService_->snapshot(activeDocument_);
+    Result<EditorValue>      content  = documentService_->content(activeDocument_);
     if (!snapshot.ok() || !snapshot.ok() || !content.ok() || !content.ok())
         return eve::editing::failed<StoredDocument>(EditorStatus::Failed,
                                                    RuleId("editor.session.autosave-snapshot-failed"),
                                                    "Active document could not be captured for autosave");
-    EditorResult<StoredDocument> result = autosaveService_->writeDraft(snapshot.value(), content.value());
+    Result<StoredDocument> result = autosaveService_->writeDraft(snapshot.value(), content.value());
     if (result.ok()) {
         lastAutosavedRevision_ = snapshot.value().revision.edit;
         autosaveElapsed_       = 0.f;
@@ -346,7 +346,7 @@ EditorResult<StoredDocument> EditorSession::autosaveDocument() {
     return result;
 }
 
-EditorResult<DocumentSnapshot> EditorSession::pollDocumentChanges() {
+Result<DocumentSnapshot> EditorSession::pollDocumentChanges() {
     if (!documentService_ || activeDocument_.empty())
         return eve::editing::failed<DocumentSnapshot>(EditorStatus::Failed,
                                                       RuleId("editor.session.no-active-document"),
@@ -469,7 +469,7 @@ void EditorSession::update(float dt) {
         if (externalPollElapsed_ >= externalPollInterval_) (void)pollDocumentChanges();
     }
 
-    EditorResult<DocumentSnapshot> snapshot = documentService_->snapshot(activeDocument_);
+    Result<DocumentSnapshot> snapshot = documentService_->snapshot(activeDocument_);
     if (!snapshot.ok() || !snapshot.value().dirty()) {
         autosaveElapsed_ = 0.f;
         return;
