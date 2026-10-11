@@ -3,7 +3,9 @@ function(zeroerr_discover_tests TARGET)
   # link unit: the suite builds as one executable per domain and each passes its
   # own target name (ctest -L '^unit_test_<domain>$').
   set(_options)
-  set(_one_value LABEL)
+  # NAME_PREFIX keeps optional composition executables from overwriting the
+  # normal per-domain CTest entries when they contain the same case sources.
+  set(_one_value LABEL NAME_PREFIX)
   cmake_parse_arguments(_eve_zeroerr "${_options}" "${_one_value}" "" ${ARGN})
   set(ctest_file "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_zeroerr_tests.cmake")
   # SHARED module-linkage builds write the link-group libraries to
@@ -44,6 +46,7 @@ function(zeroerr_discover_tests TARGET)
       -DCTEST_FILE=${ctest_file}
       -DZEROERR_WORKING_DIRECTORY=${CMAKE_SOURCE_DIR}
       -DZEROERR_LABEL=${_eve_zeroerr_LABEL}
+      "-DZEROERR_NAME_PREFIX=${_eve_zeroerr_NAME_PREFIX}"
       "-DZEROERR_DLL_DIR=${_eve_zeroerr_dll_dirs}"
       -P ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ZeroErrDiscoverTestsImpl.cmake
     BYPRODUCTS ${ctest_file}

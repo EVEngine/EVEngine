@@ -1,5 +1,12 @@
 # 图形渲染模块
 
+`Mesh.getLocalBounds()` 返回标准 Result，其 value 为 `[minX,minY,minZ,maxX,maxY,maxZ]`。
+结果由 CPU 顶点计算，CPU morph baking 会更新边界；GPU 蒙皮和着色器位移不包含在内。
+无有限顶点时返回 NotFound。
+`eve.destroyRenderable3D(entityId,generation)` 在 render/owner thread 销毁当前世界的指定实体，
+不存在或 generation 过期返回 NotFound，不销毁 mesh。成功后不得再访问该实体脚本引用。
+场景链接保留完整世界矩阵，直接 TRS setter 切回本地模式；链接下一次推送重新更新派生矩阵。
+
 **脚本入口：** `eve.Graphics()`
 
 清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。Camera2D/Camera3D 提供屏幕与世界坐标换算，供 2D/3D 拾取使用；形状命中测试见 [Math](math.md)，物理体查询见 [Physics](physics.md)。
@@ -901,3 +908,20 @@ RGBA 模式任一通道命中即启用。`setMask(imageData)` 会复制像素，
 - `updateMeshVertices` 是显式动态上传：每次调用仍有线性转换/上传成本，内部复用转换数组与 GPU 缓冲容量，不扫描全数组判断是否相同。源数据的 owner 应只在数据变化时调用；无需额外 token/commit。
 - Groom 的 `update(dt)` 完整推进模拟；参数与可见性修改只记录变化。视图准备阶段（或直接 `draw` 的准备边界）合并几何刷新并复用同一网格。`getMesh` 等 getter 不触发刷新，返回最后发布结果；`rebuild` 是兼容的显式同步刷新。`Representation::None` 隐藏但保留网格以供再次显示复用。显式可见性掩码属于调用者当前视图，多视图时在各视图绘制前更新，不能跨视图复用最后一次掩码。
 - Groom 必须在其 Graphics owner 销毁前析构；析构移除准备回调。网格、纹理与 shader 仍由 Graphics 统一回收，不产生第二套所有权。
+
+### AI 候选遮挡测量
+
+`eve.prepareSceneVisibility(request)` 返回 owning 单次查询，`query.measure(gfx)` 返回结构化 Result。
+MCP 可直接调用 `eve_scene_modify(action="visibility", target="object", params={width=256,height=256})`，
+或 `params={preview=true}` 测量现有物理摆放候选，无需提交或移动实时场景。
+结果包含 visibleFraction、fullPixels、visiblePixels、occluders 的 ObjectId/比例和深度歧义。
+只有 Measured 状态可作测量证据；少于四像素为 Unmeasurable，Unsupported 不得替代为包围盒估计。
+支持静态无贴图不透明网格，具体范围、预算和 schema 见 [遮挡接口](../../dev/2026-10-11-scene-visibility-validation.md)。
+
+visibility-request v2 支持对象局部区域 target（v1 字符串 target 仍支持），证据为 v2；
+区域用实际目标 depth 还原局部表面点筛选，多个区域复用对象 full pass。
+参见 [区域协议与验证](../../dev/2026-10-11-scene-regions-validation.md)。
+
+## 投影轮廓重叠
+
+作者文档 v4 支持 projected_overlap(subject, reference, minimum, maximum)，可附 reference 的 local_box region。测量两个对象独立真实投影 mask 的交集/reference 像素数；前后顺序及第三者遮挡不改变该构图指标。visibility-evidence v3 的 projectedOverlaps 返回交集像素、双方像素数及比例；任一 mask 少于 4 像素不可测。关系通过原有 relations/relation_begin/relation_check/relation_commit 正式路径使用，提交重新测量并一次撤销。详见 [契约与验证](../../dev/2026-10-12-scene-projected-overlap-validation.md)。

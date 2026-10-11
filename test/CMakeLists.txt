@@ -616,3 +616,31 @@ foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
 endforeach()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
+
+# Focused composition proof for trimmed authoring hosts. The normal per-domain
+# suite still discovers these module-owned sources; this target avoids linking
+# unrelated optional-domain consumers into a minimal host.
+if(TARGET EVScene_editor AND TARGET EVGraphics AND NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
+  add_executable(scene_authoring_contract_test EXCLUDE_FROM_ALL
+    main.cpp scene_authoring.cpp scene_authoring_script.cpp graphics_authoring_projection.cpp
+    scene_relations.cpp
+    scene_regions.cpp scene_projected_overlap.cpp scene_physics_placement.cpp scene_visibility.cpp
+    scene_editing_commands.cpp scene_editor_session.cpp scene_editor_live_session.cpp)
+  if(TARGET EVDevTools)
+    target_sources(scene_authoring_contract_test PRIVATE mcp_scene_literal.cpp)
+  endif()
+  target_link_libraries(scene_authoring_contract_test eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+    ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  target_compile_options(scene_authoring_contract_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(scene_authoring_contract_test EVBacktrace)
+    target_compile_definitions(scene_authoring_contract_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/scene_authoring_contract_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/scene_authoring_contract_test_zeroerr_tests.cmake" "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(scene_authoring_contract_test LABEL "scene_authoring_contract_test"
+    NAME_PREFIX "authoring-contract/")
+endif()

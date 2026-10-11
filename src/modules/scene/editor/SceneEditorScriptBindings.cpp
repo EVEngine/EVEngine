@@ -466,6 +466,30 @@ void exposeSceneEditorSessions(ssq::Table& table, ssq::Class& module) {
         auto result = self->beginPhysicsPlacement(std::move(request.value()));
         return script::projectStatusResult(vm, result.status());
     });
+    cls.addFunc("beginRelationPlacement", [vm](SceneEditorSession* self, ssq::Object payload) {
+        auto value = script::valueFromSquirrel(payload);
+        if (!value.ok()) return script::projectStatusResult(vm, value.status());
+        auto request = placementRequest(editing::toEditingValue(value.value()));
+        if (!request.ok()) return script::projectStatusResult(vm, request.status());
+        auto result = self->beginRelationPlacement(std::move(request.value()));
+        return script::projectStatusResult(vm, result.status());
+    });
+    cls.addFunc("geometryRevision", [vm](SceneEditorSession* self, std::string object) {
+        auto result = self->geometryRevision(editing::ObjectId(std::move(object)));
+        if (!result.ok()) return script::projectStatusResult(vm, result.status());
+        return script::projectStatusResult(vm, result.status(), eve::Value(result.value()));
+    });
+    cls.addFunc("prepareRelationVisibility", [vm](SceneEditorSession* self, std::string host, ssq::Object payload) {
+        auto value = script::valueFromSquirrel(payload);
+        if (!value.ok()) return script::projectStatusResult(vm, value.status());
+        auto result = self->prepareRelationVisibility(std::move(host), editing::toEditingValue(value.value()));
+        return script::projectStatusResult(vm, result.status());
+    });
+    cls.addFunc("checkRelationPlacement", [vm](SceneEditorSession* self) {
+        auto report = self->checkRelationPlacement();
+        if (!report.ok()) return script::projectStatusResult(vm, report.status());
+        return script::projectStatusResult(vm, report.status(), editing::toPresentationValue(report.value()));
+    });
     cls.addFunc("updatePhysicsPlacement", [vm](SceneEditorSession* self, float x, float y, float z, float dt) {
         auto result = self->updatePhysicsPlacement(x, y, z, dt);
         if (!result.ok()) return script::projectStatusResult(vm, result.status());

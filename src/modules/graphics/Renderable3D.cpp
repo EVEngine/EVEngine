@@ -8,6 +8,7 @@
 namespace eve::graphics {
 void Renderable3D::setPosition(float x, float y, float z) {
     auto t = transform();
+    t->hasLinkedWorld = false;
     t->x   = x;
     t->y   = y;
     t->z   = z;
@@ -15,17 +16,22 @@ void Renderable3D::setPosition(float x, float y, float z) {
 
 void Renderable3D::setRotation(float yaw, float pitch, float roll) {
     auto t   = transform();
+    t->hasLinkedWorld = false;
     t->yaw   = yaw;
     t->pitch = pitch;
     t->roll  = roll;
 }
 
-void Renderable3D::setYaw(float yaw) { transform()->yaw = yaw; }
+void Renderable3D::setYaw(float yaw) {
+    transform()->hasLinkedWorld = false;
+    transform()->yaw            = yaw;
+}
 
 float Renderable3D::getYaw() { return transform()->yaw; }
 
 void Renderable3D::setScale(float sx, float sy, float sz) {
     auto t = transform();
+    t->hasLinkedWorld = false;
     t->sx  = sx;
     t->sy  = sy;
     t->sz  = sz;
