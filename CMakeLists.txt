@@ -547,18 +547,22 @@ function(main)
     # when the submodule is absent (profiles and tools that do not use ECS), and
     # skipped without touching anything when the checkout already carries it.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp")
-        execute_process(
-            COMMAND ${CMAKE_COMMAND}
-                -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ecs-shared-default-table.patch
-                -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp
-                -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
-            RESULT_VARIABLE _eve_ecs_patch_result)
-        if(NOT _eve_ecs_patch_result EQUAL 0)
-            message(FATAL_ERROR
-                "Patching external/ECS.hpp failed (exit ${_eve_ecs_patch_result}). "
-                "The vendored submodule moved away from the pinned commit; "
-                "update cmake/patches/ecs-shared-default-table.patch.")
-        endif()
+        foreach(_eve_ecs_patch IN ITEMS
+                ecs-shared-default-table.patch
+                ecs-view-entity-staging-handle.patch)
+            execute_process(
+                COMMAND ${CMAKE_COMMAND}
+                    -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/${_eve_ecs_patch}
+                    -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
+                RESULT_VARIABLE _eve_ecs_patch_result)
+            if(NOT _eve_ecs_patch_result EQUAL 0)
+                message(FATAL_ERROR
+                    "Patching external/ECS.hpp failed (exit ${_eve_ecs_patch_result}). "
+                    "The vendored submodule moved away from the pinned commit; "
+                    "update cmake/patches/${_eve_ecs_patch}.")
+            endif()
+        endforeach()
     endif()
 
     add_subdirectory(src/engine)
