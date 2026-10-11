@@ -1,5 +1,8 @@
 # AI 生成 / 辅助开发与 MCP 支持
 
+[English practical setup](../en/usr/AI-MCP.md)
+
+
 > 状态：首版落地（嵌入式 MCP + DevTools AI 面板 + Cursor stdio 桥）。
 > 代码：[`src/engine/devtools/McpServer.*`](../../src/engine/devtools/McpServer.hpp)、
 > [`AiPanel.*`](../../src/engine/devtools/AiPanel.hpp)、[`DevTool.*`](../../src/engine/devtools/DevTool.hpp)；

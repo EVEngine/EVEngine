@@ -1,5 +1,7 @@
 # Result 检查与不得丢弃返回值规范
 
+[English](../en/dev/RESULT-CONTRACTS.md)
+
 日期：2026-08-26
 状态：已确认的架构要求
 

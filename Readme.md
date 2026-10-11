@@ -139,11 +139,11 @@ bin\eve.exe run mygame
 |------|----------|
 | 操作系统 | Windows 10 / 11（x64） |
 | IDE / 工具链 | **Visual Studio 2026**（含「使用 C++ 的桌面开发」工作负载） |
-| CMake 生成器 | `Visual Studio 18 2026`（与仓库根目录 `Makefile` 一致） |
+| CMake 生成器 | 根目录 `Makefile` 的 Windows Debug / Release 目标使用 Ninja + MSVC；手工配置 VS 工程时可选 `Visual Studio 18 2026` |
 | Vulkan SDK | 从 [LunarG](https://vulkan.lunarg.com/) 安装，安装后确认用户环境变量 `VULKAN_SDK`（例如 `C:\VulkanSDK\1.4.357.0`），并把 `%VULKAN_SDK%\Bin` 加入 `PATH`（含 `glslc`）。装完后请**新开终端 / 重启 Cursor** 再 cmake |
 | 可选 | Git for Windows、将 CMake / Ninja 加入 `PATH` |
 
-> 若使用 Visual Studio 2022，可将 `Makefile` 中的生成器改为 `"Visual Studio 17 2022"`。
+> 若使用 Visual Studio 2022，Ninja 目标通过 `cmake/with-msvc.cmd` 定位已安装的 MSVC；手工配置 VS 工程时选择 `"Visual Studio 17 2022"`。
 
 #### Linux
 
@@ -369,7 +369,7 @@ make build/win32-debug \
 
 | 目标 | 构建目录 | 说明 |
 |------|----------|------|
-| Win32 Release | `build/win32` | VS 工程 + Release 二进制 |
+| Win32 Release | `build/win32` | Ninja + MSVC Release 二进制 |
 | Win32 Debug | `build/win32-debug` | Ninja + MSVC Debug 二进制 |
 | Linux Release | `build/linux` | Unix Makefiles |
 | Linux Debug | `build/linux-debug` | Unix Makefiles |
@@ -488,7 +488,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
    确认已安装 Vulkan SDK，且 `VULKAN_SDK` 指向正确路径；macOS 请 `source ~/VulkanSDK/<version>/setup-env.sh` 后再配置。重新打开终端后再 cmake。
 
 2. **Windows 生成器名称不匹配**  
-   `Makefile` 当前使用 `Visual Studio 18 2026`。若本机是 VS 2022，请改生成器字符串或升级 IDE。
+   Windows Makefile 目标使用 Ninja。手工配置 VS 工程时，请选择已安装的生成器（VS 2026 或 VS 2022）；不要复用由其他生成器配置的构建目录。
 
 3. **首次 `deps` 很慢或网络失败**  
    `third-party` 从 GitHub 拉取。可手动 `git clone https://github.com/EVEngine/third-party` 到仓库根目录的 `third-party/`，再重新配置。

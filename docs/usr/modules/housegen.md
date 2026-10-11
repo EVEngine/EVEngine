@@ -43,11 +43,10 @@ if (generation.ok) {
 遍历 `toJson()` 的实例（墙/屋顶/门窗盒体），映射到 `voxel` 方块或
 `Renderable3D` 立方体。参考 `test/housegen_render.cpp` 的预览路径。
 
-## API 快查
+## 绑定与行为说明
 
 ### `HouseGen`（模块）
 
-- `loadComponentsFromJson(json)` / `loadComponentsFromFile(path)` / `clearComponents()` /
   `getComponentCount()`。
 - `newRequest()` / `newLayout()`。
 - `generate(request, layout)` → structured Result；失败原因在 Result 的诊断字段中。
@@ -62,16 +61,11 @@ if (generation.ok) {
 
 ### `HouseRequest`
 
-- `setSeed(int)`、`setPlot(w, d)`、`setFloors(int)`、`setModuleSize(float)`、
-  `setFloorHeight(float)`、`setStyle(string)`、
-  `setFootprint(string)`、`setRoof(string)`、`setEntrance(string)`、
   `setRequiredRooms(csv)`、`setPerimeter(csv)`。
 
 ### `HouseLayout`
 
 - `toJson()`、`fromJson(json)` → structured Result、`getInstanceCount()`、
-  `getInstanceComponentId(index)`、`getInstanceX(index)`、`getInstanceY(index)`、
-  `getInstanceZ(index)`、`getInstanceRotationDeg(index)`、`getFloorHeight()`、
   `getFootprintStyle()`、`getRoofStyle()`、`getRoomCount()`、`getDiagnosticCount()`。
 - `writeFootprintGrid(grid)` → `Grid2D`；`writeComponentPoints(points)` → `PointSet`。
 
