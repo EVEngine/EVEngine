@@ -1,5 +1,7 @@
 # Canonical material schema v12
 
+Historical schema: the current write format is [material v15](canonical-material-v15.md).
+
 Schema v12 extends the optional `vegetationAlpha` object from three to six
 members. The exact members are `global`, `variation`, `detailFade`, `glancing`,
 `camera`, and `constant`. The three new numeric values map directly to TVE 12.6

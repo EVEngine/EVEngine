@@ -2,7 +2,7 @@
 
 > 状态：P2 已落地（editing/editor 文档与预览 + LifeField 材质绑定 + 表面 Capture）。日期：2026-10-05  
 > 目标：基于 GPU Compute 架构搭建可扩展的 GPU Agents 实时模拟框架，覆盖鱼群、生命网格、鸟群与花瓣四类效果；模拟逻辑、环境数据与渲染表现解耦。  
-> 关联：[`模块编排与裁剪架构.md`](./模块编排与裁剪架构.md)、[`领域短根继承与跨域组合架构.md`](./领域短根继承与跨域组合架构.md)、[`Result检查与不得丢弃返回值规范.md`](./Result检查与不得丢弃返回值规范.md)、[`superpowers/specs/2026-08-10-gpgpu-backend-abstraction-design.md`](./superpowers/specs/2026-08-10-gpgpu-backend-abstraction-design.md)、[`群体行为与流场模块设计.md`](./群体行为与流场模块设计.md)。
+> 关联：[`模块编排与裁剪架构.md`](./模块编排与裁剪架构.md)、[`领域短根继承与跨域组合架构.md`](./领域短根继承与跨域组合架构.md)、[`Result检查与不得丢弃返回值规范.md`](./Result检查与不得丢弃返回值规范.md)、[`docs/usr/modules/gpgpu.md`](../usr/modules/gpgpu.md)、[`群体行为与流场模块设计.md`](./群体行为与流场模块设计.md)。
 
 ## 0. P0–P2 落地备注
 

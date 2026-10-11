@@ -6,6 +6,18 @@
 > 下载预编译 SDK 直接使用，**不需要编译引擎**；用户文档见[用户指南](../usr/README.md)与
 > [模块使用手册](../usr/MODULES.md)。本目录及下文“从源码构建”只对需要修改引擎的人有意义。
 
+## 怎么读这个目录
+
+| 层级 | 含义 | 入口 |
+|------|------|------|
+| **规范** | 改公共 API / ECS / 持久化前必读；CI 会门禁 | 下文「架构与工程约定」 |
+| **产品规划** | 当前版本叙事与收口清单 | `2026-10-08-*` |
+| **模块设计** | 引擎内部设计与进度；脚本用法见 `docs/usr/modules/` | 下文「功能设计」 |
+| **Schema CURRENT** | 资源格式现行版本；历史 vN 仅供迁移对照 | 下文「资源 Schema」 |
+| **阶段性计划** | `superpowers/` 实施稿；完成后应删除或并入活文档，勿当入口 | [`superpowers/`](superpowers/) |
+
+未列入本 README 的文件**不是导航入口**（多为历史切片、导入日记或调研草稿）；新增文档时请同步更新本索引，否则默认视为临时材料。
+
 ## 架构与工程约定
 
 - [发布流程](发布流程.md)（`main` / `dev` / `vX.X.X`，Pre-release 发版）
@@ -18,11 +30,18 @@
 - [模块接口契约与机制选型规范](模块接口契约与机制选型规范.md)（模块对外六个面、ECS/事件/provider/Link 选型判据、API 成本可见性）
 - [模块边界审查清单](模块边界审查清单.md)（对单个模块执行上述规范的逐项判据与取证方式）
 - [模块边界审查台账（首轮全量）](2026-09-15-模块边界审查台账.md)（194 个模块的逐条结论与实测数据）
+- [重构代码质量与系统完整性规范](重构代码质量与系统完整性规范.md)
+- [领域短根继承与跨域组合架构](领域短根继承与跨域组合架构.md)
+- [Result 检查与不得丢弃返回值规范](Result检查与不得丢弃返回值规范.md)
+- [架构巩固清单](2026-08-26-architecture-consolidation-checklist.md)（`ARCHITECTURE_BASE=HEAD make check/architecture-contracts`）
+- [物理系统分层与后端契约](物理系统分层与后端契约.md)
+- [场景对象模型使用指南](场景对象模型使用指南.md)（Node / SceneEntity / Link cookbook）
 - [EveScript 语言设计](EveScript语言设计.md)（统一 `.nut` 前端、脚本模块、类型、持久变量与异步 lowering）
 - [Squirrel 绑定风格](Squirrel绑定风格.md)（`BindContext` / `projectResult` / Contracts 刮取约定；不拆 `editing_script`）
 - [依赖项](依赖项.md)
 - [命令行设计](命令行设计.md)
 - [测试覆盖](测试覆盖.md)
+- [测试套件优化纪要](superpowers/specs/2026-08-18-test-suite-optimization.md)（CI per-case / SHARED 陷阱；`AGENTS.md` 引用）
 - [AI 与 MCP 支持](AI与MCP支持.md)
 - [AI 知识补偿](AI知识补偿.md)（推理时知识包、Binding Contract 目录、少写脚本）
 - [AI 场景导演](AI场景导演.md)（剧情 → 自动搭台 → 质检迭代 → 交付）
@@ -30,32 +49,53 @@
 
 ## 功能设计
 
+引擎设计文档；脚本侧手册见对应 [`docs/usr/modules/`](../usr/modules/) 页面。
+
 - [2D 渲染 API](2D渲染API设计.md)
 - [3D 渲染管线](3D渲染管线.md)（初始化 / VKBuilder / 异步帧、buffers、数据流、函数与 shader）
 - [体积光模块](体积光模块设计.md)
 - [抗锯齿模块](抗锯齿模块设计.md)
-- [风格化渲染模块](风格化渲染模块设计.md)
+- [风格化渲染模块](风格化渲染模块设计.md)（对象模型摘要见 [stylize-architecture.md](stylize-architecture.md)）
+- [实时雾系统](realtime-fog-system.md)（`graphics_fog`）
+- [环境光遮蔽模块](环境光遮蔽模块设计.md)
 - [GUI 框架](GUI框架设计.md)
 - [Tilemap](Tilemap设计.md)
 - [寻路系统](寻路系统设计.md)
 - [动态视野系统](动态视野系统设计.md)
 - [程序化生成模块](程序化生成模块设计.md)
-- [体积光模块](体积光模块设计.md)
-- [环境光遮蔽模块](环境光遮蔽模块设计.md)
-- [风格化渲染模块](风格化渲染模块设计.md)
+- [贴花渲染模块](贴花渲染模块设计.md) → [usr/decal](../usr/modules/decal.md)
+- [群体行为与流场](群体行为与流场模块设计.md) → [usr/crowd](../usr/modules/crowd.md)
 - [RPG 系统](RPG系统设计.md)
 - [RPG 任务系统](RPG任务系统设计.md)
 - [背包系统](背包系统设计.md)
 - [建筑放置系统](建筑放置系统设计.md)
 - [空间索引模块](空间索引模块设计.md)
-- [游戏模型](游戏模型设计.md)
-- [界面设计](界面设计.md)
-- [修改思路](修改思路.md)（历史备忘；现行入口见文内表格）
-- [场景对象模型使用指南](场景对象模型使用指南.md)（Node / SceneEntity / Link cookbook）
+- [dnut 序列语言与解释器](dnut序列语言与解释器.md)
+
+## 资源 Schema（CURRENT）
+
+历史版本文件（如 `canonical-material-v3`…`v14`）仅描述迁移输入，**现行写入版本**如下：
+
+- [Canonical material v15](canonical-material-v15.md)
+- [Canonical mesh v3](canonical-mesh-v3.md)
+- [Canonical terrain material v3](canonical-terrain-material-v3.md)
+- [Canonical vegetation scene v1](canonical-vegetation-scene-v1.md)
+- [Canonical vegetation conversion preset v1](canonical-vegetation-conversion-preset-v1.md)
+- [Canonical volume texture v1](canonical-volume-texture-v1.md)
+
+### 资产导入契约（仍在推进，非导航主入口）
+
+TVE / Unity 植被与天空导入的源语义契约仍散落在根目录（`vegetation-*-source-contract.*`、
+`unity-*-import.md`、`tga`/`tiff-source-admission.md`、[`uds-sky-runtime-contract.md`](uds-sky-runtime-contract.md)、
+[`2026-09-12-vegetation-port.md`](2026-09-12-vegetation-port.md)）。`uds-sky-runtime-contract.md`
+是架构契约证据，勿删；其余在对应导入路径收口进 CURRENT schema / `docs/usr` 后再删。
 
 ## 实施记录
 
 阶段性设计稿与实施计划位于 [`superpowers/`](superpowers/)。文档使用的图示位于 [`img/`](img/)。
+
+规则：功能合入且活文档（本 README 索引或 `docs/usr/`）已覆盖后，对应 `superpowers/plans|specs`
+应删除或把独特内容并入活文档，避免再堆「未实施」假状态。
 
 ## 构建与文档
 

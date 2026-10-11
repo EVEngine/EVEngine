@@ -2,7 +2,8 @@
 
 > Status: CPU orchestrator + existing AtmosphereVolume froxel display path  
 > Module: `graphics_fog` (`src/modules/graphics/fog/`)  
-> Script: `eve.RealtimeFog()`
+> Script: `eve.RealtimeFog()`  
+> User manual: [`docs/usr/modules/graphics_fog.md`](../usr/modules/graphics_fog.md)
 
 Four cooperating routes — world-space ray marching, MAC fluid transport,
 camera froxel integration, and analytic volumetric lights — share one density

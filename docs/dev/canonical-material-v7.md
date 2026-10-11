@@ -1,7 +1,7 @@
 # Canonical material v7: TVE global Colors
 
 This document records the historical `eve.material/7` global-colors addition.
-The current version is v8; see `canonical-material-v8.md`. When v7 was current, version 6
+The current write format is v15; see `canonical-material-v15.md`. When v7 was current, version 6
 definitions preserve every existing field during migration. When they contain a
 `vegetationSurface`, migration adds the v7 Colors defaults; a v6 object that
 already spells a Colors field is rejected because that data had no versioned

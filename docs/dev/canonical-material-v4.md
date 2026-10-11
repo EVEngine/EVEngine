@@ -1,8 +1,8 @@
 # Canonical material v4
 
-Historical format contract: the current format is
-[material v6](canonical-material-v6.md). V4 is outside the current read/migration
-window and cannot carry `motionHighlightColor`.
+Historical format contract: the current write format is
+[material v15](canonical-material-v15.md). V4 is outside the current
+read/migration window and cannot carry `motionHighlightColor`.
 
 `eve.material/4` retains v3 semantics and adds the optional `translucency` object.
 Its owning CPU definition is decoded before image resolution; only a fully

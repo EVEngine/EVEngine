@@ -1,5 +1,7 @@
 # Canonical material schema v14
 
+Historical schema: the current write format is [material v15](canonical-material-v15.md).
+
 Schema v14 adds the optional `vegetationGradient` object and completes the
 existing TVE vertex-occlusion surface data with `vertexOcclusionColor`. The
 gradient's exact members are

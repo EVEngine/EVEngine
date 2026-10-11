@@ -341,7 +341,7 @@
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/climbing/ClimbingInput.h",
-        "docs/dev/superpowers/specs/2026-08-28-climbing-parkour-system.md"
+        "docs/usr/modules/climbing.md"
       ],
       "tests": [
         "test/climbing_input.cpp",
@@ -546,7 +546,7 @@
       "evidence": [
         "src/modules/npc_ai/NpcAiECS.h",
         "src/modules/npc_ai/NpcAiECS.cpp",
-        "docs/dev/superpowers/specs/2026-08-30-npc-ai-framework.md"
+        "docs/usr/modules/npc_ai.md"
       ],
       "tests": [
         "test/npc_ai_ecs.cpp",
@@ -1417,7 +1417,7 @@
       "evidence": [
         "src/modules/crowd/Crowd.h",
         "src/modules/crowd/CrowdBindings.cpp",
-        "docs/dev/2026-09-22-rts-crowd-implementation.md",
+        "docs/dev/群体行为与流场模块设计.md",
         "cmake/profile_checks.cmake"
       ],
       "tests": [
@@ -2076,7 +2076,7 @@
         "src/modules/rts/RTSFormationBindings.cpp",
         "src/modules/rts/RTSReplay.cpp",
         "src/modules/rts/RTSRestore.cpp",
-        "docs/dev/2026-09-22-rts-crowd-implementation.md"
+        "docs/dev/群体行为与流场模块设计.md"
       ],
       "tests": [
         "test/rts_groups.cpp",
