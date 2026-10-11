@@ -48,7 +48,7 @@ set(DOC_MAINPAGE "${DOC_TOP_DIR}/dox/mainpage.dox")
 
 # Wrappers are generated at configure time; refresh them when a guide is edited.
 file(GLOB_RECURSE _doc_guide_sources CONFIGURE_DEPENDS
-    "${DOC_TOP_DIR}/usr/*.md" "${DOC_TOP_DIR}/en/usr/*.md")
+    "${DOC_TOP_DIR}/usr/*.md" "${DOC_TOP_DIR}/en/*.md")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
     ${_doc_guide_sources} "${DOC_TOP_DIR}/dev/API-CONVENTIONS.md")
 
@@ -168,26 +168,36 @@ endforeach()
 # Only actual translations are included; untranslated guides link to the source
 # repository and are explicitly marked Chinese by the English handbook.
 set(_doc_english_pages
-    "README.md|usr_guide_en|EVEngine User Guide"
-    "EVESCRIPT.md|usr_evescript_en|EveScript Tutorial"
-    "MODULES.md|usr_modules_en|Module Handbook"
-    "SAVE.md|usr_save_en|Saving Games"
-    "TRIMMING.md|usr_trimming_en|Module Trimming"
-    "API-CONVENTIONS.md|usr_conventions_en|API Conventions"
-    "modules/window.md|mod_window_en|Window"
-    "modules/keyboard.md|mod_keyboard_en|Keyboard"
-    "modules/mouse.md|mod_mouse_en|Mouse"
-    "modules/filesystem.md|mod_filesystem_en|Files and Hot Reload"
-    "modules/entity.md|mod_entity_en|Script ECS"
-    "modules/graphics.md|mod_graphics_en|Graphics: Getting Started"
-    "modules/ui.md|mod_ui_en|UI: Getting Started")
+    "usr/README.md|usr_guide_en|EVEngine User Guide"
+    "usr/EVESCRIPT.md|usr_evescript_en|EveScript Tutorial"
+    "usr/MODULES.md|usr_modules_en|Module Handbook"
+    "usr/SAVE.md|usr_save_en|Saving Games"
+    "usr/TRIMMING.md|usr_trimming_en|Module Trimming"
+    "usr/API-CONVENTIONS.md|usr_conventions_en|API Conventions"
+    "usr/modules/window.md|mod_window_en|Window"
+    "usr/modules/keyboard.md|mod_keyboard_en|Keyboard"
+    "usr/modules/mouse.md|mod_mouse_en|Mouse"
+    "usr/modules/filesystem.md|mod_filesystem_en|Files and Hot Reload"
+    "usr/modules/entity.md|mod_entity_en|Script ECS"
+    "usr/modules/graphics.md|mod_graphics_en|Graphics: Getting Started"
+    "usr/modules/ui.md|mod_ui_en|UI: Getting Started"
+    "dev/README.md|dev_guide_en|Engine Developer Guide"
+    "dev/BUILDING.md|dev_building_en|Building from Source"
+    "dev/TESTING.md|dev_testing_en|Testing Engine Changes"
+    "dev/DEBUGGING.md|dev_debugging_en|Debugging Engine Changes"
+    "dev/DEPENDENCIES.md|dev_dependencies_en|Engine Dependencies"
+    "dev/MODULE-DEVELOPMENT.md|dev_modules_en|Module Development"
+    "dev/SCRIPT-BINDINGS.md|dev_bindings_en|Squirrel Binding Style"
+    "dev/RESULT-CONTRACTS.md|dev_results_en|Result Contracts"
+    "dev/RELEASING.md|dev_releasing_en|Release Process")
 set(_doc_english_subpages "")
+set(_doc_developer_subpages "")
 foreach(_doc_spec IN LISTS _doc_english_pages)
     string(REPLACE "|" ";" _doc_parts "${_doc_spec}")
     list(GET _doc_parts 0 _doc_name)
     list(GET _doc_parts 1 _doc_id)
     list(GET _doc_parts 2 _doc_title)
-    file(READ "${DOC_TOP_DIR}/en/usr/${_doc_name}" _doc_content ENCODING UTF-8)
+    file(READ "${DOC_TOP_DIR}/en/${_doc_name}" _doc_content ENCODING UTF-8)
     get_filename_component(_doc_relative_dir "${_doc_name}" DIRECTORY)
     # Resolve translated-page links by stable IDs. Doxygen otherwise mistakes
     # README.md for the repository root when several directories use that name.
@@ -196,8 +206,8 @@ foreach(_doc_spec IN LISTS _doc_english_pages)
         list(GET _doc_target_parts 0 _doc_target_name)
         list(GET _doc_target_parts 1 _doc_target_id)
         file(RELATIVE_PATH _doc_target_rel
-            "${DOC_TOP_DIR}/en/usr/${_doc_relative_dir}"
-            "${DOC_TOP_DIR}/en/usr/${_doc_target_name}")
+            "${DOC_TOP_DIR}/en/${_doc_relative_dir}"
+            "${DOC_TOP_DIR}/en/${_doc_target_name}")
         string(REPLACE "](${_doc_target_rel})" "](@ref ${_doc_target_id})"
             _doc_content "${_doc_content}")
     endforeach()
@@ -214,19 +224,27 @@ foreach(_doc_spec IN LISTS _doc_english_pages)
                 "](https://github.com/EVEngine/EVEngine/blob/dev/${_doc_area}/"
                 _doc_content "${_doc_content}")
         endforeach()
+        string(REPLACE "](${_doc_prefix}AGENTS.md"
+            "](https://github.com/EVEngine/EVEngine/blob/dev/AGENTS.md"
+            _doc_content "${_doc_content}")
         string(REPLACE "](${_doc_prefix}Readme"
             "](https://github.com/EVEngine/EVEngine/blob/dev/Readme"
             _doc_content "${_doc_content}")
     endforeach()
-    file(MAKE_DIRECTORY "${_doc_pages_dir}/docs/en/usr/${_doc_relative_dir}")
-    file(WRITE "${_doc_pages_dir}/docs/en/usr/${_doc_name}"
+    file(MAKE_DIRECTORY "${_doc_pages_dir}/docs/en/${_doc_relative_dir}")
+    file(WRITE "${_doc_pages_dir}/docs/en/${_doc_name}"
         "\\page ${_doc_id} ${_doc_title}\n\n${_doc_content}")
-    if(NOT _doc_id STREQUAL "usr_guide_en")
+    if(_doc_name MATCHES "^dev/" AND NOT _doc_id STREQUAL "dev_guide_en")
+        string(APPEND _doc_developer_subpages "\\subpage ${_doc_id}\n\n")
+    elseif(_doc_name MATCHES "^usr/" AND NOT _doc_id STREQUAL "usr_guide_en")
         string(APPEND _doc_english_subpages "\\subpage ${_doc_id}\n\n")
     endif()
 endforeach()
 file(APPEND "${_doc_pages_dir}/docs/en/usr/README.md"
     "\n\n${_doc_english_subpages}")
+
+file(APPEND "${_doc_pages_dir}/docs/en/dev/README.md"
+    "\n\n${_doc_developer_subpages}")
 
 # ---------------------------------------------------------------------------
 # Static sidebar navigation (plain HTML, no JavaScript).
@@ -254,6 +272,7 @@ set(_doc_sidebar_html
     "<a href=\"index.html\">首页</a>"
     "<a href=\"usr_guide.html\">用户指南</a>"
     "<a href=\"usr_guide_en.html\">English user guide</a>"
+    "<a href=\"dev_guide_en.html\">English developer guide</a>"
     "<details open><summary>模块使用手册</summary>")
 foreach(_doc_group IN LISTS _doc_sidebar_groups)
     string(REPLACE "|" ";" _doc_gparts "${_doc_group}")

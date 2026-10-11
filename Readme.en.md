@@ -13,7 +13,7 @@ English user guides are maintained by hand; Chinese is the authoritative source.
 - Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.md) — every screenshot is a real presented frame written by the engine itself.
 - [Game developer docs](docs/en/usr/README.md): download the engine, create and run a game, debug, and publish; the [module handbook](docs/en/usr/MODULES.md) covers the script APIs and examples one by one.
 - [Online API reference (Doxygen)](https://evengine.github.io/EVEngine/): published continuously to GitHub Pages; includes the C++ API and the user manual.
-- [Engine developer docs](docs/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
+- [Engine developer docs](docs/en/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
 
 > **For game developers:** you do **not** need to compile EVEngine. Download the prebuilt SDK for your platform from the [official release page](https://github.com/EVEngine/EVEngine/releases), unzip it, and start creating — no Git, CMake, C++ compiler, or Vulkan SDK required. Only developers who want to modify the engine itself need to read "Building from source" below.
 
@@ -141,11 +141,11 @@ Third-party libraries (SDL2, Box2D, Squirrel, Poco, ImGui, OpenAL Soft, FreeType
 |-----------|-------------|
 | OS | Windows 10 / 11 (x64) |
 | IDE / toolchain | **Visual Studio 2026** (with the “Desktop development with C++” workload) |
-| CMake generator | `Visual Studio 18 2026` (matches the root `Makefile`) |
+| CMake generator | Ninja + MSVC for the root Makefile Windows targets; `Visual Studio 18 2026` for manually configured VS projects |
 | Vulkan SDK | Install from [LunarG](https://vulkan.lunarg.com/). Confirm user env `VULKAN_SDK` (e.g. `C:\VulkanSDK\1.4.357.0`) and add `%VULKAN_SDK%\Bin` to `PATH` (includes `glslc`). **Open a new terminal / restart Cursor** before running cmake |
 | Optional | Git for Windows; add CMake / Ninja to `PATH` |
 
-> If you use Visual Studio 2022, change the generator in `Makefile` to `"Visual Studio 17 2022"`.
+> With Visual Studio 2022, Ninja targets locate MSVC through `cmake/with-msvc.cmd`; choose `"Visual Studio 17 2022"` when configuring a VS project manually.
 
 #### Linux
 
@@ -407,7 +407,7 @@ Output layout:
 
 | Target | Build dir | Notes |
 |--------|-----------|-------|
-| Win32 Release | `build/win32` | VS project + Release binaries |
+| Win32 Release | `build/win32` | Ninja + MSVC Release binaries |
 | Win32 Debug | `build/win32-debug` | Ninja + MSVC Debug binaries |
 | Linux Release | `build/linux` | Unix Makefiles |
 | Linux Debug | `build/linux-debug` | Unix Makefiles |
@@ -526,7 +526,7 @@ Inside the container, configure and build with the Linux flow. You still need to
    Confirm the Vulkan SDK is installed and `VULKAN_SDK` points at the right path; on macOS, `source ~/VulkanSDK/<version>/setup-env.sh` before configure. Open a new terminal, then re-run cmake.
 
 2. **Windows generator name mismatch**  
-   The `Makefile` uses `Visual Studio 18 2026`. For VS 2022, change the generator string or upgrade the IDE.
+   The Windows Makefile targets use Ninja. For a manually configured VS project, choose the installed generator (VS 2026 or VS 2022); do not reuse a build directory configured with another generator.
 
 3. **First `deps` is slow or network fails**  
    `third-party` is fetched from GitHub. You can manually `git clone https://github.com/EVEngine/third-party` into the repo-root `third-party/`, then reconfigure.

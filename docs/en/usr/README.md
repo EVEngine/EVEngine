@@ -2,7 +2,7 @@
 
 [中文](../../usr/README.md) · [Module handbook](MODULES.md) · [EveScript tutorial](EVESCRIPT.md)
 
-EVEngine is a lightweight, Squirrel-driven engine for 2D, third-person 3D and mixed 2D/3D games. This guide covers downloading the SDK, creating a game, debugging and packaging it. To change the engine itself, see the [engine developer documentation (Chinese)](../../dev/README.md).
+EVEngine is a lightweight, Squirrel-driven engine for 2D, third-person 3D and mixed 2D/3D games. This guide covers downloading the SDK, creating a game, debugging and packaging it. To change the engine itself, see the [engine developer documentation](../dev/README.md).
 
 This English guide is maintained by hand. The Chinese documentation is authoritative; changes to behavior should be documented there first and then reflected here. APIs are still evolving. Run the SDK's `share/eve/examples/basic/` after an upgrade before adapting your game.
 
