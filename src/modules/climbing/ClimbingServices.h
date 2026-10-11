@@ -46,11 +46,10 @@ public:
     [[nodiscard]] virtual std::string_view adapterId() const noexcept = 0;
 
     /** @brief Reserve an exact non-negative cost without publishing the debit. */
-    [[nodiscard]] virtual eve::Result<ClimbingStaminaReservation> prepare(
-        ClimbingServiceSubject subject, float cost, eve::SimulationTick tick) = 0;
+    [[nodiscard]] virtual eve::Result<ClimbingStaminaReservation> prepare(ClimbingServiceSubject subject, float cost,
+                                                                          eve::SimulationTick tick) = 0;
     /** @brief Publish a successfully prepared debit; guaranteed infallible by the provider contract. */
-    virtual void commitPrepared(ClimbingStaminaReservation reservation,
-                                ClimbingExecutionId executionId) noexcept = 0;
+    virtual void commitPrepared(ClimbingStaminaReservation reservation, ClimbingExecutionId executionId) noexcept = 0;
     /** @brief Release an uncommitted reservation; guaranteed infallible and idempotent. */
     virtual void cancelPrepared(ClimbingStaminaReservation reservation) noexcept = 0;
 };
@@ -70,9 +69,9 @@ public:
     /** @brief Releases IClimbingConditionAuthority resources. */
     virtual ~IClimbingConditionAuthority() = default;
     /** @brief Evaluate every required tag for one subject at the injected simulation tick. */
-    [[nodiscard]] virtual eve::Result<ClimbingConditionDecision> evaluate(
-        ClimbingServiceSubject subject, std::span<const std::string> requiredTags,
-        eve::SimulationTick tick) = 0;
+    [[nodiscard]] virtual eve::Result<ClimbingConditionDecision> evaluate(ClimbingServiceSubject       subject,
+                                                                          std::span<const std::string> requiredTags,
+                                                                          eve::SimulationTick          tick) = 0;
 };
 
 /** @brief Optional post-simulation event adapter; it does not own the runtime event queue. */
@@ -82,8 +81,8 @@ public:
     /** @brief Releases IClimbingEventSink resources. */
     virtual ~IClimbingEventSink() = default;
     /** @brief Consume an owning event view after all ECS simulation views have closed. */
-    [[nodiscard]] virtual eve::Result<void> publish(ClimbingServiceSubject subject,
-                                                     std::span<const ClimbingEvent> events) = 0;
+    [[nodiscard]] virtual eve::Result<void> publish(ClimbingServiceSubject         subject,
+                                                    std::span<const ClimbingEvent> events) = 0;
 };
 
 /**
@@ -98,10 +97,10 @@ public:
  *          `declareScriptPhotoModeApplySeam` 同一条纪律）。由 `Climbing` 模块构造时调用。
  * @cost 一次 map 插入；只在模块构造时调用。
  */
-void declareScriptClimbingEventSeam();
+EVENGINE_API_DOMAINS void declareScriptClimbingEventSeam();
 
 /** @brief 撤回接缝与仍然在位的脚本适配器（由 `Climbing` 模块析构时调用）。 */
-void withdrawScriptClimbingEventSeam();
+EVENGINE_API_DOMAINS void withdrawScriptClimbingEventSeam();
 
 /** @brief Optional post-physics Animation/IK adapter consuming derived pose constraints only. */
 class IClimbingPoseAdapter {
@@ -110,13 +109,12 @@ public:
     /** @brief Releases IClimbingPoseAdapter resources. */
     virtual ~IClimbingPoseAdapter() = default;
     /** @brief Apply one derived pose projection; failure never invalidates authoritative climbing motion. */
-    [[nodiscard]] virtual eve::Result<void> apply(ClimbingServiceSubject subject,
-                                                   const ClimbingAdvance& advance) = 0;
+    [[nodiscard]] virtual eve::Result<void> apply(ClimbingServiceSubject subject, const ClimbingAdvance& advance) = 0;
 };
 
 /** @brief Result of a service-aware selection transaction. */
 struct ClimbingServiceStart {
-    ClimbingStart                 start;
+    ClimbingStart                start;
     ClimbingOptionalServiceState stamina = ClimbingOptionalServiceState::Disabled;
 };
 
@@ -127,10 +125,11 @@ public:
      * @brief Start one action and publish any configured stamina debit exactly once.
      * @remarks Input, runtime, and stamina reservation are unchanged/released on every failure path.
      */
-    [[nodiscard]] static eve::Result<ClimbingServiceStart> tryStart(
-        ClimbingRuntime& runtime, physics::World3D& world, const ClimbingPose& pose, ClimbingIntent& intent,
-        ClimbingCommand command, eve::SimulationTick tick, eve::SimulationTick lastGroundedTick,
-        ClimbingServiceSubject subject);
+    [[nodiscard]] static eve::Result<ClimbingServiceStart> tryStart(ClimbingRuntime& runtime, physics::World3D& world,
+                                                                    const ClimbingPose& pose, ClimbingIntent& intent,
+                                                                    ClimbingCommand command, eve::SimulationTick tick,
+                                                                    eve::SimulationTick    lastGroundedTick,
+                                                                    ClimbingServiceSubject subject);
 };
 
 /** @brief Dispatch to the optional event sink, returning ProviderAbsent instead of silently dropping. */

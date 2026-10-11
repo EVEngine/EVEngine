@@ -5,6 +5,7 @@
  * @brief 让编辑器 inspector 读写脚本组件的字段（J-3 编辑器通路）。
  */
 
+#include "common/Export.h"
 #include "common/ScriptComponentSnapshot.h"
 #include "scene/editing/SceneComponentPayload.h"
 
@@ -35,8 +36,8 @@ namespace eve::scene_editor {
  *          `Conflict` 拒绝，而不是把值写到另一个组件上。
  * @remarks 主人线程亲和：读写引擎侧存储、以及撤销时的整份发布都按主线程约定，实现不做同步。
  */
-class ScriptComponentOperationTarget final : public scene_editing::IDomainOperationTarget,
-                                             public scene_editing::IDomainOperationTargetStaging {
+class EVENGINE_API_EDITORS ScriptComponentOperationTarget final : public scene_editing::IDomainOperationTarget,
+                                                                  public scene_editing::IDomainOperationTargetStaging {
 public:
     /** @brief 域操作类型：一个脚本组件字段的绝对赋值。 */
     static std::string_view setOperationType();
@@ -105,7 +106,7 @@ private:
  *          脚本里给了非 null 的默认值**——那才是类型与默认值的来源；声明成 `null` 的字段与登记已丢的
  *          组件只读，但当前值照样显示（"有组件但没类型"看得见，而不是被静默藏掉）。
  */
-class ScriptComponentPayloadProvider final : public scene_editing::ISceneComponentPayloadProvider {
+class EVENGINE_API_EDITORS ScriptComponentPayloadProvider final : public scene_editing::ISceneComponentPayloadProvider {
 public:
     /**
      * @brief 编辑器目标 id → 场景**宿主名**。

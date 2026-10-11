@@ -5,15 +5,17 @@
  * @brief Squirrel GC wrappers for Motion builder / handle / sequence.
  */
 
+#include "common/Export.h"
+
 namespace ssq {
 class Table;
 class Class;
-}
+}  // namespace ssq
 
 namespace eve::animation {
 
 /** @brief Register Motion / MotionSequence script types and Animation factories. */
-void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass);
+EVENGINE_API_WORLD void exposeMotionScriptBindings(ssq::Table& table, ssq::Class& animationClass);
 
 /**
  * @brief 释放所有**脚本 motion sink** 适配器，并撤回它们在 provider 注册表里的登记。
@@ -23,6 +25,6 @@ void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass);
  *
  * @cost 与绑定的 sink 数成正比；只在模块析构时调用一次。
  */
-void clearScriptMotionSinkAdapters();
+EVENGINE_API_WORLD void clearScriptMotionSinkAdapters();
 
 }  // namespace eve::animation

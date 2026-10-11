@@ -6,6 +6,7 @@
  */
 
 #include <cstdint>
+#include "common/Export.h"
 
 namespace eve::map {
 
@@ -33,10 +34,10 @@ namespace eve::map {
  *          `declareScriptClimbingEventSeam` 同一条纪律）。由 `Map` 模块构造时调用。
  * @cost 一次 map 插入；只在模块构造时调用。
  */
-void declareScriptTileCollisionSinkSeam();
+EVENGINE_API_WORLD void declareScriptTileCollisionSinkSeam();
 
 /** @brief 撤回接缝与仍然在位的脚本适配器（由 `Map` 模块析构时调用）。 */
-void withdrawScriptTileCollisionSinkSeam();
+EVENGINE_API_WORLD void withdrawScriptTileCollisionSinkSeam();
 
 /**
  * @brief 脚本 tile-collision sink **拒绝/抛错**的累计次数（诊断与测试用）。
@@ -47,9 +48,9 @@ void withdrawScriptTileCollisionSinkSeam();
  *
  * @return 进程内累计值；`resetScriptTileCollisionSinkFailures()` 归零，供测试隔离。
  */
-[[nodiscard]] std::uint64_t scriptTileCollisionSinkFailures();
+[[nodiscard]] EVENGINE_API_WORLD std::uint64_t scriptTileCollisionSinkFailures();
 
 /** @brief 把上面的计数归零（测试隔离用）。 */
-void resetScriptTileCollisionSinkFailures();
+EVENGINE_API_WORLD void resetScriptTileCollisionSinkFailures();
 
 }  // namespace eve::map

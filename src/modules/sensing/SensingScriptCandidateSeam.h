@@ -5,6 +5,8 @@
  * @brief 让脚本实现 `ISensingCandidateProvider`（阶段 5：第三个落地的插座）。
  */
 
+#include "common/Export.h"
+
 namespace eve::sensing {
 
 /**
@@ -63,9 +65,9 @@ namespace eve::sensing {
  * @remarks 幂等：重复调用替换上一对回调。由 `Sensing` 模块构造时调用。
  * @cost 一次 map 插入；只在模块构造时调用。
  */
-void declareScriptSensingCandidateSeam();
+EVENGINE_API_PLATFORM void declareScriptSensingCandidateSeam();
 
 /** @brief 撤回接缝与仍然在位的脚本适配器（由 `Sensing` 模块析构时调用）。 */
-void withdrawScriptSensingCandidateSeam();
+EVENGINE_API_PLATFORM void withdrawScriptSensingCandidateSeam();
 
 }  // namespace eve::sensing

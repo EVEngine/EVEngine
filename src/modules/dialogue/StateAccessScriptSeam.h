@@ -6,6 +6,7 @@
  */
 
 #include <cstdint>
+#include "common/Export.h"
 
 namespace eve::dialogue {
 
@@ -37,10 +38,10 @@ namespace eve::dialogue {
  *   capability 只有一条接缝。由 `Dialogue` 模块构造时调用。
  * @cost 一次 map 插入；只在模块构造时调用。
  */
-void declareScriptStateQuerySeam();
+EVENGINE_API_DOMAINS void declareScriptStateQuerySeam();
 
 /** @brief 撤回 `IStateQuery` 接缝与仍然在位的脚本适配器。 */
-void withdrawScriptStateQuerySeam();
+EVENGINE_API_DOMAINS void withdrawScriptStateQuerySeam();
 
 /**
  * @brief 声明"`IStateMutation` 可以由脚本提供"这条接缝。
@@ -62,10 +63,10 @@ void withdrawScriptStateQuerySeam();
  * @remarks 单实现槽位（消费方用 `cap::query`），顶掉时写一行 `warn`。
  * @cost 一次 map 插入；只在模块构造时调用。
  */
-void declareScriptStateMutationSeam();
+EVENGINE_API_DOMAINS void declareScriptStateMutationSeam();
 
 /** @brief 撤回 `IStateMutation` 接缝与仍然在位的脚本适配器。 */
-void withdrawScriptStateMutationSeam();
+EVENGINE_API_DOMAINS void withdrawScriptStateMutationSeam();
 
 /**
  * @brief 脚本 state query **失败**（抛错或答案形状不对）的累计次数。
@@ -76,9 +77,9 @@ void withdrawScriptStateMutationSeam();
  *
  * @return 进程内累计值；`resetScriptStateQueryFailures()` 归零，供测试隔离。
  */
-[[nodiscard]] std::uint64_t scriptStateQueryFailures();
+[[nodiscard]] EVENGINE_API_DOMAINS std::uint64_t scriptStateQueryFailures();
 
 /** @brief 把上面的计数归零（测试隔离用）。 */
-void resetScriptStateQueryFailures();
+EVENGINE_API_DOMAINS void resetScriptStateQueryFailures();
 
 }  // namespace eve::dialogue
