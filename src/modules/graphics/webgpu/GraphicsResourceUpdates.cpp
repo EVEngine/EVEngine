@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <cstring>
 #include <memory>
 #include "common/Exception.h"
 #include "common/Resource.h"
@@ -7,11 +6,11 @@
 #include "graphics/Mesh.h"
 #include "graphics/Texture.h"
 #include "graphics/webgpu/Graphics.h"
+#include "graphics/webgpu/wgpu_types.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 namespace eve::graphics::webgpu {
 namespace {
-WGPUStringView sv(const char* s) { return {s, std::strlen(s)}; }
 std::string    normalizeTexPath(std::string path) {
     std::replace(path.begin(), path.end(), '\\', '/');
     while (path.starts_with("./")) path.erase(0, 2);
