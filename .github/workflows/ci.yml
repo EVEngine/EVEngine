@@ -7,6 +7,8 @@
 #   ios     → ios debug; ios-release when asked
 #   linux   → linux debug (+ unit tests); linux-release when asked
 #   webgpu  → webgpu (Emscripten/WASM) release
+# Native Dawn: Windows owns parity; macOS checks Metal on relevant changes.
+# Scheduled/manual/reusable runs retain the complete native Dawn test selection.
 #
 # iOS signing (optional repo secrets):
 #   IOS_CERTIFICATE_P12_BASE64, IOS_CERTIFICATE_PASSWORD, IOS_DEVELOPMENT_TEAM
@@ -71,6 +73,7 @@ jobs:
       asan: ${{ steps.scope.outputs.asan }}
       fuzz: ${{ steps.scope.outputs.fuzz }}
       webgpu: ${{ steps.scope.outputs.webgpu }}
+      dawn_metal: ${{ steps.scope.outputs.dawn_metal }}
       tools: ${{ steps.scope.outputs.tools }}
       test_mode: ${{ steps.scope.outputs.test_mode }}
       test_label_regex: ${{ steps.scope.outputs.test_label_regex }}
@@ -830,6 +833,7 @@ jobs:
           fi
 
       - name: Configure native Dawn Metal lane
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil/glfw3 (and friends)
         # from chromium.googlesource.com. That clone can land an empty
         # directory without CMakeLists.txt (run 34850493956 / job 103997514884;
@@ -866,6 +870,7 @@ jobs:
           exit 1
 
       - name: Verify native Dawn Metal platform selection
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         timeout-minutes: 5
         run: |
           grep -Eq '^#define EVENGINE_WEBGPU[[:space:]]*$' \
@@ -879,6 +884,7 @@ jobs:
           fi
 
       - name: Build native Dawn Metal lane
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         # A warm sccache builds this lane in 10-29 minutes (10.4 on PR #443,
         # 28.6 on dev), but a cache-cold pull-request ref compiles the whole
         # webgpu-native unit_test target and ran past the former 40-minute guard
@@ -891,7 +897,20 @@ jobs:
         timeout-minutes: 5
         run: sccache --show-stats
 
-      - name: Test native Dawn Metal surface and rendering
+      - name: Test native Dawn Metal surface and rendering (targeted)
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' && (github.event_name == 'pull_request' || github.event_name == 'push') && inputs.build_type != 'release' && inputs.build_type != 'both' }}
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+        # Present/readback exercises the native surface; texture updates/blending
+        # and 3D lighting cover Metal translation without duplicating Windows parity.
+        run: |
+          ctest --test-dir build/webgpu-macos \
+            -R '^(Graphics\.screenGetPixelAfterPresent|graphics\.backendParity\.textureUpdateAndAlphaBlend|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels))$' \
+            --no-tests=error --output-on-failure
+
+      - name: Test native Dawn Metal surface and rendering (full)
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' && (github.event_name != 'pull_request' && github.event_name != 'push' || inputs.build_type == 'release' || inputs.build_type == 'both') }}
         timeout-minutes: 20
         env:
           ALSOFT_DRIVERS: "null"
