@@ -1,107 +1,30 @@
-name: Diagnostic Android SDK runtime gate
+# Weekly cleanup of merged release branches (vX.Y.Z / promote/* / rebase/*).
+# The release tag is never touched. Run manually via workflow_dispatch.
+
+name: Cleanup release branches
 
 on:
+  schedule:
+    # Monday 02:00 UTC
+    - cron: "0 2 * * 1"
   workflow_dispatch:
 
 permissions:
-  contents: read
-
-env:
-  CMAKE_EXTRA_ARGS: -DBUILD_TESTING=OFF
-  ANDROID_NDK_VERSION: "27.3.13750724"
-  ANDROID_API: "34"
+  contents: write
 
 jobs:
-  build-apk:
-    name: Build only the Android SDK and diagnostic APK
+  cleanup:
+    name: cleanup-branches
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 30
     steps:
-      - name: Checkout diagnostic branch
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v4.2.2
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          submodules: recursive
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Java
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
-        with:
-          packages: >-
-            platform-tools
-            platforms;android-${{ env.ANDROID_API }}
-            build-tools;${{ env.ANDROID_API }}.0.0
-            ndk;${{ env.ANDROID_NDK_VERSION }}
-
-      - name: Resolve Android SDK and NDK paths
-        run: bash .github/scripts/setup-android-sdk.sh
-
-      - name: Build and install only the Android SDK
-        run: |
-          make sdk/android \
-            ANDROID_ABI=x86_64 \
-            ANDROID_SDK="$ANDROID_SDK" \
-            ANDROID_NDK="$ANDROID_NDK" \
-            JAVA_HOME="$JAVA_HOME" \
-            CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" \
-            ANDROID_JOBS=4
-
-      - name: Assemble diagnostic APK from the installed SDK
-        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/android android 0.5.2 x86_64
-
-      - name: Stage diagnostic APK
-        run: |
-          mkdir apk
-          cp dist/eve-sdk/android/platform/apk/app/build/outputs/apk/debug/app-debug.apk \
-            apk/eve-android-sdk-diagnostic.apk
-
-      - name: Upload diagnostic APK
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: android-sdk-diagnostic-apk
-          path: apk/*.apk
-          if-no-files-found: error
-
-  apk-gate:
-    name: Run only the rebuilt Android SDK APK on API 35
-    needs: build-apk
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - name: Checkout diagnostic branch
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v4.2.2
-
-      - name: Download diagnostic APK
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: android-sdk-diagnostic-apk
-          path: apk
-
-      - name: Enable KVM access
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
-            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Boot API 35 emulator and run the diagnostic APK
-        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
-        with:
-          api-level: 35
-          arch: x86_64
-          target: google_apis
-          emulator-boot-timeout: 600
-          emulator-options: >-
-            -no-window
-            -gpu swiftshader
-            -no-snapshot
-            -noaudio
-            -no-boot-anim
-            -accel on
-          disable-linux-hw-accel: false
-          disable-animations: true
-          script: bash .github/scripts/run-consumer-apks.sh apk 1 SDK_TEST_GAME_OK x86_64
+      - name: Clean up merged release branches
+        timeout-minutes: 15
+        run: python3 scripts/release.py cleanup-branches
