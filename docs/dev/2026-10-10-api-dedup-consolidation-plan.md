@@ -1,7 +1,7 @@
 # API 重复与相似面收敛计划
 
 > 日期：2026-10-10  
-> 状态：**计划（未实施）**  
+> 状态：**实施中**（P0.2 / P0.3 已落地；后续阶段继续合入同一 PR）  
 > 来源：对 `common` / graphics-asset / gameplay 公共 API 的重复面审计  
 > 关联：`2026-08-26-architecture-consolidation-checklist.md`、`Result检查与不得丢弃返回值规范.md`、`领域短根继承与跨域组合架构.md`、`2026-09-15-模块边界审查台账.md`
 
@@ -95,7 +95,7 @@
 
 **PR 粒度**：接口 + 全部 provider + 测试，一个 PR。
 
-#### P0.2 `WriteResult` → `eve::Result`（或薄别名）
+#### P0.2 `WriteResult` → `eve::Result`（或薄别名） — **已完成**
 
 **做法**
 
@@ -105,18 +105,18 @@
 
 **验收**：无生产调用方再构造 `WriteResult`；契约测试断言失败码稳定。
 
-#### P0.3 `PatchResult` → `eve::Result` + 结构化细节
+#### P0.3 `PatchResult` → `eve::Result` + 结构化细节 — **已完成**
 
 **做法**
 
 1. batch commit 返回 `Result<PatchCommitInfo>`（changedCount、revisionBefore/After 进成功值；错误进 diagnostics）。
 2. 迁移 StatePatch 调用方；保留短暂兼容 facade 仅当脚本依赖且带 expiry。
 
-**验收**：公共头文件不再导出 `bool success` 的 `PatchResult`（或明确 `@compatibility` + 移除日期）。
+**验收**：公共头文件不再导出 `bool success` 的 `PatchResult`（或明确 `@compatibility` + 移除日期）。`PatchResult` 已标 `@compatibility` / `@expiry 2026-12-31`。
 
 #### P0.4 Capability 查询面：bool/err → Result
 
-**范围（按接口拆 PR，避免巨型变更）**
+**范围（同一收敛 PR 内按接口分提交，避免拆多 PR）**
 
 1. `IRenderCapture`（`savePng` / mask / gbuffer）
 2. `ISceneQuery` 变更类方法（get/set 中需要失败原因者）
