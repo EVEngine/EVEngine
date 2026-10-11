@@ -33,6 +33,6 @@ void Graphics::applyPendingResourceChanges() {
         changed           = true;
     }
     samplerChangesPending_ = false;
-    (void)changed;
+    if (changed) clearMeshBindGroupCache();
 }
 }  // namespace eve::graphics::webgpu

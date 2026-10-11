@@ -3257,6 +3257,8 @@ void Graphics::drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch& lb, int view
 
 void Graphics::begin3DFrame() {
     if (!initialized || !device) return;
+    ensureFileTexturesReady();
+    applyPendingResourceChanges();
     frame3DStarted = true;
     frameHad3DThisFrame = true;
     // Match the desktop (Vulkan) backend: had3DThisFrame() must return true
