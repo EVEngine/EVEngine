@@ -8,7 +8,7 @@
 #include "zeroerr/unittest.h"
 namespace {
 using namespace eve::editing;
-std::unique_ptr<eve::scene_editor::SceneEditorSession> session() {
+std::unique_ptr<eve::scene_editor::SceneEditorSession> makeRegionSession() {
     auto result = std::make_unique<eve::scene_editor::SceneEditorSession>(
         std::make_unique<eve::scene_editing::SceneAuthoringDocumentTarget>("regions"));
     REQUIRE(
@@ -42,7 +42,7 @@ Value intent(const std::string& revision) {
 }
 }  // namespace
 TEST_CASE("scene.regions.geometry_revision_excludes_trs_and_material_but_invalidates_recipe") {
-    auto target   = session();
+    auto target   = makeRegionSession();
     auto revision = target->geometryRevision(ObjectId("house"));
     REQUIRE(revision.ok());
     auto source = target->snapshot().getIf<Value::Object>()->at("sources").getIf<Value::Object>()->at("house");
@@ -76,7 +76,7 @@ TEST_CASE("scene.regions.geometry_revision_excludes_trs_and_material_but_invalid
     REQUIRE(eve::scene_editing::sceneVisibilityTargets(relations.value(), target->snapshot()).ok());
 }
 TEST_CASE("scene.regions.roundtrip_delete_undo_and_v2_migration_preserve_intent") {
-    auto target   = session();
+    auto target   = makeRegionSession();
     auto revision = target->geometryRevision(ObjectId("house"));
     REQUIRE(revision.ok());
     REQUIRE(target
@@ -103,7 +103,7 @@ TEST_CASE("scene.regions.roundtrip_delete_undo_and_v2_migration_preserve_intent"
             legacy.getIf<Value::Object>()->at("relations"));
 }
 TEST_CASE("scene.regions.invalid_bounds_unknown_fields_and_conflicting_identity_are_atomic") {
-    auto target   = session();
+    auto target   = makeRegionSession();
     auto revision = target->geometryRevision(ObjectId("house"));
     REQUIRE(revision.ok());
     const auto saved = target->saveJson();

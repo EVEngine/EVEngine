@@ -10,7 +10,7 @@
 #include "zeroerr/unittest.h"
 namespace {
 using namespace eve::editing;
-std::unique_ptr<eve::scene_editor::SceneEditorSession> session() {
+std::unique_ptr<eve::scene_editor::SceneEditorSession> makeOverlapSession() {
     auto target = std::make_unique<eve::scene_editor::SceneEditorSession>(
         std::make_unique<eve::scene_editing::SceneAuthoringDocumentTarget>("overlap"));
     for (const auto* id : {"a", "b"})
@@ -38,7 +38,7 @@ Value evidence(double fraction) {
 }
 }  // namespace
 TEST_CASE("scene.projected_overlap.schema_v4_migration_roundtrip_delete_and_invalid_restore") {
-    auto target                                       = session();
+    auto target                                       = makeOverlapSession();
     auto legacy                                       = target->snapshot();
     (*legacy.getIf<Value::Object>())["schemaVersion"] = 3;
     REQUIRE(target->execute("scene.snapshot.restore.v1", legacy).ok());
@@ -63,7 +63,7 @@ TEST_CASE("scene.projected_overlap.schema_v4_migration_roundtrip_delete_and_inva
     REQUIRE_EQ(target->saveJson(), saved);
 }
 TEST_CASE("scene.projected_overlap.target_planning_includes_partner_and_reference_region") {
-    auto target   = session();
+    auto target   = makeOverlapSession();
     auto revision = target->geometryRevision(ObjectId("b"));
     REQUIRE(revision.ok());
     auto relation                                = intent();
@@ -137,7 +137,7 @@ TEST_CASE("scene.projected_overlap_uses_pair_fraction_independent_of_visibility_
 TEST_CASE("scene.projected_overlap.provider_absent_rejects_measure_and_commit_without_document_mutation") {
     auto* previous = eve::cap::query<eve::ISceneVisibilityEvidence>();
     if (previous) eve::cap::revoke<eve::ISceneVisibilityEvidence>(previous);
-    auto target = session();
+    auto target = makeOverlapSession();
     REQUIRE(target->execute("scene.authoring.relations.set.v1", Value::Object{{"value", Value::Array{intent()}}}).ok());
     eve::scene_editor::PhysicsPlacementRequest request;
     eve::scene_editor::PhysicsPlacementObject  a, b;
