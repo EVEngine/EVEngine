@@ -7,6 +7,7 @@
 
 #include "common/Capability.h"
 #include "common/RenderCapture.h"
+#include "common/ProcgenProbeSink.h"
 
 #include "common/ECS.h"
 #include "common/b64.h"
@@ -15,6 +16,9 @@
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ReflectionProbeCapture.h"
+#include "graphics/DiffuseLightProbeRegistry.h"
+#include "graphics/ReflectionProbeRegistry.h"
 #include "image/ImageData.h"
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
@@ -27,6 +31,9 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <memory>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace eve::graphics {
@@ -559,11 +566,106 @@ private:
     }
 };
 
+class ProcgenProbeSinkImpl final : public eve::IProcgenProbeSink {
+public:
+    struct Batch {
+        std::vector<std::unique_ptr<ReflectionProbeCapture>> reflections;
+        std::vector<eve::ProcgenProbeDesc> lights;
+    };
+
+    Result<int> replaceProbeBatch(const std::string& batchId,
+                                  const std::vector<eve::ProcgenProbeDesc>& probes) override {
+        Graphics* graphics = eve::ModuleManager::getInstance<Graphics>("Graphics");
+        if (batchId.empty() || !graphics)
+            return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                "procedural probe publication requires a batch id and graphics provider"));
+        Batch candidate;
+        std::unordered_set<std::uint64_t> identities;
+        for (const auto& probe : probes) {
+            if (!probe.sourcePointId || !identities.insert(probe.sourcePointId).second ||
+                probe.resource.empty() || (probe.type != 0 && probe.type != 1) ||
+                !std::isfinite(probe.x) || !std::isfinite(probe.y) || !std::isfinite(probe.z) ||
+                !std::isfinite(probe.extentX) || !std::isfinite(probe.extentY) || !std::isfinite(probe.extentZ) ||
+                probe.extentX <= 0 || probe.extentY <= 0 || probe.extentZ <= 0 ||
+                probe.resolution < 16 || probe.resolution > 2048 ||
+                !std::isfinite(probe.clipDistance) || probe.clipDistance <= 0 ||
+                !std::isfinite(probe.irradianceR) || !std::isfinite(probe.irradianceG) ||
+                !std::isfinite(probe.irradianceB) || probe.irradianceR < 0 || probe.irradianceG < 0 ||
+                probe.irradianceB < 0)
+                return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                    "procedural probe publication requires valid unique probe descriptors"));
+            if (probe.hasSphericalHarmonics &&
+                !std::all_of(probe.sphericalHarmonics.begin(), probe.sphericalHarmonics.end(),
+                             [](float coefficient) { return std::isfinite(coefficient); }))
+                return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                    "procedural light probe spherical harmonics must be finite"));
+            if (probe.type == 1) {
+                candidate.lights.push_back(probe);
+                continue;
+            }
+            auto capture = std::make_unique<ReflectionProbeCapture>(graphics);
+            capture->configure(probe.x, probe.y, probe.z, probe.resolution, 0.1F, probe.clipDistance);
+            capture->configureInfluence(probe.extentX, probe.extentY, probe.extentZ, 1, 1, 0);
+            capture->requestCapture();
+            candidate.reflections.push_back(std::move(capture));
+        }
+        ensureRegistry();
+        for (auto& probe : candidate.reflections) registry_->add(probe.get());
+        auto found = batches_.find(batchId);
+        if (found != batches_.end())
+            for (auto& probe : found->second.reflections) registry_->remove(probe.get());
+        DiffuseLightProbeRegistry::instance().replaceBatch(batchId, candidate.lights);
+        batches_.insert_or_assign(batchId, std::move(candidate));
+        return Result<int>::success(static_cast<int>(probes.size()));
+    }
+
+    Result<int> removeProbeBatch(const std::string& batchId) override {
+        auto found = batches_.find(batchId);
+        if (found == batches_.end())
+            return Result<int>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                "procedural probe batch was not published", batchId));
+        const int count = static_cast<int>(found->second.reflections.size() + found->second.lights.size());
+        if (registry_)
+            for (auto& probe : found->second.reflections) registry_->remove(probe.get());
+        DiffuseLightProbeRegistry::instance().removeBatch(batchId);
+        batches_.erase(found);
+        return Result<int>::success(count);
+    }
+
+    Result<int> tickProbeBatches(int faceBudget, int filterBudget, int filterSamples) override {
+        if (faceBudget < 0 || filterBudget < 0 || filterSamples < 8 || filterSamples > 512)
+            return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                "procedural probe tick requires nonnegative budgets and 8..512 filter samples"));
+        ensureRegistry();
+        return Result<int>::success(registry_->tick(faceBudget, filterBudget, filterSamples));
+    }
+    int probeCount(const std::string& batchId) const override {
+        auto found = batches_.find(batchId);
+        return found == batches_.end() ? 0 : static_cast<int>(found->second.reflections.size() + found->second.lights.size());
+    }
+    int reflectionProbeCount(const std::string& batchId) const override {
+        auto found = batches_.find(batchId);
+        return found == batches_.end() ? 0 : static_cast<int>(found->second.reflections.size());
+    }
+    int lightProbeCount(const std::string& batchId) const override {
+        auto found = batches_.find(batchId);
+        return found == batches_.end() ? 0 : static_cast<int>(found->second.lights.size());
+    }
+private:
+    void ensureRegistry() {
+        if (!registry_) registry_ = std::make_unique<ReflectionProbeRegistry>();
+    }
+    std::unique_ptr<ReflectionProbeRegistry> registry_;
+    std::unordered_map<std::string, Batch> batches_;
+};
+
 }  // namespace
 
 void registerGraphicsCapabilities() {
     static RenderCaptureImpl impl;
+    static ProcgenProbeSinkImpl probeSink;
     eve::cap::provide<eve::IRenderCapture>(&impl);
+    eve::cap::provide<eve::IProcgenProbeSink>(&probeSink);
 }
 
 }  // namespace eve::graphics

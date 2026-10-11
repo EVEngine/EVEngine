@@ -9,6 +9,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
+import utf8_stdio
 
 TAG_RE = re.compile(r"^v([0-9]+)\.([0-9]+)\.([0-9]+)$")
 PROMOTE_HEAD_RE = re.compile(r"^promote/v[0-9]+\.[0-9]+\.[0-9]+$")
@@ -819,6 +820,7 @@ def main(
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     main()
 
 

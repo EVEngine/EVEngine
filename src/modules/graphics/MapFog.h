@@ -124,27 +124,28 @@ private:
     Texture  *mask_       = nullptr;
 
     float time_            = 0.f;
-    float tileA_           = 0.55f;
-    float tileB_           = 0.95f;
-    float speedA_          = 0.008f;
-    float speedB_          = 0.015f;
-    float distort_         = 0.22f;
+    float tileA_           = 1.10f;
+    float tileB_           = 1.65f;
+    float speedA_          = 0.010f;
+    float speedB_          = 0.016f;
+    float distort_         = 0.085f;
     float fixX_            = 0.f;
     float fixY_            = 0.f;
-    float fogR_            = 0.92f;
-    float fogG_            = 0.94f;
-    float fogB_            = 0.98f;
-    float fogAlpha_        = 0.90f;
-    float edgeSoft_        = 0.14f;
-    bool  shadowEnabled_   = true;
-    float shadowOffX_      = 0.034f;
-    float shadowOffY_      = 0.048f;
-    float shadowStrength_  = 0.78f;
+    float fogR_            = 0.96f;
+    float fogG_            = 0.97f;
+    float fogB_            = 1.00f;
+    float fogAlpha_        = 0.96f;
+    float edgeSoft_        = 0.16f;
+    bool  shadowEnabled_   = false;
+    float shadowOffX_      = 0.018f;
+    float shadowOffY_      = 0.024f;
+    float shadowStrength_  = 0.32f;
     float selectStrength_  = 0.85f;
     float dissolveScale_   = 1.8f;
-    float cloudMix_        = 0.35f;
-    float densityContrast_ = 0.42f;
-    float densityBias_     = 0.16f;
+    float cloudMix_        = 0.30f;
+    // Calm deep sheet; cloud coverage sculpts only the frontier islands.
+    float densityContrast_ = 0.24f;
+    float densityBias_     = 0.10f;
     float drawAspect_      = 1.f;
 };
 

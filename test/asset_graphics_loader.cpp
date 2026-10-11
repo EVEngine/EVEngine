@@ -1,3 +1,4 @@
+#include "asset/CanonicalMesh.h"
 #include "asset/graphics/EvpackGraphicsLoader.h"
 #include "asset/graphics/EvpackImageLoader.h"
 
@@ -57,9 +58,10 @@ std::shared_ptr<const Evpack> makePack(std::vector<std::uint8_t> mesh) {
     build.packageId = persistentId("018f6f22-2490-7ad2-bf58-4f1dbca31040");
     build.buildId = persistentId("018f6f22-2490-7ad2-bf58-4f1dbca31041");
     build.variants = {{"windows", "x86_64", "vulkan", {"bc"}, "spirv-1.6", "high", {}}};
-    build.chunks = {{id, "eve.mesh", SchemaVersion(1), 0, EvpackChunkKind::Definition, 0,
+    const auto schema = mesh.size() > 7 && mesh[7] == 3 ? SchemaVersion(3) : SchemaVersion(1);
+    build.chunks = {{id, "eve.mesh", schema, 0, EvpackChunkKind::Definition, 0,
                      EvpackCodec::None, 8, {}, {'{', '}' }},
-                    {id, "eve.mesh", SchemaVersion(1), 0, EvpackChunkKind::Bulk, 1,
+                    {id, "eve.mesh", schema, 0, EvpackChunkKind::Bulk, 1,
                      EvpackCodec::None, 16, {}, std::move(mesh)}};
     auto bytes = buildEvpack(std::move(build));
     REQUIRE(bytes.ok());
@@ -85,6 +87,14 @@ public:
             reinterpret_cast<eve::graphics::Mesh*>(&token));
     }
 
+    Result<eve::graphics::Mesh*> uploadMeshColored(
+        const float* positions, const float* normals, const float* texcoords, const float* colors,
+        int vertexCount, const std::uint32_t* indices, int indexCount) override {
+        auto result = uploadMesh(positions, normals, texcoords, vertexCount, indices, indexCount);
+        if (result) observedColors.assign(colors, colors + vertexCount * 4);
+        return result;
+    }
+
     Result<void> releaseMesh(eve::graphics::Mesh*) override { return Result<void>::success(); }
 
     bool reject = false;
@@ -92,6 +102,7 @@ public:
     std::vector<float> observedPositions;
     std::vector<float> observedNormals;
     std::vector<float> observedTexcoords;
+    std::vector<float> observedColors;
     std::vector<std::uint32_t> observedIndices;
 
 private:
@@ -164,6 +175,24 @@ TEST_CASE("asset.graphics.validatesCanonicalMeshBeforeBackendUpload") {
     CHECK_EQ(factory.observedNormals.size(), std::size_t(9));
     CHECK_EQ(factory.observedTexcoords.size(), std::size_t(6));
     CHECK_EQ(factory.observedIndices, std::vector<std::uint32_t>({0, 1, 2}));
+}
+
+TEST_CASE("asset.graphics.uploadsCanonicalVertexColorsWithoutDroppingThem") {
+    asset::CanonicalMeshData mesh;
+    mesh.positions = {0, 0, 0, 1, 0, 0, 0, 1, 0};
+    mesh.normals = {0, 0, 1, 0, 0, 1, 0, 0, 1};
+    mesh.texcoords[0] = {0, 0, 1, 0, 0, 1};
+    mesh.colors = {1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1};
+    mesh.indices = {0, 1, 2};
+    auto encoded = encodeCanonicalMesh(mesh);
+    REQUIRE(encoded.ok());
+    EvpackResourceReader reader(makePack(std::move(encoded).takeValue()));
+    RecordingMeshFactory factory;
+    EvpackGraphicsLoader loader(reader, factory);
+    auto loaded = loader.loadMesh(assetRef("asset://550e8400-e29b-41d4-a716-446655440000"),
+                                  capabilities);
+    REQUIRE(loaded.ok());
+    CHECK_EQ(factory.observedColors, mesh.colors);
 }
 
 TEST_CASE("asset.graphics.invalidMeshNeverReachesBackend") {

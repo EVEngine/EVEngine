@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 from check_architecture_contracts import DEFAULT_METADATA, catalogue_sort_key
+import utf8_stdio
 
 
 def main() -> int:
@@ -36,4 +37,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     raise SystemExit(main())

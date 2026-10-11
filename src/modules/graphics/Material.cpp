@@ -194,6 +194,7 @@ Result<void> Material::bind(Graphics& gfx) const {
     gfx.setMesh3DMaterial(metallic_, roughness_);
     gfx.setMesh3DTexCellBomb(texBombScale_, texBombStrength_, texBombRot_);
     gfx.setMesh3DNormalTexture(pbr_.textures[2].texture);
+    gfx.setMesh3DPackedNormalMask(false);
     gfx.setMesh3DHeightTexture(height_);
     gfx.setMesh3DVirtualTexture(virtualTextureEnabled_, virtualPageCountX_, virtualPageCountY_,
                                 virtualAtlasSlotsX_, virtualAtlasSlotsY_,

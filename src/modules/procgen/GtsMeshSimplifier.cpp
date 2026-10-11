@@ -1,0 +1,253 @@
+#include "procgen/GtsMeshSimplifier.h"
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <limits>
+#include <map>
+#include <set>
+#include <vector>
+namespace eve::procgen {
+namespace {
+struct V {
+    double                 x, y, z, nx, ny, nz, u, v, r = 1, g = 1, b = 1, a = 1;
+    bool                   alive = true, locked = false, border = false, seam = false, foldover = false;
+    std::array<double, 10> q{};
+};
+struct T {
+    std::uint32_t a, b, c, aa, ab, ac;
+    int           group;
+    bool          alive = true;
+};
+template <class X>
+Result<X> fail(const char* m) {
+    return Result<X>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, m, "procgen.gtsMeshSimplify"));
+}
+using Edge = std::pair<std::uint32_t, std::uint32_t>;
+Edge   edge(std::uint32_t a, std::uint32_t b) { return {std::min(a, b), std::max(a, b)}; }
+double qeval(const std::array<double, 10>& q, double x, double y, double z) {
+    return q[0] * x * x + 2 * q[1] * x * y + 2 * q[2] * x * z + q[3] * y * y + 2 * q[4] * y * z + q[5] * z * z +
+           2 * q[6] * x + 2 * q[7] * y + 2 * q[8] * z + q[9];
+}
+bool valid(const MeshBuild& m) {
+    return m.getVertexCount() >= 3 && m.getIndexCount() >= 3 && m.getIndexCount() % 3 == 0 &&
+           m.positions().size() == size_t(m.getVertexCount()) * 3 &&
+           m.normals().size() == size_t(m.getVertexCount()) * 3 && m.uvs().size() == size_t(m.getVertexCount()) * 2 &&
+           (!m.hasVertexColors() || m.colors().size() == size_t(m.getVertexCount()) * 4);
+}
+}  // namespace
+Result<int> simplifyGtsMesh(MeshBuild& output, const MeshBuild& source, float quality,
+                            const GtsMeshSimplificationOptions& o) {
+    if (!valid(source) || !std::isfinite(quality) || quality < 0 || quality > 1 || o.maxIterationCount <= 0 ||
+        !std::isfinite(o.vertexLinkDistance) || o.vertexLinkDistance < 0 || !std::isfinite(o.aggressiveness) ||
+        o.aggressiveness <= 0)
+        return fail<int>("invalid GTS mesh simplification input or options");
+    std::vector<V> vs;
+    vs.reserve(source.getVertexCount());
+    for (int i = 0; i < source.getVertexCount(); ++i) {
+        V             v{source.getPositionX(i), source.getPositionY(i), source.getPositionZ(i), source.getNormalX(i),
+                        source.getNormalY(i),   source.getNormalZ(i),   source.getUvU(i),       source.getUvV(i),
+                        source.getColor(i, 0),  source.getColor(i, 1),  source.getColor(i, 2),  source.getColor(i, 3)};
+        const double* p = &v.x;
+        for (int k = 0; k < 12; ++k)
+            if (!std::isfinite(p[k])) return fail<int>("mesh attributes must be finite");
+        vs.push_back(v);
+    }
+    std::vector<T> ts;
+    for (int i = 0; i < source.getIndexCount(); i += 3) {
+        int a = source.getIndex(i), b = source.getIndex(i + 1), c = source.getIndex(i + 2);
+        if (a < 0 || b < 0 || c < 0 || a >= int(vs.size()) || b >= int(vs.size()) || c >= int(vs.size()) || a == b ||
+            b == c || a == c)
+            return fail<int>("mesh triangles must be valid and non-degenerate");
+        ts.push_back({uint32_t(a), uint32_t(b), uint32_t(c), uint32_t(a), uint32_t(b), uint32_t(c),
+                      source.getTriangleGroup(i / 3)});
+    }
+    std::map<Edge, int> counts;
+    for (auto& t : ts) {
+        auto&  a  = vs[t.a];
+        auto&  b  = vs[t.b];
+        auto&  c  = vs[t.c];
+        double ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z, vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
+        double nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx,
+               l = sqrt(nx * nx + ny * ny + nz * nz);
+        if (l < 1e-12) return fail<int>("mesh contains a zero-area triangle");
+        nx /= l;
+        ny /= l;
+        nz /= l;
+        double                 d = -(nx * a.x + ny * a.y + nz * a.z);
+        std::array<double, 10> q{nx * nx, nx * ny, nx * nz, ny * ny, ny * nz, nz * nz, nx * d, ny * d, nz * d, d * d};
+        for (auto id : {t.a, t.b, t.c})
+            for (int k = 0; k < 10; ++k) vs[id].q[k] += q[k];
+        ++counts[edge(t.a, t.b)];
+        ++counts[edge(t.b, t.c)];
+        ++counts[edge(t.c, t.a)];
+    }
+    for (auto& [e, n] : counts)
+        if (n == 1) {
+            vs[e.first].border  = true;
+            vs[e.second].border = true;
+        }
+    if (o.enableSmartLink) {
+        double distance2 = o.vertexLinkDistance * o.vertexLinkDistance;
+        for (size_t i = 0; i < vs.size(); ++i)
+            if (vs[i].border)
+                for (size_t j = i + 1; j < vs.size(); ++j)
+                    if (vs[j].border) {
+                        double dx = vs[i].x - vs[j].x, dy = vs[i].y - vs[j].y, dz = vs[i].z - vs[j].z;
+                        if (dx * dx + dy * dy + dz * dz <= distance2) {
+                            bool sameUv  = std::abs(vs[i].u - vs[j].u) <= 1e-12 && std::abs(vs[i].v - vs[j].v) <= 1e-12;
+                            vs[i].border = vs[j].border = false;
+                            if (sameUv)
+                                vs[i].foldover = vs[j].foldover = true;
+                            else
+                                vs[i].seam = vs[j].seam = true;
+                            for (auto& t : ts) {
+                                if (t.a == j) t.a = uint32_t(i);
+                                if (t.b == j) t.b = uint32_t(i);
+                                if (t.c == j) t.c = uint32_t(i);
+                            }
+                        }
+                    }
+    }
+    for (auto& v : vs)
+        v.locked = (o.preserveBorderEdges && v.border) || (o.preserveUvSeamEdges && v.seam) ||
+                   (o.preserveUvFoldoverEdges && v.foldover);
+    int alive = int(ts.size()), target = int(std::lround(ts.size() * quality));
+    for (int iteration = 0; iteration < o.maxIterationCount && alive > target; ++iteration) {
+        std::set<Edge> es;
+        for (auto& t : ts)
+            if (t.alive) {
+                es.insert(edge(t.a, t.b));
+                es.insert(edge(t.b, t.c));
+                es.insert(edge(t.c, t.a));
+            }
+        double best = std::numeric_limits<double>::infinity();
+        Edge   chosen{};
+        for (auto e : es) {
+            auto& a = vs[e.first];
+            auto& b = vs[e.second];
+            if (!a.alive || !b.alive || (a.locked && b.locked) || a.border != b.border || a.seam != b.seam ||
+                a.foldover != b.foldover)
+                continue;
+            std::array<double, 10> q;
+            for (int k = 0; k < 10; ++k) q[k] = a.q[k] + b.q[k];
+            double x    = a.locked   ? a.x
+                          : b.locked ? b.x
+                                     : (a.x + b.x) * .5,
+                   y    = a.locked   ? a.y
+                          : b.locked ? b.y
+                                     : (a.y + b.y) * .5,
+                   z    = a.locked   ? a.z
+                          : b.locked ? b.z
+                                     : (a.z + b.z) * .5,
+                   cost = qeval(q, x, y, z);
+            if (o.preserveSurfaceCurvature) cost *= 2. - std::clamp(a.nx * b.nx + a.ny * b.ny + a.nz * b.nz, -1., 1.);
+            if (cost < best) {
+                best   = cost;
+                chosen = e;
+            }
+        }
+        const double threshold = 1e-9 * std::pow(iteration + 3., o.aggressiveness);
+        if (!std::isfinite(best)) break;
+        if (best > threshold) continue;
+        int removedByCollapse = 0;
+        for (const auto& t : ts)
+            if (t.alive) {
+                auto ids = std::array<uint32_t, 3>{t.a, t.b, t.c};
+                for (auto& n : ids)
+                    if (n == chosen.second) n = chosen.first;
+                if (ids[0] == ids[1] || ids[1] == ids[2] || ids[0] == ids[2]) ++removedByCollapse;
+            }
+        if (removedByCollapse >= alive) {
+            vs[chosen.first].locked = true;
+            continue;
+        }
+        auto& a          = vs[chosen.first];
+        auto& b          = vs[chosen.second];
+        V     candidate  = a;
+        candidate.x      = a.locked ? a.x : b.locked ? b.x : (a.x + b.x) * .5;
+        candidate.y      = a.locked ? a.y : b.locked ? b.y : (a.y + b.y) * .5;
+        candidate.z      = a.locked ? a.z : b.locked ? b.z : (a.z + b.z) * .5;
+        candidate.nx     = (a.nx + b.nx) * .5;
+        candidate.ny     = (a.ny + b.ny) * .5;
+        candidate.nz     = (a.nz + b.nz) * .5;
+        candidate.u      = a.locked ? a.u : b.locked ? b.u : (a.u + b.u) * .5;
+        candidate.v      = a.locked ? a.v : b.locked ? b.v : (a.v + b.v) * .5;
+        candidate.locked = a.locked || b.locked;
+        for (int k = 0; k < 10; ++k) candidate.q[k] = a.q[k] + b.q[k];
+        bool flip = false;
+        for (auto& t : ts)
+            if (t.alive && (t.a == chosen.second || t.b == chosen.second || t.c == chosen.second ||
+                            t.a == chosen.first || t.b == chosen.first || t.c == chosen.first)) {
+                auto old0 = vs[t.a], old1 = vs[t.b], old2 = vs[t.c];
+                auto ids = std::array<uint32_t, 3>{t.a, t.b, t.c};
+                for (auto& n : ids)
+                    if (n == chosen.second) n = chosen.first;
+                if (ids[0] == ids[1] || ids[1] == ids[2] || ids[0] == ids[2]) continue;
+                auto p = vs[ids[0]], q = vs[ids[1]], r = vs[ids[2]];
+                if (ids[0] == chosen.first) p = candidate;
+                if (ids[1] == chosen.first) q = candidate;
+                if (ids[2] == chosen.first) r = candidate;
+                double oux = old1.x - old0.x, ouy = old1.y - old0.y, ouz = old1.z - old0.z, ovx = old2.x - old0.x,
+                       ovy = old2.y - old0.y, ovz = old2.z - old0.z;
+                double onx = ouy * ovz - ouz * ovy, ony = ouz * ovx - oux * ovz, onz = oux * ovy - ouy * ovx;
+                double ux = q.x - p.x, uy = q.y - p.y, uz = q.z - p.z, vx = r.x - p.x, vy = r.y - p.y, vz = r.z - p.z,
+                       nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+                double area = nx * nx + ny * ny + nz * nz;
+                if (area < 1e-16 || onx * nx + ony * ny + onz * nz <= 0) {
+                    flip = true;
+                    break;
+                }
+            }
+        if (flip) {
+            a.locked = true;
+            continue;
+        }
+        a       = candidate;
+        b.alive = false;
+        for (auto& t : ts)
+            if (t.alive) {
+                if (t.a == chosen.second) t.a = chosen.first;
+                if (t.b == chosen.second) t.b = chosen.first;
+                if (t.c == chosen.second) t.c = chosen.first;
+                if (t.a == t.b || t.b == t.c || t.a == t.c) {
+                    t.alive = false;
+                    --alive;
+                }
+            }
+    }
+    MeshBuild                                    next;
+    std::vector<float>                           colors;
+    std::map<std::pair<uint32_t, uint32_t>, int> map;
+    for (auto& t : ts)
+        if (t.alive) {
+            if (t.group >= 0)
+                next.setActiveGroup(source.getGroupName(t.group));
+            else
+                next.setActiveGroup("");
+            uint32_t ids[3]{t.a, t.b, t.c}, attrs[3]{t.aa, t.ab, t.ac}, out[3];
+            for (int k = 0; k < 3; ++k) {
+                auto key   = std::make_pair(ids[k], attrs[k]);
+                auto found = map.find(key);
+                if (found == map.end()) {
+                    auto&  p  = vs[ids[k]];
+                    auto&  a  = vs[attrs[k]];
+                    double nl = sqrt(a.nx * a.nx + a.ny * a.ny + a.nz * a.nz);
+                    double nx = nl > 1e-12 ? a.nx / nl : a.nx, ny = nl > 1e-12 ? a.ny / nl : a.ny,
+                           nz    = nl > 1e-12 ? a.nz / nl : a.nz;
+                    int    index = next.getVertexCount();
+                    next.addVertex(float(p.x), float(p.y), float(p.z), float(nx), float(ny), float(nz), float(a.u),
+                                   float(a.v));
+                    if (source.hasVertexColors())
+                        colors.insert(colors.end(), {float(a.r), float(a.g), float(a.b), float(a.a)});
+                    found = map.emplace(key, index).first;
+                }
+                out[k] = uint32_t(found->second);
+            }
+            next.addTriangle(out[0], out[1], out[2]);
+        }
+    if (!colors.empty()) next.setVertexColors(std::move(colors)).ignore("validated simplified color stream");
+    if (next.empty()) return fail<int>("simplification removed the complete mesh");
+    output = std::move(next);
+    return Result<int>::success(alive);
+}
+}  // namespace eve::procgen

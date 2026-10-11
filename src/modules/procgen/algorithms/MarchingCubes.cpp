@@ -10,6 +10,7 @@
 #include "procgen/algorithms/MeshDeformationGeometry.h"
 #include "procgen/algorithms/LSystemMesh.h"
 #include "procgen/urban/UrbanOutput.h"
+#include "procgen/road/RoadRecipes.h"
 #include "procgen/algorithms/CastleMesh.h"
 
 #include <algorithm>
@@ -675,6 +676,7 @@ void MeshRecipeRegistry::registerBuiltins() {
     registerLinearStructureRecipes(*this);
     registerLSystemRecipes(*this);
     urban::registerUrbanMeshRecipes(*this);
+    road::registerRoadMeshRecipes(*this);
     registerCastleMeshRecipe(*this);
     builtinsRegistered_ = true;
 }

@@ -181,6 +181,55 @@ AnimSkin* AnimSkin::fromModel(const model3d::ModelData* model, int meshIndex, co
     return skin;
 }
 
+Result<std::unique_ptr<AnimSkin>> AnimSkin::fromStreams(AnimSkinStreamData streams) {
+    auto fail = [](const char* message) {
+        return Result<std::unique_ptr<AnimSkin>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, message, "animation.skin.streams"));
+    };
+    const std::size_t vertices = streams.vertexCount > 0 ? static_cast<std::size_t>(streams.vertexCount) : 0U;
+    const std::size_t joints = streams.skeletonBones.size();
+    if (vertices == 0 || vertices > 8U * 1024U * 1024U ||
+        streams.bindPositions.size() != vertices * 3U ||
+        (!streams.bindNormals.empty() && streams.bindNormals.size() != vertices * 3U) ||
+        joints == 0 || joints > 65535U || streams.boneNames.size() != joints ||
+        streams.inverseBindMatrices.size() != joints ||
+        streams.vertexSkinJoints.size() != vertices * kMaxInfluences ||
+        streams.vertexWeights.size() != vertices * kMaxInfluences)
+        return fail("AnimSkin native stream sizes are invalid");
+    for (float value : streams.bindPositions) if (!std::isfinite(value)) return fail("AnimSkin position is non-finite");
+    for (float value : streams.bindNormals) if (!std::isfinite(value)) return fail("AnimSkin normal is non-finite");
+    for (std::size_t joint = 0; joint < joints; ++joint) {
+        if (streams.skeletonBones[joint] < 0 || streams.boneNames[joint].empty())
+            return fail("AnimSkin joint identity is invalid");
+        for (float value : streams.inverseBindMatrices[joint])
+            if (!std::isfinite(value)) return fail("AnimSkin inverse bind is non-finite");
+    }
+    for (std::size_t index = 0; index < streams.vertexWeights.size(); ++index) {
+        const int joint = streams.vertexSkinJoints[index];
+        const float weight = streams.vertexWeights[index];
+        if (!std::isfinite(weight) || weight < 0.F ||
+            (weight > 0.F && (joint < 0 || static_cast<std::size_t>(joint) >= joints)) ||
+            (weight == 0.F && joint >= static_cast<int>(joints)))
+            return fail("AnimSkin influence is invalid");
+    }
+    auto skin = std::make_unique<AnimSkin>();
+    skin->vertexCount_ = streams.vertexCount;
+    skin->bindPos_ = std::move(streams.bindPositions);
+    skin->bindNrm_ = std::move(streams.bindNormals);
+    skin->skeletonBone_ = std::move(streams.skeletonBones);
+    skin->skinBoneNames_ = std::move(streams.boneNames);
+    skin->inverseBind_.resize(joints);
+    for (std::size_t joint = 0; joint < joints; ++joint)
+        std::copy(streams.inverseBindMatrices[joint].begin(), streams.inverseBindMatrices[joint].end(),
+                  skin->inverseBind_[joint].m);
+    skin->influences_.resize(vertices * kMaxInfluences);
+    for (std::size_t index = 0; index < skin->influences_.size(); ++index) {
+        skin->influences_[index].bone = streams.vertexWeights[index] > 0.F ? streams.vertexSkinJoints[index] : -1;
+        skin->influences_[index].weight = streams.vertexWeights[index];
+    }
+    return Result<std::unique_ptr<AnimSkin>>::success(std::move(skin));
+}
+
 int AnimSkin::getSkeletonBone(int skinBoneIndex) const {
     requireSkinBone(skinBoneIndex);
     return skeletonBone_[static_cast<size_t>(skinBoneIndex)];
@@ -266,6 +315,13 @@ int AnimSkin::getVertexBone(int vertexIndex, int influenceIndex) const {
     const Influence& inf = influences_[static_cast<size_t>(vertexIndex) * kMaxInfluences + influenceIndex];
     if (inf.bone < 0) return -1;
     return skeletonBone_[static_cast<size_t>(inf.bone)];
+}
+
+int AnimSkin::getVertexSkinJoint(int vertexIndex, int influenceIndex) const {
+    requireVertex(vertexIndex);
+    if (influenceIndex < 0 || influenceIndex >= kMaxInfluences)
+        throw Exception("AnimSkin.getVertexSkinJoint: influenceIndex must be 0..%d", kMaxInfluences - 1);
+    return influences_[static_cast<size_t>(vertexIndex) * kMaxInfluences + influenceIndex].bone;
 }
 
 float AnimSkin::getVertexWeight(int vertexIndex, int influenceIndex) const {

@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+#include <mutex>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 
@@ -156,6 +158,15 @@ eve::Result<eve::SimulationStep> makeLegacyStep(float dt, eve::SimulationTick cu
     return eve::Result<eve::SimulationStep>::success({*nextTick, std::move(duration).takeValue()});
 }
 
+struct WorldRegistry {
+    std::mutex mutex;
+    std::unordered_map<PhysicsWorldHandle::index_type, World3D*> worlds;
+};
+WorldRegistry& worldRegistry() {
+    static auto* registry = new WorldRegistry;
+    return *registry;
+}
+
 }  // namespace
 
 World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep, eve::PersistentId instanceId)
@@ -201,6 +212,9 @@ World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep, eve
     b3World_SetRestitutionCallback(worldId_, &mixRestitution);
     b3World_SetCustomFilterCallback(worldId_, &World3D::customFilterCallback, this);
     b3World_SetPreSolveCallback(worldId_, &World3D::preSolveCallback, this);
+    auto& registry = worldRegistry();
+    std::scoped_lock registryLock(registry.mutex);
+    registry.worlds[runtimeHandle_.index()] = this;
 }
 
 void World3D::setContinuousCollisionEnabled(bool enabled) {
@@ -416,6 +430,12 @@ bool World3D::isValid() const { return !destroyed_ && b3World_IsValid(worldId_);
 
 void World3D::destroy() {
     if (destroyed_) return;
+    {
+        auto& registry = worldRegistry();
+    std::scoped_lock registryLock(registry.mutex);
+        auto found = registry.worlds.find(runtimeHandle_.index());
+        if (found != registry.worlds.end() && found->second == this) registry.worlds.erase(found);
+    }
     destroyed_ = true;
     // Invalidate borrowed query registrations without touching any global
     // registry. This keeps teardown safe for every static destruction order.
@@ -452,6 +472,15 @@ void World3D::destroy() {
     jointHandles_.clear();
     worldId_ = {};
     runtimeHandle_ = PhysicsWorldHandle::invalid();
+}
+
+World3D* World3D::findWorld(PhysicsWorldHandle handle) noexcept {
+    if (handle.isInvalid()) return nullptr;
+    auto& registry = worldRegistry();
+    std::scoped_lock registryLock(registry.mutex);
+    auto found = registry.worlds.find(handle.index());
+    if (found == registry.worlds.end() || !found->second || found->second->runtimeHandle() != handle) return nullptr;
+    return found->second;
 }
 
 bool World3D::sphereCast(float x1, float y1, float z1, float x2, float y2, float z2,

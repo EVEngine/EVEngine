@@ -241,6 +241,8 @@ void deactivateResidentGpu(graphics::Graphics* gfx, ParticleEmitter::GpuSim& gpu
     gpu.estimatedAlive = 0;
     gpu.timeline       = 0.0;
     gpu.deathTimes.clear();
+    gpu.pendingWorldOffsetX = 0.f;
+    gpu.pendingWorldOffsetY = 0.f;
 }
 
 eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *emitter, const eve::SimulationStep &step,
@@ -310,6 +312,8 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
         update.localOffsetX = cfg->x - previousX;
         update.localOffsetY = cfg->y - previousY;
     }
+    update.localOffsetX += gpu->pendingWorldOffsetX;
+    update.localOffsetY += gpu->pendingWorldOffsetY;
 
     if (!gfx->updateGpuParticleEmitter(gpu->residentHandle, update, spawns.data(), std::uint32_t(spawns.size()))) {
         // Before activation the CPU state remains authoritative and already
@@ -324,6 +328,8 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
     sim->alive          = 0;
     gpu->residentActive = true;
     gpu->estimatedAlive = int(gpu->deathTimes.size());
+    gpu->pendingWorldOffsetX = 0.f;
+    gpu->pendingWorldOffsetY = 0.f;
     return eve::Result<bool>::success(true);
 }
 

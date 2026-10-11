@@ -1,7 +1,10 @@
 #pragma once
 
 #include "animation/AnimMath.h"
+#include "common/Result.h"
 
+#include <array>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -18,6 +21,18 @@ namespace eve::animation {
 
 class AnimSkeleton;
 class AnimPose;
+
+/** @brief Owned native streams for constructing a skin outside the model importer. */
+struct AnimSkinStreamData {
+    int vertexCount = 0;
+    std::vector<float> bindPositions;
+    std::vector<float> bindNormals;
+    std::vector<int> skeletonBones;
+    std::vector<std::string> boneNames;
+    std::vector<std::array<float, 16>> inverseBindMatrices;
+    std::vector<int> vertexSkinJoints;
+    std::vector<float> vertexWeights;
+};
 
 /**
  * @brief CPU linear-blend skinning binding for one mesh against an AnimSkeleton.
@@ -43,6 +58,14 @@ public:
      * Returned pointer is owned by the caller / script GC.
      */
     static AnimSkin* fromModel(const model3d::ModelData* model, int meshIndex, const AnimSkeleton* skeleton);
+
+    /**
+     * @brief Construct a caller-owned skin from validated native streams.
+     * @param streams Moved bind geometry, joint identities, inverse binds and four influences per vertex.
+     * @return Owned skin or a structured diagnostic; no partial skin is published.
+     * @thread Synchronous CPU operation. The returned skin has caller-selected thread affinity.
+     */
+    [[nodiscard]] static Result<std::unique_ptr<AnimSkin>> fromStreams(AnimSkinStreamData streams);
 
     int getVertexCount() const { return vertexCount_; }
     int getBoneCount() const { return static_cast<int>(skeletonBone_.size()); }
@@ -132,6 +155,8 @@ public:
 
     /** @brief Influence slot i (0..3) for vertex: skeleton bone index or -1. */
     int   getVertexBone(int vertexIndex, int influenceIndex) const;
+    /** @brief Influence slot i (0..3) for vertex: skin-local joint index or -1. */
+    int   getVertexSkinJoint(int vertexIndex, int influenceIndex) const;
     float getVertexWeight(int vertexIndex, int influenceIndex) const;
 
 private:

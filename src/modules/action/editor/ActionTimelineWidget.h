@@ -19,6 +19,31 @@ enum class TimelineHitPart : std::uint8_t { Body, StartHandle, EndHandle };
 /** @brief Observable pointer-drag lifecycle state. */
 enum class TimelineDragStatus : std::uint8_t { Idle, Active };
 
+/** @brief Stable semantic thumbnail kind projected for one timeline block. */
+enum class TimelineItemVisual : std::uint8_t {
+    Animation,
+    Gameplay,
+    Damage,
+    Vfx,
+    Audio,
+    Prefab,
+    Camera,
+    Hitbox,
+    Defense,
+    Input,
+    Collision,
+    Movement,
+    Curve,
+    Custom
+};
+
+/**
+ * @brief Return the stable script-facing name for a timeline visual kind.
+ * @param visual Semantic projection kind.
+ * @return Static text valid for the lifetime of the process.
+ */
+[[nodiscard]] std::string_view timelineItemVisualName(TimelineItemVisual visual) noexcept;
+
 /** @brief Owning geometry projected for one timeline item. */
 struct TimelineItemGeometry {
     LogicalId trackId;
@@ -30,6 +55,12 @@ struct TimelineItemGeometry {
     float     maximumX = 0.0f;
     float     minimumY = 0.0f;
     float     maximumY = 0.0f;
+    /** @brief Registry-owned display name copied into this frame projection. */
+    std::string displayName;
+    /** @brief Compact owning payload summary suitable for a tooltip or block subtitle. */
+    std::string detail;
+    /** @brief Semantic mini-preview selected from the registered type, never persisted. */
+    TimelineItemVisual visual = TimelineItemVisual::Custom;
 };
 
 /** @brief One deterministic ruler tick projected into host coordinates. */
@@ -50,12 +81,23 @@ struct TimelineWidgetLayout {
     float                             width     = 0.0f;
     float                             height    = 0.0f;
     float                             playheadX = 0.0f;
+    /** @brief Whether an audio module currently provides waveform projection. */
+    bool                              audioWaveformsAvailable = false;
     std::vector<TimelineItemGeometry> items;
     std::vector<TimelineRulerTick>    rulerTicks;
 };
 
 /** @brief Standard context-menu and keyboard actions exposed by the widget. */
-enum class TimelineWidgetCommand : std::uint8_t { Copy, Paste, DeleteSelection, Undo, Redo, PlayPause };
+enum class TimelineWidgetCommand : std::uint8_t {
+    Copy,
+    Paste,
+    DeleteSelection,
+    Undo,
+    Redo,
+    PlayPause,
+    AlignSelectionStart,
+    AlignSelectionEnd
+};
 
 /** @brief One host-renderable command entry. */
 struct TimelineWidgetCommandDescriptor {
@@ -109,6 +151,8 @@ public:
 
     /** @brief Seek the editor preview cursor from a host-space coordinate. */
     [[nodiscard]] EditorResult<void> seek(float x);
+    /** @brief Convert a host-space coordinate to its snapped authoritative timeline time. */
+    [[nodiscard]] Duration timeAt(float x) const noexcept { return xToTime(x); }
     /** @brief Present and apply selected item timing, type and JSON payload fields. */
     [[nodiscard]] EditorResult<void> inspectSelection(IEditorInspector& inspector);
 
@@ -140,10 +184,12 @@ private:
         bool            state = false;
     };
 
-    [[nodiscard]] float              timeToX(Duration time) const noexcept;
-    [[nodiscard]] Duration           xToTime(float x) const noexcept;
-    [[nodiscard]] EditorResult<void> updateDrag(float x);
-    [[nodiscard]] LogicalId          generatedItemId();
+    [[nodiscard]] float                   timeToX(Duration time) const noexcept;
+    [[nodiscard]] Duration                xToTime(float x) const noexcept;
+    [[nodiscard]] std::optional<Duration> magneticSnap(Duration candidate,
+                                                       const LogicalId& excludedItem) const noexcept;
+    [[nodiscard]] EditorResult<void>      updateDrag(float x);
+    [[nodiscard]] LogicalId               generatedItemId();
 
     ActionTimelineEditor&               editor_;
     const action::ActionNotifyRegistry& registry_;

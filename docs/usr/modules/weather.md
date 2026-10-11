@@ -77,7 +77,7 @@ gfx.render3D();
   强度额外压暗；调用方可以通过天空颜色、太阳强度控制阴天氛围。
 - `examples/weather` 在 `render3D` 后使用 GBuffer 深度和 `Volumetric.applyFog` 叠加
   场景雾，再绘制 UI。GBuffer 使用片段位置深度，避免三角形透视插值造成的雾量接缝。Weather 本身只对天气粒子应用雾，不自动拥有场景后处理。
-- 雪花不模拟屋顶碰撞、地面积雪或植被受风；这些需要对应场景系统提供。
+- 雪花的屋顶碰撞需要粒子/物理提供者；地面积雪与植被受风需要对应场景系统提供。
 
 模拟状态仍由 Weather 实例持有，更新在渲染主线程、`render3D` 前执行；没有新增公共
 对象所有权、跨域 Link 或持久格式。运动使用调用方提供的 dt，初始化粒子使用固定 seed。
@@ -85,3 +85,63 @@ GLSL/WGSL 采用相同公式，但浮点三角函数及覆盖率采样不保证�
 
 修改 GLSL 后运行 `python scripts/compile_weather_shaders.py` 更新嵌入式 SPIR-V。
 WGSL 对应源码位于 `src/modules/weather/shaders/WeatherWgsl.h`，需同步维护并运行后端验证。
+### Pcg 雷击状态
+
+`ThunderStrikeSettings` 提供 `intensity`、`radius`、`volume` 和 `audioClipCount`；
+`ThunderStrikeState` 提供 `playing` 与当前 `intensity`。`triggerThunderStrike` 接收玩家世界坐标和显式
+seed，返回雷击 `x/y/z`、光强、半径、音量和 `audioClipIndex`。与 Pcg 源码一致，存在至少两个片段时
+索引从 1 开始，片段 0 不参与随机选择。`advanceThunderStrike` 实现 clamped `Lerp(intensity,0,dt*2)`
+以及低于 0.15 时停止的规则；两个函数均返回标准 `Result`。
+
+### Pcg 三轴雪风
+
+`setSnowWind(x,y,z)` 直接设置 `PW_VFX_Snow_Controller.SnowWindDir` 对应的世界空间雪粒子速度；
+Y 为有符号速度，负值下落、零值悬停、正值上升。`clearSnowWind()` 恢复由
+`setWindSpeed/setWindDirection` 计算的水平风和默认下落速度。`hasSnowWind()`、`getSnowWindX()`、
+`getSnowWindY()`、`getSnowWindZ()` 提供可观察状态。非有限输入返回标准 Result 且保持旧值。
+
+### Pcg 室内天气体积
+
+`PcgInteriorWeatherVolume` 复现 Pcg 的 Box/Sphere 室内判定以及 `Collision`、
+`DisableVFX` 两种策略。`configureBox` / `configureSphere` 原子校验形状、模式和
+内外混响 preset id；`weather.applyInteriorVolume(volume, x, y, z)` 用于每帧 Bounds
+采样，`weather.setInteriorVolumeState(volume, inside)` 用于物理 Trigger 回调。返回值的
+`value` 为 0（无变化）、1（进入）或 2（离开）。Weather 只复制状态，不保存 volume 指针。
+
+进入 `DisableVFX` 体积会隐藏雨雪；进入 `Collision` 体积会隐藏 Pcg 原实现中的 rain
+mesh，并通过 `isInteriorWeatherCollisionRequested()` 暴露碰撞请求，供可选粒子/物理适配器
+消费。核心 weather 模块不直接依赖 audio 或 particles；当前混响 preset 可由
+`getCurrentWeatherReverbPreset()` 读取并投影到音频后端。
+
+补充状态接口：`contains(x, y, z)` 可独立检查 volume；
+`isInsideInteriorWeather()` 返回当前室内状态；`clearInteriorWeather()` 清除该状态并恢复外部
+混响 preset。
+
+### Pcg PhotoMode Weather 适配器
+
+Weather 模块会在自身生命周期内注册照片模式字段提供者。m_pcgWeatherEnabled、m_pcgWeatherRain、m_pcgWeatherSnow、m_pcgWindSettingsOverride、m_pcgWindDirection 和 m_pcgWindSpeed 直接写入 Weather 权威状态；Rain 与 Snow 可同时启用，Weather Enabled 统一控制显示。setPreset 会退出照片模式的天气接管并恢复普通 preset 行为。
+
+### Pcg PhotoMode 时间适配器
+
+`PcgLightingTimePhotoMode` 将 Lighting 域的时间设置接入现有 `DayNight` 时钟。显式设置
+借用目标并取得 authority 后，`m_pcgTime` 写入 0..24 小时，`m_pcgTimeScale` 写入
+0..200 推进倍率，`m_pcgTimeOfDayEnabled` 直接控制 paused 状态。目标必须比适配器
+活得更久；换场景时先撤销 authority 或销毁适配器。
+### Pcg PhotoMode 手动太阳适配器
+
+`PcgLightingSunPhotoMode` 负责 `m_sunRotation`、`m_sunPitch`、`m_sunOverride`、
+`m_sunIntensity`、`m_sunColor` 和 `m_sunKelvinValue`。六项值作为联合状态原子写入
+`DayNight`；override 开启后，太阳方向、直射光、天空盒太阳盘、雾和反射探针共享同一
+持久结果，时钟继续运行也不会覆盖它。关闭 override 会在下一次更新恢复程序化太阳。
+
+### Pcg PhotoMode 天空盒适配器
+
+`PcgLightingSkyboxPhotoMode` 接管 `m_skyboxOverride`、`m_skyboxRotation`、`m_skyboxExposure` 和 `m_skyboxTint`。覆盖开启时，旋转、曝光与 RGB tint 持久进入 DayNight 的程序化天空、实际天空 cubemap、背景色与反射探针；关闭覆盖会恢复 DayNight 原有天空参数。
+
+### Pcg PhotoMode 雾与 Density Volume 适配器
+
+`PcgLightingFogPhotoMode` 联合接管普通雾、Pcg Weather 附加雾、全局密度倍率以及 HDRP Density Volume 的 14 个字段。`DayNight.applyAtmosphere()` 每帧将权威状态投影到真实 `Volumetric`；Density Volume 开启时优先使用其 albedo、可视距离、五档 haze 和六档质量。覆盖首次启用会保存目标原有 mode、quality、density 与距离，全部覆盖关闭后原子恢复。
+
+### Pcg PhotoMode 环境光适配器
+
+`PcgLightingAmbientPhotoMode` 接管环境强度、天空/地平线/地面三色与全局直射光倍率。三色按半球梯度合成进入 DayNight ambient，倍率同步作用于方向光、雾散射与其他 `getSunRGB` 消费者。authority 启用时保存原状态，撤销或析构时恢复。

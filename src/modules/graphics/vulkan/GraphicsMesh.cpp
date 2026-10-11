@@ -246,6 +246,12 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
 
 Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                                   int vertexCount, const uint32_t *indices, int indexCount) {
+    return newMeshFromArraysColored(posXYZ,nrmXYZ,uvST,nullptr,vertexCount,indices,indexCount);
+}
+
+Mesh *Graphics::newMeshFromArraysColored(const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                                         const float *colorRGBA, int vertexCount,
+                                         const uint32_t *indices, int indexCount) {
     ASSERT(initialized);
     if (!initialized) throw Exception("newMeshFromArrays: graphics not initialized");
     if (!posXYZ || vertexCount <= 0) throw Exception("newMeshFromArrays: empty positions");
@@ -265,6 +271,9 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
             v.uv = {uvST[size_t(i) * 2u], uvST[size_t(i) * 2u + 1u]};
         else
             v.uv = {0.f, 0.f};
+        if (colorRGBA)
+            v.color = {colorRGBA[size_t(i)*4u],colorRGBA[size_t(i)*4u+1u],
+                       colorRGBA[size_t(i)*4u+2u],colorRGBA[size_t(i)*4u+3u]};
     }
 
     std::vector<uint32_t> idx(indices, indices + indexCount);
@@ -820,6 +829,7 @@ void Graphics::drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *
                   mesh3dAlphaCutoff);
     ubo.virtualTexture = mesh3dVirtualTexture;
     ubo.virtualAtlas = mesh3dVirtualAtlas;
+    ubo.lodFade = mesh3dLodFade;
     for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
         if (i >= mesh3dReflectionProbes.count) continue;
         const auto &probe = mesh3dReflectionProbes.probes[i];
@@ -831,6 +841,7 @@ void Graphics::drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *
     }
     if (mesh->hasGpuSkinning()) {
         ubo.skinInfo.x = static_cast<float>(mesh->getSkinPaletteCount());
+        ubo.skinInfo.y = static_cast<float>(mesh3dSkinInfluenceLimit);
     }
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     int dirI = -1;

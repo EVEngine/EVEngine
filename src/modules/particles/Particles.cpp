@@ -1,6 +1,11 @@
 #include "particles/Particles.h"
+#include "particles/UnderwaterParticles.h"
+#include "particles/GroundParticleCulling.h"
+#include "particles/FloatingPointFixParticles.h"
+#include "particles/PcgMaterialSelector.h"
 #include "common/Module.h"
 #include "common/Profile.h"
+#include "common/SquirrelBinding.h"
 #include "data/DataModule.h"
 #include "data/JsonDocument.h"
 #include "filesystem/FileData.h"
@@ -174,6 +179,41 @@ void Particles::expose(ssq::Table &table) {
     auto em = table.addClass<ParticleEmitter>(
         "Emitter", std::function<ParticleEmitter *()>([]() -> ParticleEmitter * { return nullptr; }),
         true);
+    auto selector=table.addClass<PcgMaterialSelector>(
+        "PcgMaterialSelector",std::function<PcgMaterialSelector*()>([](){return new PcgMaterialSelector();}),true);
+    selector.addFunc("add",[vm=table.getHandle()](PcgMaterialSelector* self,graphics::Texture* texture){
+        return eve::script::projectResult(vm,self->add(texture));
+    });
+    selector.addFunc("clear",&PcgMaterialSelector::clear);
+    selector.addFunc("count",&PcgMaterialSelector::count);
+    selector.addFunc("selectAndApply",[vm=table.getHandle()](PcgMaterialSelector* self,
+        ParticleEmitter* emitter,int seed){
+        return eve::script::projectResult(vm,self->selectAndApply(emitter,static_cast<std::uint32_t>(seed)),
+            [](int index){return eve::Value(index);});
+    });
+    table.addFunc("applyUnderwaterParticles",
+                  [vm = table.getHandle()](ParticleEmitter* ambience,
+                                           ParticleEmitter* transition, bool active,
+                                           bool transitionFx, bool entered, bool exited) {
+        return eve::script::projectResult(
+            vm, applyUnderwaterParticles(ambience, transition, active, transitionFx, entered,
+                                         exited));
+    });
+    table.addFunc("applyUnderwaterSurfaceVfx",
+                  [vm = table.getHandle()](ParticleEmitter* surfaceVfx, bool active) {
+        return eve::script::projectResult(vm, applyUnderwaterSurfaceVfx(surfaceVfx, active));
+    });
+    table.addFunc("applyGroundParticleCulling",
+                  [vm = table.getHandle()](ParticleEmitter* emitter, int playerTag,
+                                           int visitorTag, bool entered, bool exited) {
+        return eve::script::projectResult(
+            vm, applyGroundParticleCulling(emitter, playerTag, visitorTag, entered, exited));
+    });
+    table.addFunc("shiftWorldSpaceParticles",
+                  [vm = table.getHandle()](ParticleEmitter* emitter, float shiftX, float shiftY) {
+        return eve::script::projectResult(vm, shiftWorldSpaceParticles(emitter, shiftX, shiftY),
+                                          [](int count) { return eve::Value(count); });
+    });
 
     auto effect = table.addClass<ParticleEffect>(
         "ParticleEffect", std::function<ParticleEffect*()>([]() -> ParticleEffect* { return nullptr; }), true);

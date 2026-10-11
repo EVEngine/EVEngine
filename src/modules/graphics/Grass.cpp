@@ -1,6 +1,7 @@
 #include "graphics/Grass.h"
 
 #include "common/Exception.h"
+#include "common/Capability.h"
 #include "data/ByteData.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
@@ -27,11 +28,7 @@
 namespace eve::graphics::grass {
 namespace {
 
-const std::array<const char *, 18> kParamSlots = {
-    "time",        "frameDuration", "grassWidth",         "grassHeight", "alphaCutoff",
-    "alwaysDark",  "lightGreenX",   "lightGreenY",        "lightGreenZ", "darkGreenX",
-    "darkGreenY",  "darkGreenZ",    "frameCount",         "atlasCols",   "atlasRows",
-    "grassVariantCount", "leafVariantCount", "leafRowOffset"};
+
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
@@ -280,45 +277,6 @@ void stampTuft(std::vector<uint8_t> &rgba, int atlasW, int atlasH, int ox, int f
 }
 
 }  // namespace
-
-int paramCount() { return int(kParamSlots.size()); }
-
-std::string paramName(int index) {
-    if (index < 0 || index >= int(kParamSlots.size())) return {};
-    return kParamSlots[size_t(index)];
-}
-
-void bindDefaults(Shader *shader) {
-    if (!shader) throw eve::Exception("grass::bindDefaults: null shader");
-    shader->declareFloat("time");
-    shader->declareFloat("frameDuration");
-    shader->declareFloat("grassWidth");
-    shader->declareFloat("grassHeight");
-    shader->declareFloat("alphaCutoff");
-    shader->declareFloat("alwaysDark");
-    shader->declareVec3("lightGreen");
-    shader->declareVec3("darkGreen");
-    shader->declareFloat("frameCount");
-    shader->declareFloat("atlasCols");
-    shader->declareFloat("atlasRows");
-    shader->declareFloat("grassVariantCount");
-    shader->declareFloat("leafVariantCount");
-    shader->declareFloat("leafRowOffset");
-    shader->sendFloat("time", 0.f);
-    shader->sendFloat("frameDuration", 0.12f);
-    shader->sendFloat("grassWidth", 0.62f);
-    shader->sendFloat("grassHeight", 0.95f);
-    shader->sendFloat("alphaCutoff", 0.35f);
-    shader->sendFloat("alwaysDark", 0.f);
-    shader->sendVec3("lightGreen", 0.58f, 0.84f, 0.26f);
-    shader->sendVec3("darkGreen", 0.10f, 0.28f, 0.12f);
-    shader->sendFloat("frameCount", 4.f);
-    shader->sendFloat("atlasCols", 2.f);
-    shader->sendFloat("atlasRows", 2.f);
-    shader->sendFloat("grassVariantCount", 1.f);
-    shader->sendFloat("leafVariantCount", 1.f);
-    shader->sendFloat("leafRowOffset", 0.f);
-}
 
 void bindAtlasLayout(Shader *shader, const PackedAtlasInfo &info) {
     if (!shader) throw eve::Exception("grass::bindAtlasLayout: null shader");
@@ -588,40 +546,6 @@ std::vector<Point> samplePoisson(const float *posXYZ, const float *nrmXYZ, int v
     return accepted;
 }
 
-BillboardMesh buildBillboards(const std::vector<Point> &points, float width, float height,
-                              bool alwaysDark) {
-    (void)width;
-    (void)height;
-    BillboardMesh mesh;
-    const size_t n = points.size();
-    mesh.posXYZ.reserve(n * 4 * 3);
-    mesh.nrmXYZ.reserve(n * 4 * 3);
-    mesh.uvST.reserve(n * 4 * 2);
-    mesh.indices.reserve(n * 6);
-
-    // Local corners: (0,0) bottom-left, (1,0) bottom-right, (1,1) top-right, (0,1) top-left.
-    // Root is the bottom-center of the rectangle, i.e. UV (0.5, 0).
-    const float cu[4] = {0.f, 1.f, 1.f, 0.f};
-    const float cv[4] = {0.f, 0.f, 1.f, 1.f};
-    const uint32_t corners[6] = {0, 1, 2, 0, 2, 3};
-
-    for (size_t i = 0; i < n; ++i) {
-        const Point &p = points[i];
-        const uint32_t base = uint32_t(i * 4);
-        for (int c = 0; c < 4; ++c) {
-            mesh.posXYZ.push_back(p.position.x);
-            mesh.posXYZ.push_back(p.position.y);
-            mesh.posXYZ.push_back(p.position.z);
-            mesh.nrmXYZ.push_back(float(p.id));
-            mesh.nrmXYZ.push_back(p.scale > 1e-3f ? p.scale : 1.f);
-            mesh.nrmXYZ.push_back(alwaysDark ? 1.f : 0.f);
-            mesh.uvST.push_back(cu[c]);
-            mesh.uvST.push_back(cv[c]);
-        }
-        for (uint32_t k : corners) mesh.indices.push_back(base + k);
-    }
-    return mesh;
-}
 
 void makePlane(float sizeX, float sizeZ, int segX, int segZ, std::vector<float> &posXYZ,
                std::vector<float> &nrmXYZ, std::vector<uint32_t> &indices) {
@@ -680,7 +604,29 @@ GrassField::GrassField(Graphics *gfx) : gfx_(gfx) {
         });
 }
 
-GrassField::~GrassField() { RenderSystem3D::removeCaptureExtraDrawer(captureDrawerToken_); }
+GrassField::~GrassField() { if(photoModeAuthority_)cap::removeListener<IPhotoModeFieldSink>(this);RenderSystem3D::removeCaptureExtraDrawer(captureDrawerToken_); }
+
+void GrassField::setPhotoModeAuthority(bool enabled){if(enabled==photoModeAuthority_)return;if(enabled)cap::addListener<IPhotoModeFieldSink>(this);else cap::removeListener<IPhotoModeFieldSink>(this);photoModeAuthority_=enabled;}
+PhotoModeFieldAcceptance GrassField::acceptsPhotoModeField(const PhotoModeAssignment&a)const noexcept{return a.domain==PhotoModeDomain::Grass?PhotoModeFieldAcceptance::Accepted:PhotoModeFieldAcceptance::Rejected;}
+Result<void> GrassField::applyPhotoModeField(const PhotoModeAssignment&a){
+ auto fail=[&](const char*m){return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,m,a.field,{},"graphics.grass.photoMode"));};
+ auto f=std::get_if<float>(&a.value);auto i=std::get_if<int64_t>(&a.value);
+ if(a.field=="m_globalGrassDensity"){if(!f||!std::isfinite(*f)||*f<=0)return fail("grass density multiplier must be positive and finite");photoModeDensity_=*f;}
+ else if(a.field=="m_globalGrassDistance"){if(!f||!std::isfinite(*f)||*f<=0)return fail("grass distance multiplier must be positive and finite");photoModeDistance_=*f;}
+ else if(a.field=="m_cameraCellDistance"){if(!f||!std::isfinite(*f)||*f<=0)return fail("camera-cell distance multiplier must be positive and finite");photoModeCellDistance_=*f;}
+ else if(a.field=="m_cameraCellSubdivision"){if(!i||*i<-8||*i>8)return fail("camera-cell subdivision must be in [-8,8]");photoModeCellSubdivision_=int(*i);}
+ else return fail("unsupported grass photo-mode field");
+ applyPhotoModeShaderState();return Result<void>::success();
+}
+void GrassField::applyPhotoModeShaderState(){
+ const float cellScale=photoModeCellDistance_*std::exp2(float(-photoModeCellSubdivision_));
+ detailHardDistance_=baseDetailHardDistance_*photoModeDistance_*photoModeCellDistance_;
+ detailDensity_=std::clamp(baseDetailDensity_*photoModeDensity_,0.f,1.f);
+ if(!shader_||!foliageProfile_)return;
+ shader_->sendFloat("atlasCols",baseDetailRenderDistance_*photoModeDistance_*cellScale);
+ shader_->sendFloat("atlasRows",baseDetailFadeRange_*photoModeDistance_*cellScale);
+ shader_->sendFloat("leafRowOffset",std::floor(detailHardDistance_)+detailDensity_*0.5f);
+}
 
 void GrassField::bake(const float *posXYZ, const float *nrmXYZ, int vertexCount,
                       const uint32_t *indices, int indexCount, const BakeParams &params) {
@@ -757,17 +703,17 @@ void GrassField::bakePlane(float sizeX, float sizeZ, int segX, int segZ, const B
 
 void GrassField::update(float dt) {
     time_ += dt;
-    if (shader_) grass::setTime(shader_, time_);
+    if (shader_ && !foliageProfile_) grass::setTime(shader_, time_);
 }
 
 void GrassField::setTime(float seconds) {
     time_ = seconds;
-    if (shader_) grass::setTime(shader_, time_);
+    if (shader_ && !foliageProfile_) grass::setTime(shader_, time_);
 }
 
 void GrassField::setFrameDuration(float seconds) {
     frameDuration_ = seconds > 1e-4f ? seconds : 1e-4f;
-    if (shader_) grass::setFrameDuration(shader_, frameDuration_);
+    if (shader_ && !foliageProfile_) grass::setFrameDuration(shader_, frameDuration_);
 }
 
 void GrassField::draw() { draw(glm::mat4(1.f)); }
@@ -776,8 +722,12 @@ void GrassField::draw(const glm::mat4 &model) {
     lastModel_ = model;
     if (!gfx_ || !shader_ || !atlas_) return;
     const Color tint(1.f, 1.f, 1.f, 1.f);
-    grass::setTime(shader_, time_);
-    grass::setFrameDuration(shader_, frameDuration_);
+    if (!foliageProfile_) {
+        grass::setTime(shader_, time_);
+        grass::setFrameDuration(shader_, frameDuration_);
+    }
+    gfx_->setMesh3DNormalTexture(normal_);
+    gfx_->setMesh3DHeightTexture(mask_);
     if (denseMesh_) {
         grass::bindLayer(shader_, false);
         gfx_->drawMeshShader(denseMesh_, model, atlas_, tint, shader_);
@@ -786,6 +736,8 @@ void GrassField::draw(const glm::mat4 &model) {
         grass::bindLayer(shader_, true);
         gfx_->drawMeshShader(sparseMesh_, model, atlas_, tint, shader_);
     }
+    gfx_->setMesh3DNormalTexture(nullptr);
+    gfx_->setMesh3DHeightTexture(nullptr);
 }
 
 }  // namespace eve::graphics

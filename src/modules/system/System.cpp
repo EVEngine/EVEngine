@@ -1,9 +1,12 @@
 #include "system/System.h"
+#include "system/PcgFrameRateManager.h"
+#include "system/PcgTaskQueue.h"
 
 #include "common/Exception.h"
 #include "common/Module.h"
 #include "common/Capability.h"
 #include "common/GpuInfo.h"
+#include "common/FramePresentation.h"
 #include "common/config.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -42,7 +45,62 @@ eve::caps::IGpuInfo *gpuInfoOrNull() {
 
 Module_IMPL(System, new System());
 
-System::System() { SDL_InitSubSystem(SDL_INIT_TIMER); }
+System::System() {
+    SDL_InitSubSystem(SDL_INIT_TIMER);
+    cap::addListener<IPhotoModeFieldSink>(this);
+}
+
+System::~System() { cap::removeListener<IPhotoModeFieldSink>(this); }
+
+PhotoModeFieldAcceptance System::acceptsPhotoModeField(const PhotoModeAssignment& assignment) const noexcept {
+    return assignment.domain == PhotoModeDomain::System ? PhotoModeFieldAcceptance::Accepted
+                                                         : PhotoModeFieldAcceptance::Rejected;
+}
+
+Result<void> System::applyPhotoModeField(const PhotoModeAssignment& assignment) {
+    const auto* value = std::get_if<int64_t>(&assignment.value);
+    const auto fail = [&](const char* message, DiagnosticCode code = DiagnosticCode::InvalidArgument) {
+        return Result<void>::failure(
+            Diagnostic::error(code, message, assignment.field, {}, "system.pcgPhotoMode"));
+    };
+    if (!value) return fail("system photo-mode field requires an integer");
+
+    if (assignment.field == "m_vSync") {
+        if (*value < 0 || *value > 2) return fail("VSync count must be in [0,2]");
+        auto* presentation = cap::query<IFramePresentation>();
+        if (!presentation)
+            return fail("frame presentation capability is unavailable", DiagnosticCode::Unsupported);
+        presentation->setVSyncCount(static_cast<int>(*value));
+        photoModeVSync_ = static_cast<int>(*value);
+        lastFrameCounter_ = 0;
+    } else if (assignment.field == "m_targetFPS") {
+        if (*value < -1 || *value > 240) return fail("target FPS must be in [-1,240]");
+        photoModeTargetFPS_ = static_cast<int>(*value);
+        lastFrameCounter_ = 0;
+    } else {
+        return fail("unsupported system photo-mode field");
+    }
+    return Result<void>::success();
+}
+
+void System::limitFrame() {
+    const uint64_t now = SDL_GetPerformanceCounter();
+    const uint64_t frequency = SDL_GetPerformanceFrequency();
+    if (lastFrameCounter_ == 0 || frequency == 0) {
+        lastFrameCounter_ = now;
+        return;
+    }
+    if (photoModeVSync_ == 0 && photoModeTargetFPS_ > 0) {
+        const double target = static_cast<double>(frequency) / static_cast<double>(photoModeTargetFPS_);
+        const double elapsed = static_cast<double>(now - lastFrameCounter_);
+        if (elapsed < target) {
+            const uint32_t milliseconds =
+                static_cast<uint32_t>((target - elapsed) * 1000.0 / static_cast<double>(frequency));
+            if (milliseconds > 0) SDL_Delay(milliseconds);
+        }
+    }
+    lastFrameCounter_ = SDL_GetPerformanceCounter();
+}
 
 std::string System::getEngineVersion() const { return EVENGINE_VERSION; }
 
@@ -189,6 +247,8 @@ int System::getGpuMemoryTotalMB() const {
 void System::expose(ssq::Table &table) {
     auto cls = table.addClass("HostSystem", System::create, false);
     expose(cls);
+    exposePcgFrameRateManagerBindings(table);
+    exposePcgTaskQueueBindings(table);
 }
 
 void System::expose(ssq::Class &cls) {
@@ -202,6 +262,9 @@ void System::expose(ssq::Class &cls) {
     cls.addFunc("getProcessMemoryMB", &System::getProcessMemoryMB);
     cls.addFunc("getWallTime", &System::getWallTime);
     cls.addFunc("sleepMilliseconds", &System::sleepMilliseconds);
+    cls.addFunc("limitFrame", &System::limitFrame);
+    cls.addFunc("getPhotoModeVSync", [](const System* system) { return system->getPhotoModeVSync(); });
+    cls.addFunc("getPhotoModeTargetFPS", [](const System* system) { return system->getPhotoModeTargetFPS(); });
     cls.addFunc("getPowerState", &System::getPowerState);
     cls.addFunc("getPowerSecondsLeft", &System::getPowerSecondsLeft);
     cls.addFunc("getPowerPercent", &System::getPowerPercent);

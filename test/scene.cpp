@@ -41,6 +41,7 @@
 
 #include "common/ECS.h"
 #include "common/Capability.h"
+#include "common/EntitySpatialResolver.h"
 #include "common/Module.h"
 #include "common/ProcgenSceneSink.h"
 
@@ -240,6 +241,24 @@ TEST_CASE("Scene.identity.mountFindAndOwnershipContracts") {
     auto object = SceneObject::createObject("checked", "child");
     REQUIRE(object.ok());
     CHECK(object.value() != nullptr);
+}
+
+TEST_CASE("Scene.entitySpatialProviderResolvesWorldPoseAndRejectsUnknownBone") {
+    Scene* mod = Scene::create();
+    auto mounted = mod->mountAs("spatial-provider",
+                                node("root", {node("child").withPosition(2.f, 3.f, 4.f)})
+                                    .withPosition(10.f, 20.f, 30.f));
+    REQUIRE(mounted.ok());
+    auto object = SceneObject::createObject("spatial-provider", "child");
+    REQUIRE(object.ok());
+    auto pose = eve::resolveEntitySpatialPose(ecs::handle_of(object.value()));
+    REQUIRE(pose.ok());
+    CHECK(approxEq(static_cast<float>(pose.value().positionX), 12.f));
+    CHECK(approxEq(static_cast<float>(pose.value().positionY), 23.f));
+    CHECK(approxEq(static_cast<float>(pose.value().positionZ), 34.f));
+    auto bone = eve::resolveEntitySpatialPose(ecs::handle_of(object.value()), "hand_r");
+    CHECK(!bone.ok());
+    CHECK(static_cast<int>(bone.status().code()) == static_cast<int>(eve::StatusCode::Unsupported));
 }
 
 TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
@@ -1059,8 +1078,9 @@ TEST_CASE("Scene.pick.rayAndScreen") {
 TEST_CASE("Scene.cull.frustum") {
     Scene *mod = Scene::create();
     mod->mountAs("cu",
-                 node("root", {node("front").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f),
-                               node("side").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f).withPosition(10.f, 0.f, 0.f)}))
+                 node("root", {node("front").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f).withTag("terrain"),
+                               node("side").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f).withPosition(10.f, 0.f, 0.f).withTag("terrain"),
+                               node("decor").withBounds(-1.f,-1.f,-1.f,1.f,1.f,1.f).withPosition(12.f,0.f,0.f)}))
         .ignore("test setup");
     auto *cam = eve::graphics::Camera3D::createCamera();
     cam->setEye(0.f, 0.f, 5.f);
@@ -1074,6 +1094,12 @@ TEST_CASE("Scene.cull.frustum") {
     }
     CHECK(hasFront);
     CHECK(!hasSide);
+    auto applied=mod->applyPcgTerrainCullingAt("cu",cam,640.f,480.f,"terrain");
+    REQUIRE(applied.ok()); CHECK_EQ(applied.value(),1);
+    CHECK(mod->getNodeVisibleAt("cu","front")); CHECK(!mod->getNodeVisibleAt("cu","side"));
+    CHECK(mod->getNodeVisibleAt("cu","decor"));
+    CHECK(!mod->applyPcgTerrainCullingAt("cu",cam,0.f,480.f,"terrain").ok());
+    CHECK(!mod->getNodeVisibleAt("cu","side"));
     ecs::DestroyEntity(cam);
 }
 

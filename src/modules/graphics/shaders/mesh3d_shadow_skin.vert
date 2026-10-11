@@ -18,10 +18,15 @@ layout(location = 0) out vec2 vUV;
 layout(std430, set = 0, binding = 2) readonly buffer SkinPalette { mat4 bones[]; } skinPalette;
 
 void main() {
-    mat4 skin = inWeights.x * skinPalette.bones[inJoints.x]
-              + inWeights.y * skinPalette.bones[inJoints.y]
-              + inWeights.z * skinPalette.bones[inJoints.z]
-              + inWeights.w * skinPalette.bones[inJoints.w];
+    vec4 weights = inWeights;
+    if (skinPass.skinInfo.y < 3.5) weights.zw = vec2(0.0);
+    if (skinPass.skinInfo.y < 1.5) weights.y = 0.0;
+    float weightSum = dot(weights, vec4(1.0));
+    if (weightSum > 1e-8) weights /= weightSum;
+    mat4 skin = weights.x * skinPalette.bones[inJoints.x]
+              + weights.y * skinPalette.bones[inJoints.y]
+              + weights.z * skinPalette.bones[inJoints.z]
+              + weights.w * skinPalette.bones[inJoints.w];
     gl_Position = skinPass.mvp * skin * vec4(inPos, 1.0);
     vUV = inUV;
 }

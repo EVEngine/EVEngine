@@ -3,8 +3,12 @@
 This example composes EVEngine's UI-neutral editor SDK into a project-specific
 combat action editor. It uses the canonical `eve.action.timeline` asset model,
 native hit testing and drag preview, one-step transactions, undo/redo, and
-deterministic preview events. The 3D viewport is driven by the same preview
-cursor as the timeline.
+deterministic preview events. Its document toolbar opens two independently
+persisted montage assets, projects dirty state into tabs, and protects unsaved
+work when a tab is closed. The 3D viewport is driven by the same preview cursor
+as the active timeline. The viewport also runs a two-fighter playtest: edited
+`combat:damage` payloads flow from Montage runtime events into the canonical
+Combat damage runtime, while movement and health stay owned by that runtime.
 
 Run on Windows:
 
@@ -14,16 +18,95 @@ make run/win32-debug GAME=examples/combat-action-editor
 
 Controls:
 
-- Click **Melee 1H Attack Chop** to select and replay the authored action.
-- **Play / Pause** and **Restart** control deterministic action preview; Space
+- Switch between **Light Attack** and **Follow-up** document tabs. An asterisk
+  marks unsaved edits; closing a dirty tab requires a second explicit click to
+  discard its changes.
+- The save icon or Ctrl+S atomically writes the active document under
+  `Content/Actions`, validates it, and registers its stable GUID sidecar with
+  AssetDB. **Open Asset** provides a searchable picker over indexed, validated
+  Montage documents; selecting an already-open GUID activates its existing tab.
+- The compact transport icons control deterministic action preview; Space
   toggles playback.
 - Click empty timeline space to seek.
+- Timeline blocks project registry display names, compact resource/parameter
+  details and stable semantic mini-previews for VFX, audio, prefabs, cameras,
+  hitboxes, defense, input and movement. These visuals are derived UI state and
+  never become duplicate fields in the action asset.
 - Drag an item body to move it; drag a state edge to resize it.
-- Edit the selected hitbox start/end in the inspector sliders.
+- Selecting an animation section, instant notify, or state window automatically
+  opens the **Action Block** inspector. Its timing sliders commit validated,
+  undoable transactions; the toolbar deletes the selected block and exposes the
+  same undo/redo history. Audio, VFX and Prefab blocks expose typed resource,
+  playback, lifecycle and shared spatial controls. VFX states can atomically
+  fit their block duration to the trimmed clip at 1.0x speed, or fit the clip
+  end to the current block duration. When the Particles provider is loaded,
+  **Use Asset Duration** reads the real finite emitter/lifetime data instead
+  of asking the author to copy a duration by hand. Audio additionally exposes
+  a random clip URI pool, deterministic pitch variation, spatial blend and
+  attenuation distances, and exit fade controls; the advanced payload JSON
+  remains available for extensions. Each typed edit merges only its fields,
+  preserves unknown payload data, validates the complete result through the
+  notify registry, and commits one undo step. Notify type and payload JSON are
+  also editable for advanced authoring; registered type, Instant/State shape and
+  typed payload contracts are validated before the document changes. **Enabled** persists in schema v4;
+  disabled blocks remain visible and editable but do not emit preview/runtime
+  events. **New Block** opens a compact registry-backed picker for the target
+  track, Instant/State type, duration and payload; valid starter payloads make
+  every built-in type immediately insertable at the playhead. Copy/paste uses
+  the native deep-copy clipboard and pastes relative to the current playhead.
+  Ctrl/Shift-click adds blocks to the selection; the inspector reports the
+  complete selection range and aligns starts or ends. Dragging one selected
+  body moves the whole selection, while copy and delete operate on every
+  selected block in one undoable transaction.
+  Dragging also uses an eight-pixel magnetic threshold to snap against the
+  playhead, physical splits, animation-section edges and other block edges,
+  after applying the deterministic frame grid.
+  The **Track** tab selects and renames tracks, toggles mute/lock state, creates
+  all eight semantic track kinds, deletes tracks, and deep-copies whole tracks
+  across the open document tabs.
+  Selecting an animation section reveals its source URI, exact start/end,
+  blend-in duration, source trim range and blend curve. **New Section** creates
+  validated sections at explicit timeline ranges. Persisted UI state is migrated
+  when newer editor controls are introduced, preserving open document state.
+  The **Montage** tab edits play rate, looping, Foot IK, animation layer,
+  default blend windows and Root Motion masks. Valid changes update both the
+  persisted timeline and the already prepared runtime preview. Its Physical
+  Sections controls add a split at the live playhead, move an indexed split or
+  delete it; every operation preserves strict ordering and participates in the
+  same undo/redo history used by section jumps and adaptive time warping.
+  The **Joint** tab retains skeleton
+  transform and key editing in the same compact side panel.
+- The Presentation lane includes a cubic master-volume parameter curve. Its
+  sampled shape is drawn inside the block; native inspector/script APIs edit
+  its keys through the same undoable timeline transaction.
+- The impact camera cue drives the preview's real `CameraController` with a
+  deterministic position, rotation and FOV impulse.
 - **Undo / Redo** (or Ctrl+Z / Ctrl+Y) operates on the native timeline
   transaction history.
+- Use the transport speed controls or `Q` / `E` / `R` for 0.5x / 1.0x / 1.5x
+  playback. The HUD shows the authoritative physical section, section progress,
+  mixer weight and current rate.
 - Hold the right mouse button over the preview to orbit; use the mouse wheel to
   zoom.
+- Use WASD to move the player through `CombatLocomotionRuntime`. When playback
+  crosses the damage notify, target health and reaction update above the
+  viewport. Editing that block changes the next hit without a demo-only damage
+  model.
+The active editor snapshot is also registered as an `AbilityDefinition`; its
+physical sections become action phases, and the preview HUD reports the native
+Ability phase and cooldown instead of maintaining script timers.
+The skinned KayKit character consumes the Montage runtime pose directly, so
+section cross-fades, jumps and blend-out are visible on the real skeleton.
+Joint/key edits deep-copy the rebuilt clip into the running Montage and resample
+the current cursor without retaining editor-owned clip pointers.
+Saving hot-reloads that definition without revoking its grant. Press `J` while
+the authored `input:combo-window` is open to resolve its gameplay tag through
+`matchingAbilities`, replace the active exclusive Ability, and replay the
+montage through the fixed dual-slot coordinator. The outgoing execution keeps
+its clip snapshot and fades out while the replacement fades in, so combo
+transitions remain continuous. Input outside the authored window is rejected.
+Naturally completed montages retain their final weighted pose until another
+montage cross-fades it out, avoiding a one-frame snap back to the bind pose.
 
 The preview and timeline headers show the current selection, playback state,
 edit revision and the last emitted event so every interaction has visible

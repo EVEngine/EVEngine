@@ -56,8 +56,10 @@ export ALSOFT_DRIVERS=null                                     # OpenAL Soft nul
   `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md`.
 - Run an example (long-lived GUI loop — use `timeout` for a smoke run):
   `cd examples/basic && VK_ICD_FILENAMES=... ALSOFT_DRIVERS=... XDG_RUNTIME_DIR=... xvfb-run -a ../../build/linux-debug/src/engine/eve run`
-- `scripts/smoke_examples.sh <name>` launches an example headless and greps for error
-  markers (PASS/FAIL) — a good quick check under `xvfb-run`.
+- `scripts/smoke_examples.sh <name>` launches an example headless, requires it to stay
+  alive for `MIN_RUN_SECONDS` (default 2s) and greps for error markers (PASS/FAIL) — a
+  good quick check under `xvfb-run`. `python3 scripts/check_examples.py` (or
+  `make check/examples`) validates the `examples/` layout half of the same contract.
 - The benign `[ALSOFT] Failed to set real-time priority` warning is expected on this VM.
 
 ### Capturing a rendered frame (visual artifact)
@@ -269,6 +271,32 @@ model behind them.
 - **Tests stay per-module.** New tests go into their own file under `test/`
   (zeroerr cases; each case is process-isolated via CTest). Do not grow a
   shared test main.
+- **Examples are a tested surface.** A new `examples/<name>/` must be runnable
+  (`main.nut` + a `config.nut` that assigns the engine `config` table), or be
+  listed with a reason in `scripts/check_examples.py`'s `NON_RUNNABLE_EXAMPLES`;
+  it must own a `README.md` and a row in `examples/README.md`. `make check/examples`
+  (source-quality) enforces that layout, and `scripts/smoke_examples.sh` launches
+  every runnable example in CI for at least `MIN_RUN_SECONDS` (2s) — dying early,
+  exiting non-zero, or printing an error marker fails the job. Run
+  `MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh <name>` before claiming an
+  example works.
+- **Repository scripts are UTF-8 on every host.** CI runs them on Linux, where
+  stdout/stderr are UTF-8; on Windows a *redirected* stream falls back to the
+  ANSI code page (cp936/GBK on a Chinese Windows), so printing a character that
+  code page cannot encode (`↔`, `²`, `³`, `⇒`, `•`, emoji — all common in this
+  repository) raises `UnicodeEncodeError` and turns a checker into a traceback.
+  The mirror image is input: `Path.read_text()` without `encoding=` decodes
+  UTF-8 repository text as cp936 and raises `UnicodeDecodeError`.
+  - Every `scripts/*.py` program (a module with an `if __name__ == "__main__":`
+    block) calls `utf8_stdio.enable_utf8_stdio()` as the first statement of that
+    block — never at import time, so importing a script module stays free of
+    side effects.
+  - Text file I/O always passes `encoding="utf-8"` explicitly.
+  - Decode a child process with the encoding that child actually writes: `git`
+    output is UTF-8, so its call sites pass `encoding="utf-8"`.
+  - `scripts/tests/test_utf8_stdio.py` enforces all of the above and runs in the
+    CI script-test step; `python3 -X utf8 -m unittest discover -s scripts/tests
+    -p "test_*.py"` is the local equivalent.
 - **PR granularity.** An interface change ships as one PR that updates the
   interface, every backend and every consumer — no intermediate commits that
   break CI. Use `codex/` branch prefixes for agent work.

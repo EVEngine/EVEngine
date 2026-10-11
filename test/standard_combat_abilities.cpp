@@ -1,5 +1,6 @@
 #include "combat/StandardAbilities.h"
 
+#include "action/AbilityAsset.h"
 #include "action/AbilityController.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -41,4 +42,25 @@ TEST_CASE("standardCombatAbilities.registerGrantAndActivateThroughSharedControll
     REQUIRE(activation.ok());
     REQUIRE(activation.value().has_value());
     CHECK(actions.find(activation.value()->executionId) != nullptr);
+}
+
+TEST_CASE("standardCombatAbilities.roundTripEveryArchetypeThroughVersionedJsonAssets") {
+    auto catalog = eve::combat::standardCombatAbilities();
+    REQUIRE(catalog.ok());
+    eve::action::ActionRuntime actions;
+    eve::action::AbilityRuntime abilities(actions);
+    for (const auto& definition : catalog.value()) {
+        auto encoded = eve::action::encodeAbilityAsset(definition);
+        REQUIRE(encoded.ok());
+        auto json = encoded.value().toJson();
+        REQUIRE(json.ok());
+        auto parsed = eve::Value::fromJson(json.value());
+        REQUIRE(parsed.ok());
+        auto decoded = eve::action::decodeAbilityAsset(parsed.value());
+        REQUIRE(decoded.ok());
+        CHECK_EQ(decoded.value().id, definition.id);
+        CHECK_EQ(decoded.value().action.metadata.at("combat.adapter").asString(),
+                 definition.action.metadata.at("combat.adapter").asString());
+        REQUIRE(abilities.registerDefinition(std::move(decoded).takeValue()).ok());
+    }
 }

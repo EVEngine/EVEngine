@@ -16,6 +16,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import utf8_stdio
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -576,4 +577,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

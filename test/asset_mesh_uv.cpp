@@ -58,7 +58,7 @@ TEST_CASE("asset.mesh.multipleUvSetsSurviveImportAndCook") {
     REQUIRE(pack.ok());
     asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
     asset::EvpackCapabilities   caps{"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
-    auto payload = reader.read(imported.value().manifest.entrypoints.at("default"), "eve.mesh/2", caps, 1024 * 1024);
+    auto payload = reader.read(imported.value().manifest.entrypoints.at("default"), "eve.mesh/3", caps, 1024 * 1024);
     REQUIRE(payload.ok());
     bool checked = false;
     for (const auto& c : payload.value().chunks)
@@ -217,4 +217,32 @@ TEST_CASE("asset.mesh.rejectsInvalidSourceUvAccessors") {
         request.documentBytes.assign(json.value().begin(), json.value().end());
         REQUIRE(!asset_import::prepareGltfImport(request).ok());
     }
+}
+
+TEST_CASE("asset.mesh.encoderRoundTripsCanonicalVersion3WithVertexColors") {
+    asset::CanonicalMeshData source;
+    source.positions = {0, 0, 0, 1, 0, 0, 0, 1, 0};
+    source.normals = {0, 0, 1, 0, 0, 1, 0, 0, 1};
+    source.texcoords[0] = {0, 0, 1, 0, 0, 1};
+    source.colors = {1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0.5f};
+    source.indices = {0, 1, 2};
+    auto encoded = asset::encodeCanonicalMesh(source);
+    REQUIRE(encoded.ok());
+    auto decoded = asset::decodeCanonicalMesh(encoded.value());
+    REQUIRE(decoded.ok());
+    CHECK_EQ(decoded.value().positions, source.positions);
+    CHECK_EQ(decoded.value().normals, source.normals);
+    CHECK_EQ(encoded.value()[7], std::uint8_t(3));
+    CHECK_EQ(decoded.value().texcoords, source.texcoords);
+    CHECK_EQ(decoded.value().colors, source.colors);
+    CHECK_EQ(decoded.value().indices, source.indices);
+    auto invalid = source;
+    invalid.texcoords[0].pop_back();
+    REQUIRE(!asset::encodeCanonicalMesh(invalid).ok());
+    invalid = source;
+    invalid.colors.pop_back();
+    REQUIRE(!asset::encodeCanonicalMesh(invalid).ok());
+    invalid = source;
+    invalid.indices[2] = 3;
+    REQUIRE(!asset::encodeCanonicalMesh(invalid).ok());
 }

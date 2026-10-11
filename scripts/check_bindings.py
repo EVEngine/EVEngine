@@ -36,6 +36,7 @@ import sys
 from pathlib import Path
 
 import check_module_manifest
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
 MODULES = ROOT / "src" / "modules"
@@ -224,4 +225,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

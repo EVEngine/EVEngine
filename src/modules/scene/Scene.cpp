@@ -1,11 +1,16 @@
 #include "common/ECS.h"
+#include "common/SquirrelBinding.h"
 #include "scene/Scene.h"
+#include "scene/PcgBuildConfig.h"
+#include "scene/PcgGrowth.h"
 
 #include "scene/ArtifactProvider.h"
 #include "scene/SceneBounds.h"
 #include "scene/SceneCapabilities.h"
 #include "scene/SceneInternal.h"
 #include "scene/TransformSystem.h"
+#include "scene/FollowPlayer.h"
+#include "scene/LocationProfileBindings.h"
 
 #include "spatial/Octree.h"
 
@@ -576,6 +581,9 @@ eve.Scene["pickScreen"] <- function(cam, screenX, screenY, viewW, viewH) {
 }
 eve.Scene["collectFrustumIds"] <- function(cam, viewW, viewH) {
     return collectFrustumIdsAt(currentHostName(), cam, viewW, viewH)
+}
+eve.Scene["applyPcgTerrainCulling"] <- function(cam, viewW, viewH, tag) {
+    return applyPcgTerrainCullingAt(currentHostName(), cam, viewW, viewH, tag)
 }
 eve.Scene["syncSpatialIndex"] <- function(octree) {
     return syncSpatialIndexAt(currentHostName(), octree)
@@ -1217,6 +1225,10 @@ void Scene::expose(ssq::Table &table) {
 
     injectSceneComponentClass(table);
     injectSceneEntityScript(table);
+    exposeFollowPlayerBindings(table);
+    exposeLocationProfileBindings(table);
+    exposePcgGrowthBindings(table);
+    exposePcgBuildConfigBindings(table);
 }
 
 void Scene::expose(ssq::Class &cls) {
@@ -1286,6 +1298,11 @@ void Scene::expose(ssq::Class &cls) {
     cls.addFunc("pickRayAt", &Scene::pickRayAt);
     cls.addFunc("pickScreenAt", &Scene::pickScreenAt);
     cls.addFunc("collectFrustumIdsAt", &Scene::collectFrustumIdsAt);
+    cls.addFunc("applyPcgTerrainCullingAt", [vm=cls.getHandle()](Scene* self,const std::string& host,
+        graphics::Camera3D* cam,float w,float h,const std::string& tag) {
+        return eve::script::projectResult(vm,self->applyPcgTerrainCullingAt(host,cam,w,h,tag),
+            [](int changed){return Value(changed);});
+    });
     cls.addFunc("syncSpatialIndexAt", &Scene::syncSpatialIndexAt);
     cls.addFunc("nodeIdFromSpatialIdAt", &Scene::nodeIdFromSpatialIdAt);
 

@@ -191,12 +191,30 @@ for (local i = 0; i < octree.getResultCount(); ++i) {
 - `getNodeCount()`、`getNodePath()`、`getParentId()`、`getRootId()`、`hasNode()`、`isAncestor()`、`isDescendant()`、`linkRenderable2D()`
 - `linkRenderable3D()`、`mountBuild()`、`mountBuildAs()`、`remountBuildAs()`、`select()`、`setBuildPosition()`、`setBuildRotation()`、`setBuildScale()`
 - `setBuildSpace()`、`setBuildVisible()`、`setHostLayer()`、`setHostVisible()`、`setNodePosition()`、`setNodeRotation()`、`setNodeScale()`、`setNodeVisible()`
+
+Pcg `Growth` 由 `eve.PcgGrowth()` 承接。`configure(startScale,endScale,variance,growthTime)` 配置范围，`start(realtime,seed)` 选择确定性的实际终点；`advance(realtime)` 返回统一缩放，`applyPcgGrowth(growth,node,realtime)` 将其应用到真实 `SceneNodeRef`，并在 `die(realtime)` 后五秒删除节点。状态可用 `getActualEndScale()`、`getScale()`、`getFinished()`、`shouldDestroy(realtime)` 查询。
 - `unlinkNode()`、`updateTransforms()`、`updateTransformsAll()`、`walkBreadthFirstIds()`、`walkDepthFirstIds()`
 
 辅助对象：
 
 - `eve.SceneEntity`：`scene()` / `node()` / `onAttach()` / `onDetach()` / `update(dt)`，组件槽字段与 `eve.Entity` 一致。
 - `eve.SceneNodeRef`（节点句柄）：`getNodeId()`、`getPersistentId()`、`getHostName()`、`isValid()`、`getScene()`、`setPosition()` / `getPosition()`、`setRotation()` / `getRotation()`、`setScale()` / `getScale()`、`setVisible()` / `isVisible()`、`getWorldPosition*()`、`getWorldMatrix()`、`getForward()/getRight()/getUp()`、`getParentId()`、`getChildCount()`、`getChildIdAt()`、`getPath()`、`attachEntity()`、`detachEntity()`、`getEntity()`、`hasEntity()`、`entitiesOf()`、`linkRenderable2D/3D()`、`linkPhysics2D/3D()`、`linkCamera3D()`、`linkAudio3D()`、`unlinkNode()`、`unlinkNodeKind()`、`linkCount()`、`localToWorld()`、`worldToLocal()`、`setParent()`、`removeNode()`、`setQuaternion()`、`getQuaternion()`、`lookAt()`、`addTag()`、`removeTag()`、`hasTag()`、`getTags()`、`setLayer()`、`getLayer()`、`setBounds()`、`hasBounds()`、`getBounds()`。
+
+## 跟随玩家的环境对象
+
+`FollowPlayerSettings`、`FollowPlayerInput`、`FollowPlayerOutput` 与
+`evaluateFollowPlayer(output,settings,input)` 对应 Pcg `FollowPlayerSystem`。在 LateUpdate 阶段填入玩家世界
+坐标，将 `applyPosition=true` 的输出位置应用到每个调用者拥有的粒子、水体或场景节点。关闭 offset 时完全
+复制玩家坐标；普通 offset 使用 `(playerX+offsetX, playerY-offsetY, playerZ-offsetZ)`；water 模式在玩家
+Y<1 时额外抬高 70，否则抬高 10，再减 offsetY。`useScale` 独立发布一次性 scale 写入语义。
+
+计算层不查找全局 Camera、不持有对象列表，也不直接依赖 graphics、water 或 particles provider；调用者负责
+稳定对象身份和实际变换写入。缺少玩家或关闭 follow 时不发布位置，缩放仍可发布。所有输入先验证有限性，
+失败不会部分覆盖 output。
+
+脚本字段：settings 提供 `followPlayer`、`waterObject`、`useOffset`、`offsetX/Y/Z`、`useScale`、
+`scaleX/scaleY/scaleZ`；input 提供 `hasPlayer`、`playerX/Y/Z`；output 提供 `applyPosition`、`x/y/z`、
+`applyScale` 与 `scaleX/scaleY/scaleZ`。
 
 ## 使用要点
 
@@ -206,3 +224,26 @@ for (local i = 0; i < octree.getResultCount(); ++i) {
 
 **源码：** [`src/modules/scene/`](../../../src/modules/scene/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `scene`。
+### Pcg 位置与书签
+
+`LocationProfile` 保存一次性的启动位置，并管理 Pcg `LocationSystem` 风格的命名书签。
+`LocationPose` 以位置和四元数保存相机/玩家姿态；`LocationBookmark` 还保存控制器与场景名。
+书签暴露 `name`、`controller`、`scene` 字段，以及 `setCamera`、`setPlayer`、`clearPlayer`。
+脚本可调用 `saveLocation`、`saveLocationWithPlayer`、`loadLocation`、`addBookmark`、
+`overrideBookmark`、`removeBookmark`、`loadBookmark`、`previousBookmark`、`nextBookmark`、
+`clearBookmarks`、`getBookmarkCount`、`getBookmarkName`、`getBookmarkController`、
+`getBookmarkScene` 和 `hasSavedLocation`。修改与读取操作返回标准 `Result`；加载启动位置只成功一次。
+`serializeJson` 与 `restoreJson` 使用 `eve.scene.location-profile` schema version 1；恢复会拒绝未知字段，
+并在任何解析或验证失败时保留原状态。
+### PcgScenePlayer 地形视锥裁剪
+
+`applyPcgTerrainCullingAt(host,camera,viewWidth,viewHeight,tag)` 检查指定 host 内带 tag 且具有 bounds 的
+节点，并把视锥相交结果原子应用到节点 visibility；返回实际变化数量。当前 host 的简写为
+`applyPcgTerrainCulling(camera,viewWidth,viewHeight,tag)`。未标记节点不受影响，场景加载器或 streaming
+层可在组成变化后重新调用，替代 Pcg 在 sceneLoaded/sceneUnloaded 后 0.5 秒重新扫描 Unity Terrain 的路径。
+
+### PcgBuildConfig
+
+`eve.PcgBuildConfig()` 对应 Pcg ResourcesSystem 的 `BuildConfig`。发布类型为 Addressables=0、RegularBuild=1；`addHistory(category,sceneName,timestamp)` 按调用顺序记录七类构建事件，category 为 0..6。使用 `getHistoryCount/Category/SceneName/Timestamp` 查询，越界或非法枚举返回结构化错误。
+
+脚本方法：`setPublicationType()`、`getPublicationType()`、`addHistory()`、`clearHistory()`、`getHistoryCount()`、`getHistoryCategory()`、`getHistorySceneName()`、`getHistoryTimestamp()`。

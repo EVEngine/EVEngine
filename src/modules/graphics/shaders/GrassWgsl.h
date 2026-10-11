@@ -18,6 +18,7 @@ struct VSOut {
     @location(2) viewPos: vec3f, @location(3) rootPos: vec3f,
     @location(4) instanceId: f32, @location(5) tint: vec4f,
     @location(6) alwaysDark: f32,
+    @location(7) instanceTint: vec3f,
 };
 @group(0) @binding(0) var<uniform> frame: Frame;
 @group(0) @binding(15) var<uniform> params: Externals;
@@ -30,6 +31,50 @@ fn inverse3(m: mat3x3f) -> mat3x3f {
     return mat3x3f(vec3f(e*i-f*h,f*g-d*i,d*h-e*g)/det,
                    vec3f(c*h-b*i,a*i-c*g,b*g-a*h)/det,
                    vec3f(b*f-c*e,c*d-a*f,a*e-b*d)/det);
+}
+fn windOffset(local: vec3f, root: vec3f, up: vec3f, baseDimensions: vec2f) -> vec3f {
+    var dimensions = baseDimensions;
+    var range = abs(p(23u));
+    var main = p(21u);
+    if (range == 0.0 || main == 0.0) { return local; }
+    var distance = (root - frame.cameraPos.xyz) / range;
+    var attenuation = 1.0 - clamp(dot(distance, distance), 0.0, 1.0);
+    attenuation *= attenuation;
+    if (attenuation == 0.0) { return local; }
+    var upLength = length(up);
+    var scale = max(upLength, 0.4);
+    var upDot = clamp(up.y / upLength, 0.0, 1.0);
+    dimensions = mix(vec2f(dimensions.y * 2.0), dimensions, upDot * upDot) * scale;
+    var flex = vec3f(p(24u), p(25u), p(26u)) *
+        vec3f(clamp(main * 3.0, 0.0, 1.0), clamp(main * 2.0, 0.0, 1.0), 1.0 - main * main * 0.5) * main * attenuation * scale;
+    var frequency = vec3f(p(27u), p(28u), p(29u)) * scale;
+    var direction = vec3f(p(18u), p(19u), p(20u));
+    var time = -fract(p(22u) * 6.0) * 6.283185;
+    var norm = local / vec3f(dimensions.x, dimensions.y, dimensions.x);
+    var branch = dot(norm.xz, norm.xz);
+    var stem = norm.y;
+    var lengthA = dot(local, local);
+    var world = root + local;
+    var gust = ((sin(time + frequency.x * (root.x + root.y + root.z)) * 0.3 + main * 0.5) +
+        (p(30u) * 0.4 + main) * main) * (p(31u) * 0.3 + 0.7);
+    var tally = vec3f(direction.x, 0.0, direction.z) * stem * stem * gust * flex.x;
+    gust = gust * 0.7 + 0.3;
+    if (p(23u) > 0.0) {
+        var displaced = world + tally * 0.25;
+        tally += direction * stem * stem * (sin(time * 2.0 +
+            (displaced.x + displaced.y + displaced.z) * frequency.y) * branch * 0.7 + 0.3) * gust * flex.y;
+    }
+    var offset = local + tally;
+    var denominator = dot(offset, offset);
+    var normalization = 0.0;
+    if (denominator != 0.0) { normalization = clamp(lengthA / denominator, 0.0, 1.0); }
+    tally = offset * normalization;
+    if (p(23u) > 0.0 && flex.z != 0.0) {
+        var wave = sin(vec3f(time * 5.0) + (world + tally) * frequency.z);
+        return tally + (wave * direction + direction) * vec3f(branch, branch * 0.75, branch) *
+            (stem * gust * flex.z) * (normalization + 0.5);
+    }
+    return tally;
 }
 @vertex
 fn vs_main(in: VSIn) -> VSOut {
@@ -44,16 +89,33 @@ fn vs_main(in: VSIn) -> VSOut {
     let fallback = select(vec3f(1.0, 0.0, 0.0), vec3f(0.0, 1.0, 0.0), abs(up.y) < 0.95);
     let right = select(normalize(cross(up, fallback)), normalize(cross(up, toCamera)),
                        length(toCamera) > 0.0001);
-    let scale = max(in.normal.y, 0.05);
-    let objectPos = in.pos + right * (in.uv.x - 0.5) * max(p(2u), 0.01) * scale +
-                    up * in.uv.y * max(p(3u), 0.01) * scale;
-    let world = frame.model * vec4f(objectPos, 1.0);
+    let scale = select(1.0, in.normal.y, in.normal.y > 0.0);
+    let widthScale = select(select(scale, in.normal.z - 1.0, in.normal.z > 1.0), -in.normal.z, in.normal.z < 0.0);
+    var objectPos = in.pos + right * (in.uv.x - 0.5) * select(0.01, p(2u), p(2u) > 0.0) * widthScale +
+                    up * in.uv.y * select(0.01, p(3u), p(3u) > 0.0) * scale;
     let root = frame.model * vec4f(in.pos, 1.0);
+    if (p(23u) != 0.0 && p(21u) != 0.0) {
+        objectPos = in.pos + invModel3 * windOffset(model3 * (objectPos - in.pos), root.xyz,
+            model3 * up * scale, vec2f(select(0.01, p(2u), p(2u) > 0.0), select(0.01, p(3u), p(3u) > 0.0)));
+    }
+    let world = frame.model * vec4f(objectPos, 1.0);
     var out: VSOut;
     out.pos = frame.mvp * vec4f(objectPos, 1.0); out.pos.y = -out.pos.y;
     out.uv = in.uv; out.worldPos = world.xyz; out.viewPos = (frame.view * world).xyz;
-    out.rootPos = root.xyz; out.instanceId = in.normal.x; out.tint = frame.tint;
-    out.alwaysDark = in.normal.z;
+    out.rootPos = root.xyz; out.tint = frame.tint;
+    if (in.normal.x < 0.0) {
+        let packed = -in.normal.x - 1.0;
+        let red = floor(packed / 65536.0);
+        let greenRest = packed - red * 65536.0;
+        let green = floor(greenRest / 256.0);
+        let blue = greenRest - green * 256.0;
+        out.instanceTint = vec3f(red, green, blue) / 255.0;
+        out.instanceId = fract(sin(dot(in.pos, vec3f(12.9898, 78.233, 37.719))) * 43758.5453) * 65535.0;
+    } else {
+        out.instanceTint = vec3f(1.0);
+        out.instanceId = in.normal.x;
+    }
+    out.alwaysDark = select(0.0, 1.0, in.normal.z > 0.0);
     return out;
 }
 )wgsl";
@@ -76,9 +138,12 @@ struct FSIn {
     @location(2) viewPos: vec3f, @location(3) rootPos: vec3f,
     @location(4) instanceId: f32, @location(5) tint: vec4f,
     @location(6) alwaysDark: f32,
+    @location(7) instanceTint: vec3f,
 };
 @group(0) @binding(0) var<uniform> frame: Frame;
 @group(0) @binding(1) var albedo: texture_2d<f32>;
+@group(0) @binding(2) var normalMap: texture_2d<f32>;
+@group(0) @binding(3) var maskMap: texture_2d<f32>;
 @group(0) @binding(4) var<uniform> shadow: ShadowFrame;
 @group(0) @binding(5) var shadowMap: texture_depth_2d_array;
 @group(0) @binding(7) var mainSampler: sampler;
@@ -147,10 +212,12 @@ fn grassShadow(worldPos: vec3f, viewDepth: f32) -> f32 {
 }
 @fragment
 fn fs_main(in: FSIn) -> @location(0) vec4f {
+    let foliage = p(12u) < 0.0;
     let frames = max(p(12u), 1.0); let duration = max(p(1u), 0.0001);
     let random = fract(sin(in.instanceId * 12.9898) * 43758.5453);
     let frameNumber = i32(p(0u) / duration + random * frames) % i32(frames);
-    let cols = i32(max(p(13u), 1.0)); let rows = i32(max(p(14u), 1.0));
+    let cols = select(i32(max(p(13u), 1.0)), 1, foliage);
+    let rows = select(i32(max(p(14u), 1.0)), 1, foliage);
     let leaf = in.alwaysDark > 0.5 || p(5u) > 0.5;
     let variants = select(i32(max(p(15u), 1.0)), i32(max(p(16u), 1.0)), leaf);
     let variant = i32(in.instanceId) % variants;
@@ -163,12 +230,41 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         atlasUv = vec2f((f32(column) + in.uv.x) / f32(cols),
                         (f32(row) + 1.0 - in.uv.y) / f32(rows));
     }
-    let mask = textureSample(albedo, mainSampler, atlasUv) * in.tint;
+    var mask = textureSample(albedo, mainSampler, atlasUv) * in.tint * vec4f(in.instanceTint, 1.0);
+    if (foliage) {
+        let detailDistance = distance(in.rootPos, frame.cameraPos.xyz);
+        let packedDetail = max(p(17u), 0.0);
+        let hardDistance = floor(packedDetail);
+        let density = clamp(fract(packedDetail) * 2.0, 0.0, 1.0);
+        if (detailDistance > hardDistance || hash > density) { discard; }
+        let fade = (1.0 - clamp((detailDistance - p(13u)) /
+                                 max(p(14u), 0.0001), 0.0, 1.0)) * 2.0;
+        mask.a *= fade;
+    }
     if (mask.a < max(p(4u), 0.01)) { discard; }
     // Dawn's depth precision self-shadows roots that lie exactly on the ground
     // plane. Sample the visible blade point; the explicit normal offset in
     // grassShadow still preserves occluder shadows without blanket acne.
     var visibility = grassShadow(in.worldPos, max(-in.viewPos.z, 0.0));
+    if (foliage) {
+        var base = mask.rgb * vec3f(p(6u), p(7u), p(8u)) * 0.5;
+        let snowFade = clamp((in.worldPos.y - p(0u)) / max(p(15u), 0.0001), 0.0, 1.0);
+        let snowAmount = mix(0.0, 0.1, snowFade) * clamp(p(16u), 0.0, 1.0);
+        base = mix(base, clamp(base + vec3f(p(9u), p(10u), p(11u)), vec3f(0.0), vec3f(1.0)), snowAmount);
+        let surface = clamp(textureSample(maskMap, mainSampler, atlasUv), vec4f(0.0), vec4f(1.0));
+        var tangentNormal = textureSample(normalMap, mainSampler, atlasUv).xyz * 2.0 - vec3f(1.0);
+        tangentNormal = abs(normalize(vec3f(tangentNormal.xy * max(p(1u), 0.01), tangentNormal.z)));
+        let lightDir = normalize(frame.lightDir.xyz);
+        let viewDir = normalize(frame.cameraPos.xyz - in.worldPos);
+        let diffuse = max(dot(tangentNormal, lightDir), 0.0);
+        let backlight = max(dot(-lightDir, viewDir), 0.0) * (1.0 - surface.b);
+        let smoothness = surface.a * 0.25;
+        let halfDir = normalize(lightDir + viewDir);
+        let specular = pow(max(dot(tangentNormal, halfDir), 0.0), mix(4.0, 64.0, smoothness)) * surface.r;
+        let lighting = frame.ambient.rgb * surface.g + frame.lightColor.rgb * frame.lightDir.w *
+                       (diffuse * visibility + backlight * 0.35 + specular * visibility);
+        return vec4f(base * lighting, mask.a);
+    }
     if (p(5u) > 0.5 || in.alwaysDark > 0.5) { visibility = 0.0; }
     let color = mix(vec3f(p(9u), p(10u), p(11u)), vec3f(p(6u), p(7u), p(8u)), visibility);
     return vec4f(color * mask.rgb, mask.a);

@@ -26,6 +26,10 @@ src.play();
 
 从 SoundData 创建 Source，设置 `setLooping(true)` 和音量后 `play()`；暂停菜单用 `pause()`，继续用 `play()`，换场景时 `stop()`。用 `tell()` / `seek()` 实现继续播放。
 
+`applyUnderwaterAudio(submergeDown,submergeUp,ambience,playDown,playUp,loopAmbience,volume)` 消费水下状态机的
+一次性转换标志和循环状态。down/up 可为空，ambience 必须有效；函数先验证 `[0,1]` 音量，再设置三个借用
+Source 的增益、一次性播放下潜/上浮声音，并启动或停止循环环境声。所有 Source 始终由调用者持有。
+
 ### 设置 3D 声源
 
 每帧同步 Source 的 `setPosition()`、`setVelocity()`，并同步 Audio listener 的位置和朝向。界面音效应 `setRelative(true)`，避免随摄像机衰减。
@@ -52,3 +56,12 @@ src.play();
 
 **源码：** [`src/modules/audio/`](../../../src/modules/audio/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `audio`。
+### Pcg 环境音频区域
+
+`AudioZoneItem` 包含 `volume`、`fadeInTime`、`fadeOutTime`、`duration`。
+`AudioZoneProfile` 的 `x/y/z`、`radius`、`global`、`minimumBreakTime`、`maximumBreakTime`、
+`deactivationTime` 描述区域与时序，使用 `addItem` 添加曲目并由 `getItemCount` 查询。
+`AudioZoneState` 保存 `selectedTrack` 和 `playing`；`evaluateAudioZone` 接收绝对模拟时间、玩家坐标、
+master volume 和显式 seed，返回 `play`、`stop`、`trackIndex`、`volume` 命令。实现保留 Pcg 的淡入淡出、
+不连续重复曲目和离开区域后默认 10 秒延迟停播规则，调用者继续拥有实际 `Source`。
+选择 `trackIndex` 对应的 Source 后，可用 `applyAudioZoneOutput(source,play,stop,volume)` 原子应用命令。

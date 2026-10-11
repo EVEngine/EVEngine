@@ -47,6 +47,13 @@ canvas.setPixel(10, 10, 1.0, 0.0, 0.0, 1.0);
 
 返回同格式的新 `ImageData`（调用方拥有）；源范围外采样为透明黑。`rotsprite` 只挑选已有调色板颜色，不引入插值新色。
 
+`ImageData.scalePcg(width, height, filter)` 原地执行 Pcg `ScaleTexture` 的精确取样规则，
+`filter` 为 `"point"` 或 `"bilinear"`。Point 使用
+`floor(sourceSize / destinationSize * coordinate)`；Bilinear 使用
+`(sourceSize - 1) / destinationSize`，忠实保留其不会采到最后一行/列端点的行为。
+它返回结构化 Result，成功值为写入像素数；非法尺寸、滤镜或不足 2x2 的 Bilinear 源图
+不会改变原图。调用会替换当前 `ImageData` 的像素和尺寸；共享缓存图片应先 `clone()`。
+
 ## 目标导向指南
 
 ### 加载并上传一张 PNG 为纹理
@@ -93,6 +100,7 @@ CPU 编辑器与 GPU Canvas 喷涂共享 `newUvPaintRegion()` 创建的可复用
 - `Image`：`getName()`、`newImageData(data)`、`newImageDataFromFile(path)`、`newEmptyImageData(width, height, format)`、`newUvPaintRegion()`、`isCompressed(data)`
 - `ImageData`：`getWidth()`、`getHeight()`、`getFormat()`、`getSize()`、`getPixelSize()`、`isSRGB()`、`inside(x, y)`、
   `clone()`、`paste(src, dx, dy, sx, sy, sw, sh)`、`rotate(radians, filter, expand)`、
+  `scalePcg(width, height, filter)`、
   `getPixelR(x, y)`、`getPixelG(x, y)`、`getPixelB(x, y)`、`getPixelA(x, y)`、`setPixel(x, y, r, g, b, a)`、
   `paintCircleUv(u, v, radiusPixels, r, g, b, a, wrapU, wrapV)`
 - `UvPaintSession`：`initialize(image)`、`paintCircle(...)`、`undo()`、`restore()`、`bake()`、

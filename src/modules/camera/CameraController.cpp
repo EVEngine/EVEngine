@@ -1,8 +1,11 @@
 #include "camera/CameraController.h"
+#include "camera/PcgCarCameraSetup.h"
+#include "camera/PcgFreeCamera.h"
 
 #include "common/CameraObstruction.h"
 #include "common/Capability.h"
 #include "common/Json.h"
+#include "common/SquirrelBinding.h"
 #include "graphics/RenderSystem3D.h"
 #include "platform_event/PlatformEvent.h"
 #include "scene/SceneNodeRef.h"
@@ -53,6 +56,117 @@ Module_IMPL(Camera, new Camera());
 
 CameraController::CameraController() = default;
 
+CameraController::~CameraController() {
+    cap::removeListener<action::IActionCameraCueSink>(this);
+    if (photoModeAuthority_) cap::removeListener<IPhotoModeFieldSink>(this);
+}
+
+bool CameraController::getActionCuesEnabled() const {
+    for (std::size_t index = 0; index < cap::listenerCount<action::IActionCameraCueSink>(); ++index)
+        if (cap::listenerAt<action::IActionCameraCueSink>(index) == this) return true;
+    return false;
+}
+
+void CameraController::setActionCuesEnabled(bool enabled) {
+    const bool current = getActionCuesEnabled();
+    if (enabled && !current)
+        cap::addListener<action::IActionCameraCueSink>(this);
+    else if (!enabled && current)
+        cap::removeListener<action::IActionCameraCueSink>(this);
+}
+
+bool CameraController::supports(const LogicalId&) const noexcept { return getActionCuesEnabled(); }
+
+Result<void> CameraController::trigger(const action::ActionCameraCueBinding& binding,
+                                       const action::ActionNotifyContext&) {
+    addImpulse(static_cast<float>(binding.positionAmplitude), static_cast<float>(binding.rotationAmplitude),
+               static_cast<float>(binding.duration.seconds()), binding.seed);
+    addFovImpulse(static_cast<float>(binding.fovAmplitude), static_cast<float>(binding.duration.seconds()));
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+void CameraController::setPhotoModeAuthority(bool enabled){
+ if(enabled==photoModeAuthority_)return;
+ if(enabled)cap::addListener<IPhotoModeFieldSink>(this);else cap::removeListener<IPhotoModeFieldSink>(this);
+ photoModeAuthority_=enabled;
+}
+PhotoModeFieldAcceptance CameraController::acceptsPhotoModeField(const PhotoModeAssignment&a)const noexcept{
+ return a.domain==PhotoModeDomain::Camera||a.domain==PhotoModeDomain::PostFx?PhotoModeFieldAcceptance::Accepted:PhotoModeFieldAcceptance::Rejected;
+}
+Result<void> CameraController::setCameraRoll(float degrees){
+ if(!std::isfinite(degrees))return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+  "camera roll must be finite","camera.photoMode.roll"));
+ cameraRollDeg_=degrees;
+ if(cam_){
+  glm::vec3 eye(cam_->getEyeX(),cam_->getEyeY(),cam_->getEyeZ());
+  glm::vec3 target(cam_->getTargetX(),cam_->getTargetY(),cam_->getTargetZ());
+  glm::vec3 forward=target-eye;const float length=glm::length(forward);
+  if(length>1e-6f){forward/=length;glm::vec3 up(0,1,0);if(std::abs(glm::dot(forward,up))>0.999f)up={0,0,-1};
+   glm::vec3 right=glm::normalize(glm::cross(forward,up));up=glm::normalize(glm::cross(right,forward));
+   const float roll=glm::radians(cameraRollDeg_);up=up*std::cos(roll)+right*std::sin(roll);cam_->setUp(up.x,up.y,up.z);}
+ }
+ return Result<void>::success();
+}
+Result<void> CameraController::applyPhotoModeField(const PhotoModeAssignment&a){
+ auto bad=[&](const std::string&m){return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,m,a.field,{},"camera.photoMode"));};
+ if(!cam_)return bad("photo-mode camera authority requires a bound Camera3D");
+ if(a.domain==PhotoModeDomain::PostFx)return applyPcgPostFx(a);
+ if(a.domain!=PhotoModeDomain::Camera)return bad("unsupported photo-mode camera domain");
+ auto number=std::get_if<float>(&a.value);if(!number||!std::isfinite(*number))return bad("camera field requires a finite float");
+ if(a.field=="m_fieldOfView"){if(*number<=0||*number>=180)return bad("field of view must be in (0,180)");fovDeg_=*number;cam_->setFov(*number);}
+ else if(a.field=="m_pcgCullinDistance"){pcgCullingDistance_=*number;const float distance=std::max(0.f,cam_->getFarClip()+*number);for(int layer=0;layer<32;++layer)cam_->setLayerCullDistance(layer,distance);}
+ else if(a.field=="m_cameraAperture"){if(*number<=0)return bad("camera aperture must be positive");cam_->setPhysicalLens(*number,cam_->getFocalLength());}
+ else if(a.field=="m_cameraFocalLength"){if(*number<=0)return bad("camera focal length must be positive");cam_->setPhysicalLens(cam_->getAperture(),*number);}
+ else if(a.field=="m_cameraRoll")return setCameraRoll(*number);
+ else if(a.field=="m_farClipPlane"){if(*number<=cam_->getNearClip())return bad("far clip must exceed near clip");cam_->setClipPlanes(cam_->getNearClip(),*number);const float distance=std::max(0.f,*number+pcgCullingDistance_);for(int layer=0;layer<32;++layer)cam_->setLayerCullDistance(layer,distance);}
+ else return bad("unsupported photo-mode camera field");
+ return Result<void>::success();
+}
+
+Result<void> CameraController::applyPcgPostFx(const PhotoModeAssignment&a){
+ auto bad=[&](const std::string&m){return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,m,a.field,{},"camera.photoMode.postFx"));};
+ PcgPhotoModePostFxState next=pcgPostFxState_;
+ auto number=std::get_if<float>(&a.value);auto integer=std::get_if<int64_t>(&a.value);auto flag=std::get_if<bool>(&a.value);
+ auto finitePositive=[&](float* target){if(!number||!std::isfinite(*number)||*number<=0.f)return false;*target=*number;return true;};
+ auto finiteNonNegative=[&](float* target){if(!number||!std::isfinite(*number)||*number<0.f)return false;*target=*number;return true;};
+ if(a.field=="m_postFXExposure"){if(!number||!std::isfinite(*number))return bad("exposure requires a finite float");next.postFxExposure=*number;}
+ else if(a.field=="m_postFXExposureMode"){if(!integer||*integer<0)return bad("exposure mode requires a non-negative integer");next.postFxExposureMode=*integer;}
+ else if(a.field=="m_dofActive"){if(!flag)return bad("depth-of-field active requires a bool");next.depthOfFieldActive=*flag;}
+ else if(a.field=="m_autoDOFFocus"){if(!flag)return bad("automatic focus requires a bool");next.autoDepthOfFieldFocus=*flag;}
+ else if(a.field=="m_dofFocusDistance"){if(!finitePositive(&next.focusDistance))return bad("focus distance must be positive and finite");}
+ else if(a.field=="m_dofAperture"){if(!finitePositive(&next.aperture))return bad("aperture must be positive and finite");}
+ else if(a.field=="m_dofFocalLength"){if(!finitePositive(&next.focalLength))return bad("focal length must be positive and finite");}
+ else if(a.field=="m_dofKernelSize"){if(!integer||*integer<0||*integer>3)return bad("kernel size must be in [0,3]");next.kernelSize=*integer;}
+ else if(a.field=="m_savedDofFocusMode"){if(!integer||*integer<0)return bad("saved focus mode requires a non-negative integer");next.savedFocusMode=*integer;}
+ else if(a.field=="m_dofFocusModeHDRP"){if(!integer||*integer<0)return bad("HDRP focus mode requires a non-negative integer");next.focusModeHdrp=*integer;}
+ else if(a.field=="m_dofFocusModeURP"){if(!integer||*integer<0)return bad("URP focus mode requires a non-negative integer");next.focusModeUrp=*integer;}
+ else if(a.field=="m_dofQualityHDRP"){if(!integer||*integer<0)return bad("HDRP quality requires a non-negative integer");next.qualityHdrp=*integer;}
+ else if(a.field=="m_dofNearBlurStart"){if(!finiteNonNegative(&next.nearBlurStart))return bad("near blur start must be finite and non-negative");}
+ else if(a.field=="m_dofNearBlurEnd"){if(!finiteNonNegative(&next.nearBlurEnd))return bad("near blur end must be finite and non-negative");}
+ else if(a.field=="m_dofFarBlurStart"){if(!finiteNonNegative(&next.farBlurStart))return bad("far blur start must be finite and non-negative");}
+ else if(a.field=="m_dofFarBlurEnd"){if(!finiteNonNegative(&next.farBlurEnd))return bad("far blur end must be finite and non-negative");}
+ else if(a.field=="m_dofStartBlurURP"){if(!finiteNonNegative(&next.blurStartUrp))return bad("URP blur start must be finite and non-negative");}
+ else if(a.field=="m_dofEndBlurURP"){if(!finiteNonNegative(&next.blurEndUrp))return bad("URP blur end must be finite and non-negative");}
+ else if(a.field=="m_dofMaxRadiusBlur"){if(!finiteNonNegative(&next.maximumBlurRadius))return bad("maximum blur radius must be finite and non-negative");}
+ else if(a.field=="m_dofHighQualityURP"){if(!flag)return bad("URP high quality requires a bool");next.highQualityUrp=*flag;}
+ else return bad("unsupported photo-mode post-processing field");
+ pcgPostFxState_=next;projectPcgPostFx();return Result<void>::success();
+}
+
+void CameraController::projectPcgPostFx(){
+ if(!cam_)return;
+ const auto&s=pcgPostFxState_;
+ cam_->setExposure(s.postFxExposure);
+ cam_->setAutoExposure(s.postFxExposureMode!=0);
+ cam_->setPhysicalLens(s.aperture,s.focalLength);
+ if(!s.depthOfFieldActive){cam_->clearDepthOfField();return;}
+ const float urpRange=std::max(0.01f,s.blurEndUrp-s.blurStartUrp);
+ const float hdrpRange=std::max(0.01f,s.farBlurStart-s.nearBlurEnd);
+ const float focusRange=s.focusModeUrp==0?urpRange:hdrpRange;
+ const float qualityScale=(s.highQualityUrp?1.5f:1.f)*(1.f+0.25f*float(s.qualityHdrp));
+ const float blurPixels=std::max(0.01f,s.maximumBlurRadius*qualityScale*float(s.kernelSize+1));
+ cam_->setDepthOfField(s.focusDistance,blurPixels,focusRange);
+}
 void CameraController::setCamera(graphics::Camera3D* cam) { cam_ = cam; }
 
 graphics::Camera3D* CameraController::getCamera() const { return cam_; }
@@ -86,7 +200,13 @@ void CameraController::setMode(const std::string& mode) {
 
 std::string CameraController::getMode() const { return mode_; }
 
-void CameraController::setRadius(float r) { radius_ = std::max(0.01f, r); }
+void CameraController::setRadius(float r) { radius_ = glm::clamp(r, minimumRadius_, maximumRadius_); }
+Result<void> CameraController::setRadiusLimits(float minimum, float maximum) {
+    if (!std::isfinite(minimum) || !std::isfinite(maximum) || minimum <= 0.f || maximum < minimum)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "camera radius limits are invalid", "camera.radiusLimits"));
+    minimumRadius_ = minimum; maximumRadius_ = maximum; radius_ = glm::clamp(radius_, minimum, maximum);
+    return Result<void>::success();
+}
 void CameraController::setAzimuth(float deg) { azimuthDeg_ = deg; }
 void CameraController::setElevation(float deg) { elevationDeg_ = glm::clamp(deg, -89.f, 89.f); }
 void CameraController::setOrbitSpeed(float degPerSec) { orbitSpeedDeg_ = degPerSec; }
@@ -717,6 +837,10 @@ void CameraController::applyView(const View& v) {
     const glm::vec3 forward = glm::normalize(v.target - v.eye);
     glm::vec3       up(0.f, 1.f, 0.f);
     if (std::abs(glm::dot(forward, up)) > 0.999f) up = glm::vec3(0.f, 0.f, -1.f);
+    glm::vec3 right=glm::normalize(glm::cross(forward,up));
+    up=glm::normalize(glm::cross(right,forward));
+    const float roll=glm::radians(cameraRollDeg_);
+    up=up*std::cos(roll)+right*std::sin(roll);
     cam_->setUp(up.x, up.y, up.z);
     cam_->setFov(v.fov);
 }
@@ -799,6 +923,13 @@ void Camera::expose(ssq::Table& table) {
 
     cc.addFunc("setCamera", &CameraController::setCamera);
     cc.addFunc("getCamera", &CameraController::getCamera);
+    cc.addFunc("setActionCuesEnabled", &CameraController::setActionCuesEnabled);
+    cc.addFunc("getActionCuesEnabled", &CameraController::getActionCuesEnabled);
+    cc.addFunc("setPhotoModeAuthority", &CameraController::setPhotoModeAuthority);
+    cc.addFunc("getPhotoModeAuthority", [](const CameraController* self){return self->getPhotoModeAuthority();});
+    cc.addFunc("setCameraRoll", [vm=table.getHandle()](CameraController* self,float value){return eve::script::projectResult(vm,self->setCameraRoll(value));});
+    cc.addFunc("getCameraRoll", [](const CameraController* self){return self->getCameraRoll();});
+    cc.addFunc("getPcgCullingDistance", [](const CameraController* self){return self->getPcgCullingDistance();});
 
     cc.addFunc("setTarget", &CameraController::setTarget);
     cc.addFunc("setTargetNode", &CameraController::setTargetNode);
@@ -812,6 +943,10 @@ void Camera::expose(ssq::Table& table) {
     cc.addFunc("getMode", &CameraController::getMode);
 
     cc.addFunc("setRadius", &CameraController::setRadius);
+    cc.addFunc("getRadius", &CameraController::getRadius);
+    cc.addFunc("setRadiusLimits", [vm=table.getHandle()](CameraController* self,float minimum,float maximum) { return eve::script::projectResult(vm,self->setRadiusLimits(minimum,maximum)); });
+    cc.addFunc("getMinimumRadius", &CameraController::getMinimumRadius);
+    cc.addFunc("getMaximumRadius", &CameraController::getMaximumRadius);
     cc.addFunc("setAzimuth", &CameraController::setAzimuth);
     cc.addFunc("setElevation", &CameraController::setElevation);
     cc.addFunc("setOrbitSpeed", &CameraController::setOrbitSpeed);
@@ -876,6 +1011,8 @@ void Camera::expose(ssq::Table& table) {
     cc.addFunc("deserializeAsset", &CameraController::deserializeAsset);
 
     cc.addFunc("update", &CameraController::update);
+    exposePcgFreeCameraBindings(table);
+    exposePcgCarCameraSetupBindings(table);
 }
 
 }  // namespace eve::camera

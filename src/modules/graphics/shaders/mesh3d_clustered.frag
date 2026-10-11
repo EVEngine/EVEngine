@@ -338,12 +338,20 @@ void main() {
     float roughness = clamp(ubo.cameraPos.w, 0.04, 1.0);
 
     vec3 N = Ngeom;
-    vec3 nSample =
+    vec4 packedNormal =
         (ubo.virtualTexture.x > 0.5
              ? sampleVirtualTexture(normalSampler, heightSampler, uv, ubo.virtualTexture,
                                     ubo.virtualAtlas)
              : textureCellBomb(normalSampler, uv, bombScale, bombStrength, bombRot))
-            .xyz;
+            ;
+    vec3 nSample = packedNormal.xyz;
+    float terrainAo = 1.0;
+    if (ubo.virtualAtlas.z > 0.5) {
+        vec2 normalXY = packedNormal.rg * 2.0 - 1.0;
+        nSample = vec3(packedNormal.rg, sqrt(1.0 - clamp(dot(normalXY, normalXY), 0.0, 1.0)) * 0.5 + 0.5);
+        terrainAo = clamp(packedNormal.b, 0.0, 1.0);
+        roughness = clamp(1.0 - packedNormal.a, 0.04, 1.0);
+    }
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
     vec3 Lo = vec3(0.0);
@@ -376,9 +384,9 @@ void main() {
     vec3 skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
     vec3 gndIrr = ubo.ambient.rgb * vec3(0.72, 0.62, 0.52);
     vec3 irr = mix(gndIrr, skyIrr, hemi);
-    vec3 gi = albedo * irr * (1.0 - metallic);
+    vec3 gi = albedo * irr * (1.0 - metallic) * terrainAo;
     float wrap = max(dot(N, primaryL) * 0.5 + 0.5, 0.0);
-    gi += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic);
+    gi += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic) * terrainAo;
     vec3 color = gi + Lo;
 
     float envIntensity = ubo.lightColor.w;
@@ -426,7 +434,7 @@ void main() {
         float horizon = clamp(1.0 + dot(reflect(-V, N), Ngeom), 0.0, 1.0);
         color += envSpec * specWeight * multiScatter * (horizon * horizon);
         vec3 F = fresnelSchlick(NoV, F0);
-        color += albedo * envDiffuse * (1.0 - metallic) * (1.0 - F) * 0.45;
+        color += albedo * envDiffuse * (1.0 - metallic) * (1.0 - F) * 0.45 * terrainAo;
     }
 
 

@@ -71,15 +71,8 @@ public:
     virtual void applyMontageRootMotion(const TransformTRS& delta) noexcept = 0;
 };
 
-/** @brief Owning per-step update context for one active timeline state block. */
-struct MontageActiveBlock {
-    LogicalId     trackId;
-    LogicalId     itemId;
-    LogicalId     type;
-    Duration      localTime = Duration::zero();
-    Duration      duration  = Duration::zero();
-    Value::Object payload;
-};
+/** @brief Compatibility name for the canonical action-owned active block projection. */
+using MontageActiveBlock = action::ActionActiveBlock;
 
 /** @brief Owning observation returned by one montage presentation step. */
 struct MontageAdvance {
@@ -126,6 +119,18 @@ public:
      * @param provider Borrowed synchronous provider; no replacement is committed unless all clips validate.
      */
     [[nodiscard]] Result<void> reloadClips(IMontageClipProvider& provider);
+    /**
+     * @brief Apply validated montage-wide settings without rebuilding clip topology or playback time.
+     * @param settings Candidate settings validated against the prepared timeline before publication.
+     * @return Applied, or a structured validation/state failure with no observable mutation.
+     */
+    [[nodiscard]] Result<void> setSettings(action::ActionMontageSettings settings);
+    /**
+     * @brief Atomically replace objective physical-section split timestamps without rebuilding clip topology.
+     * @param splitTimestamps Strictly ordered boundaries inside the prepared montage duration.
+     * @return Applied, or a structured validation/state failure with the previous boundaries preserved.
+     */
+    [[nodiscard]] Result<void> setSectionSplits(std::vector<Duration> splitTimestamps);
     /** @brief Transactionally replace one URI-backed clip and preserve the current cursor and slot weight. */
     [[nodiscard]] Result<void> replaceClip(std::string_view uri, std::unique_ptr<AnimClip> clip);
     /** @brief Bind presentation playback to one authoritative ActionRuntime execution. */
@@ -184,6 +189,10 @@ public:
     [[nodiscard]] bool isPlaying() const noexcept { return playing_; }
     /** @brief Whether playback is in externally requested blend-out. */
     [[nodiscard]] bool isBlendingOut() const noexcept { return blendingOut_; }
+    /** @brief Whether playback completed naturally while retaining its final weighted pose. */
+    [[nodiscard]] bool isFinished() const noexcept {
+        return timeline_ && !executionId_.isZero() && !playing_ && !blendingOut_ && weight_ > 0.0;
+    }
     /** @brief Current continuous montage slot weight. */
     [[nodiscard]] double weight() const noexcept { return weight_; }
     /** @brief Authored output layer requested by the prepared montage, or zero before preparation. */
@@ -201,7 +210,7 @@ private:
     void activate(const action::ActionAnimationSection& section, Duration localTime);
     void accumulateRootMotion(TransformTRS& total) const;
     [[nodiscard]] std::vector<action::ActionTimelineEvent> realignStateEvents(Duration target) const;
-    [[nodiscard]] std::vector<MontageActiveBlock>          activeBlocksAt(Duration target) const;
+    [[nodiscard]] Result<std::vector<MontageActiveBlock>>  activeBlocksAt(Duration target) const;
 
     AnimSkeleton&                         skeleton_;
     std::unique_ptr<AnimPlayer>           player_;

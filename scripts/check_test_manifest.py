@@ -13,6 +13,7 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
+import utf8_stdio
 
 REPO = Path(__file__).resolve().parent.parent
 TEST_DIR = REPO / "test"
@@ -82,4 +83,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

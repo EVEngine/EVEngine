@@ -19,6 +19,10 @@
 
 namespace eve::physics {
 
+namespace action_adapter {
+class ActionCollisionIgnoreState;
+}
+
 class Body3D;
 class Shape3D;
 class Joint3D;
@@ -142,6 +146,10 @@ public:
     [[nodiscard]] std::weak_ptr<const void> lifetimeToken() const noexcept { return queryLifetime_; }
     /** @brief Stable non-nil identity written to snapshot envelopes. */
     [[nodiscard]] eve::PersistentId persistentId() const noexcept { return instanceId_; }
+    /** @brief Resolve a live process-local world handle, or null after teardown.
+     * @thread Owning physics thread only; the returned pointer is borrowed for the immediate call.
+     */
+    [[nodiscard]] static World3D* findWorld(PhysicsWorldHandle handle) noexcept;
     /** @brief Whether optional accelerator selection fell back to CPU. */
     [[nodiscard]] bool usedBackendFallback() const noexcept { return backendFallback_; }
     /** @brief Selection status, including a structured absent-capability warning. */
@@ -895,6 +903,7 @@ public:
     void emitContactEvents();
 
 private:
+    friend class action_adapter::ActionCollisionIgnoreState;
     friend struct WorldSnapshotAccess;
     friend class Body3D;
     friend class Joint3D;

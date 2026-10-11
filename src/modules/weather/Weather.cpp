@@ -1,5 +1,9 @@
 #include "weather/Weather.h"
+#include "weather/ThunderStrike.h"
 #include "weather/shaders/WeatherWgsl.h"
+
+#include "common/SquirrelBinding.h"
+#include "common/Capability.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
@@ -275,11 +279,19 @@ struct Weather::Impl {
     float intensityCur = 0.f;
     float windSpeed = 0.f;
     float windDirDeg = 0.f;
+    bool snowWindOverride = false;
+    float snowWindX = 0.f, snowWindY = -1.15f, snowWindZ = 0.f;
     bool lightningEnabled = true;
     float flash = 0.f;
     float flashTimer = 0.f;
     float nextStrike = 4.f;
     bool environmentEnabled = true;
+    bool pcgMode = false, pcgWeatherEnabled = false, pcgRain = false, pcgSnow = false, pcgWindOverride = false;
+    bool interiorWeather = false;
+    PcgInteriorWeatherMode interiorMode = PcgInteriorWeatherMode::Collision;
+    int interiorReverbPreset = 0;
+    int exteriorReverbPreset = 0;
+    int currentReverbPreset = 0;
 
     // mood
     float skyR = 0.45f, skyG = 0.53f, skyB = 0.62f;
@@ -304,9 +316,9 @@ struct Weather::Impl {
 const char *const Weather::kPresetNames[] = {"clear", "drizzle", "rain", "storm", "snow", "fog", "wind", "blizzard"};
 const int         Weather::kPresetCount   = 8;
 
-Weather::Weather() : impl_(new Impl()) {}
+Weather::Weather() : impl_(new Impl()) { cap::addListener<IPhotoModeFieldSink>(this); }
 
-Weather::~Weather() { delete impl_; }
+Weather::~Weather() { cap::removeListener<IPhotoModeFieldSink>(this); delete impl_; }
 
 // ---------------------------------------------------------------------------
 // Private setup
@@ -442,10 +454,31 @@ void Weather::init(graphics::Graphics *gfx) {
 // Public API
 // ---------------------------------------------------------------------------
 
+PhotoModeFieldAcceptance Weather::acceptsPhotoModeField(const PhotoModeAssignment& a)const noexcept{
+ return a.domain==PhotoModeDomain::Weather?PhotoModeFieldAcceptance::Accepted:PhotoModeFieldAcceptance::Rejected;
+}
+Result<void> Weather::applyPhotoModeField(const PhotoModeAssignment& a){
+ auto bad=[&](){return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+  "invalid Pcg weather photo-mode assignment",a.field,{},"weather.photoMode"));};
+ if(a.domain!=PhotoModeDomain::Weather)return bad();
+ if(a.field=="m_pcgWeatherEnabled"){auto*v=std::get_if<bool>(&a.value);if(!v)return bad();impl_->pcgWeatherEnabled=*v;}
+ else if(a.field=="m_pcgWeatherRain"){auto*v=std::get_if<bool>(&a.value);if(!v)return bad();impl_->pcgRain=*v;}
+ else if(a.field=="m_pcgWeatherSnow"){auto*v=std::get_if<bool>(&a.value);if(!v)return bad();impl_->pcgSnow=*v;}
+ else if(a.field=="m_pcgWindSettingsOverride"){auto*v=std::get_if<bool>(&a.value);if(!v)return bad();impl_->pcgWindOverride=*v;}
+ else if(a.field=="m_pcgWindDirection"){auto*v=std::get_if<float>(&a.value);if(!v||!std::isfinite(*v))return bad();impl_->windDirDeg=*v;}
+ else if(a.field=="m_pcgWindSpeed"){auto*v=std::get_if<float>(&a.value);if(!v||!std::isfinite(*v)||*v<0)return bad();impl_->windSpeed=*v;}
+ else return bad();
+ impl_->pcgMode=true;return Result<void>::success();
+}
+bool Weather::getPcgWeatherEnabled()const{return impl_->pcgWeatherEnabled;}
+bool Weather::getPcgRainEnabled()const{return impl_->pcgRain;}
+bool Weather::getPcgSnowEnabled()const{return impl_->pcgSnow;}
+bool Weather::getPcgWindOverride()const{return impl_->pcgWindOverride;}
 void Weather::setPreset(const std::string &name) {
     for (int i = 0; i < kPresetCount; ++i) {
         if (name == kPresetNames[i]) {
             impl_->preset = i;
+            impl_->pcgMode = false;
             return;
         }
     }
@@ -463,6 +496,49 @@ float Weather::getWindSpeed() const { return impl_->windSpeed; }
 
 void Weather::setWindDirection(float deg) { impl_->windDirDeg = deg; }
 float Weather::getWindDirection() const { return impl_->windDirDeg; }
+Result<void> Weather::setSnowWind(float x,float y,float z) {
+    if(!std::isfinite(x)||!std::isfinite(y)||!std::isfinite(z))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "Snow wind must be finite","weather.snowWind"));
+    impl_->snowWindOverride=true; impl_->snowWindX=x; impl_->snowWindY=y; impl_->snowWindZ=z;
+    return Result<void>::success();
+}
+void Weather::clearSnowWind(){impl_->snowWindOverride=false;}
+bool Weather::hasSnowWind()const{return impl_->snowWindOverride;}
+float Weather::getSnowWindX()const{return impl_->snowWindX;}
+float Weather::getSnowWindY()const{return impl_->snowWindY;}
+float Weather::getSnowWindZ()const{return impl_->snowWindZ;}
+
+Result<PcgInteriorWeatherTransition> Weather::setInteriorVolumeState(
+    const PcgInteriorWeatherVolume& volume, bool inside) {
+    impl_->interiorMode = volume.mode();
+    impl_->interiorReverbPreset = volume.interiorReverbPreset();
+    impl_->exteriorReverbPreset = volume.exteriorReverbPreset();
+    impl_->currentReverbPreset = inside ? impl_->interiorReverbPreset : impl_->exteriorReverbPreset;
+    if (inside == impl_->interiorWeather)
+        return Result<PcgInteriorWeatherTransition>::success(PcgInteriorWeatherTransition::Unchanged);
+    impl_->interiorWeather = inside;
+    return Result<PcgInteriorWeatherTransition>::success(
+        inside ? PcgInteriorWeatherTransition::Entered : PcgInteriorWeatherTransition::Exited);
+}
+
+Result<PcgInteriorWeatherTransition> Weather::applyInteriorVolume(
+    const PcgInteriorWeatherVolume& volume, float x, float y, float z) {
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
+        return Result<PcgInteriorWeatherTransition>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "sample position must be finite", "weather.interiorVolume"));
+    return setInteriorVolumeState(volume, volume.contains(x, y, z));
+}
+
+void Weather::clearInteriorWeather() {
+    impl_->interiorWeather = false;
+    impl_->currentReverbPreset = impl_->exteriorReverbPreset;
+}
+bool Weather::isInsideInteriorWeather() const { return impl_->interiorWeather; }
+bool Weather::isInteriorWeatherCollisionRequested() const {
+    return impl_->interiorWeather && impl_->interiorMode == PcgInteriorWeatherMode::Collision;
+}
+int Weather::getCurrentWeatherReverbPreset() const { return impl_->currentReverbPreset; }
 
 void Weather::setLightningEnabled(bool on) { impl_->lightningEnabled = on; }
 bool Weather::isLightningEnabled() const { return impl_->lightningEnabled; }
@@ -517,7 +593,8 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     impl_->time += dt;
 
     // Smooth intensity toward target.
-    const float target = impl_->intensity;
+    const bool pcgPrecipitation=impl_->pcgMode&&impl_->pcgWeatherEnabled&&(impl_->pcgRain||impl_->pcgSnow);
+    const float target = pcgPrecipitation?1.f:impl_->intensity;
     impl_->intensityCur += (target - impl_->intensityCur) * std::min(1.f, dt * 3.f);
     if (std::fabs(target - impl_->intensityCur) < 0.002f) impl_->intensityCur = target;
 
@@ -541,8 +618,10 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
 
     // Rain visible for drizzle/rain/storm.
     const bool windOn = impl_->preset == 6;
-    const bool rainOn = (impl_->preset >= 1 && impl_->preset <= 3) || windOn;
-    impl_->rain->setVisible(rainOn && intensity > 0.01f);
+    const bool rainOn = impl_->pcgMode ? (impl_->pcgWeatherEnabled && impl_->pcgRain) :
+                                      ((impl_->preset >= 1 && impl_->preset <= 3) || windOn);
+    const bool suppressRain = impl_->interiorWeather;
+    impl_->rain->setVisible(rainOn && intensity > 0.01f && !suppressRain);
     if (rainOn) {
         const float speed = windOn ? 0.15f : 18.f;
         impl_->rainMat->setFloat("uKind", windOn ? 2.f : 0.f);
@@ -552,16 +631,21 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     }
 
     // Snow.
-    const bool snowOn = impl_->preset == 4 || impl_->preset == 7;
-    impl_->snow->setVisible(snowOn && intensity > 0.01f);
+    const bool snowOn = impl_->pcgMode ? (impl_->pcgWeatherEnabled && impl_->pcgSnow) :
+                                      (impl_->preset == 4 || impl_->preset == 7);
+    const bool suppressSnow = impl_->interiorWeather &&
+                              impl_->interiorMode == PcgInteriorWeatherMode::DisableVfx;
+    impl_->snow->setVisible(snowOn && intensity > 0.01f && !suppressSnow);
     if (snowOn) {
         impl_->snowMat->setFloat("uKind", 1.f);
-        pushWeatherParams(impl_->snowMat, time, windX, windZ, 1.15f, 0.22f, 0.22f, intensity, fogR, fogG, fogB, fogD,
+        pushWeatherParams(impl_->snowMat, time, impl_->snowWindOverride?impl_->snowWindX:windX,
+                          impl_->snowWindOverride?impl_->snowWindZ:windZ,
+                          impl_->snowWindOverride?-impl_->snowWindY:1.15f, 0.22f, 0.22f, intensity, fogR, fogG, fogB, fogD,
                           0.f);
     }
 
     // Lightning during storm.
-    const bool storm = impl_->preset == 3;
+    const bool storm = !impl_->pcgMode && impl_->preset == 3;
     if (storm && impl_->lightningEnabled) {
         impl_->nextStrike -= dt;
         if (impl_->nextStrike <= 0.f && impl_->activeBolt < 0) strike();
@@ -622,6 +706,40 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
 void Weather::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Weather::create, false);
     expose(cls);
+    auto interior = table.addClass("PcgInteriorWeatherVolume", ssq::Class::Ctor<PcgInteriorWeatherVolume()>());
+    interior.addFunc("configureBox", [vm=table.getHandle()](PcgInteriorWeatherVolume* self,
+        float x,float y,float z,float sx,float sy,float sz,int mode,int insideReverb,int outsideReverb) {
+        return eve::script::projectResult(vm,self->configureBox(x,y,z,sx,sy,sz,mode,insideReverb,outsideReverb));
+    });
+    interior.addFunc("configureSphere", [vm=table.getHandle()](PcgInteriorWeatherVolume* self,
+        float x,float y,float z,float radius,int mode,int insideReverb,int outsideReverb) {
+        return eve::script::projectResult(vm,self->configureSphere(x,y,z,radius,mode,insideReverb,outsideReverb));
+    });
+    interior.addFunc("contains", [](PcgInteriorWeatherVolume* self,float x,float y,float z) {
+        return self && self->contains(x,y,z);
+    });
+    auto settings = table.addClass("ThunderStrikeSettings", ssq::Class::Ctor<ThunderStrikeSettings()>());
+    settings.addVar("intensity", &ThunderStrikeSettings::intensity);
+    settings.addVar("radius", &ThunderStrikeSettings::radius);
+    settings.addVar("volume", &ThunderStrikeSettings::volume);
+    settings.addVar("audioClipCount", &ThunderStrikeSettings::audioClipCount);
+    auto state = table.addClass("ThunderStrikeState", ssq::Class::Ctor<ThunderStrikeState()>());
+    state.addVar("playing", &ThunderStrikeState::playing);
+    state.addVar("intensity", &ThunderStrikeState::intensity);
+    table.addFunc("triggerThunderStrike", [vm=table.getHandle()](ThunderStrikeState* state,
+        const ThunderStrikeSettings* settings, float x, float y, float z, std::uint32_t seed) {
+        auto result=state&&settings?triggerThunderStrike(*state,*settings,x,y,z,seed)
+            :Result<ThunderStrikeReceipt>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"state and settings required"));
+        return eve::script::projectResult(vm,std::move(result),[](const ThunderStrikeReceipt& value) {
+            return Value::Object{{"x",value.x},{"y",value.y},{"z",value.z},{"intensity",value.intensity},
+                {"radius",value.radius},{"volume",value.volume},{"audioClipIndex",value.audioClipIndex}};
+        });
+    });
+    table.addFunc("advanceThunderStrike", [vm=table.getHandle()](ThunderStrikeState* state,float dt) {
+        auto result=state?advanceThunderStrike(*state,dt)
+            :Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"state required"));
+        return eve::script::projectResult(vm,std::move(result));
+    });
 }
 
 void Weather::expose(ssq::Class &cls) {
@@ -636,6 +754,36 @@ void Weather::expose(ssq::Class &cls) {
     cls.addFunc("getWindSpeed", &Weather::getWindSpeed);
     cls.addFunc("setWindDirection", &Weather::setWindDirection);
     cls.addFunc("getWindDirection", &Weather::getWindDirection);
+    cls.addFunc("setSnowWind",[vm=cls.getHandle()](Weather* self,float x,float y,float z){
+        return eve::script::projectResult(vm,self->setSnowWind(x,y,z));
+    });
+    cls.addFunc("clearSnowWind",&Weather::clearSnowWind);
+    cls.addFunc("hasSnowWind",&Weather::hasSnowWind);
+    cls.addFunc("getSnowWindX",&Weather::getSnowWindX);
+    cls.addFunc("getSnowWindY",&Weather::getSnowWindY);
+    cls.addFunc("getSnowWindZ",&Weather::getSnowWindZ);
+    cls.addFunc("applyInteriorVolume", [vm=cls.getHandle()](Weather* self,
+        const PcgInteriorWeatherVolume* volume,float x,float y,float z) {
+        auto result = volume ? self->applyInteriorVolume(*volume,x,y,z) :
+            Result<PcgInteriorWeatherTransition>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument,"interior volume required","weather.interiorVolume"));
+        return eve::script::projectResult(vm,std::move(result),[](PcgInteriorWeatherTransition value) {
+            return static_cast<int>(value);
+        });
+    });
+    cls.addFunc("setInteriorVolumeState", [vm=cls.getHandle()](Weather* self,
+        const PcgInteriorWeatherVolume* volume,bool inside) {
+        auto result = volume ? self->setInteriorVolumeState(*volume,inside) :
+            Result<PcgInteriorWeatherTransition>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument,"interior volume required","weather.interiorVolume"));
+        return eve::script::projectResult(vm,std::move(result),[](PcgInteriorWeatherTransition value) {
+            return static_cast<int>(value);
+        });
+    });
+    cls.addFunc("clearInteriorWeather",&Weather::clearInteriorWeather);
+    cls.addFunc("isInsideInteriorWeather",&Weather::isInsideInteriorWeather);
+    cls.addFunc("isInteriorWeatherCollisionRequested",&Weather::isInteriorWeatherCollisionRequested);
+    cls.addFunc("getCurrentWeatherReverbPreset",&Weather::getCurrentWeatherReverbPreset);
     cls.addFunc("setLightningEnabled", &Weather::setLightningEnabled);
     cls.addFunc("isLightningEnabled", &Weather::isLightningEnabled);
     cls.addFunc("strike", &Weather::strike);

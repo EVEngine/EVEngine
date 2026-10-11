@@ -5,6 +5,7 @@
 #include "action/ActionTimeline.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -43,6 +44,8 @@ struct ActionPreviewFrame {
     Duration                         previous;
     Duration                         current;
     std::vector<ActionPreviewCue>    cues;
+    /** @brief Owning state-block samples active at current for isolated scene reconciliation. */
+    std::vector<ActionActiveBlock>   activeBlocks;
     RootMotionPreviewState           rootMotionState = RootMotionPreviewState::Unavailable;
     std::vector<ActionPreviewPoint3> rootMotionPath;
 };
@@ -62,6 +65,21 @@ public:
     virtual void present(const ActionPreviewFrame& frame) noexcept = 0;
     /** @brief Discard staged resources when the authoritative transport commit fails. */
     virtual void discardPrepared() noexcept = 0;
+};
+
+/**
+ * @brief Optional owner-thread provider of one independently owned action preview layer.
+ *
+ * Multiple providers are composed in capability-listener order. The provider
+ * owns no returned sink. Callers own and destroy each sink before unloading
+ * its implementation module. Creation is synchronous and non-reentrant.
+ */
+class IActionPreviewSinkProvider {
+public:
+    static constexpr const char* capabilityName = "eve.action.preview-sink-provider";
+    virtual ~IActionPreviewSinkProvider() = default;
+    /** @brief Create one isolated preview sink owned by the caller. */
+    [[nodiscard]] virtual Result<std::unique_ptr<IActionPreviewSink>> createActionPreviewSink() = 0;
 };
 
 /** @brief Optional animation provider that samples an owning root-motion polyline. */

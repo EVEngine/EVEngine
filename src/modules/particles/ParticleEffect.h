@@ -1,5 +1,8 @@
 #pragma once
 
+#include "common/Result.h"
+#include "common/Time.h"
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -40,6 +43,13 @@ public:
     ParticleEmitter* getEmitter(int index) const;
     /** @brief Return an emitter layer by name, or null. */
     ParticleEmitter* getEmitterByName(const std::string& name) const;
+
+    /**
+     * @brief Calculate when every enabled finite emitter and its particles have ended.
+     * @return Maximum non-looping lifetime, or one loop period when every enabled layer loops.
+     * @remarks Owner-thread-only. Unbounded emitters return Unsupported instead of a guessed duration.
+     */
+    [[nodiscard]] Result<Duration> naturalDuration() const;
 
     /** @brief Set the group transform origin in world space. */
     void setPosition(float x, float y);

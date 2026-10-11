@@ -1534,6 +1534,72 @@ TEST_CASE("graphics.imageAudit.materialsAndCamera") {
     win->close();
 }
 
+TEST_CASE("graphics.imageAudit.vertexColorsReachPresentedPixels") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width = 400;
+    settings.height = 300;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+    CloseWin closer{win};
+    resetScene3D();
+
+    gfx->setBackgroundColor(Color(0.02f, 0.02f, 0.02f, 1.f));
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 0.f, 3.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setAmbient(1.f, 1.f, 1.f);
+    camera->setEnvIntensity(0.f);
+
+    const float positions[] = {-1.4f, -1.f, 0.f, 1.4f, -1.f, 0.f,
+                               1.4f,  1.f, 0.f, -1.4f, 1.f, 0.f};
+    const float normals[] = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+                             0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    const float uv[] = {0.f, 1.f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f};
+    const float colors[] = {1.f, 0.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f,
+                            0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 0.f, 1.f};
+    const std::uint32_t indices[] = {0, 1, 2, 0, 2, 3};
+    Mesh *mesh = gfx->newMeshFromArraysColored(positions, normals, uv, colors, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    auto *material = gfx->newMaterial();
+    REQUIRE(material != nullptr);
+    material->setShadingModel("unlit");
+    material->setAlbedoTexture(makeSolid(gfx, 255, 255, 255));
+    material->setReceiveLight(false);
+    auto *quad = Renderable3D::create();
+    quad->setMesh(mesh);
+    quad->setMaterial(material);
+    quad->setReceiveLight(false);
+    quad->setCastShadow(false);
+
+    gfx->setScreenReadbackEnabled(false);
+    for (int frame = 0; frame < 2; ++frame) RenderSystem3D::render(*gfx);
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::render(*gfx);
+    std::unique_ptr<ImageData> image(gfx->newImageData());
+    REQUIRE(image != nullptr);
+    gfx->setScreenReadbackEnabled(false);
+
+    int redDominant = 0;
+    int greenDominant = 0;
+    for (int y = 70; y < 230; y += 2)
+        for (int x = 70; x < 330; x += 2) {
+            const auto pixel = image->getPixel(x, y);
+            if (pixel.r > pixel.g * 1.35f && pixel.r > 0.15f) ++redDominant;
+            if (pixel.g > pixel.r * 1.35f && pixel.g > 0.15f) ++greenDominant;
+        }
+    CHECK(redDominant > 300);
+    CHECK(greenDominant > 300);
+    saveImagePng(*image, auditOutDir() + "/vertex_colors_presented.png");
+
+    delete material;
+    resetScene3D();
+    win->close();
+}
+
 TEST_CASE("graphics.imageAudit.postFx") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();

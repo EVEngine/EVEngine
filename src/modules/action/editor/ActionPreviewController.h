@@ -28,6 +28,12 @@ public:
     [[nodiscard]] EditorResult<void> refresh();
     /** @brief Atomically prepare presentation and seek the authoritative preview transport. */
     [[nodiscard]] EditorResult<void> seek(Duration time);
+    /** @brief Atomically stop presentation, pause transport and return to the first frame. */
+    [[nodiscard]] EditorResult<void> stop();
+    /** @brief Atomically step signed frames and pause transport at the resulting cursor. */
+    [[nodiscard]] EditorResult<void> stepFrames(std::int64_t frames, double frameRate);
+    /** @brief Atomically seek to the final frame boundary and pause transport. */
+    [[nodiscard]] EditorResult<void> jumpToEnd();
     /** @brief Atomically prepare presentation and advance by injected deterministic time. */
     [[nodiscard]] EditorResult<std::size_t> update(Duration delta);
     /** @brief Last frame successfully published to the host. */

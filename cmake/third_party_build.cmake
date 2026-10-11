@@ -222,6 +222,12 @@ function(check_third_party_project name repo)
             -DANDROID_NDK=${ANDROID_NDK}
             -DCMAKE_SYSTEM_NAME=Android
         )
+        # NDK 27 exposes arm_neon.h even for x86 targets, which makes this
+        # OpenAL Soft version mis-detect NEON and compile ARM intrinsics with
+        # an x86 compiler. Preserve NEON for the release arm64 build.
+        if(ANDROID_ABI MATCHES "^x86(_64)?$")
+            list(APPEND _eve_tp_cmake_args -DALSOFT_CPUEXT_NEON=OFF)
+        endif()
         if(CMAKE_MAKE_PROGRAM)
             list(APPEND _eve_tp_cmake_args -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM})
         endif()
@@ -409,7 +415,14 @@ function(check_third_party_project name repo)
         )
     endif()
     target_include_directories(eve_engine_includes INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include
+        # SDL2 and FreeType install headers below their own include roots.
+        # These directories do not exist yet during a clean configure because
+        # the ExternalProject install happens in the later `deps` build.  They
+        # must still be registered now; testing IS_DIRECTORY here makes clean
+        # iOS/simulator builds miss <SDL.h> or <ft2build.h>.
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include/SDL2
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include/freetype2)
     eve_external_include(
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
     target_link_directories(eve_engine_includes INTERFACE

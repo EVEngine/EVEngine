@@ -9,6 +9,7 @@ void MeshBuild::clear() {
     positions_.clear();
     normals_.clear();
     uvs_.clear();
+    colors_.clear();
     indices_.clear();
     triangleGroups_.clear();
     groupNames_.clear();
@@ -21,6 +22,7 @@ void MeshBuild::reserve(int vertexCount, int indexCount) {
         positions_.reserve(size_t(vertexCount) * 3u);
         normals_.reserve(size_t(vertexCount) * 3u);
         uvs_.reserve(size_t(vertexCount) * 2u);
+        if (!colors_.empty()) colors_.reserve(size_t(vertexCount) * 4u);
     }
     if (indexCount > 0) {
         indices_.reserve(size_t(indexCount));
@@ -38,6 +40,7 @@ void MeshBuild::addVertex(float px, float py, float pz, float nx, float ny, floa
     normals_.push_back(nz);
     uvs_.push_back(u);
     uvs_.push_back(v);
+    if (!colors_.empty()) colors_.insert(colors_.end(), {1.f, 1.f, 1.f, 1.f});
 }
 
 void MeshBuild::addTriangle(uint32_t i0, uint32_t i1, uint32_t i2) {
@@ -92,6 +95,7 @@ std::unique_ptr<MeshBuild> MeshBuild::copyGroup(int groupIndex) const {
     auto result = std::make_unique<MeshBuild>();
     result->setActiveGroup(groupNames_[size_t(groupIndex)]);
     std::unordered_map<uint32_t, uint32_t> remap;
+    std::vector<float> copiedColors;
     for (int t = 0; t < int(triangleGroups_.size()); ++t) {
         if (triangleGroups_[size_t(t)] != groupIndex) continue;
         uint32_t dst[3];
@@ -103,12 +107,16 @@ std::unique_ptr<MeshBuild> MeshBuild::copyGroup(int groupIndex) const {
                 result->addVertex(getPositionX(int(src)), getPositionY(int(src)), getPositionZ(int(src)),
                                   getNormalX(int(src)), getNormalY(int(src)), getNormalZ(int(src)),
                                   getUvU(int(src)), getUvV(int(src)));
+                if (hasVertexColors())
+                    for (int component = 0; component < 4; ++component)
+                        copiedColors.push_back(getColor(int(src), component));
                 remap.emplace(src, next); dst[corner] = next;
             } else dst[corner] = found->second;
         }
         result->addTriangle(dst[0], dst[1], dst[2]);
     }
     if (result->empty()) return {};
+    if (!copiedColors.empty()) result->setVertexColors(std::move(copiedColors)).ignore("validated copied color stream");
     result->meta_ = meta_;
     result->setMeta("group", groupNames_[size_t(groupIndex)]);
     return result;
@@ -120,6 +128,7 @@ bool MeshBuild::appendTransformed(const MeshBuild *other, float tx, float ty, fl
         std::fabs(sy) < 1e-8f || std::fabs(sz) < 1e-8f)
         return false;
     const uint32_t base = uint32_t(getVertexCount());
+    if (other->hasVertexColors() && !hasVertexColors()) colors_.assign(std::size_t(base) * 4u, 1.f);
     std::vector<int> groupMap(size_t(other->getGroupCount()), -1);
     const int previousGroup = activeGroup_;
     for (int i = 0; i < other->getGroupCount(); ++i)
@@ -141,6 +150,9 @@ bool MeshBuild::appendTransformed(const MeshBuild *other, float tx, float ty, fl
         if (nl > 1e-8f) { nx /= nl; ny /= nl; nz /= nl; }
         addVertex(c * px + s * pz + tx, py + ty, -s * px + c * pz + tz,
                   nx, ny, nz, other->getUvU(i), other->getUvV(i));
+        if (other->hasVertexColors())
+            for (int component = 0; component < 4; ++component)
+                colors_[colors_.size() - 4u + std::size_t(component)] = other->getColor(i, component);
     }
     const bool mirrored = (sx * sy * sz) < 0.f;
     for (int i = 0; i + 2 < other->getIndexCount(); i += 3) {
@@ -190,6 +202,24 @@ float MeshBuild::getUvU(int i) const {
 float MeshBuild::getUvV(int i) const {
     if (i < 0 || i >= getVertexCount()) return 0.f;
     return uvs_[size_t(i) * 2u + 1u];
+}
+bool MeshBuild::hasVertexColors() const noexcept {
+    return !colors_.empty() && colors_.size() == std::size_t(getVertexCount()) * 4u;
+}
+float MeshBuild::getColor(int vertexIndex, int component) const noexcept {
+    if (!hasVertexColors() || vertexIndex < 0 || vertexIndex >= getVertexCount() || component < 0 || component > 3)
+        return 1.f;
+    return colors_[std::size_t(vertexIndex) * 4u + std::size_t(component)];
+}
+eve::Result<void> MeshBuild::setVertexColors(std::vector<float> colors) {
+    if (!colors.empty() && colors.size() != std::size_t(getVertexCount()) * 4u)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+            "mesh vertex color count must match the vertex count", "colors", {}, "procgen.mesh"));
+    if (std::any_of(colors.begin(), colors.end(), [](float value) { return !std::isfinite(value); }))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+            "mesh vertex colors must be finite", "colors", {}, "procgen.mesh"));
+    colors_ = std::move(colors);
+    return eve::Result<void>::success();
 }
 int MeshBuild::getIndex(int i) const {
     if (i < 0 || i >= getIndexCount()) return 0;

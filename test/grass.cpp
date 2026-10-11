@@ -100,16 +100,79 @@ TEST_CASE("graphics.Grass.bindDefaults") {
     CHECK_EQ(sh.getUniformIndex("grassVariantCount"), 15);
     CHECK_EQ(sh.getUniformIndex("leafVariantCount"), 16);
     CHECK_EQ(sh.getUniformIndex("leafRowOffset"), 17);
-    CHECK_EQ(sh.usedFloats(), 18);
+    CHECK_EQ(sh.getUniformIndex("windGlobals"), 18);
+    CHECK_EQ(sh.getUniformIndex("windPhaseDistance"), 22);
+    CHECK_EQ(sh.getUniformIndex("windFlex"), 24);
+    CHECK_EQ(sh.getUniformIndex("windFrequency"), 27);
+    CHECK_EQ(sh.getUniformIndex("windSineTime"), 30);
+    CHECK_EQ(sh.pushConstantData()[23], 0.f);
+    CHECK_EQ(sh.usedFloats(), 32);
 }
 
 TEST_CASE("graphics.Grass.paramNames") {
-    CHECK_EQ(eve::graphics::grass::paramCount(), 18);
+    CHECK_EQ(eve::graphics::grass::paramCount(), 32);
     CHECK_EQ(eve::graphics::grass::paramName(0), std::string("time"));
     CHECK_EQ(eve::graphics::grass::paramName(5), std::string("alwaysDark"));
     CHECK_EQ(eve::graphics::grass::paramName(12), std::string("frameCount"));
     CHECK_EQ(eve::graphics::grass::paramName(13), std::string("atlasCols"));
     CHECK_EQ(eve::graphics::grass::paramName(17), std::string("leafRowOffset"));
+}
+
+TEST_CASE("graphics.Grass.foliageProfileReusesStablePushLayout") {
+    Shader sh;
+    sh.setKind(Shader::Kind::eMesh3D);
+    eve::graphics::grass::GrassFoliageSettings settings;
+    settings.baseR = 0.2f; settings.baseG = 0.4f; settings.baseB = 0.6f;
+    settings.normalStrength = 1.7f; settings.renderDistance = 91.f; settings.fadeRange = 13.f;
+    settings.snowMinimumHeight = 8.f; settings.snowFadeDistance = 17.f; settings.snowProgress = 0.75f;
+    eve::graphics::grass::bindFoliage(&sh, settings);
+    CHECK_EQ(sh.usedFloats(), 32);
+    CHECK_EQ(sh.pushConstantData()[0], 8.f);
+    CHECK_EQ(sh.pushConstantData()[1], 1.7f);
+    CHECK_EQ(sh.pushConstantData()[6], 0.2f);
+    CHECK_EQ(sh.pushConstantData()[12], -1.f);
+    CHECK_EQ(sh.pushConstantData()[13], 91.f);
+    CHECK_EQ(sh.pushConstantData()[14], 13.f);
+    CHECK_EQ(sh.pushConstantData()[15], 17.f);
+    CHECK_EQ(sh.pushConstantData()[16], 0.75f);
+    CHECK_EQ(sh.pushConstantData()[17], 105.5f);
+    CHECK_EQ(sh.getUniformIndex("windGlobals"), 18);
+}
+
+TEST_CASE("graphics.Grass.terrainDetailOverwriteKeepsThreeDistanceSemantics") {
+    eve::graphics::grass::GrassFoliageSettings foliage;
+    eve::graphics::grass::TerrainDetailOverwriteSettings settings;
+    settings.pcgDetailDistance = -4;
+    settings.pcgFadeoutDistance = 12;
+    settings.unityDetailDistance = 140;
+    settings.unityDetailDensity = 0.35F;
+    settings.detailResolutionPerPatch = 4;
+    auto applied = eve::graphics::grass::applyTerrainDetailOverwrite(foliage, settings);
+    REQUIRE(applied.ok());
+    CHECK(applied.value() == static_cast<int>(eve::graphics::grass::TerrainDetailQuality::VeryHigh4));
+    CHECK(foliage.renderDistance == 0);
+    CHECK(foliage.fadeRange == 12);
+    CHECK(foliage.hardRenderDistance == 140);
+    CHECK(foliage.density == 0.35F);
+    auto before = foliage;
+    settings.unityDetailDensity = 2;
+    CHECK(!eve::graphics::grass::applyTerrainDetailOverwrite(foliage, settings).ok());
+    CHECK(foliage.renderDistance == before.renderDistance);
+    CHECK(eve::graphics::grass::terrainDetailQuality(7) ==
+          eve::graphics::grass::TerrainDetailQuality::VeryLow64);
+}
+
+TEST_CASE("graphics.Grass.photoModeAuthorityOwnsFourRuntimeMultipliers") {
+    auto* gfx=Graphics::create();auto* field=gfx->newGrassField();field->setPhotoModeAuthority(true);
+    REQUIRE(field->applyPhotoModeField({"m_globalGrassDensity",eve::PhotoModeDomain::Grass,2.f}).ok());
+    REQUIRE(field->applyPhotoModeField({"m_globalGrassDistance",eve::PhotoModeDomain::Grass,3.f}).ok());
+    REQUIRE(field->applyPhotoModeField({"m_cameraCellDistance",eve::PhotoModeDomain::Grass,1.5f}).ok());
+    REQUIRE(field->applyPhotoModeField({"m_cameraCellSubdivision",eve::PhotoModeDomain::Grass,int64_t{2}}).ok());
+    CHECK_EQ(field->getPhotoModeDensity(),2.f);CHECK_EQ(field->getPhotoModeDistance(),3.f);
+    CHECK_EQ(field->getPhotoModeCellDistance(),1.5f);CHECK_EQ(field->getPhotoModeCellSubdivision(),2);
+    CHECK_EQ(field->getTerrainDetailHardDistance(),472.5f);CHECK_EQ(field->getTerrainDetailDensity(),1.f);
+    CHECK(!field->applyPhotoModeField({"m_cameraCellSubdivision",eve::PhotoModeDomain::Grass,int64_t{9}}).ok());
+    CHECK_EQ(field->getPhotoModeCellSubdivision(),2);delete field;
 }
 
 TEST_CASE("graphics.Grass.spvMagic") {

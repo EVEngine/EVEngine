@@ -22,6 +22,31 @@
       "pointer_policy": "A public pointer requires Doxygen ownership/lifetime wording or an explicit reviewed adapter contract."
     },
     {
+      "id": "gts-terrain-collider-link-contract",
+      "rule": "link",
+      "scope": "src/modules/procgen/physics/GtsTerrainColliderRuntime.cpp",
+      "owner": "procgen_physics::GtsTerrainColliderRuntime and physics::World3D",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Optional generated terrain colliders retain only owner-qualified runtime handles across frame and teardown boundaries.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/physics/GtsTerrainColliderRuntime.h",
+        "docs/usr/modules/procgen_physics.md"
+      ],
+      "tests": [
+        "test/gts_terrain_collider.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "ColliderLink"
+      ],
+      "create": "replace creates World3D-owned static bodies and publishes world/body handles only after every tile collider succeeds.",
+      "ownership": "World3D solely owns bodies and shapes; the runtime owns only typed process-local links.",
+      "destroy_order": "Runtime-first destroys resolved bodies; world-first removes the world registry entry and all later resolutions return stale null.",
+      "restore": "Links are never persisted; callers rebuild them by replacing from the restored GtsTerrainLodSet.",
+      "stale": "World and body generation-qualified handles are both resolved before any access or destruction."
+    },
+    {
       "id": "physics-link-contract",
       "rule": "link",
       "scope": "src/modules/physics/PhysicsLink.h",

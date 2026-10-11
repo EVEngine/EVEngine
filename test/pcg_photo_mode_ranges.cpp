@@ -1,0 +1,6 @@
+#include "zeroerr/unittest.h"
+#include "ui/PcgPhotoModeRanges.h"
+#include <cmath>
+using namespace eve::ui;
+TEST_CASE("ui.pcgPhotoModeRanges.containsAllExactDefaults") {PcgPhotoModeRanges r;CHECK_EQ(r.getCount(),uint64_t(57));auto first=r.getName(0);auto last=r.getName(56);REQUIRE(first.ok());REQUIRE(last.ok());CHECK_EQ(first.value(),"m_0To1");CHECK_EQ(last.value(),"m_cameraCellSubdivision");REQUIRE(r.select("m_fieldOfView").ok());CHECK_EQ(r.getMinimum(),1.0);CHECK_EQ(r.getMaximum(),115.0);CHECK(!r.getIntegral());REQUIRE(r.select("m_cameraCellSubdivision").ok());CHECK_EQ(r.getMinimum(),-8.0);CHECK_EQ(r.getMaximum(),8.0);CHECK(r.getIntegral());REQUIRE(r.select("m_densityVolumeFogDistance").ok());CHECK(std::isinf(r.getMaximum()));}
+TEST_CASE("ui.pcgPhotoModeRanges.clampsAndUpdatesAtomically") {PcgPhotoModeRanges r;auto c=r.clamp("m_fieldOfView",200);REQUIRE(c.ok());CHECK_EQ(c.value(),115.0);REQUIRE(r.setRange("m_fieldOfView",10,80).ok());c=r.clamp("m_fieldOfView",5);REQUIRE(c.ok());CHECK_EQ(c.value(),10.0);CHECK(!r.setRange("m_fieldOfView",90,20).ok());REQUIRE(r.select("m_fieldOfView").ok());CHECK_EQ(r.getMaximum(),80.0);CHECK(!r.setRange("m_targetFPS",0.5,60).ok());CHECK(!r.clamp("missing",1).ok());}

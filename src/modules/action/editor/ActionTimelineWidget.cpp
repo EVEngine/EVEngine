@@ -1,8 +1,14 @@
 #include "action/editor/ActionTimelineWidget.h"
 
+#include "action/ActionAudioBlock.h"
+#include "action/ActionAudioWaveform.h"
+#include "action/ActionParameterCurve.h"
+#include "common/Capability.h"
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <sstream>
 #include <utility>
 
 namespace eve::editor {
@@ -10,6 +16,8 @@ namespace {
 
 constexpr float kHandleRadius = 6.0f;
 constexpr float kNotifyWidth  = 8.0f;
+constexpr std::size_t kMaximumWaveformBuckets = 512;
+constexpr std::size_t kMaximumCurveSegments   = 128;
 
 EditorResult<void> widgetError(std::string rule, std::string message, EditorStatus status = EditorStatus::Rejected) {
     return eve::editing::failed<void>(status, RuleId(std::move(rule)), std::move(message));
@@ -64,7 +72,94 @@ EditorResult<void> adapt(const EditorResult<std::size_t>& result, std::string ru
     return eve::editing::failed<void>(result.code(), RuleId(std::move(rule)), std::move(message));
 }
 
+std::string payloadText(const Value::Object& payload, std::string_view fieldName) {
+    const auto found = payload.find(std::string(fieldName));
+    return found != payload.end() && found->second.isString() ? found->second.asString() : std::string{};
+}
+
+std::string resourceName(std::string value) {
+    const auto slash = value.find_last_of("/\\");
+    return slash == std::string::npos ? value : value.substr(slash + 1);
+}
+
+TimelineItemVisual visualFor(std::string_view type) {
+    if (type == "animation:section") return TimelineItemVisual::Animation;
+    if (type == "combat:damage") return TimelineItemVisual::Damage;
+    if (type == "presentation:vfx" || type == "presentation:vfx-state") return TimelineItemVisual::Vfx;
+    if (type == "presentation:audio" || type == "presentation:audio-state") return TimelineItemVisual::Audio;
+    if (type == "gameplay:prefab-spawn") return TimelineItemVisual::Prefab;
+    if (type == "presentation:camera") return TimelineItemVisual::Camera;
+    if (type == "combat:hitbox-window") return TimelineItemVisual::Hitbox;
+    if (type == "combat:invulnerability-window") return TimelineItemVisual::Defense;
+    if (type == "input:combo-window") return TimelineItemVisual::Input;
+    if (type == "collision:ignore-window") return TimelineItemVisual::Collision;
+    if (type == "movement:root-motion-window") return TimelineItemVisual::Movement;
+    if (type == "presentation:parameter-curve") return TimelineItemVisual::Curve;
+    if (type.starts_with("gameplay:")) return TimelineItemVisual::Gameplay;
+    return TimelineItemVisual::Custom;
+}
+
+std::string detailFor(std::string_view type, const Value::Object& payload) {
+    if (type == "animation:section") return resourceName(payloadText(payload, "animationUri"));
+    if (type == "combat:damage") {
+        const auto amount = payload.find("amount");
+        if (amount != payload.end() && (amount->second.isInt64() || amount->second.isDouble())) {
+            std::ostringstream stream;
+            if (amount->second.isInt64())
+                stream << amount->second.asInt();
+            else
+                stream << amount->second.asDouble();
+            const auto damageType = payloadText(payload, "damageType");
+            return damageType.empty() ? stream.str() : damageType + " " + stream.str();
+        }
+    }
+    if (type == "presentation:vfx" || type == "presentation:vfx-state" ||
+        type == "presentation:audio" || type == "presentation:audio-state" ||
+        type == "gameplay:prefab-spawn")
+        return resourceName(payloadText(payload, "uri"));
+    if (type == "presentation:camera") return payloadText(payload, "cue");
+    if (type == "combat:hitbox-window") return payloadText(payload, "hitbox");
+    if (type == "input:combo-window") return payloadText(payload, "input");
+    if (type == "collision:ignore-window") return payloadText(payload, "channel");
+    if (type == "movement:root-motion-window") return payloadText(payload, "mode");
+    if (type == "presentation:parameter-curve") return payloadText(payload, "target");
+    if (type == "gameplay:event") return payloadText(payload, "tag");
+    return {};
+}
+
+void decorate(TimelineItemGeometry& geometry, const LogicalId& type, const Value::Object& payload,
+              const action::ActionNotifyRegistry& registry) {
+    geometry.visual = visualFor(type.format());
+    geometry.detail = detailFor(type.format(), payload);
+    if (geometry.visual == TimelineItemVisual::Animation) {
+        geometry.displayName = "Animation";
+        return;
+    }
+    auto descriptor = registry.descriptor(type.format());
+    geometry.displayName = descriptor ? descriptor.value().displayName : type.format();
+}
+
 }  // namespace
+
+std::string_view timelineItemVisualName(TimelineItemVisual visual) noexcept {
+    switch (visual) {
+        case TimelineItemVisual::Animation: return "animation";
+        case TimelineItemVisual::Gameplay: return "gameplay";
+        case TimelineItemVisual::Damage: return "damage";
+        case TimelineItemVisual::Vfx: return "vfx";
+        case TimelineItemVisual::Audio: return "audio";
+        case TimelineItemVisual::Prefab: return "prefab";
+        case TimelineItemVisual::Camera: return "camera";
+        case TimelineItemVisual::Hitbox: return "hitbox";
+        case TimelineItemVisual::Defense: return "defense";
+        case TimelineItemVisual::Input: return "input";
+        case TimelineItemVisual::Collision: return "collision";
+        case TimelineItemVisual::Movement: return "movement";
+        case TimelineItemVisual::Curve: return "curve";
+        case TimelineItemVisual::Custom: return "custom";
+    }
+    return "custom";
+}
 
 ActionTimelineWidget::ActionTimelineWidget(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry)
     : editor_(editor), registry_(registry) {}
@@ -154,9 +249,55 @@ Duration ActionTimelineWidget::xToTime(float x) const noexcept {
     return Duration::fromNanoseconds(time);
 }
 
+std::optional<Duration> ActionTimelineWidget::magneticSnap(Duration candidate,
+                                                           const LogicalId& excludedItem) const noexcept {
+    constexpr double kSnapPixels = 8.0;
+    const auto&      timeline    = editor_.target().timeline();
+    const auto       start       = visibleEnd_ > visibleStart_ ? visibleStart_ : Duration::zero();
+    const auto       end         = visibleEnd_ > visibleStart_ ? visibleEnd_ : timeline.duration;
+    const auto       selected    = editor_.selectedItemIds();
+    const auto       excluded    = [&](const LogicalId& id) {
+        return id == excludedItem || std::find(selected.begin(), selected.end(), id) != selected.end();
+    };
+    const auto pixels = static_cast<double>(width_ - labelWidth_);
+    if (pixels <= 0.0) return std::nullopt;
+    const auto threshold = static_cast<std::int64_t>(
+        std::llround(static_cast<double>(end.nanoseconds() - start.nanoseconds()) * kSnapPixels / pixels));
+    std::optional<Duration> best;
+    auto bestDelta = threshold + 1;
+    const auto consider = [&](Duration target) {
+        const auto delta = target > candidate ? target.nanoseconds() - candidate.nanoseconds()
+                                              : candidate.nanoseconds() - target.nanoseconds();
+        if (delta <= threshold && delta < bestDelta) {
+            best      = target;
+            bestDelta = delta;
+        }
+    };
+    consider(Duration::zero());
+    consider(editor_.previewTime());
+    for (const auto split : timeline.splitTimestamps) consider(split);
+    for (const auto& section : timeline.animationSections) {
+        if (excluded(section.id)) continue;
+        consider(section.start);
+        consider(section.end);
+    }
+    for (const auto& track : timeline.tracks) {
+        for (const auto& notify : track.notifies) {
+            if (!excluded(notify.id)) consider(notify.time);
+        }
+        for (const auto& state : track.states) {
+            if (excluded(state.id)) continue;
+            consider(state.start);
+            consider(state.end);
+        }
+    }
+    return best;
+}
+
 TimelineWidgetLayout ActionTimelineWidget::layout() const {
     TimelineWidgetLayout result;
     result.width                       = width_;
+    result.audioWaveformsAvailable     = eve::cap::query<action::IActionAudioWaveformProvider>() != nullptr;
     const bool        hasAnimationLane = !editor_.target().timeline().animationSections.empty();
     const std::size_t rowOffset        = hasAnimationLane ? 1U : 0U;
     result.height         = rowHeight_ * static_cast<float>(editor_.target().timeline().tracks.size() + rowOffset);
@@ -191,6 +332,8 @@ TimelineWidgetLayout ActionTimelineWidget::layout() const {
             result.items.push_back({animationTrack, section.id, animationType, true, isSelected(section.id),
                                     timeToX(start), std::max(timeToX(end), timeToX(start) + 4.0f), 3.0f,
                                     rowHeight_ - 3.0f});
+            decorate(result.items.back(), animationType,
+                     {{"animationUri", Value(section.animationUri)}}, registry_);
         }
     }
     for (std::size_t row = 0; row < editor_.target().timeline().tracks.size(); ++row) {
@@ -203,6 +346,7 @@ TimelineWidgetLayout ActionTimelineWidget::layout() const {
             result.items.push_back({track.id, notify.id, notify.type, false, isSelected(notify.id),
                                     center - kNotifyWidth * 0.5f, center + kNotifyWidth * 0.5f, top + 3.0f,
                                     top + rowHeight_ - 3.0f});
+            decorate(result.items.back(), notify.type, notify.payload, registry_);
         }
         for (const auto& state : track.states) {
             Duration start = state.start;
@@ -215,6 +359,7 @@ TimelineWidgetLayout ActionTimelineWidget::layout() const {
             const float maximum = std::max(timeToX(end), minimum + 4.0f);
             result.items.push_back({track.id, state.id, state.type, true, isSelected(state.id), minimum, maximum,
                                     top + 3.0f, top + rowHeight_ - 3.0f});
+            decorate(result.items.back(), state.type, state.payload, registry_);
         }
     }
     return result;
@@ -243,6 +388,75 @@ void ActionTimelineWidget::draw(IEditorOverlay& overlay) const {
             item.selected ? 0xf2b84bffU : (animationSection ? 0xa66bd4ffU : (item.state ? 0x568bd7ffU : 0x61c28bffU));
         overlay.rectangle({item.minimumX, item.minimumY, 0.0f}, {item.maximumX, item.maximumY, 0.0f},
                           {color, 1.0f, true});
+        if (item.maximumX - item.minimumX >= 48.0f)
+            overlay.text({item.minimumX + 5.0f, item.minimumY + 3.0f, 0.0f}, item.displayName,
+                         {0xffffffffU, 1.0f, false});
+        if (item.state && item.type.format() == "presentation:audio-state") {
+            const auto view      = findItem(timeline, item.itemId);
+            auto*      waveforms = eve::cap::query<action::IActionAudioWaveformProvider>();
+            if (view && waveforms) {
+                auto binding = action::ActionAudioBinding::fromPayload(
+                    view->payload, action::ActionAudioShape::State);
+                const auto pixels = static_cast<std::size_t>(
+                    std::max(1.0f, std::floor(item.maximumX - item.minimumX)));
+                if (binding) {
+                    action::ActionAudioWaveformRequest request{
+                        std::move(binding).takeValue(), difference(view->end, view->start),
+                        std::min(pixels, kMaximumWaveformBuckets)};
+                    auto waveform = waveforms->waveform(request);
+                    if (waveform && !waveform.value().buckets.empty()) {
+                        const float middle = (item.minimumY + item.maximumY) * 0.5f;
+                        const float amplitude = std::max(1.0f, (item.maximumY - item.minimumY) * 0.42f);
+                        const float step = (item.maximumX - item.minimumX) /
+                                           static_cast<float>(waveform.value().buckets.size());
+                        for (std::size_t index = 0; index < waveform.value().buckets.size(); ++index) {
+                            const auto& bucket = waveform.value().buckets[index];
+                            const float x = item.minimumX + (static_cast<float>(index) + 0.5f) * step;
+                            overlay.line({x, middle - std::clamp(bucket.maximum, -1.0f, 1.0f) * amplitude, 0.0f},
+                                         {x, middle - std::clamp(bucket.minimum, -1.0f, 1.0f) * amplitude, 0.0f},
+                                         {0xe7f4ffffU, 1.0f, false});
+                        }
+                    }
+                }
+            }
+        }
+        if (item.state && item.type.format() == "presentation:parameter-curve") {
+            const auto view = findItem(timeline, item.itemId);
+            auto binding = view ? action::ActionParameterCurveBinding::fromPayload(view->payload)
+                                : Result<action::ActionParameterCurveBinding>::failure(
+                                      Diagnostic::error(DiagnosticCode::NotFound, "curve item is unavailable"));
+            if (binding) {
+                double minimum = binding.value().keys.front().value;
+                double maximum = minimum;
+                for (const auto& key : binding.value().keys) {
+                    minimum = std::min(minimum, key.value);
+                    maximum = std::max(maximum, key.value);
+                }
+                if (maximum - minimum < 1e-9) {
+                    minimum -= 0.5;
+                    maximum += 0.5;
+                }
+                const auto point = [&](double time, double value) {
+                    const float x = item.minimumX + static_cast<float>(time) * (item.maximumX - item.minimumX);
+                    const float normalized = static_cast<float>((value - minimum) / (maximum - minimum));
+                    const float y = item.maximumY - 2.0f - normalized * (item.maximumY - item.minimumY - 4.0f);
+                    return OverlayPoint{x, y, 0.0f};
+                };
+                const auto segments = std::min<std::size_t>(
+                    kMaximumCurveSegments,
+                    std::max<std::size_t>(2, static_cast<std::size_t>(item.maximumX - item.minimumX)));
+                auto previous = point(0.0, binding.value().sample(0.0));
+                for (std::size_t segment = 1; segment <= segments; ++segment) {
+                    const double time = static_cast<double>(segment) / static_cast<double>(segments);
+                    const auto current = point(time, binding.value().sample(time));
+                    overlay.line(previous, current, {0xffdc7affU, 1.5f, false});
+                    previous = current;
+                }
+                for (const auto& key : binding.value().keys)
+                    overlay.circle(point(key.time, key.value), 2.5f,
+                                   {item.selected ? 0xffffffffU : 0xffdc7affU, 1.0f, true});
+            }
+        }
         if (item.state) {
             overlay.line({item.minimumX, item.minimumY, 0.0f}, {item.minimumX, item.maximumY, 0.0f},
                          {0xffffffffU, 2.0f, false});
@@ -257,14 +471,24 @@ void ActionTimelineWidget::draw(IEditorOverlay& overlay) const {
 
 std::optional<TimelineHit> ActionTimelineWidget::hitTest(float x, float y) const {
     const auto projected = layout();
+    const auto containsY = [&](const TimelineItemGeometry& item) {
+        return y >= item.minimumY && y <= item.maximumY;
+    };
+    // Resize handles remain the most precise affordance even when items overlap.
     for (auto it = projected.items.rbegin(); it != projected.items.rend(); ++it) {
-        if (y < it->minimumY || y > it->maximumY || x < it->minimumX - kHandleRadius ||
-            x > it->maximumX + kHandleRadius)
-            continue;
+        if (!containsY(*it) || !it->state) continue;
         if (it->state && std::abs(x - it->minimumX) <= kHandleRadius)
             return TimelineHit{it->itemId, TimelineHitPart::StartHandle};
         if (it->state && std::abs(x - it->maximumX) <= kHandleRadius)
             return TimelineHit{it->itemId, TimelineHitPart::EndHandle};
+    }
+    // A point notify drawn over a state span must remain directly selectable.
+    for (auto it = projected.items.rbegin(); it != projected.items.rend(); ++it) {
+        if (!containsY(*it) || it->state) continue;
+        if (x >= it->minimumX && x <= it->maximumX) return TimelineHit{it->itemId, TimelineHitPart::Body};
+    }
+    for (auto it = projected.items.rbegin(); it != projected.items.rend(); ++it) {
+        if (!containsY(*it) || !it->state) continue;
         if (x >= it->minimumX && x <= it->maximumX) return TimelineHit{it->itemId, TimelineHitPart::Body};
     }
     return std::nullopt;
@@ -282,7 +506,9 @@ EditorResult<void> ActionTimelineWidget::pointerDown(float x, float y, bool addi
         return widgetError("editor.action.timeline.widget.item-missing", "Timeline item no longer exists",
                            EditorStatus::Conflict);
     if (item->locked) return widgetError("editor.action.timeline.track-locked", "Action track is locked");
-    auto selected = editor_.selectItem(item->itemId, additiveSelection);
+    const auto selectedIds     = editor_.selectedItemIds();
+    const bool alreadySelected = std::find(selectedIds.begin(), selectedIds.end(), item->itemId) != selectedIds.end();
+    auto selected = editor_.selectItem(item->itemId, additiveSelection || alreadySelected);
     if (!selected.ok()) return selected;
     drag_ = DragState{item->itemId, hit->part, xToTime(x), item->start, item->end, item->start, item->end, item->state};
     return eve::editing::applied<void>();
@@ -296,30 +522,52 @@ EditorResult<void> ActionTimelineWidget::updateDrag(float x) {
     if (!drag_->state) {
         auto moved = drag_->originalStart.tryAdd(delta);
         if (!moved) return widgetError("editor.action.timeline.widget.drag-overflow", "Notify drag overflowed");
-        drag_->previewStart = std::clamp(moved.value(), Duration::zero(), duration);
+        const auto candidate = std::clamp(moved.value(), Duration::zero(), duration);
+        drag_->previewStart  = magneticSnap(candidate, drag_->itemId).value_or(candidate);
         drag_->previewEnd   = drag_->previewStart;
         return eve::editing::applied<void>();
     }
     if (drag_->part == TimelineHitPart::StartHandle) {
         auto moved = drag_->originalStart.tryAdd(delta);
         if (!moved) return widgetError("editor.action.timeline.widget.drag-overflow", "State start drag overflowed");
-        drag_->previewStart = std::clamp(moved.value(), Duration::zero(), drag_->originalEnd);
-        drag_->previewEnd   = drag_->originalEnd;
+        const auto candidate = std::clamp(moved.value(), Duration::zero(), drag_->originalEnd);
+        drag_->previewStart  = magneticSnap(candidate, drag_->itemId).value_or(candidate);
+        drag_->previewStart  = std::min(drag_->previewStart, drag_->originalEnd);
+        drag_->previewEnd    = drag_->originalEnd;
         return eve::editing::applied<void>();
     }
     if (drag_->part == TimelineHitPart::EndHandle) {
         auto moved = drag_->originalEnd.tryAdd(delta);
         if (!moved) return widgetError("editor.action.timeline.widget.drag-overflow", "State end drag overflowed");
         drag_->previewStart = drag_->originalStart;
-        drag_->previewEnd   = std::clamp(moved.value(), drag_->originalStart, duration);
+        const auto candidate = std::clamp(moved.value(), drag_->originalStart, duration);
+        drag_->previewEnd    = magneticSnap(candidate, drag_->itemId).value_or(candidate);
+        drag_->previewEnd = std::max(drag_->previewEnd, drag_->originalStart);
         return eve::editing::applied<void>();
     }
     const auto span  = drag_->originalEnd.nanoseconds() - drag_->originalStart.nanoseconds();
     auto       moved = drag_->originalStart.tryAdd(delta);
     if (!moved) return widgetError("editor.action.timeline.widget.drag-overflow", "State drag overflowed");
     const auto latestStart = Duration::fromNanoseconds(duration.nanoseconds() - span);
-    drag_->previewStart    = std::clamp(moved.value(), Duration::zero(), latestStart);
-    drag_->previewEnd      = Duration::fromNanoseconds(drag_->previewStart.nanoseconds() + span);
+    drag_->previewStart = std::clamp(moved.value(), Duration::zero(), latestStart);
+    drag_->previewEnd   = Duration::fromNanoseconds(drag_->previewStart.nanoseconds() + span);
+    const auto snappedStart = magneticSnap(drag_->previewStart, drag_->itemId);
+    const auto snappedEnd   = magneticSnap(drag_->previewEnd, drag_->itemId);
+    Duration adjustment     = Duration::zero();
+    if (snappedStart && snappedEnd) {
+        const auto startDelta = difference(*snappedStart, drag_->previewStart);
+        const auto endDelta   = difference(*snappedEnd, drag_->previewEnd);
+        adjustment = std::abs(startDelta.nanoseconds()) <= std::abs(endDelta.nanoseconds()) ? startDelta : endDelta;
+    } else if (snappedStart) {
+        adjustment = difference(*snappedStart, drag_->previewStart);
+    } else if (snappedEnd) {
+        adjustment = difference(*snappedEnd, drag_->previewEnd);
+    }
+    const auto adjustedStart = drag_->previewStart.tryAdd(adjustment);
+    if (adjustedStart && adjustedStart.value() >= Duration::zero() && adjustedStart.value() <= latestStart) {
+        drag_->previewStart = adjustedStart.value();
+        drag_->previewEnd   = Duration::fromNanoseconds(drag_->previewStart.nanoseconds() + span);
+    }
     return eve::editing::applied<void>();
 }
 
@@ -331,6 +579,8 @@ EditorResult<void> ActionTimelineWidget::pointerUp(float x) {
     const DragState completed = *drag_;
     drag_.reset();
     const auto item = findItem(editor_.target().timeline(), completed.itemId);
+    if (completed.part == TimelineHitPart::Body && editor_.selectionCount() > 1)
+        return editor_.moveSelection(difference(completed.previewStart, completed.originalStart));
     if (item && item->animationSection) {
         if (completed.part == TimelineHitPart::Body)
             return editor_.moveAnimationSection(completed.itemId,
@@ -353,7 +603,25 @@ EditorResult<void> ActionTimelineWidget::seek(float x) { return editor_.seek(xTo
 
 EditorResult<void> ActionTimelineWidget::inspectSelection(IEditorInspector& inspector) {
     const auto selected = editor_.selectedItemIds();
-    if (selected.size() != 1) return eve::editing::noOp();
+    if (selected.size() > 1) {
+        auto range = editor_.selectionRange();
+        if (!range.ok()) return EditorResult<void>::failure(range.status());
+        float       startSeconds = static_cast<float>(range.value().start.seconds());
+        float       endSeconds   = static_cast<float>(range.value().end.seconds());
+        const float maximum = static_cast<float>(editor_.target().timeline().duration.seconds());
+        inspector.beginGroup("action.timeline.selection", "Selection");
+        bool changed = inspector.scalar("start", "Start", startSeconds, 0.0f, maximum);
+        changed      = inspector.scalar("end", "End", endSeconds, 0.0f, maximum) || changed;
+        inspector.endGroup();
+        if (!changed) return eve::editing::noOp();
+        auto start = Duration::fromSeconds(startSeconds);
+        auto end   = Duration::fromSeconds(endSeconds);
+        if (!start || !end)
+            return widgetError("editor.action.timeline.widget.selection-time-invalid",
+                               "Selection bounds are invalid");
+        return editor_.scaleSelection(start.value(), end.value());
+    }
+    if (selected.empty()) return eve::editing::noOp();
     auto item = findItem(editor_.target().timeline(), selected.front());
     if (!item)
         return widgetError("editor.action.timeline.widget.item-missing", "Selected item no longer exists",
@@ -407,6 +675,63 @@ EditorResult<void> ActionTimelineWidget::inspectSelection(IEditorInspector& insp
         return editor_.editAnimationSectionFull(std::move(edited));
     }
 
+    if (item->state && item->type.format() == "presentation:parameter-curve") {
+        auto binding = action::ActionParameterCurveBinding::fromPayload(item->payload);
+        if (!binding)
+            return widgetError("editor.action.timeline.widget.parameter-curve-invalid",
+                               "Selected parameter curve payload is invalid");
+        std::string target = binding.value().target.format();
+        std::string operation = std::string(action::actionParameterOperationName(binding.value().operation));
+        Value::Array keys;
+        bool changed = false;
+        inspector.beginGroup("action.timeline.parameter-curve", "Parameter Curve");
+        changed = inspector.string("target", "Target", target) || changed;
+        changed = inspector.string("operation", "Operation", operation) || changed;
+        for (std::size_t index = 0; index < binding.value().keys.size(); ++index) {
+            auto key = binding.value().keys[index];
+            float time = static_cast<float>(key.time);
+            float value = static_cast<float>(key.value);
+            float inTangent = static_cast<float>(key.inTangent);
+            float outTangent = static_cast<float>(key.outTangent);
+            std::string interpolation = std::string(action::actionParameterInterpolationName(key.interpolation));
+            inspector.beginGroup("action.timeline.parameter-key." + std::to_string(index),
+                                 "Key " + std::to_string(index));
+            const bool endpoint = index == 0 || index + 1 == binding.value().keys.size();
+            const float minimumTime = endpoint ? static_cast<float>(key.time)
+                                               : static_cast<float>(binding.value().keys[index - 1].time);
+            const float maximumTime = endpoint ? static_cast<float>(key.time)
+                                               : static_cast<float>(binding.value().keys[index + 1].time);
+            changed = inspector.scalar("time", "Time", time, minimumTime, maximumTime) || changed;
+            changed = inspector.scalar("value", "Value", value, std::numeric_limits<float>::lowest(),
+                                       std::numeric_limits<float>::max()) || changed;
+            changed = inspector.scalar("inTangent", "In Tangent", inTangent,
+                                       std::numeric_limits<float>::lowest(),
+                                       std::numeric_limits<float>::max()) || changed;
+            changed = inspector.scalar("outTangent", "Out Tangent", outTangent,
+                                       std::numeric_limits<float>::lowest(),
+                                       std::numeric_limits<float>::max()) || changed;
+            changed = inspector.string("interpolation", "Interpolation", interpolation) || changed;
+            inspector.endGroup();
+            keys.emplace_back(Value::Object{{"time", static_cast<double>(time)},
+                                            {"value", static_cast<double>(value)},
+                                            {"inTangent", static_cast<double>(inTangent)},
+                                            {"outTangent", static_cast<double>(outTangent)},
+                                            {"interpolation", std::move(interpolation)}});
+        }
+        inspector.endGroup();
+        if (!changed) return eve::editing::applied<void>();
+        auto payload = item->payload;
+        payload["target"] = std::move(target);
+        payload["operation"] = std::move(operation);
+        payload["keys"] = Value(std::move(keys));
+        auto validated = action::ActionParameterCurveBinding::fromPayload(payload);
+        if (!validated)
+            return widgetError("editor.action.timeline.widget.parameter-curve-contract",
+                               "Parameter curve fields violate the block contract");
+        return editor_.updateItem(item->itemId, item->type,
+                                  validated.value().toPayload(std::move(payload)));
+    }
+
     float       startSeconds = static_cast<float>(item->start.seconds());
     float       endSeconds   = static_cast<float>(item->end.seconds());
     std::string type         = item->type.format();
@@ -457,9 +782,12 @@ EditorResult<void> ActionTimelineWidget::inspectSelection(IEditorInspector& insp
 
 std::vector<TimelineWidgetCommandDescriptor> ActionTimelineWidget::commands() const {
     const bool selected = editor_.selectionCount() > 0;
+    const bool multi    = editor_.selectionCount() > 1;
     return {{TimelineWidgetCommand::Copy, "Copy", "Ctrl+C", selected},
             {TimelineWidgetCommand::Paste, "Paste at Playhead", "Ctrl+V", clipboardAnchor_.has_value()},
             {TimelineWidgetCommand::DeleteSelection, "Delete", "Delete", selected},
+            {TimelineWidgetCommand::AlignSelectionStart, "Align Starts", "Shift+[", multi},
+            {TimelineWidgetCommand::AlignSelectionEnd, "Align Ends", "Shift+]", multi},
             {TimelineWidgetCommand::Undo, "Undo", "Ctrl+Z", editor_.canUndo()},
             {TimelineWidgetCommand::Redo, "Redo", "Ctrl+Y", editor_.canRedo()},
             {TimelineWidgetCommand::PlayPause, editor_.playing() ? "Pause" : "Play", "Space", true}};
@@ -487,6 +815,8 @@ EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
                          "editor.action.timeline.widget.paste", "Could not paste timeline selection");
         }
         case TimelineWidgetCommand::DeleteSelection: return editor_.deleteSelection();
+        case TimelineWidgetCommand::AlignSelectionStart: return editor_.alignSelectionStart();
+        case TimelineWidgetCommand::AlignSelectionEnd: return editor_.alignSelectionEnd();
         case TimelineWidgetCommand::Undo: {
             auto result = editor_.undo();
             if (result.ok()) return eve::editing::applied<void>();
@@ -512,6 +842,8 @@ EditorResult<void> ActionTimelineWidget::handleShortcut(std::string_view shortcu
     if (shortcut == "Ctrl+C") return invoke(TimelineWidgetCommand::Copy);
     if (shortcut == "Ctrl+V") return invoke(TimelineWidgetCommand::Paste);
     if (shortcut == "Delete" || shortcut == "Backspace") return invoke(TimelineWidgetCommand::DeleteSelection);
+    if (shortcut == "Shift+[") return invoke(TimelineWidgetCommand::AlignSelectionStart);
+    if (shortcut == "Shift+]") return invoke(TimelineWidgetCommand::AlignSelectionEnd);
     if (shortcut == "Ctrl+Z") return invoke(TimelineWidgetCommand::Undo);
     if (shortcut == "Ctrl+Y" || shortcut == "Ctrl+Shift+Z") return invoke(TimelineWidgetCommand::Redo);
     if (shortcut == "Space") return invoke(TimelineWidgetCommand::PlayPause);

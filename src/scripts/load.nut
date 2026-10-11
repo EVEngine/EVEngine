@@ -75,7 +75,7 @@ function normalize_path(path) {
 
 /** True when the build contains this module and it has been instantiated. */
 function has_module(slot) {
-    return slot in getroottable() && getroottable()[slot] != null;
+    return slot in getroottable() && getroottable()[slot] != null && typeof getroottable()[slot] == "instance";
 }
 
 function _module_entry(slot) {
@@ -831,6 +831,9 @@ eve_frame <- function() {
     // later frame fails with "begin3DFrame: swapchain pass already open".
     try {
         gfx.present();
+        if (has_module("system") && (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames)) {
+            system.limitFrame();
+        }
         if (has_module("ui")) ui.dispatchEvents();
         clear_loop_error("present");
     } catch (e) {

@@ -5,6 +5,7 @@ layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec2 inUV;
 layout(location = 3) in uvec4 inJoints;
 layout(location = 4) in vec4 inWeights;
+layout(location = 5) in vec4 inColor;
 
 struct Light3D {
     vec4 posRadius;
@@ -47,10 +48,15 @@ void main() {
     vec4 localPos = vec4(inPos, 1.0);
     vec3 localNormal = inNormal;
     if (ubo.skinInfo.x > 0.5) {
-        mat4 skin = inWeights.x * skinPalette.bones[inJoints.x]
-                  + inWeights.y * skinPalette.bones[inJoints.y]
-                  + inWeights.z * skinPalette.bones[inJoints.z]
-                  + inWeights.w * skinPalette.bones[inJoints.w];
+        vec4 weights = inWeights;
+        if (ubo.skinInfo.y < 3.5) weights.zw = vec2(0.0);
+        if (ubo.skinInfo.y < 1.5) weights.y = 0.0;
+        float weightSum = dot(weights, vec4(1.0));
+        if (weightSum > 1e-8) weights /= weightSum;
+        mat4 skin = weights.x * skinPalette.bones[inJoints.x]
+                  + weights.y * skinPalette.bones[inJoints.y]
+                  + weights.z * skinPalette.bones[inJoints.z]
+                  + weights.w * skinPalette.bones[inJoints.w];
         localPos = skin * localPos;
         localNormal = mat3(skin) * localNormal;
     }
@@ -61,6 +67,6 @@ void main() {
     mat3 normalMat = transpose(inverse(mat3(ubo.model)));
     vNormal = normalize(normalMat * localNormal);
     vUV = inUV;
-    vTint = ubo.tint;
+    vTint = ubo.tint * inColor;
     vCameraPos = ubo.cameraPos.xyz;
 }

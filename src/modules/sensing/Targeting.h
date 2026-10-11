@@ -232,6 +232,12 @@ public:
     [[nodiscard]] CoordinateSpace space() const noexcept { return space_; }
     /** @brief Returns whether this area is valid. */
     [[nodiscard]] bool isValid() const noexcept { return valid_; }
+    /** @brief Return the center for circle/sphere, or minimum corner for boxes. */
+    [[nodiscard]] WorldPoint first() const noexcept { return first_; }
+    /** @brief Return the maximum corner for boxes; invalid/default for circle and sphere. */
+    [[nodiscard]] WorldPoint second() const noexcept { return second_; }
+    /** @brief Return circle/sphere radius; zero for boxes. */
+    [[nodiscard]] float radius() const noexcept { return radius_; }
     /** @brief Tests a world point without converting coordinate spaces. */
     [[nodiscard]] bool contains(WorldPoint point) const noexcept;
 
@@ -277,6 +283,10 @@ public:
     [[nodiscard]] CoordinateSpace space() const noexcept { return space_; }
     /** @brief Returns whether this area is valid. */
     [[nodiscard]] bool isValid() const noexcept { return valid_; }
+    /** @brief Return the inclusive minimum grid corner. */
+    [[nodiscard]] GridPoint minimum() const noexcept { return minimum_; }
+    /** @brief Return the inclusive maximum grid corner. */
+    [[nodiscard]] GridPoint maximum() const noexcept { return maximum_; }
     /** @brief Tests a grid point without converting coordinate spaces. */
     [[nodiscard]] bool contains(GridPoint point) const noexcept;
 

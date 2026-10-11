@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/ECS.h"
+#include "common/Result.h"
 #include "graphics/Material.h"
 #include "graphics/MeshInstanceRange.h"
 #include "zeroerr/assert.h"
@@ -29,25 +30,31 @@ public:
     struct Data {
         static constexpr int kMaxReflectionProbes = 8;
         struct ReflectionProbe {
-            Texture *cubemap = nullptr;
+            Texture*  cubemap = nullptr;
             glm::vec3 center{0.f};
             glm::vec3 extent{0.f};
-            float intensity = 0.f;
-            float blendDistance = 0.f;
-            int priority = 0;
-            bool enabled = false;
+            float     intensity     = 0.f;
+            float     blendDistance = 0.f;
+            int       priority      = 0;
+            bool      enabled       = false;
         };
         float eyeX = 0.f, eyeY = 0.f, eyeZ = 3.f;
         float targetX = 0.f, targetY = 0.f, targetZ = 0.f;
         float upX = 0.f, upY = 1.f, upZ = 0.f;
         float fovYDeg = 60.f, nearZ = 0.1f, farZ = 100.f;
-        bool orthographic = false;
-        float orthoHeight = 20.f;
-        float ambientR = 0.12f, ambientG = 0.12f, ambientB = 0.14f;
-        Texture *envMap = nullptr;   // cubemap; nullptr → no IBL
-        float envIntensity = 1.f;
-        glm::vec3 envProbeCenter{0.f};
-        glm::vec3 envProbeExtent{0.f};  // any zero axis disables box projection
+        float aperture = 19.f, focalLength = 50.f;
+        float lodBias = 1.f;
+        /** Zero means the normal camera far plane controls the layer. */
+        std::array<float, 32> layerCullDistances{};
+        /** Zero means the normal shadow cascade range controls the layer. */
+        std::array<float, 32>                             shadowLayerCullDistances{};
+        bool                                              orthographic = false;
+        float                                             orthoHeight  = 20.f;
+        float                                             ambientR = 0.12f, ambientG = 0.12f, ambientB = 0.14f;
+        Texture*                                          envMap       = nullptr;  // cubemap; nullptr → no IBL
+        float                                             envIntensity = 1.f;
+        glm::vec3                                         envProbeCenter{0.f};
+        glm::vec3                                         envProbeExtent{0.f};  // any zero axis disables box projection
         std::array<ReflectionProbe, kMaxReflectionProbes> reflectionProbes{};
         float exposureEV = 0.f;  // exposure compensation in stops; 0 preserves legacy brightness
         bool autoExposure = false;
@@ -67,8 +74,9 @@ public:
 
     COMPONENT(Data, data)
 
+    /** @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity. */
     static Camera3D *createCamera() {
-        Camera3D *c = Camera3D::create();
+        Camera3D* c = Camera3D::create();
         ASSERT(c != nullptr);
         c->data()->entity = c;
         c->data()->active = true;
@@ -80,13 +88,13 @@ public:
     float getEyeX();
     float getEyeY();
     float getEyeZ();
-    void setTarget(float x, float y, float z);
+    void  setTarget(float x, float y, float z);
     /** @brief Look-at target (world space). */
     float getTargetX();
     float getTargetY();
     float getTargetZ();
-    void setUp(float x, float y, float z);
-    void setFov(float fovYDeg);
+    void  setUp(float x, float y, float z);
+    void  setFov(float fovYDeg);
     /** @brief Vertical field of view in degrees. */
     float getFov();
     /** @brief Enable an orthographic projection with the given vertical world-space span. */
@@ -95,10 +103,23 @@ public:
     void setPerspective();
     /** @brief Set positive near/far clipping distances; far is kept beyond near. */
     void setClipPlanes(float nearZ, float farZ);
-    void setActive(bool active);
-    void setAmbient(float r, float g, float b);
+    /** @brief Return the positive near clipping distance. */ float getNearClip();
+    /** @brief Return the far clipping distance. */ float getFarClip();
+    /** @brief Set positive physical-camera aperture and focal length metadata. */ void setPhysicalLens(float aperture,float focalLength);
+    /** @brief Return physical-camera aperture. */ float getAperture();
+    /** @brief Return physical-camera focal length in millimetres. */ float getFocalLength();
+    /** @brief Set the camera cull distance for one render layer; zero disables the override. */
+    void setLayerCullDistance(int layer, float distance);
+    /** @brief Return the camera cull-distance override for one render layer. */
+    float getLayerCullDistance(int layer);
+    /** @brief Set the shadow-caster cull distance for one render layer; zero disables it. */
+    void setShadowLayerCullDistance(int layer, float distance);
+    /** @brief Return the shadow-caster cull-distance override for one render layer. */
+    float getShadowLayerCullDistance(int layer);
+    void  setActive(bool active);
+    void  setAmbient(float r, float g, float b);
     /** @brief Specular IBL cubemap (Graphics::newCubemap). nullptr disables IBL. */
-    void setEnvMap(Texture *cube);
+    void setEnvMap(Texture* cube);
     void setEnvIntensity(float intensity);
     /** @brief Set exposure compensation in photographic stops. Positive values brighten. */
     void setExposure(float ev);
@@ -121,6 +142,8 @@ public:
      * @param focusRange Distance from focus at which blur reaches maxBlurPx.
      */
     void setDepthOfField(float focusDistance, float maxBlurPx, float focusRange = 8.f);
+    /** @brief Disable depth-of-field while retaining the current focus settings. */
+    void clearDepthOfField();
     /** @brief Return DOF focus distance. */
     float getDofFocusDistance();
     /** @brief Return DOF max blur in texels (0 when disabled). */
@@ -128,12 +151,11 @@ public:
     /** @brief Return DOF focus range. */
     float getDofFocusRange();
     /** @brief Enable box-projected IBL for the camera environment cubemap. */
-    void setEnvProbe(float centerX, float centerY, float centerZ, float extentX, float extentY,
-                     float extentZ);
+    void setEnvProbe(float centerX, float centerY, float centerZ, float extentX, float extentY, float extentZ);
     /** @brief Disable box projection and return to an infinite-distance environment. */
     void clearEnvProbe();
     /** @brief True when all three box-probe extents are positive. */
-    bool hasEnvProbe();
+    bool  hasEnvProbe();
     float getEnvProbeCenterX();
     float getEnvProbeCenterY();
     float getEnvProbeCenterZ();
@@ -147,9 +169,8 @@ public:
      * @param blendDistance Inward edge fade distance in world units.
      * @param priority Higher values win when more than two probes are relevant.
      */
-    void setReflectionProbe(int slot, Texture *cubemap, float centerX, float centerY,
-                            float centerZ, float extentX, float extentY, float extentZ,
-                            float intensity = 1.f, float blendDistance = 1.f,
+    void setReflectionProbe(int slot, Texture* cubemap, float centerX, float centerY, float centerZ, float extentX,
+                            float extentY, float extentZ, float intensity = 1.f, float blendDistance = 1.f,
                             int priority = 0);
     /** @brief Disable one local reflection probe slot. */
     void clearReflectionProbe(int slot);
@@ -178,23 +199,25 @@ public:
 
     struct Transform3D {
         float x = 0, y = 0, z = 0;
-        float yaw = 0, pitch = 0, roll = 0; // radians
+        float yaw = 0, pitch = 0, roll = 0;  // radians
         float sx = 1, sy = 1, sz = 1;
     };
 
     struct MeshRenderer {
         static constexpr int kMaxLodLevels = 4;
-        static constexpr int kMaxParts = Material::kMaxPartsHint;
+        static constexpr int kMaxParts     = Material::kMaxPartsHint;
 
-        Mesh *mesh = nullptr;
-        Texture *texture = nullptr;
-        Texture *normalTexture = nullptr;  // nullptr → flat normal in default PBR path
+        Mesh*    mesh             = nullptr;
+        Texture* texture          = nullptr;
+        Texture* normalTexture    = nullptr;  // nullptr → flat normal in default PBR path
+        bool     packedNormalMask = false;    // RG normal XY, B AO, A smoothness
+        /** @ownership Borrowed Graphics texture. @lifetime Must not outlive Graphics. */
         Texture *heightTexture = nullptr;  // nullptr → no parallax height (R = height)
         Shader *shader = nullptr;          // nullptr → default mesh3d PBR pipeline
         /** @brief Optional value-owned instance range; forward custom shader path only. */
         std::optional<MeshInstanceRange> instances;
         /** @brief Optional packed material; when set, overrides texture/shader/PBR fields below. */
-        Material *material = nullptr;
+        Material* material = nullptr;
         /**
          * @brief Optional X-ray shader used to paint this entity's occluded silhouette
          * (see Shader::setXray). When xrayHighlight is set, the entity is skipped
@@ -202,32 +225,35 @@ public:
          * second time over the scene with the X-ray shader. Only the part hidden
          * behind buildings shows the highlight; visible parts render normally.
          */
-        Shader *xrayShader = nullptr;
-        bool xrayHighlight = false;
-        float r = 1, g = 1, b = 1, a = 1;
-        float metallic = 0.f;
-        float roughness = 0.45f;
-        float texBombScale = 4.f;     // cells per UV unit
-        float texBombStrength = 0.f;  // 0 = off (default, preserves tiling)
-        float texBombRot = 1.f;       // 0..1 per-cell rotation amount
-        float parallaxScale = 0.f;    // 0 = off (default)
-        float parallaxMinLayers = 8.f;
-        float parallaxMaxLayers = 32.f;
-        bool visible = true;
+        Shader*  xrayShader    = nullptr;
+        bool     xrayHighlight = false;
+        float    r = 1, g = 1, b = 1, a = 1;
+        float    metallic              = 0.f;
+        float    roughness             = 0.45f;
+        float    texBombScale          = 4.f;  // cells per UV unit
+        float    texBombStrength       = 0.f;  // 0 = off (default, preserves tiling)
+        float    texBombRot            = 1.f;  // 0..1 per-cell rotation amount
+        float    parallaxScale         = 0.f;  // 0 = off (default)
+        float    parallaxMinLayers     = 8.f;
+        float    parallaxMaxLayers     = 32.f;
+        bool     visible               = true;
+        int      layer                 = 0;
         uint32_t reflectionCaptureMask = 1u;
-        bool receiveLight = true;
-        bool castShadow = true;
-        bool receiveShadow = true;
-        bool castOcclusion = true;  // volumetric occlusion (screen-space shafts)
+        bool     receiveLight          = true;
+        bool     castShadow            = true;
+        bool     receiveShadow         = true;
+        bool     castOcclusion         = true;  // volumetric occlusion (screen-space shafts)
+        bool     customLightProbe      = false;
+        std::array<glm::vec4, 9> customLightProbeSh{};
         /** @brief Alpha-blended hair/fur card pass (drawn after opaque meshes, back-to-front). */
-        bool isHair = false;
-        Camera3D *camera = nullptr;
+        bool      isHair = false;
+        Camera3D* camera = nullptr;
 
         /**
          * @brief Multi-part model slots (one mesh + material per Assimp mesh / body region).
          * When partCount > 0, each part is drawn; otherwise `mesh` + material/fields.
          */
-        int partCount = 0;
+        int       partCount        = 0;
         ModelPart parts[kMaxParts] = {};
 
         /**
@@ -235,25 +261,51 @@ public:
          * instead of `mesh` based on camera distance. lodDistances[i] is the distance
          * at which rendering switches from lodMeshes[i] to lodMeshes[i+1].
          */
-        int lodCount = 0;
-        Mesh *lodMeshes[kMaxLodLevels] = {};
+        int   lodCount                        = 0;
+        Mesh* lodMeshes[kMaxLodLevels]        = {};
         float lodDistances[kMaxLodLevels - 1] = {25.f, 60.f, 120.f};
+        /** @brief Distance beyond which the complete LOD chain is culled; zero disables. */
+        float lodCullDistance = 0.f;
+        struct LodRendererState {
+            bool configured = false;
+            int  skinQuality = 0;
+            int  shadowCastingMode = 1;
+            bool receiveShadows = true;
+            int  motionVectorMode = 1;
+            bool skinnedMotionVectors = true;
+            int  lightProbeUsage = 1;
+            int  reflectionProbeUsage = 1;
+        };
+        LodRendererState lodRendererStates[kMaxLodLevels] = {};
+        float lodFadeWidths[kMaxLodLevels] = {};
+        int   lodFadeMode = 0;
+        bool  lodAnimateCrossFading = false;
+        float lodCrossFadeDuration = 0.5f;
+        int   lodAnimatedCurrent = -2;
+        int   lodAnimatedPrevious = -2;
+        float lodAnimatedProgress = 1.f;
 
         /** @brief Pick LOD mesh for a camera distance; falls back to `mesh` when LOD disabled. */
+        /** @ownership Returns a borrowed mesh. @lifetime Same as the selected Graphics resource. */
         Mesh *meshForDistance(float distance) const {
+            if (lodCullDistance > 0.f && distance >= lodCullDistance) return nullptr;
             if (lodCount <= 0) return mesh;
             int level = 0;
             while (level + 1 < lodCount && distance >= lodDistances[level]) ++level;
-            Mesh *picked = lodMeshes[level];
+            Mesh* picked = lodMeshes[level];
             return picked ? picked : mesh;
         }
 
         int lodLevelForDistance(float distance) const {
+            if (lodCullDistance > 0.f && distance >= lodCullDistance) return -1;
             if (lodCount <= 0) return 0;
             int level = 0;
             while (level + 1 < lodCount && distance >= lodDistances[level]) ++level;
             return level;
         }
+
+        /** @brief Select primary/secondary levels and secondary weight for the active fade policy. */
+        void lodBlendForDistance(float distance, int& primary, int& secondary, float& secondaryWeight) const;
 
         bool usesParts() const { return partCount > 0; }
 
@@ -296,17 +348,22 @@ public:
     /** @brief Remove runtime instance metadata on the update thread; no callbacks. */
     void clearInstanceRange();
     /** @brief Main (non-part) mesh attached via setMesh; nullptr when unset. */
+    /** @ownership Returns a borrowed mesh. @lifetime Valid while its Graphics resource is live. */
     Mesh *getMesh();
-    void setTexture(Texture *texture);
-    void setNormalTexture(Texture *texture);
+    void  setTexture(Texture* texture);
+    void  setNormalTexture(Texture* texture);
+    /** @brief Enable RG normal XY, B AO and A smoothness interpretation for the normal texture. */
+    void setPackedNormalMask(bool enabled);
     /** @brief Height map for parallax (R channel; white = raised). nullptr disables sampling. */
-    void setHeightTexture(Texture *texture);
-    void setShader(Shader *shader);
+    void setHeightTexture(Texture* texture);
+    void setShader(Shader* shader);
     /** @brief Attach a Material that packages shading method + surface params. */
-    void setMaterial(Material *material);
+    void      setMaterial(Material* material);
+    /** @ownership Returns a borrowed material. @lifetime Valid while its Graphics resource is live. */
     Material *getMaterial();
     /** @brief Attach an X-ray mesh shader (see Shader::setXray) for occluded silhouettes. */
-    void setXRayShader(Shader *shader);
+    void    setXRayShader(Shader* shader);
+    /** @ownership Returns a borrowed shader. @lifetime Valid while its Graphics resource is live. */
     Shader *getXRayShader();
     /**
      * @brief When true, this entity is an X-ray target: its G-buffer pixels are replaced
@@ -319,21 +376,21 @@ public:
      * @brief Bind a named mesh+material part (e.g. Assimp submesh / body region).
      * index 0..kMaxParts-1. Passing nullptr mesh clears that slot and trims partCount.
      */
-    void setPart(int index, const std::string &name, Mesh *mesh, Material *material);
+    void setPart(int index, const std::string& name, Mesh* mesh, Material* material);
     /** @brief Override transparent sorting for one part without mutating its shared Material. */
     void setPartSortPriority(int index, int priority);
     /** @brief Clear a part's per-instance sort override and use its Material priority. */
     void clearPartSortPriority(int index);
     /** @brief Return the effective per-part or Material transparent sort priority. */
-    int getPartSortPriority(int index);
-    void clearParts();
-    int getPartCount();
+    int         getPartSortPriority(int index);
+    void        clearParts();
+    int         getPartCount();
     std::string getPartName(int index);
-    Mesh *getPartMesh(int index);
-    Material *getPartMaterial(int index);
-    void setHair(bool hair);
-    bool getHair();
-    void setTint(float r, float g, float b, float a = 1.f);
+    Mesh*       getPartMesh(int index);
+    Material*   getPartMaterial(int index);
+    void        setHair(bool hair);
+    bool        getHair();
+    void        setTint(float r, float g, float b, float a = 1.f);
     /** @brief Return the field-backed material tint red channel. */
     float getTintR() { return meshRenderer()->r; }
     /** @brief Return the field-backed material tint green channel. */
@@ -342,13 +399,13 @@ public:
     float getTintB() { return meshRenderer()->b; }
     /** @brief Return the field-backed material roughness. */
     float getRoughness() { return meshRenderer()->roughness; }
-    void setMetallic(float metallic);
-    void setRoughness(float roughness);
+    void  setMetallic(float metallic);
+    void  setRoughness(float roughness);
     /**
      * @brief Texture cell bombing — random per-cell UV offset/rotation blended across a 2×2
      * neighborhood to hide tiling. strength 0 disables (default).
      */
-    void setTexCellBomb(float cellScale, float strength, float rotAmount = 1.f);
+    void  setTexCellBomb(float cellScale, float strength, float rotAmount = 1.f);
     float getTexCellBombScale();
     float getTexCellBombStrength();
     float getTexCellBombRotation();
@@ -356,36 +413,69 @@ public:
      * @brief Parallax occlusion mapping. scale 0 disables (default). Typical scale 0.02..0.08.
      * Requires a height texture via setHeightTexture.
      */
-    void setParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f);
+    void  setParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f);
     float getParallaxScale();
     float getParallaxMinLayers();
     float getParallaxMaxLayers();
-    void setVisible(bool visible);
+    void  setVisible(bool visible);
+    /** @brief Return whether this renderable participates in scene rendering. */
+    bool getVisible() { return meshRenderer()->visible; }
+    /** @brief Assign this renderable to a camera-culling layer in [0,31]. */
+    void setLayer(int layer);
+    /** @brief Return this renderable's camera-culling layer. */
+    int getLayer();
     /** @brief Set the bit mask used to include this object in reflection-probe captures. */
     void setReflectionCaptureMask(int mask);
     /** @brief Return the reflection-probe capture bit mask. */
-    int getReflectionCaptureMask();
+    int  getReflectionCaptureMask();
     void setReceiveLight(bool receive);
+    /** @brief Supply baked diffuse irradiance for LOD levels using CustomProvided light probes. */
+    [[nodiscard]] Result<void> setCustomLightProbe(float r, float g, float b);
+    /** @brief Set one L0..L2 RGB spherical-harmonic coefficient for CustomProvided mode. */
+    [[nodiscard]] Result<void> setCustomLightProbeCoefficient(int coefficient, float r, float g, float b);
+    /** @brief Clear the custom diffuse probe and restore the camera ambient value. */
+    void clearCustomLightProbe();
     void setCastShadow(bool cast);
     void setReceiveShadow(bool receive);
     void setCastOcclusion(bool cast);
     bool getCastOcclusion();
-    void setCamera(Camera3D *camera);
+    void setCamera(Camera3D* camera);
 
     /**
      * @brief Configure geometric LOD. index 0 = highest detail.
      * For index > 0, switchDistance is the camera distance that selects this level
      * (stored in lodDistances[index-1]). Passing nullptr mesh clears that slot.
      */
-    void setMeshLod(int index, Mesh *mesh, float switchDistance = 0.f);
+    void setMeshLod(int index, Mesh* mesh, float switchDistance = 0.f);
+    /** @brief Set one LOD's Pcg-compatible renderer policy using Unity enum numeric values. */
+    [[nodiscard]] Result<void> setMeshLodRendererState(int index, int skinQuality, int shadowCastingMode,
+                                                       bool receiveShadows, int motionVectorMode,
+                                                       bool skinnedMotionVectors, int lightProbeUsage,
+                                                       int reflectionProbeUsage);
+    /** @brief Return one LOD renderer policy field, or -1 for an invalid level/field. */
+    int getMeshLodRendererState(int index, int field);
+    /** @brief Configure per-level distance fade width. */
+    [[nodiscard]] Result<void> setMeshLodFadeWidth(int index, float width);
+    /** @brief Configure Unity LODFadeMode and deterministic time-driven transitions. */
+    [[nodiscard]] Result<void> setMeshLodFadePolicy(int mode, bool animate, float duration);
+    /** @brief Advance an animated transition using caller-injected distance and dt. */
+    [[nodiscard]] Result<void> advanceMeshLodTransition(float distance, float dt);
+    /** @brief Return secondary LOD selected for a fade, or -1 for cull/no secondary. */
+    int getMeshLodSecondaryLevelAtDistance(float distance);
+    /** @brief Return secondary LOD weight in [0,1]. */
+    float getMeshLodSecondaryWeightAtDistance(float distance);
+    /** @brief Set the distance that culls the whole mesh LOD chain; zero disables culling. */
+    void setMeshLodCullDistance(float distance);
+    /** @brief Return the mesh LOD culling distance; zero means disabled. */
+    float getMeshLodCullDistance();
     void clearMeshLod();
-    int getMeshLodCount();
-    int getMeshLodLevelAtDistance(float distance);
+    int  getMeshLodCount();
+    int  getMeshLodLevelAtDistance(float distance);
 };
 
 class RenderSystem3D {
 public:
-    static void render(Graphics &gfx);
+    static void render(Graphics& gfx);
 
     /**
      * @brief Forward 3D pass into an offscreen canvas using multipart materials, LOD,
@@ -399,13 +489,10 @@ public:
      * @param includeTransparent Whether transparent and hair surfaces are submitted.
      * @param useClusteredLighting Whether lights beyond the legacy pack use clustered shading.
      */
-    static void renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *camera,
-                               uint32_t reflectionCaptureMask = 0xffffffffu,
-                               float lodDistanceScale = 1.f,
-                               bool includeTransparent = true,
-                               bool useClusteredLighting = true,
-                               Texture *skyFaceTexture = nullptr,
-                               Mesh *skyQuad = nullptr,
+    static void renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* camera,
+                               uint32_t reflectionCaptureMask = 0xffffffffu, float lodDistanceScale = 1.f,
+                               bool includeTransparent = true, bool useClusteredLighting = true,
+                               Texture* skyFaceTexture = nullptr, Mesh* skyQuad = nullptr,
                                float skyFaceTextureScale = 1.f);
 
     /**
@@ -416,10 +503,8 @@ public:
      * @param aspect Destination aspect ratio.
      * @param reflectionCaptureMask Active capture-layer mask.
      */
-    using CaptureExtraDrawer =
-        std::function<void(Graphics &gfx, const Camera3D::Data &cam,
-                           const glm::mat4 &viewProj, float aspect,
-                           uint32_t reflectionCaptureMask)>;
+    using CaptureExtraDrawer = std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj,
+                                                  float aspect, uint32_t reflectionCaptureMask)>;
 
     /**
      * @brief Register custom forward geometry for offscreen captures.
@@ -427,8 +512,7 @@ public:
      * @param drawer Callback invoked before the offscreen forward pass ends.
      * @return Non-zero token accepted by removeCaptureExtraDrawer.
      */
-    static uint64_t addCaptureExtraDrawer(uint32_t reflectionCaptureMask,
-                                          CaptureExtraDrawer drawer);
+    static uint64_t addCaptureExtraDrawer(uint32_t reflectionCaptureMask, CaptureExtraDrawer drawer);
 
     /**
      * @brief Unregister an offscreen capture contributor.
@@ -443,8 +527,7 @@ public:
      * The camera data and view-projection match the pass camera.
      */
     using GBufferExtraDrawer =
-        std::function<void(Graphics &gfx, const Camera3D::Data &cam,
-                           const glm::mat4 &viewProj, float aspect)>;
+        std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect)>;
     static void addGBufferExtraDrawer(GBufferExtraDrawer drawer);
 
     /**
@@ -454,8 +537,7 @@ public:
      * gfx.drawDecal(...) there (optionally gfx.setDecalCamera first).
      */
     using DecalExtraDrawer =
-        std::function<void(Graphics &gfx, const Camera3D::Data &cam,
-                           const glm::mat4 &viewProj, float aspect)>;
+        std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect)>;
     static void addDecalExtraDrawer(DecalExtraDrawer drawer);
 
     /**
@@ -496,4 +578,4 @@ public:
     static void setDirectionalLight(float dx, float dy, float dz, float r, float g, float b);
 };
 
-} // namespace eve::graphics
+}  // namespace eve::graphics

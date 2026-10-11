@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# test-sdk.sh <sdk-root> <platform> [expected-version]
+# test-sdk.sh <sdk-root> <platform> [expected-version] [android-abi]
 #
 # Verify a freshly-built target-platform SDK is usable by consumers, before it is
 # zipped and published to a GitHub Release. Runs on the same host as the SDK:
 #   win32 -> bin/eve.exe   (Windows runner)
 #   linux -> bin/eve       (Linux runner)
 #   macosx-> bin/eve       (macOS runner)
-#   android/ios -> skipped (no host runtime binary)
+#   android -> packaged APK assembled from the installed SDK
+#   ios     -> installed device app bundle validated as an arm64 Mach-O
 #
 # [expected-version] (e.g. "0.1.0") makes the version checks exact: the
 # share/eve/VERSION marker must equal it and `eve -v` must contain it.
@@ -19,7 +20,7 @@
 #   4. `eve package --sdk` assembles a runnable game folder containing the runtime
 #      + game.eve (and, on Windows, the runtime DLLs).
 #
-# Best-effort (WARN only, never blocks the release): try to run the packaged game
+# Best-effort (WARN only, never blocks the release): try to run the desktop packaged game
 # from memory and check for the game's startup marker. Window/Vulkan init depends
 # on a display / software ICD, so failures there are reported, not fatal.
 set -euo pipefail
@@ -33,11 +34,12 @@ case "$SDK" in
 esac
 PLAT="${2:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
 EXPECTED="${3:-}"
+ANDROID_PACKAGE_ABI="${4:-arm64-v8a}"
 
 case "$PLAT" in
   win32)           RUNTIME="eve.exe" ;;
   linux|macosx)    RUNTIME="eve" ;;
-  android)         RUNTIME="" ;;   # verified by the APK smoke below
+  android|ios)     RUNTIME="" ;;   # verified by target-specific gates below
   *) echo "SKIP: no host runtime to test for platform '$PLAT'"; exit 0 ;;
 esac
 
@@ -50,8 +52,7 @@ trap 'rm -rf "$WORK"' EXIT
 # Hard gate: the template + SDK libs + a minimal game must produce an APK.
 if [ "$PLAT" = "android" ]; then
   if [ -z "${ANDROID_SDK:-}" ] || [ -z "${JAVA_HOME:-}" ]; then
-    echo "SKIP: android APK smoke needs ANDROID_SDK + JAVA_HOME in the environment"
-    exit 0
+    fail "android APK smoke needs ANDROID_SDK + JAVA_HOME in the environment"
   fi
   [ -f "$SDK/share/eve/TARGET_PLATFORM" ] || fail "missing share/eve/TARGET_PLATFORM"
   [ "$(cat "$SDK/share/eve/TARGET_PLATFORM")" = "android" ] || fail "TARGET_PLATFORM != android"
@@ -74,13 +75,15 @@ if [ "$PLAT" = "android" ]; then
     fail "android template launcher must be EVEngineActivity (EVTestActivity has MAIN)"
   fi
 
-  JNI="$TEMPLATE/app/src/main/jniLibs/arm64-v8a"
+  JNI="$TEMPLATE/app/src/main/jniLibs/$ANDROID_PACKAGE_ABI"
   mkdir -p "$JNI"
   [ -f "$SDK/lib/libmain.so" ] || fail "missing lib/libmain.so"
   cp "$SDK/lib/libmain.so" "$JNI/"
-  for lib in libSDL2.so libhidapi.so libc++_shared.so; do
-    [ -f "$SDK/lib/$lib" ] && cp "$SDK/lib/$lib" "$JNI/"
+  for lib in libSDL2.so libc++_shared.so; do
+    [ -f "$SDK/lib/$lib" ] || fail "missing lib/$lib"
+    cp "$SDK/lib/$lib" "$JNI/"
   done
+  [ ! -f "$SDK/lib/libhidapi.so" ] || cp "$SDK/lib/libhidapi.so" "$JNI/"
 
   GAME="$TEMPLATE/app/src/main/assets/game"
   mkdir -p "$GAME"
@@ -94,10 +97,9 @@ EOF
   printf 'sdk.dir=%s\n' "$ANDROID_SDK" > "$TEMPLATE/local.properties"
 
   echo "== [test-sdk] assembling APK from $TEMPLATE =="
-  ( cd "$TEMPLATE" && sh gradlew :app:assembleDebug --no-daemon --console=plain ) \
-    >"$WORK/apk-build.log" 2>&1
-  rc=$?
-  if [ $rc -ne 0 ]; then
+  if ! ( cd "$TEMPLATE" && bash gradlew :app:assembleDebug \
+      -PevengineAbi="$ANDROID_PACKAGE_ABI" --no-daemon --console=plain ) \
+      >"$WORK/apk-build.log" 2>&1; then
     tail -n 40 "$WORK/apk-build.log"
     fail "gradle assembleDebug failed"
   fi
@@ -105,6 +107,38 @@ EOF
   [ -f "$APK" ] || fail "assembleDebug did not produce app-debug.apk"
   echo "OK: android APK assembled: $(basename "$APK") ($(du -h "$APK" | cut -f1))"
   echo "== [test-sdk] PASS (android) =="
+  exit 0
+fi
+
+# --- iOS: validate the installed device SDK app bundle -----------------------
+# The release SDK contains an iphoneos app and cannot run in a simulator.  The
+# separate ios-sim workflow job is the runtime gate; this is the artifact gate
+# that catches a missing executable, wrong architecture, malformed bundle, or
+# version/target marker before the SDK is zipped.
+if [ "$PLAT" = "ios" ]; then
+  [ -f "$SDK/share/eve/TARGET_PLATFORM" ] || fail "missing share/eve/TARGET_PLATFORM"
+  [ "$(cat "$SDK/share/eve/TARGET_PLATFORM")" = "ios" ] || fail "TARGET_PLATFORM != ios"
+  [ -f "$SDK/share/eve/VERSION" ] || fail "missing share/eve/VERSION"
+  VERSION_FILE="$(cat "$SDK/share/eve/VERSION")"
+  if [ -n "$EXPECTED" ] && [ "$VERSION_FILE" != "$EXPECTED" ]; then
+    fail "share/eve/VERSION '$VERSION_FILE' != expected '$EXPECTED'"
+  fi
+
+  APP="$SDK/bin/eve.app"
+  PLIST="$APP/Info.plist"
+  [ -d "$APP" ] || fail "ios SDK missing bin/eve.app"
+  [ -f "$PLIST" ] || fail "ios SDK missing eve.app/Info.plist"
+  command -v /usr/libexec/PlistBuddy >/dev/null 2>&1 || fail "PlistBuddy unavailable"
+  EXECUTABLE="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$PLIST")"
+  [ -n "$EXECUTABLE" ] || fail "CFBundleExecutable is empty"
+  BINARY="$APP/$EXECUTABLE"
+  [ -f "$BINARY" ] || fail "ios SDK missing app executable '$EXECUTABLE'"
+  file "$BINARY" | grep -q 'Mach-O' || fail "ios app executable is not Mach-O"
+  lipo -archs "$BINARY" | tr ' ' '\n' | grep -qx arm64 || fail "ios app executable has no arm64 slice"
+  [ -d "$SDK/include/eve" ] || fail "ios SDK missing include/eve"
+  [ -d "$SDK/platform" ] || fail "ios SDK missing platform template"
+  echo "OK: ios device SDK bundle is complete (executable=$EXECUTABLE, arch=arm64)"
+  echo "== [test-sdk] PASS (ios) =="
   exit 0
 fi
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import subprocess
 from pathlib import Path
+import utf8_stdio
 
 BUILD_SCOPES = ("windows", "android", "macos", "ios", "linux", "asan", "fuzz", "webgpu")
 SCOPES = (*BUILD_SCOPES, "tools")
@@ -50,6 +51,10 @@ def changed_paths(base: str, head: str) -> list[str]:
         check=True,
         capture_output=True,
         text=True,
+        # git writes UTF-8; the locale default (cp936 on a Chinese Windows)
+        # would mangle or reject a non-ASCII path instead.
+        encoding="utf-8",
+        errors="replace",
     )
     return [line for line in result.stdout.splitlines() if line]
 
@@ -77,4 +82,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     raise SystemExit(main())

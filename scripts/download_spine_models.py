@@ -18,6 +18,7 @@ Idempotent: skips files already present with the expected size. Writes a
 import os
 import sys
 import urllib.request
+import utf8_stdio
 
 RAW_BASE = (
     "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/3.5"
@@ -124,4 +125,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

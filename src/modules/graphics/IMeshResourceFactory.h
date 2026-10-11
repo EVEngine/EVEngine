@@ -28,6 +28,15 @@ public:
                                                    const std::uint32_t* indices,
                                                    int indexCount) = 0;
 
+    /** @brief Upload a mesh with a tightly packed linear RGBA vertex-color stream.
+     * @return Unsupported when a provider cannot retain vertex colors; no resource is created on failure.
+     */
+    [[nodiscard]] virtual Result<Mesh*> uploadMeshColored(const float*, const float*, const float*, const float*, int,
+                                                          const std::uint32_t*, int) {
+        return Result<Mesh*>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "mesh provider does not support vertex colors"));
+    }
+
     /** @brief Attach an owning UV stream to an uploaded mesh before publication.
      * @thread Graphics thread; input is borrowed synchronously, without callbacks.
      * @return Unsupported for providers without multi-UV support; no mutation on failure.

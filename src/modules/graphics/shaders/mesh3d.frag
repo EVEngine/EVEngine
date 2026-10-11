@@ -40,6 +40,13 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 skinInfo;
     vec4 reflectionProbeCenter[2];
     vec4 reflectionProbeExtent[2];
+    vec4 diffuseProbeSh[9];
+    vec4 diffuseProbeInfo;
+    vec4 diffuseVolumePosition[8];
+    vec4 diffuseVolumeExtent[8];
+    vec4 diffuseVolumeSh[72];
+    vec4 diffuseVolumeInfo;
+    vec4 lodFade;
 } ubo;
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
@@ -340,6 +347,12 @@ float sampleShadowPCF(vec3 worldPos, vec3 N, float viewDepth, float nDotL) {
 }
 
 void main() {
+    if (ubo.lodFade.z > 0.5) {
+        float lodHash = fract(dot(floor(gl_FragCoord.xy), vec2(0.06711056, 0.00583715)));
+        bool rejected = ubo.lodFade.y < 0.5 ? lodHash >= ubo.lodFade.x
+                                             : lodHash < 1.0 - ubo.lodFade.x;
+        if (rejected) discard;
+    }
     float bombScale = ubo.texBomb.x;
     float bombStrength = ubo.texBomb.y;
     float bombRot = ubo.texBomb.z;
@@ -372,12 +385,20 @@ void main() {
     int count = int(ubo.lightDirIntensity.w + 0.5);
 
     vec3 N = Ngeom;
-    vec3 nSample =
+    vec4 packedNormal =
         (ubo.virtualTexture.x > 0.5
              ? sampleVirtualTexture(normalSampler, heightSampler, uv, ubo.virtualTexture,
                                     ubo.virtualAtlas)
              : textureCellBomb(normalSampler, uv, bombScale, bombStrength, bombRot))
-            .xyz;
+            ;
+    vec3 nSample = packedNormal.xyz;
+    float terrainAo = 1.0;
+    if (ubo.virtualAtlas.z > 0.5) {
+        vec2 normalXY = packedNormal.rg * 2.0 - 1.0;
+        nSample = vec3(packedNormal.rg, sqrt(1.0 - clamp(dot(normalXY, normalXY), 0.0, 1.0)) * 0.5 + 0.5);
+        terrainAo = clamp(packedNormal.b, 0.0, 1.0);
+        roughness = clamp(1.0 - packedNormal.a, 0.04, 1.0);
+    }
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
 
@@ -447,9 +468,57 @@ void main() {
     vec3 skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
     vec3 gndIrr = ubo.ambient.rgb * vec3(0.72, 0.62, 0.52);
     vec3 irr = mix(gndIrr, skyIrr, hemi);
-    vec3 gi = albedo * irr * (1.0 - metallic);
+    float shBasis[9] = float[9](0.2820947918, 0.4886025119 * N.y, 0.4886025119 * N.z,
+        0.4886025119 * N.x, 1.0925484306 * N.x * N.y, 1.0925484306 * N.y * N.z,
+        0.3153915653 * (3.0 * N.z * N.z - 1.0), 1.0925484306 * N.x * N.z,
+        0.5462742153 * (N.x * N.x - N.y * N.y));
+    if (ubo.diffuseVolumeInfo.x > 0.5) {
+        vec3 volumeIrradiance = vec3(0.0);
+        float volumeWeight = 0.0;
+        vec3 cellMin = ubo.diffuseVolumePosition[0].xyz;
+        vec3 cellMax = cellMin;
+        if (ubo.diffuseVolumeInfo.y > 0.5) {
+            for (int probe = 1; probe < 8; ++probe) {
+                if (probe >= int(ubo.diffuseVolumeInfo.x + 0.5)) break;
+                cellMin = min(cellMin, ubo.diffuseVolumePosition[probe].xyz);
+                cellMax = max(cellMax, ubo.diffuseVolumePosition[probe].xyz);
+            }
+        }
+        vec3 cellT = clamp((vWorldPos - cellMin) / max(cellMax - cellMin, vec3(1e-4)), 0.0, 1.0);
+        for (int probe = 0; probe < 8; ++probe) {
+            if (probe >= int(ubo.diffuseVolumeInfo.x + 0.5)) break;
+            vec3 extent = max(ubo.diffuseVolumeExtent[probe].xyz, vec3(1e-4));
+            vec3 delta = abs(vWorldPos - ubo.diffuseVolumePosition[probe].xyz);
+            if (ubo.diffuseVolumeInfo.y > 0.5 || all(lessThanEqual(delta, extent))) {
+                float weight;
+                if (ubo.diffuseVolumeInfo.y > 0.5) {
+                    bvec3 activeAxis = greaterThan(cellMax - cellMin, vec3(1e-4));
+                    bvec3 lowerCorner = greaterThan(
+                        abs(ubo.diffuseVolumePosition[probe].xyz - cellMax), vec3(1e-4));
+                    vec3 axisWeight = mix(cellT, vec3(1.0) - cellT, lowerCorner);
+                    axisWeight = mix(vec3(1.0), axisWeight, activeAxis);
+                    weight = axisWeight.x * axisWeight.y * axisWeight.z;
+                } else {
+                    weight = 1.0 / max(length(delta / extent), 0.05);
+                }
+                vec3 probeIrradiance = vec3(0.0);
+                for (int coefficient = 0; coefficient < 9; ++coefficient)
+                    probeIrradiance += ubo.diffuseVolumeSh[probe * 9 + coefficient].rgb *
+                                       shBasis[coefficient];
+                volumeIrradiance += max(probeIrradiance, vec3(0.0)) * weight;
+                volumeWeight += weight;
+            }
+        }
+        if (volumeWeight > 0.0) irr = volumeIrradiance / volumeWeight;
+    } else if (ubo.diffuseProbeInfo.x > 0.5) {
+        irr = vec3(0.0);
+        for (int coefficient = 0; coefficient < 9; ++coefficient)
+            irr += ubo.diffuseProbeSh[coefficient].rgb * shBasis[coefficient];
+        irr = max(irr, vec3(0.0));
+    }
+    vec3 gi = albedo * irr * (1.0 - metallic) * terrainAo;
     float wrap = max(dot(N, primaryL) * 0.5 + 0.5, 0.0);
-    gi += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic);
+    gi += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic) * terrainAo;
     vec3 color = gi + Lo;
 
     // Split-sum specular IBL using the UE-style analytic DFG approximation.
@@ -499,7 +568,7 @@ void main() {
         color += envSpec * specWeight * multiScatter * (horizon * horizon);
         vec3 F = fresnelSchlick(NoV, F0);
         // Cheap diffuse IBL for dielectrics (sample along N at a blurry lod).
-        color += albedo * envDiffuse * (1.0 - metallic) * (1.0 - F) * 0.45;
+        color += albedo * envDiffuse * (1.0 - metallic) * (1.0 - F) * 0.45 * terrainAo;
     }
 
     color += emissive;

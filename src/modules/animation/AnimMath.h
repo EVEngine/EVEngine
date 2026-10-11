@@ -98,6 +98,10 @@ inline void multiplyQuat(float ax, float ay, float az, float aw, float bx, float
  * skeleton bind local for BindPose-mode absolute samples. Translation adds
  * (sample - reference); scale multiplies by sample/reference (or sample when
  * reference is identity); rotation right-multiplies the slerped identity-to-delta quaternion.
+ * @param base Accumulated transform mutated in place.
+ * @param sample Evaluated additive-layer transform.
+ * @param reference Reference transform used as the additive identity.
+ * @param weight Finite blend influence, clamped to [0,1].
  */
 inline void applyAdditiveTRS(TransformTRS &base, const TransformTRS &sample, const TransformTRS &reference,
                              float weight) {

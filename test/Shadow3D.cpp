@@ -220,6 +220,80 @@ TEST_CASE("Shadow3D.dirLightDarkensOccludedGround") {
     win->close();
 }
 
+TEST_CASE("Shadow3D.pcgLodTwoSidedCastsBackFacingGeometry") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+
+    Renderable3D *ground = nullptr;
+    Renderable3D *caster = nullptr;
+    Light3D *sun = nullptr;
+    setupShadowScene(gfx, ground, sun, true, &caster);
+    (void)ground;
+    const float pos[] = {-0.8f, 0.f, -0.8f, 0.8f, 0.f, -0.8f,
+                          0.8f, 0.f,  0.8f, -0.8f, 0.f, 0.8f};
+    const float nrm[] = {0.f, -1.f, 0.f, 0.f, -1.f, 0.f,
+                         0.f, -1.f, 0.f, 0.f, -1.f, 0.f};
+    const float uv[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t idxA[] = {0, 1, 2, 0, 2, 3};
+    const uint32_t idxB[] = {0, 2, 1, 0, 3, 2};
+    Mesh *windingA = gfx->newMeshFromArrays(pos, nrm, uv, 4, idxA, 6);
+    Mesh *windingB = gfx->newMeshFromArrays(pos, nrm, uv, 4, idxB, 6);
+    REQUIRE(windingA != nullptr);
+    REQUIRE(windingB != nullptr);
+    caster->setPosition(0.f, 0.35f, 0.f);
+    caster->setScale(1.f, 1.f, 1.f);
+    caster->setMeshLod(0, windingA);
+    gfx->setScreenReadbackEnabled(true);
+
+    auto shadowDelta = [&](Mesh *mesh, int shadowMode) {
+        caster->setMeshLod(0, mesh);
+        REQUIRE(caster->setMeshLodRendererState(0, 0, shadowMode, true, 1, true, 1, 1).ok());
+        sun->setCastShadow(false);
+        warmPresent(gfx);
+        const auto off = captureLumaGrid(gfx);
+        sun->setCastShadow(true);
+        warmPresent(gfx);
+        const auto on = captureLumaGrid(gfx);
+        return maxLumaDelta(gfx, off, on);
+    };
+
+    const float doubleA = shadowDelta(windingA, 2);
+    const float doubleB = shadowDelta(windingB, 2);
+    const float singleA = shadowDelta(windingA, 1);
+    const float singleB = shadowDelta(windingB, 1);
+    REQUIRE(std::min(doubleA, doubleB) > 0.02f);
+    REQUIRE(std::min(singleA, singleB) + 0.015f < std::min(doubleA, doubleB));
+    win->close();
+}
+
+TEST_CASE("Shadow3D.pcgSpeedTreeLodKeepsComplementaryCasterCoverage") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+    Renderable3D *ground = nullptr;
+    Renderable3D *caster = nullptr;
+    Light3D *sun = nullptr;
+    setupShadowScene(gfx, ground, sun, true, &caster);
+    (void)ground;
+    Mesh *sphere = caster->getMesh();
+    caster->setMeshLod(0, sphere);
+    caster->setMeshLod(1, sphere, 10.f);
+    REQUIRE(caster->setMeshLodFadeWidth(0, 1.f).ok());
+    REQUIRE(caster->setMeshLodFadePolicy(1, false, .5f).ok());
+    gfx->setScreenReadbackEnabled(true);
+    sun->setCastShadow(false);
+    warmPresent(gfx);
+    const auto off = captureLumaGrid(gfx);
+    sun->setCastShadow(true);
+    warmPresent(gfx);
+    const auto on = captureLumaGrid(gfx);
+    CHECK(maxLumaDelta(gfx, off, on) > .03f);
+    win->close();
+}
+
 TEST_CASE("Shadow3D.receiveShadowFalseIgnoresMap") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;

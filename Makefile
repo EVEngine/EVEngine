@@ -144,7 +144,7 @@ GAME ?=
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
 	check/test-manifest check/module-layers check/bindings check/nodiscard check/quality-metadata \
-	check/profile-matrix check/architecture-contracts check/quality \
+	check/profile-matrix check/architecture-contracts check/quality check/examples \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
@@ -173,6 +173,13 @@ show-targets:
 check/test-manifest:
 	python3 scripts/check_test_manifest.py
 
+# Verify the examples/ layout contract: runnable vs reviewed non-runnable
+# directories, config.nut assigning the engine config table, README.md presence
+# and registration in examples/README.md. Source-only; the runtime half of the
+# contract is scripts/smoke_examples.sh (MIN_RUN_SECONDS).
+check/examples:
+	python3 scripts/check_examples.py
+
 # Verify module includes never climb above the declared manifest LAYER.
 check/module-layers:
 	python3 scripts/module_depgraph.py --check-layers
@@ -196,9 +203,11 @@ check/nodiscard:
 
 # Validate the ten top-level architecture contracts and lint changed C/C++
 # lines. The source-only gate never configures or builds the engine.
+# The unit test runs with -X utf8: its own stdout/stderr would otherwise follow
+# the host ANSI code page (cp936 on a Chinese Windows) and mangle test output.
 check/architecture-contracts:
 	python3 scripts/check_architecture_contracts.py $(if $(ARCHITECTURE_BASE),--base "$(ARCHITECTURE_BASE)")
-	python3 -m unittest scripts.tests.test_architecture_contracts -v
+	python3 -X utf8 -m unittest scripts.tests.test_architecture_contracts -v
 
 # Focused CPU tests for format round trips and live tile editing; no GPU host.
 AGENT_TEST_BUILD ?= build/agent
@@ -772,7 +781,14 @@ sync/android-libs:
 	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android; fi; \
 	  cp -f "$$TP_DIR/lib/libSDL2.so" $(JNI_LIBS)/; \
 	  if [ -f "$$TP_DIR/lib/libhidapi.so" ]; then cp -f "$$TP_DIR/lib/libhidapi.so" $(JNI_LIBS)/; fi
-	cp -f "$(ANDROID_NDK)/toolchains/llvm/prebuilt/"*"/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so" $(JNI_LIBS)/
+	@case "$(ANDROID_ABI)" in \
+	  arm64-v8a) ndk_triple=aarch64-linux-android ;; \
+	  armeabi-v7a) ndk_triple=arm-linux-androideabi ;; \
+	  x86_64) ndk_triple=x86_64-linux-android ;; \
+	  x86) ndk_triple=i686-linux-android ;; \
+	  *) echo "Unsupported Android ABI: $(ANDROID_ABI)" >&2; exit 1 ;; \
+	esac; \
+	cp -f "$(ANDROID_NDK)/toolchains/llvm/prebuilt/"*"/sysroot/usr/lib/$$ndk_triple/libc++_shared.so" $(JNI_LIBS)/
 	@echo "Synced native libs -> $(JNI_LIBS)"
 	ls -la $(JNI_LIBS)
 

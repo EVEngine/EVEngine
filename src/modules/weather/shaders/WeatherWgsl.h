@@ -13,7 +13,7 @@ fn hash12(q:vec2f)->f32{var v=fract(vec3f(q.x,q.y,q.x)*0.1031);v+=dot(v,v.yzx+ve
 @vertex fn vs_main(i:In)->Out {
     let kind=p(12u);
     let phase=hash12(i.pos.xz*0.5+vec2f(floor(i.pos.y*0.7),13.0));
-    let speed=max(p(3u)*i.normal.z,0.01);
+    let speed=p(3u)*i.normal.z;
     let velocity=vec3f(p(1u),-speed,p(2u));
     var base=i.pos+vec3f(p(13u),-speed*p(0u),p(14u));
     if(kind>1.5) { base=i.pos; }

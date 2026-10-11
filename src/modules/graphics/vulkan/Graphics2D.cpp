@@ -1168,36 +1168,38 @@ Shader *Graphics::newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     ASSERT(initialized);
     if (!initialized) throw Exception("newMeshShaderFromSpv: graphics not initialized");
     createMesh3DPipeline();
-    if (fragSpv.empty()) throw Exception("newMeshShaderFromSpv: empty fragment SPIR-V");
     if (!mesh3dShaderPipelineLayout)
         throw Exception("newMeshShaderFromSpv: mesh3d pipeline layout missing");
 
     std::vector<uint32_t> vert = vertSpv;
+    std::vector<uint32_t> frag = fragSpv;
     if (vert.empty())
         vert.assign(mesh3d_vert_spv, mesh3d_vert_spv + mesh3d_vert_spv_count);
-    if (vert[0] != 0x07230203 || fragSpv[0] != 0x07230203)
+    if (frag.empty())
+        frag.assign(mesh3d_frag_spv, mesh3d_frag_spv + mesh3d_frag_spv_count);
+    if (vert[0] != 0x07230203 || frag[0] != 0x07230203)
         throw Exception("newMeshShaderFromSpv: SPIR-V magic mismatch");
 
     auto gpu = std::make_unique<GpuShader>();
     gpu->isMesh3D = true;
     gpu->pipelineLayout = mesh3dShaderPipelineLayout;
     ensureOffscreen3DResources();
-    gpu->mesh3dPipeline = createMesh3DStylePipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
+    gpu->mesh3dPipeline = createMesh3DStylePipeline(vert, frag, mesh3dShaderPipelineLayout,
                                                     activeScenePass(), activeSceneSamples());
     // Built here, not lazily in drawMeshShader: vkCreateGraphicsPipelines
     // during an open render pass crashes software ICDs (Lavapipe).
-    gpu->mesh3dXrayPipeline = createMesh3DXrayPipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
+    gpu->mesh3dXrayPipeline = createMesh3DXrayPipeline(vert, frag, mesh3dShaderPipelineLayout,
                                                        activeScenePass(), activeSceneSamples());
     gpu->mesh3dOffscreenPipeline = createMesh3DStylePipeline(
-        vert, fragSpv, mesh3dShaderPipelineLayout, offscreen3DRenderPass,
+        vert, frag, mesh3dShaderPipelineLayout, offscreen3DRenderPass,
         vk::SampleCountFlagBits::e1);
     gpu->mesh3dHdrOffscreenPipeline = createMesh3DStylePipeline(
-        vert, fragSpv, mesh3dShaderPipelineLayout, hdrOffscreen3DRenderPass,
+        vert, frag, mesh3dShaderPipelineLayout, hdrOffscreen3DRenderPass,
         vk::SampleCountFlagBits::e1);
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
-    sh->setSpirv(std::move(vert), fragSpv);
+    sh->setSpirv(std::move(vert), std::move(frag));
     sh->gpuHandle = gpu.get();
     gpu->owner = sh.get();
 

@@ -1,6 +1,19 @@
 #include "ui/UI.h"
 #include "ui/DatabasePanel.h"
 #include "ui/EditorShell.h"
+#include "ui/PcgColorPreviewSync.h"
+#include "ui/PcgControllerSelection.h"
+#include "ui/PcgDraggableWindow.h"
+#include "ui/PcgPhotoModeApplyPlan.h"
+#include "ui/PcgPhotoModePanels.h"
+#include "ui/PcgPhotoModeRuntimeUI.h"
+#include "ui/PcgPhotoModeValues.h"
+#include "ui/PcgPhotoModeSession.h"
+#include "ui/PcgPhotoModeRanges.h"
+#include "ui/PcgPhotoModeColorPicker.h"
+#include "ui/PcgScreenshotSavedNotice.h"
+#include "ui/PcgLoadingScreen.h"
+#include "ui/PcgTooltip.h"
 #include "ui/EditorHostCapabilities.h"
 #include "ui/UIAutomationCapabilities.h"
 
@@ -9,6 +22,7 @@
 #include "ui/Theme.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
+#include "ui/ParentScaler.h"
 
 #include "common/Module.h"
 #include "common/SquirrelBinding.h"
@@ -2012,6 +2026,20 @@ void UI::expose(ssq::Table &table) {
     auto cls = table.addClass(name, UI::create, false);
     expose(cls);
     injectUIComponentClass(table);
+    exposeParentScalerBindings(table);
+    exposePcgColorPreviewSyncBindings(table);
+    exposePcgControllerSelectionBindings(table);
+    exposePcgDraggableWindowBindings(table);
+    exposePcgPhotoModeApplyPlanBindings(table);
+    exposePcgPhotoModePanelsBindings(table);
+    exposePcgPhotoModeRuntimeUIBindings(table);
+    exposePcgPhotoModeValuesBindings(table);
+    exposePcgPhotoModeSessionBindings(table);
+    exposePcgPhotoModeRangesBindings(table);
+    exposePcgPhotoModeColorPickerBindings(table);
+    exposePcgScreenshotSavedNoticeBindings(table);
+    exposePcgLoadingScreenBindings(table);
+    exposePcgTooltipBindings(table);
 }
 
 void UI::expose(ssq::Class &cls) {

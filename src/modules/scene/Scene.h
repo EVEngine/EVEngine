@@ -232,6 +232,19 @@ public:
     std::vector<std::string> collectFrustumIdsAt(const std::string &hostName,
                                                  graphics::Camera3D *cam, float viewW,
                                                  float viewH) const;
+    /**
+     * @brief Apply PcgScenePlayer frustum visibility to bounded nodes carrying a tag.
+     * @param hostName Scene host to mutate.
+     * @param cam Borrowed camera used only during this call.
+     * @param viewW Positive viewport width.
+     * @param viewH Positive viewport height.
+     * @param tag Terrain classification tag, such as `terrain` or `mesh-terrain`.
+     * @return Number of visibility values changed.
+     * @ownership The caller retains the camera; this function retains no pointer.
+     * @lifetime Camera must remain valid for the duration of the call.
+     */
+    [[nodiscard]] Result<int> applyPcgTerrainCullingAt(const std::string &hostName,
+        graphics::Camera3D *cam,float viewW,float viewH,const std::string &tag);
     /** @brief Insert every bounded node's world AABB into an octree (id = arena index). */
     bool syncSpatialIndexAt(const std::string &hostName, spatial::Octree *ot) const;
     /** @brief Map a spatial-index id (arena index) back to a node id. */

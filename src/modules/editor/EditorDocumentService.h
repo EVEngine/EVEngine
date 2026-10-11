@@ -2,6 +2,7 @@
 
 #include "editor/EditorProtocol.h"
 
+#include <functional>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -110,6 +111,9 @@ private:
  */
 class DocumentService {
 public:
+    /** @brief Synchronous content validator borrowed only for one external reconciliation call. */
+    using ContentValidator = std::function<EditorResult<void>(const EditorValue&)>;
+
     explicit DocumentService(IAtomicDocumentStore* store) : store_(store) {}
 
     /** @brief Open an asset-backed document, loading existing persisted content when present. */
@@ -136,6 +140,13 @@ public:
      * @return Updated snapshot or a structured conflict/failure.
      */
     EditorResult<DocumentSnapshot> reconcileExternal(const DocumentId& document);
+    /**
+     * @brief Reconcile external content only after a domain validator accepts the complete candidate.
+     * @param document Stable identity of the open document to inspect.
+     * @param validator Synchronous callback invoked without a service lock and never retained.
+     * @return Updated snapshot, or a structured failure preserving the previous working content.
+     */
+    EditorResult<DocumentSnapshot> reconcileExternal(const DocumentId& document, ContentValidator validator);
     /** @brief Close and discard in-memory state; persisted content is unchanged. */
     EditorResult<void> close(const DocumentId& document);
 

@@ -7,6 +7,7 @@
 #include "physics/Shape3D.h"
 #include "physics/DistanceField3D.h"
 #include "physics/Joint3D.h"
+#include "physics/TerrainLoadGravity.h"
 
 #include <box3d/box3d.h>
 
@@ -45,6 +46,46 @@ TEST_CASE("box3d.body.fallsUnderGravity") {
 
     CHECK_LT(box->getY(), y0);
     CHECK_GT(box->getY(), 0.f);
+}
+
+TEST_CASE("box3d.terrainLoadGravity.waitsThenRestoresOriginalScale") {
+    auto* mod = Physics::create();
+    std::unique_ptr<World3D> world(mod->newWorld3D(0.f, -10.f, 0.f, false));
+    Body3D* body = world->newBody("dynamic", 0.f, 10.f, 0.f);
+    body->newSphereShape(0.5f, 1.f, 0.5f, 0.f);
+    body->setGravityScale(0.35f);
+    TerrainLoadGravityState state;
+    REQUIRE(static_cast<bool>(beginTerrainLoadGravity(&state, body, true)));
+    CHECK(state.isMonitoring());
+    CHECK_EQ(body->getGravityScale(), 0.f);
+
+    auto waiting = advanceTerrainLoadGravity(&state, body, false, 0.5f, 2.f);
+    REQUIRE(static_cast<bool>(waiting));
+    CHECK(!waiting.value());
+    CHECK(!state.isActivationScheduled());
+    auto scheduled = advanceTerrainLoadGravity(&state, body, true, 0.75f, 2.f);
+    REQUIRE(static_cast<bool>(scheduled));
+    CHECK(!scheduled.value());
+    CHECK(state.isActivationScheduled());
+    CHECK_EQ(state.getDelayElapsed(), 0.75f);
+    CHECK(!advanceTerrainLoadGravity(&state, body, false, NAN, 2.f));
+    CHECK_EQ(state.getDelayElapsed(), 0.75f);
+    auto activated = advanceTerrainLoadGravity(&state, body, false, 1.25f, 2.f);
+    REQUIRE(static_cast<bool>(activated));
+    CHECK(activated.value());
+    CHECK(state.isCompleted());
+    CHECK(!state.isMonitoring());
+    CHECK_EQ(body->getGravityScale(), 0.35f);
+    auto alreadyDone = advanceTerrainLoadGravity(&state, body, true, 1.f, 2.f);
+    REQUIRE(static_cast<bool>(alreadyDone));
+    CHECK(!alreadyDone.value());
+
+    Body3D* passthrough = world->newBody("dynamic", 0.f, 3.f, 0.f);
+    TerrainLoadGravityState absent;
+    REQUIRE(static_cast<bool>(beginTerrainLoadGravity(&absent, passthrough, false)));
+    CHECK(absent.isCompleted());
+    CHECK_EQ(passthrough->getGravityScale(), 1.f);
+    CHECK(!beginTerrainLoadGravity(&absent, passthrough, false));
 }
 
 TEST_CASE("box3d.body.staticDoesNotMove") {

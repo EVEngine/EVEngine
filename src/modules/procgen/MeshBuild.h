@@ -87,6 +87,12 @@ public:
     float getNormalZ(int i) const;
     float getUvU(int i) const;
     float getUvV(int i) const;
+    /** @brief Return whether this mesh owns one packed RGBA color per vertex. */
+    [[nodiscard]] bool hasVertexColors() const noexcept;
+    /** @brief Return one color component, or 1 for an invalid vertex/component or an absent color stream. */
+    [[nodiscard]] float getColor(int vertexIndex, int component) const noexcept;
+    /** @brief Atomically replace the optional packed RGBA stream; empty removes it. */
+    [[nodiscard]] eve::Result<void> setVertexColors(std::vector<float> colors);
     int   getIndex(int i) const;
 
     void        setMeta(const std::string &key, const std::string &value);
@@ -95,6 +101,7 @@ public:
     const std::vector<float>    &positions() const { return positions_; }
     const std::vector<float>    &normals() const { return normals_; }
     const std::vector<float>    &uvs() const { return uvs_; }
+    const std::vector<float>    &colors() const { return colors_; }
     const std::vector<uint32_t> &indices() const { return indices_; }
     /** @brief Return all metadata key/value pairs in deterministic map order. */
     const std::unordered_map<std::string, std::string> &metadata() const { return meta_; }
@@ -108,6 +115,7 @@ private:
     std::vector<float>                           positions_;
     std::vector<float>                           normals_;
     std::vector<float>                           uvs_;
+    std::vector<float>                           colors_;
     std::vector<uint32_t>                        indices_;
     std::vector<int>                             triangleGroups_;
     std::vector<std::string>                     groupNames_;

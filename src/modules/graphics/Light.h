@@ -3,6 +3,7 @@
 #include "common/ECS.h"
 #include "zeroerr/assert.h"
 
+#include <array>
 #include <cstdint>
 #include <string>
 #include <glm/glm.hpp>
@@ -92,6 +93,14 @@ struct Lighting3DPack {
     glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f};
     Light3DGpu lights[kMaxLights]{};
     int count = 0;
+    std::array<glm::vec4, 9> diffuseProbeSh{};  // xyz = RGB coefficient
+    bool diffuseProbeShEnabled = false;
+    static constexpr int kMaxDiffuseVolumeProbes = 8;
+    std::array<glm::vec4, kMaxDiffuseVolumeProbes> diffuseVolumePosition{};
+    std::array<glm::vec4, kMaxDiffuseVolumeProbes> diffuseVolumeExtent{};
+    std::array<glm::vec4, kMaxDiffuseVolumeProbes * 9> diffuseVolumeSh{};
+    int diffuseVolumeProbeCount = 0;
+    bool diffuseVolumeTrilinearCell = false;
 };
 
 /**

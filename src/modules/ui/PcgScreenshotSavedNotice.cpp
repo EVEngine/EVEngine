@@ -1,0 +1,11 @@
+#include "ui/PcgScreenshotSavedNotice.h"
+#include "common/SquirrelBinding.h"
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <cmath>
+namespace eve::ui {namespace {Result<void> bad(const char*m){return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,m,"ui.pcgScreenshotSavedNotice"));}}
+Result<void> PcgScreenshotSavedNotice::configure(bool enabled,float seconds){if(!std::isfinite(seconds)||seconds<0)return bad("show duration must be finite and non-negative");enabled_=enabled;duration_=seconds;if(!enabled_){visible_=false;pending_=false;}return Result<void>::success();}
+Result<void> PcgScreenshotSavedNotice::request(const std::string& path){if(path.find('\0')!=std::string::npos)return bad("saved path contains a null character");visible_=false;pending_=false;if(!enabled_)return Result<void>::success();path_=path;pending_=true;return Result<void>::success();}
+Result<void> PcgScreenshotSavedNotice::endFrame(float now){if(!std::isfinite(now)||now<0)return bad("time must be finite and non-negative");if(pending_&&enabled_){pending_=false;visible_=true;hideAt_=now+duration_;}return Result<void>::success();}
+Result<void> PcgScreenshotSavedNotice::tick(float now){if(!std::isfinite(now)||now<0)return bad("time must be finite and non-negative");if(visible_&&now>=hideAt_)visible_=false;return Result<void>::success();}
+void exposePcgScreenshotSavedNoticeBindings(ssq::Table&t){auto c=t.addClass("PcgScreenshotSavedNotice",ssq::Class::Ctor<PcgScreenshotSavedNotice()>());auto vm=t.getHandle();c.addFunc("configure",[vm](PcgScreenshotSavedNotice*s,bool e,float d){return eve::script::projectResult(vm,s->configure(e,d));});c.addFunc("request",[vm](PcgScreenshotSavedNotice*s,const std::string&p){return eve::script::projectResult(vm,s->request(p));});c.addFunc("endFrame",[vm](PcgScreenshotSavedNotice*s,float n){return eve::script::projectResult(vm,s->endFrame(n));});c.addFunc("tick",[vm](PcgScreenshotSavedNotice*s,float n){return eve::script::projectResult(vm,s->tick(n));});c.addFunc("getVisible",[](const PcgScreenshotSavedNotice*s){return s->getVisible();});c.addFunc("getPathVisible",[](const PcgScreenshotSavedNotice*s){return s->getPathVisible();});c.addFunc("getPath",[](const PcgScreenshotSavedNotice*s){return s->getPath();});c.addFunc("getPending",[](const PcgScreenshotSavedNotice*s){return s->getPending();});}
+}

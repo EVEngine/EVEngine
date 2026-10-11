@@ -14,6 +14,9 @@
 #include <string>
 
 namespace eve::graphics {
+
+/** @brief Number of strongest vertex influences retained by GPU skinning. */
+enum class SkinInfluenceLimit : int { One = 1, Two = 2, Four = 4 };
 struct PbrSurface;
 
 
@@ -106,11 +109,17 @@ public:
     virtual void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) = 0;
     virtual void setMesh3DShadows(const ShadowUpload &upload) = 0;
     virtual void setMesh3DShadowReceive(bool receive) = 0;
+    /** @brief Select the influence limit consumed by subsequent mesh draws. */
+    virtual void setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) = 0;
 
     virtual void beginShadowPass(int cascadeIndex) = 0;
-    virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) = 0;
+    /** @brief Queue an opaque caster with explicit face-culling policy. */
+    virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, bool doubleSided = true) = 0;
+    /** @brief Queue an alpha-cutout caster with explicit face-culling policy. */
     virtual void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
-                                     Texture *albedo = nullptr) = 0;
+                                     Texture *albedo = nullptr, bool doubleSided = true,
+                                     float lodWeight = 1.f, bool lodFadeReverse = false,
+                                     bool lodDither = false) = 0;
     virtual void endShadowPass() = 0;
 
     virtual void beginGBufferPass(int width, int height) = 0;

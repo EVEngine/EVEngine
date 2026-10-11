@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/vec3.hpp>
+
 namespace eve::graphics {
 
 class Canvas;
@@ -20,13 +22,24 @@ public:
      * @param automatic Enable percentile metering and eye adaptation.
      * @param minEV Minimum automatic exposure EV.
      * @param maxEV Maximum automatic exposure EV.
+     * @param colorFilter Non-negative linear RGB multiplier applied after exposure.
+     * @param lift HDR shadow offsets applied before the signed gamma operation.
+     * @param inverseGamma Positive HDR midtone exponents.
+     * @param gain HDR highlight multipliers applied before lift.
+     * @param vignette Normalized radial edge-darkening strength.
+     * @param vignetteSmoothness Classic vignette border smoothness in [0.01,1].
+     * @param lensDistortion Normalized radial UV-distortion strength.
+     * @param lensScale Global lens image scale in [0.01,5].
      * @param meterSource Optional pre-bloom HDR source used for luminance metering.
      * @param deltaSeconds Frame delta used by eye adaptation.
      * @return Full-resolution pre-exposed linear HDR texture.
      * @lifetime The returned texture is owned by this Exposure until the next target resize.
      */
     Texture *apply(Texture *source, float manualExposure, bool automatic, float minEV,
-                   float maxEV, Texture *meterSource = nullptr,
+                   float maxEV, const glm::vec3& colorFilter, const glm::vec3& lift,
+                   const glm::vec3& inverseGamma, const glm::vec3& gain, float vignette,
+                   float vignetteSmoothness, float lensDistortion, float lensScale,
+                   Texture *meterSource = nullptr,
                    float deltaSeconds = 1.f / 60.f);
 
     /** @brief Invalidate eye-adaptation history, for camera cuts and mode changes. */

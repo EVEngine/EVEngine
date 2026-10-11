@@ -23,6 +23,7 @@ import re
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = ROOT / "cmake" / "module_manifest.cmake"
@@ -270,4 +271,5 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

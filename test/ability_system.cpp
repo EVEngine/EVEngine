@@ -76,6 +76,45 @@ TEST_CASE("abilitySystem.cooldownsUseOnlyInjectedDeterministicDuration") {
     CHECK(!abilities.advanceCooldowns(eve::Duration::fromNanoseconds(-1)).ok());
 }
 
+TEST_CASE("abilitySystem.hotReloadPreservesGrantsAndActiveDefinitionSnapshots") {
+    eve::action::ActionRuntime  runtime;
+    eve::action::AbilityRuntime abilities(runtime);
+    auto                        original = ability("strike", eve::action::AbilityInstancingPolicy::PerExecution,
+                                                   eve::action::AbilityActivationGroup::Independent);
+    original.action.timing.active = eve::Duration::fromNanoseconds(100);
+    REQUIRE(abilities.registerDefinition(original).ok());
+    auto grant = abilities.grant("fighter", original.id);
+    REQUIRE(grant.ok());
+    auto first = abilities.activate(grant.value(), requestFor(original), eve::SimulationTick(1));
+    REQUIRE(first.ok());
+
+    auto replacement                 = original;
+    replacement.action.id            = logicalId("action", "strike-v2");
+    replacement.action.timing.active = eve::Duration::fromNanoseconds(250);
+    REQUIRE(abilities.replaceDefinition(replacement).ok());
+    REQUIRE(runtime.find(first.value().executionId) != nullptr);
+    CHECK(runtime.find(first.value().executionId)->definition().id == original.action.id);
+    CHECK(runtime.find(first.value().executionId)->definition().timing.active == eve::Duration::fromNanoseconds(100));
+
+    REQUIRE(runtime.cancel(first.value().executionId, eve::SimulationTick(2)).ok());
+    REQUIRE(abilities.synchronize().ok());
+    auto second = abilities.activate(grant.value(), requestFor(replacement), eve::SimulationTick(3));
+    REQUIRE(second.ok());
+    REQUIRE(runtime.find(second.value().executionId) != nullptr);
+    CHECK(runtime.find(second.value().executionId)->definition().id == replacement.action.id);
+    CHECK(runtime.find(second.value().executionId)->definition().timing.active == eve::Duration::fromNanoseconds(250));
+
+    auto missing = replacement;
+    missing.id   = logicalId("ability", "missing");
+    CHECK(!abilities.replaceDefinition(missing).ok());
+    auto invalid                 = replacement;
+    invalid.action.timing.active = eve::Duration::fromNanoseconds(-1);
+    CHECK(!abilities.replaceDefinition(invalid).ok());
+    auto incompatible       = replacement;
+    incompatible.instancing = eve::action::AbilityInstancingPolicy::PerOwner;
+    CHECK(!abilities.replaceDefinition(incompatible).ok());
+}
+
 TEST_CASE("abilitySystem.exclusiveGroupsReplaceOrBlockDeterministically") {
     eve::action::ActionRuntime  runtime;
     eve::action::AbilityRuntime abilities(runtime);

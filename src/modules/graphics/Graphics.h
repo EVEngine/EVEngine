@@ -14,6 +14,7 @@
 #include "common/Module.h"
 #include "common/Result.h"
 #include "common/WindowSurfaceHost.h"
+#include "common/FramePresentation.h"
 #include "graphics/BlendMode.h"
 #include "graphics/Canvas.h"
 #include "graphics/Color.h"
@@ -90,6 +91,7 @@ class Quad;
 class RenderControl;
 class Renderable2D;
 class AlphaMask;
+class DepthOfField;
 class MapFog;
 class ScreenSpaceReflection;
 class Shader;
@@ -116,7 +118,8 @@ class Graphics : public Module,
                  public ICanvasTarget,
                  public IResourceFactory,
                  public ISolidRectRenderer,
-                 public IPostFX {
+                 public IPostFX,
+                 public IFramePresentation {
 public:
     Module_REG(Graphics);
     Graphics();
@@ -134,9 +137,8 @@ public:
     virtual void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
                                       float a = 1.f);
     /** @brief 绕矩形中心旋转 `degrees` 度（顺时针，屏幕 Y 向下）的贴图绘制。 */
-    virtual void drawTexturedRectRotatedRGBA(Texture *texture, float cx, float cy, float w, float h,
-                                             float degrees, float r, float g, float b,
-                                             float a = 1.f);
+    virtual void drawTexturedRectRotatedRGBA(Texture* texture, float cx, float cy, float w, float h, float degrees,
+                                             float r, float g, float b, float a = 1.f);
     /** @brief RGBA-float overload matching the script-facing drawSolidRect name. */
     virtual void drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
     /** @brief RGBA-float overload matching the script-facing drawTexturedRect name. */
@@ -149,6 +151,8 @@ public:
     /** Upload RGBA8 ImageData; optional seamless repeat on U/V.
      *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
      *  releaseTexture); callers must not delete it. */
+    /** @ownership Input remains caller-owned; result is Graphics-owned.
+     * @lifetime Input is call-only; result lives until released. */
     Texture *newTextureFromImageData(image::ImageData *data, bool repeatU = false,
                                      bool repeatV = false);
     /** @brief Upload RGBA8 ImageData with mipmaps / filter / anisotropy options. */
@@ -162,16 +166,14 @@ public:
      * @thread Render-thread affine.
      * @reentrancy Does not invoke user callbacks.
      */
-    [[nodiscard]] eve::Result<void> updateTextureFromImageData(Texture *texture,
-                                                               image::ImageData *data);
+    [[nodiscard]] eve::Result<void> updateTextureFromImageData(Texture* texture, image::ImageData* data);
 
     /**
      * @brief Script-friendly texture create: filter = "linear"|"nearest", mipmap = "none"|"linear"|"nearest".
      * generateMipmaps builds a full mip chain; maxAnisotropy > 1 enables anisotropic filtering.
      */
-    Texture *newTextureWithSampler(image::ImageData *data, bool repeatU, bool repeatV,
-                                   bool generateMipmaps, float maxAnisotropy,
-                                   const std::string &filter, const std::string &mipmap,
+    Texture* newTextureWithSampler(image::ImageData* data, bool repeatU, bool repeatV, bool generateMipmaps,
+                                   float maxAnisotropy, const std::string& filter, const std::string& mipmap,
                                    float lodBias = 0.f);
 
     /**
@@ -228,7 +230,10 @@ public:
     virtual void gpuDrivenSetEnabled(bool enabled) { (void)enabled; }
 
     /** @brief GPU mesh-table slot for a mesh (kInvalidGpuDrivenSlot when not uploaded). */
-    virtual uint32_t gpuDrivenMeshRecord(Mesh *mesh) { (void)mesh; return kInvalidGpuDrivenSlot; }
+    virtual uint32_t gpuDrivenMeshRecord(Mesh* mesh) {
+        (void)mesh;
+        return kInvalidGpuDrivenSlot;
+    }
 
     /** @brief GPU material-table slot for a material (lazily created). */
     virtual uint32_t gpuDrivenMaterialRecord(Material *material) {
@@ -274,10 +279,8 @@ public:
 
     /** @brief Upload one simulation step and optional spawn commands.
      * @compatibility Preserves the established GPU-particle boolean submission contract. */
-    virtual bool updateGpuParticleEmitter(GpuParticleHandle handle,
-                                          const GpuParticleUpdate& update,
-                                          const GpuParticleSpawn* spawns,
-                                          std::uint32_t spawnCount) {
+    virtual bool updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
+                                          const GpuParticleSpawn* spawns, std::uint32_t spawnCount) {
         (void)handle;
         (void)update;
         (void)spawns;
@@ -340,8 +343,8 @@ public:
     }
 
     /** @brief Record the cull + emit compute dispatches for the current frame. */
-    virtual void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
-                                   float nearZ, float farZ) {
+    virtual void gpuDrivenCullEmit(const glm::mat4& viewProj, const glm::vec3& eye, float fovYDeg, float nearZ,
+                                   float farZ) {
         (void)viewProj;
         (void)eye;
         (void)fovYDeg;
@@ -395,6 +398,7 @@ public:
      * @brief Register one instance of a VG asset this frame (model + material).
      * The first instance per asset wins; returns false for unknown assets.
      */
+    /** @compatibility Legacy boolean facade over backend submission status. */
     virtual bool gpuDrivenVgSetInstance(std::uint32_t vgAssetId, const glm::mat4 &model,
                                         std::uint32_t materialId) {
         (void)vgAssetId;
@@ -404,8 +408,8 @@ public:
     }
 
     /** @brief Record the HZB build + cull-params section (VG-only frames). */
-    virtual void gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
-                                           float fovYDeg, float nearZ, float farZ) {
+    virtual void gpuDrivenVgComputeSection(const glm::mat4& viewProj, const glm::vec3& eye, float fovYDeg, float nearZ,
+                                           float farZ) {
         (void)viewProj;
         (void)eye;
         (void)fovYDeg;
@@ -443,9 +447,7 @@ public:
     int getPixelWidth() const { return pixelWidth; }
     int getPixelHeight() const { return pixelHeight; }
 
-    double getCurrentDPIScale() const {
-        return (width > 0) ? double(pixelWidth) / double(width) : 1.0;
-    }
+    double getCurrentDPIScale() const { return (width > 0) ? double(pixelWidth) / double(width) : 1.0; }
     double getScreenDPIScale() const { return getCurrentDPIScale(); }
 
     /**
@@ -461,8 +463,7 @@ public:
                                BlendMode blend = BlendMode::Alpha) = 0;
 
     /** @brief Rotated solid quad `degrees` clockwise (screen Y-down) around (cx, cy). */
-    virtual void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
-                                      const Color &color,
+    virtual void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees, const Color& color,
                                       BlendMode blend = BlendMode::Alpha) = 0;
 
     /** Create RGBA8 texture from CPU pixels (size = width*height*4).
@@ -474,8 +475,7 @@ public:
     /** Create RGBA8 texture with explicit sampler / mipmap options.
      *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
      *  releaseTexture); callers must not delete it. */
-    virtual Texture *newTexture(int width, int height, const uint8_t *rgba,
-                                const TextureCreateInfo &info) = 0;
+    virtual Texture* newTexture(int width, int height, const uint8_t* rgba, const TextureCreateInfo& info) = 0;
 
     /**
      * @brief Create an RGBA8 cubemap from 6 faces packed as +X,-X,+Y,-Y,+Z,-Z
@@ -484,6 +484,8 @@ public:
     virtual Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) = 0;
 
     /** @brief Cubemap with GGX specular mips and final diffuse-irradiance mip. */
+    /** @ownership Pixels remain caller-owned; result is Graphics-owned.
+     * @lifetime Pixels are call-only; result lives until released. */
     virtual Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                                 const TextureCreateInfo &info) = 0;
 
@@ -520,8 +522,7 @@ public:
      * @return True when every requested face copy was submitted.
      * @compatibility Preserves the established backend boolean submission contract.
      */
-    virtual bool copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
-                                          Texture *cubemap) {
+    virtual bool copyHDRCanvasesToCubemap(Canvas* const* sources, int faceCount, Texture* cubemap) {
         if (!sources || faceCount < 1 || faceCount > 6) return false;
         for (int face = 0; face < faceCount; ++face)
             if (!copyHDRCanvasToCubemapFace(sources[face], cubemap, face)) return false;
@@ -552,8 +553,8 @@ public:
      * texture instead. Returns false when the texture is not owned by this
      * backend or the backend does not support in-place updates.
      */
-    virtual bool updateTexture(Texture *texture, int width, int height,
-                               const uint8_t *rgba) = 0;
+    /** @compatibility Legacy boolean facade; updateTextureRegion is the canonical Result API. */
+    virtual bool updateTexture(Texture *texture, int width, int height, const uint8_t *rgba) = 0;
 
     /**
      * @brief Copy a same-device resident RGBA8 buffer into an existing texture.
@@ -599,9 +600,9 @@ public:
      * @lifetime `texture` and `rgba` must remain valid only for this render-thread call.
      * @remarks Textures with mip chains are rejected because partial mip regeneration is undefined.
      */
-    [[nodiscard]] virtual eve::Result<void> updateTextureRegion(
-        Texture *texture, int x, int y, int width, int height,
-        std::span<const std::uint8_t> rgba, std::size_t bytesPerRow = 0) = 0;
+    [[nodiscard]] virtual eve::Result<void> updateTextureRegion(Texture* texture, int x, int y, int width, int height,
+                                                                std::span<const std::uint8_t> rgba,
+                                                                std::size_t                   bytesPerRow = 0) = 0;
 
     /**
      * @brief Validate then upload multiple independent mip-zero RGBA8 regions as one batch.
@@ -612,8 +613,8 @@ public:
      * @lifetime All arguments need remain valid only through this render-thread call.
      * @remarks Vulkan guarantees one staging allocation and queue submission for the batch.
      */
-    [[nodiscard]] virtual eve::Result<void> updateTextureRegions(
-        Texture *texture, std::span<const TextureRegionUpload> regions) = 0;
+    [[nodiscard]] virtual eve::Result<void> updateTextureRegions(Texture*                             texture,
+                                                                 std::span<const TextureRegionUpload> regions) = 0;
 
     /**
      * @brief Recreate the sampler for an existing texture (keeps image / mip chain).
@@ -667,30 +668,27 @@ public:
 
     /** Draw a textured quad (full UV 0..1). texture may be null → solid.
      *  Uses currentShader when set (or per-call override via drawTexturedRectShader). */
-    virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
-                                  const Color &color) = 0;
+    virtual void drawTexturedRect(Texture* texture, float x, float y, float w, float h, const Color& color) = 0;
 
     /** @brief Draw with an explicit Shader (nullptr = default textured pipeline). */
-    virtual void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w,
-                                        float h, const Color &color) = 0;
+    virtual void drawTexturedRectShader(Texture* texture, Shader* shader, float x, float y, float w, float h,
+                                        const Color& color) = 0;
 
     /** @brief Draw a textured sub-rect (atlas / tile UVs). texture may be null → solid. */
-    virtual void drawTexturedRectUV(Texture *texture, float x, float y, float w, float h, float u0,
-                                    float v0, float u1, float v1, const Color &color) = 0;
+    virtual void drawTexturedRectUV(Texture* texture, float x, float y, float w, float h, float u0, float v0, float u1,
+                                    float v1, const Color& color) = 0;
 
     /** @brief UV draw with an explicit Shader (nullptr = default textured pipeline). */
-    virtual void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y,
-                                          float w, float h, float u0, float v0, float u1, float v1,
-                                          const Color &color, bool rotatedUV = false,
-                                          BlendMode blend = BlendMode::Alpha) = 0;
+    virtual void drawTexturedRectShaderUV(Texture* texture, Shader* shader, float x, float y, float w, float h,
+                                          float u0, float v0, float u1, float v1, const Color& color,
+                                          bool rotatedUV = false, BlendMode blend = BlendMode::Alpha) = 0;
 
     /**
      * @brief UV draw rotated `degrees` clockwise (screen Y-down) around the rect center.
      * texture may be null → solid. Shader nullptr = default textured pipeline.
      */
-    virtual void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx,
-                                                 float cy, float w, float h, float degrees,
-                                                 float u0, float v0, float u1, float v1,
+    virtual void drawTexturedRectShaderUVRotated(Texture* texture, Shader* shader, float cx, float cy, float w, float h,
+                                                 float degrees, float u0, float v0, float u1, float v1,
                                                  const Color &color, bool rotatedUV = false,
                                                  BlendMode blend = BlendMode::Alpha) = 0;
 
@@ -698,25 +696,20 @@ public:
      * @brief Fullscreen/post draw sampling `color` at binding 0 and `depth` at binding 1
      * (hardware D32, .r = Vulkan NDC z). depth may be null → color is bound twice.
      */
-    virtual void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader,
-                                             float x, float y, float w, float h,
-                                             const Color &tint) = 0;
+    virtual void drawTexturedRectShaderDepth(Texture* color, Texture* depth, Shader* shader, float x, float y, float w,
+                                             float h, const Color& tint) = 0;
 
     /** @brief Post draw with color, depth/history and motion/reactive textures. */
-    virtual void drawTexturedRectShaderDepthMotion(Texture *color, Texture *depth,
-                                                   Texture *motion, Shader *shader, float x,
-                                                   float y, float w, float h,
-                                                   const Color &tint) = 0;
+    virtual void drawTexturedRectShaderDepthMotion(Texture* color, Texture* depth, Texture* motion, Shader* shader,
+                                                   float x, float y, float w, float h, const Color& tint) = 0;
 
     /** @brief Post draw with four sampled textures at bindings 0, 1, 2 and 3. */
-    virtual void drawTexturedRectShader4(Texture *color, Texture *depth, Texture *motion,
-                                         Texture *extra, Shader *shader, float x, float y,
-                                         float w, float h, const Color &tint) = 0;
+    virtual void drawTexturedRectShader4(Texture* color, Texture* depth, Texture* motion, Texture* extra,
+                                         Shader* shader, float x, float y, float w, float h, const Color& tint) = 0;
 
     /** @brief Post draw with five sampled textures at bindings 0 through 4. */
-    virtual void drawTexturedRectShader5(Texture *color, Texture *depth, Texture *motion,
-                                         Texture *extra, Texture *specular, Shader *shader,
-                                         float x, float y, float w, float h,
+    virtual void drawTexturedRectShader5(Texture* color, Texture* depth, Texture* motion, Texture* extra,
+                                         Texture* specular, Shader* shader, float x, float y, float w, float h,
                                          const Color &tint) = 0;
 
     /**
@@ -729,9 +722,10 @@ public:
      */
     enum class SceneColorDistortionStatus { Queued, Unavailable };
 
-    virtual SceneColorDistortionStatus drawSceneColorDistortionUVRotated(
-        Texture* displacement, float cx, float cy, float w, float h, float degrees, float u0,
-        float v0, float u1, float v1, float strengthPixels, float opacity,
+    virtual SceneColorDistortionStatus drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy,
+                                                                         float w, float h, float degrees, float u0,
+                                                                         float v0, float u1, float v1,
+                                                                         float strengthPixels, float opacity,
         bool rotatedUV = false) {
         return SceneColorDistortionStatus::Unavailable;
     }
@@ -740,9 +734,8 @@ public:
      * @brief Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D.
      * normal may be null → treated as flat (0.5,0.5,1) only if a default normal tex exists.
      */
-    virtual void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w,
-                                       float h, float u0, float v0, float u1, float v1,
-                                       const Color &color) = 0;
+    virtual void drawTexturedRectLitUV(Texture* albedo, Texture* normal, float x, float y, float w, float h, float u0,
+                                       float v0, float u1, float v1, const Color& color) = 0;
 
     /** @brief Upload per-frame / per-canvas 2D lighting constants for subsequent lit draws. */
     virtual void setLighting2D(const Lighting2DUBO &ubo) = 0;
@@ -766,8 +759,14 @@ public:
      * posXYZ required (vertexCount*3). nrmXYZ/uvST may be null (flat normal / zero UV).
      * indices required (indexCount, triangles).
      */
+    /** @ownership Arrays remain caller-owned; result is Graphics-owned.
+     * @lifetime Arrays are call-only; result lives until released. */
     virtual Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                                     int vertexCount, const uint32_t *indices, int indexCount) = 0;
+    /** @brief Upload a triangle mesh with an optional packed RGBA color per vertex. */
+    virtual Mesh *newMeshFromArraysColored(const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                                           const float *colorRGBA, int vertexCount,
+                                           const uint32_t *indices, int indexCount) = 0;
 
     /**
      * @brief Describe a live mesh created by this Graphics backend.
@@ -788,11 +787,13 @@ public:
      * posXYZ/nrmXYZ follow newMeshFromArrays layout (uvST may be null);
      * indices/indexCount may be null/0 to keep the mesh's existing indices.
      */
+    /** @compatibility Legacy boolean mesh update facade. */
     virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
                                     const float *uvST, int vertexCount, const uint32_t *indices,
                                     int indexCount) = 0;
 
     /** @brief Upload four joint indices and weights per vertex for built-in GPU skinning. */
+    /** @compatibility Legacy boolean skinning upload facade. */
     virtual bool setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
                                      int vertexCount) {
         (void)mesh;
@@ -862,9 +863,7 @@ public:
     virtual void drawScene3DRGBA(float x, float y, float w, float h, float r = 1.f, float g = 1.f, float b = 1.f,
                                  float a = 1.f);
     /** @brief Script-friendly 4-arg form (simplesquirrel does not apply C++ defaults). */
-    void drawScene3D(float x, float y, float w, float h) {
-        drawScene3DRGBA(x, y, w, h, 1.f, 1.f, 1.f, 1.f);
-    }
+    void drawScene3D(float x, float y, float w, float h) { drawScene3DRGBA(x, y, w, h, 1.f, 1.f, 1.f, 1.f); }
 
     /** @brief Draw a Canvas color buffer as a textured rect (same batch order as other 2D). */
     virtual void drawCanvasRGBA(Canvas *canvas, float x, float y, float w, float h, float r = 1.f, float g = 1.f,
@@ -898,23 +897,20 @@ public:
      * After endGBufferPass, textures are available via getRenderControl()->getGBuffer().
      */
     virtual void beginGBufferPass(int width, int height) = 0;
-    virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                 float nearZ, float farZ, Texture *albedo = nullptr,
-                                 float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
-                                 float motionX = 0.f, float motionY = 0.f,
-                                 float roughness = 0.45f, float metallic = 0.f) = 0;
+    virtual void drawMeshGBuffer(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
+                                 Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                                 float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f,
+                                 float metallic = 0.f)   = 0;
     /**
      * @brief GBuffer fill with alpha-cutout discard (card/billboard geometry such as
      * sprite-stack slices): same outputs as drawMeshGBuffer, but transparent
      * texels are discarded so depth/normal follow the silhouette. No-op on
      * backends without the alpha pipeline (WebGPU).
      */
-    virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                      float nearZ, float farZ, Texture *albedo = nullptr,
-                                      float tintR = 1.f, float tintG = 1.f,
-                                      float tintB = 1.f, float motionX = 0.f,
-                                      float motionY = 0.f, float roughness = 0.45f,
-                                      float metallic = 0.f) = 0;
+    virtual void drawMeshGBufferAlpha(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
+                                      Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
+                                      float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
+                                      float roughness = 0.45f, float metallic = 0.f) = 0;
     virtual void endGBufferPass() = 0;
 
     /**
@@ -972,6 +968,8 @@ public:
         glm::mat4 model{1.f};
         glm::vec4 idColor{0.f, 0.f, 0.f, 1.f};
     };
+    /** @ownership Result transfers to caller.
+     * @lifetime Draw inputs are borrowed only for this call. */
     virtual image::ImageData *renderEntityIdMask(const std::vector<EntityIdDraw> &draws,
                                                  const glm::mat4 &viewProj, int w, int h) {
         (void)draws;
@@ -1039,6 +1037,9 @@ public:
     /** @brief Optional normal map for the next drawMesh / drawMeshShader (nullptr = flat). */
     virtual void setMesh3DNormalTexture(Texture *normal) = 0;
 
+    /** @brief Interpret normal texture RG as tangent XY, B as AO and A as smoothness for terrain surfaces. */
+    virtual void setMesh3DPackedNormalMask(bool enabled) = 0;
+
     /** @brief Optional height map for parallax (R channel; nullptr = flat / off). */
     virtual void setMesh3DHeightTexture(Texture *height) = 0;
 
@@ -1048,8 +1049,7 @@ public:
      * When enabled, albedo/normal are physical atlases and height is the RGBA8 page table.
      * Disabled preserves ordinary material sampling. Values are copied immediately.
      */
-    virtual void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
-                                         int atlasSlotsX, int atlasSlotsY,
+    virtual void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY, int atlasSlotsX, int atlasSlotsY,
                                          float borderFraction) = 0;
 
     /**
@@ -1071,27 +1071,21 @@ public:
     virtual void setMesh3DSceneColor(Texture *color) = 0;
 
     /** @brief Observable result of requesting a same-frame mesh SceneColor snapshot. */
-    enum class Mesh3DSceneColorCaptureStatus {
-        ExplicitOverride,
-        Scheduled,
-        Captured,
-        HistoryFallback,
-        Unavailable
-    };
+    enum class Mesh3DSceneColorCaptureStatus { ExplicitOverride, Scheduled, Captured, HistoryReuse, Unavailable };
 
     /**
      * @brief Make opaque scene color available to subsequent refractive mesh draws.
      *
      * Backends may capture immediately or defer the split until command encoding.
      * An explicit texture installed by setMesh3DSceneColor takes precedence. A
-     * HistoryFallback result is observable quality degradation, not same-frame data.
+     * HistoryReuse is observable quality degradation because it is not same-frame data.
      *
      * @return Capture disposition for the current render frame.
      * @thread Render-thread affine; call immediately before the first refractive draw.
      * @reentrancy Does not invoke scripts or caller callbacks.
      */
     [[nodiscard]] virtual Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() {
-        return Mesh3DSceneColorCaptureStatus::HistoryFallback;
+        return Mesh3DSceneColorCaptureStatus::HistoryReuse;
     }
 
     /** @brief Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
@@ -1108,9 +1102,8 @@ public:
     }
 
     /** @brief Select pipeline state for subsequent mesh draws. */
-    virtual void setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
-                                  bool doubleSided, float alphaCutoff,
-                                  const std::string &alphaTechnique = "cutoff") = 0;
+    virtual void setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite, bool doubleSided,
+                                  float alphaCutoff, const std::string& alphaTechnique = "cutoff") = 0;
 
     /**
      * @brief Texture cell bombing for the next default mesh draw (breaks tiling).
@@ -1126,6 +1119,9 @@ public:
      */
     virtual void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) = 0;
 
+    /** @brief Set opaque LOD dither coverage for the next default mesh draw. Render-thread only. */
+    virtual void setMesh3DLodDither(float weight, bool reverse, bool enabled) = 0;
+
     /** @brief Per-frame ambient + up to 8 lights packed into Mesh3DUBO. */
     virtual void setMesh3DLighting(const Lighting3DPack &pack) = 0;
 
@@ -1134,8 +1130,8 @@ public:
      * strength 0 disables (no change to rendering). time advances wind drift.
      * Packed into Mesh3DUBO.cloud / cloudWind and consumed by mesh3d shaders.
      */
-    virtual void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
-                                 float windAngle, float coverage, float detail) = 0;
+    virtual void setCloudShadows(float strength, float worldCell, float time, float windSpeed, float windAngle,
+                                 float coverage, float detail) = 0;
 
     /**
      * @brief Enable clustered forward path for subsequent default mesh draws (SSBO light lists).
@@ -1170,9 +1166,8 @@ public:
      * Requires begin3DFrame(); uses viewProj from setMesh3DViewProj.
      * atlas may be null → white; tilesPerRow subdivides atlas for texture indices.
      */
-    virtual void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
-                                        float originY, float originZ, const std::string &faceDir,
-                                        Texture *atlas, int tilesPerRow = 16,
+    virtual void drawVoxelFaceInstances(const uint32_t* packed, int count, float originX, float originY, float originZ,
+                                        const std::string& faceDir, Texture* atlas, int tilesPerRow = 16,
                                         const uint32_t *ao = nullptr) = 0;
 
     /**
@@ -1241,6 +1236,29 @@ public:
     virtual void setSceneExposure(float exposure) = 0;
     /** @brief Current linear manual exposure multiplier. */
     virtual float getSceneExposure() const = 0;
+    /** @brief Set a non-negative linear RGB multiplier applied during final HDR exposure. */
+    virtual void setSceneColorFilter(const glm::vec3& color) = 0;
+    /** @brief Current linear RGB multiplier applied during final HDR exposure. */
+    virtual glm::vec3 getSceneColorFilter() const = 0;
+    /** @brief Set pre-tonemap HDR lift, inverse-gamma and gain coefficients. */
+    virtual void setSceneLiftGammaGain(const glm::vec3& lift, const glm::vec3& inverseGamma, const glm::vec3& gain) = 0;
+    /** @brief Current pre-tonemap lift coefficients. */
+    virtual glm::vec3 getSceneLift() const = 0;
+    /** @brief Current pre-tonemap inverse-gamma coefficients. */
+    virtual glm::vec3 getSceneInverseGamma() const = 0;
+    /** @brief Current pre-tonemap gain coefficients. */
+    virtual glm::vec3 getSceneGain() const = 0;
+    /** @brief Set final-composite vignette and radial lens distortion strengths in [0,1]. */
+    virtual void setSceneTransitionFx(float vignette, float vignetteSmoothness, float lensDistortion,
+                                      float lensScale) = 0;
+    /** @brief Return the final-composite vignette strength. */
+    virtual float getSceneTransitionVignette() const = 0;
+    /** @brief Return the final-composite vignette smoothness. */
+    virtual float getSceneTransitionVignetteSmoothness() const = 0;
+    /** @brief Return the final-composite radial lens-distortion strength. */
+    virtual float getSceneTransitionLensDistortion() const = 0;
+    /** @brief Return the final-composite lens scaling factor. */
+    virtual float getSceneTransitionLensScale() const = 0;
     /** @brief Configure log-average scene auto exposure and its EV clamp range. */
     virtual void setSceneAutoExposure(bool enabled, float minEV, float maxEV) = 0;
     /** @brief Whether automatic exposure is active. */
@@ -1278,21 +1296,31 @@ public:
     virtual void setMesh3DShadowReceive(bool receive) = 0;
 
     /**
+     * @brief Limit GPU skinning to the strongest one, two or four vertex influences.
+     * @param count Influence count; Auto and Bone4 resolve to Four before this call.
+     * @thread Render-thread state consumed by subsequent mesh draws.
+     */
+    virtual void setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) = 0;
+
+    /**
      * @brief Depth-only shadow pass for one cascade layer (0..2). Draws are recorded
      * into the next begin3DFrame command buffer (ping-pong map per frame slot).
      * Call before begin3DFrame.
      */
     virtual void beginShadowPass(int cascadeIndex) = 0;
-    virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) = 0;
+    /** @brief Queue an opaque shadow caster. @param mesh Borrowed for this frame. @param lightMVP Light transform.
+     * @param doubleSided True disables face culling; false culls back faces. */
+    virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, bool doubleSided = true) = 0;
     /**
      * @brief Shadow pass draw with alpha-cutout discard (card/billboard geometry such
      * as sprite-stack slices): transparent texels of `albedo` are discarded so
      * the slice casts a silhouette shadow instead of a solid quad. Requires an
-     * active shadow pass (beginShadowPass). No-op on backends without the
-     * alpha shadow pipeline (WebGPU).
+     * active shadow pass (beginShadowPass).
+     * @param doubleSided True disables face culling; false culls back faces.
      */
-    virtual void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
-                                     Texture *albedo = nullptr) = 0;
+    virtual void drawMeshShadowAlpha(Mesh* mesh, const glm::mat4& lightMVP, Texture* albedo = nullptr,
+                                     bool doubleSided = true, float lodWeight = 1.f,
+                                     bool lodFadeReverse = false, bool lodDither = false) = 0;
     virtual void endShadowPass() = 0;
 
     /** @brief True after begin3DFrame until present completes. */
@@ -1336,6 +1364,8 @@ public:
      */
     virtual void setVSync(bool enabled) { vsyncEnabled = enabled; }
     bool isVSync() const { return vsyncEnabled; }
+    void setVSyncCount(int count) override { presentationVSyncCount_=count;setVSync(count!=0); }
+    int getVSyncCount() const noexcept override{return presentationVSyncCount_;}
 
     /**
      * @brief Hardware MSAA sample count for the 3D scene color pass (0 disables, then
@@ -1348,8 +1378,7 @@ public:
     /** @brief Pause/resume presenting (Android background / foreground). */
     void setActive(bool active) override {
         graphicsActive = active;
-        if (active)
-            markSwapchainDirty();
+        if (active) markSwapchainDirty();
     }
     bool isActive() const { return graphicsActive; }
 
@@ -1435,8 +1464,8 @@ public:
      * @throws eve::Exception if no current font has been selected.
      * @note Render-thread only. The call is synchronous and invokes no callbacks.
      */
-    virtual void print(const std::string &text, float x, float y,
-                       const Color &color = Color(1.f, 1.f, 1.f, 1.f), float scale = 1.f);
+    virtual void print(const std::string& text, float x, float y, const Color& color = Color(1.f, 1.f, 1.f, 1.f),
+                       float scale = 1.f);
 
     /**
      * @brief Draw UTF-8 text with an explicitly supplied GPU font.
@@ -1468,8 +1497,8 @@ public:
      * @throws eve::Exception if `font` is nullptr.
      * @note Render-thread only. The call retains no arguments and invokes no callbacks.
      */
-    void drawTextRGBA(Font *font, const std::string &text, float x, float y, float r, float g,
-                      float b, float a, float scale = 1.f) {
+    void drawTextRGBA(Font* font, const std::string& text, float x, float y, float r, float g, float b, float a,
+                      float scale = 1.f) {
         drawText(font, text, x, y, Color(r, g, b, a), scale);
     }
 
@@ -1486,8 +1515,7 @@ public:
      * @throws eve::Exception if no current font has been selected.
      * @note Render-thread only. The call retains no arguments and invokes no callbacks.
      */
-    void printRGBA(const std::string &text, float x, float y, float r, float g, float b, float a,
-                   float scale = 1.f) {
+    void printRGBA(const std::string& text, float x, float y, float r, float g, float b, float a, float scale = 1.f) {
         print(text, x, y, Color(r, g, b, a), scale);
     }
 
@@ -1523,6 +1551,8 @@ public:
      * depth sampler 3, Externals UBO 4) and vs_main/fs_main entry points.
      * Vulkan throws (uses SPIR-V via newShaderFromSpv).
      */
+    /** @ownership Result is Graphics-owned.
+     * @lifetime Sources are call-only; result lives until released. */
     virtual Shader *newShaderFromWgsl(const std::string &vertWgsl,
                                       const std::string &fragWgsl) = 0;
 
@@ -1537,8 +1567,7 @@ public:
      *       renderable/material references remain bound to the last successfully published pipeline.
      * @lifetime `shader` remains owned by this Graphics instance and keeps the same address.
      */
-    [[nodiscard]] virtual Result<void> replaceShaderFromSpv(
-        Shader &shader, const std::vector<uint32_t> &vertSpv,
+    [[nodiscard]] virtual Result<void> replaceShaderFromSpv(Shader& shader, const std::vector<uint32_t>& vertSpv,
         const std::vector<uint32_t> &fragSpv) = 0;
 
     /**
@@ -1574,8 +1603,8 @@ public:
      * @note Main/render-thread only and not reentrant. Vulkan reports Unsupported without mutation.
      * @lifetime `shader` remains owned by this Graphics instance and keeps the same address.
      */
-    [[nodiscard]] virtual Result<void> replaceShaderFromWgsl(
-        Shader &shader, const std::string &vertWgsl, const std::string &fragWgsl) = 0;
+    [[nodiscard]] virtual Result<void> replaceShaderFromWgsl(Shader& shader, const std::string& vertWgsl,
+                                                             const std::string& fragWgsl) = 0;
 
     /**
      * @brief Compile GLSL and transactionally replace an existing shader.
@@ -1643,6 +1672,7 @@ public:
     Shader *newMeshShaderVF(const std::string &vertGlsl, const std::string &fragGlsl) {
         return newMeshShader(vertGlsl, fragGlsl);
     }
+    /** @ownership Result is Graphics-owned. @lifetime Source is call-only; result lives until released. */
     Shader *newMeshShader(const std::string &fragGlsl) {
         return newMeshShader(std::string(), fragGlsl);
     }
@@ -1654,8 +1684,7 @@ public:
     virtual Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                          const std::vector<uint32_t> &fragSpv) = 0;
     /** @brief Create an alpha-blended hair/card shader from WGSL on WebGPU. */
-    virtual Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
-                                          const std::string &fragWgsl) = 0;
+    virtual Shader* newHairShaderFromWgsl(const std::string& vertWgsl, const std::string& fragWgsl) = 0;
     /** @brief Built-in hair shader with default anisotropic parameters. */
     Shader *newHairShader();
 
@@ -1695,6 +1724,17 @@ public:
      * Owned by Graphics. See grass:: / GrassField.
      */
     Shader *newGrassShader();
+
+    /**
+     * @brief Create a backend-native tree wind shader using the default Mesh3D PBR fragment stage.
+     *
+     * @ownership Graphics owns the returned shader; callers borrow it.
+     * @lifetime Valid until releaseShader() or
+     * Graphics destruction.
+     * @thread Render thread only.
+     * @return Borrowed shader pointer.
+     */
+    Shader* newTreeWindShader();
 
     /**
      * @brief Dense + sparse stylized grass field. Caller owns GrassField*;
@@ -1755,6 +1795,8 @@ public:
      * its Shaders are owned by Graphics.
      */
     Volumetric *newVolumetric();
+    /** @brief Create a caller-owned depth-aware depth-of-field compositor. */
+    DepthOfField* newDepthOfField();
 
     /**
      * @brief Screen-space ambient occlusion (ssao / hbao / gtao). Caller owns AmbientOcclusion*;
@@ -1948,7 +1990,8 @@ public:
 
 	// virtual void draw(const DrawCommand &cmd) = 0;
 	// virtual void draw(const DrawIndexedCommand &cmd) = 0;
-	// virtual void drawQuads(int start, int count, const vertex::Attributes &attributes, const vertex::BufferBindings &buffers, Texture *texture) = 0;
+    // virtual void drawQuads(int start, int count, const vertex::Attributes &attributes, const vertex::BufferBindings
+    // &buffers, Texture *texture) = 0;
 
 protected:
     struct DeferredFileTexture {
@@ -1974,6 +2017,7 @@ protected:
     bool recordingEngine3D_ = false;
     bool screenReadbackEnabled = false;
     bool vsyncEnabled = true;
+    int presentationVSyncCount_=1;
     bool graphicsActive = true;
     int msaaSamples = 4;
     PresentOverlayFn presentOverlayFn_ = nullptr;
@@ -1990,6 +2034,12 @@ protected:
     std::unique_ptr<Bloom> pipelineBloom_;
     std::unique_ptr<DepthOfField> pipelineDof_;
     std::unique_ptr<Exposure> pipelineExposure_;
+    bool                                                   sceneDepthOfFieldEnabled_           = false;
+    float                                                  sceneDepthOfFieldFocusDistance_     = 10.f;
+    float                                                  sceneDepthOfFieldFocusRange_        = 5.f;
+    float                                                  sceneDepthOfFieldMaximumBlurPixels_ = 8.f;
+    float                                                  sceneDepthOfFieldNearPlane_         = 0.1f;
+    float                                                  sceneDepthOfFieldFarPlane_          = 100.f;
     std::unique_ptr<DepthPyramid> pipelineDepthPyramid_;
     Canvas *spatialAAResolve_ = nullptr;
     int spatialAAResolveWidth_ = 0;

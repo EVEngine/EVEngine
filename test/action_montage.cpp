@@ -3,6 +3,7 @@
 #include "action/editor/ActionTimelineEditor.h"
 #include "action/editor/ActionTimelineWidget.h"
 #include "animation/AnimClip.h"
+#include "animation/AnimLayerMixer.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/MontageCoordinator.h"
@@ -12,6 +13,7 @@
 #include "zeroerr/unittest.h"
 
 #include <cmath>
+#include <limits>
 #include <memory>
 #include <string_view>
 
@@ -64,6 +66,20 @@ std::vector<eve::animation::MontageClipAsset> montageClips() {
     return clips;
 }
 
+std::vector<eve::animation::MontageClipAsset> maskedMontageClips() {
+    auto clip = std::make_unique<eve::animation::AnimClip>("masked");
+    clip->setDuration(1.0f);
+    clip->setLoop(false);
+    clip->addPositionKey(0, 0.0f, 0.0f, 0.0f, 0.0f);
+    clip->addPositionKey(0, 1.0f, 2.0f, 0.0f, 0.0f);
+    clip->addPositionKey(1, 0.0f, 0.0f, 1.0f, 0.0f);
+    clip->addPositionKey(1, 1.0f, 0.0f, 3.0f, 0.0f);
+    std::vector<eve::animation::MontageClipAsset> clips;
+    clips.push_back({"memory://clips/anticipation", std::move(clip)});
+    clips.push_back({"memory://clips/strike", rootClip("unused", 0.0f)});
+    return clips;
+}
+
 class RootReceiver final : public eve::animation::IMontageRootMotionReceiver {
 public:
     void applyMontageRootMotion(const eve::animation::TransformTRS& delta) noexcept override {
@@ -79,7 +95,7 @@ public:
 
 }  // namespace
 
-TEST_CASE("actionMontage.schemaV2RoundTripAndV1Migration") {
+TEST_CASE("actionMontage.schemaV4RoundTripAndLegacyMigration") {
     auto timeline                       = montageTimeline();
     timeline.montage.basePlayRate       = 1.25;
     timeline.montage.looping            = true;
@@ -117,10 +133,26 @@ TEST_CASE("actionMontage.schemaV2RoundTripAndV1Migration") {
         object->erase("sourceEndNs");
         object->erase("blendCurve");
     }
+    auto* tracks = (*versionTwoObject)["tracks"].getIf<eve::Value::Array>();
+    REQUIRE(tracks != nullptr);
+    for (auto& track : *tracks) {
+        auto* trackObject = track.getIf<eve::Value::Object>();
+        REQUIRE(trackObject != nullptr);
+        for (const char* collection : {"notifies", "states"}) {
+            auto* items = (*trackObject)[collection].getIf<eve::Value::Array>();
+            REQUIRE(items != nullptr);
+            for (auto& item : *items) {
+                auto* itemObject = item.getIf<eve::Value::Object>();
+                REQUIRE(itemObject != nullptr);
+                itemObject->erase("enabled");
+            }
+        }
+    }
     auto migratedV2 = eve::action::ActionTimeline::fromValue(versionTwo);
     REQUIRE(migratedV2.ok());
     CHECK(migratedV2.value().splitTimestamps.empty());
     CHECK_EQ(migratedV2.value().animationSections[0].blendCurve, eve::action::ActionBlendCurve::EaseInOut);
+    CHECK(migratedV2.value().tracks[0].states[0].enabled);
 
     auto  legacy       = encoded.value();
     auto* legacyObject = legacy.getIf<eve::Value::Object>();
@@ -132,6 +164,50 @@ TEST_CASE("actionMontage.schemaV2RoundTripAndV1Migration") {
     REQUIRE(migrated.ok());
     REQUIRE_EQ(migrated.value().animationSections.size(), 1U);
     CHECK_EQ(migrated.value().animationSections[0].animationUri, "memory://clips/legacy");
+}
+
+TEST_CASE("actionMontage.settingsUpdateIsValidatedAndPreservesPreparedPlayback") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontagePlayer player(skeleton);
+    REQUIRE(player.prepare(montageTimeline(), montageClips()).ok());
+    REQUIRE(player.play(eve::action::ActionExecutionId(77)).ok());
+
+    auto settings                    = montageTimeline().montage;
+    settings.basePlayRate            = 1.5;
+    settings.animationLayer          = 3;
+    settings.footIk                  = true;
+    settings.rootMotionVertical = true;
+    REQUIRE(player.setSettings(settings).ok());
+    CHECK(player.isPlaying());
+    CHECK_EQ(player.animationLayer(), 3U);
+    CHECK(player.footIkEnabled());
+
+    settings.basePlayRate = 0.0;
+    CHECK(!player.setSettings(settings).ok());
+    CHECK_EQ(player.animationLayer(), 3U);
+    CHECK(player.footIkEnabled());
+}
+
+TEST_CASE("actionMontage.sectionSplitUpdateIsAtomicAndPreservesPreparedPlayback") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontagePlayer player(skeleton);
+    REQUIRE(player.prepare(montageTimeline(), montageClips()).ok());
+    REQUIRE(player.play(eve::action::ActionExecutionId(78)).ok());
+
+    REQUIRE(player.setSectionSplits({eve::Duration::fromSeconds(0.25).takeValue(),
+                                     eve::Duration::fromSeconds(1.5).takeValue()})
+                .ok());
+    REQUIRE(player.jumpToSection(eve::action::ActionExecutionId(78), 1, eve::SimulationTick(1)).ok());
+    REQUIRE(player.physicalSectionIndex().ok());
+    CHECK_EQ(player.physicalSectionIndex().value(), 1U);
+
+    CHECK(!player.setSectionSplits({eve::Duration::zero()}).ok());
+    REQUIRE(player.jumpToSection(eve::action::ActionExecutionId(78), 2, eve::SimulationTick(2)).ok());
+    REQUIRE(player.physicalSectionIndex().ok());
+    CHECK_EQ(player.physicalSectionIndex().value(), 2U);
+    CHECK(player.isPlaying());
 }
 
 TEST_CASE("actionMontage.clipTrimAndBlendCurveUseAuthoredSectionDuration") {
@@ -209,6 +285,9 @@ TEST_CASE("actionMontage.jumpSectionProgressAndInterruptedBlendOutKeepBlockPairs
     advance.id           = execution;
     advance.phase        = eve::action::ActionPhase::Active;
     advance.totalElapsed = eve::Duration::fromSeconds(0.9).takeValue();
+    auto activeBlocks     = timeline.activeBlocks(advance.totalElapsed);
+    REQUIRE(activeBlocks.ok());
+    advance.activeBlocks = std::move(activeBlocks).takeValue();
     auto entered         = player.present(advance, eve::SimulationTick(1));
     REQUIRE(entered.ok());
     REQUIRE_EQ(entered.value().activeBlocks.size(), 1U);
@@ -311,9 +390,15 @@ TEST_CASE("actionMontage.coordinatorPingPongsSlotsAndRejectsStaleHandles") {
     REQUIRE(second.ok());
     CHECK_NE(first.value().index(), second.value().index());
     REQUIRE(coordinator.resolve(first.value()).ok());
+    eve::action::ActionAdvance secondAdvance;
+    secondAdvance.id           = eve::action::ActionExecutionId(12);
+    secondAdvance.phase        = eve::action::ActionPhase::Active;
+    secondAdvance.totalElapsed = eve::Duration::fromSeconds(0.1).takeValue();
+    REQUIRE(coordinator.present(second.value(), secondAdvance, eve::SimulationTick(3)).ok());
     REQUIRE(coordinator.advanceBlendOuts(eve::Duration::fromSeconds(0.1).takeValue(), eve::SimulationTick(3)).ok());
     auto layerPose = coordinator.pose(0);
     REQUIRE(layerPose.ok());
+    CHECK(std::fabs(layerPose.value().get().local(0).px - 0.3f) < 1e-5f);
     REQUIRE(coordinator.advanceBlendOuts(eve::Duration::fromSeconds(0.1).takeValue(), eve::SimulationTick(4)).ok());
     auto stale = coordinator.resolve(first.value());
     CHECK(!stale.ok());
@@ -323,6 +408,174 @@ TEST_CASE("actionMontage.coordinatorPingPongsSlotsAndRejectsStaleHandles") {
     REQUIRE(third.ok());
     CHECK_EQ(third.value().index(), first.value().index());
     CHECK_NE(third.value().generation(), first.value().generation());
+}
+
+TEST_CASE("actionMontage.coordinatorRetainsCompletedPoseUntilNextCrossFade") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontageCoordinator coordinator(skeleton);
+    auto first = coordinator.play(0, montageTimeline(), montageClips(), eve::action::ActionExecutionId(41),
+                                  eve::SimulationTick(1));
+    REQUIRE(first.ok());
+    eve::action::ActionAdvance completed;
+    completed.id           = eve::action::ActionExecutionId(41);
+    completed.phase        = eve::action::ActionPhase::Completed;
+    completed.totalElapsed = eve::Duration::fromSeconds(2.0).takeValue();
+    REQUIRE(coordinator.present(first.value(), completed, eve::SimulationTick(2)).ok());
+    REQUIRE(coordinator.advanceBlendOuts(eve::Duration::zero(), eve::SimulationTick(3)).ok());
+    auto retained = coordinator.resolve(first.value());
+    REQUIRE(retained.ok());
+    CHECK(retained.value().get().isFinished());
+    auto retainedPose = coordinator.pose(0);
+    REQUIRE(retainedPose.ok());
+    CHECK(std::fabs(retainedPose.value().get().local(0).px - 2.0f) < 1e-5f);
+
+    auto nextTimeline = montageTimeline();
+    nextTimeline.montage.defaultBlendIn = eve::Duration::fromSeconds(0.2).takeValue();
+    auto second = coordinator.play(0, nextTimeline, montageClips(), eve::action::ActionExecutionId(42),
+                                   eve::SimulationTick(4));
+    REQUIRE(second.ok());
+    eve::action::ActionAdvance entering;
+    entering.id           = eve::action::ActionExecutionId(42);
+    entering.phase        = eve::action::ActionPhase::Active;
+    entering.totalElapsed = eve::Duration::fromSeconds(0.1).takeValue();
+    REQUIRE(coordinator.present(second.value(), entering, eve::SimulationTick(5)).ok());
+    REQUIRE(coordinator.advanceBlendOuts(eve::Duration::fromSeconds(0.1).takeValue(),
+                                         eve::SimulationTick(5), second.value()).ok());
+    auto blendedPose = coordinator.pose(0);
+    REQUIRE(blendedPose.ok());
+    CHECK(std::fabs(blendedPose.value().get().local(0).px - 1.05f) < 1e-5f);
+    REQUIRE(coordinator.advanceBlendOuts(eve::Duration::fromSeconds(0.1).takeValue(),
+                                         eve::SimulationTick(6), second.value()).ok());
+    CHECK(!coordinator.resolve(first.value()).ok());
+}
+
+TEST_CASE("actionMontage.coordinatorLayerMaskRestrictsCompositionPerBone") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    skeleton.addBone("upper", 0);
+    skeleton.setBindPosition(1, 0.0f, 1.0f, 0.0f);
+    eve::animation::MontageCoordinator coordinator(skeleton);
+
+    CHECK(!coordinator.setLayerBoneMask(0, {1.0f}).ok());
+    CHECK(!coordinator.setLayerBoneMask(0, {0.0f, std::numeric_limits<float>::infinity()}).ok());
+    eve::animation::AnimBoneMask upperBody(&skeleton);
+    REQUIRE(upperBody.setBoneAndChildren("upper", 0.5f));
+    REQUIRE(coordinator.setLayerBoneMask(0, upperBody).ok());
+    eve::animation::AnimSkeleton otherSkeleton;
+    otherSkeleton.addBone("root");
+    eve::animation::AnimBoneMask foreignMask(&otherSkeleton);
+    CHECK(!coordinator.setLayerBoneMask(0, foreignMask).ok());
+    auto configured = coordinator.layerBoneMask(0);
+    REQUIRE(configured.ok());
+    REQUIRE_EQ(configured.value().size(), 2U);
+    CHECK_EQ(configured.value()[1], 0.5f);
+    upperBody.setAll(0.0f);
+    configured = coordinator.layerBoneMask(0);
+    REQUIRE(configured.ok());
+    CHECK_EQ(configured.value()[1], 0.5f);
+
+    auto handle = coordinator.play(0, montageTimeline(), maskedMontageClips(),
+                                   eve::action::ActionExecutionId(21), eve::SimulationTick(1));
+    REQUIRE(handle.ok());
+    eve::action::ActionAdvance advance;
+    advance.id           = eve::action::ActionExecutionId(21);
+    advance.phase        = eve::action::ActionPhase::Active;
+    advance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(coordinator.present(handle.value(), advance, eve::SimulationTick(2)).ok());
+    auto pose = coordinator.pose(0);
+    REQUIRE(pose.ok());
+    CHECK(std::fabs(pose.value().get().local(0).px) < 1e-5f);
+    CHECK(std::fabs(pose.value().get().local(1).py - 1.5f) < 1e-5f);
+
+    REQUIRE(coordinator.clearLayerBoneMask(0).ok());
+    REQUIRE(coordinator.pose(0).ok());
+    auto unmasked = coordinator.pose(0);
+    REQUIRE(unmasked.ok());
+    CHECK(std::fabs(unmasked.value().get().local(0).px - 1.0f) < 1e-5f);
+    CHECK(std::fabs(unmasked.value().get().local(1).py - 2.0f) < 1e-5f);
+}
+
+TEST_CASE("actionMontage.coordinatorComposesWeightedOverrideAndAdditiveLayersOverBasePose") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    skeleton.addBone("upper", 0);
+    skeleton.setBindPosition(1, 0.0f, 1.0f, 0.0f);
+    eve::animation::MontageCoordinator coordinator(skeleton);
+
+    CHECK(!coordinator.setLayerWeight(0, -0.1f).ok());
+    CHECK(!coordinator.setLayerWeight(0, std::numeric_limits<float>::infinity()).ok());
+    REQUIRE(coordinator.setLayerWeight(0, 0.5f).ok());
+    REQUIRE(coordinator.setLayerBoneMask(0, {0.0f, 1.0f}).ok());
+    auto overrideHandle = coordinator.play(0, montageTimeline(), maskedMontageClips(),
+                                           eve::action::ActionExecutionId(51), eve::SimulationTick(1));
+    REQUIRE(overrideHandle.ok());
+    eve::action::ActionAdvance overrideAdvance;
+    overrideAdvance.id           = eve::action::ActionExecutionId(51);
+    overrideAdvance.phase        = eve::action::ActionPhase::Active;
+    overrideAdvance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(coordinator.present(overrideHandle.value(), overrideAdvance, eve::SimulationTick(2)).ok());
+
+    REQUIRE(coordinator.setLayerWeight(1, 0.5f).ok());
+    REQUIRE(coordinator.setLayerAdditive(1, true).ok());
+    auto additiveHandle = coordinator.play(1, montageTimeline(), montageClips(), eve::action::ActionExecutionId(52),
+                                           eve::SimulationTick(3));
+    REQUIRE(additiveHandle.ok());
+    eve::action::ActionAdvance additiveAdvance;
+    additiveAdvance.id           = eve::action::ActionExecutionId(52);
+    additiveAdvance.phase        = eve::action::ActionPhase::Active;
+    additiveAdvance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(coordinator.present(additiveHandle.value(), additiveAdvance, eve::SimulationTick(4)).ok());
+
+    eve::animation::AnimPose base(skeleton.getBoneCount());
+    skeleton.applyBindPose(&base);
+    base.setLocalPosition(0, 10.0f, 0.0f, 0.0f);
+    base.setLocalPosition(1, 0.0f, 10.0f, 0.0f);
+    auto composed = coordinator.compose(base);
+    REQUIRE(composed.ok());
+    CHECK(std::fabs(composed.value().get().local(0).px - 10.25f) < 1e-5f);
+    CHECK(std::fabs(composed.value().get().local(1).py - 6.0f) < 1e-5f);
+
+    auto weight = coordinator.layerWeight(0);
+    REQUIRE(weight.ok());
+    CHECK_EQ(weight.value(), 0.5f);
+    auto additive = coordinator.layerAdditive(1);
+    REQUIRE(additive.ok());
+    CHECK(additive.value());
+    eve::animation::AnimPose foreignBase(1);
+    CHECK(!coordinator.compose(foreignBase).ok());
+}
+
+TEST_CASE("actionMontage.coordinatorRootMotionReceiverFollowsLayerSlots") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontageCoordinator coordinator(skeleton);
+    RootReceiver receiver;
+    REQUIRE(coordinator.setLayerRootMotionReceiver(0, receiver).ok());
+
+    auto first = coordinator.play(0, montageTimeline(), montageClips(), eve::action::ActionExecutionId(31),
+                                  eve::SimulationTick(1));
+    REQUIRE(first.ok());
+    eve::action::ActionAdvance advance;
+    advance.id           = eve::action::ActionExecutionId(31);
+    advance.phase        = eve::action::ActionPhase::Active;
+    advance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(coordinator.present(first.value(), advance, eve::SimulationTick(2)).ok());
+    CHECK_EQ(receiver.calls, 1);
+    CHECK(std::fabs(receiver.x - 0.5f) < 1e-5f);
+
+    auto second = coordinator.play(0, montageTimeline(), montageClips(), eve::action::ActionExecutionId(32),
+                                   eve::SimulationTick(3));
+    REQUIRE(second.ok());
+    advance.id = eve::action::ActionExecutionId(32);
+    REQUIRE(coordinator.present(second.value(), advance, eve::SimulationTick(4)).ok());
+    CHECK_EQ(receiver.calls, 2);
+
+    REQUIRE(coordinator.clearLayerRootMotionReceiver(0).ok());
+    advance.totalElapsed = eve::Duration::fromSeconds(0.75).takeValue();
+    REQUIRE(coordinator.present(second.value(), advance, eve::SimulationTick(5)).ok());
+    CHECK_EQ(receiver.calls, 2);
+    REQUIRE(coordinator.clearLayerRootMotionReceiver(0).ok());
 }
 
 TEST_CASE("actionMontage.hotReloadIsTransactionalAndPreservesCursor") {
@@ -344,7 +597,12 @@ TEST_CASE("actionMontage.hotReloadIsTransactionalAndPreservesCursor") {
     CHECK(!player.replaceClip("memory://clips/anticipation", std::move(invalidClip)).ok());
     CHECK(std::fabs(player.pose().local(0).px - 0.5f) < 1e-4f);
 
-    REQUIRE(player.replaceClip("memory://clips/anticipation", rootClip("replacement", 3.0f)).ok());
+    auto replacement = rootClip("replacement", 3.0f);
+    auto cloned      = replacement->clone();
+    replacement->setDuration(2.0f);
+    CHECK_EQ(cloned->getName(), std::string("replacement"));
+    CHECK(std::fabs(cloned->getDuration() - 1.0f) < 1e-5f);
+    REQUIRE(player.replaceClip("memory://clips/anticipation", std::move(cloned)).ok());
     CHECK_EQ(player.time(), eve::Duration::fromSeconds(0.5).takeValue());
     CHECK(std::fabs(player.pose().local(0).px - 1.5f) < 1e-4f);
 }

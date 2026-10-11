@@ -151,6 +151,14 @@ jobs:
         timeout-minutes: 5
         run: python3 scripts/check_test_manifest.py
 
+      - name: Check examples layout and overview registration
+        # Every examples/<name>/ is either a runnable example (main.nut +
+        # config.nut) or explicitly exempted with a reason, owns a README.md and
+        # is listed in examples/README.md.  A new example therefore cannot dodge
+        # the runtime smoke test in the Linux lane by simply not being runnable.
+        timeout-minutes: 5
+        run: python3 scripts/check_examples.py
+
       - name: Check critical return-value diagnostics
         timeout-minutes: 5
         run: python3 scripts/check_nodiscard.py
@@ -174,7 +182,10 @@ jobs:
 
       - name: Test CI and repository scripts
         timeout-minutes: 10
-        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
+        # -X utf8 so the runner's own output never follows the host ANSI code
+        # page; on Linux CI this is already the default. Test modules are
+        # imported by the runner, so they cannot guard their own stdio.
+        run: python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
 
   profile-matrix:
     name: Profile ${{ matrix.profile }}
@@ -277,9 +288,9 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     # This lane builds and tests both Vulkan and native Dawn configurations.
-    # A cold Windows runner needs more than 90 minutes for the two independent
-    # unit_test builds; keep the per-step limits below as the hang guards.
-    timeout-minutes: 180
+    # Release run 35436382201 exhausted the former 180-minute job budget while
+    # the bounded native Dawn build step was still making progress.
+    timeout-minutes: 300
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
@@ -359,10 +370,9 @@ jobs:
 
       - name: Build win32 debug
         # A PR that changes the third-party patch/cache key must do a full cold
-        # dependency plus engine/test build. Recent windows-2025 runners can
-        # exceed 40 minutes without any compiler failure, so retain a bounded
-        # hang guard while allowing the cold build to finish.
-        timeout-minutes: 60
+        # dependency plus engine/test build. Release run 35419568563 was still
+        # compiling normally when the former 60-minute guard terminated it.
+        timeout-minutes: 100
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -520,7 +530,7 @@ jobs:
     # A cold Release build took 55 minutes and the process-isolated 3510-case
     # suite reached 3060/3510 at the former 30-minute test guard. Preserve
     # bounded hang detection while budgeting setup, build, and the full suite.
-    timeout-minutes: 120
+    timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
@@ -566,7 +576,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        timeout-minutes: 90
+        # Cold release builds reached the former 90- and 120-minute guards
+        # without a compiler failure in runs 35419568563 and 35436382201.
+        timeout-minutes: 160
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -589,10 +601,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    # A cold NDK build can consume almost the entire 45-minute build-step budget
-    # before Gradle packages the finished native library. Keep the step timeout
-    # below as the hang guard while leaving enough job budget for setup/cleanup.
-    timeout-minutes: 90
+    # Release run 35436382201 reached 1363/1408 with no compiler failures at
+    # the former 60-minute build guard. Leave setup/cleanup headroom as well.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
@@ -619,6 +630,10 @@ jobs:
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
         with:
           version: "v0.16.0"
+
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: sccache --start-server
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -650,7 +665,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android debug
-        timeout-minutes: 60
+        timeout-minutes: 85
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \
@@ -670,7 +685,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # The release build step alone may take up to 90 minutes on a cold runner.
+    # Leave room for toolchain setup and cache reporting at the job level.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
@@ -697,6 +714,10 @@ jobs:
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
         with:
           version: "v0.16.0"
+
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: sccache --start-server
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -746,7 +767,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    timeout-minutes: 120
+    # The debug unit suite exceeded its former 30-minute step guard in release
+    # run 35566503055. Budget the suite and the separate Dawn lane together.
+    timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
@@ -785,7 +808,9 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx debug
-        timeout-minutes: 40
+        # A cold build reached 96% of unit_test before the former 40-minute
+        # guard terminated release run 35419568563.
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -793,7 +818,7 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        timeout-minutes: 30
+        timeout-minutes: 60
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
@@ -851,7 +876,9 @@ jobs:
           fi
 
       - name: Build native Dawn Metal lane
-        timeout-minutes: 40
+        # A cold Dawn/Tint build was still progressing with zero compiler
+        # failures at the former 40-minute guard in release run 35436382201.
+        timeout-minutes: 75
         run: cmake --build build/webgpu-macos --target unit_test -j "$(sysctl -n hw.ncpu)"
 
       - name: Report C/C++ compilation cache
@@ -873,7 +900,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    timeout-minutes: 60
+    # The 75-minute build and 30-minute test guards must both fit inside the
+    # job budget, together with checkout and toolchain setup.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-release
@@ -1228,10 +1257,14 @@ jobs:
           ctest --test-dir build/linux-debug --output-on-failure -j 2 \
             -R '^bundle/(graphics_font|TextureSampler|gpgpu|tensor|virtualgeometry_gpu|graphics_headless)\.cpp$'
 
-      - name: Smoke all examples (headless)
+      - name: Smoke all examples (headless, >=2s alive each)
         timeout-minutes: 20
         env:
           ALSOFT_DRIVERS: "null"
+          # Contract for examples/README.md "示例规范": every runnable example
+          # must still be running MIN_RUN_SECONDS after launch, with no error
+          # markers in its log; dying early or exiting non-zero fails the job.
+          MIN_RUN_SECONDS: "2"
         run: |
           xvfb-run -a -s "-screen 0 1280x800x24" bash scripts/smoke_examples.sh
 
@@ -1247,7 +1280,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # The 75-minute build and 30-minute test guards must both fit inside the
+    # job budget, together with checkout and toolchain setup.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-release
@@ -1443,7 +1478,9 @@ jobs:
     needs: [source-quality]
     if: ${{ needs.source-quality.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    # The build plus half of the coverage test suite consumed the former
+    # 90-minute job budget in release run 35436382201.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-coverage

@@ -135,6 +135,30 @@ Result<void> MontagePlayer::reloadClips(IMontageClipProvider& provider) {
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
+Result<void> MontagePlayer::setSettings(action::ActionMontageSettings settings) {
+    if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
+    auto candidate    = *timeline_;
+    candidate.montage = settings;
+    auto valid        = candidate.validate();
+    if (!valid) return Result<void>::failure(valid.status());
+    timeline_->montage           = std::move(settings);
+    rootMotionMask_.translationX = timeline_->montage.rootMotionHorizontal;
+    rootMotionMask_.translationZ = timeline_->montage.rootMotionHorizontal;
+    rootMotionMask_.translationY = timeline_->montage.rootMotionVertical;
+    rootMotionMask_.rotation     = timeline_->montage.rootMotionRotation;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> MontagePlayer::setSectionSplits(std::vector<Duration> splitTimestamps) {
+    if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
+    auto candidate            = *timeline_;
+    candidate.splitTimestamps = std::move(splitTimestamps);
+    auto valid                = candidate.validate();
+    if (!valid) return Result<void>::failure(valid.status());
+    timeline_->splitTimestamps = std::move(candidate.splitTimestamps);
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 Result<void> MontagePlayer::replaceClip(std::string_view uri, std::unique_ptr<AnimClip> clip) {
     if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
     if (uri.empty() || !clip) return invalid<void>("replacement montage clip is incomplete", "clip");
@@ -280,7 +304,7 @@ Result<MontageAdvance> MontagePlayer::present(const action::ActionAdvance& advan
     }
 
     result.events               = advance.timelineEvents;
-    result.activeBlocks         = activeBlocksAt(result.current);
+    result.activeBlocks         = advance.activeBlocks;
     result.sectionId            = activeSection_ ? std::optional<LogicalId>(activeSection_->id) : std::nullopt;
     result.completed            = advance.phase == action::ActionPhase::Completed;
     const double currentSeconds = result.current.seconds();
@@ -328,19 +352,8 @@ std::vector<action::ActionTimelineEvent> MontagePlayer::realignStateEvents(Durat
     return events;
 }
 
-std::vector<MontageActiveBlock> MontagePlayer::activeBlocksAt(Duration target) const {
-    std::vector<MontageActiveBlock> blocks;
-    for (const auto& track : timeline_->tracks) {
-        if (track.muted) continue;
-        for (const auto& state : track.states) {
-            if (target < state.start || target >= state.end) continue;
-            blocks.push_back({track.id, state.id, state.type,
-                              Duration::fromNanoseconds(target.nanoseconds() - state.start.nanoseconds()),
-                              Duration::fromNanoseconds(state.end.nanoseconds() - state.start.nanoseconds()),
-                              state.payload});
-        }
-    }
-    return blocks;
+Result<std::vector<MontageActiveBlock>> MontagePlayer::activeBlocksAt(Duration target) const {
+    return timeline_->activeBlocks(target);
 }
 
 Result<MontageAdvance> MontagePlayer::jumpToTime(action::ActionExecutionId executionId, Duration target,
@@ -358,7 +371,9 @@ Result<MontageAdvance> MontagePlayer::jumpToTime(action::ActionExecutionId execu
     result.previous     = time_;
     result.current      = target;
     result.events       = realignStateEvents(target);
-    result.activeBlocks = activeBlocksAt(target);
+    auto active         = activeBlocksAt(target);
+    if (!active) return Result<MontageAdvance>::failure(active.status());
+    result.activeBlocks = std::move(active).takeValue();
     player_->stop();
     activeSection_ = nullptr;
     if (const auto* section = sectionAt(target)) {
@@ -442,15 +457,28 @@ Result<MontageAdvance> MontagePlayer::interrupt(SimulationTick tick) {
 Result<MontageAdvance> MontagePlayer::beginBlendOut(Duration duration, SimulationTick tick) {
     if (duration < Duration::zero())
         return invalid<MontageAdvance>("montage blend-out duration must be non-negative", "duration");
-    if (duration.isZero()) return interrupt(tick);
     if (!timeline_) return invalid<MontageAdvance>("montage has not been prepared", "montage");
-    if (!playing_) return Result<MontageAdvance>::success(MontageAdvance{}, Status::success(StatusCode::NoOp));
+    if (duration.isZero() && playing_) return interrupt(tick);
+    if (!playing_ && weight_ <= 0.0)
+        return Result<MontageAdvance>::success(MontageAdvance{}, Status::success(StatusCode::NoOp));
     if (hasLastTick_ && tick <= lastTick_)
         return Result<MontageAdvance>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "montage tick must advance monotonically", "tick"));
     MontageAdvance result;
     result.previous = result.current = time_;
     result.weight                    = weight_;
+    if (duration.isZero()) {
+        player_->stop();
+        activeSection_ = nullptr;
+        playing_       = false;
+        blendingOut_   = false;
+        weight_        = 0.0;
+        result.weight  = 0.0;
+        result.completed = true;
+        lastTick_      = tick;
+        hasLastTick_   = true;
+        return Result<MontageAdvance>::success(std::move(result), Status::success(StatusCode::Applied));
+    }
     for (const auto& track : timeline_->tracks) {
         if (track.muted) continue;
         for (const auto& state : track.states)

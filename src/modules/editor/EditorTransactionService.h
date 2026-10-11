@@ -74,6 +74,8 @@ public:
     [[nodiscard]] bool canUndo() const noexcept override { return consumer_.canUndo(); }
     /** @brief True when one or more compensated transactions can be reapplied. */
     [[nodiscard]] bool canRedo() const noexcept override { return consumer_.canRedo(); }
+    /** @brief Clear pending work and local undo/redo history without mutating the authority target. */
+    void clear() { consumer_.clear(); }
 
 private:
     static EditorResult<TransactionReceipt> project(eve::Result<EditorTransactionRecord>&& result);

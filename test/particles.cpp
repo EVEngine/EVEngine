@@ -27,6 +27,13 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
+#include "particles/UnderwaterParticles.h"
+#include "particles/GroundParticleCulling.h"
+#include "particles/FloatingPointFixParticles.h"
+#include "physics/Physics.h"
+#include "physics/World3D.h"
+#include "physics/Body3D.h"
+#include "physics/Shape3D.h"
 #include "window/Window.h"
 
 #include <SDL2/SDL.h>
@@ -106,6 +113,110 @@ TEST_CASE("particles.emitter.startStopPause") {
     e->start();
     e->stop();
     CHECK(e->isStopped());
+}
+
+TEST_CASE("particles.underwater.ambienceAndTransitionLifecycle") {
+    auto *mod = Particles::create();
+    auto *ambience = mod->newEmitter(64);
+    auto *transition = mod->newEmitter(16);
+    REQUIRE(static_cast<bool>(
+        applyUnderwaterParticles(ambience, transition, true, true, true, false)));
+    CHECK(ambience->isActive());
+    CHECK(ambience->isVisible());
+    CHECK(transition->isActive());
+    CHECK(transition->isVisible());
+
+    CHECK(!applyUnderwaterParticles(ambience, transition, false, true, true, true));
+    CHECK(ambience->isActive());
+    REQUIRE(static_cast<bool>(
+        applyUnderwaterParticles(ambience, transition, false, true, false, true)));
+    CHECK(ambience->isStopped());
+    CHECK(!ambience->isVisible());
+
+    auto *surfaceVfx = mod->newEmitter(32);
+    REQUIRE(static_cast<bool>(applyUnderwaterSurfaceVfx(surfaceVfx, true)));
+    CHECK(surfaceVfx->isActive());
+    CHECK(surfaceVfx->isVisible());
+    REQUIRE(static_cast<bool>(applyUnderwaterSurfaceVfx(surfaceVfx, false)));
+    CHECK(surfaceVfx->isStopped());
+    CHECK(!surfaceVfx->isVisible());
+    CHECK(!applyUnderwaterSurfaceVfx(nullptr, true));
+}
+
+TEST_CASE("particles.groundCulling.filtersVisitorAndControlsPlayback") {
+    constexpr int zoneTag = 7201;
+    constexpr int playerTag = 7202;
+    auto* mod = Particles::create();
+    auto* emitter = mod->newEmitter(32);
+    auto* physics = eve::physics::Physics::create();
+    std::unique_ptr<eve::physics::World3D> world(
+        physics->newWorld3D(0.0F, 0.0F, 0.0F, false));
+    auto* zone = world->newBody("static", 0.0F, 0.0F, 0.0F);
+    auto* sensor = zone->newSphereShape(5.0F);
+    sensor->setTag(zoneTag);
+    sensor->setSensor(true);
+    auto* player = world->newBody("dynamic", 0.0F, 0.0F, 0.0F);
+    player->newSphereShape(0.5F)->setTag(playerTag);
+    REQUIRE(emitter->isStopped());
+    REQUIRE(static_cast<bool>(applyGroundParticleCulling(emitter, playerTag, 99, true, false)));
+    CHECK(emitter->isStopped());
+    world->update(1.0F / 60.0F);
+    REQUIRE_EQ(world->getBeginTriggerCount(), 1);
+    REQUIRE_EQ(world->getBeginTriggerSensorShapeTag(0), zoneTag);
+    REQUIRE(static_cast<bool>(applyGroundParticleCulling(
+        emitter, playerTag, world->getBeginTriggerVisitorShapeTag(0), true, false)));
+    CHECK(emitter->isActive());
+    CHECK(!applyGroundParticleCulling(emitter, playerTag, playerTag, true, true));
+    CHECK(emitter->isActive());
+    player->setPosition(10.0F, 0.0F, 0.0F);
+    world->update(1.0F / 60.0F);
+    REQUIRE_EQ(world->getEndTriggerCount(), 1);
+    REQUIRE(static_cast<bool>(applyGroundParticleCulling(
+        emitter, playerTag, world->getEndTriggerVisitorShapeTag(0), false, true)));
+    CHECK(emitter->isStopped());
+    CHECK(!applyGroundParticleCulling(nullptr, playerTag, playerTag, true, false));
+}
+
+TEST_CASE("particles.floatingOrigin.shiftsWorldParticlesWithoutChangingPlayback") {
+    auto* mod = Particles::create();
+    auto* emitter = mod->newEmitter(8);
+    emitter->setAutoRandomSeed(false);
+    emitter->setRandomSeed(7);
+    emitter->setPosition(1200.0F, 45.0F);
+    emitter->emit(2);
+    emitter->pause();
+    const auto before0 = emitter->sim()->particles[0];
+    const auto before1 = emitter->sim()->particles[1];
+    REQUIRE(static_cast<bool>(shiftWorldSpaceParticles(emitter, 1000.0F, 0.0F)));
+    CHECK(emitter->isPaused());
+    CHECK_EQ(emitter->getX(), 1200.0F);
+    CHECK_EQ(emitter->sim()->particles[0].x, before0.x - 1000.0F);
+    CHECK_EQ(emitter->sim()->particles[0].y, before0.y);
+    CHECK_EQ(emitter->sim()->particles[1].x, before1.x - 1000.0F);
+    CHECK_EQ(emitter->sim()->particles[1].life, before1.life);
+
+    emitter->setSimulationSpace("local");
+    const float unchanged = emitter->sim()->particles[0].x;
+    CHECK(!shiftWorldSpaceParticles(emitter, 1.0F, 0.0F));
+    CHECK_EQ(emitter->sim()->particles[0].x, unchanged);
+    emitter->setSimulationSpace("world");
+    CHECK(!shiftWorldSpaceParticles(emitter, NAN, 0.0F));
+    CHECK_EQ(emitter->sim()->particles[0].x, unchanged);
+    CHECK(!shiftWorldSpaceParticles(nullptr, 1.0F, 0.0F));
+
+    auto gpu = emitter->gpuSim();
+    gpu->residentActive = true;
+    gpu->estimatedAlive = 3;
+    auto queued = shiftWorldSpaceParticles(emitter, 20.0F, -4.0F);
+    REQUIRE(static_cast<bool>(queued));
+    CHECK_EQ(queued.value(), 5);
+    CHECK_EQ(gpu->pendingWorldOffsetX, -20.0F);
+    CHECK_EQ(gpu->pendingWorldOffsetY, 4.0F);
+    REQUIRE(static_cast<bool>(shiftWorldSpaceParticles(emitter, 5.0F, 1.0F)));
+    CHECK_EQ(gpu->pendingWorldOffsetX, -25.0F);
+    CHECK_EQ(gpu->pendingWorldOffsetY, 3.0F);
+    gpu->residentActive = false;
+    gpu->estimatedAlive = 0;
 }
 
 TEST_CASE("particles.emitter.motion") {

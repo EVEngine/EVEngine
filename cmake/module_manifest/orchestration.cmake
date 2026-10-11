@@ -54,7 +54,7 @@ eve_declare_module(NAME level_editing LAYER 5
                    DEPS editing
                    GROUP 2d 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
-                   DEPS animation data filesystem graphics ik
+                   DEPS action animation data filesystem graphics ik
                    THIRDPARTY poco
                    GROUP 2d 3d)
 # Surface fluid simulation: particles constrained to mesh SDFs (flow down
@@ -243,13 +243,20 @@ eve_declare_module(NAME pixelworld_editor LAYER 6 SCRIPT PixelWorldEditorModule 
                    GROUP 2d 3d web)
 # Runtime bridge from capability-selected packages into executable PointGraphs.
 eve_declare_module(NAME asset_procgen LAYER 6
-                   DEPS asset procgen
+                   DEPS asset asset_import data procgen
+                   GROUP 3d)
+eve_declare_module(NAME procgen_physics LAYER 6 SCRIPT ProcgenPhysics SLOT procgenPhysics
+                   DEPS physics procgen
+                   GROUP 3d)
+eve_declare_module(NAME procgen_animation DIR procgen/animation LAYER 6
+                   SCRIPT ProcgenAnimation SLOT procgenAnimation
+                   DEPS animation procgen
                    GROUP 3d)
 eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
                    DEPS graphics procgen
                    GROUP 3d)
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
-                   DEPS animation data filesystem graphics image model3d scene thread
+                   DEPS action animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp
                    GROUP 3d)
 eve_declare_module(NAME dialogue LAYER 6

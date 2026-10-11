@@ -31,7 +31,21 @@ vk::Pipeline createPbrPipeline(vkb::Device& device, vk::PipelineLayout layout, c
                                vk::SampleCountFlagBits samples, BlendMode blend, bool depthWrite, bool doubleSided) {
     ShaderModulePair shaders(device, embeddedSpirv(pbr_surface_vert_spv), embeddedSpirv(pbr_surface_frag_spv));
     auto             input = vkb::VertexInputStateBuilder();
-    input.addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>();
+    input.addInputBinding<MeshVertex>();
+    // The dedicated PBR shader reserves locations 5..15 for its eleven material
+    // UV streams. MeshVertex gained a color attribute at location 5 for the
+    // regular mesh pipelines, so describe only the five attributes consumed by
+    // pbr_surface.vert here instead of importing the shared six-attribute list.
+    input.input_attributes.emplace_back(0, 0, vk::Format::eR32G32B32Sfloat,
+                                        uint32_t(offsetof(MeshVertex, pos)));
+    input.input_attributes.emplace_back(1, 0, vk::Format::eR32G32B32Sfloat,
+                                        uint32_t(offsetof(MeshVertex, normal)));
+    input.input_attributes.emplace_back(2, 0, vk::Format::eR32G32Sfloat,
+                                        uint32_t(offsetof(MeshVertex, uv)));
+    input.input_attributes.emplace_back(3, 0, vk::Format::eR16G16B16A16Uint,
+                                        uint32_t(offsetof(MeshVertex, joints)));
+    input.input_attributes.emplace_back(4, 0, vk::Format::eR32G32B32A32Sfloat,
+                                        uint32_t(offsetof(MeshVertex, weights)));
     // Five mesh attributes plus eleven material UV streams fit Vulkan's minimum
     // sixteen vertex attributes. Each role can select any canonical mesh UV set.
     for (uint32_t i = 0; i < 11; ++i) {

@@ -366,6 +366,9 @@ public:
         double timeline = 0.0;
         /** @brief Absolute death times; min-heap with std::greater<float>. */
         std::vector<float> deathTimes;
+        /** @brief World-origin translation queued for the next resident GPU update. */
+        float pendingWorldOffsetX = 0.f;
+        float pendingWorldOffsetY = 0.f;
     };
 
     COMPONENT(Config, config)

@@ -261,6 +261,40 @@ ParticleEmitter* ParticleEffect::getEmitterByName(const std::string& name) const
     return layer == layers_.end() ? nullptr : layer->emitter;
 }
 
+Result<Duration> ParticleEffect::naturalDuration() const {
+    double maximumNonLooping = 0.0;
+    double maximumLoopPeriod = 0.0;
+    bool   hasEnabledLayer    = false;
+    for (const auto& layer : layers_) {
+        if (!layer.enabled || !layer.emitter) continue;
+        hasEnabledLayer            = true;
+        const double emitterLife   = layer.emitter->getEmitterLifetime();
+        const double particleLife  = layer.emitter->getParticleLifetimeMax();
+        if (!std::isfinite(emitterLife) || !std::isfinite(particleLife) || particleLife < 0.0)
+            return Result<Duration>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "Particle effect contains invalid lifetime data", "emitters"));
+        if (layer.emitter->getLooping()) {
+            if (emitterLife <= 0.0)
+                return Result<Duration>::failure(Diagnostic::error(
+                    DiagnosticCode::Unsupported, "Particle effect contains an unbounded looping emitter",
+                    "emitters"));
+            maximumLoopPeriod = std::max(maximumLoopPeriod, emitterLife);
+            continue;
+        }
+        if (emitterLife < 0.0)
+            return Result<Duration>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "Particle effect contains an unbounded emitter", "emitters"));
+        maximumNonLooping = std::max(maximumNonLooping, emitterLife + particleLife);
+    }
+    if (!hasEnabledLayer)
+        return Result<Duration>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Particle effect has no enabled emitters", "emitters"));
+    const double seconds = maximumNonLooping > 0.001 ? maximumNonLooping : maximumLoopPeriod;
+    auto         duration = Duration::fromSeconds(std::max(0.01, seconds));
+    if (!duration) return Result<Duration>::failure(duration.status());
+    return Result<Duration>::success(duration.value());
+}
+
 void ParticleEffect::syncTransform() {
     const float c = std::cos(rotation_);
     const float s = std::sin(rotation_);
