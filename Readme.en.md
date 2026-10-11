@@ -10,9 +10,10 @@ Evolutionary Vision Engine
 
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
 
-- Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.md) — every screenshot is a real presented frame written by the engine itself.
+- Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.en.md) — every screenshot is a real presented frame written by the engine itself.
 - [Game developer docs](docs/en/usr/README.md): download the engine, create and run a game, debug, and publish; the [module handbook](docs/en/usr/MODULES.md) covers the script APIs and examples one by one.
 - [Online API reference (Doxygen)](https://evengine.github.io/EVEngine/): published continuously to GitHub Pages; includes the C++ API and the user manual.
+- [Example walkthroughs](examples/README.en.md), [AI and MCP setup](docs/en/usr/AI-MCP.md), and [user FAQ](docs/en/usr/FAQ.md).
 - [Engine developer docs](docs/en/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
 
 > **For game developers:** you do **not** need to compile EVEngine. Download the prebuilt SDK for your platform from the [official release page](https://github.com/EVEngine/EVEngine/releases), unzip it, and start creating — no Git, CMake, C++ compiler, or Vulkan SDK required. Only developers who want to modify the engine itself need to read "Building from source" below.
@@ -31,7 +32,7 @@ Design goals:
 4. ✅ Built-in asset management and hot reload—no separate pipeline required
 5. 🛠 Class scanning with auto-generated editing GUIs (property reflection not landed yet; `editor.Inspector` currently registers fields manually—see roadmap)
 6. 🟡 GUIs that create and sync live from scripts (declarative `ui` module + hot reload; reflective two-way binding is on the roadmap)
-7. ✅ Pause the game loop for debugging (`eve run --debug`, F-keys / DAP / snapshots, see `examples/devlab`)
+7. ✅ Pause the game loop for debugging (`eve run --debug`, F-keys / DAP / snapshots, see [DevLab](examples/devlab/README.en.md))
 8. 🟡 Independent state-machine models (e.g. animation) exist; systematic "edit code → affected state machines hot-update" support is on the roadmap
 9. ✅ Mixed 3D and 2D rendering
 

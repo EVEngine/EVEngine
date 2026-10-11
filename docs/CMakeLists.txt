@@ -169,6 +169,9 @@ endforeach()
 # repository and are explicitly marked Chinese by the English handbook.
 set(_doc_english_pages
     "usr/README.md|usr_guide_en|EVEngine User Guide"
+    "usr/EXAMPLES.md|usr_examples_en|Choose an Example"
+    "usr/AI-MCP.md|usr_ai_en|AI and MCP"
+    "usr/FAQ.md|usr_faq_en|User FAQ"
     "usr/EVESCRIPT.md|usr_evescript_en|EveScript Tutorial"
     "usr/MODULES.md|usr_modules_en|Module Handbook"
     "usr/SAVE.md|usr_save_en|Saving Games"
@@ -219,7 +222,7 @@ foreach(_doc_spec IN LISTS _doc_english_pages)
                 "](https://github.com/EVEngine/EVEngine/blob/dev/docs/${_doc_area}/"
                 _doc_content "${_doc_content}")
         endforeach()
-        foreach(_doc_area IN ITEMS src examples cmake)
+        foreach(_doc_area IN ITEMS src examples cmake tools)
             string(REPLACE "](${_doc_prefix}${_doc_area}/"
                 "](https://github.com/EVEngine/EVEngine/blob/dev/${_doc_area}/"
                 _doc_content "${_doc_content}")

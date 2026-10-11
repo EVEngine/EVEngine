@@ -44,7 +44,9 @@ bin/eve run share/eve/examples/basic
 
 An open window displaying the example confirms that the runtime starts. In the commands below, `eve` means your SDK's `bin/eve` or `bin\eve.exe`; use its actual path if it is not on `PATH`.
 
-The [render gallery (Chinese captions)](../../images/examples/README.md) shows frames captured by the engine.
+The [render gallery](../../images/examples/README.en.md) shows frames captured by the engine.
+
+See [Examples](EXAMPLES.md), [AI and MCP setup](AI-MCP.md) and the [FAQ](FAQ.md) for the next steps.
 
 ## 2. Create your first game
 
