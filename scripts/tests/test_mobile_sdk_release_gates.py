@@ -109,6 +109,7 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         )
 
     def test_android_script_output_is_observable_in_logcat(self) -> None:
+        self.assertIn('#include "common/config.h"', self.script_runtime)
         self.assertIn('__android_log_vprint(ANDROID_LOG_INFO, "EVEngine"', self.script_runtime)
         self.assertIn(
             "vm->setPrintFunc(&androidScriptPrint, &androidScriptError)",

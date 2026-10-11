@@ -1,6 +1,7 @@
 #include "common/Runtime.h"
 
 #include "common/Assert.h"
+#include "common/config.h"
 #include "common/Module.h"
 #include "common/ReflectScript.h"
 #include "common/ScriptCompiler.h"
