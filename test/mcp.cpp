@@ -1,10 +1,11 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "common/Runtime.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
+#include "common/ProcgenQuery.h"
 #include "common/RenderCapture.h"
+#include "common/Runtime.h"
 #include "common/SceneQuery.h"
 #include "common/ScriptCompiler.h"
 #include "devtools/AiPanel.hpp"
@@ -595,6 +596,34 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
 
     mcp.stop();
     dt.detach();
+}
+
+TEST_CASE("devtools.procgenQuery.generateMapReportsStructuredFailure") {
+    class AbsentProcgen final : public eve::IProcgenQuery {
+    public:
+        std::vector<std::string> algorithms() override { return {}; }
+        std::vector<std::string> meshRecipes() override { return {}; }
+        std::vector<std::string> textureRecipes() override { return {}; }
+        std::vector<std::string> pbrRecipes() override { return {}; }
+        eve::Result<std::string> generateMap(const std::string&, int, int, uint32_t,
+                                             const std::vector<std::pair<std::string, std::string>>&) override {
+            return eve::Result<std::string>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Procgen module not available", "procgen"));
+        }
+        eve::Result<std::string> buildMesh(const std::string&, uint32_t, int, int, int) override {
+            return eve::Result<std::string>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Procgen module not available", "procgen"));
+        }
+    } query;
+
+    auto map = query.generateMap("bsp", 8, 8, 1, {});
+    REQUIRE(!map.ok());
+    REQUIRE(map.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(map.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
+
+    auto mesh = query.buildMesh("mesh.fence", 1, -1, -1, -1);
+    REQUIRE(!mesh.ok());
+    CHECK_EQ(mesh.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
 }
 
 TEST_CASE("devtools.sceneQuery.getSetReportStructuredFailure") {

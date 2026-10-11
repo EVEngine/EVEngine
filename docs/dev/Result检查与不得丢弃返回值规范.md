@@ -320,6 +320,7 @@ Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下
 - `Store::commit` → `Result<PatchCommitInfo>`（`PatchResult` 仅脚本兼容投影）
 - `IRenderCapture::savePng` → `Result<CaptureImageInfo>`；`entityIdMaskPng` / `gbufferPng` → `Result<void>`
 - `ISceneQuery::getNode` / `getNodeIn` → `Result<SceneNodeInfo>`；`setNodeTransform` / `setNodeVisible` → `Result<void>`
+- `IProcgenQuery::generateMap` / `buildMesh` → `Result<std::string>`
 - ConditionResult、SettlementResult、TransferResult、CompileResult 等包含状态/诊断的结果
 
 现有 Editor API 全部属于这一类，包括但不限于：

@@ -1,7 +1,7 @@
 # API 重复与相似面收敛计划
 
 > 日期：2026-10-10  
-> 状态：**实施中**（P0.2 / P0.3 / P0.4·IRenderCapture·ISceneQuery 已落地；后续阶段继续合入同一 PR）  
+> 状态：**实施中**（P0.2 / P0.3 / P0.4 capability 面已落地；P0.1 StateValue 待做，继续合入同一 PR）  
 > 来源：对 `common` / graphics-asset / gameplay 公共 API 的重复面审计  
 > 关联：`2026-08-26-architecture-consolidation-checklist.md`、`Result检查与不得丢弃返回值规范.md`、`领域短根继承与跨域组合架构.md`、`2026-09-15-模块边界审查台账.md`
 
@@ -120,7 +120,7 @@
 
 1. `IRenderCapture`（`savePng` / mask / gbuffer）— **已完成**（`Result<CaptureImageInfo>` / `Result<void>`；契约测试 `devtools.renderCapture.savePngReportsStructuredFailure`）
 2. `ISceneQuery` get/set — **已完成**（`Result<SceneNodeInfo>` / `Result<void>`；契约测试 `devtools.sceneQuery.getSetReportStructuredFailure`）
-3. `IProcgenQuery` err outs
+3. `IProcgenQuery` err outs — **已完成**（`generateMap` / `buildMesh` → `Result<std::string>`；契约测试 `devtools.procgenQuery.generateMapReportsStructuredFailure`）
 4. 与 P0.1 对齐的 `IStateProvider`
 
 **规则**：同一接口上已有 Result 方法的，新方法必须 Result；迁移时旧 bool 方法标 `@compatibility` 并给 expiry，禁止新增 bool/err。

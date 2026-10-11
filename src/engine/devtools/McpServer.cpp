@@ -955,11 +955,13 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         }
         if (args && args->has("corridorStyle"))
             params.emplace_back("corridorStyle", getArgString(args, "corridorStyle"));
-        std::string err;
-        std::string json = pg->generateMap(algorithm, getArgInt(args, "width", 32), getArgInt(args, "height", 32),
-                                           static_cast<uint32_t>(getArgInt(args, "seed", 0)), params, &err);
-        if (json.empty()) return "error: " + (err.empty() ? std::string("empty grid") : err);
-        return json;
+        auto generated = pg->generateMap(algorithm, getArgInt(args, "width", 32), getArgInt(args, "height", 32),
+                                         static_cast<uint32_t>(getArgInt(args, "seed", 0)), params);
+        if (!generated) {
+            const auto* diag = generated.status().primaryDiagnostic();
+            return "error: " + (diag ? diag->message() : generated.status().describe());
+        }
+        return std::move(generated).value();
     }
 
     if (name == "eve_procgen_mesh") {
@@ -967,11 +969,14 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!pg) return "error: Procgen module not available";
         const std::string recipe = getArgString(args, "recipe");
         if (recipe.empty()) return "error: missing recipe";
-        std::string err;
-        std::string json =
+        auto built =
             pg->buildMesh(recipe, static_cast<uint32_t>(getArgInt(args, "seed", 0)), getArgInt(args, "width", -1),
-                          getArgInt(args, "height", -1), getArgInt(args, "depth", -1), &err);
-        if (json.empty()) return "error: " + (err.empty() ? std::string("build failed") : err);
+                          getArgInt(args, "height", -1), getArgInt(args, "depth", -1));
+        if (!built) {
+            const auto* diag = built.status().primaryDiagnostic();
+            return "error: " + (diag ? diag->message() : built.status().describe());
+        }
+        const std::string       json = std::move(built).value();
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("recipe", recipe);
         try {
