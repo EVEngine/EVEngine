@@ -131,21 +131,23 @@ TEST_CASE("devtools.mcp.hostScriptFailureCarriesTheReason") {
     host.start(vm, root.string(), /*allowWindow=*/false);
     REQUIRE(host.listEditors().find("terrain") != std::string::npos);
 
-    // ViewModel 的编译失败必须带上出处与位置，而不是只回一个通用词。实测字符串形如
-    // "error: compile failed:  error at host_vm.nut:1 (<anonymous>): expression expected"。
+    // ViewModel 的编译失败必须带上出处与位置，而不是只回一个通用词。dev 之后把来源名从
+    // 缺省的 "host_vm.nut" 换成真实资源路径（`game:/editors/<id>.vm.nut`），所以断言的是
+    // 文件名的后半段而不是旧名字。实测字符串形如
+    // "error: compile failed:  error at game:/editors/terrain.vm.nut:1 (<anonymous>): expression expected"。
     writeText(vmPath, "::TerrainVM <- { broken = ; };");
     const std::string compileError = host.reloadResource("editors/terrain.vm.nut");
     REQUIRE(compileError.rfind("error:", 0) == 0);
     REQUIRE(compileError.find("compile failed") != std::string::npos);
-    REQUIRE(compileError.find("host_vm.nut") != std::string::npos);
+    REQUIRE(compileError.find("terrain.vm.nut") != std::string::npos);
 
     // 运行期抛出必须带上脚本错误原文与行号：
-    // "error: runtime failed: host_vm.nut:2 (main): vm chunk exploded"。
+    // "error: runtime failed: game:/editors/terrain.vm.nut:2 (main): vm chunk exploded"。
     writeText(vmPath, "::TerrainVM <- { version = 2 };\nthrow \"vm chunk exploded\";\n");
     const std::string runtimeError = host.reloadResource("editors/terrain.vm.nut");
     REQUIRE(runtimeError.rfind("error:", 0) == 0);
     REQUIRE(runtimeError.find("runtime failed") != std::string::npos);
-    REQUIRE(runtimeError.find("host_vm.nut:2") != std::string::npos);
+    REQUIRE(runtimeError.find("terrain.vm.nut:2") != std::string::npos);
     REQUIRE(runtimeError.find("vm chunk exploded") != std::string::npos);
 
     // 片段路径（mcp.nut）走的是同一个 runSquirrel。

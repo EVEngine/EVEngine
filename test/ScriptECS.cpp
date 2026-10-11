@@ -517,9 +517,10 @@ function testGpuDrivenBindingSurface() {
                       "getGpuResidentOffsetAlignment", "writeGpuDrivenInstance",
                       "submitResidentInstances"]
     foreach (name in required) if (!(name in gpu)) return false
-    // 160, not the old 80: GpuInstance grew reflection-probe fields, and
-    // GpuDrivenTypes.h pins the new size with static_assert(sizeof(GpuInstance) == 160).
-    return gpu.getGpuDrivenInstanceStride() == 160 &&
+    // 208, not the old 160: GpuInstance grew again (dev's graphics-side fields), and
+    // GpuDrivenTypes.h pins the new size with static_assert(sizeof(GpuInstance) == 208).
+    // The offset alignment still comes from kGpuResidentStorageOffsetAlignment.
+    return gpu.getGpuDrivenInstanceStride() == 208 &&
            gpu.getGpuResidentOffsetAlignment() == 256
 }
 

@@ -121,19 +121,19 @@ std::uint64_t entityIdOf(const char* componentName) {
     return 0;
 }
 
-EditorResult<eve::editing::TransactionReceipt> commitOperation(IDomainOperationTarget&               target,
-                                                               eve::editor::LocalTransactionBackend& transactions,
-                                                               const DomainOperation&                operation,
-                                                               eve::editing::Revision baseRevision, const char* id) {
+eve::Result<eve::editing::TransactionReceipt> commitOperation(IDomainOperationTarget&               target,
+                                                              eve::editor::LocalTransactionBackend& transactions,
+                                                              const DomainOperation&                operation,
+                                                              eve::editing::Revision baseRevision, const char* id) {
     eve::editing::TransactionSpec specification;
     specification.id           = eve::editing::TransactionId(id);
     specification.label        = "Script component edit";
     specification.target       = TargetId(target.targetId());
     specification.baseRevision = baseRevision;
     auto begun                 = transactions.begin(std::move(specification));
-    if (!begun.ok()) return EditorResult<eve::editing::TransactionReceipt>::failure(begun.status());
+    if (!begun.ok()) return eve::Result<eve::editing::TransactionReceipt>::failure(begun.status());
     auto appended = transactions.append(operation);
-    if (!appended.ok()) return EditorResult<eve::editing::TransactionReceipt>::failure(appended.status());
+    if (!appended.ok()) return eve::Result<eve::editing::TransactionReceipt>::failure(appended.status());
     return transactions.commit();
 }
 

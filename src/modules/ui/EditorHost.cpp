@@ -327,9 +327,13 @@ std::string runSquirrel(HSQUIRRELVM vm, const std::string& source, const char* n
     if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(vm, source.c_str(),
                                                              static_cast<SQInteger>(source.size()),
                                                              name, SQTrue))) {
-        std::string text = eve::script::formatLastScriptError(vm);
+        // A compile error never reaches the runtime error store, so it is read from the
+        // compiler's own context. Reporting only "compile failed" told the tool caller
+        // nothing about the file, line or reason.
+        const script::ScriptErrorContext context = script::captureCompileError(vm);
         sq_settop(vm, top);
-        return text.empty() ? "compile failed" : ("compile failed: " + text);
+        if (context.empty()) return "compile failed";
+        return "compile failed: " + script::formatScriptError(context);
     }
     if (Runtime* rt = ModuleManager::runtime()) {
         try {

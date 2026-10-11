@@ -136,6 +136,11 @@ tableError <- ""
 
 class MotionScriptSinkTest : public ScriptTest {
 public:
+    // NOTE: the bundle entry (`ctest -L bundle`, opt-in) sees motions left active by an
+    // earlier case, because the Animation module is process-level and MotionRuntime has no
+    // public reset: case 3 starts with activeCount()==5 instead of 4. Per-case runs -- the
+    // CI shape -- are clean. A `MotionRuntime::clear()` test hook or per-case cancellation
+    // in this file is the fix; it is not part of the merge.
     MotionScriptSinkTest() : ScriptTest(kScriptMotionSink) { ScriptProviderRegistry::instance().clearAll(); }
 
     ~MotionScriptSinkTest() {

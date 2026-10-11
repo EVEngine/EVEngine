@@ -20,7 +20,6 @@ namespace {
 
 using scene_editing::DiagnosticSeverity;
 using scene_editing::DomainOperation;
-using scene_editing::EditorResult;
 using scene_editing::EditorStatus;
 using scene_editing::EditorValue;
 using scene_editing::ObjectId;
@@ -111,7 +110,7 @@ bool readPositiveNumber(const EditorValue& value, std::uint64_t& out) {
 }
 
 template <class T>
-EditorResult<T> editRefusal(EditorStatus status, const char* rule, std::string message) {
+Result<T> editRefusal(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
 }
 
@@ -140,7 +139,7 @@ std::uint64_t ScriptComponentOperationTarget::revision() const {
     return static_cast<std::uint64_t>(eve::scriptComponentStoreRevision());
 }
 
-EditorResult<void> ScriptComponentOperationTarget::writeField(const std::string& field, const Value& value) {
+Result<void> ScriptComponentOperationTarget::writeField(const std::string& field, const Value& value) {
     if (staging_) {
         // 候选副本只改自己那份字段：撤销要能"先在候选上试算"，失败不留半套状态。
         const auto found = fields_.find(field);
@@ -159,7 +158,7 @@ EditorResult<void> ScriptComponentOperationTarget::writeField(const std::string&
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ScriptComponentOperationTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> ScriptComponentOperationTarget::applyDomainOperation(const DomainOperation& operation) {
     if (!bound_)
         return editRefusal<void>(EditorStatus::Rejected, "editor.scene.script-component.unbound",
                                  "script component operation target is not bound to a component");
@@ -198,7 +197,7 @@ std::unique_ptr<scene_editing::IDomainOperationTarget> ScriptComponentOperationT
     return candidate;
 }
 
-EditorResult<void> ScriptComponentOperationTarget::commitDomainState(
+Result<void> ScriptComponentOperationTarget::commitDomainState(
     std::unique_ptr<scene_editing::IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<ScriptComponentOperationTarget*>(candidate.get());
     if (typed == nullptr || !typed->staging_ || !bound_ || !typed->bound_ || typed->target_ != target_ ||
@@ -268,10 +267,10 @@ std::vector<SceneComponentPayloadRef> ScriptComponentPayloadProvider::components
     return out;
 }
 
-EditorResult<scene_editing::IDomainOperationTarget*> ScriptComponentPayloadProvider::payloadOperationTarget(
+Result<scene_editing::IDomainOperationTarget*> ScriptComponentPayloadProvider::payloadOperationTarget(
     const SelectionSnapshot& selection) const {
     auto resolved = resolve(selection);
-    if (!resolved.ok()) return EditorResult<scene_editing::IDomainOperationTarget*>::failure(resolved.status());
+    if (!resolved.ok()) return Result<scene_editing::IDomainOperationTarget*>::failure(resolved.status());
     const Resolved& target = resolved.value();
     operationTarget_.bind(target.target, target.nodeId, target.state.entityId, target.state.name, target.state.version,
                           target.state.generation);
@@ -375,9 +374,8 @@ PropertyReadResult ScriptComponentPayloadProvider::read(const SelectionSnapshot&
     return {PropertyReadState::Value, eve::editing::toEditingValue(found->second), {}};
 }
 
-EditorResult<DomainOperation> ScriptComponentPayloadProvider::planWrite(const Resolved&     target,
-                                                                        const PropertyPath& path,
-                                                                        const EditorValue&  value) const {
+Result<DomainOperation> ScriptComponentPayloadProvider::planWrite(const Resolved& target, const PropertyPath& path,
+                                                                  const EditorValue& value) const {
     const auto        current = target.state.fields.find(path.value());
     const EditorValue previous =
         current != target.state.fields.end() ? eve::editing::toEditingValue(current->second) : EditorValue{};
@@ -409,17 +407,16 @@ EditorResult<DomainOperation> ScriptComponentPayloadProvider::planWrite(const Re
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> ScriptComponentPayloadProvider::makeSet(const SelectionSnapshot& selection,
-                                                                      const PropertyPath&      path,
-                                                                      const EditorValue&       value,
-                                                                      PropertySetMode          mode) const {
+Result<DomainOperation> ScriptComponentPayloadProvider::makeSet(const SelectionSnapshot& selection,
+                                                                const PropertyPath& path, const EditorValue& value,
+                                                                PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     if (mode != PropertySetMode::Absolute)
         return editRefusal<DomainOperation>(EditorStatus::Rejected, "editor.scene.script-component.mode",
                                             "script component fields accept absolute edits only");
 
     auto resolved = resolve(selection);
-    if (!resolved.ok()) return EditorResult<DomainOperation>::failure(resolved.status());
+    if (!resolved.ok()) return Result<DomainOperation>::failure(resolved.status());
     const Resolved& target = resolved.value();
 
     const auto descriptor = schemaOf(target.state).find(path);
@@ -431,14 +428,14 @@ EditorResult<DomainOperation> ScriptComponentPayloadProvider::makeSet(const Sele
             EditorStatus::Rejected, "editor.scene.script-component.untyped",
             "field has no declared non-null default, so its type is unknown and it stays read-only: " + path.value());
     const auto validation = validatePropertyValue(*descriptor, value);
-    if (!validation.ok()) return EditorResult<DomainOperation>::failure(validation.status());
+    if (!validation.ok()) return Result<DomainOperation>::failure(validation.status());
     return planWrite(target, path, value);
 }
 
-EditorResult<DomainOperation> ScriptComponentPayloadProvider::makeReset(const SelectionSnapshot& selection,
-                                                                        const PropertyPath&      path) const {
+Result<DomainOperation> ScriptComponentPayloadProvider::makeReset(const SelectionSnapshot& selection,
+                                                                  const PropertyPath&      path) const {
     auto resolved = resolve(selection);
-    if (!resolved.ok()) return EditorResult<DomainOperation>::failure(resolved.status());
+    if (!resolved.ok()) return Result<DomainOperation>::failure(resolved.status());
     const Resolved& target = resolved.value();
 
     const auto descriptor = schemaOf(target.state).find(path);

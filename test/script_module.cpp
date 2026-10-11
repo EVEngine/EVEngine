@@ -215,6 +215,8 @@ TEST_CASE("scriptModule.instantiationFailureCarriesTheScriptError") {
     REQUIRE(!message.empty());
     REQUIRE(message.find("failed to instantiate script module") != std::string::npos);
     REQUIRE(message.find("module body exploded") != std::string::npos);
+}
+
 TEST_CASE("scriptModule.dofileInstantiatesImports") {
     cap::detail::clearAllRaw();
     VirtualFileSystem filesystem;

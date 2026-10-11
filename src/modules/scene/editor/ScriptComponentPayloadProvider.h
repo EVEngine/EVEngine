@@ -61,14 +61,14 @@ public:
     scene_editing::EditRegion dirtyRegion() const override { return {}; }
     void                      clearDirtyRegion() override {}
 
-    scene_editing::EditorResult<void> applyDomainOperation(const scene_editing::DomainOperation& operation) override;
+    eve::Result<void> applyDomainOperation(const scene_editing::DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<scene_editing::IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] scene_editing::EditorResult<void>                      commitDomainState(
+    [[nodiscard]] eve::Result<void>                                      commitDomainState(
         std::unique_ptr<scene_editing::IDomainOperationTarget> candidate) override;
 
 private:
     /** 把一次字段赋值写进"当前身份该写的地方"：候选副本写副本，权威实例写存储。 */
-    [[nodiscard]] scene_editing::EditorResult<void> writeField(const std::string& field, const eve::Value& value);
+    [[nodiscard]] eve::Result<void> writeField(const std::string& field, const eve::Value& value);
 
     scene_editing::TargetId target_;
     std::string             nodeId_;
@@ -144,7 +144,7 @@ public:
      * @lifetime 与提供方同寿；但绑定内容会被下一次调用改写，所以过期的指针只会被**拒绝**
      *           （载荷身份对不上），不会写错组件。
      */
-    scene_editing::EditorResult<scene_editing::IDomainOperationTarget*> payloadOperationTarget(
+    eve::Result<scene_editing::IDomainOperationTarget*> payloadOperationTarget(
         const scene_editing::SelectionSnapshot& selection) const override;
 
     /**
@@ -168,13 +168,14 @@ public:
                                            const scene_editing::PropertyPath&      path) const override;
 
     /** @brief 计划一次字段写入（`Reset` 模式转给 `makeReset`）。 */
-    scene_editing::EditorResult<scene_editing::DomainOperation> makeSet(
-        const scene_editing::SelectionSnapshot& selection, const scene_editing::PropertyPath& path,
-        const scene_editing::EditorValue& value, scene_editing::PropertySetMode mode) const override;
+    eve::Result<scene_editing::DomainOperation> makeSet(const scene_editing::SelectionSnapshot& selection,
+                                                        const scene_editing::PropertyPath&      path,
+                                                        const scene_editing::EditorValue&       value,
+                                                        scene_editing::PropertySetMode          mode) const override;
 
     /** @brief 计划一次"恢复声明默认值"；默认值来自注册表的声明 schema，不是当前值。 */
-    scene_editing::EditorResult<scene_editing::DomainOperation> makeReset(
-        const scene_editing::SelectionSnapshot& selection, const scene_editing::PropertyPath& path) const override;
+    eve::Result<scene_editing::DomainOperation> makeReset(const scene_editing::SelectionSnapshot& selection,
+                                                          const scene_editing::PropertyPath&      path) const override;
 
 private:
     /** 选中项解析出来的一个组件实例：编辑器目标 id、节点 id（编辑器侧）+ 引擎侧状态。 */
@@ -191,8 +192,9 @@ private:
     [[nodiscard]] scene_editing::PropertySchema schemaOf(const eve::ScriptComponentInstanceState& state) const;
 
     /** 把一次赋值封成可执行、可撤销的域操作（正向值与反向值都在里面）。 */
-    [[nodiscard]] scene_editing::EditorResult<scene_editing::DomainOperation> planWrite(
-        const Resolved& target, const scene_editing::PropertyPath& path, const scene_editing::EditorValue& value) const;
+    [[nodiscard]] eve::Result<scene_editing::DomainOperation> planWrite(const Resolved&                    target,
+                                                                        const scene_editing::PropertyPath& path,
+                                                                        const scene_editing::EditorValue&  value) const;
 
     /** 目标 id → 宿主名（空 resolver 时就是目标 id 本身）。 */
     [[nodiscard]] std::string hostNameOf(const scene_editing::TargetId& target) const;

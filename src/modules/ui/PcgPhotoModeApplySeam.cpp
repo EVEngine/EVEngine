@@ -33,7 +33,7 @@ struct DomainName {
 
 constexpr std::array<DomainName, 12> kDomainNames = {{
     {PhotoModeDomain::Photo, "photo"},
-    {PhotoModeDomain::System, "system"},
+    {PhotoModeDomain::FramePacing, "framepacing"},
     {PhotoModeDomain::Graphics, "graphics"},
     {PhotoModeDomain::Camera, "camera"},
     {PhotoModeDomain::Streaming, "streaming"},
