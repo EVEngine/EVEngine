@@ -9,6 +9,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
+#include "graphics/ViewPreparation.h"
 #include "graphics/hair/RibbonBuilder.h"
 
 #include <algorithm>
@@ -46,9 +47,14 @@ CardMeshData buildCardsFromStrands(const StrandsDatas &strands, float widthScale
 
 GroomInstance::GroomInstance(Graphics *gfx) : gfx_(gfx) {
     if (!gfx_) throw eve::Exception("GroomInstance: null graphics");
+    auto registered   = addViewPreparation([this](Graphics &graphics, const glm::mat4 &, const glm::vec3 &) {
+        if (&graphics != gfx_ || !geometryDirty_ || asset_.groupCount() == 0) return Result<void>::success();
+        return rebuild();
+    });
+    preparationToken_ = std::move(registered).expect("GroomInstance: view preparation registration failed");
 }
 
-GroomInstance::~GroomInstance() = default;
+GroomInstance::~GroomInstance() { removeViewPreparation(preparationToken_); }
 
 const GroomGroup *GroomInstance::primaryGroup() const { return asset_.groupAt(0); }
 
@@ -140,17 +146,48 @@ Result<void> GroomInstance::bakeFromStrands(StrandsDatas strands, const char *de
 Result<void> GroomInstance::setAsset(const GroomAsset &asset) {
     auto ok = asset.validate();
     if (!ok.ok()) return Result<void>::failure(ok.status());
-    asset_ = asset;
+    GroomAsset candidate     = asset;
+    auto       previousAsset = std::move(asset_);
+    auto       previousCull  = std::move(groupCull_);
+    auto       previousSim   = std::move(groupSim_);
     const bool keepSim = guideSimEnabled_;
+    const bool previousDirty = geometryDirty_;
+    auto       restore       = [&] {
+        asset_           = std::move(previousAsset);
+        groupCull_       = std::move(previousCull);
+        groupSim_        = std::move(previousSim);
+        guideSimEnabled_ = keepSim;
+        geometryDirty_   = previousDirty;
+    };
+    asset_ = std::move(candidate);
+    markGeometryDirty();
     clearGuideSimulation();
-    auto grid = rebuildClusterGrids();
-    if (!grid.ok()) return Result<void>::failure(grid.status());
-    auto rebuilt = rebuild();
-    if (!rebuilt.ok()) return Result<void>::failure(rebuilt.status());
-    if (keepSim) {
-        return enableGuideSimulation(guideSimParams_, guideFraction_, guideInterpMode_);
+    try {
+        auto grid = rebuildClusterGrids();
+        if (!grid.ok()) {
+            auto error = grid.status();
+            restore();
+            return Result<void>::failure(error);
+        }
+        if (keepSim) {
+            auto simulation = setupGuideSimulation(guideFraction_, guideInterpMode_);
+            if (!simulation.ok()) {
+                auto error = simulation.status();
+                restore();
+                return Result<void>::failure(error);
+            }
+        }
+        auto rebuilt = rebuild();
+        if (!rebuilt.ok()) {
+            auto error = rebuilt.status();
+            restore();
+            return Result<void>::failure(error);
+        }
+        return Result<void>::success();
+    } catch (const std::exception &error) {
+        restore();
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "hair.groom.asset"));
     }
-    return Result<void>::success();
 }
 
 Result<void> GroomInstance::bakeProceduralPlane(float sizeX, float sizeZ,
@@ -168,23 +205,49 @@ Result<void> GroomInstance::bakeProceduralMesh(const float *posXYZ, const float 
     return bakeFromStrands(std::move(strands).value(), "procedural_mesh");
 }
 
-void GroomInstance::setForcedLod(int lod) { forcedLod_ = lod; }
+void GroomInstance::setForcedLod(int lod) {
+    if (forcedLod_ == lod) return;
+    forcedLod_ = lod;
+    markGeometryDirty();
+}
 
 int GroomInstance::getForcedLod() const { return forcedLod_; }
 
 void GroomInstance::setScreenSize(float screenSize) {
-    screenSize_ = std::clamp(screenSize, 0.f, 1.f);
+    const float next = std::clamp(screenSize, 0.f, 1.f);
+    if (next == screenSize_) return;
+    const float previous = screenSize_;
+    screenSize_          = next;
+    if (forcedLod_ >= 0) return;
+    for (size_t i = 0; i < asset_.groupCount(); ++i) {
+        const auto &group = *asset_.groupAt(i);
+        if (selectLodIndex(group.lods, previous) != selectLodIndex(group.lods, next)) markGeometryDirty();
+    }
 }
 
 float GroomInstance::getScreenSize() const { return screenSize_; }
 
-void GroomInstance::setWidthScale(float scale) { widthScale_ = scale > 1e-6f ? scale : 1e-6f; }
+void GroomInstance::setWidthScale(float scale) {
+    const float next = scale > 1e-6f ? scale : 1e-6f;
+    if (next == widthScale_) return;
+    widthScale_ = next;
+    markGeometryDirty();
+}
 
 float GroomInstance::getWidthScale() const { return widthScale_; }
 
-void GroomInstance::setSideHint(float x, float y, float z) { sideHint_ = glm::vec3(x, y, z); }
+void GroomInstance::setSideHint(float x, float y, float z) {
+    const glm::vec3 next(x, y, z);
+    if (next == sideHint_) return;
+    sideHint_ = next;
+    markGeometryDirty();
+}
 
-void GroomInstance::setClusterCullingEnabled(bool enabled) { clusterCulling_ = enabled; }
+void GroomInstance::setClusterCullingEnabled(bool enabled) {
+    if (enabled == clusterCulling_) return;
+    clusterCulling_ = enabled;
+    markGeometryDirty();
+}
 
 bool GroomInstance::isClusterCullingEnabled() const { return clusterCulling_; }
 
@@ -264,13 +327,15 @@ Result<void> GroomInstance::enableGuideSimulation(const GuideSimParams &params, 
         clearGuideSimulation();
         return Result<void>::failure(setup.status());
     }
-    return rebuild();
+    markGeometryDirty();
+    return Result<void>::success();
 }
 
 Result<void> GroomInstance::disableGuideSimulation() {
     clearGuideSimulation();
     if (asset_.groupCount() == 0) return Result<void>::success();
-    return rebuild();
+    markGeometryDirty();
+    return Result<void>::success();
 }
 
 bool GroomInstance::isGuideSimulationEnabled() const { return guideSimEnabled_; }
@@ -303,10 +368,11 @@ Result<void> GroomInstance::update(float dt) {
         if (!strands.ok()) return Result<void>::failure(strands.status());
         state.deformedStrands = std::move(strands).value();
     }
-    return rebuild();
+    markGeometryDirty();
+    return Result<void>::success();
 }
 
-Mesh *GroomInstance::getMesh() const { return mesh_; }
+Mesh *GroomInstance::getMesh() const { return meshVisible_ ? mesh_ : nullptr; }
 
 Shader *GroomInstance::getShader() const { return shader_; }
 
@@ -388,13 +454,26 @@ Result<void> GroomInstance::updateVisibility(const float *viewProj16) {
         if (!visibleClusters.ok()) return Result<void>::failure(visibleClusters.status());
         auto curves = state.clusters.collectCurveIndices(visibleClusters.value());
         if (!curves.ok()) return Result<void>::failure(curves.status());
+        if (!state.hasVisibility || state.visibleCurves != curves.value()) markGeometryDirty();
         state.visibleCurves = std::move(curves).value();
         state.hasVisibility = true;
     }
-    return rebuild();
+    return Result<void>::success();
 }
 
 Result<void> GroomInstance::rebuild() {
+    if (!geometryDirty_) return Result<void>::success();
+    struct PublicationGuard {
+        GroomInstance &groom;
+        int            lod;
+        Representation representation;
+        ~PublicationGuard() {
+            if (groom.geometryDirty_) {
+                groom.activeLodIndex_       = lod;
+                groom.activeRepresentation_ = representation;
+            }
+        }
+    } publication{*this, activeLodIndex_, activeRepresentation_};
     if (asset_.groupCount() == 0) {
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "GroomInstance::rebuild: no groups", "hair.groom"));
@@ -427,7 +506,6 @@ Result<void> GroomInstance::rebuild() {
         const GroomLod &lod = group->lods[lodIndex];
         if (lod.representation == Representation::None) continue;
         if (lod.representation == Representation::Meshes) {
-            mesh_ = nullptr;
             return Result<void>::failure(Diagnostic::error(
                 DiagnosticCode::Unsupported,
                 "GroomInstance::rebuild: Meshes LOD not implemented yet",
@@ -471,39 +549,49 @@ Result<void> GroomInstance::rebuild() {
 
     if (useCards) {
         if (cardCombined.indices.empty()) {
-            mesh_ = nullptr;
+            meshVisible_   = false;
+            geometryDirty_ = false;
             return Result<void>::success();
         }
-        mesh_ = uploadCardMesh(gfx_, cardCombined);
-        if (!mesh_) {
-            return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, "GroomInstance::rebuild: card mesh upload failed",
-                "hair.groom.cards"));
-        }
-        return ensureDrawResources();
+        return publishMesh(cardCombined.positions, cardCombined.normals, cardCombined.uvs, cardCombined.indices);
     }
 
     if (!anyRibbon || ribbonCombined.indices.empty()) {
-        mesh_ = nullptr;
+        meshVisible_   = false;
+        geometryDirty_ = false;
         return Result<void>::success();
     }
 
-    mesh_ = gfx_->newMeshFromArrays(ribbonCombined.posXYZ.data(), ribbonCombined.nrmXYZ.data(),
-                                    ribbonCombined.uvST.data(), ribbonCombined.vertexCount(),
-                                    ribbonCombined.indices.data(), ribbonCombined.indexCount());
-    if (!mesh_) {
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::Failed, "GroomInstance::rebuild: mesh upload failed", "hair.groom.mesh"));
-    }
+    return publishMesh(ribbonCombined.posXYZ, ribbonCombined.nrmXYZ, ribbonCombined.uvST, ribbonCombined.indices);
+}
 
-    return ensureDrawResources();
+Result<void> GroomInstance::publishMesh(const std::vector<float> &positions, const std::vector<float> &normals,
+                                        const std::vector<float> &uvs, const std::vector<uint32_t> &indices) {
+    auto resources = ensureDrawResources();
+    if (!resources.ok()) return Result<void>::failure(resources.status());
+    if (mesh_) {
+        if (!gfx_->updateMeshVertices(mesh_, positions.data(), normals.data(), uvs.data(), int(positions.size() / 3),
+                                      indices.data(), int(indices.size())))
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "GroomInstance: mesh update failed", "hair.groom.mesh"));
+    } else {
+        mesh_ = gfx_->newMeshFromArrays(positions.data(), normals.data(), uvs.data(), int(positions.size() / 3),
+                                        indices.data(), int(indices.size()));
+        if (!mesh_)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "GroomInstance: mesh creation failed", "hair.groom.mesh"));
+    }
+    meshVisible_   = true;
+    geometryDirty_ = false;
+    return Result<void>::success();
 }
 
 void GroomInstance::draw() { draw(lastModel_); }
 
 void GroomInstance::draw(const glm::mat4 &model) {
     lastModel_ = model;
-    if (!gfx_ || !mesh_ || !shader_ || !texture_) return;
+    if (geometryDirty_ && asset_.groupCount() > 0) rebuild().expect("GroomInstance: draw preparation failed");
+    if (!gfx_ || !meshVisible_ || !mesh_ || !shader_ || !texture_) return;
     applyShadingParams();
     const Color tint(1.f, 1.f, 1.f, 1.f);
     gfx_->drawMeshShader(mesh_, model, texture_, tint, shader_);

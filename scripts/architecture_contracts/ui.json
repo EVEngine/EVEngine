@@ -11,11 +11,14 @@
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/ui/UISystem.h",
-        "docs/dev/重构代码质量与系统完整性规范.md"
+        "docs/dev/重构代码质量与系统完整性规范.md",
+        "src/modules/ui/Component.cpp",
+        "src/modules/ui/UIComponentScript.cpp"
       ],
       "tests": [
         "test/ui_control_semantics.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/UIComponentScheduling.cpp"
       ],
       "systems": [
         "UISystem"
@@ -24,10 +27,48 @@
       "view": "Generation-checked UI component tree plus per-frame input state.",
       "read_set": "Widget state, layout inputs, input events and backend availability.",
       "write_set": "Widget interaction state, dirty flags, layout/render submissions.",
-      "structural_changes": "Widget structural edits are queued by UI owner; traversal does not mutate tree topology directly.",
+      "structural_changes": "Dirty native components flush before the widget View is opened; widget structural edits never occur during traversal.",
       "events": "UI input/change events are emitted after state mutation; backend callbacks are not retained.",
       "services": "Borrowed UIBackend, injected input frame and script bindings on the owner thread.",
       "phase": "UI input/layout/render phase."
+    },
+    {
+      "id": "ui-component-scheduling-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/Component*",
+      "owner": "ui::Component",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Native component edits coalesce before UI traversal; weak scheduling lifetime is owned by each component.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/ui/Component.h",
+        "src/modules/ui/Component.cpp",
+        "docs/usr/modules/ui.md",
+        "src/modules/ui/UIComponentScript.cpp"
+      ],
+      "tests": [
+        "test/UIComponentScheduling.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No new trim claim. Component scheduling is compiled only with UI; no provider or backend is required to queue/flush descriptions."
+      },
+      "thread_affinity": "UI owner thread; no locks across virtual build; component must not destroy itself during build.",
+      "cost_notes": [
+        {
+          "api": "Component::markDirty",
+          "shape": "scheduled-setter",
+          "why": "Repeated edits coalesce; build cost is paid once before UI traversal, not by getters."
+        }
+      ],
+      "hot_path": [
+        "src/modules/ui/Component.cpp"
+      ]
     },
     {
       "id": "ui-eventsink-module-interface",

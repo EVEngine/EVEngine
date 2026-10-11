@@ -522,3 +522,9 @@ PcgPhotoModeApplyPlan 比较两个完整 PcgPhotoModeValues 快照，按 Pcg 源
 ### Pcg Lighting profile 身份
 
 PhotoMode 的 `m_isUsingPcgLighting` 与 `m_selectedPcgLightingProfile` 由 `PcgPhotoModePhotoAuthority` 作为持久化身份联合保存。`lightingProfileMatches(currentProfile)` 同时比较 profile 索引和 Pcg/custom 模式；`PcgPhotoModeSession.begin()` 也使用这两个条件与场景名、渲染管线共同决定是否允许加载旧设置。
+
+### 组件修改自动合并
+
+C++ `Component::markDirty()` / `setState()` 将组件加入一次性弱注册队列；`UISystem::render` 在开始 host/widget 遍历前刷新。脚本 `UIComponent` 沿用自动队列。重复标脏合并一次；`build()` 内再次标脏留到下一批，失败保留脏状态与剩余队列，组件销毁取消注册。简单 `setText` 直接更新节点，相同文本跳过赋值。
+
+Getter 不构建树。`rebuild(forceFull)` 保留为兼容的显式同步入口，其成本是完整描述树构建；常规代码只修改状态。组件不可复制或移动，不允许在其 `build()` 回调中销毁自己。

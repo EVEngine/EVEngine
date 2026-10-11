@@ -160,6 +160,8 @@ struct GpuMesh {
     uint32_t vertexStride = 0;
     wgpu::IndexFormat indexFormat = wgpu::IndexFormat::Uint32;
     std::vector<MeshVertex> cpuVertices;
+    std::vector<float>      updateVertices;
+    std::vector<uint16_t>   updateIndices16;
 };
 
 /**
@@ -355,7 +357,6 @@ public:
     /** @brief Returns the max anisotropy. */
     float getMaxAnisotropy() const override;
     /** @brief Creates a texture from file. @ownership Caller deletes unless documented otherwise. */
-    Texture *newTextureFromFile(const std::string &filename) override;
     /** @brief Reloads texture from file. */
     bool reloadTextureFromFile(const std::string &filename) override;
     /** @brief Uploads deferred file texture. */
@@ -938,6 +939,15 @@ private:
                                                  uint32_t frameUboOffset, uint32_t shadowUboOffset);
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
     void ensureMeshBindGroupsForDraw(Mesh3dDraw &d);
+    void            applyPendingResourceChanges() override;
+    [[nodiscard]] ResultRef<Texture> requestFileTexture(const std::string &filename) override;
+    bool                             samplerChangesPending_ = false;
+    struct CachedSampler {
+        TextureSampler state;
+        uint32_t       mipLevels;
+        wgpu::Sampler  sampler;
+    };
+    std::vector<CachedSampler> cachedSamplers_;
     wgpu::Sampler makeSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
 
     void uploadTexturePixels(GpuTexture *gt, const uint8_t *rgba, int w, int h,

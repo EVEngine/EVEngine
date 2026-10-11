@@ -34,6 +34,10 @@
 #include <stdexcept>
 
 namespace eve::scene {
+namespace detail {
+// Internal module binding entry point; no cross-module callers.
+void injectSceneComponentClass(ssq::Table &eveTable);
+}  // namespace detail
 
 Scene::Scene() {
     registerSceneCapabilities();
@@ -193,90 +197,6 @@ NodeDesc nodeFromJson(const Poco::JSON::Object::Ptr &o) {
 }
 #endif
 
-/** Script base: `class X extends eve.SceneComponent { function build() { ... } }`. */
-const char *kSceneComponentScript = R"SQ(
-eve.SceneComponent <- class {
-    hostName = ""
-    dirty = true
-    forceFull = false
-    _scene = null
-    _mounted = false
-
-    constructor(sceneInstance = null) {
-        _scene = sceneInstance
-        hostName = ""
-        dirty = true
-        forceFull = false
-        _mounted = false
-    }
-
-    function setScene(sceneInstance) { _scene = sceneInstance }
-
-    function mountAs(name) {
-        hostName = name
-        dirty = true
-        forceFull = true
-        updateIfDirty()
-    }
-
-    function setState() { dirty = true }
-    function markDirty() { dirty = true }
-    function onMount() {}
-
-    // Override: call this.scene().beginNode / addNode / end ...
-    function build() {}
-
-    function scene() {
-        if (_scene != null) return _scene
-        try {
-            if (::scene != null) return ::scene
-        } catch (e) {}
-        _scene = ::eve.Scene()
-        return _scene
-    }
-
-    function updateIfDirty() {
-        if (!dirty) return false
-        local s = scene()
-        s.beginBuild()
-        build()
-        local name = hostName
-        if (name == null || name == "") name = "default"
-        if (forceFull) {
-            s.mountBuildAs(name)
-            forceFull = false
-        } else {
-            s.remountBuildAs(name)
-        }
-        if (!_mounted) {
-            _mounted = true
-            onMount()
-        }
-        dirty = false
-        return true
-    }
-
-    function rebuild(force = false) {
-        dirty = true
-        forceFull = force
-        return updateIfDirty()
-    }
-}
-)SQ";
-
-void injectSceneComponentClass(ssq::Table &eveTable) {
-    HSQUIRRELVM vm = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kSceneComponentScript,
-                                   static_cast<SQInteger>(std::strlen(kSceneComponentScript)),
-                                   "SceneComponent.nut", SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
-}
 
 /**
  * Per-node script entities (eve.SceneEntity). Injected by a post-ECS hook so
@@ -1353,7 +1273,7 @@ void Scene::expose(ssq::Table &table) {
     refCls.addFunc("getChildIdAt", &SceneNodeRef::getChildIdAt);
     refCls.addFunc("getPath", &SceneNodeRef::getPath);
 
-    injectSceneComponentClass(table);
+    detail::injectSceneComponentClass(table);
     injectSceneEntityScript(table);
     exposeFollowPlayerBindings(table);
     exposeLocationProfileBindings(table);

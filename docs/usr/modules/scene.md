@@ -256,3 +256,9 @@ Y<1 时额外抬高 70，否则抬高 10，再减 offsetY。`useScale` 独立发
 `eve.PcgBuildConfig()` 对应 Pcg ResourcesSystem 的 `BuildConfig`。发布类型为 Addressables=0、RegularBuild=1；`addHistory(category,sceneName,timestamp)` 按调用顺序记录七类构建事件，category 为 0..6。使用 `getHistoryCount/Category/SceneName/Timestamp` 查询，越界或非法枚举返回结构化错误。
 
 脚本方法：`setPublicationType()`、`getPublicationType()`、`addHistory()`、`clearHistory()`、`getHistoryCount()`、`getHistoryCategory()`、`getHistorySceneName()`、`getHistoryTimestamp()`。
+
+### 组件修改自动合并
+
+C++ `SceneComponent::markDirty()` / `setState()` 自动排队，在 `TransformSystem::updateAll` 开始 ECS View 前刷新；脚本组件在引擎每帧的绘制准备阶段自动刷新，不依赖游戏保留默认 eve_update。无需每帧主动 `rebuild()`。构建期间的新修改留到下一批，失败保留脏状态与未处理队列。
+
+组件仅保存 host 的 ECS generation handle；host 先销毁时解析失败、排队更新跳过，组件先销毁时弱注册失效。重新 attach 后重新标脏。Getter 不构建树；兼容 `rebuild(forceFull)` 保留显式同步刷新语义。组件不可复制或移动，不允许在自己的 build 回调中销毁自己。

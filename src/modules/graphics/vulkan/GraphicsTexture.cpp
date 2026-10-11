@@ -783,23 +783,6 @@ ResultRef<Texture> Graphics::newSharedTexture(image::ImageData *data, const std:
 }
 
 
-void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler) {
-    ensureFileTexturesReady();
-    if (!texture || !texture->gpuHandle || !initialized) return;
-    for (auto &owned : ownedGpuTextures) {
-        if (owned.get() != texture->gpuHandle) continue;
-        // In-flight frames may still be sampling the old sampler / descriptor.
-        waitForSharedGpuResources();
-        if (owned->sampler) device->destroySampler(owned->sampler);
-        owned->samplerState = sampler;
-        owned->sampler = createVkSampler(sampler, owned->mipLevels);
-        texture->sampler = sampler;
-        if (!owned->isCube) writeCombinedImageDescriptor(owned.get());
-        invalidateTextureBindings();
-        return;
-    }
-}
-
 bool Graphics::releaseTexture(Texture *texture) {
     if (!texture) return false;
     dropDeferredFileTexture(texture);
@@ -861,7 +844,7 @@ bool Graphics::releaseTexture(Texture *texture) {
     // In-flight frames may still sample the image / sampler; drain first.
     waitForSharedGpuResources();
     unregisterBindlessTexture(gpu);
-    if ((*gpuIt)->sampler) device->destroySampler((*gpuIt)->sampler);
+    if ((*gpuIt)->sampler && !(*gpuIt)->sharedSampler) device->destroySampler((*gpuIt)->sampler);
     texture->gpuHandle = nullptr;
     ownedGpuTextures.erase(gpuIt);
     // Transfer the CPU facade to the caller instead of destroying it.
@@ -1091,7 +1074,7 @@ bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_
         // samples it is a typical TDR. Drain first, then drop cached sets.
         waitForSharedGpuResources();
         unregisterBindlessTexture(static_cast<GpuTexture *>(oldHandle));
-        if (owned->sampler) device->destroySampler(owned->sampler);
+        if (owned->sampler && !owned->sharedSampler) device->destroySampler(owned->sampler);
         owned = std::move(gpu);
         tex->gpuHandle = owned.get();
         tex->width = w;
@@ -1118,67 +1101,5 @@ bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_
     return true;
 }
 
-Texture *Graphics::newTextureFromFile(const std::string &filename) {
-    ASSERT(!filename.empty());
-    if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
-
-    const std::string key = normalizeTexPath(filename);
-    if (!fileTextureSourceExists(filename) && !fileTextureSourceExists(key))
-        throw Exception("Could not load image file: %s", filename.c_str());
-
-    auto it = texturesByPath.find(key);
-    if (it != texturesByPath.end() && it->second) {
-        requestFileImageDecode(key);
-        if (it->second->hasDeferredFilePixels()) return it->second;
-        auto waited = eve::ResourceManager::getInstance().waitFor(key);
-        if (!waited.ok()) throw Exception("%s", waited.status().describe().c_str());
-        auto *data = dynamic_cast<image::ImageData *>(&waited.value().get());
-        if (!data || !replaceTexturePixels(it->second, data))
-            throw Exception("newTextureFromFile: reload failed '%s'", filename.c_str());
-        return it->second;
-    }
-
-    requestFileImageDecode(key);
-    auto tex = std::make_unique<Texture>();
-    tex->markDeferredFilePixels(this);
-    Texture *raw = tex.get();
-    ownedTextures.push_back(std::move(tex));
-    texturesByPath[key] = raw;
-    deferredFileTextures_.push_back({key, raw});
-    return raw;
-}
-
-bool Graphics::uploadDeferredFileTexture(Texture *texture, image::ImageData *data) {
-    return replaceTexturePixels(texture, data);
-}
-
-bool Graphics::reloadTextureFromFile(const std::string &filename) {
-    if (filename.empty()) return false;
-    const std::string key = normalizeTexPath(filename);
-    auto it = texturesByPath.find(key);
-    if (it == texturesByPath.end() || !it->second) return false;
-
-    ensureFileTexturesReady();
-    // The provider hands back a cache-owned ImageData; the pin keeps it alive until
-    // the pixels have been copied out of it.
-    image::ImageData *data = nullptr;
-    eve::ResourcePin  keepAlive;
-    try {
-        auto *imgMod = image::Image::create();
-        data         = imgMod->newImageDataFromFile(filename);
-        if (data != nullptr) {
-            auto pinned = eve::ResourceManager::getInstance().pin(data);
-            if (!pinned.ok()) return false;
-            keepAlive = std::move(pinned).takeValue();
-            // The pin is the authority from here on; the borrowed pointer may have gone
-            // stale before the pin was taken.
-            data = static_cast<image::ImageData *>(keepAlive.get());
-        }
-    } catch (...) {
-        return false;
-    }
-    if (!data) return false;
-    return replaceTexturePixels(it->second, data);
-}
 
 }  // namespace eve::graphics::vulkan
