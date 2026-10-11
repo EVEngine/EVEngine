@@ -228,6 +228,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "i18n_script;core"
     "image_script;core"
     "json;core"
+    "math_smooth;core"
     "xml;core"
     "medialoader_model_link;core"
     "=model;core"

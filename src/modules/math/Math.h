@@ -48,6 +48,15 @@ public:
     float lerp(float a, float b, float t) const;
     /** @brief Hermite smoothstep between edge0 and edge1. */
     float smoothstep(float edge0, float edge1, float x) const;
+    /**
+     * @brief C1 smooth maximum of two finite heights; see common/SmoothMax.h.
+     * @param a First height in shared terrain units.
+     * @param b Second height in shared terrain units.
+     * @param width Finite nonnegative height band; zero gives max(a,b).
+     * @return Blended height; at a==b adds width/4, on float overflow returns +infinity.
+     * @thread Stateless; no retained data, callbacks, or RNG. Constant work per sample.
+     */
+    [[nodiscard]] float smoothMax(float a, float b, float width) const;
     /** @brief Maps x from [inMin,inMax] into [outMin,outMax]. */
     float remap(float x, float inMin, float inMax, float outMin, float outMax) const;
     /** @brief Degrees to radians. */

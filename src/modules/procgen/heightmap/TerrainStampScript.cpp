@@ -1146,26 +1146,7 @@ void exposeHeightmap(ssq::Table& table) {
         return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
     });
 
-    auto settings = table.addClass("TerrainStampSettings", ssq::Class::Ctor<TerrainStampSettings()>());
-    // The pinned VM uses float SQFloat; bind explicit float adapters for double world coordinates.
-    settings.addFunc("setGrid", [](TerrainStampSettings* s, float x, float z, float dx, float dz) {
-        s->originX  = x;
-        s->originZ  = z;
-        s->spacingX = dx;
-        s->spacingZ = dz;
-    });
-    settings.addFunc("setCenter", [](TerrainStampSettings* s, float x, float z) {
-        s->centerX = x;
-        s->centerZ = z;
-    });
-    settings.addFunc("setSize", [](TerrainStampSettings* s, float width, float depth) {
-        s->width = width;
-        s->depth = depth;
-    });
-    settings.addFunc("setRotation", [](TerrainStampSettings* s, float radians) { s->rotation = radians; });
-    settings.addVar("amplitude", &TerrainStampSettings::amplitude);
-    settings.addVar("baseHeight", &TerrainStampSettings::baseHeight);
-    settings.addVar("blendStrength", &TerrainStampSettings::blendStrength);
+    exposeTerrainStampSettings(table);
 
     auto stitchSettings =
         table.addClass("TerrainHeightStitchSettings", ssq::Class::Ctor<TerrainHeightStitchSettings()>());
