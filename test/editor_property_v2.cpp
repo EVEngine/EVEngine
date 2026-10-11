@@ -313,7 +313,7 @@ TEST_CASE("editor.v2.property_model_uses_transaction_backend_for_commit_undo_and
 
     const EditorValue desired = EditorValue::Array{10.0, 11.0, 12.0};
     const auto        write   = model.write("transform.position", toPresentationValue(desired));
-    CHECK(write.accepted);
+    CHECK(write.ok());
     CHECK(!legacySinkCalled);
     CHECK(target.position() == desired);
     CHECK(backend.canUndo());
@@ -342,7 +342,7 @@ TEST_CASE("editor.v2.property_model_explicit_transaction_previews_without_mutati
     auto begun = model.beginTransaction("Set transform position");
     CHECK(begun.ok());
     const auto staged = model.write("transform.position", toPresentationValue(desired));
-    CHECK(staged.accepted);
+    CHECK(staged.ok());
     CHECK(target.position() != desired);
 
     auto previewed = model.previewTransaction();
@@ -365,7 +365,7 @@ TEST_CASE("editor.v2.property_model_failed_commit_keeps_target_unchanged_and_is_
     const EditorValue         before = target.position();
 
     const auto failed = model.write("transform.position", toPresentationValue(EditorValue::Array{16.0, 17.0, 18.0}));
-    CHECK(!failed.accepted);
+    CHECK(!failed.ok());
     CHECK(target.position() == before);
     CHECK(backend.active());
 
@@ -386,7 +386,7 @@ TEST_CASE("editor.v2.property_model_binds_non_zero_provider_revision") {
 
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(41));
     const auto write = model.write("transform.position", toPresentationValue(EditorValue::Array{1.0, 2.0, 3.0}));
-    CHECK(write.accepted);
+    CHECK(write.ok());
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(42));
 }
 
@@ -403,8 +403,8 @@ TEST_CASE("editor.v2.property_model_rejects_external_change_until_refresh_rebase
     target.externalSet(external);
     const EditorValue beforeRejectedWrite = target.position();
     const auto rejected = model.write("transform.position", toPresentationValue(EditorValue::Array{8.0, 9.0, 10.0}));
-    CHECK(!rejected.accepted);
-    CHECK_EQ(rejected.code, std::string("editor.property.revision-conflict"));
+    CHECK(!rejected.ok());
+    CHECK_EQ(eve::property_access::writeRule(rejected), std::string("editor.property.revision-conflict"));
     CHECK(target.position() == beforeRejectedWrite);
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(7));
 
@@ -414,7 +414,7 @@ TEST_CASE("editor.v2.property_model_rejects_external_change_until_refresh_rebase
     CHECK(model.read("transform.position") == std::optional<eve::Value>(toPresentationValue(external)));
 
     const auto accepted = model.write("transform.position", toPresentationValue(EditorValue::Array{8.0, 9.0, 10.0}));
-    CHECK(accepted.accepted);
+    CHECK(accepted.ok());
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(9));
 }
 
@@ -430,7 +430,7 @@ TEST_CASE("editor.v2.property_model_external_change_conflict_preserves_failed_tr
     const auto begun = model.beginTransaction("stale property edit");
     CHECK(begun.ok());
     const auto staged = model.write("transform.position", toPresentationValue(EditorValue::Array{30.0, 31.0, 32.0}));
-    CHECK(staged.accepted);
+    CHECK(staged.ok());
     const EditorValue external = EditorValue::Array{40.0, 41.0, 42.0};
     target.externalSet(external);
 
@@ -456,8 +456,8 @@ TEST_CASE("editor.v2.legacy_property_provider_fails_closed_without_implicit_zero
     model.setEditSink([](const PropertyEditIntent&) { return eve::editing::applied<void>(); });
 
     const auto rejected = model.write("transform.position", toPresentationValue(EditorValue::Array{2.0, 3.0, 4.0}));
-    CHECK(!rejected.accepted);
-    CHECK_EQ(rejected.code, std::string("editor.property.revision-unsupported"));
+    CHECK(!rejected.ok());
+    CHECK_EQ(eve::property_access::writeRule(rejected), std::string("editor.property.revision-unsupported"));
     const EditorValue expected = EditorValue::Array{2.0, 3.0, 4.0};
     CHECK(target.position() != expected);
 }

@@ -29,11 +29,12 @@ Result<SplineBindingPose> SceneQuerySplineBindingSource::resolve(const std::stri
         return eve::editing::failed<SplineBindingPose>(EditorStatus::Unsupported,
                                                        RuleId("editor.spline.binding-provider-absent"),
                                                        "Scene transform provider is not available");
-    SceneNodeInfo info;
-    if (!query_->getNodeIn(host, object, &info))
+    auto lookedUp = query_->getNodeIn(host, object);
+    if (!lookedUp)
         return eve::editing::failed<SplineBindingPose>(EditorStatus::Conflict,
                                                        RuleId("editor.spline.binding-source-stale"),
                                                        "Bound scene transform is missing or stale");
+    const SceneNodeInfo info = std::move(lookedUp).value();
     return eve::editing::applied<SplineBindingPose>({info.x, info.y, info.z});
 }
 

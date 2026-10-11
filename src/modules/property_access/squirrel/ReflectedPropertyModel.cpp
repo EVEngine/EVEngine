@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <string_view>
 #include <utility>
 
 namespace eve::property_access {
@@ -118,7 +119,7 @@ Value scalarValue(const ReflectedValue &value) {
     }
 }
 
-const char *scriptValidationCode(const std::string &sharedCode) {
+const char *scriptValidationCode(std::string_view sharedCode) {
     if (sharedCode == "property_access.property.read-only") return "property_access.script.read-only";
     if (sharedCode == "property_access.property.type") return "property_access.script.type";
     if (sharedCode == "property_access.property.choice") return "property_access.script.choice";
@@ -129,8 +130,14 @@ const char *scriptValidationCode(const std::string &sharedCode) {
     return "property_access.script.validation";
 }
 
-WriteResult validationFailure(const WriteResult &validation) {
-    return WriteResult::reject(scriptValidationCode(validation.code), validation.message);
+Result<void> validationFailure(Result<void> validation) {
+    std::string rule;
+    std::string message;
+    if (const Diagnostic *error = validation.error()) {
+        rule    = std::string(diagnosticRule(*error));
+        message = error->message();
+    }
+    return rejected(scriptValidationCode(rule), std::move(message));
 }
 
 }  // namespace
@@ -227,65 +234,59 @@ std::optional<Value> ReflectedPropertyModel::read(const std::string &path) const
     return convertValue(path, runtime_->readProperty(instance_, path));
 }
 
-WriteResult ReflectedPropertyModel::write(const std::string &path, const Value &value) {
+Result<void> ReflectedPropertyModel::write(const std::string &path, const Value &value) {
     auto descriptor = schema_.find(path);
-    if (!descriptor) return WriteResult::reject("property_access.script.missing", "Property is not reflected");
-    const WriteResult validation = validatePropertyValue(descriptor->get(), value);
-    if (!validation.accepted) return validationFailure(validation);
+    if (!descriptor) return rejected("property_access.script.missing", "Property is not reflected");
+    Result<void> validation = validatePropertyValue(descriptor->get(), value);
+    if (!validation.ok()) return validationFailure(std::move(validation));
 
     const PropertyKind kind = descriptor->get().kind;
     if (kind == PropertyKind::Array || kind == PropertyKind::Color || kind == PropertyKind::Vec2 ||
         kind == PropertyKind::Vec3 || kind == PropertyKind::Vec4) {
         const auto *items = value.getIf<Value::Array>();
-        if (!items)
-            return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+        if (!items) return rejected("property_access.script.type", "Unsupported property value type");
         std::size_t current = runtime_->arraySize(instance_, path);
         while (current > items->size()) {
             if (!runtime_->arrayRemove(instance_, path, current - 1))
-                return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+                return rejected("property_access.script.write", "Runtime rejected the property write");
             --current;
         }
         for (std::size_t index = 0; index < items->size(); ++index) {
             const ReflectedValue reflected = toReflectedValue((*items)[index]);
-            if (reflected.empty())
-                return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+            if (reflected.empty()) return rejected("property_access.script.type", "Unsupported property value type");
             if (index < current) {
                 if (!runtime_->arraySet(instance_, path, index, reflected))
-                    return WriteResult::reject("property_access.script.write",
-                                               "Runtime rejected the property write");
+                    return rejected("property_access.script.write", "Runtime rejected the property write");
             } else if (!runtime_->arrayAppend(instance_, path, reflected)) {
-                return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+                return rejected("property_access.script.write", "Runtime rejected the property write");
             }
         }
     } else if (kind == PropertyKind::Map || kind == PropertyKind::Struct) {
         const auto *fields = value.getIf<Value::Object>();
-        if (!fields)
-            return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+        if (!fields) return rejected("property_access.script.type", "Unsupported property value type");
         const std::vector<std::string> existing = runtime_->tableKeys(instance_, path);
         for (const std::string &key : existing) {
             if (fields->find(key) != fields->end()) continue;
             if (!runtime_->tableRemove(instance_, path, key))
-                return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+                return rejected("property_access.script.write", "Runtime rejected the property write");
         }
         for (const auto &[key, entry] : *fields) {
             const ReflectedValue reflected = toReflectedValue(entry);
-            if (reflected.empty())
-                return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+            if (reflected.empty()) return rejected("property_access.script.type", "Unsupported property value type");
             if (!runtime_->tableSet(instance_, path, key, reflected))
-                return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+                return rejected("property_access.script.write", "Runtime rejected the property write");
         }
     } else {
         ReflectedValue reflected = toReflectedValue(value);
-        if (reflected.empty())
-            return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+        if (reflected.empty()) return rejected("property_access.script.type", "Unsupported property value type");
         if (!runtime_->writeProperty(instance_, path, reflected))
-            return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+            return rejected("property_access.script.write", "Runtime rejected the property write");
     }
 
     const Value applied = convertValue(path, runtime_->readProperty(instance_, path));
     const auto  found   = cachedValues_.find(path);
     if (found == cachedValues_.end() || found->second != applied) emit(path, applied);
-    return WriteResult::success();
+    return accepted();
 }
 
 Subscription ReflectedPropertyModel::subscribe(ChangeCallback callback) {

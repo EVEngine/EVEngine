@@ -104,40 +104,41 @@ public:
         if (auto *g = gfx()) g->setScreenReadbackEnabled(enabled);
     }
 
-    bool savePng(const std::string &path, int *outWidth, int *outHeight,
-                 std::string *err) override {
+    eve::Result<eve::CaptureImageInfo> savePng(const std::string &path) override {
         auto *g = gfx();
         if (!g) {
-            if (err) *err = "Graphics module not available";
-            return false;
+            return eve::Result<eve::CaptureImageInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Graphics module not available", "capture"));
         }
         g->setScreenReadbackEnabled(true);
         image::ImageData *frame = nullptr;
         try {
             frame = g->newImageData();
         } catch (...) {
-            if (err)
-                *err = "no presented frame yet: readback was just enabled and the "
-                       "copy lands on the next present — call again after one frame "
-                       "(screenshots need a running, presented game loop)";
-            return false;
+            return eve::Result<eve::CaptureImageInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                       "no presented frame yet: readback was just enabled and the "
+                                       "copy lands on the next present — call again after one frame "
+                                       "(screenshots need a running, presented game loop)",
+                                       "capture"));
         }
         if (!frame) {
-            if (err) *err = "no presented frame (enable readback and render a frame first)";
-            return false;
+            return eve::Result<eve::CaptureImageInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                       "no presented frame (enable readback and render a frame first)", "capture"));
         }
         filesystem::FileData *png = nullptr;
         try {
             png = frame->encode(image::ImageData::FormatHandler::ENCODED_PNG, "frame.png", false);
         } catch (...) {
             delete frame;
-            if (err) *err = "png encode failed";
-            return false;
+            return eve::Result<eve::CaptureImageInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "png encode failed", "capture"));
         }
         if (!png) {
             delete frame;
-            if (err) *err = "png encode returned null";
-            return false;
+            return eve::Result<eve::CaptureImageInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "png encode returned null", "capture"));
         }
         std::error_code ec;
         std::filesystem::create_directories(std::filesystem::path(path).parent_path(), ec);
@@ -145,18 +146,22 @@ public:
         if (!out.good()) {
             delete png;
             delete frame;
-            if (err) *err = "cannot open output file: " + path;
-            return false;
+            return eve::Result<eve::CaptureImageInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot open output file: " + path, "capture"));
         }
         out.write(static_cast<const char *>(png->getData()),
                   static_cast<std::streamsize>(png->getSize()));
         const bool ok = out.good();
         delete png;
         delete frame;
-        if (outWidth) *outWidth = g->getPixelWidth();
-        if (outHeight) *outHeight = g->getPixelHeight();
-        if (!ok && err) *err = "failed writing: " + path;
-        return ok;
+        if (!ok) {
+            return eve::Result<eve::CaptureImageInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed writing: " + path, "capture"));
+        }
+        eve::CaptureImageInfo info;
+        info.width  = g->getPixelWidth();
+        info.height = g->getPixelHeight();
+        return eve::Result<eve::CaptureImageInfo>::success(info);
     }
 
     std::string capturePngDataUrl() override {
@@ -347,16 +352,16 @@ public:
                "],\"count\":" + std::to_string(id - 1) + "}";
     }
 
-    bool entityIdMaskPng(const std::string &path, std::string *err) override {
+    eve::Result<void> entityIdMaskPng(const std::string &path) override {
         auto *g = gfx();
         if (!g) {
-            if (err) *err = "Graphics module not available";
-            return false;
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Graphics module not available", "id_mask"));
         }
         auto *cam = camera();
         if (!cam) {
-            if (err) *err = "no camera";
-            return false;
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no camera", "id_mask"));
         }
         auto d = cam->data();
         const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
@@ -365,8 +370,8 @@ public:
         const int vw = g->getPixelWidth() > 0 ? g->getPixelWidth() : g->getWidth();
         const int vh = g->getPixelHeight() > 0 ? g->getPixelHeight() : g->getHeight();
         if (vw <= 0 || vh <= 0) {
-            if (err) *err = "empty viewport";
-            return false;
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "empty viewport", "id_mask"));
         }
         const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
         const glm::mat4 projM = cameraProjectionVulkanRH_ZO(
@@ -405,16 +410,16 @@ public:
         }
         image::ImageData *img = g->renderEntityIdMask(draws, viewProj, vw, vh);
         if (!img) {
-            if (err) *err = "id mask unsupported";
-            return false;
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "id mask unsupported", "id_mask"));
         }
         filesystem::FileData *png = nullptr;
         try {
             png = img->encode(image::ImageData::FormatHandler::ENCODED_PNG, "id.png", false);
         } catch (...) {
             delete img;
-            if (err) *err = "png encode failed";
-            return false;
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "png encode failed", "id_mask"));
         }
         bool ok = false;
         if (png) {
@@ -429,43 +434,52 @@ public:
         }
         delete png;
         delete img;
-        if (!ok && err) *err = "failed writing id mask";
-        return ok;
+        if (!ok) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed writing id mask", "id_mask"));
+        }
+        return eve::Result<void>::success();
     }
 
-    bool gbufferPng(const std::string &name, const std::string &path, std::string *err) override {
+    eve::Result<void> gbufferPng(const std::string &name, const std::string &path) override {
         auto *g = gfx();
         if (!g) {
-            if (err) *err = "Graphics module not available";
-            return false;
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Graphics module not available", "gbuffer"));
         }
         image::ImageData *img = g->readGBufferToImageData(name);
         if (!img) {
-            if (err) *err = "G-buffer attachment unavailable: " + name;
-            return false;
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Unsupported, "G-buffer attachment unavailable: " + name, "gbuffer"));
         }
         filesystem::FileData *png = nullptr;
         try {
             png = img->encode(image::ImageData::FormatHandler::ENCODED_PNG, "buf.png", false);
         } catch (...) {
             delete img;
-            if (err) *err = "png encode failed";
-            return false;
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "png encode failed", "gbuffer"));
         }
-        const bool ok = png != nullptr;
-        if (ok) {
-            std::error_code ec;
-            std::filesystem::create_directories(std::filesystem::path(path).parent_path(), ec);
-            std::ofstream out(path, std::ios::binary);
-            if (out.good()) {
-                out.write(static_cast<const char *>(png->getData()),
-                          static_cast<std::streamsize>(png->getSize()));
-            }
+        if (!png) {
+            delete img;
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "png encode returned null", "gbuffer"));
+        }
+        std::error_code ec;
+        std::filesystem::create_directories(std::filesystem::path(path).parent_path(), ec);
+        std::ofstream out(path, std::ios::binary);
+        bool          ok = false;
+        if (out.good()) {
+            out.write(static_cast<const char *>(png->getData()), static_cast<std::streamsize>(png->getSize()));
+            ok = out.good();
         }
         delete png;
         delete img;
-        if (!ok && err) *err = "png encode returned null";
-        return ok;
+        if (!ok) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed writing gbuffer png", "gbuffer"));
+        }
+        return eve::Result<void>::success();
     }
 
 private:

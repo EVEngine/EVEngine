@@ -368,13 +368,18 @@ Poco::JSON::Object::Ptr sceneNodeObservation(eve::ISceneQuery& scene, const std:
     output->set("observer", "scene-node");
     output->set("host", host.empty() ? scene.activeHost() : host);
     output->set("node", node);
-    eve::SceneNodeInfo info;
-    const bool found = host.empty() ? scene.getNode(node, &info) : scene.getNodeIn(host, node, &info);
-    if (node.empty() || !found) {
+    if (node.empty()) {
         output->set("status", "not-found");
         output->set("error", "Scene node is missing from the observed host");
         return output;
     }
+    auto lookedUp = host.empty() ? scene.getNode(node) : scene.getNodeIn(host, node);
+    if (!lookedUp) {
+        output->set("status", "not-found");
+        output->set("error", "Scene node is missing from the observed host");
+        return output;
+    }
+    const eve::SceneNodeInfo info = std::move(lookedUp).value();
     output->set("status", "ok");
     output->set("id", info.id);
     output->set("name", info.name);
@@ -880,9 +885,11 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_scene_node_get") {
         auto* scene = mcpScene();
         if (!scene || scene->activeHost().empty()) return "error: no active scene host";
-        const std::string  id = getArgString(args, "id");
-        eve::SceneNodeInfo n;
-        if (id.empty() || !scene->getNode(id, &n)) return "error: node not found: " + id;
+        const std::string id = getArgString(args, "id");
+        if (id.empty()) return "error: node not found: " + id;
+        auto lookedUp = scene->getNode(id);
+        if (!lookedUp) return "error: node not found: " + id;
+        const eve::SceneNodeInfo n = std::move(lookedUp).value();
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("id", n.id);
         o->set("name", n.name);
@@ -911,11 +918,11 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (id.empty()) return "error: node not found: " + id;
         bool changed = false;
         if (args && args->has("x") && args->has("y") && args->has("z")) {
-            changed =
-                scene->setNodeTransform(id, getArgFloat(args, "x"), getArgFloat(args, "y"), getArgFloat(args, "z"));
+            if (scene->setNodeTransform(id, getArgFloat(args, "x"), getArgFloat(args, "y"), getArgFloat(args, "z")))
+                changed = true;
         }
         if (args && args->has("visible")) {
-            changed = scene->setNodeVisible(id, getArgBool(args, "visible")) || changed;
+            if (scene->setNodeVisible(id, getArgBool(args, "visible"))) changed = true;
         }
         return changed ? "ok" : "error: node not found: " + id;
     }
@@ -948,11 +955,13 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         }
         if (args && args->has("corridorStyle"))
             params.emplace_back("corridorStyle", getArgString(args, "corridorStyle"));
-        std::string err;
-        std::string json = pg->generateMap(algorithm, getArgInt(args, "width", 32), getArgInt(args, "height", 32),
-                                           static_cast<uint32_t>(getArgInt(args, "seed", 0)), params, &err);
-        if (json.empty()) return "error: " + (err.empty() ? std::string("empty grid") : err);
-        return json;
+        auto generated = pg->generateMap(algorithm, getArgInt(args, "width", 32), getArgInt(args, "height", 32),
+                                         static_cast<uint32_t>(getArgInt(args, "seed", 0)), params);
+        if (!generated) {
+            const auto* diag = generated.status().primaryDiagnostic();
+            return "error: " + (diag ? diag->message() : generated.status().describe());
+        }
+        return std::move(generated).value();
     }
 
     if (name == "eve_procgen_mesh") {
@@ -960,11 +969,14 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!pg) return "error: Procgen module not available";
         const std::string recipe = getArgString(args, "recipe");
         if (recipe.empty()) return "error: missing recipe";
-        std::string err;
-        std::string json =
+        auto built =
             pg->buildMesh(recipe, static_cast<uint32_t>(getArgInt(args, "seed", 0)), getArgInt(args, "width", -1),
-                          getArgInt(args, "height", -1), getArgInt(args, "depth", -1), &err);
-        if (json.empty()) return "error: " + (err.empty() ? std::string("build failed") : err);
+                          getArgInt(args, "height", -1), getArgInt(args, "depth", -1));
+        if (!built) {
+            const auto* diag = built.status().primaryDiagnostic();
+            return "error: " + (diag ? diag->message() : built.status().describe());
+        }
+        const std::string       json = std::move(built).value();
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("recipe", recipe);
         try {
@@ -1073,25 +1085,25 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             if (c == '\\') c = '/';
         }
 
-        const eve::RenderStatusInfo status = cap->status();
-        int                         w      = 0;
-        int                         h      = 0;
-        std::string                 err;
-        if (!cap->savePng(path, &w, &h, &err)) {
+        const eve::RenderStatusInfo status   = cap->status();
+        auto                        captured = cap->savePng(path);
+        if (!captured) {
             // Enabling readback and reading it back cannot happen inside one
             // presented frame: the swapchain copy is recorded by the next
             // present. Report that as a retryable state instead of a failure so
             // an unattended loop keeps polling instead of giving up.
             const bool              retryable = !status.readbackEnabled;
+            const auto*             diag      = captured.status().primaryDiagnostic();
             Poco::JSON::Object::Ptr o         = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
             o->set("ok", false);
             o->set("retryable", retryable);
             o->set("reason", retryable ? "no-presented-frame" : "capture-failed");
             o->set("readbackEnabled", status.readbackEnabled);
-            o->set("message", err);
+            o->set("message", diag ? diag->message() : captured.status().describe());
             const std::string payload = mcpStringify(Poco::Dynamic::Var(o));
             return retryable ? payload : "error: " + payload;
         }
+        const eve::CaptureImageInfo info = std::move(captured).value();
 
         std::error_code         sizeError;
         const auto              bytes = std::filesystem::file_size(path, sizeError);
@@ -1099,8 +1111,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         o->set("ok", true);
         o->set("path", path);
         o->set("bytes", sizeError ? Poco::Int64(0) : static_cast<Poco::Int64>(bytes));
-        o->set("width", w);
-        o->set("height", h);
+        o->set("width", info.width);
+        o->set("height", info.height);
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 

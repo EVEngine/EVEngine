@@ -166,10 +166,10 @@ eve::Result<eve::MutationReceipt> StatePatchStateAdapter::apply(std::span<const 
     auto committed = coordinator.execute(transaction, participants);
     if (!committed) return eve::Result<eve::MutationReceipt>::failure(committed.status());
 
-    const PatchResult& result = batch->result();
+    const PatchResult& summary = batch->result();
     return eve::Result<eve::MutationReceipt>::success(
-        eve::MutationReceipt{context.transactionId, static_cast<std::size_t>(result.changedCount)},
-        eve::Status::success(result.changedCount == 0 ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
+        eve::MutationReceipt{context.transactionId, static_cast<std::size_t>(summary.changedCount)},
+        eve::Status::success(summary.changedCount == 0 ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
 }
 
 }  // namespace eve::statepatch

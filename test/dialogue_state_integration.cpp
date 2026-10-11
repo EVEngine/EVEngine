@@ -214,7 +214,7 @@ TEST_CASE("dialogueState.statePatchTransactionFailureDoesNotPartiallyModify") {
     auto                   seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     CHECK(seed.view->set("actor", "value", "1"));
-    REQUIRE(store.commit(seed.view.get()));
+    REQUIRE(store.commit(seed.view.get()).ok());
     const std::string before         = store.snapshotJson();
     const auto        beforeRevision = store.revision();
     const auto        beforeEvents   = store.eventCount();
