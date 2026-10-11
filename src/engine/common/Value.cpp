@@ -9,7 +9,39 @@
 #include <string_view>
 #include <utility>
 
+#if defined(_WIN32)
+template class EVENGINE_API_FOUNDATION std::vector<eve::Value>;
+template class EVENGINE_API_FOUNDATION std::map<std::string, eve::Value>;
+#else
+template class std::vector<eve::Value>;
+template class std::map<std::string, eve::Value>;
+#endif
+
 namespace eve {
+
+Value::Value() noexcept = default;
+Value::Value(std::nullptr_t) {}
+Value::Value(bool value) : storage_(value) {}
+Value::Value(std::int64_t value) : storage_(value) {}
+Value::Value(int value) : storage_(static_cast<std::int64_t>(value)) {}
+Value::Value(double value) : storage_(value) {}
+Value::Value(float value) : storage_(static_cast<double>(value)) {}
+Value::Value(const char* value) : storage_(std::string(value ? value : "")) {}
+Value::Value(std::string value) : storage_(std::move(value)) {}
+Value::Value(Array value) : storage_(std::move(value)) {}
+Value::Value(Object value) : storage_(std::move(value)) {}
+Value::~Value()                                 = default;
+Value::Value(const Value& other)                = default;
+Value::Value(Value&& other) noexcept            = default;
+Value& Value::operator=(const Value& other)     = default;
+Value& Value::operator=(Value&& other) noexcept = default;
+bool   Value::operator==(const Value&) const    = default;
+
+Value Value::array(Array value) { return Value(std::move(value)); }
+Value Value::object(Object value) { return Value(std::move(value)); }
+Value Value::array(std::initializer_list<Value> values) { return Value(Array(values)); }
+Value Value::object(std::initializer_list<Object::value_type> members) { return Value(Object(members)); }
+
 namespace {
 
 Result<Value> copyJsonValue(const json::Value& source) {

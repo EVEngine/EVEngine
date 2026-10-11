@@ -57,27 +57,38 @@ public:
     using Kind = Type;
 
     /** @brief Construct a null value. */
-    Value() = default;
+    Value() noexcept;
     /** @brief Construct a null value from nullptr. */
-    Value(std::nullptr_t) {}
+    Value(std::nullptr_t);
     /** @brief Construct a boolean value. */
-    Value(bool value) : storage_(value) {}
+    Value(bool value);
     /** @brief Construct an Int64 value without narrowing. */
-    Value(std::int64_t value) : storage_(value) {}
+    Value(std::int64_t value);
     /** @brief Construct an integer value using the canonical Int64 type. */
-    Value(int value) : storage_(static_cast<std::int64_t>(value)) {}
+    Value(int value);
     /** @brief Construct a Double value; non-finite values serialize as errors. */
-    Value(double value) : storage_(value) {}
+    Value(double value);
     /** @brief Construct a Double value from a float. */
-    Value(float value) : storage_(static_cast<double>(value)) {}
+    Value(float value);
     /** @brief Construct a string value, copying the supplied text. */
-    Value(const char* value) : storage_(std::string(value ? value : "")) {}
+    Value(const char* value);
     /** @brief Construct a string value by taking the supplied text. */
-    Value(std::string value) : storage_(std::move(value)) {}
+    Value(std::string value);
     /** @brief Construct an array value by taking its elements. */
-    Value(Array value) : storage_(std::move(value)) {}
+    Value(Array value);
     /** @brief Construct an object value by taking its members. */
-    Value(Object value) : storage_(std::move(value)) {}
+    Value(Object value);
+
+    /** @brief Destroy the recursively owned payload. */
+    ~Value() noexcept;
+    /** @brief Copy the recursively owned payload. */
+    Value(const Value& other);
+    /** @brief Move the owned payload without copying. */
+    Value(Value&& other) noexcept;
+    /** @brief Replace this payload with a recursive copy. */
+    Value& operator=(const Value& other);
+    /** @brief Replace this payload by moving ownership. */
+    Value& operator=(Value&& other) noexcept;
 
     /** @brief Return the active value kind. */
     Type type() const noexcept { return static_cast<Type>(storage_.index()); }
@@ -109,9 +120,27 @@ public:
     /** @brief Compatibility factory for a string value. */
     static Value string(std::string value) { return Value(std::move(value)); }
     /** @brief Compatibility factory for an array value. */
-    static Value array(Array value) { return Value(std::move(value)); }
+    static Value array(Array value);
     /** @brief Compatibility factory for an object value. */
-    static Value object(Object value) { return Value(std::move(value)); }
+    static Value object(Object value);
+    /**
+     * @brief Copy elements into an owning array without a caller-side vector temporary.
+     * @param values Borrowed elements, copied before return; no references are retained.
+     * @return Independent array value.
+     * @cost Linear in the number and recursively owned size of elements, once per construction.
+     * @thread No shared mutable state; inputs must remain stable during the call.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] static Value array(std::initializer_list<Value> values);
+    /**
+     * @brief Copy members into an owning object with lexicographically ordered keys.
+     * @param members Borrowed members, copied before return; duplicate keys keep the first entry.
+     * @return Independent object value; no references to members are retained.
+     * @cost Map insertion plus recursive value copies, once per construction.
+     * @thread No shared mutable state; inputs must remain stable during the call.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] static Value object(std::initializer_list<Object::value_type> members);
 
     /** @brief Return the Int64 payload; the caller must have checked the kind. */
     std::int64_t asInt() const;
@@ -214,10 +243,20 @@ public:
     [[nodiscard]] Result<std::string> toJson() const;
 
     /** @brief Compare two values recursively, including their numeric kinds. */
-    bool operator==(const Value&) const = default;
+    bool operator==(const Value&) const;
 
 private:
     Storage storage_;
 };
 
 }  // namespace eve
+
+// One compiled owner for the canonical containers. Member templates remain
+// available in consumers; their non-template operations share foundation code.
+#if defined(_WIN32) && defined(EVENGINE_MODULE_DLL) && !defined(EVENGINE_EXPORTS_FOUNDATION)
+extern template class __declspec(dllimport) std::vector<eve::Value>;
+extern template class __declspec(dllimport) std::map<std::string, eve::Value>;
+#else
+extern template class std::vector<eve::Value>;
+extern template class std::map<std::string, eve::Value>;
+#endif

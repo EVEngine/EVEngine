@@ -12,17 +12,23 @@ set(EVENGINE_BUILD_PLATFORM "" CACHE STRING
     "EVEngine target platform override; unlike legacy BUILD_PLATFORM this cannot collide with dependencies")
 
 set(EVENGINE_COMPILER_CACHE "AUTO" CACHE STRING
-    "Compiler cache mode: AUTO detects sccache, SCCACHE requires it, OFF disables auto-detection")
-set_property(CACHE EVENGINE_COMPILER_CACHE PROPERTY STRINGS AUTO SCCACHE OFF)
+    "Compiler cache mode: AUTO, SCCACHE, CCACHE_HARDLINK (Windows Ninja), or OFF")
+set_property(CACHE EVENGINE_COMPILER_CACHE PROPERTY STRINGS AUTO SCCACHE CCACHE_HARDLINK OFF)
 string(TOUPPER "${EVENGINE_COMPILER_CACHE}" _eve_compiler_cache_mode)
-if(NOT _eve_compiler_cache_mode MATCHES "^(AUTO|SCCACHE|OFF)$")
+if(NOT _eve_compiler_cache_mode MATCHES "^(AUTO|SCCACHE|CCACHE_HARDLINK|OFF)$")
     message(FATAL_ERROR
-        "EVENGINE_COMPILER_CACHE must be AUTO, SCCACHE, or OFF "
+        "EVENGINE_COMPILER_CACHE must be AUTO, SCCACHE, CCACHE_HARDLINK, or OFF "
         "(got: ${EVENGINE_COMPILER_CACHE})")
 endif()
 
 set(_eve_sccache_enabled OFF)
-if(_eve_compiler_cache_mode STREQUAL "AUTO" AND
+set(_eve_ccache_enabled OFF)
+if(_eve_compiler_cache_mode STREQUAL "CCACHE_HARDLINK")
+    include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/ccache_hardlink.cmake")
+    eve_prepare_ccache_hardlink()
+    set(_eve_ccache_enabled ON)
+    set(_eve_compiler_cache_status "ccache hardlinks (${EVENGINE_CCACHE_EXECUTABLE})")
+elseif(_eve_compiler_cache_mode STREQUAL "AUTO" AND
    (CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER))
     set(_eve_compiler_cache_status "custom launcher supplied")
 elseif(NOT _eve_compiler_cache_mode STREQUAL "OFF")
@@ -60,7 +66,11 @@ endif()
 
 project(EVEngine)
 
-if(WIN32 AND MSVC AND CMAKE_GENERATOR MATCHES "Ninja")
+if(_eve_ccache_enabled)
+    eve_finish_ccache_hardlink()
+endif()
+
+if(WIN32 AND MSVC AND CMAKE_GENERATOR MATCHES "Ninja" AND NOT _eve_ccache_enabled)
     # sccache (and any other launcher) CreateProcess()es cl.exe with a pipe;
     # localized cl then writes ACP /showIncludes (GBK) while Ninja's
     # msvc_deps_prefix is UTF-8, so every header leaks into the build log.
@@ -789,6 +799,10 @@ endfunction()
 
 # This function will set the include directories for the project
 function(set_include)
+    include(cmake/simplesquirrel_headers.cmake)
+    eve_prepare_simplesquirrel_headers()
+    include(cmake/ecs_container_headers.cmake)
+    eve_prepare_ecs_container_headers()
     target_include_directories(eve_engine_includes INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/src/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/src/modules
@@ -1187,3 +1201,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party_build.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/webgpu_backend.cmake)
 
 main()
+
+if(_eve_ccache_enabled)
+    eve_attach_ccache_source_map("${CMAKE_SOURCE_DIR}")
+endif()
