@@ -438,8 +438,10 @@ jobs:
         # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
         # 95% only when the former 40-minute guard fired on windows-latest. The
         # growing module matrix crossed the later 75-minute guard in the v0.5.1
-        # release gate, so retain a bounded 30-minute link/cache variance margin.
-        timeout-minutes: 105
+        # release gate, and a cache-cold PR (#526) hit 3842/3843 then stalled in
+        # the unit_test link past the 105-minute guard. Keep a hang guard with
+        # margin for cold sccache + MSVC link variance.
+        timeout-minutes: 135
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
