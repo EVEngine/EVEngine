@@ -46,6 +46,12 @@ set(DOC_EXCLUDE_SYMBOLS "")
 set(_doc_pages_dir "${CMAKE_CURRENT_BINARY_DIR}/pages")
 set(DOC_MAINPAGE "${DOC_TOP_DIR}/dox/mainpage.dox")
 
+# Wrappers are generated at configure time; refresh them when a guide is edited.
+file(GLOB_RECURSE _doc_guide_sources CONFIGURE_DEPENDS
+    "${DOC_TOP_DIR}/usr/*.md" "${DOC_TOP_DIR}/en/usr/*.md")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    ${_doc_guide_sources} "${DOC_TOP_DIR}/dev/API-CONVENTIONS.md")
+
 # Start from a clean tree so stale wrappers from previous configure runs
 # (e.g. an older page set) never leak into the generated documentation.
 file(REMOVE_RECURSE "${_doc_pages_dir}")
@@ -56,10 +62,13 @@ file(MAKE_DIRECTORY
 # User guide root: EVEngine 用户指南 -> language tutorial / module handbook /
 # trimming / conventions.
 file(READ "${DOC_TOP_DIR}/usr/README.md" _doc_usr_readme ENCODING UTF-8)
+string(REPLACE "](../en/usr/README.md)" "](@ref usr_guide_en)"
+    _doc_usr_readme "${_doc_usr_readme}")
 file(WRITE "${_doc_pages_dir}/docs/usr/README.md"
     "\\page usr_guide EVEngine 用户指南\n\n"
     "\\subpage usr_evescript\n\n"
     "\\subpage usr_modules\n\n"
+    "\\subpage usr_save\n\n"
     "\\subpage usr_trimming\n\n"
     "\\subpage usr_conventions\n\n"
     "${_doc_usr_readme}")
@@ -68,6 +77,10 @@ file(WRITE "${_doc_pages_dir}/docs/usr/README.md"
 file(READ "${DOC_TOP_DIR}/usr/EVESCRIPT.md" _doc_evescript ENCODING UTF-8)
 file(WRITE "${_doc_pages_dir}/docs/usr/EVESCRIPT.md"
     "\\page usr_evescript EveScript 完整教程\n\n${_doc_evescript}")
+
+file(READ "${DOC_TOP_DIR}/usr/SAVE.md" _doc_save ENCODING UTF-8)
+file(WRITE "${_doc_pages_dir}/docs/usr/SAVE.md"
+    "\\page usr_save 跨模块存档用法\n\n${_doc_save}")
 
 # Module handbook: groups the five category pages (defined in docs/dox/).
 file(READ "${DOC_TOP_DIR}/usr/MODULES.md" _doc_modules ENCODING UTF-8)
@@ -151,6 +164,70 @@ foreach(_doc_spec IN LISTS _doc_module_pages)
         "\\page ${_doc_id} ${_doc_title}\n\n${_doc_content}")
 endforeach()
 
+# Hand-maintained English guides share this site and its generated C++ reference.
+# Only actual translations are included; untranslated guides link to the source
+# repository and are explicitly marked Chinese by the English handbook.
+set(_doc_english_pages
+    "README.md|usr_guide_en|EVEngine User Guide"
+    "EVESCRIPT.md|usr_evescript_en|EveScript Tutorial"
+    "MODULES.md|usr_modules_en|Module Handbook"
+    "SAVE.md|usr_save_en|Saving Games"
+    "TRIMMING.md|usr_trimming_en|Module Trimming"
+    "API-CONVENTIONS.md|usr_conventions_en|API Conventions"
+    "modules/window.md|mod_window_en|Window"
+    "modules/keyboard.md|mod_keyboard_en|Keyboard"
+    "modules/mouse.md|mod_mouse_en|Mouse"
+    "modules/filesystem.md|mod_filesystem_en|Files and Hot Reload"
+    "modules/entity.md|mod_entity_en|Script ECS"
+    "modules/graphics.md|mod_graphics_en|Graphics: Getting Started"
+    "modules/ui.md|mod_ui_en|UI: Getting Started")
+set(_doc_english_subpages "")
+foreach(_doc_spec IN LISTS _doc_english_pages)
+    string(REPLACE "|" ";" _doc_parts "${_doc_spec}")
+    list(GET _doc_parts 0 _doc_name)
+    list(GET _doc_parts 1 _doc_id)
+    list(GET _doc_parts 2 _doc_title)
+    file(READ "${DOC_TOP_DIR}/en/usr/${_doc_name}" _doc_content ENCODING UTF-8)
+    get_filename_component(_doc_relative_dir "${_doc_name}" DIRECTORY)
+    # Resolve translated-page links by stable IDs. Doxygen otherwise mistakes
+    # README.md for the repository root when several directories use that name.
+    foreach(_doc_target_spec IN LISTS _doc_english_pages)
+        string(REPLACE "|" ";" _doc_target_parts "${_doc_target_spec}")
+        list(GET _doc_target_parts 0 _doc_target_name)
+        list(GET _doc_target_parts 1 _doc_target_id)
+        file(RELATIVE_PATH _doc_target_rel
+            "${DOC_TOP_DIR}/en/usr/${_doc_relative_dir}"
+            "${DOC_TOP_DIR}/en/usr/${_doc_target_name}")
+        string(REPLACE "](${_doc_target_rel})" "](@ref ${_doc_target_id})"
+            _doc_content "${_doc_content}")
+    endforeach()
+    # Files outside the translated tree can be absent from Doxygen's curated
+    # inputs. Make their source links work online without importing design drafts.
+    foreach(_doc_prefix IN ITEMS "../../../../" "../../../" "../../")
+        foreach(_doc_area IN ITEMS usr dev images)
+            string(REPLACE "](${_doc_prefix}${_doc_area}/"
+                "](https://github.com/EVEngine/EVEngine/blob/dev/docs/${_doc_area}/"
+                _doc_content "${_doc_content}")
+        endforeach()
+        foreach(_doc_area IN ITEMS src examples cmake)
+            string(REPLACE "](${_doc_prefix}${_doc_area}/"
+                "](https://github.com/EVEngine/EVEngine/blob/dev/${_doc_area}/"
+                _doc_content "${_doc_content}")
+        endforeach()
+        string(REPLACE "](${_doc_prefix}Readme"
+            "](https://github.com/EVEngine/EVEngine/blob/dev/Readme"
+            _doc_content "${_doc_content}")
+    endforeach()
+    file(MAKE_DIRECTORY "${_doc_pages_dir}/docs/en/usr/${_doc_relative_dir}")
+    file(WRITE "${_doc_pages_dir}/docs/en/usr/${_doc_name}"
+        "\\page ${_doc_id} ${_doc_title}\n\n${_doc_content}")
+    if(NOT _doc_id STREQUAL "usr_guide_en")
+        string(APPEND _doc_english_subpages "\\subpage ${_doc_id}\n\n")
+    endif()
+endforeach()
+file(APPEND "${_doc_pages_dir}/docs/en/usr/README.md"
+    "\n\n${_doc_english_subpages}")
+
 # ---------------------------------------------------------------------------
 # Static sidebar navigation (plain HTML, no JavaScript).
 #
@@ -176,6 +253,7 @@ endforeach()
 set(_doc_sidebar_html
     "<a href=\"index.html\">首页</a>"
     "<a href=\"usr_guide.html\">用户指南</a>"
+    "<a href=\"usr_guide_en.html\">English user guide</a>"
     "<details open><summary>模块使用手册</summary>")
 foreach(_doc_group IN LISTS _doc_sidebar_groups)
     string(REPLACE "|" ";" _doc_gparts "${_doc_group}")
@@ -198,6 +276,7 @@ foreach(_doc_group IN LISTS _doc_sidebar_groups)
 endforeach()
 list(APPEND _doc_sidebar_html
     "</details>"
+    "<a href=\"usr_save.html\">跨模块存档</a>"
     "<a href=\"usr_trimming.html\">按需裁剪模块</a>"
     "<a href=\"usr_conventions.html\">API 使用约定</a>"
     "<div class=\"ev-nav-section\">C++ API 参考</div>"

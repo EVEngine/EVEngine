@@ -8,8 +8,10 @@ Evolutionary Vision Engine
 
 ## Documentation
 
+English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
+
 - Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.md) — every screenshot is a real presented frame written by the engine itself.
-- [Game developer docs](docs/usr/README.md): download the engine, create and run a game, debug, and publish; the [module handbook](docs/usr/MODULES.md) covers the script APIs and examples one by one.
+- [Game developer docs](docs/en/usr/README.md): download the engine, create and run a game, debug, and publish; the [module handbook](docs/en/usr/MODULES.md) covers the script APIs and examples one by one.
 - [Online API reference (Doxygen)](https://evengine.github.io/EVEngine/): published continuously to GitHub Pages; includes the C++ API and the user manual.
 - [Engine developer docs](docs/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
 
@@ -99,11 +101,11 @@ bin\eve.exe create mygame     # Windows (macOS / Linux: bin/eve create mygame)
 bin\eve.exe run mygame
 ```
 
-`eve create` generates a minimal game template: `config.nut` (window and dev options) and `main.nut` (game logic). Edit `main.nut`, save, and watch the hot reload in action. For game directory layout, lifecycle callbacks (`eve_init` / `eve_update` / `eve_render`), modules, debugging, and publishing, see the [user guide](docs/usr/README.md).
+`eve create` generates a minimal game template: `config.nut` (window and dev options) and `main.nut` (game logic). Edit `main.nut`, save, and watch the hot reload in action. For game directory layout, lifecycle callbacks (`eve_init` / `eve_update` / `eve_render`), modules, debugging, and publishing, see the [user guide](docs/en/usr/README.md).
 
 ### What you can do with the engine
 
-- **Make 2D / third-person 3D / mixed 2D+3D games**: 40+ modules — tilemap, cameras, Box2D/Box3D physics, particles, animation, RPG, inventory, UI, procedural generation, and more — all driven by EveScript (Squirrel-compatible). Start with the [EveScript tutorial](docs/usr/EVESCRIPT.md), then use the [module handbook](docs/usr/MODULES.md).
+- **Make 2D / third-person 3D / mixed 2D+3D games**: 40+ modules — tilemap, cameras, Box2D/Box3D physics, particles, animation, RPG, inventory, UI, procedural generation, and more — all driven by EveScript (Squirrel-compatible). Start with the [EveScript tutorial](docs/en/usr/EVESCRIPT.md), then use the [module handbook](docs/en/usr/MODULES.md).
 - **Hot reload for scripts and assets**: on desktop, edits take effect immediately; on mobile, push changes to the device with the `eve dev` dev server — no reinstall.
 - **Debug**: pause the game loop, breakpoints, watches, snapshots; VS Code debug adapter and AI (MCP) assisted development.
 - **Package and publish**: `eve zip` compresses a game into a `.eve` archive; `eve package --sdk <sdk>` produces a distributable folder containing the runtime and your game; Android/iOS use the SDK's bundled templates to assemble APK / .app.
@@ -366,7 +368,7 @@ make build/win32-debug \
   CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_PROFILE=2d"
 ```
 
-See [module trimming](docs/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
+See [module trimming](docs/en/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
 `full`, and per-module options.
 
 ### Match CI locally
@@ -561,7 +563,7 @@ EVEngine/
 └── docs/               # User docs (usr) and developer docs (dev)
 ```
 
-Usage docs: `docs/usr/`. Design notes: `docs/dev/`.
+User guides: [`docs/en/usr/`](docs/en/usr/README.md); authoritative Chinese guides: `docs/usr/`. Design notes: `docs/dev/` (Chinese).
 
 ## License
 

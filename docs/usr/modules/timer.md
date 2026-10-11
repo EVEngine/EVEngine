@@ -32,17 +32,10 @@ print("dt=" + dt + ", elapsed=" + timer.getTime() + "\n");
 - 把返回值当毫秒：所有时间值单位都是秒。
 - 暂停恢复后物体穿透：限制用于模拟的最大 dt。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `getDelta()`、`getName()`、`getTime()`、`step()`
-
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/timer/`](../../../src/modules/timer/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `timer`。
