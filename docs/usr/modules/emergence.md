@@ -62,15 +62,7 @@ pass。上升沿 / once / cooldown 锁存仅在该次激活的动作全部成功
 - `policy_call` 无 dependencies：注册失败——无法建立索引。
 - 在 handler 里再次 `drain` 同一引擎：禁止（PreconditionViolation）。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定。
-
-- `getName`、`newEngine`
-- `ownership`、`isStale`、`release`、`ruleCount`
-- `replaceCatalogueJson`、`setValue`、`setTag`、`setResource`、`setState`
-- `drain`、`activationCount`、`activationRuleId`、`clearActivations`、`lastDrainEvaluations`
-- `snapshotJson`、`restoreJson`
+## 绑定与行为说明
 
 **源码：** [`src/modules/emergence/`](../../../src/modules/emergence/)
 **设计：** [`docs/dev/涌现式规则触发框架.md`](../../dev/涌现式规则触发框架.md)

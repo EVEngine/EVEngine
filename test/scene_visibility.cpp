@@ -1,4 +1,5 @@
 #include <limits>
+#include "common/config.h"
 #include "graphics/SceneVisibility.h"
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"

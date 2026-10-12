@@ -44,7 +44,7 @@ loader.pollAsync();          // 就绪后挂载（GPU 上传在主线程）
 - `SOCKET_Weapon`：标为 `model-socket`，用 `socketCount/socketName` 枚举，也可通过 scene tag API 找到节点并挂接实体。
 - `UCX_`、`UBX_`、`USP_`、`UCP_`：标为隐藏的 `collision` 几何，不创建 Renderable；物理或编辑器流水线可按 tag 生成碰撞体。
 
-## API 快查
+## 绑定与行为说明
 
 ### `SceneLoader`（模块）
 

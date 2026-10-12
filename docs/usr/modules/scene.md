@@ -198,22 +198,13 @@ for (local i = 0; i < octree.getResultCount(); ++i) {
 - mount / rebuild 会校验节点 id 唯一性，重复 id 直接报错（含脚本 builder）。
 - 被销毁的渲染/物理目标会在下一次变换更新时自动从节点上摘除 link（防悬垂指针）。
 
-## API 快查
+## 绑定与行为说明
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `addNode()`、`beginBuild()`、`beginGroup()`、`beginNode()`、`bindOwner()`、`collectChildIds()`、`collectIds()`、`collectIdsByName()`
-- `collectIdsFrom()`、`collectIdsVisible()`、`end()`、`findIdByName()`、`findIdByPath()`、`getChildCount()`、`getChildIdAt()`、`getName()`
-- `attachEntity()`、`attachEntityAt()`、`detachEntity()`、`detachEntityAt()`、`scheduleDetachEntity()`、`scheduleDetachEntityAt()`、`collectIdsWith()`、`getEntity()`、`getEntityAt()`、`hasEntity()`、`hasEntityAt()`、`entitiesOf()`、`entitiesOfAt()`、`update()`、`currentHostName()`、`getNodeRef()`、`getNodeRefAt()`、`getNodeRefByPath()`
 - `linkRenderable2D()`、`linkRenderable3D()`、`linkPhysics2D()`、`linkPhysics3D()`、`linkCamera3D()`、`linkAudio3D()`、`unlinkNodeKind()`、`linkCount()`（及 host-scoped `*At` 变体）
 - `getNodePosition()`、`getNodeRotation()`、`getNodeScale()`、`getNodeVisible()`、`getNodeWorldPosition()`、`getNodeWorldRotation()`、`getNodeWorldScale()`、`localToWorld()`、`worldToLocal()`、`setNodeParent()`、`removeNode()`、`addNodeChild()`、`removeNodeChild()`、`setNodeQuaternion()`、`getNodeQuaternion()`、`setNodeLookAt()`、`addNodeTag()`、`removeNodeTag()`、`hasNodeTag()`、`getNodeTags()`、`collectIdsByTag()`、`setNodeLayer()`、`getNodeLayer()`（及 host-scoped `*At` 变体）
 - `setNodeBounds()`、`hasNodeBounds()`、`getNodeBounds()`、`serializeHost()`、`deserializeHost()`、`pickRay()`、`pickScreen()`、`collectFrustumIds()`、`syncSpatialIndex()`、`nodeIdFromSpatialId()`（及 host-scoped `*At` 变体）
-- `getNodeCount()`、`getNodePath()`、`getParentId()`、`getRootId()`、`hasNode()`、`isAncestor()`、`isDescendant()`、`linkRenderable2D()`
-- `linkRenderable3D()`、`mountBuild()`、`mountBuildAs()`、`remountBuildAs()`、`select()`、`setBuildPosition()`、`setBuildRotation()`、`setBuildScale()`
-- `setBuildSpace()`、`setBuildVisible()`、`setHostLayer()`、`setHostVisible()`、`setNodePosition()`、`setNodeRotation()`、`setNodeScale()`、`setNodeVisible()`
 
 Pcg `Growth` 由 `eve.PcgGrowth()` 承接。`configure(startScale,endScale,variance,growthTime)` 配置范围，`start(realtime,seed)` 选择确定性的实际终点；`advance(realtime)` 返回统一缩放，`applyPcgGrowth(growth,node,realtime)` 将其应用到真实 `SceneNodeRef`，并在 `die(realtime)` 后五秒删除节点。状态可用 `getActualEndScale()`、`getScale()`、`getFinished()`、`shouldDestroy(realtime)` 查询。
-- `unlinkNode()`、`updateTransforms()`、`updateTransformsAll()`、`walkBreadthFirstIds()`、`walkDepthFirstIds()`
 
 辅助对象：
 
@@ -240,7 +231,6 @@ Y<1 时额外抬高 70，否则抬高 10，再减 offsetY。`useScale` 独立发
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/scene/`](../../../src/modules/scene/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `scene`。

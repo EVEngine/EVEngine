@@ -972,7 +972,10 @@ void RPG::expose(ssq::Table &table) {
 
     auto worldState = table.addClass<WorldState>(
         "RPGWorldState", std::function<WorldState *()>([]() { return nullptr; }), true);
-    worldState.addFunc("isObjectConsumed", &WorldState::isObjectConsumed);
+    worldState.addFunc("isObjectConsumed",
+                       [](WorldState *state, const std::string &mapId, const std::string &objectId) {
+                           return state && state->isObjectConsumed(mapId, objectId);
+                       });
     worldState.addFunc("consumeObject", [vm](WorldState *state, const std::string &mapId,
                                                const std::string &objectId) {
         if (!state)

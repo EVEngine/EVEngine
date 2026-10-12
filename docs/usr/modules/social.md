@@ -22,7 +22,7 @@ local support = social.relation("officer:vela", "general:arden", "support");
 字符串 ID 与整数 ID 属于不同命名空间；需要整数实体 ID 时使用 `*Int` API，
 `idFromInt` 可取得其规范字符串形式，不能直接用 `"7"` 替代整数 7。
 
-## API 快查
+## 绑定与行为说明
 
 | 分类 | API | 说明 |
 |---|---|---|

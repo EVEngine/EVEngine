@@ -115,34 +115,10 @@ if (t >= 0) {
 - 射线 API 的 `t` 是参数：`hit = origin + t * dir`；`dir` 不必单位化，线段检测时用 `dir = B - A` 并要求 `t ∈ [0,1]`。
 - 把 Math 几何测试当成刚体物理：需要接触事件、摩擦或传感器时用 Physics。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `add()`、`angle()`、`angle2()`、`angleBetween2()`、`approach()`、`bezierCubic()`、`bezierCubic2X()`、`bezierCubic2Y()`
-- `bezierQuadratic()`、`bezierQuadratic2X()`、`bezierQuadratic2Y()`、`bias()`、`bilinear()`、`boxesOverlap()`、`cartesianAngle()`
-- `cartesianRadius()`、`circleRectOverlap()`、`circlesOverlap()`、`clamp()`、`clone()`、`closestPointOnSegment2X()`、`closestPointOnSegment2Y()`、`closestPointOnSegment3X()`
-- `closestPointOnSegment3Y()`、`closestPointOnSegment3Z()`、`cross()`、`cross2()`、`degToRad()`、`distance2()`、`distance3()`、`distanceTo()`
-- `dot()`、`dot2()`、`dot3()`、`ease()`、`fbm2()`、`fbm3()`、`fract()`、`gain()`
-- `get()`、`getName()`、`getRandomSeed()`、`getX()`、`getY()`、`getZ()`、`hash1()`、`hash2()`
-- `hash3()`、`identity()`、`inverseLerp()`、`length()`、`length2()`、`length3()`、`lengthSquared()`、`lerp()`
-- `lerpAngle()`、`lerpTo()`、`multiplied()`、`multiply()`、`newMat4()`、`newMat4RotationZ()`、`newMat4Scale()`、`newMat4Translation()`
-- `newVec2()`、`newVec3()`、`noise1()`、`noise2()`、`noise3()`、`normalize()`、`normalize2X()`、`normalize2Y()`
-- `normalize3X()`、`normalize3Y()`、`normalize3Z()`、`normalized()`、`perlin2()`、`perlin3()`、`pingPong()`、`pointInBox()`
-- `pointInCircle()`、`pointInRect()`、`pointInSphere()`、`polarX()`、`polarY()`、`quantize()`、`radToDeg()`、`random()`
-- `randomGaussian()`、`randomInt()`、`randomRange()`、`raycastBox()`、`raycastCircle2()`、`raycastPlane()`、`raycastRect2()`、`raycastSphere()`
-- `rectsOverlap()`、`remap()`、`ridged2()`、`ridged3()`、`rotate2X()`、`rotate2Y()`、`rotateX()`、`rotateY()`
-- `rotateZ()`、`scale()`、`segmentsIntersect()`、`set()`、`setRandomSeed()`、`setRandomSeedFromTime()`、`setX()`、`setY()`
-- `setZ()`、`sign()`、`smootherstep()`、`smoothstep()`、`snap()`、`spheresOverlap()`、`step()`、`sub()`
-- `steeringArrive2()`、`steeringArrive3()`、`steeringAvoid2()`、`steeringAvoid3()`、`steeringFlee2()`、`steeringFlee3()`
-- `steeringPathTarget2()`、`steeringPathTarget3()`、`steeringSeek2()`、`steeringSeek3()`、`steeringSeparation2()`、`steeringSeparation3()`
-- `transformPoint2()`、`transformVec3()`、`translate()`、`turbulence2()`、`voronoi2()`、`voronoiEdge2()`、`warpNoise2()`、`wrap()`
-
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/math/`](../../../src/modules/math/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `math`。
