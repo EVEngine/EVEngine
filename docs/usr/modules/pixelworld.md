@@ -118,7 +118,7 @@ simulation-thread 操作。它只扫描显式的 inclusive 有限区域，保留
 都会返回结构化失败且不写入。Physics/gameplay 可以持有 bitmap，但不得将其当作第二份
 可变地形权威状态。
 
-## API 快查
+## 绑定与行为说明
 
 - 模块：`newWorld()`。
 - 世界写入与推进：兼容 facade `setMaterial()`、`paintCircle()`、`step()`、`clear()`；

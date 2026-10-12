@@ -450,26 +450,10 @@ Emitter。ambience 在水下可见并运行、离水停止并隐藏；启用过�
 - 骨骼绑定后位置不对：检查是否先更新姿态（`pose.computeWorld(sk)` / `spine.updateWorldTransform()` / IK `forwardKinematics`/`solve`），以及 `plane`/`scale` 是否匹配相机投影。
 - 蒙皮表面无粒子：确认 `setSkinSource` 与 `hasBones` 网格，且过滤器未把候选顶点剔光。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `addBurst()`、`addColorStop()`、`addForceField()`、`addRotationCurvePoint()`、`addSizeCurvePoint()`、`addSubEmitter()`、`addVelocityCurvePoint()`、`applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`bindFloatParameter()`、`clearBursts()`、`clearColorGradient()`、`clearFloatParameterBindings()`、`clearFloatParameters()`、`clearForceFields()`、`clearRotationCurve()`、`clearSizeCurve()`、`clearSkinSource()`、`clearSubEmitters()`、`clearVelocityCurve()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoRandomSeed()`、`getAutoReload()`、`getBlendMode()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`、`getEmissionRateOverDistance()`、`getFixedTimeStep()`、`getGpuSimulation()`、`getLightsEnabled()`、`getLooping()`、`getPlaybackSpeed()`、`getPrewarmSeconds()`、`getRandomSeed()`、`getShader()`
-- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getEmitterName()`、`getEmitter()`、`getEmitterByName()`、`getFloatParameter()`、`getGpuFallbackReason()`、`getLastEffectError()`、`getLayer()`、`getName()`、`getPriority()`、`getMinimumQuality()`、`getCullingMode()`、`getCullDistance()`、`getMaxSpawnPerFrame()`、`getMaterialMode()`、`getDistortionStrength()`、`getNormalTexture()`、`getResolvedParameterScale()`、`getRotation()`、`getScale()`、`getSimulationBackend()`、`getSourcePath()`、`getVersion()`
-- `getMaxParticles()`、`getMaxSimulatedEmitters()`、`getQualityLevel()`、`getLastSimulatedEmitters()`、`getLastCulledEmitters()`、`getLastBudgetSkippedEmitters()`、`getLastParticleCount()`、`getLastSpawnedParticles()`、`getLastDroppedSpawns()`、`getLastRenderedParticles()`、`getLastSimulationMs()`、`getLastRenderMs()`
-- `getParticleHeight()`、`getParticleLifetimeMax()`、`getParticleLifetimeMin()`、`getParticleWidth()`、`getSizeVariation()`、`getSpread()`、`getX()`、`getY()`
-- `hasFloatParameter()`、`hasSkinSource()`、`isActive()`、`isAttached()`、`isGpuFeatureSetSupported()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEffectFromFile()`、`newEffectFromText()`、`newEmitter()`、`newEmitterFromFile()`
-- `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`getConfigReloadObservation()`
-- `setAutoRandomSeed()`、`setBlendMode()`、`setBudget()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setCullingMode()`、`setCullDistance()`、`setDamping()`、`setDirection()`、`setDistortionStrength()`、`setEmissionArea()`、`setEmissionRate()`、`setEmissionRateOverDistance()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFixedTimeStep()`、`setFlipbook()`、`setFloatParameter()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setLooping()`、`setMaterialMode()`、`setMaxDeltaTime()`、`setMaxSpawnPerFrame()`、`setMinimumQuality()`、`setNoise()`、`setNormalTexture()`、`setOverflowMode()`、`setPlaybackSpeed()`、`setPrewarm()`、`setPriority()`、`setQualityLevel()`、`setRandomSeed()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
-- `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setRotation()`、`setScale()`、`setSizeVariation()`
-- `setSizes()`、`setSkinBoneFilter()`、`setSkinBoneFilterByName()`、`setSkinPlane()`、`setSkinScale()`、`setSkinSource()`、`setSpeed()`、`setSpin()`、`setSpread()`、`setStartRotation()`、`setTangentialAcceleration()`、`setTexture()`、`setVisible()`、`start()`
-- `stop()`、`syncAttach()`、`update()`
-
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/particles/`](../../../src/modules/particles/)
 **相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_effect_asset.cpp`](../../../test/particles_effect_asset.cpp)、[`test/particles_p2_p3.cpp`](../../../test/particles_p2_p3.cpp)、[`test/particles_reference_effects.cpp`](../../../test/particles_reference_effects.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。
