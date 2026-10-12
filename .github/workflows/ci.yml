@@ -1443,7 +1443,7 @@ jobs:
     runs-on: ubuntu-24.04
     # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
     # the 90-minute test guard, plus dependency/toolchain setup and reporting.
-    timeout-minutes: 270
+    timeout-minutes: 300
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1516,9 +1516,9 @@ jobs:
 
       - name: Build linux RelWithDebInfo (ASan+UBSan)
         # PRs cannot populate the shared sccache, so sanitizer flag sets are a
-        # cold rebuild. Runs 34820985249 / 34823491554 reached ~94% after 100m;
-        # keep headroom for linking unit_test. Job budget is 270m.
-        timeout-minutes: 140
+        # cold rebuild. PR #533 reached 91% with zero cache hits when the old
+        # 140-minute guard expired; keep headroom for the remaining test links.
+        timeout-minutes: 180
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
