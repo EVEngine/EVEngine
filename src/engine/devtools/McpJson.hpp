@@ -16,6 +16,7 @@
 #include <cstdio>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace eve::dev {
 
@@ -47,6 +48,30 @@ inline std::string mcpJsonEscape(const std::string& value) {
                 }
                 break;
         }
+    }
+    return out;
+}
+
+/**
+ * @brief Structured tool failure object for agent self-correction.
+ * @param error Stable machine-readable reason.
+ * @param hint What the agent should try next (human + model readable).
+ * @param retryable Whether repeating the same call may succeed after progress.
+ * @param nextTools Optional tool names to call next.
+ * @return Object with `ok=false` plus the optional recovery fields.
+ */
+inline Poco::JSON::Object::Ptr mcpFailureObject(const std::string& error, const std::string& hint = {},
+                                                bool                             retryable = false,
+                                                const std::vector<std::string>& nextTools = {}) {
+    Poco::JSON::Object::Ptr out = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+    out->set("ok", false);
+    out->set("error", error);
+    if (retryable) out->set("retryable", true);
+    if (!hint.empty()) out->set("hint", hint);
+    if (!nextTools.empty()) {
+        Poco::JSON::Array::Ptr tools = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+        for (const auto& name : nextTools) tools->add(name);
+        out->set("nextTools", tools);
     }
     return out;
 }

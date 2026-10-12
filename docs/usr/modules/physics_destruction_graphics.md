@@ -25,7 +25,7 @@ if (has_module("destructionFx")) {
 
 示例：[`examples/destruction-basic`](../../../examples/destruction-basic/)。
 
-## API 快查
+## 绑定与行为说明
 
 ### `DestructionFx`
 
@@ -34,11 +34,8 @@ if (has_module("destructionFx")) {
 
 ### `GeometryCollectionRenderer`
 
-- `setInstance` / `getInstance`
-- `setExteriorColor` / `setInteriorColor` / `setSleepColor`
 - `draw(gfx)`：Attached 用外材色、Detached 用内材色逐骨块画盒代理；Sleeping
   按 `sleepBatchRevision` 合批
-- `lastActiveDrawCount()` / `lastSleepBatchCount()`
 
 ## 生命周期
 

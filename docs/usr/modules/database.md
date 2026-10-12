@@ -29,7 +29,7 @@ conn.close();
 `conn.from("actors").where("hp>?", 50).orderBy("hp", "desc").limit(10).offset(0)`
 的链式 Query 返回 `allJson()` / `firstJson()` / `count()`，避免手拼 SQL。
 
-## API 快查
+## 绑定与行为说明
 
 ### `Database`（模块）
 
@@ -51,7 +51,6 @@ conn.close();
 
 ### `Model`
 
-- `insertJson(obj)`、`allJson()`、`findJson(id)`、`updateJson(obj, id)`、
   `remove(id)`、`query()` → `Query`。
 
 ## 生命周期
