@@ -824,28 +824,7 @@ reinstall/third-party/ios-debug:
 # In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
 # otherwise it is the engine's src/engine/libmain.so.
 sync/android-libs:
-	mkdir -p $(JNI_LIBS)
-	@if [ -f $(BUILD_DIR)/test/libmain.so ]; then \
-	  echo "syncing test runner libmain.so"; \
-	  cp -f $(BUILD_DIR)/test/libmain.so $(JNI_LIBS)/; \
-	else \
-	  cp -f $(BUILD_DIR)/src/engine/libmain.so $(JNI_LIBS)/; \
-	fi
-	@TP_DIR=build/third-party-binary/$$(basename $(BUILD_DIR)); \
-	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android-debug; fi; \
-	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android; fi; \
-	  cp -f "$$TP_DIR/lib/libSDL2.so" $(JNI_LIBS)/; \
-	  if [ -f "$$TP_DIR/lib/libhidapi.so" ]; then cp -f "$$TP_DIR/lib/libhidapi.so" $(JNI_LIBS)/; fi
-	@case "$(ANDROID_ABI)" in \
-	  arm64-v8a) ndk_triple=aarch64-linux-android ;; \
-	  armeabi-v7a) ndk_triple=arm-linux-androideabi ;; \
-	  x86_64) ndk_triple=x86_64-linux-android ;; \
-	  x86) ndk_triple=i686-linux-android ;; \
-	  *) echo "Unsupported Android ABI: $(ANDROID_ABI)" >&2; exit 1 ;; \
-	esac; \
-	cp -f "$(ANDROID_NDK)/toolchains/llvm/prebuilt/"*"/sysroot/usr/lib/$$ndk_triple/libc++_shared.so" $(JNI_LIBS)/
-	@echo "Synced native libs -> $(JNI_LIBS)"
-	ls -la $(JNI_LIBS)
+	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_ABI="$(ANDROID_ABI)" -DANDROID_NDK="$(ANDROID_NDK)" -P cmake/sync_android_libs.cmake
 
 # Populate APK assets/game from a source tree (do not hand-edit assets/game).
 #   make sync/android-assets                 # default: demo shell
