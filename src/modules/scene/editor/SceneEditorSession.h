@@ -17,7 +17,7 @@ namespace eve::scene_editor {
 /**
  * @brief Composable scene command/history host with no UI or renderer dependency.
  * Owns its target, command registry and history. Host supplies selection, input,
- * rendering and file I/O; snapshot JSON contains hierarchy/TRS only.
+ * rendering and file I/O; snapshot JSON follows the owned target's versioned schema.
  * @thread Owner thread only. Live targets may notify host observers after publication,
  * without locks. Observers must not destroy or reenter the active session.
  */
@@ -78,6 +78,35 @@ public:
     [[nodiscard]] editing::Result<void> restorePhysicsPlacementColliderCacheJson(const std::string& json);
     /** @brief Begin an isolated Box3D placement preview using current scene transforms. */
     [[nodiscard]] editing::Result<void> beginPhysicsPlacement(PhysicsPlacementRequest request);
+    /**
+     * @brief Begin relation-aware preview for one adjustable object, retaining locked static obstacles.
+     * @param request Owning collision proxies; relevant persisted participants must be admitted.
+     * @return Applied or rejection without a preview; existing interactive placement remains unchanged.
+     * @thread Owner thread only, no callbacks.
+     * @cost Private world construction per begin, amortized across repeated update/check calls.
+     */
+    [[nodiscard]] editing::Result<void> beginRelationPlacement(PhysicsPlacementRequest request);
+    /** @brief Inspect the authored immutable geometry recipe, excluding TRS/materials.
+     * @thread Owner thread; no callbacks or retained pointers.
+     * @cost Recipe serialization per explicit region binding.
+     * @return Owning revision token or unsupported/missing source diagnostic. */
+    [[nodiscard]] editing::Result<std::string> geometryRevision(const editing::ObjectId& object) const;
+    /**
+     * @brief Prepare owning native projection proof for the active relation preview.
+     * @param host Named authoring projection, borrowed only for this call.
+     * @param request Bounded visibility request; camera/models must match this document.
+     * @return Applied or diagnostic without changing scene or existing proof.
+     * @thread Owner thread; no callbacks. No native resource pointer retained.
+     * @cost Linear validation per begin; expensive raster occurs only on explicit check/commit.
+     */
+    [[nodiscard]] editing::Result<void> prepareRelationVisibility(std::string host, editing::Value request);
+    /**
+     * @brief Measure persisted relations incident to the current selected object using contact evidence.
+     * @return Owning per-relation report; untouched physical pairs are NotEvaluated, all visual relations are checked.
+     * @thread Owner thread only; no scene mutation or callbacks.
+     * @cost Contact queries plus blocking GPU raster/readback per visual target per explicit check/commit.
+     */
+    [[nodiscard]] editing::Result<editing::Value> checkRelationPlacement() const;
     /** @brief Move the preview handle and advance one fixed simulation step. */
     [[nodiscard]] editing::Result<PhysicsPlacementFrame> updatePhysicsPlacement(double x, double y, double z,
                                                                                 double fixedDelta = 1.0 / 60.0);
@@ -96,7 +125,8 @@ public:
                                                                                         double toY, double toZ,
                                                                                         double offset     = 0.0,
                                                                                         double fixedDelta = 1.0 / 60.0);
-    /** @brief Atomically publish selected preview transforms as one undoable transaction. */
+    /** @brief Recheck constraints and atomically publish selected transforms as one undoable transaction.
+     * @cost Blocking raster/readback per visual target plus one transaction per explicit commit. */
     [[nodiscard]] editing::Result<editing::TransactionReceipt> commitPhysicsPlacement();
     /** @brief Discard the isolated preview without changing scene state. */
     [[nodiscard]] editing::Result<void> cancelPhysicsPlacement();

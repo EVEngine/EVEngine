@@ -214,6 +214,12 @@ public:
         float x = 0, y = 0, z = 0;
         float yaw = 0, pitch = 0, roll = 0;  // radians
         float sx = 1, sy = 1, sz = 1;
+        /** @brief Derived scene-link projection, preserving reflection and parent shear.
+         * @ownership Value owned; SceneHost supplies it on its owner thread.
+         * @remarks Direct TRS setters return this component to local TRS mode.
+         */
+        glm::mat4 linkedWorld{1.f};
+        bool      hasLinkedWorld = false;
     };
 
     struct MeshRenderer {
@@ -419,6 +425,8 @@ public:
     /** @brief Return the field-backed material roughness. */
     float getRoughness() { return meshRenderer()->roughness; }
     void  setMetallic(float metallic);
+    /** @brief Read the current material metallic scalar on the render thread. */
+    float getMetallic() { return meshRenderer()->metallic; }
     void  setRoughness(float roughness);
     /**
      * @brief Texture cell bombing — random per-cell UV offset/rotation blended across a 2×2

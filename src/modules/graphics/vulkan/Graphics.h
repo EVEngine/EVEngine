@@ -775,6 +775,10 @@ public:
     image::ImageData *renderEntityIdMask(
         const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
         int width, int height) override;
+    /** @brief Private-target synchronous opaque ID and float depth readback. */
+    [[nodiscard]] Result<VisibilityPixels> captureVisibilityPixels(const std::vector<EntityIdDraw> &draws,
+                                                                   const glm::mat4 &viewProj, int width,
+                                                                   int height) override;
     /** @brief Reads g buffer to image data. */
     image::ImageData *readGBufferToImageData(const std::string &name) override;
     /** @brief Reads decal layer to image data. */
