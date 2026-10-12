@@ -40,7 +40,7 @@ const LEG_HALF = 0.42;
 const MOVE_SPEED = 2.4;
 const VEL_SCALE = 0.75;
 const DEPTH_CONTRAST = 0.06;
-const VISUAL_GAIN = 4.0;
+const VISUAL_GAIN = 6.0;
 
 const WATER_STYLE_JSON = @"
 {
@@ -348,11 +348,11 @@ eve_update = function(dt) {
 
         if (mouseClicked()) {
             local p = screenToLake(mouse.getX(), mouse.getY());
-            requireOk(sim.addImpulse(p[0], p[1], 1.8, 0.22), "mouseImpulse");
+            requireOk(sim.addImpulse(p[0], p[1], 2.0, 0.28), "mouseImpulse");
         }
 
         local pulse = 0.5 + 0.5 * sin(elapsed * 2.2);
-        requireOk(sim.addImpulse(LAKE * 0.55, LAKE * 0.40, 1.2, 0.014 * pulse), "pulseImpulse");
+        requireOk(sim.addImpulse(LAKE * 0.55, LAKE * 0.40, 1.3, 0.02 * pulse), "pulseImpulse");
 
         elapsed += dt;
         updateLegs(dt);
