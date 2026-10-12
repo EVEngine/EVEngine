@@ -30,7 +30,6 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-import utf8_stdio
 
 import utf8_stdio
 
