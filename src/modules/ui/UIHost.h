@@ -52,6 +52,12 @@ enum class NodeType : uint8_t {
     NinePatchPanel = 32, // .9.png-backed stretchable content container
     ColorPalette = 33,   // color editor + swatch grid; RGBA lives in tint*
     Grid = 34,           // fixed-column retained grid container
+    Tab = 35,            // selectable tab label (page id in valueText)
+    TabBar = 36,         // horizontal strip of Tab children
+    TabContainer = 37,   // TabBar + pages; active page id in valueText
+    PanelFrame = 38,     // titled fixed chrome (not a free-floating Window host)
+    DockArea = 39,       // named fill slot for a dock region (region in valueText)
+    AppFrame = 40,       // fixed editor frame: toolbar + body + status bar
 };
 
 /** @brief Main-axis direction for Flex containers. */

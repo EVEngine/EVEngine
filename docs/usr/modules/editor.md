@@ -590,6 +590,17 @@ ws.select("world", "scene", "level-1", "tree-42", "vegetation.tree", false);
 完整组合示例见 [`examples/composable-editor`](../../../examples/composable-editor)：项目脚本用
 五个面板 builder 组合地形、材质、反射 MVVM、ECS 与游戏命令；C++ 不认识这些具体面板。
 
+需要固定 IDE 壳（而不是每个面板一个可拖动 Window）时，用 `ui` 的 `AppFrame` /
+`DockArea` / `PanelFrame` / `TabContainer`，或直接：
+
+```squirrel
+local uiEditor = eve.UiEditorModule();
+uiEditor.mountWorkspaceShell(ui, ws, "workspace-shell");
+```
+
+这会把 Workspace 描述符映射到锁定的单 Host 布局（见
+[`examples/editor-workspace-shell`](../../../examples/editor-workspace-shell)）。
+
 ### 动作时间轴编辑器
 
 `eve.ActionEditorModule().create(targetId, timelineTable)` 把版本化的 `eve.action.timeline`
