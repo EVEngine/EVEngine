@@ -71,7 +71,7 @@ function resetLake() {
     characterZ = LAKE * 0.45;
     characterVx = 0.0;
     characterVz = 0.0;
-    requireOk(water.addImpulse(LAKE * 0.65, LAKE * 0.55, 1.4, 0.28), "seedImpulse");
+    requireOk(water.addImpulse(LAKE * 0.65, LAKE * 0.55, 1.6, 0.06), "seedImpulse");
     syncWaterMesh();
 }
 
@@ -87,9 +87,9 @@ function updateLegs(dt) {
     local rightY = hipY - LEG_HALF;
 
     requireOk(water.setColliderCapsule(1, leftX, leftY, leftZ, LEG_HALF, LEG_RADIUS,
-                                       characterVx, 0.0, characterVz, 1.35, 1.1), "leftLeg");
+                                       characterVx, 0.0, characterVz, 0.85, 0.55), "leftLeg");
     requireOk(water.setColliderCapsule(2, rightX, rightY, rightZ, LEG_HALF, LEG_RADIUS,
-                                       characterVx, 0.0, characterVz, 1.35, 1.1), "rightLeg");
+                                       characterVx, 0.0, characterVz, 0.85, 0.55), "rightLeg");
 
     if (leftLeg != null) {
         leftLeg.setPosition(leftX, leftY, leftZ);
@@ -208,7 +208,7 @@ eve_update = function(dt) {
 
         if (mouseClicked()) {
             local p = screenToLake(mouse.getX(), mouse.getY());
-            requireOk(water.addImpulse(p[0], p[1], 0.9, 0.32), "mouseImpulse");
+            requireOk(water.addImpulse(p[0], p[1], 1.1, 0.05), "mouseImpulse");
         }
 
         elapsed += dt;

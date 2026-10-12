@@ -69,7 +69,7 @@ struct ShallowWaterSettings {
     /** @brief Depth treated as dry. */
     float minDepth = 1e-4f;
     /** @brief Hard clamp on water column height. */
-    float maxDepth = 8.f;
+    float maxDepth = 2.5f;
     /** @brief Courant number used to pick substeps. */
     float cfl = 0.45f;
     /** @brief Upper bound on substeps per `step` call. */
@@ -192,7 +192,7 @@ private:
 
     [[nodiscard]] Result<void> validateSettings(const ShallowWaterSettings& settings) const;
     void                       stepCpu(float dt);
-    void                       rasterizeCollidersCpu();
+    void                       rasterizeCollidersCpu(float dt);
     void                       integrateCpu(float dt);
     [[nodiscard]] bool         ensureGpu();
     [[nodiscard]] Result<void> stepGpu(float dt);

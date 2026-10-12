@@ -78,6 +78,7 @@ void main() {
     if (x >= resX || z >= resZ) return;
 
     float cell = pc.d[2];
+    float dt = max(pc.d[3], 0.0);
     vec3 origin = vec3(pc.d[10], pc.d[11], pc.d[12]);
     uint idx = z * resX + x;
     vec2 world = origin.xz + vec2((float(x) + 0.5) * cell, (float(z) + 0.5) * cell);
@@ -116,18 +117,23 @@ void main() {
         if (dist >= cell * 0.75 || immersion <= 1e-4) continue;
 
         float cover = clamp(1.0 - dist / max(cell * 0.75, 1e-4), 0.0, 1.0);
-        float push = immersion * cover * displacementScale;
+        // displacementScale / dragScale are rates; multiply by substep dt so
+        // CFL substepping cannot stack absolute impulses into height spikes.
+        float push = immersion * cover * displacementScale * dt;
         vec2 outward = world - center.xz;
         float olen = length(outward);
         vec2 dir = olen > 1e-5 ? outward / olen : vec2(0.0, 1.0);
-        float radial = push * 2.5;
+        float radial = push * 1.0;
         float h = max(stateSrc.q[idx].x, pc.d[7]);
         acc.x -= push * 0.35;
-        acc.y += (dir.x * radial + velocity.x * dragScale) * h;
-        acc.z += (dir.y * radial + velocity.z * dragScale) * h;
+        acc.y += (dir.x * radial + velocity.x * dragScale * dt) * h;
+        acc.z += (dir.y * radial + velocity.z * dragScale * dt) * h;
         // Vertical motion injects a local swell that neighbors redistribute via fluxes.
-        acc.x += max(0.0, -velocity.y) * cover * 0.15 * displacementScale;
+        acc.x += max(0.0, -velocity.y) * cover * 0.15 * displacementScale * dt;
     }
+    // Keep one substep's source within a fraction of the hard depth clamp.
+    float maxSrcH = pc.d[8] * 0.15;
+    acc.x = clamp(acc.x, -maxSrcH, maxSrcH);
     sources.s[idx] = acc;
 }
 )GLSL";

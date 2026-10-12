@@ -365,13 +365,14 @@ Result<void> ShallowWaterField::buildSurfaceMesh(std::vector<float>& positionsXY
     return Result<void>::success();
 }
 
-void ShallowWaterField::rasterizeCollidersCpu() {
+void ShallowWaterField::rasterizeCollidersCpu(float dt) {
     std::fill(srcH_.begin(), srcH_.end(), 0.f);
     std::fill(srcHu_.begin(), srcHu_.end(), 0.f);
     std::fill(srcHv_.begin(), srcHv_.end(), 0.f);
-    if (colliders_.empty()) return;
+    if (colliders_.empty() || !(dt > 0.f)) return;
 
     const float coverRadius = cellSize_ * 0.75f;
+    const float maxSrcH     = maxDepth_ * 0.15f;
     for (int z = 0; z < resZ_; ++z) {
         for (int x = 0; x < resX_; ++x) {
             const int   i  = index(x, z);
@@ -384,10 +385,12 @@ void ShallowWaterField::rasterizeCollidersCpu() {
                 const float immersion = colliderImmersion(c, surfaceY);
                 if (immersion <= 1e-4f) continue;
                 const float cover = std::clamp(1.f - dist / coverRadius, 0.f, 1.f);
-                const float push  = immersion * cover * c.displacementScale;
-                float       dx    = wx - c.center.x;
-                float       dz    = wz - c.center.z;
-                const float olen  = std::sqrt(dx * dx + dz * dz);
+                // Rates × substep dt — absolute sources stacked with CFL substeps
+                // previously grew into multi-meter height spikes.
+                const float push = immersion * cover * c.displacementScale * dt;
+                float       dx   = wx - c.center.x;
+                float       dz   = wz - c.center.z;
+                const float olen = std::sqrt(dx * dx + dz * dz);
                 if (olen > 1e-5f) {
                     dx /= olen;
                     dz /= olen;
@@ -395,13 +398,14 @@ void ShallowWaterField::rasterizeCollidersCpu() {
                     dx = 0.f;
                     dz = 1.f;
                 }
-                const float radial = push * 2.5f;
+                const float radial = push * 1.f;
                 const float h      = std::max(heights_[size_t(i)], minDepth_);
                 srcH_[size_t(i)] -= push * 0.35f;
-                srcHu_[size_t(i)] += (dx * radial + c.velocity.x * c.dragScale) * h;
-                srcHv_[size_t(i)] += (dz * radial + c.velocity.z * c.dragScale) * h;
-                srcH_[size_t(i)] += std::max(0.f, -c.velocity.y) * cover * 0.15f * c.displacementScale;
+                srcHu_[size_t(i)] += (dx * radial + c.velocity.x * c.dragScale * dt) * h;
+                srcHv_[size_t(i)] += (dz * radial + c.velocity.z * c.dragScale * dt) * h;
+                srcH_[size_t(i)] += std::max(0.f, -c.velocity.y) * cover * 0.15f * c.displacementScale * dt;
             }
+            srcH_[size_t(i)] = std::clamp(srcH_[size_t(i)], -maxSrcH, maxSrcH);
         }
     }
 }
@@ -511,7 +515,7 @@ void ShallowWaterField::integrateCpu(float dt) {
 }
 
 void ShallowWaterField::stepCpu(float dt) {
-    rasterizeCollidersCpu();
+    rasterizeCollidersCpu(dt);
     integrateCpu(dt);
 }
 

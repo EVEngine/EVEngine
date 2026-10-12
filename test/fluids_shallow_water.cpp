@@ -77,11 +77,11 @@ TEST_CASE("fluids.shallowWater.capsuleLegDisplacesWater") {
     leg.halfExtent        = {0.12f, 0.45f, 0.12f};
     leg.radius            = 0.12f;
     leg.velocity          = {0.8f, 0.f, 0.f};
-    leg.displacementScale = 1.5f;
-    leg.dragScale         = 1.2f;
+    leg.displacementScale = 2.5f;
+    leg.dragScale         = 1.8f;
     REQUIRE(field->setColliders(std::span(&leg, 1)).ok());
 
-    for (int i = 0; i < 20; ++i) REQUIRE(field->step(1.f / 60.f).ok());
+    for (int i = 0; i < 45; ++i) REQUIRE(field->step(1.f / 60.f).ok());
 
     const float underFoot = field->depthAt(cx, cz);
     const float beside    = field->depthAt(cx + 0.8f, cz);
