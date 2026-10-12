@@ -1516,9 +1516,9 @@ jobs:
 
       - name: Build linux RelWithDebInfo (ASan+UBSan)
         # PRs cannot populate the shared sccache, so sanitizer flag sets are a
-        # cold rebuild. Runs 34820985249 / 34823491554 reached ~94% after 100m;
-        # keep headroom for linking unit_test. Job budget is 270m.
-        timeout-minutes: 140
+        # cold rebuild. Run 38200074459 timed out at 92% after 140m; allow
+        # linking the remaining unit tests within the 270m job budget.
+        timeout-minutes: 180
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
