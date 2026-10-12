@@ -127,13 +127,12 @@ local mat = gfx.newMaterial();
 mat.setShadingModel("custom");
 ```
 
-## API 快查
+## 绑定与行为说明
 
 ### `Stylize`（模块）
 
 - `getName()`：模块名（"Stylize"）。
 - 风格注册表：`getStyleCount` / `getStyleId(i)` / `hasStyle(id)` /
-  `hasMeshStyle(id)` / `supports(style, feature)` / `getStyleParamCount` /
   `getStyleParamName`。
 - 实例：`newInstance(styleId)` → `StyleInstance`。
 - 配方：`newRecipe()` → `StyleRecipe`，按 priority 编译并自动管理中间 Canvas。
@@ -160,7 +159,6 @@ mat.setShadingModel("custom");
 
 ### `StyleChain`
 
-- `clear()`、`add(pass)`、`getPassCount()`、`getPass(i)`、
   `apply(gfx)` / `applyCanvas(gfx)`。
 
 `StyleChain` 是兼容层；新代码优先使用 `StyleRecipe`。

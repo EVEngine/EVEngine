@@ -25,19 +25,17 @@
 `x = (axialX + 0.5·axialZ) · innerDiameter`，`z = axialZ · outerRadius · 1.5`。
 `HexCoordinates::fromWorldPosition` 是其精确逆变换（含立方体取整修正）。
 
-## C++ API 快查
+## 绑定与行为说明
 
 ### `HexMetrics`（[HexMetrics.h](../../../src/modules/hexmap/HexMetrics.h)）
 
 常量与角点/边采样助手：`firstCorner` / `firstSolidCorner` / `firstWaterCorner` /
-`bridge` / `waterBridge` / `solidEdgeMiddle` / `terraceLerp` / `wallLerp`，
 以及 `elevationY` / `streamBedY` / `waterSurfaceY`。`EdgeVertices` 是边上 5 个
 采样点（v1…v5）。
 
 ### `HexCoordinates`（[HexCoordinates.h](../../../src/modules/hexmap/HexCoordinates.h)）
 
 轴坐标 `(x, z)`，`y = -x - z`。`step(direction, distance)`、`distanceTo`、
-`fromOffset` / `offsetX` / `offsetZ`、`chunkColumn` / `chunkRow`、
 `toWorldPosition` / `fromWorldPosition`。
 
 ### `HexMap`（[HexMap.h](../../../src/modules/hexmap/HexMap.h)）
@@ -46,14 +44,10 @@
 
 - 拓扑：`contains` / `indexOf` / `coordinatesAt` / `tryGetNeighbor` / `edgeTypeTo`
 - 分块：`chunkIndexOf` / `chunkColumnOf` / `chunkRowOf` / `chunkCenter` /
-  `takeDirtyChunk` / `markAllChunksDirty` / `dirtyChunkCount`
 - 拾取：`pickCell(rayOrigin, rayDirection)` —— 无碰撞体，改为在候选格高程平面上
   迭代求交并二分收敛
 - 查询：`elevation` / `waterLevel` / `terrainType` / `urbanLevel` / `farmLevel` /
-  `plantLevel` / `specialIndex` / `isUnderwater` / `hasRiver` / `hasRoad` / `isWalled`
 - 编辑：`setElevation` / `setWaterLevel` / `setTerrainType` / `setUrbanLevel` /
-  `setFarmLevel` / `setPlantLevel` / `setSpecialIndex` / `setWalled` /
-  `setOutgoingRiver` / `removeRiver` / `addRoad` / `removeRoads`
 - 笔刷：`editElevation` / `editWaterLevel` / `editTerrainType` / `editFeatureLevel`
   （六边形圆盘，`collectBrush` 可单独枚举）
 

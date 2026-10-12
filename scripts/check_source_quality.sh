@@ -45,7 +45,7 @@ group "changed lines are clang-format clean" \
     bash .github/scripts/check-format.sh "$BASE"
 group "module dependency layering" \
     python3 scripts/module_depgraph.py --check
-group "script bindings are documented" \
+group "script bindings have guide or generated API coverage" \
     python3 scripts/check_bindings.py --strict
 group "binding gap ownership metadata" \
     python3 scripts/check_binding_gap_metadata.py

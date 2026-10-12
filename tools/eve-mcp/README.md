@@ -68,5 +68,6 @@ eve mcp --root path/to/game
 The host exposes the `eve_host_*` tool family: create windows, apply JSON-defined
 editors (View), register Squirrel ViewModel tables (MVVM two-way binding), read human
 interaction events, capture PNGs, run Squirrel snippets, persist editors to the
-project `editors/` directory. See `docs/dev/AI与MCP支持.md` for the JSON protocol,
+project `editors/` directory. See the [English setup guide](../../docs/en/usr/AI-MCP.md) and
+[full protocol design (Chinese)](../../docs/dev/AI与MCP支持.md) for the JSON protocol,
 tool list, and terrain/material editor examples.

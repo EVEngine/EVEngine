@@ -193,10 +193,8 @@ check/examples:
 check/module-layers:
 	python3 scripts/module_depgraph.py --check-layers
 
-# Verify every script-facing addFunc is actually documented (see
-# docs/usr/REVIEW.md). Pre-existing debt is registered in
-# scripts/check_bindings_gaps.txt (regenerate with --write-gaps); new gaps
-# fail, so docs cannot silently drift from the bindings.
+# Verify script-facing bindings have a guide explanation or generated SDK
+# signature. Unresolved signatures and new unreferenced bindings fail CI.
 check/bindings:
 	python3 scripts/check_bindings.py --strict
 
@@ -824,7 +822,7 @@ reinstall/third-party/ios-debug:
 # In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
 # otherwise it is the engine's src/engine/libmain.so.
 sync/android-libs:
-	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_NDK="$(ANDROID_NDK)" -P cmake/sync_android_libs.cmake
+	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_NDK="$(ANDROID_NDK)" -DANDROID_ABI="$(ANDROID_ABI)" -P cmake/sync_android_libs.cmake
 
 # Populate APK assets/game from a source tree (do not hand-edit assets/game).
 #   make sync/android-assets                 # default: demo shell

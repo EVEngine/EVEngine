@@ -1906,6 +1906,8 @@ eve_init = function() {
     if (rpg == null) rpg = eve.RPG();
     if (inv == null) inv = eve.Inventory();
     if (saveFs == null) saveFs = eve.Filesystem();
+    if (!saveFs.setIdentity("rpg-classic", true) || !saveFs.setupWriteDirectory())
+        throw "rpg-classic: save directory unavailable";
     loadSettings();
     if (gs != null) worldState = rpg.newWorldState(gs);
     local contractSource = readTextFile("data/world-object-contract.json");

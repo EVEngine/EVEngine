@@ -97,26 +97,10 @@ host.onPeerDisconnected(function(peerId) { /* peerdisconn */ });
 - 假设 TCP 一次 send 对应一次 receive：应用层必须定义消息边界。
 - 发送数据不立即写出：`send()` 先入队，由网络线程轮询冲刷；大流量下 `pendingSendBytes()` 可见积压。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `accept()`、`add()`、`bind()`、`bool()`、`bytes()`、`callRpc()`、`close()`、`closeAll()`、`connect()`、`f32()`、`f64()`
-- `get()`、`getName()`、`getPeer()`、`getSocket()`、`i8()`、`i16()`、`i32()`、`i64()`、`init()`、`initString()`、`isAlive()`
-- `isConnected()`、`link()`、`listen()`、`newChannel()`、`newHost()`、`newHttp()`、`newReader()`、`newRpc()`、`newSession()`
-- `newTcp()`、`newUdp()`、`newUdpLink()`、`newWriter()`、`ok()`、`onMessage()`、`onPeerConnected()`、`onPeerDisconnected()`
-- `peer()`、`peerCount()`、`peerId()`、`pendingFragments()`、`pendingReliable()`、`pos()`、`pump()`、`registerRpc()`、`remaining()`
-- `remove()`、`send()`、`sendMsg()`、`sendMsgString()`、`sendOrdered()`、`sendReliable()`、`sendString()`、`sendTo()`、`sendToString()`
-- `sendUnreliable()`、`setBody()`、`setBodyString()`、`setHeader()`、`setLossRate()`、`setRemote()`、`setRemoteString()`、`setTimeout()`
-- `setTimeoutMs()`、`setVerifySsl()`、`size()`、`start()`、`str()`、`submit()`、`toString()`、`u8()`、`u16()`、`u32()`、`u64()`
-- `writeBool()`、`writeBytes()`、`writeF32()`、`writeF64()`、`writeI8()`、`writeI16()`、`writeI32()`、`writeI64()`、`writeString()`
-- `writeU8()`、`writeU16()`、`writeU32()`、`writeU64()`
-
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/network/`](../../../src/modules/network/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `network`。
