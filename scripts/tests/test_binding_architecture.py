@@ -114,5 +114,24 @@ class BindingArchitectureTests(unittest.TestCase):
         self.assertNotEqual(before[1]["architecture"]["inputHash"], contracts[1].architecture["inputHash"])
 
 
+    def test_same_cpp_spelling_in_other_module_does_not_inherit_owner(self):
+        from dataclasses import replace
+        contracts = self.extract()
+        original = next(contract for contract in contracts if contract.method == "setVisible")
+        other = replace(original, module="other")
+        contracts.append(other)
+        self.attach(contracts)
+        self.assertIsNone(other.architecture)
+        self.assertIsNotNone(original.architecture)
+
+    def test_reviewed_reads_and_writes_remain_distinct(self):
+        self.entry["reads"] = ["SceneNode.other"]
+        contracts = self.extract()
+        self.attach(contracts)
+        mapping = next(contract for contract in contracts if contract.method == "setVisible").architecture
+        self.assertEqual(mapping["reads"], ["SceneNode.other"])
+        self.assertEqual(mapping["writes"], ["SceneNode.visible"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -140,6 +140,7 @@ struct EVENGINE_API_FOUNDATION_INLINE BindingArchitectureContract {
     std::string              limitations;
     std::vector<std::string> writes;
     std::vector<std::string> tests;
+    std::vector<std::string> reads;
 };
 
 /** @brief Complete script-facing contract for a native function or method. */

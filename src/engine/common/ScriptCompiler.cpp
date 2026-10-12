@@ -380,6 +380,7 @@ std::string BindingContract::toJson() const {
         };
         writeArray("writes", mapping.writes);
         writeArray("tests", mapping.tests);
+        writeArray("reads", mapping.reads);
         json << '}';
     } else {
         json << "{\"status\":\"unknown\",\"reason\":\"No reviewed owner mapping for this binding\"}";

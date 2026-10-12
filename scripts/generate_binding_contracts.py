@@ -640,7 +640,7 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
                 'implementationSource', 'stateOwner', 'ownerSource', 'inputHash', 'limitations'
             )]
             values += ['{' + ', '.join(cpp_string(value) for value in mapping[key]) + '}'
-                       for key in ('writes', 'tests')]
+                       for key in ('writes', 'tests', 'reads')]
             architecture = 'BindingArchitectureContract{' + ', '.join(values) + '}'
         parameters = []
         for parameter in contract.parameters:
@@ -712,7 +712,8 @@ def main() -> int:
     sources = source_files()
     contracts, unresolved = extract_contracts(sources, enabled_modules, args.platform)
     try:
-        attach_architecture(contracts, sources, ROOT, [ROOT / "src/modules/scene/binding_architecture.json"],
+        metadata_files = sorted((ROOT / "src/modules").glob("*/binding_architecture.json"))
+        attach_architecture(contracts, sources, ROOT, metadata_files,
                             mask_comments, enabled_modules)
     except (ValueError, KeyError, OSError) as error:
         print(f"Architecture mapping error: {error}", file=sys.stderr)

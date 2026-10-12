@@ -2023,6 +2023,50 @@
       ]
     },
     {
+      "id": "mcp-architecture-graph-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/McpArchitectureTools*",
+      "owner": "foundation graph projection; scene and inventory own reviewed domain evidence",
+      "issue": "EVENGINE-SEMANTIC-WORLD-PHASE2",
+      "reason": "Read-only typed evidence graph, conservative state-access impact and bounded task context from the existing binding registry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/McpArchitectureTools.hpp",
+        "src/engine/devtools/McpArchitectureTools.cpp",
+        "src/modules/inventory/binding_architecture.json",
+        "docs/dev/架构行为图与任务上下文.md"
+      ],
+      "tests": [
+        "test/mcp_architecture_graph.cpp",
+        "test/inventory_binding_architecture.cpp",
+        "scripts/tests/test_binding_architecture.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Build-generated registry and reviewed metadata; no live world state."
+      ],
+      "binds": [
+        "eve_architecture_query",
+        "eve_architecture_impact",
+        "eve_task_context"
+      ],
+      "protocol": [
+        "eve.architecture-graph v1 and eve.task-context v1; unknown coverage, truncation and stale source evidence rejection."
+      ],
+      "cost_notes": [
+        "First call builds an O(bindings + edges) process-owned immutable graph and adjacency index; subsequent traversal/output query budgets; no simulation hot path."
+      ],
+      "hot_path": [],
+      "thread_affinity": "Registry/main MCP poll thread; no script execution, runtime pointers or callbacks.",
+      "trim": {
+        "claim": "Catalogue projection only, no binary-trim claim",
+        "absent_profile": "Disabled domains have no matching graph nodes.",
+        "evidence": "scripts/tests/test_binding_architecture.py"
+      }
+    },
+    {
       "id": "model3d-import-surface",
       "rule": "module-interface",
       "scope": "src/modules/model3d/**",
