@@ -1659,11 +1659,15 @@
       ],
       "provides": [],
       "requires": [
-        "Optional game.agent.json world object; optional eve.dev.publishWorldContext overlay; live modules/domains when a VM is attached."
+        {
+          "capability": "IGameplayControlProvider",
+          "required": false,
+          "fallback": "domains array stays empty when no gameplay control providers are registered"
+        }
       ],
       "emits": [],
       "observes": [
-        "config.modules / optionalModules and instantiated eve.moduleList slots; IGameplayControlProvider domain names."
+        "Optional game.agent.json world object and eve.dev.publishWorldContext overlay; config.modules / optionalModules and instantiated eve.moduleList slots."
       ],
       "binds": [],
       "protocol": [
