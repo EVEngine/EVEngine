@@ -90,7 +90,7 @@ outerwear(300) → cape(400)`，武器为 `weapon(500)`。项目可用
 参数，Avatar 侧可映射到嘴部图层 alpha。每帧调用 `avatar.update(dt)` 与
 `avatar.render(gfx)`。
 
-## API 快查
+## 绑定与行为说明
 
 ### `Avatar`（模块）
 
@@ -105,13 +105,9 @@ outerwear(300) → cape(400)`，武器为 `weapon(500)`。项目可用
 ### `AvatarInstance`
 
 - 通用：`getKind()`、`setPosition/getX/getY`、`setScale/getScaleX/getScaleY`、
-  `setVisible/isVisible`、`setLayer/getLayer`、`setExpression/getExpression`、
-  `setMotion/getMotion`、`setParameter/getParameter/hasParameter`、
-  `getParameterCount/getParameterName`、`defineParameter`、`getParameterDefault`、
   `getParameterMinimum`、`getParameterMaximum`、`update/sync/release`。参数元数据只描述
   inspector 建议范围，不会钳制运行时值，因此同一 Avatar 数据模型可用于开发工具和游戏内捏脸。
 - 图层：`addLayer(name, texture, z)`、`setLayerTexture`、`setLayerVisible`、
-  `setLayerOffset`、`setLayerColor`、`setLayerZ`、`setLayerSize`、
   `getLayerCount/getLayerName/hasLayer`、`getLayerRenderable(name)`。
 - 表情：`defineExpression(name, spec)`、`applyExpression(name)`、`removeExpression(name)`；
   `getExpressionCount/getExpressionName` 提供稳定排序的项目表情列表；
@@ -119,9 +115,6 @@ outerwear(300) → cape(400)`，武器为 `weapon(500)`。项目可用
 
 `getLayerRenderable(name)` 返回该层原生的 `Renderable2D`。兼容的图层 setter
 仍可使用；需要完整 Sprite2D 能力时可直接调用 `setPosition`、`getX`、`getY`、
-`setRotation`、`getRotation`、`setScale`、`setSize`、`setColor`、`setLayer`、
-`getLayer`、`setVisible`、`isVisible`、`setTexture`、`setQuad`、
-`setReceiveLight`、`getReceiveLight`、
 `setCastOcclusion`、`getCastOcclusion`、`setBlendMode`、`getBlendMode`；混合模式可选
 alpha、additive 或 opaque。Avatar 同步只传播角色整体变换、显隐和
 相对层级，不会覆盖层上的旋转、Quad、Shader、Canvas、Camera 或光照设置。
@@ -129,11 +122,8 @@ alpha、additive 或 opaque。Avatar 同步只传播角色整体变换、显隐�
   真实插件可接收 Avatar transform、visibility、layer，并通过共享 2D draw queue
   输出 drawable；`hasLive2DBackend` 只在后端 `isRuntimeAvailable()` 时为 true。
 - VRoid/3D：`loadVroidModelPath(path)`、`bindVroidModelData(data)`、
-  `loadMorphNamesFromModel`、`setMesh`、`setTexture`、`setPosition3D`、
-  `setRotation3D`、`setScale3D`、`getRenderable3D`、`getBoundMesh`、
   `getVroidModelPath`、`bakeMorphs`。
 - 3D 动画：`bindAnimPlayer`、`bindAnimStateMachine`、`bindAnimSkin`、
-  `registerMotion`、`unregisterMotion`、`getMotionCount`、`getMotionName`、`getMotionClip`、
   `setMotionBlendTime`；`setMotion(name)` 会播放已注册 Clip，
   或向绑定的状态机发送同名 trigger。`setApplyRootMotion/getApplyRootMotion` 控制
   根骨 X/Z 位移是否累加到 Avatar，`getRootMotionDeltaX/getRootMotionDeltaZ`
@@ -145,7 +135,6 @@ alpha、additive 或 opaque。Avatar 同步只传播角色整体变换、显隐�
   生命周期。每帧顺序为基础动画、约束栈/Foot IK、Dynamic Bone、世界 Pose 与蒙皮。
 - 动画分层：`bindAnimLayerMixer(mixer)` 让 Avatar 直接消费通用 Override/Additive
   分层 Pose，并继续执行根运动、LookAt、蒙皮和骨骼附件。每帧事件可通过
-  `getAnimationEventCount()`、`getAnimationEventLayer()`、`getAnimationEventName()`、
   `getAnimationEventPayload()` 读取。
 - VRM 运行时语义：`mapHumanoidBone` / `autoMapHumanoidBones` 把标准 humanoid
   名称映射到当前动画骨架；`mapViseme` / `setViseme` 把口型语义映射到真实 mesh

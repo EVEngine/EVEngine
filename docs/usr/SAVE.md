@@ -1,5 +1,7 @@
 # 跨模块存档用法
 
+[English](../en/usr/SAVE.md)
+
 游戏存档不是单独的引擎「存档模块」，而是各玩法域用 **JSON 文本 + 严格校验 + 原子发布**
 拼出来的。本页按当前源码说明推荐的拼法，细节仍以各模块手册为准。
 
@@ -8,7 +10,7 @@
 1. **每个可变事实只有一个权威所有者**（`GameState`、`Tracker`、`Bag`、战局等），存档只序列化权威状态。
 2. **先校验完整候选，再一次发布**；任一 participant 失败则全部保持不变。
 3. **内容定义（物品/任务/技能表）不进玩家存档**；读档前必须先加载同一 `contentVersion` 的定义。
-4. **磁盘写入用 `fs.writeTextAtomic`**；`fs` 是启动脚本注入的 Filesystem 实例。读档可先 `validate` 再 `restore`，主档坏了再试备份。
+4. **磁盘写入用 `fs.writeTextAtomic` 并检查返回值**；`fs` 是启动脚本注入的 Filesystem 实例。读档可先 `validate` 再 `restore`，主档坏了再试备份。
 
 ## 三条竖切里怎么做
 

@@ -102,7 +102,7 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 - `Zone.acceptKinds` 通过 `addAcceptKind` 设置后会参与实际 Drop 判定，不匹配的卡牌不会产生 drop 事件。
 - `newCard(defId)` 返回的实例 id 形如 `defId#N`（保证唯一）；卡牌定义用 `getCardDefinition*` 系列读取。
 
-## API 快查
+## 绑定与行为说明
 
 - `eve.Card()`：`registerCardsFromJson`、`clearCardDefinitions`、`getCardDefinitionCount`、`getCardDefinitionId`、`hasCardDefinition`、`setCardDefinition`、`removeCardDefinition`、`getCardDefinitionName/Kind/Cost/Attack/Health/TintR/TintG/TintB`
 - `eve.Card()` 工厂：`newConfig()`、`newCard(defId)`、`newDeck()`、`newZone(id, label, x, y, w, h)`、`newHand(cfg)`

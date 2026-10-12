@@ -1,5 +1,7 @@
 # 脚本 ECS：数据、实体与系统
 
+[English](../../en/usr/modules/entity.md)
+
 **脚本入口：** `eve.Component` / `eve.Entity` / `eve.System` / `eve.ShaderSystem`
 
 通过 Component、Entity 和 System 声明数据组合与批量更新逻辑。大批量数值积分可用 `eve.ShaderSystem` 写成 compute shader（见 [gpgpu.md](gpgpu.md)）。

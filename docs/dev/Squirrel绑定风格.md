@@ -1,5 +1,7 @@
 # Squirrel 绑定风格
 
+[English](../en/dev/SCRIPT-BINDINGS.md)
+
 > 配套：[`Result检查与不得丢弃返回值规范.md`](./Result检查与不得丢弃返回值规范.md)、
 > [`模块编排与裁剪架构.md`](./模块编排与裁剪架构.md)。
 

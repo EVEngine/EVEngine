@@ -956,7 +956,7 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 - 笔刷直接改 `TileLayer`——请先画在 `TileBuffer`，再同步，避免模块硬耦合。
 - `getPart*` 在 mode/TRS 变化后过期——调用 `rebuildParts()` 或任意 set*（多数 set 已自动重建）。
 
-## API 快查
+## 绑定与行为说明
 
 - Editor 核心模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newToolbar` / `newInspector` / `newDock`
 - Toolbar：`clear` / `addTool` / `setIcon` / `setShortcut` / `setActive` / `getActive` / `matchShortcut` / `getToolCount` / `getToolId` / `getToolLabel` / `getToolIcon` / `getToolShortcut`

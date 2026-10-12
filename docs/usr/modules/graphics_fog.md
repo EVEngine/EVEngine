@@ -30,7 +30,7 @@ vol.uploadFroxel(gfx);
 
 可运行示例：`examples/realtime-fog`。它复用 `examples/atmospheric-fog` 的视锥高度雾 + emissive proxy + `integrateFroxel`，再用 GPU `applyFog` 叠一层，MAC 只通过 `injectToVolumetric` 往同一网格里加密度。`has_module("realtimeFog")` 在裁剪构建中检测本模块。
 
-## API 快查
+## 绑定与行为说明
 
 | 绑定 | 作用 |
 | --- | --- |

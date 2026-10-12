@@ -87,7 +87,7 @@ PlacementSystem::registerValidateRule("needGold",
 
 建筑定义 `"validateRule":"needGold"`；脚本侧只需选用该规则名。
 
-## API 快查
+## 绑定与行为说明
 
 ### `Building`（模块）
 

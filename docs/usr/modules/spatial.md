@@ -48,7 +48,7 @@ for (local i = 0; i < tree.getResultCount(); i++) {
 - `getResultId` 在新的 `query*` 之后仍使用旧循环变量——结果缓冲已被覆盖。
 - 根包围盒过小：树/BSP 构造时给出的世界范围应覆盖所有可能插入的 AABB。
 
-## API 快查
+## 绑定与行为说明
 
 - 模块：`getName()`、`newQuadTree()`、`newOctree()`、`newSpatialHash2D()`、`newSpatialHash3D()`、`newBSPTree2D()`、`newBSPTree3D()`
 - 共用：`clear()`、`insert()`、`remove()`、`update()`、`contains()`、`getCount()`、`getResultCount()`、`getResultId()`

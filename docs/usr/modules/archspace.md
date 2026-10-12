@@ -63,7 +63,7 @@ auto mesh = target.bakeMesh();  // positions + indices + primitiveIds（含 *.re
 // ArchSpaceWallDrawTool / ArchSpaceOpeningPlaceTool / ArchSpaceItemPlaceTool
 ```
 
-## API 快查
+## 绑定与行为说明
 
 ### `ArchSpaceDocument`（脚本类）
 

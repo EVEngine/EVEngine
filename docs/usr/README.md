@@ -1,5 +1,11 @@
 # EVEngine 用户指南
 
+[English](../en/usr/README.md)
+
+中文是唯一权威来源，英文手工维护在 `docs/en/usr/`；修改使用行为时先更新中文，再同步对应英文。
+尚未翻译的模块在英文导航中明确标为 Chinese。手册保留任务、示例和注意事项，不重复维护完整方法清单：
+C++ 接口查 Doxygen，脚本接口查 SDK 绑定目录（见 [API 使用约定](../dev/API-CONVENTIONS.md)）。
+
 EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速制作 2D、第三人称 3D，以及 2D/3D 混合的游戏原型。本指南面向“使用引擎制作游戏”的用户；如果你要修改引擎实现，请阅读[开发者文档](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)。
 
 > 在线版文档（API + 用户手册）持续构建于 GitHub Pages：

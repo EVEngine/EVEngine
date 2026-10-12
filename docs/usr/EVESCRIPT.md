@@ -1,5 +1,7 @@
 # EveScript 完整教程
 
+[English](../en/usr/EVESCRIPT.md)
+
 EveScript 是 EVEngine 的游戏脚本语言。它以 Squirrel 为基础，保留 Squirrel 的对象模型、闭包、
 协程和动态类型能力，同时增加脚本模块、渐进类型、空值运算、命名参数、Inspector 元数据、热重载
 持久变量、单位字面量、模式匹配以及 `async` / `await`。

@@ -1,5 +1,8 @@
 # AI Editor — 让 AI 现场长出一个项目专属编辑器
 
+[English](README.en.md)
+
+
 演示 EVEngine 无头 MCP 主机（`eve mcp`）的核心能力：**AI 提交一段 JSON View +
 Squirrel ViewModel，引擎现场生成一个可交互的编辑器窗口**，并做 MVVM 双向绑定。
 每个项目都能长出风格与功能完全不同的地形编辑器、材质编辑器、事件编辑器——
