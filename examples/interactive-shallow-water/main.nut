@@ -40,7 +40,7 @@ const LEG_HALF = 0.42;
 const MOVE_SPEED = 2.4;
 const VEL_SCALE = 0.75;
 const DEPTH_CONTRAST = 0.06;
-const VISUAL_GAIN = 2.5;
+const VISUAL_GAIN = 4.0;
 
 const WATER_STYLE_JSON = @"
 {
@@ -138,22 +138,12 @@ function syncFieldLegend() {
 }
 
 function syncWaterMesh() {
-    // Presentation mesh is Water.createPlane-centered; convert sim world XZ → local.
+    // Write sim heights in world XZ into the Water mesh. waterFx.draw() uses identity
+    // model, so vertices must stay in world space (not createPlane's centered local frame).
     local built = requireOk(sim.buildSurfaceMesh(VISUAL_GAIN), "buildSurfaceMesh");
     local mesh = built.value;
-    local pos = mesh.positions;
-    local i = 0;
-    while (i < mesh.vertexCount) {
-        local p = i * 3;
-        pos[p] = pos[p] - HALF;
-        pos[p + 2] = pos[p + 2] - HALF;
-        i += 1;
-    }
-    if (waterMesh == null) {
-        waterMesh = waterFx.getMesh();
-        waterObj.setMesh(waterMesh);
-    }
-    if (!gfx.updateMeshVertices(waterMesh, pos, mesh.normals, mesh.uvs,
+    waterMesh = waterFx.getMesh();
+    if (!gfx.updateMeshVertices(waterMesh, mesh.positions, mesh.normals, mesh.uvs,
                                 mesh.vertexCount, mesh.indices, mesh.indexCount)) {
         throw "updateMeshVertices failed";
     }
@@ -263,20 +253,12 @@ eve_init = function() {
         ground.setCastShadow(false);
     }
 
+    // Water is drawn explicitly via waterFx.draw() after opaques so the stylized
+    // shader gets scene-color refraction + gbuffer depth (see Water::drawWithReflection).
     if (waterObj == null) {
-        waterMat = gfx.newMaterial();
-        waterMat.setSurfaceMode("transparent");
-        waterMat.setBlendMode("alpha");
-        waterMat.setDepthWrite(false);
-        waterMat.setShader(waterFx.getShader());
         waterObj = eve.Renderable3D();
-        waterObj.setMaterial(waterMat);
-        waterObj.setShader(waterFx.getShader());
         waterObj.setMesh(waterFx.getMesh());
-        waterObj.setPosition(HALF, 0.0, HALF);
-        waterObj.setTint(1.0, 1.0, 1.0, 1.0);
-        waterObj.setCastShadow(false);
-        waterObj.setReceiveShadow(false);
+        waterObj.setVisible(false);
         waterMesh = waterFx.getMesh();
     }
 
@@ -382,7 +364,10 @@ eve_update = function(dt) {
 };
 
 eve_render = function() {
-    waterFx.bindParams();
     gfx.clear();
     gfx.render3D();
+    // Transparent water pass on top of ground/character (scene color + depth bound).
+    waterFx.setViewport(gfx.getWidth().tofloat(), gfx.getHeight().tofloat());
+    waterFx.bindParams();
+    waterFx.draw();
 };
