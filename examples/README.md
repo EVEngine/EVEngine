@@ -191,6 +191,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [ink-arena](ink-arena/README.md) | GPU 表面喷墨：片元着色器向持久 RGBA8 画布绘制 |
 | [uv-texture-paint](uv-texture-paint/README.md) | 点击网格经 Box3D 三角形命中映射回模型 UV 并绘制贴图 |
 | [tensor](tensor/README.md) | 张量编译管线：策略网络 / conv / SDPA / 批量模拟（纯计算） |
+| [gpu-formation](gpu-formation/README.md) | 纯脚本 GPU 阵型：`eve.TF()` 齐次 matmul 部署 + compile 软追逐与阵型 morph |
 | [interior-mapping](interior-mapping/README.md) | 无室内几何的室内映射：预投影 Atlas、切线空间射线–AABB、伪透视缩放、过程化家具遮挡与掠射菲涅尔 |
 | [triplanar-decal](triplanar-decal/README.md) | 三维投射贴花：局部空间三平面混合解决单轴投射在立面上的拉伸，含混合锐度对照 |
 
