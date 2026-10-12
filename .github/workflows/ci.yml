@@ -435,12 +435,12 @@ jobs:
           }
 
       - name: Build native Dawn parity lane
-        # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
-        # 95% only when the former 40-minute guard fired on windows-latest. The
-        # growing module matrix crossed the later 75-minute guard in the v0.5.1
-        # release gate. Run 38158658328 completed 3862/3863 compilation steps
-        # before the 105-minute guard killed the final link; allow 15 more minutes.
-        timeout-minutes: 120
+        # A cold Dawn/Tint build compiles roughly 2,400–3,800 targets and has
+        # repeatedly reached >95% only when the former 40/75/105-minute guards
+        # fired on windows-latest (e.g. run 38156754042 died at 3847/3848). Keep
+        # a bounded hosted-runner / sccache-miss variance margin above a full
+        # cold compile.
+        timeout-minutes: 130
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
@@ -1444,7 +1444,8 @@ jobs:
     runs-on: ubuntu-24.04
     # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
     # the 90-minute test guard, plus dependency/toolchain setup and reporting.
-    timeout-minutes: 270
+    # Build step alone can approach 180m on a cold PR; keep job headroom.
+    timeout-minutes: 330
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1518,8 +1519,9 @@ jobs:
       - name: Build linux RelWithDebInfo (ASan+UBSan)
         # PRs cannot populate the shared sccache, so sanitizer flag sets are a
         # cold rebuild. Runs 34820985249 / 34823491554 reached ~94% after 100m;
-        # keep headroom for linking unit_test. Job budget is 270m.
-        timeout-minutes: 140
+        # run 38181213947 hit the 140m step budget at ~97% still compiling
+        # unit_test_* shards. Keep headroom for linking. Job budget is 330m.
+        timeout-minutes: 180
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
