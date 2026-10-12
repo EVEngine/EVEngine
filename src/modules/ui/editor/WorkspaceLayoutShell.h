@@ -61,6 +61,7 @@ public:
      * @param content Optional builder; when null, each panel gets a placeholder label.
      * @param options Chrome ratios, toolbar/status, and tab-stack policy.
      * @return Window WidgetDesc ready for UIHost::setTree / UI::mountAs.
+     * @cost Linear in visible panel count; builds an owning WidgetDesc tree once per call.
      */
     [[nodiscard]] static ui::WidgetDesc buildWindow(const editor::EditorWorkspace &workspace,
                                                     ContentBuilder content = {},
@@ -69,6 +70,7 @@ public:
     /**
      * @brief Compose only the dock body (SplitPane + DockArea tree) without a Window.
      * Useful when the caller already owns MenuBar / Window chrome.
+     * @cost Linear in visible panel count; builds an owning WidgetDesc subtree once per call.
      */
     [[nodiscard]] static ui::WidgetDesc buildDockBody(const editor::EditorWorkspace &workspace,
                                                       ContentBuilder content = {},
@@ -77,6 +79,7 @@ public:
     /**
      * @brief Collect visible panels for one region in deterministic order.
      * @return Owning descriptor snapshots; empty when the region has no visible panels.
+     * @cost Linear in workspace panel count; returns an owning vector copy per call.
      */
     [[nodiscard]] static std::vector<editor::WorkspacePanelDescriptor> panelsInRegion(
         const editor::EditorWorkspace &workspace, std::string_view region);
