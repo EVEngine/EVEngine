@@ -585,3 +585,17 @@ v1 无前驱迁移，不恢复 placement；调用成本随 JSON/连接器大小�
 房屋不定义专用图类型。`writeFootprintGrid` 输出 `Grid2D`，供现有 `GridGraph.grid.input` 使用；
 `writeComponentPoints` 输出 `PointSet`，供现有 `PointGraph.input` 使用。后续筛选、变换、合并、
 缓存与序列化全部由既有 graph 系统处理。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](procgen/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：生成、发布和失效处理
+
+按示例先加载生成脚本和输入参数，明确 seed、区域及算法版本；生成 CPU Output 后验证类型和非空内容，再发布图形/物理消费者。地图、mesh、image 的输出不是互换的。缓存键包含参数、种子与资源版本；不要在每帧噪声查询中重建整张地形。编辑热更使用候选 revision，晚到结果如果不匹配则丢弃；失败保留旧发布结果。GTS 渲染 LOD 与碰撞 LOD 分别选定，再共享同一世界变换。
+
+完整项目：[examples/procgen-script-pipeline](../../../examples/procgen-script-pipeline/README.md)，
+其 [main.nut](../../../examples/procgen-script-pipeline/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。
+详细流程：[专题](procgen/guides.md)。

@@ -266,3 +266,7 @@ GPU 错误明确返回，不会自动改用 CPU 重试。
 **源码：** [`src/modules/tensor/`](../../../src/modules/tensor/)（含
 `Optimizer` 图优化/融合、`KernelGen` 专用 kernel 生成、`GpuBackend` GPU 运行时）
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `tensor`。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](tensor/api-reference.md)，使用前先确认本章的前置条件与生命周期。

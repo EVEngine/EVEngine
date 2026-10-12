@@ -129,3 +129,7 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 **源码：** [`src/modules/card/`](../../../src/modules/card/)  
 **示例：** [`examples/cardgame/`](../../../examples/cardgame/)  
 **运行：** `make run/<platform>-debug GAME=examples/cardgame`
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](cardgame/api-reference.md)，使用前先确认本章的前置条件与生命周期。

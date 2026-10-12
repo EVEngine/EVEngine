@@ -172,3 +172,7 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
   （归一化采样高度阈值，>0 且 `sand` 非 0 时启用沙滩带）、`enable`（1 打开地形）。
   `setTerrainParam` 只覆盖传入的键，其余参数保持默认；地形默认关闭，需 `enable=1`。
 - 存档格式为可移植小端二进制（`EVVX` + 版本 + chunk 坐标与体素），加载后网格按需重建。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](voxel/api-reference.md)，使用前先确认本章的前置条件与生命周期。

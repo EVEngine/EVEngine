@@ -1,0 +1,31 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/game-tutorial",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 42,
+    "maxHostFrames": 180,
+    "mustReach": ["collect-state"]
+  },
+  "clock": { "defaultStep": "frame" },
+  "observations": [
+    {
+      "id": "collect-state",
+      "kind": "script-root",
+      "path": "tutorial_state",
+      "fields": ["schema", "version", "x", "y", "score"]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      { "id": "restart", "script": "restart_game()" },
+      { "id": "save", "script": "save_game()" },
+      { "id": "load", "script": "load_game()" }
+    ]
+  },
+  "capture": { "requiredFor": ["visual"], "backend": "engine-readback" },
+  "tolerances": { "screenshot": "human-or-vlm", "numericAbs": 0.0001 }
+}

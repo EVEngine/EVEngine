@@ -66,3 +66,7 @@ for (local i = 0; i < tree.getResultCount(); i++) {
 **源码：** [`src/modules/spatial/`](../../../src/modules/spatial/)  
 **设计文档：** [`docs/dev/空间索引模块设计.md`](../../dev/空间索引模块设计.md)  
 **相关测试：** [`test/spatial.cpp`](../../../test/spatial.cpp)
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](spatial/api-reference.md)，使用前先确认本章的前置条件与生命周期。

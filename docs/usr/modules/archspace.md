@@ -102,4 +102,4 @@ auto mesh = target.bakeMesh();  // positions + indices + primitiveIds（含 *.re
 2. `eve_editor_execute` 调用上表命令；
 3. `eve_editor_inspect` / observe / `eve_screenshot` 验收。
 
-设计说明见 [`docs/dev/2026-09-14-archspace-editor.md`](../dev/2026-09-14-archspace-editor.md)。
+设计说明见 [`docs/dev/2026-09-14-archspace-editor.md`](../../dev/2026-09-14-archspace-editor.md)。

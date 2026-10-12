@@ -262,3 +262,16 @@ Y<1 时额外抬高 70，否则抬高 10，再减 offsetY。`useScale` 独立发
 C++ `SceneComponent::markDirty()` / `setState()` 自动排队，在 `TransformSystem::updateAll` 开始 ECS View 前刷新；脚本组件在引擎每帧的绘制准备阶段自动刷新，不依赖游戏保留默认 eve_update。无需每帧主动 `rebuild()`。构建期间的新修改留到下一批，失败保留脏状态与未处理队列。
 
 组件仅保存 host 的 ECS generation handle；host 先销毁时解析失败、排队更新跳过，组件先销毁时弱注册失效。重新 attach 后重新标脏。Getter 不构建树；兼容 `rebuild(forceFull)` 保留显式同步刷新语义。组件不可复制或移动，不允许在自己的 build 回调中销毁自己。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](scene/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：把场景树与玩法状态组合
+
+先 build/mount SceneHost，再挂 SceneEntity/Renderable link；update 前准备输入，系统修改 local TRS，按 scene.update/updateTransforms 的约定完成 world 变换同步。不要把节点路径当持久实体 ID，也不要让 ECS 和物理世界各自写一套位置。物理拥有运动时由物理结果更新节点；纯场景拥有运动时只设节点变换。销毁时解除挂载实体和 link，再清 host；恢复后重新建立派生 link，不能复用旧指针。
+
+完整项目：[examples/scene-ecs](../../../examples/scene-ecs/README.md)，
+其 [main.nut](../../../examples/scene-ecs/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。

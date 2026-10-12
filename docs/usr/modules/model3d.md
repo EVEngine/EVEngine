@@ -135,3 +135,7 @@ options 是严格的布尔值表，可包含 `triangulate`、`generateNormalsIfM
 调用成本随顶点数线性增长，只在准备资产时执行，不能每帧重复。
 在 main/render 线程同步调用，不保留 modelData 借用，不执行回调。
 配合 Graphics 的 configureFoliageWind 与显式时间使用，保留导入 PBR 纹理。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](model3d/api-reference.md)，使用前先确认本章的前置条件与生命周期。
