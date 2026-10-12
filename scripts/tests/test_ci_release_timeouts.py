@@ -38,7 +38,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
     def test_release_job_budgets_cover_cold_builds_and_tests(self) -> None:
         minimums = {
             "windows-release": 240,
-            "android-release": 150,
+            "android-release": 180,
             "macos-release": 150,
             "linux-release": 150,
         }
@@ -59,6 +59,8 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("macos", "Build native Dawn Metal lane"): 75,
             ("windows", "Build native Dawn parity lane"): 150,
             ("linux-release", "Build linux release"): 105,
+            ("android-release", "Build android release"): 120,
+            ("profile-matrix", "Build independent profile smoke target"): 60,
         }
         for (job, step), minimum in minimums.items():
             with self.subTest(job=job, step=step):
@@ -70,6 +72,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             "android": 120,
             "macos": 240,
             "linux-coverage": 150,
+            "profile-matrix": 130,
         }
         for job, minimum in minimums.items():
             with self.subTest(job=job):

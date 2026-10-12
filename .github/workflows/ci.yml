@@ -152,7 +152,7 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 130
     strategy:
       fail-fast: false
       matrix:
@@ -188,7 +188,8 @@ jobs:
         run: make profile/configure
 
       - name: Build independent profile smoke target
-        timeout-minutes: 35
+        # Cold 3d builds reached 1609/1758 edges at the old 35-minute limit.
+        timeout-minutes: 60
         run: make profile/build
 
       - name: Run independent capability smoke probes
@@ -680,7 +681,7 @@ jobs:
     runs-on: windows-latest
     # The release build step alone may take up to 90 minutes on a cold runner.
     # Leave room for toolchain setup and cache reporting at the job level.
-    timeout-minutes: 150
+    timeout-minutes: 180
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
@@ -740,7 +741,8 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android release
-        timeout-minutes: 90
+        # Native compilation consumed 88 minutes before Gradle APK packaging.
+        timeout-minutes: 120
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android \
