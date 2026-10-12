@@ -1,8 +1,10 @@
 #include "fluids/ShallowWaterField.h"
+#include "image/ImageData.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include <cmath>
+#include <cstdint>
 #include <vector>
 
 using namespace eve::fluids;
@@ -133,6 +135,46 @@ TEST_CASE("fluids.shallowWater.buildSurfaceMeshHasNormalsAndTriangles") {
     REQUIRE(uv.size() == size_t(16 * 12 * 2));
     REQUIRE(idx.size() == size_t(15 * 11 * 6));
     REQUIRE(idx.back() < uint32_t(16 * 12));
+}
+
+TEST_CASE("fluids.shallowWater.copyFieldToImageEncodesDepthAndVelocity") {
+    ShallowWaterSettings settings;
+    settings.resolutionX  = 16;
+    settings.resolutionZ  = 16;
+    settings.cellSize     = 0.25f;
+    settings.initialDepth = 0.5f;
+    settings.maxDepth     = 2.5f;
+    settings.preferGpu    = false;
+    auto created          = ShallowWaterField::create(settings);
+    REQUIRE(created.ok());
+    auto field = std::move(created).takeValue();
+
+    REQUIRE(field->addImpulse(2.f, 2.f, 1.f, 0.2f).ok());
+    for (int i = 0; i < 8; ++i) REQUIRE(field->step(1.f / 60.f).ok());
+
+    eve::image::ImageData fieldImage(16, 16, "RGBA8");
+    REQUIRE(field->copyFieldToImage(fieldImage, 2.f).ok());
+    eve::image::ImageData albedo(16, 16, "RGBA8");
+    REQUIRE(field->copyShadedAlbedoToImage(albedo, 0.5f, 2.f).ok());
+    eve::image::ImageData normals(16, 16, "RGBA8");
+    REQUIRE(field->copyNormalToImage(normals, 6.f).ok());
+
+    const auto* fieldPx = static_cast<const uint8_t*>(fieldImage.getData());
+    bool        depthVaries = false;
+    bool        hasFlow     = false;
+    for (int i = 0; i < 16 * 16; ++i) {
+        const uint8_t r = fieldPx[size_t(i) * 4u + 0];
+        const uint8_t g = fieldPx[size_t(i) * 4u + 1];
+        const uint8_t b = fieldPx[size_t(i) * 4u + 2];
+        const uint8_t a = fieldPx[size_t(i) * 4u + 3];
+        if (r < 100 || r > 140) depthVaries = true;  // rest ≈ 0.5/2.5 → ~51; impulse raises it
+        if (std::abs(int(g) - 128) > 4 || std::abs(int(b) - 128) > 4 || a > 4) hasFlow = true;
+    }
+    REQUIRE(depthVaries);
+    REQUIRE(hasFlow);
+
+    eve::image::ImageData wrong(8, 8, "RGBA8");
+    REQUIRE(!field->copyFieldToImage(wrong, 2.f).ok());
 }
 
 TEST_CASE("fluids.shallowWater.cpuMassStaysBoundedAfterSteps") {

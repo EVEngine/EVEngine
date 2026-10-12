@@ -1,10 +1,20 @@
 // Interactive shallow-water lake with character-leg capsules.
 // GPU Saint-Venant solver via eve.Fluids().newShallowWater (CPU fallback).
+// Each frame packs depth/velocity into an RGBA field texture and uploads a
+// shaded albedo + slope normal map so waves read clearly under lighting.
 
 persist fluids = null
+persist imageApi = null
 persist water = null
 persist waterMesh = null
 persist waterObj = null
+persist waterMat = null
+persist fieldImage = null
+persist fieldTex = null
+persist albedoImage = null
+persist albedoTex = null
+persist normalImage = null
+persist normalTex = null
 persist ground = null
 persist cam = null
 persist leftLeg = null
@@ -27,6 +37,7 @@ const WATER_DEPTH = 0.55;
 const LEG_RADIUS = 0.11;
 const LEG_HALF = 0.42;
 const MOVE_SPEED = 2.4;
+const VEL_SCALE = 1.5;
 
 function edgePressed(name) {
     local down = keyboard.isDown(name);
@@ -52,6 +63,17 @@ function requireOk(result, label) {
     return result;
 }
 
+function syncWaterTextures() {
+    // Field texture: R=depth/maxDepth, G/B=±velocity around 0.5, A=speed.
+    requireOk(water.copyFieldToImage(fieldImage, VEL_SCALE), "copyFieldToImage");
+    requireOk(water.copyShadedAlbedoToImage(albedoImage, WATER_DEPTH, VEL_SCALE), "copyShadedAlbedoToImage");
+    requireOk(water.copyNormalToImage(normalImage, 10.0), "copyNormalToImage");
+    // updateTextureFromImageData throws on failure (no Result table).
+    gfx.updateTextureFromImageData(fieldTex, fieldImage);
+    gfx.updateTextureFromImageData(albedoTex, albedoImage);
+    gfx.updateTextureFromImageData(normalTex, normalImage);
+}
+
 function syncWaterMesh() {
     local built = requireOk(water.buildSurfaceMesh(), "buildSurfaceMesh");
     local mesh = built.value;
@@ -63,6 +85,7 @@ function syncWaterMesh() {
                                        mesh.vertexCount, mesh.indices, mesh.indexCount)) {
         throw "updateMeshVertices failed";
     }
+    syncWaterTextures();
 }
 
 function resetLake() {
@@ -71,7 +94,7 @@ function resetLake() {
     characterZ = LAKE * 0.45;
     characterVx = 0.0;
     characterVz = 0.0;
-    requireOk(water.addImpulse(LAKE * 0.65, LAKE * 0.55, 1.6, 0.06), "seedImpulse");
+    requireOk(water.addImpulse(LAKE * 0.65, LAKE * 0.55, 1.8, 0.10), "seedImpulse");
     syncWaterMesh();
 }
 
@@ -120,9 +143,22 @@ eve_init = function() {
     print("examples/interactive-shallow-water ready\n");
     gfx.setBackgroundColor(0.45, 0.62, 0.78, 1.0);
     if (fluids == null) fluids = eve.Fluids();
+    if (imageApi == null) imageApi = eve.Image();
     if (water == null) {
         water = fluids.newShallowWater(RES, RES, CELL, true);
         if (water == null) throw "newShallowWater failed";
+    }
+
+    if (fieldImage == null) {
+        fieldImage = imageApi.newEmptyImageData(RES, RES, "RGBA8");
+        albedoImage = imageApi.newEmptyImageData(RES, RES, "RGBA8");
+        normalImage = imageApi.newEmptyImageData(RES, RES, "RGBA8");
+        fieldTex = gfx.newTexture(fieldImage, false, false);
+        albedoTex = gfx.newTexture(albedoImage, false, false);
+        normalTex = gfx.newTexture(normalImage, false, false);
+        gfx.setTextureSampler(fieldTex, "linear", "none", 1.0, 0.0);
+        gfx.setTextureSampler(albedoTex, "linear", "none", 1.0, 0.0);
+        gfx.setTextureSampler(normalTex, "linear", "none", 1.0, 0.0);
     }
 
     if (cam == null) {
@@ -147,9 +183,16 @@ eve_init = function() {
 
     if (waterObj == null) {
         waterObj = eve.Renderable3D();
-        waterObj.setTint(0.18, 0.48, 0.72, 0.78);
-        waterObj.setMetallic(0.05);
-        waterObj.setRoughness(0.18);
+        waterMat = gfx.newMaterial();
+        waterMat.setAlbedoTexture(albedoTex);
+        waterMat.setNormalTexture(normalTex);
+        waterObj.setMaterial(waterMat);
+        waterObj.setTexture(albedoTex);
+        waterObj.setNormalTexture(normalTex);
+        // Tint multiplies albedo — keep near-white so the depth/foam texture shows.
+        waterObj.setTint(1.0, 1.0, 1.0, 0.92);
+        waterObj.setMetallic(0.02);
+        waterObj.setRoughness(0.22);
         waterObj.setCastShadow(false);
     }
 
@@ -175,6 +218,7 @@ eve_init = function() {
     local backend = water.usingGpu() ? "GPU" : (water.usedBackendFallback() ? "CPU-fallback" : "CPU");
     hud = "Shallow water (" + backend + ")  WASD move  LMB splash  Space pause  R reset";
     print(hud + "\n");
+    print("field tex RGBA = depth / vx / vz / speed\n");
 };
 
 eve_update = function(dt) {
@@ -208,7 +252,7 @@ eve_update = function(dt) {
 
         if (mouseClicked()) {
             local p = screenToLake(mouse.getX(), mouse.getY());
-            requireOk(water.addImpulse(p[0], p[1], 1.1, 0.05), "mouseImpulse");
+            requireOk(water.addImpulse(p[0], p[1], 1.2, 0.09), "mouseImpulse");
         }
 
         elapsed += dt;

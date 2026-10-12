@@ -6,6 +6,7 @@
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
 #include "gpgpu/Sequence.h"
+#include "image/ImageData.h"
 
 #include <algorithm>
 #include <cmath>
@@ -360,6 +361,116 @@ Result<void> ShallowWaterField::buildSurfaceMesh(std::vector<float>& positionsXY
             indices.push_back(i10);
             indices.push_back(i01);
             indices.push_back(i11);
+        }
+    }
+    return Result<void>::success();
+}
+
+namespace {
+
+[[nodiscard]] uint8_t toU8(float v) noexcept {
+    return uint8_t(std::lround(std::clamp(v, 0.f, 1.f) * 255.f));
+}
+
+[[nodiscard]] Result<void> requireRgbaGrid(const image::ImageData& image, int resX, int resZ) {
+    if (image.getFormat() != "RGBA8" || image.getWidth() != resX || image.getHeight() != resZ || !image.getData())
+        return fail("field image must be RGBA8 with width=resolutionX and height=resolutionZ");
+    return Result<void>::success();
+}
+
+}  // namespace
+
+Result<void> ShallowWaterField::copyFieldToImage(image::ImageData& image, float velocityScale) const {
+    if (auto shape = requireRgbaGrid(image, resX_, resZ_); !shape) return shape;
+    if (!(velocityScale > 0.f) || velocityScale > 50.f || !std::isfinite(velocityScale))
+        return fail("velocityScale must be in (0, 50]");
+
+    auto* pixels = static_cast<uint8_t*>(image.getData());
+    for (int z = 0; z < resZ_; ++z) {
+        for (int x = 0; x < resX_; ++x) {
+            const int   i     = index(x, z);
+            const float h     = heights_[size_t(i)];
+            const float invH  = 1.f / std::max(h, minDepth_);
+            const float vx    = momentumX_[size_t(i)] * invH;
+            const float vz    = momentumZ_[size_t(i)] * invH;
+            const float speed = std::sqrt(vx * vx + vz * vz);
+            const size_t p    = size_t(z * resX_ + x) * 4u;
+            pixels[p + 0]     = toU8(h / std::max(maxDepth_, 1e-4f));
+            pixels[p + 1]     = toU8(0.5f + 0.5f * std::clamp(vx / velocityScale, -1.f, 1.f));
+            pixels[p + 2]     = toU8(0.5f + 0.5f * std::clamp(vz / velocityScale, -1.f, 1.f));
+            pixels[p + 3]     = toU8(std::clamp(speed / velocityScale, 0.f, 1.f));
+        }
+    }
+    return Result<void>::success();
+}
+
+Result<void> ShallowWaterField::copyShadedAlbedoToImage(image::ImageData& image, float restDepth,
+                                                        float velocityScale) const {
+    if (auto shape = requireRgbaGrid(image, resX_, resZ_); !shape) return shape;
+    if (!(restDepth > 0.f) || restDepth > maxDepth_ || !std::isfinite(restDepth))
+        return fail("restDepth must be in (0, maxDepth]");
+    if (!(velocityScale > 0.f) || velocityScale > 50.f || !std::isfinite(velocityScale))
+        return fail("velocityScale must be in (0, 50]");
+
+    auto*       pixels   = static_cast<uint8_t*>(image.getData());
+    const float invRest  = 1.f / restDepth;
+    for (int z = 0; z < resZ_; ++z) {
+        for (int x = 0; x < resX_; ++x) {
+            const int   i       = index(x, z);
+            const float h       = heights_[size_t(i)];
+            const float invH    = 1.f / std::max(h, minDepth_);
+            const float vx      = momentumX_[size_t(i)] * invH;
+            const float vz      = momentumZ_[size_t(i)] * invH;
+            const float speed   = std::sqrt(vx * vx + vz * vz);
+            // Exaggerate small height anomalies so crests/troughs read clearly in albedo.
+            const float anomaly = std::clamp((h - restDepth) * invRest * 4.f, -1.f, 1.f);
+            const float foam    = std::clamp(speed / velocityScale, 0.f, 1.f);
+            const float flowX   = std::clamp(vx / velocityScale, -1.f, 1.f);
+            const float flowZ   = std::clamp(vz / velocityScale, -1.f, 1.f);
+
+            float r = 0.05f + 0.10f * (0.5f + 0.5f * anomaly) + 0.08f * flowX;
+            float g = 0.28f + 0.35f * (0.5f + 0.5f * anomaly) + 0.12f * flowZ;
+            float b = 0.42f + 0.45f * (0.5f + 0.5f * anomaly);
+            r       = r * (1.f - foam) + foam;
+            g       = g * (1.f - foam) + foam;
+            b       = b * (1.f - 0.85f * foam) + 0.85f * foam;
+
+            const size_t p = size_t(z * resX_ + x) * 4u;
+            pixels[p + 0]  = toU8(r);
+            pixels[p + 1]  = toU8(g);
+            pixels[p + 2]  = toU8(b);
+            pixels[p + 3]  = toU8(0.72f + 0.28f * foam);
+        }
+    }
+    return Result<void>::success();
+}
+
+Result<void> ShallowWaterField::copyNormalToImage(image::ImageData& image, float normalStrength) const {
+    if (auto shape = requireRgbaGrid(image, resX_, resZ_); !shape) return shape;
+    if (!(normalStrength > 0.f) || normalStrength > 64.f || !std::isfinite(normalStrength))
+        return fail("normalStrength must be in (0, 64]");
+
+    auto* pixels = static_cast<uint8_t*>(image.getData());
+    for (int z = 0; z < resZ_; ++z) {
+        for (int x = 0; x < resX_; ++x) {
+            const auto sampleH = [&](int cx, int cz) -> float {
+                cx = std::clamp(cx, 0, resX_ - 1);
+                cz = std::clamp(cz, 0, resZ_ - 1);
+                const int i = index(cx, cz);
+                return beds_[size_t(i)] + heights_[size_t(i)];
+            };
+            const float dHx = (sampleH(x + 1, z) - sampleH(x - 1, z)) / (2.f * cellSize_);
+            const float dHz = (sampleH(x, z + 1) - sampleH(x, z - 1)) / (2.f * cellSize_);
+            // Tangent-space normal with Z-up (OpenGL-style normal maps).
+            glm::vec3 n{-dHx * normalStrength, -dHz * normalStrength, 1.f};
+            n = glm::normalize(n);
+            if (!std::isfinite(n.x) || !std::isfinite(n.y) || !std::isfinite(n.z)) n = {0.f, 0.f, 1.f};
+
+            const size_t p = size_t(z * resX_ + x) * 4u;
+            pixels[p + 0]  = toU8(0.5f + 0.5f * n.x);
+            pixels[p + 1]  = toU8(0.5f + 0.5f * n.y);
+            pixels[p + 2]  = toU8(0.5f + 0.5f * n.z);
+            pixels[p + 3]  = 255;
         }
     }
     return Result<void>::success();

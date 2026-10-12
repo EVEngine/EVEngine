@@ -19,6 +19,10 @@ class GpuBuffer;
 class Sequence;
 }  // namespace eve::gpgpu
 
+namespace eve::image {
+class ImageData;
+}  // namespace eve::image
+
 namespace eve::fluids {
 
 /** @brief Analytic obstacle geometry sampled into the shallow-water grid. */
@@ -183,6 +187,43 @@ public:
                                                                             std::vector<float>&    normalsXYZ,
                                                                             std::vector<float>&    uvsST,
                                                                             std::vector<uint32_t>& indices) const;
+
+    /**
+     * @brief Pack per-cell depth / velocity into an RGBA8 image (`resolutionX` × `resolutionZ`).
+     * @param image Destination; must be RGBA8 with width=`resolutionX` and height=`resolutionZ`.
+     * @param velocityScale Horizontal speed that maps to the full channel range, in (0, 50].
+     * @details Channel layout (row `z`, column `x`, matching mesh UVs):
+     *          - R: water depth `h / maxDepth`
+     *          - G: `0.5 + 0.5 * clamp(vx / velocityScale, -1, 1)`
+     *          - B: `0.5 + 0.5 * clamp(vz / velocityScale, -1, 1)`
+     *          - A: `clamp(|v| / velocityScale, 0, 1)` (foam / speed mask)
+     * @ownership Does not retain `image`; caller owns the pixel buffer for the call duration.
+     * @return Success, or InvalidArgument when the image shape/format/scale is rejected.
+     */
+    [[nodiscard("check shallow-water field image")]] Result<void> copyFieldToImage(image::ImageData& image,
+                                                                                   float velocityScale = 2.f) const;
+
+    /**
+     * @brief Write a shaded water albedo (RGBA8, same size as the grid) for Material upload.
+     * @param image Destination RGBA8 `resolutionX` × `resolutionZ`.
+     * @param restDepth Reference depth used to exaggerate crests/troughs; typically `initialDepth`.
+     * @param velocityScale Speed scale for foam / flow tint, in (0, 50].
+     * @details Deep water is dark cyan; crests lighten; horizontal flow shifts green/magenta;
+     *          foam (near-white) follows speed. Intended for `setAlbedoTexture` / `setTexture`.
+     * @ownership Does not retain `image`.
+     */
+    [[nodiscard("check shallow-water albedo image")]] Result<void> copyShadedAlbedoToImage(
+        image::ImageData& image, float restDepth, float velocityScale = 2.f) const;
+
+    /**
+     * @brief Write tangent-space normals from free-surface slopes (RGBA8, same grid size).
+     * @param image Destination RGBA8 `resolutionX` × `resolutionZ`.
+     * @param normalStrength Slope exaggeration in (0, 64]; higher values make small waves catch light.
+     * @details RGB stores `0.5 + 0.5 * n` with `n` in tangent space (Z-up in texture); A = 1.
+     * @ownership Does not retain `image`.
+     */
+    [[nodiscard("check shallow-water normal image")]] Result<void> copyNormalToImage(image::ImageData& image,
+                                                                                     float normalStrength = 6.f) const;
 
     /** @return Mutable tuning copy (does not resize the grid). */
     [[nodiscard]] ShallowWaterSettings settings() const noexcept;

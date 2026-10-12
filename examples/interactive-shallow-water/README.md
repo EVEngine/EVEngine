@@ -39,4 +39,10 @@ make run/<platform>-debug GAME=examples/interactive-shallow-water
 - API：`eve.Fluids().newShallowWater(resX, resZ, cellSize)` → `ShallowWater`
 - 每帧 `setColliderCapsule` 更新左右腿，再 `step(dt)`
 - `buildSurfaceMesh()` 产出 positions/normals/uvs/indices，经 `gfx.updateMeshVertices` 上传
+- 场纹理（`copyFieldToImage`，RGBA8，格子分辨率）：
+  - **R** = 水深 `h / maxDepth`
+  - **G / B** = 水平速度 `vx` / `vz`（0.5 为静止，按 `velocityScale` 映射）
+  - **A** = 速率 `|v| / velocityScale`（泡沫 / 扰动掩码）
+- 着色：`copyShadedAlbedoToImage`（深度起伏 + 流向色偏 + 泡沫）与
+  `copyNormalToImage`（自由面斜率法线）每帧上传到 Material / Renderable3D
 - 单元测试见 `test/fluids_shallow_water.cpp`

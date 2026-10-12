@@ -746,6 +746,33 @@ void Fluids::expose(ssq::Table& table) {
         mesh.set("indexCount", int(idx.size()));
         return eve::script::projectStatusResult(vm, eve::Status::success(), mesh);
     });
+    sw.addFunc("copyFieldToImage", [vm = table.getHandle()](ShallowWaterField* field, image::ImageData* image,
+                                                            float velocityScale) {
+        if (!image)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "copyFieldToImage requires an ImageData",
+                                                                      "fluids.shallowWater")));
+        return eve::script::projectResult(vm, field->copyFieldToImage(*image, velocityScale));
+    });
+    sw.addFunc("copyShadedAlbedoToImage", [vm = table.getHandle()](ShallowWaterField* field, image::ImageData* image,
+                                                                   float restDepth, float velocityScale) {
+        if (!image)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "copyShadedAlbedoToImage requires an ImageData",
+                                                                      "fluids.shallowWater")));
+        return eve::script::projectResult(vm, field->copyShadedAlbedoToImage(*image, restDepth, velocityScale));
+    });
+    sw.addFunc("copyNormalToImage", [vm = table.getHandle()](ShallowWaterField* field, image::ImageData* image,
+                                                             float normalStrength) {
+        if (!image)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "copyNormalToImage requires an ImageData",
+                                                                      "fluids.shallowWater")));
+        return eve::script::projectResult(vm, field->copyNormalToImage(*image, normalStrength));
+    });
 }
 
 void Fluids::expose(ssq::Class& cls) {
