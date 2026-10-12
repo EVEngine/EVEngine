@@ -42,7 +42,7 @@ for (local i = 0; i < effects.taggedCount("positive"); ++i)
 查询返回借用引用：容器发生 `apply`、`remove`、`clear`、`update` 或释放后重新查询，
 不要长期缓存。`release()` 会主动释放容器；`isStale()` 可检查句柄是否已经失效。
 
-## API 快查
+## 绑定与行为说明
 
 ### `Effects` 与拥有型容器
 

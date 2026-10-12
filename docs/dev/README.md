@@ -1,5 +1,7 @@
 # EVEngine 开发者文档
 
+[English](../en/dev/README.md)
+
 本目录保存引擎的架构、模块设计、测试策略和实现计划，面向 EVEngine 本身的维护者与贡献者。
 
 > **如果你是游戏开发者而不是引擎开发者**：请从[官网发布页](https://github.com/EVEngine/EVEngine/releases)
@@ -43,6 +45,7 @@
 - [测试覆盖](测试覆盖.md)
 - [测试套件优化纪要](superpowers/specs/2026-08-18-test-suite-optimization.md)（CI per-case / SHARED 陷阱；`AGENTS.md` 引用）
 - [AI 与 MCP 支持](AI与MCP支持.md)
+- [Semantic World Database 架构设计](SemanticWorldDatabase架构设计.md)（待评审构想：世界事务、跨类型 AI 开发闭环、架构与行为图、具体实施方案及 Schema 来源分工；区分现有基础与拟议能力）
 - [AI 知识补偿](AI知识补偿.md)（推理时知识包、Binding Contract 目录、少写脚本）
 - [AI 场景导演](AI场景导演.md)（剧情 → 自动搭台 → 质检迭代 → 交付）
 - [游戏开发系统与工具差距分析](游戏开发系统与工具差距分析.md)

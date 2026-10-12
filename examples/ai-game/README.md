@@ -1,5 +1,8 @@
 # AI Game — 让 AI Agent 驾驶一个真实游戏
 
+[English](README.en.md)
+
+
 一个最小但真实的 2D 对战游戏，专为展示 EVEngine 的 **Play Host**：
 Agent 通过 `game.agent.json` 声明观察面，再用 `eve_play` 暂停、推进帧、观察、截图、checkpoint 复位。
 不要把 `eve_eval` 当作官方读状态路径。

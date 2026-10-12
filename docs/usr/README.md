@@ -1,5 +1,11 @@
 # EVEngine 用户指南
 
+[English](../en/usr/README.md)
+
+中文是唯一权威来源，英文手工维护在 `docs/en/usr/`；修改使用行为时先更新中文，再同步对应英文。
+尚未翻译的模块在英文导航中明确标为 Chinese。手册保留任务、示例和注意事项；补充绑定参考从源码生成，不手工维护第二份完整方法清单：
+C++ 接口查 Doxygen，脚本接口查 SDK 绑定目录（见 [API 使用约定](../dev/API-CONVENTIONS.md)）。
+
 EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速制作 2D、第三人称 3D，以及 2D/3D 混合的游戏原型。本指南面向“使用引擎制作游戏”的用户；如果你要修改引擎实现，请阅读[开发者文档](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)。
 
 > 在线版文档（API + 用户手册）持续构建于 GitHub Pages：
@@ -7,7 +13,7 @@ EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速�
 
 > 当前版本为早期开发版本，API 仍在演进。最可靠的学习方式是运行并修改示例：下载的 SDK 自带 `share/eve/examples/basic/`，仓库中还有更多 `examples/` 可参考。
 
-本指南从“下载引擎”讲到“打包发布”；[EveScript 完整教程](EVESCRIPT.md)讲解脚本语法、规范和与标准 Squirrel 的区别，覆盖全部脚本模块的[模块使用手册](MODULES.md)则按功能逐章说明 API 与示例。给编程 Agent 的入口是仓库根目录 [`llms.txt`](../../llms.txt)。先跑通一个示例，再按需查阅对应文档即可。
+本指南从“下载引擎”讲到“打包发布”；[EveScript 完整教程](EVESCRIPT.md)讲解脚本语法、数据类型、数组/表、作用域、引用、标准库与 import/export，以及热重载和游戏帧循环；其中[收集方块小游戏](EVESCRIPT.md#20-实践用键盘收集方块)提供完整工程代码。覆盖全部脚本模块的[模块使用手册](MODULES.md)按功能逐章说明 API 与示例。给编程 Agent 的入口是仓库根目录 [`llms.txt`](../../llms.txt)。先跑通一个示例，再按需查阅对应文档即可。
 
 ## 1. 获取引擎：从官网下载，无需编译
 
@@ -218,7 +224,7 @@ SDK 中的 `eve` 可执行文件本身就是命令行工具：
 | `eve dev [--port 8765]` | 启动热重载开发服务器（移动端真机热更新用） |
 | `eve zip <目录>` | 把游戏压缩为 `.eve` 归档 |
 | `eve package <目录> -o <输出> --sdk <SDK目录>` | 打包为含运行时的可分发游戏目录 |
-| `eve test` | 运行游戏目录中的测试配置 |
+| `eve test` | 当前源码为空实现，不可作为测试通过证据；仓库使用 Make/CTest |
 | `eve doc <名字>` | 查询在线文档 |
 | `eve build` | 从源码构建（需要源码与工具链，见[开发者文档](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)） |
 
@@ -312,6 +318,10 @@ config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
 只有需要修改引擎源码、参与开发或自行打包时才需要从源码构建：环境要求、编译步骤见根目录 [Readme.md 的“从源码构建”章节](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#从源码构建引擎开发者--贡献者)；架构与设计文档见[开发者文档](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)。
 
 ## 9. 下一步
+
+从[完整游戏开发教程](GAME_DEVELOPMENT.md)开始：一个工程串起 import、输入、规则、
+纹理、HUD、严格版本化存档、热重载、调试和发布；完整源码在
+[game-tutorial](../../examples/game-tutorial/)。
 
 建议按以下顺序学习：
 

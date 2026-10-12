@@ -1,5 +1,7 @@
 # 鼠标模块
 
+[English](../../en/usr/modules/mouse.md)
+
 **脚本入口：** `eve.Mouse()`
 
 查询鼠标位置、按键、相对模式与可见性。
@@ -43,18 +45,10 @@ mouse.setRelativeMode(false);  // 恢复绝对坐标
 - UI 已捕获鼠标仍触发游戏点击：先检查 `ui.wantCaptureMouse()`。
 - 相对模式请求失败：SDL 在无聚焦窗口等情况下可能拒绝，`setRelativeMode()` 返回 `false`，调用方应检查返回值。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `getName()`、`getX()`、`getY()`、`getMovementX()`、`getMovementY()`、`setX()`、`setY()`、`setPosition()`、`isDown()`、
-  `setVisible()`、`isVisible()`、`setGrabbed()`、`isGrabbed()`、`setRelativeMode()`、`getRelativeMode()`
-
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/mouse/`](../../../src/modules/mouse/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `mouse`。

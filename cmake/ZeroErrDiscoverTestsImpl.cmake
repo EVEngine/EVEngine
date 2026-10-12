@@ -172,14 +172,16 @@ endforeach()
 # sequence" in CMake's quoted-string parser (CMP0010) on some CMake versions.
 set(_content "")
 foreach(_basename IN LISTS _bundle_files)
+  set(_bundle_name "${ZEROERR_NAME_PREFIX}bundle/${_basename}")
   string(APPEND _content
-    "add_test(\"bundle/${_basename}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=.*${_basename}\")\n"
-    "set_tests_properties(\"bundle/${_basename}\" PROPERTIES LABELS \"bundle;${ZEROERR_LABEL}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_eve_test_env_property})\n")
+    "add_test(\"${_bundle_name}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=.*${_basename}\")\n"
+    "set_tests_properties(\"${_bundle_name}\" PROPERTIES LABELS \"bundle;${ZEROERR_LABEL}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_eve_test_env_property})\n")
   foreach(_entry IN LISTS _cases)
     string(REPLACE "|" ";" _parts "${_entry}")
     list(GET _parts 0 _name)
     list(GET _parts 1 _file)
     if(_file STREQUAL _basename)
+      set(_ctest_name "${ZEROERR_NAME_PREFIX}${_name}")
       # Keep source ownership on every per-case entry.  CI can then select the
       # cases from changed test translation units without relying on naming
       # conventions inside TEST_CASE strings. The link unit's own label is added
@@ -196,19 +198,19 @@ foreach(_basename IN LISTS _bundle_files)
       endif()
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
       string(APPEND _content
-        "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
-        "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"${_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_eve_test_env_property})\n")
+        "add_test(\"${_ctest_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
+        "set_tests_properties(\"${_ctest_name}\" PROPERTIES LABELS \"${_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_eve_test_env_property})\n")
       if(_name MATCHES "^ClassicScenes[.]")
         # These asset-dependent cases already return early with these diagnostics.
         # Expose that outcome as skipped rather than a zero-assertion pass.
         string(APPEND _content
-          "set_tests_properties(\"${_name}\" PROPERTIES SKIP_REGULAR_EXPRESSION \"ClassicScenes.*: missing\")\n")
+          "set_tests_properties(\"${_ctest_name}\" PROPERTIES SKIP_REGULAR_EXPRESSION \"ClassicScenes.*: missing\")\n")
       endif()
       if(_name MATCHES "^resourceFormats\\.")
         # Helpers must receive TestContext, but fail closed if a future helper
         # logs an assertion without propagating it to zeroerr's exit status.
         string(APPEND _content
-          "set_tests_properties(\"${_name}\" PROPERTIES FAIL_REGULAR_EXPRESSION \"Assertion Failed\")\n")
+          "set_tests_properties(\"${_ctest_name}\" PROPERTIES FAIL_REGULAR_EXPRESSION \"Assertion Failed\")\n")
       endif()
     endif()
   endforeach()

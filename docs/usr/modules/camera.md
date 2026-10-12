@@ -158,7 +158,7 @@ if (marker != "") print(marker + ": " + ctrl.getTimelineEventData() + "\n");
 `setMode("cinematic")` 前用 `addView("front", ...)` 等注册多个命名视角，
 `playSequence(3.0)` 在视角间平滑切换，`stopSequence()` / `isPlaying()` 控制。
 
-## API 快查
+## 绑定与行为说明
 
 ### `CameraController`
 

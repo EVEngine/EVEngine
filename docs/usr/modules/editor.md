@@ -956,7 +956,7 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 - 笔刷直接改 `TileLayer`——请先画在 `TileBuffer`，再同步，避免模块硬耦合。
 - `getPart*` 在 mode/TRS 变化后过期——调用 `rebuildParts()` 或任意 set*（多数 set 已自动重建）。
 
-## API 快查
+## 绑定与行为说明
 
 - Editor 核心模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newToolbar` / `newInspector` / `newDock`
 - Toolbar：`clear` / `addTool` / `setIcon` / `setShortcut` / `setActive` / `getActive` / `matchShortcut` / `getToolCount` / `getToolId` / `getToolLabel` / `getToolIcon` / `getToolShortcut`
@@ -996,3 +996,16 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 ### PR #287 新增绑定
 
 - 反射链、HDR 与探针相关 API 位于 `GraphicsEditorModule`：`getCenterX` `getCenterY`/`getCenterZ` `getColorB` `getColorG`/`getColorR` `getLineCount` `getLineEnd`/`getLineStart` `getStatusLabel` `createReflectionProbeVisualizer`/`setExtents`
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](editor/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：组装一个可撤销的编辑工具
+
+建立 Workspace/Session → 创建领域 target 并绑定 → 注册满足 capability 的工具 → 转换输入坐标 → begin/update/end 手势 → validate/commit → 消费变化更新预览。一次拖拽是一个命令；取消不写权威文档，撤销不从画面推导旧数据。连续笔刷写入的候选与运行时发布分开，revision 防止慢生成覆盖新编辑。先撤销 preview/target 注册，再释放资源和 provider。工具缺少 capability 时显示明确不可用原因。
+
+完整项目：[examples/editor-api-v2](../../../examples/editor-api-v2/README.md)，
+其 [main.nut](../../../examples/editor-api-v2/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。

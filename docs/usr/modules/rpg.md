@@ -373,27 +373,14 @@ JSON `StoryEvent` API 仍保留为兼容面，新产品应优先写 `.dnut` stor
 - 追踪器读完事件前先 `pollEvents()`；两个 Tracker 要各自 `notify`；`completePolicy=claim` 时满进度是 `ready`，要 `claim`。
 - 掉落物品需先在 `inventory` 模块注册物品定义，否则 `bag.addItem` 拒绝加入。
 
-## API 快查
+## 绑定与行为说明
 
 `newSettlementContext()`、`runSettlement()` 及 stage 管理方法是兼容旧项目的开放数值袋接口；内部调度已
 委托通用 Settlement，但它不提供正式 Battle 的规则、原子提交、Trace 与回放语义。新玩法应使用
 `newBattle()` 及 Battle 的统一结算配置入口。
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `addAttributeModifier()`、`addTag()`、`applyEffect()`、`beginCastSkill()`、`canCastSkill()`、`canCastSkillReason()`、`cancelCastSkill()`、`clearEffectDefinitions()`
-- `clearAllItemStats()`、`clearClassDefinitions()`、`clearItemStats()`、`clearLootTables()`、`clearQuestDefinitions()`、`clearSettlementPipeline()`、`clearSkillDamage()`、`clearSkillDefinitions()`、`forgetSkill()`、`gainXp()`
-- `get()`、`getBaseAttribute()`、`getCastEventCaster()`、`getCastEventCount()`、`getCastEventSkillId()`、`getCastEventTarget()`、`getCastProgress()`、`getCastingSkillId()`
-- `getCurrent()`、`getEffectDefinitionCount()`、`getFinalAttribute()`、`getItemStatCount()`、`getLevel()`、`getLevelUpEventActor()`、`getLevelUpEventCount()`、`getLevelUpEventNewLevel()`
-- `getLevelUpEventPreviousLevel()`、`getLootTableCount()`、`getMax()`、`getName()`、`getQuestDefinitionCount()`、`hasQuestDefinition()`、`getSettlementStageCount()`、`getSkillCooldown()`、`getSkillDefinitionCount()`
-- `getStatusCount()`、`getStatusEffectId()`、`getStatusInstanceId()`、`getStatusRemaining()`、`getStatusStacks()`、`getTickEventActor()`、`getTickEventCount()`、`getTickEventEffectId()`
-- `getTickEventInstanceId()`、`getTickEventSource()`、`getTickEventStacks()`、`getVitalsEventAction()`、`getVitalsEventActor()`、`getVitalsEventAmount()`、`getVitalsEventCount()`、`getVitalsEventCurrent()`
-- `getVitalsEventMax()`、`getVitalsEventResource()`、`getVitalsEventSource()`、`getXp()`、`getXpToNext()`、`has()`、`hasAttribute()`、`hasEffect()`
-- `hasSettlementStage()`、`hasTag()`、`heal()`、`isCastingSkill()`、`isDead()`、`knowsSkill()`、`learnSkill()`、`modifyBaseAttribute()`
-- `newActor()`、`newBattle()`、`newGameState()`、`newWorldState()`、`newSettlementContext()`、`newTracker()`、`registerClassesFromJson()`、`registerEffectsFromJson()`、`globalGameState()`
-- `removeAllAttributeModifiersBySource()`、`removeAttributeModifier()`、`removeAttributeModifiersBySource()`、`removeSettlementStage()`、`removeStatus()`、`removeStatusByEffect()`、`removeStatusBySource()`、`removeStatusByTag()`
 - `release()`（销毁 ECS actor）、`revive()`、`rollLoot()`、`runSettlement()`、`set()`、`setBaseAttribute()`、`setCurrent()`、`setSettlementStageEnabled()`、`setSettlementStagePriority()`
-- `setSkillCooldown()`、`setXpToNext()`、`syncEquipModifiers()`、`takeDamage()`、`registerItemStatsFromJson()`、`registerLootTablesFromJson()`、`registerQuestsFromJson()`、`replaceQuestsFromJson()`、`registerSkillDamage()`、`registerSkillsFromJson()`、`registerTraitsFromJson()`、`clearTraitDefinitions()`、`getTraitDefinitionCount()`、`getClassDefinitionCount()`、`update()`
 - `claimQuestRewards(tracker, gameState, bag, questId)` 原子领取任务声明的全部 `item` / `attribute` 奖励；返回结构化 Result。
 - `collectWorldLoot(...)` 原子提交一次持久化 loot 交互的世界消费、任务通知、属性与物品效果。
 - `settleBattleVictory(...)` 原子结算战斗胜利带来的经验、升级技能、任务进度、世界遭遇消费和 GameState 奖励。
@@ -504,7 +491,6 @@ JSON `StoryEvent` API 仍保留为兼容面，新产品应优先写 `.dnut` stor
 因此游戏可在步骤确认边界保存，并在读档后用新 session 精确重放尚未确认的展示步骤。
 
 **RPGStoryEventSession 方法：** `advance()`、`begin()`、`getActorId()`、`getDuration()`、
-`getEventId()`、`getReference()`、`getStepCount()`、`getStepIndex()`、`getStepKind()`、`getX()`、
 `getY()`、`isActive()`、`isFinished()`。
 
 `eve.RPGSaveSession()` 是 non-owning 的存档协调器。调用
@@ -540,7 +526,10 @@ owning payload 副本，随后仍执行全部 participant codec；磁盘原文�
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/rpg/`](../../../src/modules/rpg/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `rpg`。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](rpg/api-reference.md)，使用前先确认本章的前置条件与生命周期。

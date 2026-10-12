@@ -1,5 +1,11 @@
 # AI 场景导演（Scene Director）
 
+当前搭建状态由 native `SceneAuthoringDocumentTarget` 和 `SceneEditorSession` 拥有；
+kit 的 renderable cache 是投影。Blender GLB 继续作为输入，最终搭建/微调使用引擎正式命令。
+保存/恢复/撤销、世界几何约束、版本观测和实测参考反馈见
+[AI 场景搭建契约](2026-10-11-ai-scene-authoring.md)。
+需要构建 scene_editor、scene、graphics；缺少 native 提供者时返回错误，不生成模拟场景。
+
 > 状态：整合打通（story-scene-agent 编排 + scene_director kit + 引擎 MCP 新工具）。
 > 编排入口：`tools/story-scene-agent/`；搭台 kit：`src/scripts/scene_director.nut`；
 > 引擎侧调度：`src/engine/devtools/McpServer.cpp`。
@@ -63,6 +69,11 @@ flowchart LR
 `add_object|spawn|place`、`move_object|move`、`scale`、`rotate|rotation`、
 `remove_object|remove`、`visibility`、`material`、`lighting|set_lighting`、
 `camera`、`cameras`、`info`、`list`、`reset`。
+
+新增 `ground`、`align`、`screen`、`save`、`restore`、`undo`、`redo`、`command`、`bind_host`。
+修改的 params 可携带 expectedRevision；过期拒绝。screen 的 params 为 anchor（本地 XYZ）
+与 screen（归一化 UV），相机来自已保存的作者配置。ground 使用 height，align 使用
+reference、axis、gap；bounds 来自实际 mesh，调用方不猜中心点尺寸。
 
 参数示例：
 

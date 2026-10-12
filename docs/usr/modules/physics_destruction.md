@@ -83,7 +83,7 @@ v1 文档在加载时迁移为 `clusterId=0`。完整父子层级 Body 仍延期
 `physics:geometry-collection-instance@1`。只存骨块状态/边应变/原点，不存
 `PhysicsLink`；restore 要求活 World 且骨边拓扑一致，失败不改拓扑。
 
-## API 快查
+## 绑定与行为说明
 
 ### `Destruction`（模块）
 
@@ -96,14 +96,10 @@ v1 文档在加载时迁移为 `clusterId=0`。完整父子层级 Body 仍延期
 
 ### `GeometryCollectionInstance`
 
-- `applyStrainField(x, y, z, radius, magnitude)` / `applyAnchorField(...)` /
   `applySleepField(...)` / `applyImpulseField(x,y,z,radius,mag,dirX,dirY,dirZ)`：
   场应用失败时实例状态不变。Impulse 只击中已 Detached/Sleeping 碎块，不松锚。
 - `step(tick, dt)`：注入仿真时间；断边事件可查询。
 - `setStepBudget(maxEdgeBreaks, maxSleeps)` / `pendingEdgeBreakCount()`。
-- `boneCount()` / `edgeCount()` / `boneState(i)` / `boneClusterId(i)` /
-  `edgeStrain(i)` / `isEdgeBroken(i)` / `detachEventCount()` /
-  `clusterBreakEventCount()` / `hasLiveWorld()` / `sleepBatchRevision()` /
   `captureSnapshotJson()` / `restoreSnapshotJson(json)` / `releaseBodies()`。
 - 骨块生命周期：`Attached` → `Detached` → `Sleeping`。Instance 拥有它创建的 Body；
   World 先毁或 Instance 先毁都通过 `PhysicsLink` 陈旧解析，不保留裸指针。

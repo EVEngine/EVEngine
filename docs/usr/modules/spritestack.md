@@ -69,7 +69,7 @@ local layers = spritestack.sliceModel(model, 24, 128, 128, "y", 0.0);
 - 两者都返回 `ImageData` 数组（RGBA8），可直接传给 `gfx.newTexture` 或
   `stack.setLayerImage`。
 
-## API 快查
+## 绑定与行为说明
 
 - 工厂：`newStack(gfx)`、`newBatch(gfx)`、`slicePrimitive(...)`、`sliceModel(...)`
 - `SpriteStack2D`：`setLayerCount()`、`setLayerImage()`、`setLayerFile()`、`setLayersFromAtlas()`、`setLayerTexture()`、`getLayerTexture()`、`setLayerUV()`、`getLayerCount()`、`setPosition()`、`setSize()`、`getWidth()`、`getHeight()`、`setThickness()`、`getThickness()`、`setRotation()`、`setTint()`、`setVisible()`、`setShadowEnabled()`、`setShadowOpacity()`、`setShadowOffset()`、`setOutline()`、`render()`、`renderWithCamera()`
@@ -92,3 +92,7 @@ local layers = spritestack.sliceModel(model, 24, 128, 128, "y", 0.0);
 **相关测试：** [`test/spritestack.cpp`](../../../test/spritestack.cpp)
 
 这里的模型只用于生成 RGBA 切片；运行时仍走 2D 管线。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](spritestack/api-reference.md)，使用前先确认本章的前置条件与生命周期。

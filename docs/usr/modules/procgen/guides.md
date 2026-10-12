@@ -148,7 +148,7 @@ magic 是 `unsupported`，尺寸与字节数不一致同样是 `parse_error`—�
 `getMoisture`、`getBiome` 和 `getBiomeName`。群落名称包括 `ocean`、`beach`、
 `desert`、`grassland`、`forest`、`rainforest`、`tundra`、`taiga`、`alpine`、
 `river`、`lake`、`wetland`。湖岸和低坡河岸会依据淡水邻域、湿度与坡度形成
-湿地过渡。可运行的交互流程见 [`examples/terrain-editor`](../../../examples/terrain-editor/)。
+湿地过渡。可运行的交互流程见 [`examples/terrain-editor`](../../../../examples/terrain-editor/)。
 
 河流显示阈值和沟头起蚀阈值彼此独立：低阶细沟可以先以较弱速率侵蚀并竞争径流，
 但只有达到 `riverThreshold` 的通道才进入最终河流层。`flowAccumulation` 采用
@@ -279,7 +279,7 @@ local grid = gridResult.value;
   对象通过 `getObjectType/Asset/Rotation/Flags` 暴露语义角色、可替换资产、朝向和
   放置属性；`assets.<role>` 池可映射任意 3D 资产包，无需修改生成器。
 
-可运行脚本与快捷键见 [`examples/roguelike-generator`](../../../examples/roguelike-generator/README.md)。
+可运行脚本与快捷键见 [`examples/roguelike-generator`](../../../../examples/roguelike-generator/README.md)。
 
 ### 生成城区布局（`urban.parcels` / `mesh.urban`）
 
@@ -326,7 +326,7 @@ local mesh = meshResult.value;
 `boundaryStreet` 设为 `none` / `random` 可关闭或随机化地块边界街道；
 `cellSize`（栅格分辨率）、`extrude`（网格块高）。网格与地图的 metadata 记录
 `parcels` / `streets` / `junctions` / `streetLength` / `avgIrregularity`。
-交互示例与完整参数见 [`examples/urban-generator`](../../../examples/urban-generator/README.md)。
+交互示例与完整参数见 [`examples/urban-generator`](../../../../examples/urban-generator/README.md)。
 
 ### 生成三维随机溶洞（`mesh.cave`）
 
@@ -919,7 +919,7 @@ Marching Cubes 单元内的拓扑歧义；当前实现仍不宣称达到 2025 �
 的拓扑正确保证。
 
 可运行示例与换 seed/形态快捷键见
-[`examples/cave-generator`](../../../examples/cave-generator/README.md)。生成成本随三轴
+[`examples/cave-generator`](../../../../examples/cave-generator/README.md)。生成成本随三轴
 分辨率乘积增长，应在加载或参数变化时重建并缓存，而不是逐帧生成。
 
 ### 生成随机树木网格
@@ -983,7 +983,7 @@ local tree = treeResult.value;
 - Weber–Penn：`branchLevels`、`branchCount`、`branchAngle`、`branchAngleVariation`、`phyllotaxis`、`apicalDominance`。
 - 空间殖民：`attractorCount`、`colonizationIterations`、`influenceRadius`、`killRadius`、`growthStep`、`branchInertia`、`maxTurnAngle`、`maxCumulativeAngle`、`maxChildren`。
 
-完整参数范围、交互快捷键和可运行脚本见 [`examples/tree-generator`](../../../examples/tree-generator/README.md)。生成网格有一定成本，应在加载、换 seed 或修改参数时重建，不要每帧调用。
+完整参数范围、交互快捷键和可运行脚本见 [`examples/tree-generator`](../../../../examples/tree-generator/README.md)。生成网格有一定成本，应在加载、换 seed 或修改参数时重建，不要每帧调用。
 
 ### 生成线性可拼接结构（栅栏 / 石墙 / 桥 / 长城 / 树篱 / 拒马）
 

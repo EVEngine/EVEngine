@@ -4,7 +4,15 @@
 
 MAC 流体输运 + 世界空间光线步进 + Froxel 积分 + 解析体积光。艺术层只消费光学结果，不回写密度、速度或透射率。
 
+初始化片段，需先启用 gfx/realtimeFog 并创建 Graphics 设备；下例显式创建
+Volumetric 和相机 froxel 网格。正常游戏中 stepSimulation 在 update、upload/绘制在渲染阶段。
+
 ```squirrel
+local vol = gfx.newVolumetric();
+vol.setMode("froxel");
+vol.setQuality("medium");
+vol.setCamera(0.0, 5.0, 15.0, 0.0, 1.4, -15.0,
+              0.0, 1.0, 0.0, 55.0, 1.7777778, 0.1, 100.0);
 local fog = eve.RealtimeFog().newSystem();
 fog.configureDomain(24, 12, 32, -16, -1, -48, 16, 10, 18);
 fog.setOpticalProfile(0.04, 0.72, 0.82, 0.98, 0.15, 1.0, 0.55, 0.35);
@@ -22,7 +30,7 @@ vol.uploadFroxel(gfx);
 
 可运行示例：`examples/realtime-fog`。它复用 `examples/atmospheric-fog` 的视锥高度雾 + emissive proxy + `integrateFroxel`，再用 GPU `applyFog` 叠一层，MAC 只通过 `injectToVolumetric` 往同一网格里加密度。`has_module("realtimeFog")` 在裁剪构建中检测本模块。
 
-## API 快查
+## 绑定与行为说明
 
 | 绑定 | 作用 |
 | --- | --- |
@@ -45,3 +53,7 @@ vol.uploadFroxel(gfx);
 | `syncToVolumetric` | 按质量档重建 atlas 并注入+积分（会清掉先前的高度雾） |
 
 C++ 主 API 见 `graphics/fog/FogSystem.h`。设计说明：[realtime-fog-system.md](../../dev/realtime-fog-system.md)。
+
+退出时先停止模拟与 upload，再释放 FogSystem/Volumetric 的消费者，最后释放 Graphics。
+configureDomain 是分配操作，不在每帧重复调用。完整帧流程和相机/效果开关见
+[realtime-fog/main.nut](../../../examples/realtime-fog/main.nut)。

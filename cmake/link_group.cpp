@@ -18,6 +18,11 @@
 
 #include <cstdlib>
 
-namespace eve::internal {
-void linkGroupAnchor() {}
-}  // namespace eve::internal
+// Consumers reference a unique manifest-derived export so a DLL containing only
+// static registrations is retained by the host linker even without API calls.
+#if defined(_WIN32)
+#define EVE_LINK_GROUP_EXPORT __declspec(dllexport)
+#else
+#define EVE_LINK_GROUP_EXPORT __attribute__((visibility("default")))
+#endif
+extern "C" EVE_LINK_GROUP_EXPORT void EVENGINE_LINK_GROUP_ANCHOR() {}
