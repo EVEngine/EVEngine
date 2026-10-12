@@ -28,6 +28,7 @@ persist paused = false
 persist frame = 0
 persist deviceName = "unknown"
 persist autoDemo = true
+persist screenshotSaved = false
 
 const UNIT_COUNT = 128;
 const PURSUIT_GAIN = 0.18;
@@ -326,4 +327,11 @@ eve_render = function() {
     // Morph progress bar.
     gfx.drawSolidRect(12.0, 24.0, 200.0, 4.0, 0.15, 0.18, 0.22, 1.0);
     gfx.drawSolidRect(12.0, 24.0, 200.0 * morphT, 4.0, 0.95, 0.7, 0.2, 1.0);
+
+    // One engine-owned frame capture while the opening grid is still settled.
+    if (!screenshotSaved && frame > 90 && morphT >= 1.0 &&
+        gfx.saveFramePng("gpu-formation.png")) {
+        screenshotSaved = true;
+        print("[gpu-formation] screenshot -> gpu-formation.png\n");
+    }
 }

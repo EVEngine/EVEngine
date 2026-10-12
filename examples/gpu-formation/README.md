@@ -32,6 +32,7 @@ MIN_RUN_SECONDS=2 RUN_SECONDS=6 bash scripts/smoke_examples.sh gpu-formation
 | `R` | 单位瞬移到当前槽位 |
 
 启动后约 3 秒内会自动绕圈并轮换阵型（方便烟测与录屏）；任意键操作后退出自动演示。
+首帧 morph 稳定后会写入 `gpu-formation.png`（`gfx.saveFramePng`）。
 
 ## 相关
 
