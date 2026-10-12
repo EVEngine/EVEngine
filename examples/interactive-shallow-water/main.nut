@@ -38,8 +38,8 @@ const WATER_DEPTH = 0.55;
 const LEG_RADIUS = 0.11;
 const LEG_HALF = 0.42;
 const MOVE_SPEED = 2.4;
-const VEL_SCALE = 1.0;
-const DEPTH_CONTRAST = 0.08;
+const VEL_SCALE = 0.75;
+const DEPTH_CONTRAST = 0.06;
 const VISUAL_GAIN = 8.0;
 
 function edgePressed(name) {
@@ -257,12 +257,12 @@ eve_init = function() {
         applyWaterLook();
     }
 
-    // Horizontal legend board (XZ) + vertical board (XY) with full UV coverage.
+    // Legend boards with full UV coverage — kept in-camera above the lake.
     if (fieldBoard == null) {
         fieldBoard = eve.Renderable3D();
-        fieldBoard.setMesh(makeUvPlane(3.8));
+        fieldBoard.setMesh(makeUvPlane(4.5));
         fieldBoard.setTexture(fieldTex);
-        fieldBoard.setPosition(2.1, 3.4, 2.1);
+        fieldBoard.setPosition(LAKE * 0.22, 4.2, LAKE * 0.22);
         fieldBoard.setTint(1.0, 1.0, 1.0, 1.0);
         fieldBoard.setMetallic(0.0);
         fieldBoard.setRoughness(1.0);
@@ -271,9 +271,9 @@ eve_init = function() {
     }
     if (fieldBoardVert == null) {
         fieldBoardVert = eve.Renderable3D();
-        fieldBoardVert.setMesh(makeUvPlane(3.8));
+        fieldBoardVert.setMesh(makeUvPlane(4.5));
         fieldBoardVert.setTexture(fieldTex);
-        fieldBoardVert.setPosition(LAKE - 1.8, 2.6, 1.6);
+        fieldBoardVert.setPosition(LAKE * 0.78, 3.4, LAKE * 0.18);
         // pitch 90° stands the XZ UV plane up as a wall facing +Z.
         fieldBoardVert.setRotation(0.0, 90.0, 0.0);
         fieldBoardVert.setTint(1.0, 1.0, 1.0, 1.0);

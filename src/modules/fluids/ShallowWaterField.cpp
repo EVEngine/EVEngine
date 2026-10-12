@@ -343,7 +343,7 @@ Result<void> ShallowWaterField::buildSurfaceMesh(std::vector<float>& positionsXY
             uvsST[u + 1] = float(z) / float(std::max(vz - 1, 1));
 
             if (colorsRGBA) {
-                // Match copyFieldToImage rest-relative packing so vertex colours carry depth/velocity.
+                // Match copyFieldToImage crest-heat packing so vertex colours carry depth/velocity.
                 constexpr float kVelScale = 1.5f;
                 const float     depthContrast =
                     std::max(0.12f * std::max(restDepth, 1e-3f), 1e-3f);
@@ -352,8 +352,7 @@ Result<void> ShallowWaterField::buildSurfaceMesh(std::vector<float>& positionsXY
                 const float vzCell = momentumZ_[size_t(i)] * invH;
                 const float speed  = std::sqrt(vxCell * vxCell + vzCell * vzCell);
                 const size_t c     = size_t(i) * 4u;
-                (*colorsRGBA)[c] =
-                    0.5f + 0.5f * std::clamp((h - restDepth) / depthContrast, -1.f, 1.f);
+                (*colorsRGBA)[c]     = std::clamp((h - restDepth) / depthContrast, 0.f, 1.f);
                 (*colorsRGBA)[c + 1] = 0.5f + 0.5f * std::clamp(vxCell / kVelScale, -1.f, 1.f);
                 (*colorsRGBA)[c + 2] = 0.5f + 0.5f * std::clamp(vzCell / kVelScale, -1.f, 1.f);
                 (*colorsRGBA)[c + 3] = std::clamp(speed / kVelScale, 0.f, 1.f);
@@ -433,8 +432,10 @@ Result<void> ShallowWaterField::copyFieldToImage(image::ImageData& image, float 
             const float vz    = momentumZ_[size_t(i)] * invH;
             const float speed = std::sqrt(vx * vx + vz * vz);
             const size_t p    = size_t(z * resX_ + x) * 4u;
+            // Crest heat (not mid-gray bipolar): rest stays near black in R so G/B flow
+            // reads as teal, and raised water lights up red.
             if (depthContrast > 0.f)
-                pixels[p + 0] = toU8(0.5f + 0.5f * std::clamp((h - meanH) / depthContrast, -1.f, 1.f));
+                pixels[p + 0] = toU8(std::clamp((h - meanH) / depthContrast, 0.f, 1.f));
             else
                 pixels[p + 0] = toU8(h / std::max(maxDepth_, 1e-4f));
             pixels[p + 1] = toU8(0.5f + 0.5f * std::clamp(vx / velocityScale, -1.f, 1.f));

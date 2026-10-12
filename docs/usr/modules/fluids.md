@@ -34,7 +34,7 @@ result.ok，再取 value；以 admitted 数量和求解器状态确认真的注�
 
 `copyFieldToImage(image, velocityScale, depthContrast=0)` 把格子打成 RGBA8 场纹理
 （宽=`resX`，高=`resZ`）：**R**=水深（`depthContrast<=0` 时为 `h/maxDepth`，否则为相对
-均值的对比度映射，便于看清水波），**G/B**=水平速度（0.5 静止），**A**=速率掩码。
+均值的 crest heat，静止偏暗、浪峰偏红），**G/B**=水平速度（0.5 静止），**A**=速率掩码。
 `copyShadedAlbedoToImage` / `copyNormalToImage` 另写可视化反照率与斜率法线，供
 Material 上传。`buildSurfaceMesh` 可选顶点色使用同一套 R/G/B/A 通道语义。
 

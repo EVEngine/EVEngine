@@ -185,7 +185,7 @@ TEST_CASE("fluids.shallowWater.copyFieldToImageEncodesDepthAndVelocity") {
     REQUIRE(depthVaries);
     REQUIRE(hasFlow);
 
-    // Rest-relative packing must swing R around mid-gray when waves are present.
+    // Crest-heat packing: rest cells stay dark in R; raised water lights up.
     const auto* contrastPx = static_cast<const uint8_t*>(contrastImage.getData());
     uint8_t     rMin = 255, rMax = 0;
     for (int i = 0; i < 16 * 16; ++i) {
@@ -193,7 +193,8 @@ TEST_CASE("fluids.shallowWater.copyFieldToImageEncodesDepthAndVelocity") {
         rMin            = std::min(rMin, r);
         rMax            = std::max(rMax, r);
     }
-    REQUIRE(int(rMax) - int(rMin) > 40);
+    REQUIRE(rMin < 40);
+    REQUIRE(rMax > 120);
 
     eve::image::ImageData wrong(8, 8, "RGBA8");
     REQUIRE(!field->copyFieldToImage(wrong, 2.f).ok());

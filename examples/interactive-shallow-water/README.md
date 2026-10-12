@@ -42,7 +42,7 @@ make run/<platform>-debug GAME=examples/interactive-shallow-water
 - `buildSurfaceMesh(visualHeightGain)` 产出 positions/normals/uvs/indices/colors，经
   `gfx.updateMeshVertices` 上传；顶点色与场纹理共用通道语义
 - 场纹理（`copyFieldToImage(image, velocityScale, depthContrast)`，RGBA8，格子分辨率）：
-  - **R** = 水深（`depthContrast>0` 时为相对均值对比度，否则 `h/maxDepth`）
+  - **R** = 水深（`depthContrast>0` 时为 crest heat：静止偏暗、浪峰偏红；否则 `h/maxDepth`）
   - **G / B** = 水平速度 `vx` / `vz`（0.5 为静止，按 `velocityScale` 映射）
   - **A** = 速率 `|v| / velocityScale`（泡沫 / 扰动掩码）
 - 示例默认把场纹理贴在水面上（无光照），另有 UV 图例板；`F` 可切到着色反照率 + 法线

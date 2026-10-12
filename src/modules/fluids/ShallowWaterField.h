@@ -197,10 +197,10 @@ public:
      * @param image Destination; must be RGBA8 with width=`resolutionX` and height=`resolutionZ`.
      * @param velocityScale Horizontal speed that maps to the full channel range, in (0, 50].
      * @param depthContrast When `<= 0`, R stores absolute `h / maxDepth`. When `> 0`, R stores a
-     *        rest-relative anomaly `0.5 + 0.5 * clamp((h - meanH) / depthContrast, -1, 1)` so centimetre
-     *        waves still paint the red channel (range `(0, maxDepth]`).
+     *        crest heat map `clamp((h - meanH) / depthContrast, 0, 1)` so rest water stays dark and
+     *        centimetre waves still paint red (range `(0, maxDepth]`).
      * @details Channel layout (row `z`, column `x`, matching mesh UVs):
-     *          - R: water depth (absolute or rest-relative; see `depthContrast`)
+     *          - R: water depth (absolute `h/maxDepth`, or crest heat when `depthContrast > 0`)
      *          - G: `0.5 + 0.5 * clamp(vx / velocityScale, -1, 1)`
      *          - B: `0.5 + 0.5 * clamp(vz / velocityScale, -1, 1)`
      *          - A: `clamp(|v| / velocityScale, 0, 1)` (foam / speed mask)
