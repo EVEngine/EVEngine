@@ -29,7 +29,7 @@ function createState() {
         terrainMesh = null,
         oceanMesh = null,
 
-        topologyIndex = 2, // ico
+        topologyIndex = 3, // ico
         topologyNames = ["uv", "fibonacci", "cube", "ico"],
         topologyLabels = ["UV Sphere", "Fibonacci Sphere", "Cube Sphere", "Icosphere"],
         presetIndex = 0,
@@ -53,7 +53,9 @@ function createState() {
         oceanLevel01 = 0.4,
         showOcean = true,
         minHeight = 1.0,
-        maxHeight = 1.0
+        maxHeight = 1.0,
+        frames = 0,
+        screenshotSaved = false
     };
 }
 
@@ -220,6 +222,7 @@ eve_init = function() {
 };
 
 eve_update = function(dt) {
+    st.frames += 1;
     if (st.spinning) st.yaw += SPIN_SPEED * dt;
 
     local x = mouse.getX();
@@ -257,8 +260,18 @@ eve_update = function(dt) {
     if (key_just_pressed("4")) { st.topologyIndex = 3; rebuildPlanet(); }
     if (key_just_pressed("q") || key_just_pressed("Q")) nextPreset(-1);
     if (key_just_pressed("e") || key_just_pressed("E")) nextPreset(1);
-    if (key_just_pressed("[") ) { st.resolution = max(1, st.resolution - 1); rebuildPlanet(); }
-    if (key_just_pressed("]") ) { st.resolution = min(5, st.resolution + 1); rebuildPlanet(); }
+    if (key_just_pressed("[") ) { st.resolution = fmax(1, st.resolution - 1); rebuildPlanet(); }
+    if (key_just_pressed("]") ) { st.resolution = fmin(5, st.resolution + 1); rebuildPlanet(); }
+    if (key_just_pressed("F5")) {
+        if (gfx.saveFramePng("pcg-solar-planet.png")) {
+            st.status = "saved pcg-solar-planet.png";
+            if (st.uiReady) { ui.select("lab"); ui.setText("status", st.status); }
+        }
+    }
+    if (!st.screenshotSaved && st.frames > 90 && gfx.saveFramePng("pcg-solar-planet.png")) {
+        st.screenshotSaved = true;
+        print("SOLAR_PLANET_SCREENSHOT saved pcg-solar-planet.png\n");
+    }
 
     local clicked = ui.consumeClick();
     while (clicked != "") {
@@ -278,7 +291,7 @@ eve_update = function(dt) {
     while (changed != "") {
         if (changed == "lab/resolution") {
             ui.select("lab");
-            st.resolution = max(1, min(5, ui.getValue("resolution").tointeger()));
+            st.resolution = fmax(1, fmin(5, ui.getValue("resolution").tointeger()));
             rebuildPlanet();
         }
         changed = ui.consumeChange();

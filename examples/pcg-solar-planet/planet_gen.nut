@@ -10,6 +10,9 @@ function clampf(v, lo, hi) {
     return v;
 }
 
+function fmax(a, b) { return a > b ? a : b; }
+function fmin(a, b) { return a < b ? a : b; }
+
 function lerp(a, b, t) { return a + (b - a) * t; }
 
 function length3(x, y, z) { return sqrt(x * x + y * y + z * z); }
@@ -22,8 +25,8 @@ function normalize3(x, y, z) {
 
 // iq / SebLague polynomial smooth-min (tutorial crater blending).
 function smoothMin(a, b, k) {
-    k = max(0.0, k);
-    if (k < 1e-8) return min(a, b);
+    k = fmax(0.0, k);
+    if (k < 1e-8) return fmin(a, b);
     local h = clampf((b - a + k) / (2.0 * k), 0.0, 1.0);
     return a * h + b * (1.0 - h) - k * h * (1.0 - h);
 }
@@ -34,7 +37,7 @@ function smoothMaxK(a, b, k) {
 }
 
 function emptyMesh() {
-    return { pos = [], nrm = [], uv = [], idx = [], dirs = [], heights = [] };
+    return { pos = [], nrm = [], uv = [], idx = [], dirs = [], heights = [], minHeight = 1.0, maxHeight = 1.0 };
 }
 
 function pushVert(mesh, x, y, z, u, v) {
@@ -89,9 +92,9 @@ function buildCubeSphere(resolution) {
         [ 0.0, 0.0, 1.0,  0.0, 1.0, 0.0, -1.0, 0.0, 0.0],
         [ 0.0, 0.0,-1.0,  0.0, 1.0, 0.0,  1.0, 0.0, 0.0]
     ];
-    local res = max(2, resolution);
+    local res = fmax(2, resolution);
     foreach (face in faces) {
-        local base = mesh.dirs.len();
+        local faceOrigin = mesh.dirs.len();
         for (local y = 0; y <= res; ++y) {
             local v = y.tofloat() / res.tofloat();
             local fy = lerp(-1.0, 1.0, v);
@@ -107,7 +110,7 @@ function buildCubeSphere(resolution) {
         local stride = res + 1;
         for (local y = 0; y < res; ++y) {
             for (local x = 0; x < res; ++x) {
-                local a = base + y * stride + x;
+                local a = faceOrigin + y * stride + x;
                 local b = a + 1;
                 local c = a + stride;
                 local d = c + 1;
@@ -141,14 +144,14 @@ function midpointKey(a, b) {
 }
 
 function buildIcosphere(subdivisions) {
-    local base = icosaBase();
+    local seed = icosaBase();
     local verts = [];
-    foreach (v in base.verts) {
+    foreach (v in seed.verts) {
         local n = normalize3(v[0], v[1], v[2]);
         verts.push(n);
     }
-    local faces = base.faces;
-    local levels = max(0, subdivisions);
+    local faces = seed.faces;
+    local levels = fmax(0, subdivisions);
     for (local level = 0; level < levels; ++level) {
         local midCache = {};
         local nextFaces = [];
@@ -186,13 +189,13 @@ function buildIcosphere(subdivisions) {
 }
 
 function buildFibonacciSphere(count) {
-    local n = max(32, count);
+    local n = fmax(32, count);
     local mesh = emptyMesh();
     local golden = PI * (3.0 - sqrt(5.0));
     local points = [];
     for (local i = 0; i < n; ++i) {
         local y = 1.0 - (i.tofloat() / (n - 1).tofloat()) * 2.0;
-        local radius = sqrt(max(0.0, 1.0 - y * y));
+        local radius = sqrt(fmax(0.0, 1.0 - y * y));
         local theta = golden * i.tofloat();
         local x = cos(theta) * radius;
         local z = sin(theta) * radius;
@@ -226,10 +229,10 @@ function buildFibonacciSphere(count) {
         if (a.len() == 0 || c.len() == 0) continue;
         local i = 0, j = 0;
         while (i < a.len() - 1 || j < c.len() - 1) {
-            local a0 = a[min(i, a.len() - 1)].i;
-            local a1 = a[min(i + 1, a.len() - 1)].i;
-            local c0 = c[min(j, c.len() - 1)].i;
-            local c1 = c[min(j + 1, c.len() - 1)].i;
+            local a0 = a[fmin(i, a.len() - 1)].i;
+            local a1 = a[fmin(i + 1, a.len() - 1)].i;
+            local c0 = c[fmin(j, c.len() - 1)].i;
+            local c1 = c[fmin(j + 1, c.len() - 1)].i;
             if (i >= a.len() - 1) {
                 pushTri(mesh, a0, c0, c1);
                 j += 1;
@@ -250,12 +253,12 @@ function buildFibonacciSphere(count) {
 
 function buildTopology(name, resolution) {
     // Slider 1..5 maps to comparable visual density across topologies.
-    local level = max(1, resolution);
+    local level = fmax(1, resolution);
     if (name == "uv") return buildUvSphere(12 + level * 12, 8 + level * 6);
     if (name == "cube") return buildCubeSphere(4 + level * 3);
-    if (name == "ico") return buildIcosphere(min(4, level)); // subdiv 4 ≈ 5120 tris
+    if (name == "ico") return buildIcosphere(fmin(4, level)); // subdiv 4 ≈ 5120 tris
     if (name == "fibonacci") return buildFibonacciSphere(120 + level * 100);
-    return buildIcosphere(min(4, level));
+    return buildIcosphere(fmin(4, level));
 }
 
 // --- height field -----------------------------------------------------------
@@ -272,7 +275,7 @@ function makeCraters(seed, count, sizeMin, sizeMax) {
         // Random unit direction.
         local z = math.random() * 2.0 - 1.0;
         local a = math.random() * TAU;
-        local r = sqrt(max(0.0, 1.0 - z * z));
+        local r = sqrt(fmax(0.0, 1.0 - z * z));
         craters.push({
             cx = cos(a) * r, cy = z, cz = sin(a) * r,
             size = size, floor = floorH, smooth = smooth
@@ -287,9 +290,9 @@ function craterDepth(dir, craters, rimSteepness, rimWidth) {
         local dx = dir[0] - c.cx;
         local dy = dir[1] - c.cy;
         local dz = dir[2] - c.cz;
-        local x = length3(dx, dy, dz) / max(c.size, 1e-4);
+        local x = length3(dx, dy, dz) / fmax(c.size, 1e-4);
         local cavity = x * x - 1.0;
-        local rimX = min(x - 1.0 - rimWidth, 0.0);
+        local rimX = fmin(x - 1.0 - rimWidth, 0.0);
         local rim = rimSteepness * rimX * rimX;
         local shape = smoothMaxK(cavity, c.floor, c.smooth);
         shape = smoothMin(shape, rim, c.smooth);
@@ -325,8 +328,8 @@ function sampleHeight(dir, cfg, craters) {
 
     local mask = 1.0;
     if (cfg.mountainBlend > 0.0) {
-        local m = math.fbm3(sx * 0.7 + 40.0, sy * 0.7, sz * 0.7 - 12.0, 3, 2.0, 0.5);
-        mask = clampf((m - (1.0 - cfg.mountainBlend)) / max(cfg.mountainBlend, 1e-3), 0.0, 1.0);
+        local maskNoise = math.fbm3(sx * 0.7 + 40.0, sy * 0.7, sz * 0.7 - 12.0, 3, 2.0, 0.5);
+        mask = clampf((maskNoise - (1.0 - cfg.mountainBlend)) / fmax(cfg.mountainBlend, 1e-3), 0.0, 1.0);
     }
 
     local cratersH = 0.0;
@@ -395,9 +398,9 @@ function applyHeightField(mesh, cfg) {
         mesh.uv[i * 2 + 1] = math.hash3(d[0] * 7.1 + cfg.seedOffset,
                                         d[1] * 3.3, d[2] * 5.9);
     }
-    mesh.heights = heights;
-    mesh.minHeight = minH;
-    mesh.maxHeight = maxH;
+    mesh.heights <- heights;
+    mesh.minHeight <- minH;
+    mesh.maxHeight <- maxH;
     recomputeNormals(mesh);
     return mesh;
 }
