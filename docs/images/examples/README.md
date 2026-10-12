@@ -101,7 +101,7 @@
 | [crowd](../../../examples/crowd/README.md) | [<img src="crowd.png" width="420" alt="crowd">](crowd.png) | 2000 个单位在障碍流场中行军 |
 | [sprite-stack](../../../examples/sprite-stack/README.md) | [<img src="sprite-stack.png" width="420" alt="sprite-stack">](sprite-stack.png) | 3D 模型切片叠成伪 3D 精灵 |
 | [camera-controllers](../../../examples/camera-controllers/README.md) | [<img src="camera-controllers.png" width="420" alt="camera-controllers">](camera-controllers.png) | 相机控制器的默认测试场景 |
-| [basic](../../../examples/basic/README.md) | [<img src="basic.png" width="420" alt="basic">](basic.png) | 刚体、地面、粒子与调试绘制基础场景 |
+| [basic](../../../examples/basic/README.md) | [<img src="basic.png" width="420" alt="basic">](basic.png) | 六步入门的第 6 步：物理方块、火花与火焰（`config.nut` 中设 `tutorialStep = 6` 后重启） |
 
 ## 历史截图
 
