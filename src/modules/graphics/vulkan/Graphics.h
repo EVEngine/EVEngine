@@ -1678,8 +1678,13 @@ private:
     vk::UniqueDescriptorSetLayout deferredLightingSetLayoutUnique;
     vk::PipelineLayout            deferredLightingPipelineLayout{};
     vk::Pipeline                  deferredLightingPipeline{};
-    vkb::GenericBuffer            deferredLightingUbo{};
-    vk::DescriptorSet             deferredLightingSet{};
+    // Reused only after the present model has waited for this frame slot.
+    // Graphics owns buffers; descriptor sets belong to descriptorPool.
+    struct DeferredLightingFrame {
+        vkb::GenericBuffer ubo;
+        vk::DescriptorSet  set{};
+    };
+    std::vector<DeferredLightingFrame> deferredLightingFrames;
     vk::Sampler                   deferredLightingSampler{};
     void createMesh3DGpuDrivenPipeline();
     /** @brief Per-frame set0 (dynamic Frame UBO + shadow ring offsets). */

@@ -255,7 +255,9 @@ void Graphics::recordDeferredFrameGraph() {
     // pools is satisfied structurally.
     recordFrameGraphWithJobSystem(*graph, jobs);
     graph->submit();
-    if (!shadowMaps.empty()) currentShadowMap().image.setCurrentLayout(vk::ImageLayout::eDepthStencilReadOnlyOptimal);
+    // Match shadowDesc.afterLayout: descriptors must describe the layout the
+    // graph actually submitted, including clear-only shadow passes.
+    if (!shadowMaps.empty()) currentShadowMap().image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
     jobs->endFrame();
     for (auto &d : shadowCascadeDraws) d.clear();
     gbufferPassDraws.clear();
