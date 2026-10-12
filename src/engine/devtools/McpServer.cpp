@@ -16,6 +16,7 @@
 #include "devtools/McpDomainTools.hpp"
 #include "devtools/McpInputTools.hpp"
 #include "devtools/McpJson.hpp"
+#include "devtools/McpProjectIndexTools.hpp"
 #include "devtools/McpRuntimeTools.hpp"
 #include "devtools/McpSceneLiteral.hpp"
 #include "devtools/McpScriptTools.hpp"
@@ -2039,8 +2040,9 @@ std::string handleToolsList(const std::string& idJson) {
         // the array (a missing separator makes the whole tools/list unusable).
         std::string out;
         for (const char* part : kToolsParts) out += part;
-        for (std::string_view family : {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas(), mcpDomainToolSchemas(),
-                                        mcpInputToolSchemas(), mcpArchitectureToolSchemas()}) {
+        for (std::string_view family :
+             {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas(), mcpDomainToolSchemas(), mcpInputToolSchemas(),
+              mcpArchitectureToolSchemas(), mcpProjectIndexToolSchemas()}) {
             if (family.empty()) continue;
             out += ',';
             out += family;
@@ -2114,6 +2116,9 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson, Poco::JSO
     }
 
     // Read-only source evidence; no runtime capability provider is required.
+    if (isMcpProjectIndexTool(name)) {
+        return makeResult(idJson, callMcpProjectIndexTool(name, args));
+    }
     if (isMcpArchitectureTool(name)) {
         return makeResult(idJson, callMcpArchitectureTool(name, args));
     }

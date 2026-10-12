@@ -47,6 +47,7 @@
 - [AI 与 MCP 支持](AI与MCP支持.md)
 - [脚本契约架构映射](脚本契约架构映射.md)（第一阶段：真实绑定 → C++ 实现 → 状态 owner → 测试证据，既有 API 查询入口）
 - [架构行为图与任务上下文](架构行为图与任务上下文.md)（第二阶段：两领域证据图、候选影响分析与有预算的任务上下文包）
+- [Project Semantic Index 设计](ProjectSemanticIndex设计.md)（当前项目的结构与语义索引、增量更新、删除重命名和版本上下文）
 - [Semantic World Database 架构设计](SemanticWorldDatabase架构设计.md)（待评审构想：世界事务、跨类型 AI 开发闭环、架构与行为图、具体实施方案及 Schema 来源分工；区分现有基础与拟议能力）
 - [AI 知识补偿](AI知识补偿.md)（推理时知识包、Binding Contract 目录、少写脚本）
 - [AI 场景导演](AI场景导演.md)（剧情 → 自动搭台 → 质检迭代 → 交付）

@@ -7,6 +7,7 @@
 #include "common/BindingContracts.h"
 #include "common/ScriptCompiler.h"
 #include "devtools/McpJson.hpp"
+#include "devtools/McpProjectIndexTools.hpp"
 
 namespace eve::dev {
 namespace {
@@ -191,6 +192,7 @@ bool isMcpArchitectureTool(std::string_view name) {
     return name == "eve_architecture_query" || name == "eve_architecture_impact" || name == "eve_task_context";
 }
 std::string callMcpArchitectureTool(std::string_view name, Object::Ptr args) {
+    if (name == "eve_task_context" && args && args->has("projectDir")) return callMcpProjectIndexTool(name, args);
     Object::Ptr payload;
     try {
         payload = isMcpArchitectureTool(name) ? query(name, args) : mcpFailureObject("unknown_tool");
@@ -214,6 +216,11 @@ std::string_view mcpArchitectureToolSchemas() {
                 Object::Ptr task = new Object();
                 task->set("type", "string");
                 input->getObject("properties")->set("task", task);
+                for (const auto* field : {"projectDir", "expectedRevision"}) {
+                    Object::Ptr value = new Object();
+                    value->set("type", "string");
+                    input->getObject("properties")->set(field, value);
+                }
             }
             Object::Ptr tool = new Object();
             tool->set("name", std::string(name));

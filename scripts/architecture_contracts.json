@@ -2241,6 +2241,49 @@
       }
     },
     {
+      "id": "mcp-project-semantic-index-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/*ProjectIndex*",
+      "owner": "foundation project-source projection; RPG and Scene retain gameplay authority",
+      "issue": "EVENGINE-SEMANTIC-WORLD-PHASE2",
+      "reason": "Bounded read-only project indexing connects checked content declarations to current build contracts and versioned task context.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/McpProjectIndexTools.hpp",
+        "src/engine/devtools/McpProjectIndexTools.cpp",
+        "examples/rpg-classic/game.semantic.json",
+        "docs/dev/ProjectSemanticIndex设计.md"
+      ],
+      "tests": [
+        "test/mcp_project_index.cpp",
+        "test/rpg_classic_semantic_index.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Bounded source files and generated binding contracts; never executes project code."
+      ],
+      "binds": [
+        "eve_project_index_refresh",
+        "eve_project_index_query",
+        "eve_task_context"
+      ],
+      "protocol": [
+        "eve.project-semantic v1, eve.project-index v1 and eve.project-context v1; content revision, source diagnostics, stale-version rejection."
+      ],
+      "cost_notes": [
+        "Each refresh reads and hashes the bounded source set; parses only changed files, rebuilds a candidate graph on changes, caches up to four projects. No simulation hot path."
+      ],
+      "hot_path": [],
+      "thread_affinity": "Main MCP poll thread. Owning process cache, no callbacks or runtime pointers; candidate publication is not filesystem MVCC.",
+      "trim": {
+        "claim": "Source projection only; no binary-trim claim",
+        "absent_profile": "Project tools require desktop devtools; unavailable bindings remain unknown.",
+        "evidence": "test/mcp_project_index.cpp"
+      }
+    },
+    {
       "id": "model3d-import-surface",
       "rule": "module-interface",
       "scope": "src/modules/model3d/**",

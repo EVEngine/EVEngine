@@ -130,3 +130,16 @@ make run/win32-debug GAME=examples/rpg-classic
 真实技能、遭遇、任务、物品、剧情 `.dnut` 和对话内容，先验证雾林事件在对话后保存、恢复并继续等待/提示步骤，
 再经过任务接取、三场目录驱动战斗、跨地图世界对象消费和主支线交付，最后用 `RPGSaveSession`
 验证任务、金币、背包、角色、地图、事件完成事实和永久世界状态可整体恢复。
+
+## 项目语义索引
+
+`game.semantic.json` 声明任务、完成事件、处理函数、场景实体、引擎接口和测试探针的稳定语义 ID。
+清剿史莱姆任务正式领奖后，`quest_scene.nut` 写入 `quest.completed` 事件，调用脚本处理函数更新
+`rpg-classic.quests` 中的 `quest.slayer.marker`；探索界面读取该场景状态绘制 NPC 完成标识。
+读档、新游戏和重载以权威任务状态恢复标识，不伪造完成事件。
+
+在带 devtools 的桌面引擎中，调用 `eve_project_index_refresh`，传入本项目的绝对 `projectDir`；
+然后调用 `eve_task_context`，传入同一目录、`seed="quest:quest.slayer"`、任务描述 `task` 和刷新返回的
+`expectedRevision`，即可获取六类链路、来源与引擎契约。索引不会执行项目脚本。
+`rpg.classic.semanticQuestEventSceneRuntime` 执行本项目的 `tests/quest_scene_probe.nut`，验证真实领奖、
+事件及原生场景状态。Schema、增量更新与证据边界见 [开发设计](../../docs/dev/ProjectSemanticIndex设计.md)。
