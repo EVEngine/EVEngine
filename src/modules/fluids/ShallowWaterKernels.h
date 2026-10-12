@@ -3,9 +3,9 @@
 /**
  * @brief GLSL compute kernels for the GPU shallow-water (Saint-Venant) solver.
  *
- * Conserved state per cell is packed as vec4(h, hu, hv, unused). Bed height lives
- * in a separate float buffer. Collider impulse sources are packed as
- * vec4(dh, dhu, dhv, unused) and applied before each integrate pass.
+ * Conserved state per cell is packed as four floats: h, hu, hv, pad. Bed height
+ * lives in a separate float buffer. Collider impulse sources are packed as
+ * four floats: dh, dhu, dhv, pad — applied before each integrate pass.
  *
  * Push-constant layout (float[32]):
  *   [0]  resX
@@ -24,13 +24,16 @@
  *   [13] mode (0=integrate, 1=applySources, 2=clearSources)
  *
  * Buffer bindings:
- *   0 stateSrc(vec4)  1 stateDst(vec4)  2 bed(float)  3 sources(vec4)
- *   4 colliders(float[16] per collider)
+ *   0 stateSrc  1 stateDst  2 bed  3 sources  4 colliders (16 floats each)
  */
 
 namespace eve::fluids {
 
-/** @brief Zero the per-cell impulse source buffer. */
+/**
+ * @brief Zero the per-cell impulse source buffer.
+ * @lifetime The returned pointer remains valid for the process lifetime.
+ * @return Process-lifetime static read-only GLSL source; the caller must not free it.
+ */
 inline const char* kShallowWaterClearSources = R"GLSL(
 #version 450
 layout(local_size_x = 8, local_size_y = 8) in;
@@ -46,7 +49,11 @@ void main() {
 }
 )GLSL";
 
-/** @brief Rasterize sphere/capsule/box colliders into height/momentum sources. */
+/**
+ * @brief Rasterize sphere/capsule/box colliders into height/momentum sources.
+ * @lifetime The returned pointer remains valid for the process lifetime.
+ * @return Process-lifetime static read-only GLSL source; the caller must not free it.
+ */
 inline const char* kShallowWaterRasterizeColliders = R"GLSL(
 #version 450
 layout(local_size_x = 8, local_size_y = 8) in;
@@ -125,7 +132,11 @@ void main() {
 }
 )GLSL";
 
-/** @brief Apply source impulses then advance one Lax-Friedrichs shallow-water step. */
+/**
+ * @brief Apply source impulses then advance one Lax-Friedrichs shallow-water step.
+ * @lifetime The returned pointer remains valid for the process lifetime.
+ * @return Process-lifetime static read-only GLSL source; the caller must not free it.
+ */
 inline const char* kShallowWaterIntegrate = R"GLSL(
 #version 450
 layout(local_size_x = 8, local_size_y = 8) in;

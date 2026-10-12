@@ -248,6 +248,9 @@ public:
      * @param cellSize Cell edge length in meters.
      * @param preferGpu Prefer the gpgpu Saint-Venant kernels when available.
      * @return Module-owned field, or null when settings are invalid.
+     * @ownership The Fluids module owns the returned field until the module is destroyed.
+     * @lifetime Valid until Fluids destruction; callers must not delete the pointer.
+     * @thread Graphics/device owner thread for GPU path.
      */
     ShallowWaterField* newShallowWater(int resolutionX = 64, int resolutionZ = 64, float cellSize = 0.25f,
                                        bool preferGpu = true);
