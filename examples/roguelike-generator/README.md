@@ -11,7 +11,7 @@ Run:
 ```sh
 make run/win32-debug GAME=examples/roguelike-generator
 # or
-build/win32-debug/src/engine/eve.exe run   # from inside this directory
+eve run examples/roguelike-generator   # from the repository root, using a matching runtime
 ```
 
 ## What it generates

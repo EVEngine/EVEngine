@@ -1,5 +1,7 @@
 # 声明式 UI模块
 
+[English](../../en/usr/modules/ui.md)
+
 **脚本入口：** `eve.UI()`
 
 构建并挂载保留式控件树，通过稳定 ID 消费点击和更改事件。
@@ -304,22 +306,7 @@ anim->advance(step);  // 与游戏时钟同泵
 - 多个控件使用同一 ID。
 - 未循环消费全部 click/change，队列在后续帧才清空。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `beginBuild()`、`beginCard()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginMenu()`、`beginMenuBar()`、`beginNinePatch()`、`beginRow()`、`beginSidebar()`、`beginSplitPane()`、`beginStatusBar()`、`beginScrollList()`、`beginToolbar()`、`beginToolbox()`、`beginWindow()`、`bindOwner()`
-- `animateHostPos()`、`animateHostSize()`、`animateHostOverlayAlpha()`、`animateItemOpacity()`、`animateItemPos()`、`cancelHostTweens()`、`cancelItemTweens()`、`cancelAllTweens()`、`tickTweens()`、`getHostTweenCount()`、`getItemTweenCount()`、`badge()`、`button()`、`checkbox()`、`colorPalette()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getColorA()`、`getColorB()`、`getColorG()`、`getColorR()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
-- `getFocusedId()`、`getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`、`moveFocus()`
-- `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
-- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemAlignSelf()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemSelected()`、`setItemFlexBasis()`、`setItemFlexGrow()`、`setItemFlexShrink()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
-- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setThemeScope()`、`defineStyleClass()`、`setStyleClassColor()`、`setStyleClassMetric()`、`clearStyleClasses()`、`setItemStyleClass()`、`setStyleScope()`、`setColor()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
-- `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`、`setImageNinePatchFile()`
-- `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`、`getLayoutDiagnostics()`、`getAccessibilitySnapshot()`
-- `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
-- `inspect()`、`inspectClose()`、`inspectRefresh()`、`inspectSelectClass()`、`inspectObject()`、`inspectSetPickHandler()`、`inspectPickScene()`、`inspectAddInstance()`、`propertySchema()`
-- `dbOpen()`、`dbClose()`、`dbRefresh()`、`dbSelectClass()`、`dbRegister()`、`dbCreateInstance()`、`dbUnregister()`
-- `editorOpen()`、`editorClose()`、`editorSelectPanel()`、`sceneOpen()`、`sceneClose()`、`sceneSelectNode()`、`sceneSetPickHandler()`
+## 绑定与行为说明
 
 `propertySchema(instance)` 返回脚本实例经反射派生的属性 schema 表（`typeId` /
 `version` / `properties[]`，含 `path`、`kind`、`displayName`、`readOnly`、数值约束与
@@ -423,7 +410,6 @@ Canvas 和目标时，FullScreen 输出原始 `canvasHeight`；`partScreen=true`
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/ui/`](../../../src/modules/ui/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `ui`。

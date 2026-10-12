@@ -1,5 +1,7 @@
 # EVEngine 开发者文档
 
+[English](../en/dev/README.md)
+
 本目录保存引擎的架构、模块设计、测试策略和实现计划，面向 EVEngine 本身的维护者与贡献者。
 
 > **如果你是游戏开发者而不是引擎开发者**：请从[官网发布页](https://github.com/EVEngine/EVEngine/releases)
