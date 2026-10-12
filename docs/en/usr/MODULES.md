@@ -10,6 +10,8 @@ English guides are maintained by hand with Chinese as the authoritative source. 
 
 Use `has_module("slot")` for optional features. Project module selection and source-build trimming are different; see [EveScript](EVESCRIPT.md) and [module trimming](TRIMMING.md).
 
+[SCAD and LDraw model import](modules/asset-structured-models.md) converts procedural solids and part assemblies into canonical native static prefabs.
+
 ## Runtime and input
 
 - [Window](modules/window.md): window dimensions, resizing and DPI.
