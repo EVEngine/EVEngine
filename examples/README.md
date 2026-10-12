@@ -80,6 +80,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [iso-grid-walk](iso-grid-walk/README.md) | 独立 2.5D PNG 经可插拔 pipeline 生成 TileSet，方格移动与 A* |
 | [hd2d-riverside](hd2d-riverside/README.md) | HD2D 河畔验收：真实像素素材、正交地图与 16 种地面图块 |
 | [dynamic-water-grid](dynamic-water-grid/README.md) | 双网格岸线、逐格守恒水量、等距连续水面 Shader 与素材替换契约 |
+| [interactive-shallow-water](interactive-shallow-water/README.md) | GPU 浅水方程交互水面：Saint-Venant 求解 + 角色腿部 Capsule 排水/涌浪 |
 | [metroidvania](metroidvania/README.md) | 物理驱动的横版动作游戏：连击、蹬墙跳、空中冲刺、Boss；脚本 ECS 实体 + System |
 | [commandery-rts](commandery-rts/README.md) | 将领行政 RTS：框选/编队移动、占领经济点、生产、军饷与叛乱；单位/炮弹为脚本 ECS |
 | [rts-sandbox](rts-sandbox/README.md) | RTS 端到端 Squirrel 组合剖面：命令、生产、编队与结算 |

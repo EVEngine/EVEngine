@@ -422,6 +422,22 @@ FluidSurfaceRenderer* Fluids::newSurfaceRenderer(int width, int height) {
 
 int Fluids::getRendererCount() const { return int(renderers_.size()); }
 
+ShallowWaterField* Fluids::newShallowWater(int resolutionX, int resolutionZ, float cellSize, bool preferGpu) {
+    ShallowWaterSettings settings;
+    settings.resolutionX = resolutionX;
+    settings.resolutionZ = resolutionZ;
+    settings.cellSize    = cellSize;
+    settings.preferGpu   = preferGpu;
+    auto created         = ShallowWaterField::create(settings);
+    if (!created) return nullptr;
+    auto              field = std::move(created).takeValue();
+    ShallowWaterField* raw  = field.get();
+    shallowWaters_.push_back(std::move(field));
+    return raw;
+}
+
+int Fluids::getShallowWaterCount() const { return int(shallowWaters_.size()); }
+
 void Fluids::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Fluids::create, false);
     expose(cls);
@@ -638,6 +654,95 @@ void Fluids::expose(ssq::Table& table) {
         std::memcpy(image->getData(), renderer->color().data(), renderer->color().size());
         return eve::script::projectResult(vm, eve::Result<void>::success());
     });
+
+    auto sw = table.addClass<ShallowWaterField>(
+        "ShallowWater", std::function<ShallowWaterField*()>([]() -> ShallowWaterField* { return nullptr; }), true);
+    sw.addFunc("step", [vm = table.getHandle()](ShallowWaterField* field, float dt) {
+        return eve::script::projectResult(vm, field->step(dt));
+    });
+    sw.addFunc("fillDepth", [vm = table.getHandle()](ShallowWaterField* field, float depth) {
+        return eve::script::projectResult(vm, field->fillDepth(depth));
+    });
+    sw.addFunc("addImpulse", [vm = table.getHandle()](ShallowWaterField* field, float x, float z, float radius,
+                                                      float strength) {
+        return eve::script::projectResult(vm, field->addImpulse(x, z, radius, strength));
+    });
+    sw.addFunc("disturbAt", [vm = table.getHandle()](ShallowWaterField* field, float x, float z, float radius,
+                                                     float heightDelta, float radialSpeed) {
+        return eve::script::projectResult(vm, field->disturbAt(x, z, radius, heightDelta, radialSpeed));
+    });
+    sw.addFunc("setColliderCapsule", [vm = table.getHandle()](ShallowWaterField* field, unsigned label, float cx,
+                                                              float cy, float cz, float halfHeight, float radius,
+                                                              float vx, float vy, float vz, float displacementScale,
+                                                              float dragScale) {
+        std::vector<ShallowWaterCollider> next(field->colliders().begin(), field->colliders().end());
+        next.erase(std::remove_if(next.begin(), next.end(),
+                                  [label](const ShallowWaterCollider& c) { return c.label == label; }),
+                   next.end());
+        ShallowWaterCollider collider;
+        collider.label             = label;
+        collider.shape             = ShallowWaterColliderShape::Capsule;
+        collider.center            = {cx, cy, cz};
+        collider.halfExtent        = {radius, halfHeight, radius};
+        collider.radius            = radius;
+        collider.velocity          = {vx, vy, vz};
+        collider.displacementScale = displacementScale;
+        collider.dragScale         = dragScale;
+        next.push_back(collider);
+        return eve::script::projectResult(vm, field->setColliders(next));
+    });
+    sw.addFunc("setColliderSphere", [vm = table.getHandle()](ShallowWaterField* field, unsigned label, float cx,
+                                                             float cy, float cz, float radius, float vx, float vy,
+                                                             float vz, float displacementScale, float dragScale) {
+        std::vector<ShallowWaterCollider> next(field->colliders().begin(), field->colliders().end());
+        next.erase(std::remove_if(next.begin(), next.end(),
+                                  [label](const ShallowWaterCollider& c) { return c.label == label; }),
+                   next.end());
+        ShallowWaterCollider collider;
+        collider.label             = label;
+        collider.shape             = ShallowWaterColliderShape::Sphere;
+        collider.center            = {cx, cy, cz};
+        collider.radius            = radius;
+        collider.velocity          = {vx, vy, vz};
+        collider.displacementScale = displacementScale;
+        collider.dragScale         = dragScale;
+        next.push_back(collider);
+        return eve::script::projectResult(vm, field->setColliders(next));
+    });
+    sw.addFunc("clearColliders", [vm = table.getHandle()](ShallowWaterField* field) {
+        return eve::script::projectResult(vm, field->setColliders({}));
+    });
+    sw.addFunc("surfaceHeightAt", &ShallowWaterField::surfaceHeightAt);
+    sw.addFunc("depthAt", &ShallowWaterField::depthAt);
+    sw.addFunc("velocityXAt", [](ShallowWaterField* field, float x, float z) { return field->velocityAt(x, z).x; });
+    sw.addFunc("velocityZAt", [](ShallowWaterField* field, float x, float z) { return field->velocityAt(x, z).y; });
+    sw.addFunc("resolutionX", &ShallowWaterField::resolutionX);
+    sw.addFunc("resolutionZ", &ShallowWaterField::resolutionZ);
+    sw.addFunc("cellSize", &ShallowWaterField::cellSize);
+    sw.addFunc("usingGpu", &ShallowWaterField::usingGpu);
+    sw.addFunc("usedBackendFallback", &ShallowWaterField::usedBackendFallback);
+    sw.addFunc("buildSurfaceMesh", [vm = table.getHandle()](ShallowWaterField* field) {
+        std::vector<float>    pos, nrm, uv;
+        std::vector<uint32_t> idx;
+        auto                  built = field->buildSurfaceMesh(pos, nrm, uv, idx);
+        if (!built) return eve::script::projectResult(vm, eve::Result<void>::failure(built.status()));
+        ssq::Table mesh(vm);
+        ssq::Array posArr(vm);
+        ssq::Array nrmArr(vm);
+        ssq::Array uvArr(vm);
+        ssq::Array idxArr(vm);
+        for (float v : pos) posArr.push(v);
+        for (float v : nrm) nrmArr.push(v);
+        for (float v : uv) uvArr.push(v);
+        for (uint32_t v : idx) idxArr.push(int(v));
+        mesh.set("positions", posArr);
+        mesh.set("normals", nrmArr);
+        mesh.set("uvs", uvArr);
+        mesh.set("indices", idxArr);
+        mesh.set("vertexCount", int(pos.size() / 3u));
+        mesh.set("indexCount", int(idx.size()));
+        return eve::script::projectStatusResult(vm, eve::Status::success(), mesh);
+    });
 }
 
 void Fluids::expose(ssq::Class& cls) {
@@ -647,6 +752,8 @@ void Fluids::expose(ssq::Class& cls) {
     cls.addFunc("getSimulatorCount", &Fluids::getSimulatorCount);
     cls.addFunc("newSurfaceRenderer", &Fluids::newSurfaceRenderer);
     cls.addFunc("getRendererCount", &Fluids::getRendererCount);
+    cls.addFunc("newShallowWater", &Fluids::newShallowWater);
+    cls.addFunc("getShallowWaterCount", &Fluids::getShallowWaterCount);
 }
 
 }  // namespace eve::fluids

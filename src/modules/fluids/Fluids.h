@@ -18,6 +18,7 @@
 #include "fluids/FluidSimulation.h"
 #include "fluids/FluidSurfaceBinding.h"
 #include "fluids/FluidSurfaceRenderer.h"
+#include "fluids/ShallowWaterField.h"
 #include "fluids/SurfaceDropletSimulation.h"
 #include "fluids/SurfaceFluidContracts.h"
 #include "fluids/SurfaceFluidRenderData.h"
@@ -240,6 +241,17 @@ public:
      */
     FluidSurfaceRenderer* newSurfaceRenderer(int width = 160, int height = 160);
 
+    /**
+     * @brief Create a shallow-water free-surface field (CPU reference + optional GPU).
+     * @param resolutionX Grid resolution along world X in [8, 512].
+     * @param resolutionZ Grid resolution along world Z in [8, 512].
+     * @param cellSize Cell edge length in meters.
+     * @param preferGpu Prefer the gpgpu Saint-Venant kernels when available.
+     * @return Module-owned field, or null when settings are invalid.
+     */
+    ShallowWaterField* newShallowWater(int resolutionX = 64, int resolutionZ = 64, float cellSize = 0.25f,
+                                       bool preferGpu = true);
+
     /** @return number of live simulators owned by the module. */
     /** @brief Returns the simulator count. */
     int getSimulatorCount() const;
@@ -248,9 +260,13 @@ public:
     /** @brief Returns the renderer count. */
     int getRendererCount() const;
 
+    /** @return number of live shallow-water fields owned by the module. */
+    [[nodiscard]] int getShallowWaterCount() const;
+
 private:
     std::vector<std::unique_ptr<FluidSimulator>>       simulators_;
     std::vector<std::unique_ptr<FluidSurfaceRenderer>> renderers_;
+    std::vector<std::unique_ptr<ShallowWaterField>>    shallowWaters_;
 };
 
 }  // namespace eve::fluids

@@ -26,6 +26,16 @@ result.ok，再取 value；以 admitted 数量和求解器状态确认真的注�
 [fluids](../../../src/modules/fluids/)，性能接线证据见
 [fluids_volume_profiler.cpp](../../../test/fluids_volume_profiler.cpp)。
 
+## 任务三：浅水方程交互水面
+
+`eve.Fluids().newShallowWater(resX, resZ, cellSize)` 创建 GPU 优先的 Saint-Venant
+高度场求解器（无加速器时回退 CPU）。权威状态是格子上的水深 `h` 与水平动量
+`(hu, hv)`；`buildSurfaceMesh` / 着色只消费输出，不能回写求解器。
+
+角色腿部用 `setColliderCapsule(label, x, y, z, halfHeight, radius, vx, vy, vz, …)`
+每帧采样，再 `step(dt)`。左键/脚本冲击用 `addImpulse`。可运行示例见
+[interactive-shallow-water](../../../examples/interactive-shallow-water/)。
+
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](fluids/api-reference.md)，使用前先确认本章的前置条件与生命周期。
