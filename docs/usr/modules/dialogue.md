@@ -37,7 +37,7 @@ if (dlg.getSelectedChoiceId() == "yes") { /* 分支 A */ }
 generator 的 yield 值。完整可运行示例见
 [`examples/dialogue`](../../../examples/dialogue/main.nut)（含 i18n + 口型 + Avatar）。
 
-## API 快查
+## 绑定与行为说明
 
 ### `Dialogue`（模块）
 
@@ -47,7 +47,6 @@ generator 的 yield 值。完整可运行示例见
 - 舞台：`show(id, slot)`、`hide`、`isShown`、`getSlot`、`setSlotX/getSlotX`、
   `setExpression`、`setMotion`、`syncStage()`。
 - 台词：`say(speakerId, text)`、`narrate(text)`、`setTypeSpeed/getTypeSpeed`、
-  `skipTyping`、`isTyping`、`isWaitingAdvance`、`isIdle`、`advance`、
   `getSpeakerId/getSpeakerName/getFullText/getVisibleText/getPhase`。
 - 口型：`setLipSyncEnabled/isLipSyncEnabled`、`setLipSyncParameter/getLipSyncParameter`、
   `setLipSyncAmplitude/getLipSyncAmplitude/getLipSyncValue`。
@@ -56,8 +55,6 @@ generator 的 yield 值。完整可运行示例见
 - 变量：`setVar/getVarType/getVarInt/getVarFloat/getVarBool/getVarString/hasVar/clearVar/clearVars`。
 - 条件：`registerCondition(name, fn)/unregisterCondition/evalCondition`。
 - 台词池运行时：pool 内容只由 `DialogueFlow.loadDnutChecked/loadDnutFileChecked` 的统一工作区提交；
-  `clearPools`、`getPoolCount/getPoolId/hasPool`、
-  `getLastPoolsError`、`setRandomSeed/getRandomSeed`、`pickLine/playLine/playPool`、
   `getCurrentLineId/getCurrentLineMeta/getCurrentLineTags`。
 - 驱动：`update(dt)`、`reset()`。
 

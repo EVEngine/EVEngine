@@ -652,9 +652,7 @@ anim->advance(step);
 - 把 `ControlAnim.set` 当每帧追目标用（会清零速度，失去动力学感）。
 - `AnimTrail.sampleBone` 前忘记 `pose.computeWorld(sk)`；或 `setStyle` / plane 字符串拼错（仅 `line|points` 与 `xy|xz|yz`）。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
+## 绑定与行为说明
 
 - Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
 - Motion（LitMotion 风格）：`newMotion()`、`newMotionPunch()`、`newMotionShake()`、`newMotionSequence()`、`ensureMotionCapacity()`、`getMotionFloatCapacity()`、`getMotionFloatFreeCount()`、`getMotionCount()`；`MotionBuilder`：`ease()`、`delay()`、`loops()`、`cancelOnError()`、`frequency()`、`dampingRatio()`、`seed()`、`run()`；`Motion`：`isActive()`、`value()`、`complete()`、`cancel()`；`MotionSequence`：`append()`、`join()`、`insert()`、`appendInterval()`、`cursor()`、`duration()`、`itemCount()`、`run()`；`MotionSequenceHandle`：`isActive()`、`childCount()`、`complete()`、`cancel()`
@@ -709,7 +707,6 @@ anim->advance(step);
 - 骨骼 LOD 以 0 为最高细节。`skeleton.setBoneLodLimit(bone, highestLod)` 指定骨骼保留到哪一级，`skeleton.getBoneLodLimit(bone)` 可查询；`clip.sampleLod(...)` 和 `AnimBatch` 会让被裁剪轨道回退到目标 Bind Pose。根骨、碰撞骨和 IK 末端应保留较高 limit，手指与装饰骨通常只保留 LOD 0。
 - 程序化后处理使用 `anim.newConstraintStack(skeleton)`。`AnimConstraintStack` 按插入顺序执行 `addAim()`、`addTwoBoneIK()` 和 `addFootIK()`，通过 `apply(pose)` 一次求解；`clear()` 与 `getCount()` 管理队列。Foot IK 将髋-膝-足链种植到地面高度并按地面法线调整足部局部 +Z，可传 sole offset 与权重。
 - 步态同步使用 `anim.newSyncGroup()`。`AnimSyncGroup.addPlayer(player, phaseOffset)` 加入播放器，`setLeader()` / `getLeader()` 选择主时钟。若 leader 与 follower 都有至少两个顺序兼容的 Sync Marker，`update(dt)` 会保持在共同标记区间内的相对进度（例如 `left_plant → right_plant`），跨循环区间同样生效；否则自动回退到归一化时长同步。Clip 可用 `hasCompatibleSyncMarkers()` 检查兼容性，并用 `mapSyncTimeTo()` 单独映射时间；`getUsedMarkerSync()` 可诊断最近一次更新采用的路径，`getPhase()`、`getCount()`、`clear()` 用于调试与复用。Sync Marker 会随 EVA 导入导出和重定向 clip 一起保留。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/animation/`](../../../src/modules/animation/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `animation`。

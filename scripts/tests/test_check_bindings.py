@@ -153,5 +153,29 @@ class ReverseDirectionTests(unittest.TestCase):
         self.assertLessEqual(len(checker.doc_only_names()), 20)
 
 
+class GeneratedCoverageTests(unittest.TestCase):
+    """The generated SDK catalog covers a binding, but only from its own source file.
+
+    A catalog entry counts only for the file it was extracted from, so a same-named
+    method in another module cannot hide a missing binding here.
+    """
+
+    def test_same_method_in_another_module_does_not_cover_binding(self):
+        own = checker.ROOT / "src" / "modules" / "window" / "Window.cpp"
+        other = {"src/modules/ui/UI.cpp": {"getName"}}
+        self.assertEqual(checker.generated_names([own], other), set())
+
+    def test_only_selected_module_sources_count(self):
+        own = checker.ROOT / "src" / "modules" / "window" / "Window.cpp"
+        contracts = {
+            "src/modules/window/Window.cpp": {"getWidth", "getHeight"},
+            "src/modules/ui/UI.cpp": {"create"},
+        }
+        self.assertEqual(checker.generated_names([own], contracts), {"getWidth", "getHeight"})
+
+    def test_empty_module_is_not_covered(self):
+        self.assertEqual(checker.generated_names([], {}), set())
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -6,7 +6,7 @@
 （orthogonal / isometric / staggered / hexagonal）以及"格子 ↔ 世界坐标"的
 换算，供 tilemap、建筑放置、寻路等模块复用，避免各模块各写一套坐标换算。
 
-## C++ API 快查
+## 绑定与行为说明
 
 ### `GridConfig`（[GridConfig.h](../../../src/modules/grid/GridConfig.h)）
 
@@ -27,4 +27,3 @@
   不建模块实例、不注册到 `eve` 表。
 - 脚本侧通过 `map`（`TileLayer`）和 `building`（`PlacementWorld.setGridPlane`）
   间接使用本层；直接做网格运算的 C++ 模块按需 `#include "grid/GridProjection.h"`。
-

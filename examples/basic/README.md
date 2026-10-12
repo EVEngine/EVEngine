@@ -1,5 +1,8 @@
 # Basic — 入门示例
 
+[English](README.en.md)
+
+
 引擎能力的最小合集：Tilemap（`maps/demo.json`）、Box2D 物理、粒子与基础 2D 绘制，
 并演示软热重载的写法（`eve_init` 一次性初始化 + 全局守卫，`eve_reload` / `eve_asset_reload` 增量处理）。
 

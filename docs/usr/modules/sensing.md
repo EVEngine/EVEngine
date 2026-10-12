@@ -103,7 +103,7 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 别的 provider 占用，则返回 `Conflict` 并把那个 provider 原样保留**——项目自己注册的实现不会被
 静默顶掉。`physics` 就是这么做的：它认领 `World3D`，而不是独占整个 capability。
 
-## API 快查
+## 绑定与行为说明
 
 | 对象 | API | 说明 |
 |---|---|---|

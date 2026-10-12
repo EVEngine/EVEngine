@@ -6,6 +6,4 @@
 
 `backend="tensor"` 标签为 tensor-cpu / cpu-sgd；`backend="gpu"` 标签为 tensor-gpu / tensor-gpu-sgd。没有隐式回退；设备不可用或 shader 不支持时返回错误。详见 [Agent](agent.md)。
 
-## API 快查
-
-- `getName()`：返回 AgentTensor。
+`getName()` 返回模块名称，适合诊断日志；它不代表所管理资源的标识。

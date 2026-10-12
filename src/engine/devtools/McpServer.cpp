@@ -14,9 +14,11 @@
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpDomainTools.hpp"
+#include "devtools/McpInputTools.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpRuntimeTools.hpp"
 #include "devtools/McpScriptTools.hpp"
+#include "devtools/McpToolFilter.hpp"
 #include "devtools/McpSquirrelJson.hpp"
 #include "devtools/PlayHost.h"
 #include "devtools/RenderVision.hpp"
@@ -1101,9 +1103,11 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             // an unattended loop keeps polling instead of giving up.
             const bool              retryable = !status.readbackEnabled;
             const auto*             diag      = captured.status().primaryDiagnostic();
-            Poco::JSON::Object::Ptr o         = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-            o->set("ok", false);
-            o->set("retryable", retryable);
+            Poco::JSON::Object::Ptr o         = mcpFailureObject(
+                retryable ? "no-presented-frame" : "capture-failed",
+                retryable ? "Wait one rendered frame and call eve_screenshot again"
+                          : "Check eve_render_status / graphics readiness, then retry",
+                retryable, {"eve_render_status", "eve_screenshot"});
             o->set("reason", retryable ? "no-presented-frame" : "capture-failed");
             o->set("readbackEnabled", status.readbackEnabled);
             o->set("message", diag ? diag->message() : captured.status().describe());
@@ -2075,8 +2079,8 @@ std::string handleToolsList(const std::string& idJson) {
         // the array (a missing separator makes the whole tools/list unusable).
         std::string out;
         for (const char* part : kToolsParts) out += part;
-        for (std::string_view family :
-             {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas(), mcpDomainToolSchemas()}) {
+        for (std::string_view family : {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas(),
+                                        mcpDomainToolSchemas(), mcpInputToolSchemas()}) {
             if (family.empty()) continue;
             out += ',';
             out += family;
@@ -2086,13 +2090,17 @@ std::string handleToolsList(const std::string& idJson) {
 
     // Project-exported tools come last and are re-read every call: a script may
     // register or drop one at any time (hot reload of mcp.nut).
-    std::string tools = "{\"tools\":[";
-    tools += kToolsBody;
+    std::string body = kToolsBody;
     const std::string scripted = scriptToolSchemas();
     if (!scripted.empty()) {
-        tools += ',';
-        tools += scripted;
+        body += ',';
+        body += scripted;
     }
+    // Toolset / read-only / exclude filters apply to both built-ins and script tools
+    // so tools/list and tools/call stay consistent.
+    body = filterMcpToolsBody(body);
+    std::string tools = "{\"tools\":[";
+    tools += body;
     tools += "]}";
     return makeResult(idJson, tools);
 }
@@ -2119,6 +2127,20 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson, Poco::JSO
     } catch (...) {
     }
     AiPanel::instance().addLog("tool", name, detail);
+
+    if (!mcpToolAllowed(name)) {
+        return makeResult(idJson, textContentResult(mcpToolFilteredPayload(name), true));
+    }
+
+    // Playtest input batches (inject + deferred wait/capture).
+    if (isMcpInputTool(name)) {
+        try {
+            return makeResult(idJson, callMcpInputTool(name, args));
+        } catch (const std::exception& e) {
+            AiPanel::instance().addLog("error", name, e.what());
+            return makeResult(idJson, textContentResult(std::string("error: ") + e.what(), true));
+        }
+    }
 
     // Runtime-observation tools build their own content envelope: a console
     // payload is text, a frame capture is an MCP image item.
@@ -2467,11 +2489,13 @@ void McpServer::poll() {
             batch.swap(stdioQueue_);
         }
         for (const auto& line : batch) handleMessage(line);
+        pollMcpInputBatches();
         runPendingVisionDump();
         return;
     }
     acceptNonBlocking();
     readAndDispatch();
+    pollMcpInputBatches();
     runPendingVisionDump();
 }
 

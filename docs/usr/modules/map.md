@@ -313,12 +313,8 @@ eve.provider.unload("game.collision")
 - 期望 Tiled 直接导出 dual-grid 显示层：不支持；用逻辑层 + `resolveDualGrid`。
 - 寻路失败：`getLength()==0`（越界、不可走或不可达），不是抛异常。
 
-## API 快查
+## 绑定与行为说明
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `applyConfig()`、`clear()`、`depthYAt()`、`fill()`、`getAutoReload()`、`getConfigPath()`、`getLayer()`、`getLayerCount()`
-- `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `findObjectByName(name)`：返回第一个同名对象的临时索引；不存在返回 `-1`。
 - `findObjectAt(x, y, type)`：返回包含该点的第一个对象；空 `type` 接受任意类型，点对象要求坐标精确匹配，不存在返回 `-1`。
 - `getLastVisibleTileCount()`、`getLastCustomVisualCount()`、`getLastAtlasCount()`
@@ -349,7 +345,6 @@ Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgori
 - `newLayerFromFile` / `loadFromFile` 采用事务式场景替换：加载失败保留当前图层和对象缓存；
   成功后清空并隐藏被替换图层，再发布新图层与对象缓存。这使传送门和场景切换不会因坏资源把当前场景清空。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/map/`](../../../src/modules/map/)
 **设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)、[`docs/dev/动态视野系统设计.md`](../../dev/动态视野系统设计.md)

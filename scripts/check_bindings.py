@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Binding self-check: every script-facing `addFunc` must appear in the user docs.
+"""Check script API coverage in user guides or the generated SDK catalog.
 
 This automates the manual step recorded in docs/usr/REVIEW.md ("各目录 C++ 文件
 中的全部 addFunc 均出现在对应章节 API 快查"). It scans each CMake-declared
@@ -18,6 +18,13 @@ debt). That debt is recorded in scripts/check_bindings_gaps.txt as
 name missing from its doc chapter fails **unless** it is listed there, so the
 debt stays visible as warnings while new drift blocks CI. --modules limits the
 check to the given CMake module names.
+
+The forward direction also accepts the generated SDK catalog: human guides
+explain workflows and binding semantics, while complete signatures come from
+generate_binding_contracts.py. A catalog entry counts only for its own source
+file, so a similarly named API in another module cannot hide a missing binding,
+and unresolved catalog declarations fail --strict. Bindings absent from both
+references retain the reviewed gap inventory.
 
 Reverse direction, and what it cost to make it readable. "Documented but not
 bound" started at 221 names whose actionable yield was one, because it compared
@@ -60,6 +67,7 @@ import sys
 from pathlib import Path
 
 import check_module_manifest
+import generate_binding_contracts
 import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -322,11 +330,17 @@ def doc_text(doc: Path) -> str:
     return "\n".join(path.read_text(encoding="utf-8", errors="replace") for path in paths)
 
 
+def generated_names(files: list[Path], contracts: dict[str, set[str]]) -> set[str]:
+    """Only accept catalog entries from this module's own binding sources."""
+    return set().union(*(contracts.get(path.relative_to(ROOT).as_posix(), set())
+                         for path in files))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--quiet", action="store_true", help="only print failures")
     parser.add_argument("--strict", action="store_true",
-                        help="exit non-zero when a bound name is missing from its doc")
+                        help="fail on unresolved signatures or bindings missing from both references")
     parser.add_argument("--modules", default="",
                         help="comma-separated CMake module names to check (default: all)")
     parser.add_argument("--write-gaps", action="store_true",
@@ -336,7 +350,18 @@ def main() -> int:
     selected = {m.strip() for m in args.modules.split(",") if m.strip()}
     gaps = load_gaps()
 
+    # Signatures belong in the SDK catalog, not duplicated method-name lists.
+    # Reuse its real extractor: unresolved declarations still fail strict CI.
+    extracted, unresolved = generate_binding_contracts.extract_contracts(
+        generate_binding_contracts.source_files(), None, "")
+    contracts: dict[str, set[str]] = {}
+    for contract in extracted:
+        source = contract.source.rsplit(":", 1)[0]
+        contracts.setdefault(source, set()).add(contract.method)
+
     failures: list[str] = []
+    if args.strict:
+        failures.extend(f"unresolved generated API: {item}" for item in unresolved)
     warnings: list[str] = []
     gap_entries: list[str] = []
     checked = 0
@@ -353,7 +378,8 @@ def main() -> int:
             warnings.append(f"{module}: no user doc chapter ({DOCS / module}.md)")
             continue
         text = doc_text(doc)
-        missing = sorted(n for n in names if n not in text)
+        catalog_names = generated_names(iter_module_cpp(d, skip), contracts)
+        missing = sorted(n for n in names if n not in text and n not in catalog_names)
         checked += len(names)
         if missing:
             for name in missing:
@@ -361,12 +387,12 @@ def main() -> int:
                 if f"{module}:{name}" in gaps:
                     warnings.append(f"{module} ({doc.name}): known gap (document it): {name}")
                 elif args.strict:
-                    failures.append(f"{module} ({doc.name}): NEW gap, document it: {name}")
+                    failures.append(f"{module} ({doc.name}): NEW gap, add a guide explanation or generated signature: {name}")
                 else:
                     warnings.append(f"{module} ({doc.name}): bound but not documented: {name}")
         else:
             if not args.quiet:
-                print(f"ok  {module}: {len(names)} bindings documented")
+                print(f"ok  {module}: {len(names)} bindings covered by guide or generated API")
 
     # Doc-only names: the doc promises a script member that nothing defines. See
     # doc_only_names() for what counts as a promise and why the rest does not.
