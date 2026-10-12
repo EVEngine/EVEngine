@@ -17,6 +17,7 @@ add_subdirectory("${EVE_ZEROERR_SOURCE}" zeroerr)
 add_library(agent_core STATIC "${EVE_ROOT}/src/modules/agent/Agent.cpp"
     "${EVE_ROOT}/src/modules/agent/Codec.cpp"
     "${EVE_ROOT}/src/engine/common/Capability.cpp"
+    "${EVE_ROOT}/src/engine/common/CapabilityOwned.cpp"
     "${EVE_ROOT}/src/engine/common/Value.cpp"
     "${EVE_ROOT}/src/engine/common/Json.cpp")
 target_include_directories(agent_core PUBLIC "${EVE_ROOT}/src/engine" "${EVE_ROOT}/src/modules")

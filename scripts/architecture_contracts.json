@@ -2675,7 +2675,8 @@
       "tests": [
         "test/scene.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/scene_component_scheduling.cpp"
+        "test/scene_component_scheduling.cpp",
+        "test/scene_object_lifetime.cpp"
       ],
       "provides": [
         {

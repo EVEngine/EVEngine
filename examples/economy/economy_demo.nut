@@ -68,9 +68,13 @@ print("  玩家1 矿物余额: " + eco.get(1, "minerals") + " / 上限 " + eco.g
       ", 浪费 " + eco.getWasted(1, "minerals") + "\n");
 print("  矿点剩余: " + mine.amount() + "\n");
 
-workerA.destroy();
-workerB.destroy();
-mine.destroy();
+// The VM owns these instances. Release borrowed nodes before dropping references;
+// calling destroy() would delete an instance again when the VM releases it.
+workerA.clearAssignment();
+workerB.clearAssignment();
+workerA = null;
+workerB = null;
+mine = null;
 
 // ---------------------------------------------------------------------------
 // 场景 2：持有上限导致的浪费
@@ -100,8 +104,9 @@ print("  玩家2 黄金余额: " + eco.get(2, "gold") + " / 上限 " + eco.getCa
       ", 浪费 " + eco.getWasted(2, "gold") + "\n");
 print("  矿工往返 " + miner.trips() + " 次, 入账 " + miner.totalGathered() + "\n");
 
-miner.destroy();
-goldNode.destroy();
+miner.clearAssignment();
+miner = null;
+goldNode = null;
 
 print("\n====================================================================\n");
 print(" 演示结束\n");

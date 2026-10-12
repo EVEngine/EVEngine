@@ -39,6 +39,15 @@ registration path can be smoke-tested without Cubism.
 Requires an installed EVEngine SDK (same as `examples/native-plugin`):
 
 ```bash
-cmake -B build -DEVEngine_DIR=$PWD/../../dist/eve-sdk/linux-debug/cmake
+cmake -B build -DCMAKE_BUILD_TYPE=Debug -DEVEngine_DIR=$PWD/../../dist/eve-sdk/linux-debug/cmake
 cmake --build build
+```
+
+Use a SDK built from the same engine version as the host and match its build
+configuration (`Debug` or `Release`). On Windows, mismatched CRT/STL configurations
+can crash when strings cross the plugin boundary. From the repository root:
+
+```powershell
+cmake/with-msvc.cmd cmake.exe -S examples/live2d-backend-plugin -B build/live2d-plugin -G Ninja -DCMAKE_BUILD_TYPE=Debug -DEVEngine_DIR=$PWD/dist/eve-sdk/win32-debug/cmake
+cmake/with-msvc.cmd cmake.exe --build build/live2d-plugin
 ```
