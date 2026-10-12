@@ -83,23 +83,6 @@ std::string masked(const std::string& text, bool strings) {
     }
     return out;
 }
-size_t offsetAt(const std::string& text, unsigned line, unsigned column) {
-    size_t offset = 0;
-    for (unsigned current = 1; current < line && offset < text.size(); ++current) {
-        const auto next = text.find('\n', offset);
-        offset          = next == std::string::npos ? text.size() : next + 1;
-    }
-    return std::min(text.size(), offset + column - 1);
-}
-size_t closePair(const std::string& code, size_t start, char open, char close) {
-    if (start == std::string::npos) return start;
-    int level = 0;
-    for (size_t i = start; i < code.size(); ++i) {
-        if (code[i] == open) ++level;
-        if (code[i] == close && --level == 0) return i;
-    }
-    return std::string::npos;
-}
 std::shared_ptr<const File> parse(const std::string& path, std::string text, const std::string& hash) {
     auto file  = std::make_shared<File>();
     file->text = std::move(text);
@@ -113,19 +96,12 @@ std::shared_ptr<const File> parse(const std::string& path, std::string text, con
         } else if (extension == ".nut") {
             const auto code     = masked(file->text, true);
             const auto comments = masked(file->text, false);
-            const auto metadata = eve::script::ScriptCompiler::analyze(code, path);
-            for (const auto& symbol : metadata.symbols) {
-                if (symbol.kind != "function") continue;
-                const auto begin     = offsetAt(code, symbol.position.line, symbol.position.column);
-                const auto params    = code.find('(', begin);
-                const auto paramsEnd = closePair(code, params, '(', ')');
-                const auto body      = paramsEnd == std::string::npos ? paramsEnd : code.find('{', paramsEnd);
-                const auto end       = closePair(code, body, '{', '}');
-                if (end == std::string::npos) {
-                    file->error = "Unbalanced function body";
-                    continue;
-                }
-                file->functions.push_back({symbol.name, comments.substr(body, end - body + 1), symbol.position.line});
+            const auto metadata = eve::script::ScriptCompiler::analyze(file->text, path);
+            file->structure     = metadata.structure;
+            if (!file->structure.diagnostics.empty()) file->error = file->structure.diagnostics.front();
+            for (const auto& function : file->structure.functions) {
+                file->functions.push_back(
+                    {function.name, comments.substr(function.begin, function.end - function.begin), function.line});
             }
             static const std::regex reference(R"REF(\bdofile\s*\(\s*"([^"\n]+)"\s*\))REF");
             for (auto it = std::sregex_iterator(comments.begin(), comments.end(), reference);
@@ -136,6 +112,7 @@ std::shared_ptr<const File> parse(const std::string& path, std::string text, con
         file->error = e.what();
         file->json  = {};
         file->functions.clear();
+        file->structure = {};
     }
     return file;
 }

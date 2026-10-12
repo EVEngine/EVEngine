@@ -1,0 +1,20 @@
+{
+  "schema": "eve.project-semantic",
+  "schemaVersion": 1,
+  "projectId": "rpg-classic",
+  "nodes": [
+    {"id":"quest:quest.slayer","kind":"quest","jsonId":"quest.slayer","fields":["objectives","completePolicy"]},
+    {"id":"event:quest.completed","kind":"event","symbol":"recordQuestCompletion","contains":"\"quest.completed\""},
+    {"id":"script:onQuestCompleted","kind":"script","symbol":"onQuestCompleted"},
+    {"id":"entity:quest.slayer.marker","kind":"scene_entity","symbol":"initializeQuestScene","contains":"\"quest.slayer.marker\""},
+    {"id":"api:scene/SceneNodeRef.setVisible","kind":"engine_api","api":"scene/SceneNodeRef.setVisible"},
+    {"id":"test:quest-scene","kind":"test","symbol":"runQuestSceneProbe"}
+  ],
+  "links": [
+    {"from":"quest:quest.slayer","to":"event:quest.completed","relation":"emits","symbol":"recordQuestCompletion","contains":"tracker.getState(questId) != \"completed\""},
+    {"from":"event:quest.completed","to":"script:onQuestCompleted","relation":"handled_by","symbol":"recordQuestCompletion","contains":"onQuestCompleted("},
+    {"from":"script:onQuestCompleted","to":"entity:quest.slayer.marker","relation":"updates","symbol":"onQuestCompleted","contains":"questSceneMarker.setVisible(true)"},
+    {"from":"entity:quest.slayer.marker","to":"api:scene/SceneNodeRef.setVisible","relation":"uses","symbol":"onQuestCompleted","contains":"setVisible(true)"},
+    {"from":"api:scene/SceneNodeRef.setVisible","to":"test:quest-scene","relation":"tested_by","symbol":"runQuestSceneProbe","contains":"questSceneMarkerVisible()"}
+  ]
+}

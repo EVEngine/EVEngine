@@ -46,7 +46,7 @@ void refresh(const std::filesystem::path& root, State& state) {
         state.snapshot.stats = stats;
         return;
     }
-    auto candidate       = project(std::move(files), stats);
+    auto candidate       = project(std::move(files), stats, pathText(root.filename()));
     candidate.projectDir = pathText(root);
     // Detect a changed read set before publication; this is not a filesystem
     // transaction. Consumers must recheck revision before a later action.
@@ -69,14 +69,17 @@ Object::Ptr query(const Snapshot& snapshot, std::string_view mode, Object::Ptr a
     Object::Ptr out = new Object();
     out->set("ok", true);
     out->set("schema", mode == "eve_task_context" ? "eve.project-context" : "eve.project-index");
-    out->set("schemaVersion", 1);
+    out->set("schemaVersion", snapshot.automatic ? 2 : 1);
     out->set("projectId", snapshot.projectId);
     out->set("projectDir", snapshot.projectDir);
     out->set("revision", snapshot.revision);
+    if (snapshot.automatic) out->set("analyzerHash", std::string(eve::script::scriptStructureProviderHash()));
     out->set("declarationsResolved", snapshot.diagnostics.empty());
     out->set("coverage", "partial-project");
-    out->set("evidence", "source-metadata+checked-declarations");
+    out->set("evidence",
+             snapshot.automatic ? "compiler-structure+engine-contracts" : "source-metadata+checked-declarations");
     out->set("untrustedProjectContent", true);
+    out->set("includeCalls", args->optValue<bool>("includeCalls", false));
     out->set("limitations",
              "Source evidence, not live state or runtime causality; symbol extraction is not compilation. Structural "
              "addresses may change; declared semantic IDs survive unique source relocation.");
@@ -89,8 +92,9 @@ Object::Ptr query(const Snapshot& snapshot, std::string_view mode, Object::Ptr a
     bool                  truncated = false;
     if (mode == "eve_project_index_refresh") {
         for (const auto& [id, item] : snapshot.nodes)
-            if (item->has("evidence") && (item->getValue<std::string>("evidence") == "project-declaration" ||
-                                          item->getValue<std::string>("evidence") == "engine-build-contract")) {
+            if (item->optValue<bool>("semantic", false) ||
+                (item->has("evidence") && (item->getValue<std::string>("evidence") == "project-declaration" ||
+                                           item->getValue<std::string>("evidence") == "engine-build-contract"))) {
                 if (selected.size() < static_cast<size_t>(limit))
                     selected.insert(id);
                 else
@@ -114,10 +118,20 @@ Object::Ptr query(const Snapshot& snapshot, std::string_view mode, Object::Ptr a
             while (!pending.empty()) {
                 const auto [current, level] = pending.front();
                 pending.pop();
+                if (snapshot.automatic && !args->optValue<bool>("includeCalls", false) &&
+                    snapshot.nodes.at(current)->getValue<std::string>("kind") == "test")
+                    continue;
                 for (const auto i : adjacency[current]) {
                     const auto& edge = snapshot.edges[i];
-                    const auto  from = edge->getValue<std::string>("from"), to = edge->getValue<std::string>("to");
-                    const auto  next = from == current ? to : from;
+                    if (snapshot.automatic && !args->optValue<bool>("includeCalls", false) &&
+                        snapshot.nodes.at(current)->getValue<std::string>("kind") == "engine_api" &&
+                        edge->getValue<std::string>("relation") != "tested_by")
+                        continue;
+                    if (snapshot.automatic && !args->optValue<bool>("includeCalls", false) &&
+                        edge->getValue<std::string>("relation") == "calls")
+                        continue;
+                    const auto from = edge->getValue<std::string>("from"), to = edge->getValue<std::string>("to");
+                    const auto next = from == current ? to : from;
                     if (selected.contains(next)) continue;
                     if (level >= depth || selected.size() >= static_cast<size_t>(limit)) {
                         truncated = true;
@@ -144,12 +158,30 @@ Object::Ptr query(const Snapshot& snapshot, std::string_view mode, Object::Ptr a
     }
     for (const auto& id : selected) {
         const auto& item = snapshot.nodes.at(id);
-        nodes->add(item);
+        if (snapshot.automatic && mode == "eve_project_index_refresh") {
+            Object::Ptr summary = new Object();
+            for (const auto* field : {"id", "kind", "label", "status", "source", "evidence", "schemaContract"})
+                if (item->has(field)) summary->set(field, item->get(field));
+            nodes->add(summary);
+            if (item->getValue<std::string>("kind") == "test") tests->add(summary);
+            continue;
+        }
+        if (snapshot.automatic && item->has("contract")) {
+            Object::Ptr indexed = new Object();
+            for (const auto& field : *item)
+                if (field.first != "contract") indexed->set(field.first, field.second);
+            indexed->set("contractKey", id.substr(4));
+            nodes->add(indexed);
+        } else
+            nodes->add(item);
         if (item->has("contract")) contracts->add(item->get("contract"));
         if (item->getValue<std::string>("kind") == "test") tests->add(item);
     }
     for (const auto& edge : snapshot.edges)
-        if (selected.contains(edge->getValue<std::string>("from")) &&
+        if (!(snapshot.automatic &&
+              (mode == "eve_project_index_refresh" ||
+               (!args->optValue<bool>("includeCalls", false) && edge->getValue<std::string>("relation") == "calls"))) &&
+            selected.contains(edge->getValue<std::string>("from")) &&
             selected.contains(edge->getValue<std::string>("to")))
             edges->add(edge);
     out->set("nodes", nodes);
@@ -174,9 +206,10 @@ std::string callMcpProjectIndexTool(std::string_view name, Object::Ptr args) {
         if (!isMcpProjectIndexTool(name) && name != "eve_task_context")
             return textContentResult(mcpStringify(mcpFailureObject("unknown_tool")), true);
         const auto root = std::filesystem::canonical(sourcePath(requiredString(args, "projectDir")));
-        if (!std::filesystem::is_directory(root) || !std::filesystem::is_regular_file(root / "game.semantic.json") ||
-            std::filesystem::is_symlink(root / "game.semantic.json"))
-            throw std::runtime_error("Project requires a regular game.semantic.json");
+        if (!std::filesystem::is_directory(root) || std::filesystem::is_symlink(root / "game.semantic.json") ||
+            (std::filesystem::exists(root / "game.semantic.json") &&
+             !std::filesystem::is_regular_file(root / "game.semantic.json")))
+            throw std::runtime_error("Project requires a directory and an optional regular game.semantic.json");
         auto& state  = stateFor(root);
         lastRevision = state.snapshot.revision;
         refresh(root, state);
@@ -189,6 +222,6 @@ std::string callMcpProjectIndexTool(std::string_view name, Object::Ptr args) {
 }
 std::string_view mcpProjectIndexToolSchemas() {
     return R"JSON({"name":"eve_project_index_refresh","description":"Index current project source and checked semantic declarations without executing code. Reports revision, incremental parse stats and diagnostics.","inputSchema":{"type":"object","required":["projectDir"],"properties":{"projectDir":{"type":"string"},"maxNodes":{"type":"integer","minimum":1,"maximum":256},"maxBytes":{"type":"integer","minimum":1024,"maximum":65536}}}},
-{"name":"eve_project_index_query","description":"Query project nodes by semantic seed, kind or text; refreshes changed sources and rejects stale expectedRevision.","inputSchema":{"type":"object","required":["projectDir"],"properties":{"projectDir":{"type":"string"},"seed":{"type":"string"},"kind":{"type":"string"},"query":{"type":"string"},"expectedRevision":{"type":"string"},"maxNodes":{"type":"integer","minimum":1,"maximum":256},"maxDepth":{"type":"integer","minimum":0,"maximum":8},"maxBytes":{"type":"integer","minimum":1024,"maximum":65536}}}})JSON";
+{"name":"eve_project_index_query","description":"Query compiler-derived project semantics by seed, kind or text. includeCalls expands the full static call neighbourhood. Rejects stale expectedRevision; does not execute project code.","inputSchema":{"type":"object","required":["projectDir"],"properties":{"projectDir":{"type":"string"},"seed":{"type":"string"},"kind":{"type":"string"},"query":{"type":"string"},"includeCalls":{"type":"boolean"},"expectedRevision":{"type":"string"},"maxNodes":{"type":"integer","minimum":1,"maximum":256},"maxDepth":{"type":"integer","minimum":0,"maximum":8},"maxBytes":{"type":"integer","minimum":1024,"maximum":65536}}}})JSON";
 }
 }  // namespace eve::dev

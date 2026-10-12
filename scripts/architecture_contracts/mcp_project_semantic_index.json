@@ -7,7 +7,7 @@
       "scope": "src/engine/devtools/*ProjectIndex*",
       "owner": "foundation project-source projection; RPG and Scene retain gameplay authority",
       "issue": "EVENGINE-SEMANTIC-WORLD-PHASE2",
-      "reason": "Bounded read-only project indexing connects checked content declarations to current build contracts and versioned task context.",
+      "reason": "Compiler-derived source indexing connects reflected fields, calls and engine semantics to versioned context; legacy declarations remain compatible.",
       "expiry": "2027-12-31",
       "evidence": [
         "src/engine/devtools/McpProjectIndexTools.hpp",
@@ -17,7 +17,9 @@
       ],
       "tests": [
         "test/mcp_project_index.cpp",
-        "test/rpg_classic_semantic_index.cpp"
+        "test/rpg_classic_semantic_index.cpp",
+        "test/script_structure.cpp",
+        "scripts/tests/test_binding_semantics.py"
       ],
       "provides": [],
       "requires": [],

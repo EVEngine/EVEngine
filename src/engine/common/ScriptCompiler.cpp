@@ -385,6 +385,15 @@ std::string BindingContract::toJson() const {
     } else {
         json << "{\"status\":\"unknown\",\"reason\":\"No reviewed owner mapping for this binding\"}";
     }
+    json << ",\"semantics\":";
+    if (semantics) {
+        json << "{\"schemaVersion\":1,\"factory\":\"" << jsonEscape(semantics->factory) << "\",\"role\":\""
+             << jsonEscape(semantics->role) << "\",\"resultClass\":\"" << jsonEscape(semantics->resultClass)
+             << "\",\"identityArgument\":" << semantics->identityArgument
+             << ",\"relatedArgument\":" << semantics->relatedArgument
+             << ",\"schema\":" << (semantics->schemaJson.empty() ? "null" : semantics->schemaJson) << '}';
+    } else
+        json << "null";
     json << '}';
     return json.str();
 }
@@ -791,6 +800,7 @@ std::vector<ScriptDiagnostic> ScriptCompiler::validateProjectConfig(std::string_
 
 ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view canonicalUri) {
     ScriptMetadata result;
+    result.structure              = analyzeScriptStructure(source);
     result.sourceHash             = hashSource(source);
     result.canonicalUri           = std::string(canonicalUri);
     result.providerOrigin         = std::string(canonicalUri);

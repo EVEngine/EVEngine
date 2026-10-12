@@ -133,7 +133,8 @@ make run/win32-debug GAME=examples/rpg-classic
 
 ## 项目语义索引
 
-`game.semantic.json` 声明任务、完成事件、处理函数、场景实体、引擎接口和测试探针的稳定语义 ID。
+脚本与引擎契约自动生成任务、事件、函数、场景实体、接口及测试引用，不再手写索引关系。
+`game.semantic.json` v2 仅保留项目 ID；无此文件也可索引，默认使用目录名作为 ID。
 清剿史莱姆任务正式领奖后，`quest_scene.nut` 写入 `quest.completed` 事件，调用脚本处理函数更新
 `rpg-classic.quests` 中的 `quest.slayer.marker`；探索界面读取该场景状态绘制 NPC 完成标识。
 读档、新游戏和重载以权威任务状态恢复标识，不伪造完成事件。

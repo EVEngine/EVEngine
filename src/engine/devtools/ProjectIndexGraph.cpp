@@ -141,17 +141,25 @@ std::vector<Match> resolve(Object::Ptr declaration, const std::vector<Match>& ob
     return matches;
 }
 }  // namespace
-Snapshot project(Files files, Object::Ptr stats) {
+Snapshot project(Files files, Object::Ptr stats, std::string defaultProjectId) {
     Snapshot out;
-    out.files               = std::move(files);
-    out.stats               = stats;
-    const auto manifestFile = out.files.find("game.semantic.json");
-    if (manifestFile == out.files.end() || !manifestFile->second->error.empty() ||
-        manifestFile->second->json.type() != typeid(Object::Ptr))
-        throw std::runtime_error("Missing or invalid game.semantic.json");
-    auto manifest = manifestFile->second->json.extract<Object::Ptr>();
+    out.files                = std::move(files);
+    out.stats                = stats;
+    const auto  manifestFile = out.files.find("game.semantic.json");
+    Object::Ptr manifest;
+    if (manifestFile == out.files.end()) {
+        manifest = new Object();
+        manifest->set("schema", "eve.project-semantic");
+        manifest->set("schemaVersion", 2);
+        manifest->set("projectId", defaultProjectId);
+    } else {
+        if (!manifestFile->second->error.empty() || manifestFile->second->json.type() != typeid(Object::Ptr))
+            throw std::runtime_error("Missing or invalid game.semantic.json");
+        manifest = manifestFile->second->json.extract<Object::Ptr>();
+    }
     if (requiredString(manifest, "schema") != "eve.project-semantic" || !manifest->has("schemaVersion") ||
-        !manifest->get("schemaVersion").isInteger() || manifest->getValue<int>("schemaVersion") != 1)
+        !manifest->get("schemaVersion").isInteger() ||
+        (manifest->getValue<int>("schemaVersion") != 1 && manifest->getValue<int>("schemaVersion") != 2))
         throw std::runtime_error("Unsupported project semantic schema");
     out.projectId                                     = requiredString(manifest, "projectId");
     std::string                               version = out.projectId + '\0';
@@ -187,6 +195,14 @@ Snapshot project(Files files, Object::Ptr stats) {
             else
                 addEdge(out, "file:" + path, "file:" + target, "loads", "literal-dofile-reference");
         }
+    }
+    if (manifest->getValue<int>("schemaVersion") == 2) {
+        if (manifest->has("nodes") || manifest->has("links"))
+            throw std::runtime_error("Compiler-derived projects do not accept manual nodes or links");
+        out.automatic = true;
+        automaticGraph(out, version);
+        out.revision = digest(version);
+        return out;
     }
     auto declarations = manifest->getArray("nodes"), links = manifest->getArray("links");
     if (!declarations || !links || declarations->size() > 256 || links->size() > 1024)

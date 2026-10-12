@@ -221,6 +221,9 @@ std::string_view mcpArchitectureToolSchemas() {
                     value->set("type", "string");
                     input->getObject("properties")->set(field, value);
                 }
+                Object::Ptr includeCalls = new Object();
+                includeCalls->set("type", "boolean");
+                input->getObject("properties")->set("includeCalls", includeCalls);
             }
             Object::Ptr tool = new Object();
             tool->set("name", std::string(name));

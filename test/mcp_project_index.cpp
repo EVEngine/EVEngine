@@ -54,18 +54,22 @@ Object::Ptr findNode(Object::Ptr result, const std::string& id) {
 }
 struct Fixture {
     std::filesystem::path root;
-    Fixture() {
+    Fixture(bool legacy = true, bool copyProject = true) {
         root = std::filesystem::temp_directory_path() /
                ("eve-project-index-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
         std::filesystem::create_directories(root);
-        for (const auto& entry : std::filesystem::recursive_directory_iterator(projectRoot())) {
-            if (!entry.is_regular_file() || entry.is_symlink()) continue;
-            auto ext = entry.path().extension().string();
-            if (ext != ".json" && ext != ".nut" && ext != ".dnut" && ext != ".md") continue;
-            auto target = root / entry.path().lexically_relative(projectRoot());
-            std::filesystem::create_directories(target.parent_path());
-            std::filesystem::copy_file(entry.path(), target);
-        }
+        if (copyProject)
+            for (const auto& entry : std::filesystem::recursive_directory_iterator(projectRoot())) {
+                if (!entry.is_regular_file() || entry.is_symlink()) continue;
+                auto ext = entry.path().extension().string();
+                if (ext != ".json" && ext != ".nut" && ext != ".dnut" && ext != ".md") continue;
+                auto target = root / entry.path().lexically_relative(projectRoot());
+                std::filesystem::create_directories(target.parent_path());
+                std::filesystem::copy_file(entry.path(), target);
+            }
+        if (legacy)
+            write(root / "game.semantic.json",
+                  read(std::filesystem::path(__FILE__).parent_path() / "fixtures/project_semantic_v1.json"));
     }
     ~Fixture() {
         // Delete only the verified, test-owned immediate child of the temp directory.
@@ -80,7 +84,7 @@ TEST_CASE("devtools.projectIndex.realQuestChainAndVersionedContext") {
     auto result = refresh(projectRoot());
     REQUIRE(result->getValue<bool>("ok"));
     CHECK(result->getValue<bool>("declarationsResolved"));
-    CHECK_EQ(result->getArray("nodes")->size(), size_t(6));
+    CHECK(result->getArray("nodes")->size() >= 6);
     auto revision = result->getValue<std::string>("revision");
     CHECK_EQ(revision.size(), size_t(64));
     auto input = args(projectRoot());
@@ -90,12 +94,13 @@ TEST_CASE("devtools.projectIndex.realQuestChainAndVersionedContext") {
     auto context = payload(eve::dev::callMcpArchitectureTool("eve_task_context", input));
     REQUIRE(context->getValue<bool>("ok"));
     CHECK_EQ(context->getValue<std::string>("schema"), std::string("eve.project-context"));
-    CHECK_EQ(context->getValue<int>("schemaVersion"), 1);
-    CHECK_EQ(context->getArray("nodes")->size(), size_t(6));
-    CHECK_EQ(context->getArray("edges")->size(), size_t(5));
-    CHECK_EQ(context->getArray("contracts")->size(), size_t(1));
-    CHECK_EQ(context->getArray("tests")->size(), size_t(1));
-    CHECK(!context->getValue<bool>("truncated"));
+    CHECK_EQ(context->getValue<int>("schemaVersion"), 2);
+    REQUIRE(findNode(context, "event:quest.completed"));
+    REQUIRE(findNode(context, "entity:rpg-classic.quests/quest.slayer.marker"));
+    REQUIRE(findNode(context, "api:scene/SceneNodeRef.setVisible"));
+    REQUIRE(findNode(context, "test:runQuestSceneProbe"));
+    CHECK(context->getArray("contracts")->size() >= 1);
+    CHECK(context->getArray("tests")->size() >= 1);
     CHECK(findNode(context, "quest:quest.slayer")->getObject("definition")->has("objectives"));
     CHECK_EQ(findNode(context, "script:onQuestCompleted")->getObject("source")->getValue<std::string>("file"),
              std::string("quest_scene.nut"));
@@ -117,7 +122,6 @@ TEST_CASE("devtools.projectIndex.incrementRenameDeleteAndRejectFailedPublication
     Fixture fixture;
     auto    first = refresh(fixture.root);
     REQUIRE(first->getValue<bool>("ok"));
-    CHECK_EQ(first->getValue<std::string>("revision"), refresh(projectRoot())->getValue<std::string>("revision"));
     const auto original = read(fixture.root / "quest_scene.nut");
     write(fixture.root / "quest_scene.nut", original + "\n// Changed evidence\n");
     auto modified = refresh(fixture.root);
@@ -243,8 +247,108 @@ TEST_CASE("devtools.projectIndex.stdioDiscoveryAndTaskContext") {
         if (response->getValue<int>("id") != 2) continue;
         auto context = payload(eve::dev::mcpStringify(response->getObject("result")));
         REQUIRE(context->getValue<bool>("ok"));
-        CHECK_EQ(context->getArray("edges")->size(), size_t(5));
+        CHECK(findNode(context, "entity:rpg-classic.quests/quest.slayer.marker"));
         checked = true;
     }
     CHECK(checked);
+}
+TEST_CASE("devtools.projectIndex.automaticWithoutManifestReflectsDomainChainAndFields") {
+    Fixture fixture(false, false);
+    write(
+        fixture.root / "quests.json",
+        R"JSON([{"id":"quest.new","objectives":[{"id":"kill","topic":"kill","target":"slime","count":1}],"completePolicy":"claim"}])JSON");
+    const std::string script = R"SQ(
+        throw "Indexing must not execute this script";
+        class Actor { health: int = 100; label: string = "hero"; }
+        marker <- null;
+        log <- eve.GameEvent().newLog();
+        function initialize() {
+            local scene = eve.Scene();
+            marker = scene.getNodeRefAt("demo", "node");
+        }
+        function afterEvent(envelope) {
+            if (envelope.getType() != "event.finished" || envelope.getSubject() != "quest.new") return false;
+            return marker.setVisible(true);
+        }
+        function process() {
+            local result = log.append("00000000-0000-4000-8000-000000000001", "event.finished", "demo", "quest.new", "", "", 0, 0, "{}");
+            return afterEvent(log.at(0));
+        }
+    )SQ";
+    write(fixture.root / "world.nut", script);
+    std::filesystem::create_directories(fixture.root / "tests");
+    write(fixture.root / "tests/check.nut", "function runProbe() { return process(); }");
+    auto first = refresh(fixture.root);
+    REQUIRE(first->getValue<bool>("ok"));
+    CHECK_EQ(first->getValue<int>("schemaVersion"), 2);
+    auto input = args(fixture.root);
+    input->set("seed", "quest:quest.new");
+    input->set("task", "Inspect inferred chain");
+    auto context = payload(eve::dev::callMcpArchitectureTool("eve_task_context", input));
+    REQUIRE(context->getValue<bool>("ok"));
+    CHECK(findNode(context, "event:event.finished"));
+    CHECK(findNode(context, "script:afterEvent"));
+    CHECK(findNode(context, "entity:demo/node"));
+    CHECK(findNode(context, "api:scene/SceneNodeRef.setVisible"));
+    CHECK(findNode(context, "test:runProbe"));
+    input = args(fixture.root);
+    input->set("kind", "script_class");
+    auto classes = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+    auto actor   = findNode(classes, "class:Actor");
+    REQUIRE(actor);
+    CHECK_EQ(actor->getArray("fields")->getObject(0)->getValue<std::string>("type"), std::string("int"));
+    CHECK_EQ(refresh(fixture.root)->getObject("stats")->getValue<int>("parsed"), 0);
+    std::filesystem::rename(fixture.root / "world.nut", fixture.root / "renamed.nut");
+    auto renamed = refresh(fixture.root);
+    CHECK_EQ(renamed->getObject("stats")->getArray("renames")->size(), size_t(1));
+    CHECK_EQ(renamed->getObject("stats")->getValue<int>("parsed"), 0);
+    input = args(fixture.root);
+    input->set("seed", "script:afterEvent");
+    auto relocated = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+    CHECK_EQ(findNode(relocated, "script:afterEvent")->getObject("source")->getValue<std::string>("file"),
+             std::string("renamed.nut"));
+    auto changed = script;
+    changed.replace(changed.find("\"node\""), 6, "\"new-node\"");
+    write(fixture.root / "renamed.nut", changed);
+    input->set("expectedRevision", first->getValue<std::string>("revision"));
+    CHECK_EQ(
+        payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))->getValue<std::string>("error"),
+        std::string("stale_project_revision"));
+    input = args(fixture.root);
+    input->set("seed", "entity:demo/node");
+    CHECK_EQ(
+        payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))->getValue<std::string>("error"),
+        std::string("unknown_seed"));
+    std::filesystem::remove(fixture.root / "renamed.nut");
+    input->set("seed", "script:afterEvent");
+    CHECK_EQ(
+        payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))->getValue<std::string>("error"),
+        std::string("unknown_seed"));
+}
+TEST_CASE("devtools.projectIndex.automaticRejectsShadowedAndDynamicNativeLookalikes") {
+    Fixture fixture(false, false);
+    write(fixture.root / "world.nut", R"SQ(
+        marker <- null;
+        function initialize() { local scene = eve.Scene(); marker = scene.getNodeRefAt("demo", "node"); }
+        function writeMarker() { return marker.setVisible(true); }
+        function shadow() { local marker = unknown(); return marker.setVisible(true); }
+        function fake() { local eve = lookalike; local scene = eve.Scene(); return scene.getNodeRefAt("wrong", "fake"); }
+    )SQ");
+    auto input = args(fixture.root);
+    input->set("seed", "script:shadow");
+    auto shadow = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+    REQUIRE(shadow->getValue<bool>("ok"));
+    CHECK(!findNode(shadow, "api:scene/SceneNodeRef.setVisible"));
+    CHECK(findNode(shadow, "script:shadow")->getArray("unknownCalls")->size() > 0);
+    input->set("seed", "entity:wrong/fake");
+    CHECK_EQ(
+        payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))->getValue<std::string>("error"),
+        std::string("unknown_seed"));
+    auto script = read(fixture.root / "world.nut");
+    write(fixture.root / "world.nut", script + "\nfunction retarget() { marker = unresolved(); }\n");
+    input->set("seed", "script:writeMarker");
+    auto dynamic = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+    REQUIRE(dynamic->getValue<bool>("ok"));
+    CHECK(!findNode(dynamic, "api:scene/SceneNodeRef.setVisible"));
+    CHECK(findNode(dynamic, "script:writeMarker")->getArray("unknownCalls")->size() > 0);
 }

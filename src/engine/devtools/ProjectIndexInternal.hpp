@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "common/ScriptStructure.hpp"
 
 namespace eve::dev::project_index {
 using Object = Poco::JSON::Object;
@@ -15,13 +16,15 @@ struct Function {
     unsigned    line = 1;
 };
 struct File {
-    std::string              hash, text, error;
-    Poco::Dynamic::Var       json;
-    std::vector<Function>    functions;
-    std::vector<std::string> references;
+    eve::script::ScriptStructure structure;
+    std::string                  hash, text, error;
+    Poco::Dynamic::Var           json;
+    std::vector<Function>        functions;
+    std::vector<std::string>     references;
 };
 using Files = std::map<std::string, std::shared_ptr<const File>>;
 struct Snapshot {
+    bool                               automatic = false;
     Files                              files;
     std::string                        projectId, revision, projectDir;
     std::map<std::string, Object::Ptr> nodes;
@@ -39,7 +42,9 @@ inline std::filesystem::path sourcePath(const std::string& text) {
 /** @brief Bounded filesystem scan. Parses only changed files; symlinks are excluded. */
 Files scan(const std::filesystem::path& root, const Files& previous, Object::Ptr stats);
 /** @brief Build a candidate evidence graph without touching the published snapshot. */
-Snapshot project(Files files, Object::Ptr stats);
+Snapshot project(Files files, Object::Ptr stats, std::string defaultProjectId);
+/** @brief Project typed compiler syntax through generated engine contracts; no project declarations required. */
+void automaticGraph(Snapshot& snapshot, std::string& version);
 /** @brief Strict source string fields; invalid manifest shapes throw a diagnostic exception. */
 std::string requiredString(Object::Ptr object, const std::string& field);
 }  // namespace eve::dev::project_index
