@@ -57,6 +57,8 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("macos", "Build macosx debug"): 75,
             ("macos", "Run macosx unit tests"): 60,
             ("macos", "Build native Dawn Metal lane"): 75,
+            ("windows", "Build native Dawn parity lane"): 150,
+            ("linux-release", "Build linux release"): 105,
         }
         for (job, step), minimum in minimums.items():
             with self.subTest(job=job, step=step):
@@ -85,6 +87,17 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
                 build = block.index(f"      - name: Build {build_name}\n")
                 self.assertLess(start, build)
                 self.assertIn("        run: sccache --start-server\n", block[start:build])
+
+    def test_benchmark_filter_is_part_of_the_ctest_command(self) -> None:
+        for job in ("windows-release", "macos-release", "linux-release"):
+            with self.subTest(job=job):
+                block = job_block(self.workflow, job)
+                sample = block.split("      - name: Sample settlement release benchmark\n", 1)[1]
+                sample = sample.split("      - name:", 1)[0]
+                logical_lines = sample.replace("\\\n", "").splitlines()
+                command = next(line for line in logical_lines if line.strip().startswith("ctest "))
+                self.assertIn("-R '^settlement\\.benchmark\\.'", command)
+                self.assertIn("| tee build/settlement-benchmark-", command)
 
 
 if __name__ == "__main__":

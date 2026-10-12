@@ -180,7 +180,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build libvulkan-dev \
             libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
-            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev
+            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev \
+            libbz2-dev libpng-dev libxxf86vm-dev libasound2-dev
 
       - name: Configure profile
         timeout-minutes: 30
@@ -435,11 +436,10 @@ jobs:
           }
 
       - name: Build native Dawn parity lane
-        # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
-        # 95% only when the former 40-minute guard fired on windows-latest. The
-        # growing module matrix crossed the later 75-minute guard in the v0.5.1
-        # release gate, so retain a bounded 30-minute link/cache variance margin.
-        timeout-minutes: 105
+        # The v0.6.0 cold build finished 3,842/3,843 edges before its 105-minute
+        # guard interrupted the final link. Keep bounded headroom for linking
+        # and cache variance without dropping the native parity test lane.
+        timeout-minutes: 150
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
@@ -574,7 +574,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          ctest --test-dir build/win32 -C Release
+          ctest --test-dir build/win32 -C Release \
             -R '^settlement\.benchmark\.' -V \
             | tee build/settlement-benchmark-windows.log
 
@@ -992,7 +992,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          ctest --test-dir build/macosx
+          ctest --test-dir build/macosx \
             -R '^settlement\.benchmark\.' -V \
             | tee build/settlement-benchmark-macos.log
 
@@ -1398,7 +1398,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux release
-        timeout-minutes: 75
+        # The v0.6.0 cold build reached 93% at 75 minutes; allow the remaining
+        # compilation and links to finish while retaining a bounded hang guard.
+        timeout-minutes: 105
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1424,7 +1426,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          ctest --test-dir build/linux
+          ctest --test-dir build/linux \
             -R '^settlement\.benchmark\.' -V \
             | tee build/settlement-benchmark-linux.log
 
