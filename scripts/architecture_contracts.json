@@ -1717,7 +1717,7 @@
       ],
       "binds": [],
       "protocol": [
-        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 unchanged. Unknown request fields remain rejected."
+        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 may include optional world brief. status returns gameWorld snapshot. Unknown request/contract fields remain rejected."
       ],
       "thread_affinity": "Owner simulation thread; synchronous owning Value projection. Raw table path lookup invokes no getters or callbacks and retains no VM pointers.",
       "trim": {
@@ -1727,6 +1727,47 @@
       },
       "cost_notes": [
         "Observe scales with selected fields and converted values, bounded by the common Squirrel conversion limits. Whole-root observation remains explicit through an empty fields list."
+      ],
+      "hot_path": []
+    },
+    {
+      "id": "devtools-game-world-context-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/GameWorldContext*",
+      "owner": "devtools maintainers",
+      "issue": "EVENGINE-MCP-GAME-WORLD",
+      "reason": "AI Discover must learn the live game world from MCP without eve_eval: contract world + script overlay + configured/live modules + gameplay domains.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/GameWorldContext.hpp",
+        "src/engine/devtools/GameWorldContext.cpp",
+        "docs/dev/AI与MCP支持.md",
+        "docs/dev/2026-09-05-play-verify-evolve.md"
+      ],
+      "tests": [
+        "test/game_world_context.cpp",
+        "test/play_host.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        "Optional game.agent.json world object; optional eve.dev.publishWorldContext overlay; live modules/domains when a VM is attached."
+      ],
+      "emits": [],
+      "observes": [
+        "config.modules / optionalModules and instantiated eve.moduleList slots; IGameplayControlProvider domain names."
+      ],
+      "binds": [],
+      "protocol": [
+        "eve_game_world tool, eve://game-world resource, eve_play op=status.gameWorld; schema evengine.game-world v1. Soft restart with reloadScripts clears the runtime overlay."
+      ],
+      "thread_affinity": "Game-loop / MCP poll thread only; snapshot is an owning Value with no retained VM pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "Desktop EVDevTools only; trimmed builds without DevTools omit MCP entirely.",
+        "absent_profile": "No DevTools profile: tools and resources are absent with the rest of MCP."
+      },
+      "cost_notes": [
+        "Module enumeration walks eve.moduleList once per snapshot; bounded Squirrel conversion (depth 8 / 4096 elements)."
       ],
       "hot_path": []
     },

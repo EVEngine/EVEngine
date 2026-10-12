@@ -15,6 +15,7 @@
 #include "devtools/McpDomainTools.hpp"
 #include "devtools/McpInputTools.hpp"
 #include "devtools/McpJson.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpRuntimeTools.hpp"
 #include "devtools/McpSceneLiteral.hpp"
 #include "devtools/McpScriptTools.hpp"
@@ -1649,8 +1650,9 @@ std::string handleToolsList(const std::string& idJson) {
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":["
         "\"request\"]}},"
         "{\"name\":\"eve_play\",\"description\":\"Unified Play Host: pause/play, step host frames, observe "
-        "game.agent.json script roots, run mapped act, capture engine screenshots, checkpoint restore, and "
-        "record/replay play traces without eve_eval.\","
+        "game.agent.json script roots, run mapped act, capture engine screenshots, checkpoint restore, "
+        "record/replay play traces, and report gameWorld (world brief + live systems) on op=status without "
+        "eve_eval.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":["
         "\"request\"]}},"
         "{\"name\":\"eve_pixelworld_worlds\",\"description\":\"List live PixelWorld simulations and status.\","
@@ -2149,6 +2151,9 @@ std::string handleResourcesList(const std::string& idJson) {
                       "{\"resources\":["
                       "{\"uri\":\"eve://status\",\"name\":\"status\",\"description\":\"Debugger / MCP / DAP "
                       "status\",\"mimeType\":\"application/json\"},"
+                      "{\"uri\":\"eve://game-world\",\"name\":\"game-world\",\"description\":\"What kind of game "
+                      "world is running: contract world brief, script overlay, live domains and configured "
+                      "modules\",\"mimeType\":\"application/json\"},"
                       "{\"uri\":\"eve://error-report\",\"name\":\"error-report\",\"description\":\"Last DevTools error "
                       "slice report\",\"mimeType\":\"text/plain\"},"
                       "{\"uri\":\"eve://ai-session\",\"name\":\"ai-session\",\"description\":\"AI / MCP session "
@@ -2172,6 +2177,22 @@ std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::P
     std::string mime = "text/plain";
     if (uri == "eve://status") {
         text = engineStatusJson(McpServer::instance());
+        mime = "application/json";
+    } else if (uri == "eve://game-world") {
+        auto snapshot = liveGameWorldSnapshot();
+        if (!snapshot) {
+            const auto* diag = snapshot.status().primaryDiagnostic();
+            return makeError(idJson, -32002,
+                             diag && !diag->message().empty() ? diag->message()
+                                                              : std::string("game world snapshot failed"));
+        }
+        auto json = snapshot.value().toJson();
+        if (!json) {
+            const auto* diag = json.status().primaryDiagnostic();
+            return makeError(idJson, -32002,
+                             diag && !diag->message().empty() ? diag->message() : "game world JSON failed");
+        }
+        text = json.value();
         mime = "application/json";
     } else if (uri == "eve://error-report") {
         text = mcpLastReport();
@@ -2257,15 +2278,16 @@ std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr 
     } else if (name == "test_scenario") {
         text =
             "Design a short automated test against the live EVEngine session:\n"
-            "1) Read game.agent.json via eve_play op=status, then observe declared script roots.\n"
-            "2) Pause, step host frames, capture an engine screenshot, and checkpoint restore with eve_play.\n"
-            "3) Use eve_gameplay for player-equivalent domain commands when the contract declares a gameplay-domain.\n"
-            "4) Do not use eve_eval as the official observation path.";
+            "1) Call eve_game_world (or read eve://game-world) to learn genre/systems, then eve_play op=status.\n"
+            "2) Observe declared script roots from game.agent.json; do not invent observation paths.\n"
+            "3) Pause, step host frames, capture an engine screenshot, and checkpoint restore with eve_play.\n"
+            "4) Use eve_gameplay for player-equivalent domain commands when the contract declares a gameplay-domain.\n"
+            "5) Do not use eve_eval as the official observation path.";
     } else if (name == "ai_game_review") {
         text =
             "Review this AI-generated or AI-assisted game build:\n"
-            "1) eve_status + eve_ai_log for recent agent actions.\n"
-            "2) Spot-check critical roots with eve_eval.\n"
+            "1) eve_game_world + eve_status + eve_ai_log to learn the world and recent agent actions.\n"
+            "2) Spot-check critical roots with eve_play observe (or eve_eval only as a debug escape hatch).\n"
             "3) If unstable, pause and capture a snapshot.\n"
             "4) Summarize risks and suggested script fixes.";
     } else {

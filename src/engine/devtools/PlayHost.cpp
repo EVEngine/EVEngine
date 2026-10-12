@@ -8,6 +8,7 @@
 #include "common/SquirrelBinding.h"
 #include "devtools/AgentDevelopmentSession.hpp"
 #include "devtools/Debugger.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/PlayTrace.h"
 #include "devtools/Snapshot.hpp"
@@ -125,6 +126,9 @@ struct ParsedContract {
     std::vector<ObservationSpec> observations;
     std::vector<ActionSpec>      actions;
     std::vector<std::string>     captureRequiredFor;
+    /** @brief Optional authored world brief from `game.agent.json`. */
+    Value                        world;
+    bool                         hasWorld = false;
 };
 
 Result<std::vector<std::string>> stringArray(const Value& value, std::string path) {
@@ -148,7 +152,7 @@ Result<ParsedContract> parseContract(const Value& contract) {
     auto known =
         knownFields(*root.value(),
                     {"actions", "capture", "clock", "entry", "id", "observations", "schemaId", "schemaVersion",
-                     "smoke", "tolerances"},
+                     "smoke", "tolerances", "world"},
                     "contract");
     if (!known) return Result<ParsedContract>::failure(known.status());
     auto schemaId = stringMember(*root.value(), "schemaId", "contract");
@@ -303,6 +307,14 @@ Result<ParsedContract> parseContract(const Value& contract) {
         if (!tolKnown) return Result<ParsedContract>::failure(tolKnown.status());
     }
 
+    const auto world = root.value()->find("world");
+    if (world != root.value()->end()) {
+        auto normalized = parseWorldObject(world->second);
+        if (!normalized) return Result<ParsedContract>::failure(normalized.status());
+        parsed.world    = std::move(normalized).takeValue();
+        parsed.hasWorld = true;
+    }
+
     return Result<ParsedContract>::success(std::move(parsed));
 }
 
@@ -343,14 +355,29 @@ Result<Value> opStatus(IPlayHostRuntime& runtime) {
     Value::Object extra{{"paused", Value(runtime.paused())},
                         {"hostFrame", Value(static_cast<std::int64_t>(runtime.hostFrame()))},
                         {"domains", encodeDomains(runtime.gameplayDomains())}};
+    GameWorldSnapshotInput worldInput;
+    worldInput.domains  = runtime.gameplayDomains();
+    worldInput.gameRoot = McpServer::instance().gameRoot();
+    worldInput.configuredModules = readConfiguredModules(Debugger::instance().vm());
+    worldInput.liveModules       = readLiveModules(Debugger::instance().vm());
+
     auto loaded = runtime.loadContract();
     if (loaded) {
         auto parsed = parseContract(loaded.value());
         if (!parsed) return Result<Value>::failure(parsed.status());
         extra.emplace("contractId", Value(parsed.value().id));
         extra.emplace("contractLoaded", Value(true));
+        worldInput.contractId     = parsed.value().id;
+        worldInput.contractLoaded = true;
+        if (parsed.value().hasWorld) worldInput.contractWorld = &parsed.value().world;
+        auto snapshot = buildGameWorldSnapshot(worldInput);
+        if (!snapshot) return Result<Value>::failure(snapshot.status());
+        extra.emplace("gameWorld", std::move(snapshot).takeValue());
     } else if (loaded.code() == StatusCode::NotFound) {
         extra.emplace("contractLoaded", Value(false));
+        auto snapshot = buildGameWorldSnapshot(worldInput);
+        if (!snapshot) return Result<Value>::failure(snapshot.status());
+        extra.emplace("gameWorld", std::move(snapshot).takeValue());
     } else {
         return Result<Value>::failure(loaded.status());
     }

@@ -57,11 +57,26 @@ game.reset <- function() {
 };
 
 // Param-only soft restart path (eve_restart with reloadScripts=false).
+function publish_ai_game_world() {
+    // Tell MCP agents what this live session is after systems are up.
+    // Contract world in game.agent.json is the authored baseline; this overlay
+    // records which root systems the script actually relies on at runtime.
+    if (!("dev" in eve) || !("publishWorldContext" in eve.dev)) return;
+    local result = eve.dev.publishWorldContext({
+        title = "AI Game"
+        summary = "Minimal timed duel driven through eve_play; UI hud is the only live system surface."
+        systems = ["ui"]
+        tags = ["runtime"]
+    });
+    if (!result.ok) print("publishWorldContext failed: " + result.status.summary + "\n");
+}
+
 eve_restart <- function(args) {
     game.reset();
     gameState.tick = 0;
     gameState.time = 0.0;
     apply_restart_args(gameState);
+    publish_ai_game_world();
 };
 
 eve_init = function() {
@@ -70,6 +85,7 @@ eve_init = function() {
     // Soft restart (reloadScripts=true) deletes the root so persist re-inits
     // and eve.restartArgs can reshape the fresh defaults.
     if ("dev" in eve) eve.dev.markStateRoot("gameState");
+    publish_ai_game_world();
     apply_restart_args(gameState);
     gfx.setBackgroundColor(0.07, 0.08, 0.12, 1.0);
     ui.setTheme("dark");

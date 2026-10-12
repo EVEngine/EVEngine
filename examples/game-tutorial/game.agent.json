@@ -3,6 +3,14 @@
   "schemaVersion": 1,
   "id": "examples/game-tutorial",
   "entry": "main.nut",
+  "world": {
+    "title": "Game Tutorial",
+    "summary": "Collectible walkabout used to teach save/load and Play Host observations.",
+    "genre": ["tutorial", "collectathon"],
+    "dimensions": "2d",
+    "perspective": "side-view",
+    "systems": ["ui"]
+  },
   "smoke": {
     "scene": "default",
     "seed": 42,

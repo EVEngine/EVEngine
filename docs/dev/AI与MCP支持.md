@@ -65,6 +65,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | 名称 | 用途 |
 |------|------|
 | `eve_status` | 附着 / 暂停 / 端口 / callgraph 摘要 |
+| `eve_game_world` | Discover：当前游戏是什么世界（`game.agent.json` 的 `world` + `eve.dev.publishWorldContext` 覆盖 + 已配置/已实例化模块 + gameplay domains）；等价资源 `eve://game-world`，也出现在 `eve_play` `op=status.gameWorld` |
 | `eve_api_search` / `eve_api_get` | 查询本构建的 EveScript Binding Contracts（先查再写脚本；见 [AI 知识补偿](AI知识补偿.md)） |
 | `eve_ui_tree` / `eve_ui_get` / `eve_ui_click` | 普通游戏 retained UI 的语义树查询、控件状态读取和按 ID 点击；与 `eve_host_*` 编辑器宿主互补 |
 | `eve_eval` | 求值表达式 |

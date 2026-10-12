@@ -122,6 +122,11 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
         add("agent");
         return tags;
     }
+    if (name == "eve_game_world") {
+        add("core");
+        add("play");
+        return tags;
+    }
     if (startsWith(name, "eve_pixelworld_") || name == "eve_play" || name == "eve_gameplay" ||
         startsWith(name, "eve_ui_")) {
         add("play");
