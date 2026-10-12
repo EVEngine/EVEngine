@@ -1,5 +1,16 @@
 # 声明式场景树模块
 
+## AI 原生作者文档
+
+`eve.SceneEditorModule().createAuthoringSession(id)` 返回拥有 target 的标准 Result。
+作者文档保存层级、资源配方、镜头、光照和关系；`session.execute/undo/redo/saveJson/restoreJson`
+共用正式事务历史。原有 createSession/createLiveSession 保持其层级契约。
+`inspectAuthoringSnapshot(snapshot,id,[minX,minY,minZ,maxX,maxY,maxZ])` 返回完整世界矩阵、
+八角点、世界 AABB、尺寸和底部中心；不变更数据、不保留输入引用。
+旋转单位为弧度，FOV 为度，bounds 为未变形本地空间。缺失或非法数据返回结构化错误。
+ground/align/screen 的规划代价为每次编辑的祖先遍历和八角点变换；不在每帧重复查询。
+文档及脚本示例见 [AI 场景搭建契约](../../dev/2026-10-11-ai-scene-authoring.md)。
+
 **脚本入口：** `eve.Scene()`
 
 用节点描述构建 2D/3D 层级，维护 local/world 变换并连接渲染实体。
@@ -252,3 +263,34 @@ Y<1 时额外抬高 70，否则抬高 10，再减 offsetY。`useScale` 独立发
 C++ `SceneComponent::markDirty()` / `setState()` 自动排队，在 `TransformSystem::updateAll` 开始 ECS View 前刷新；脚本组件在引擎每帧的绘制准备阶段自动刷新，不依赖游戏保留默认 eve_update。无需每帧主动 `rebuild()`。构建期间的新修改留到下一批，失败保留脏状态与未处理队列。
 
 组件仅保存 host 的 ECS generation handle；host 先销毁时解析失败、排队更新跳过，组件先销毁时弱注册失效。重新 attach 后重新标脏。Getter 不构建树；兼容 `rebuild(forceFull)` 保留显式同步刷新语义。组件不可复制或移动，不允许在自己的 build 回调中销毁自己。
+### 关系约束摆放
+
+作者文档 v2 支持 `supported_on`（指定对象接触支撑）、`nonpenetrating`（对象对防穿插）、
+`visible_fraction`（subject 可见比例）和 `occludes`（subject 实际挡住 reference 的比例）。
+视觉关系用 `minimum` / `maximum` 定义比例区间，minimum 必填，maximum 默认 1。
+`scene.authoring.relations.set.v1` 设置关系数组；删除叶节点与相关关系一次撤销恢复。
+v1 文档显式迁移为空关系。关系不改变 transform parent，不每帧自动修复。
+
+`SceneEditorSession.beginRelationPlacement` 复用已有私有物理预览，一个对象可调整，锁定
+环境保留为障碍。`checkRelationPlacement` 返回逐关系接触/穿透/法线证据和候选世界变换。
+硬约束不满足或不可测量时，现有 `commitPhysicsPlacement` 拒绝提交；取消不改变场景。
+物理证据为碰撞代理精度；视觉证据为实际不透明三角形像素/深度测量。全部视觉约束都会检查，
+提交重新测量并验证文档/投影/网格代次；一个可调整叶节点，尚无区域 mask 或多对象联合搜索。
+原生视觉准备接口是 `prepareRelationVisibility(host, request)`；Director 的 relation_begin 自动调用。
+提供者缺失、深度歧义及不可测量的硬关系拒绝提交。详见
+[视觉关系实现与验证](../../dev/2026-10-11-scene-visual-relations-validation.md)。
+
+MCP `eve_scene_modify` 的 `relations`、`relation_begin/update/check/commit/discard` 动作及
+示例见 [关系摆放实现与验证](../../dev/2026-10-11-scene-relations-validation.md)。
+
+### 对象区域遮挡
+
+作者文档 v3 支持视觉关系中的对象局部 local_box 区域；v1/v2 自动迁移。visible_fraction
+测 subject.region，occludes 测 reference.region。MCP relations 的 region 省略 geometryRevision
+时会读取原生版本绑定，已有旧版本必须显式重新绑定。geometry_revision 动作查询版本。
+区域随对象变换，真实三角形像素/深度决定分母；整对象结果不能替代区域结果。
+参见 [区域接口与验证](../../dev/2026-10-11-scene-regions-validation.md)。
+
+## 投影轮廓重叠
+
+作者文档 v4 支持 projected_overlap(subject, reference, minimum, maximum)，可附 reference 的 local_box region。测量两个对象独立真实投影 mask 的交集/reference 像素数；前后顺序及第三者遮挡不改变该构图指标。visibility-evidence v3 的 projectedOverlaps 返回交集像素、双方像素数及比例；任一 mask 少于 4 像素不可测。关系通过原有 relations/relation_begin/relation_check/relation_commit 正式路径使用，提交重新测量并一次撤销。详见 [契约与验证](../../dev/2026-10-12-scene-projected-overlap-validation.md)。

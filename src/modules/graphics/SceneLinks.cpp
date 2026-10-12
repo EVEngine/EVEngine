@@ -25,6 +25,8 @@ void pushRenderable3D(const SceneNode &n, void *target) {
     auto *r = static_cast<Renderable3D *>(target);
     auto t = r->transform();
     const glm::mat4 &w = n.world;
+    t->linkedWorld     = w;
+    t->hasLinkedWorld  = true;
     t->x = w[3][0];
     t->y = w[3][1];
     t->z = w[3][2];
