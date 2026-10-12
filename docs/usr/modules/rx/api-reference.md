@@ -5,6 +5,10 @@
 `dynamic` 表示静态提取器无法表达具体脚本投影，Result/异常/借用语义以绑定实现为准。
 参数列没有默认值：不要从 C++ 默认实参推断脚本实参可省略。
 
+## Subscription
+
+- `isDisposed()` → `bool`；[绑定实现 L452](../../../../src/modules/rx/Rx.cpp#L452)。
+
 ## 接收者见绑定源码
 
 - `getName()` → `string`；[绑定实现 L456](../../../../src/modules/rx/Rx.cpp#L456)。

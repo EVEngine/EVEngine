@@ -7,8 +7,13 @@
 
 ## VoxelWorld
 
+- `getCubeTypeName(wx: int, wy: int, wz: int)` → `string`；[绑定实现 L156](../../../../src/modules/voxel/Voxel.cpp#L156)。
+- `getCubeTypeTex(wx: int, wy: int, wz: int, faceDir: string)` → `int`；[绑定实现 L157](../../../../src/modules/voxel/Voxel.cpp#L157)。
+- `getDirtyCount()` → `int`；[绑定实现 L138](../../../../src/modules/voxel/Voxel.cpp#L138)。
 - `getRaycastPrevY()` → `int`；[绑定实现 L170](../../../../src/modules/voxel/Voxel.cpp#L170)。
 - `getRaycastPrevZ()` → `int`；[绑定实现 L171](../../../../src/modules/voxel/Voxel.cpp#L171)。
+- `getVisibleBatchCount()` → `int`；[绑定实现 L175](../../../../src/modules/voxel/Voxel.cpp#L175)。
+- `getVisibleChunkCount()` → `int`；[绑定实现 L176](../../../../src/modules/voxel/Voxel.cpp#L176)。
 - `terrainHeightAt(wx: int, wz: int)` → `int`；[绑定实现 L110](../../../../src/modules/voxel/Voxel.cpp#L110)。
 
 

@@ -20,6 +20,7 @@
 - `getOverlayShader()` → `Shader`；[绑定实现 L1220](../../../../src/modules/graphics/Graphics.cpp#L1220)。
 - `getPower()` → `float`；[绑定实现 L1199](../../../../src/modules/graphics/Graphics.cpp#L1199)。
 - `getQuality()` → `string`；[绑定实现 L1187](../../../../src/modules/graphics/Graphics.cpp#L1187)。
+- `getRadius()` → `float`；[绑定实现 L1196](../../../../src/modules/graphics/Graphics.cpp#L1196)。
 - `getSsaoShader()` → `Shader`；[绑定实现 L1216](../../../../src/modules/graphics/Graphics.cpp#L1216)。
 - `hasParam(name: string)` → `bool`；[绑定实现 L1200](../../../../src/modules/graphics/Graphics.cpp#L1200)。
 - `setThickness(thickness: float)` → `void`；[绑定实现 L1195](../../../../src/modules/graphics/Graphics.cpp#L1195)。
@@ -34,6 +35,29 @@
 - `getSsaaShader()` → `Shader`；[绑定实现 L1318](../../../../src/modules/graphics/Graphics.cpp#L1318)。
 - `hasParam(name: string)` → `bool`；[绑定实现 L1306](../../../../src/modules/graphics/Graphics.cpp#L1306)。
 
+## Camera2D
+
+- `getZoom()` → `float`；[绑定实现 L397](../../../../src/modules/graphics/Graphics.cpp#L397)。
+- `screenToWorldY(screenX: float, screenY: float, viewW: float, viewH: float)` → `float`；[绑定实现 L399](../../../../src/modules/graphics/Graphics.cpp#L399)。
+- `worldToScreenX(worldX: float, worldY: float, viewW: float, viewH: float)` → `float`；[绑定实现 L400](../../../../src/modules/graphics/Graphics.cpp#L400)。
+- `worldToScreenY(worldX: float, worldY: float, viewW: float, viewH: float)` → `float`；[绑定实现 L401](../../../../src/modules/graphics/Graphics.cpp#L401)。
+
+## Camera3D
+
+- `getEyeY()` → `float`；[绑定实现 L439](../../../../src/modules/graphics/Graphics.cpp#L439)。
+- `getEyeZ()` → `float`；[绑定实现 L440](../../../../src/modules/graphics/Graphics.cpp#L440)。
+- `getScreenRayDirX()` → `float`；[绑定实现 L492](../../../../src/modules/graphics/Graphics.cpp#L492)。
+- `getScreenRayDirY()` → `float`；[绑定实现 L493](../../../../src/modules/graphics/Graphics.cpp#L493)。
+- `getScreenRayDirZ()` → `float`；[绑定实现 L494](../../../../src/modules/graphics/Graphics.cpp#L494)。
+- `getScreenRayOriginX()` → `float`；[绑定实现 L489](../../../../src/modules/graphics/Graphics.cpp#L489)。
+- `getScreenRayOriginY()` → `float`；[绑定实现 L490](../../../../src/modules/graphics/Graphics.cpp#L490)。
+- `getScreenRayOriginZ()` → `float`；[绑定实现 L491](../../../../src/modules/graphics/Graphics.cpp#L491)。
+- `getTargetY()` → `float`；[绑定实现 L443](../../../../src/modules/graphics/Graphics.cpp#L443)。
+- `getTargetZ()` → `float`；[绑定实现 L444](../../../../src/modules/graphics/Graphics.cpp#L444)。
+- `setActive(active: bool)` → `void`；[绑定实现 L460](../../../../src/modules/graphics/Graphics.cpp#L460)。
+- `setEye(x: float, y: float, z: float)` → `void`；[绑定实现 L437](../../../../src/modules/graphics/Graphics.cpp#L437)。
+- `setTarget(x: float, y: float, z: float)` → `void`；[绑定实现 L441](../../../../src/modules/graphics/Graphics.cpp#L441)。
+
 ## GBuffer
 
 - `getAlbedoTexture()` → `Texture`；[绑定实现 L657](../../../../src/modules/graphics/Graphics.cpp#L657)。
@@ -45,6 +69,7 @@
 - `applyFromDepthTo(gfx: Graphics, packedAlbedo: Texture, dest: Canvas)` → `void`；[绑定实现 L1268](../../../../src/modules/graphics/Graphics.cpp#L1268)。
 - `getIntensity()` → `float`；[绑定实现 L1260](../../../../src/modules/graphics/Graphics.cpp#L1260)。
 - `getQuality()` → `string`；[绑定实现 L1251](../../../../src/modules/graphics/Graphics.cpp#L1251)。
+- `getRadius()` → `float`；[绑定实现 L1259](../../../../src/modules/graphics/Graphics.cpp#L1259)。
 - `hasParam(name: string)` → `bool`；[绑定实现 L1263](../../../../src/modules/graphics/Graphics.cpp#L1263)。
 - `setThickness(thickness: float)` → `void`；[绑定实现 L1255](../../../../src/modules/graphics/Graphics.cpp#L1255)。
 
@@ -59,14 +84,67 @@
 - `getSparseMesh()` → `Mesh`；[绑定实现 L898](../../../../src/modules/graphics/Graphics.cpp#L898)。
 - `setFrameDuration(seconds: float)` → `void`；[绑定实现 L890](../../../../src/modules/graphics/Graphics.cpp#L890)。
 
+## Light2D
+
+- `getDirX()` → `float`；[绑定实现 L411](../../../../src/modules/graphics/Graphics.cpp#L411)。
+- `getDirY()` → `float`；[绑定实现 L412](../../../../src/modules/graphics/Graphics.cpp#L412)。
+- `getRadius()` → `float`；[绑定实现 L415](../../../../src/modules/graphics/Graphics.cpp#L415)。
+- `getType()` → `string`；[绑定实现 L406](../../../../src/modules/graphics/Graphics.cpp#L406)。
+- `getVolumetric()` → `bool`；[绑定实现 L423](../../../../src/modules/graphics/Graphics.cpp#L423)。
+- `getVolumetricIntensity()` → `float`；[绑定实现 L425](../../../../src/modules/graphics/Graphics.cpp#L425)。
+- `getVolumetricOnly()` → `bool`；[绑定实现 L427](../../../../src/modules/graphics/Graphics.cpp#L427)。
+- `isEnabled()` → `bool`；[绑定实现 L421](../../../../src/modules/graphics/Graphics.cpp#L421)。
+- `setCanvas(canvas: Canvas)` → `void`；[绑定实现 L428](../../../../src/modules/graphics/Graphics.cpp#L428)。
+- `setEnabled(enabled: bool)` → `void`；[绑定实现 L420](../../../../src/modules/graphics/Graphics.cpp#L420)。
+- `setVolumetricIntensity(intensity: float)` → `void`；[绑定实现 L424](../../../../src/modules/graphics/Graphics.cpp#L424)。
+- `setVolumetricOnly(enabled: bool)` → `void`；[绑定实现 L426](../../../../src/modules/graphics/Graphics.cpp#L426)。
+
+## Light3D
+
+- `getCastShadow()` → `bool`；[绑定实现 L518](../../../../src/modules/graphics/Graphics.cpp#L518)。
+- `getDirX()` → `float`；[绑定实现 L505](../../../../src/modules/graphics/Graphics.cpp#L505)。
+- `getDirY()` → `float`；[绑定实现 L506](../../../../src/modules/graphics/Graphics.cpp#L506)。
+- `getDirZ()` → `float`；[绑定实现 L507](../../../../src/modules/graphics/Graphics.cpp#L507)。
+- `getRadius()` → `float`；[绑定实现 L510](../../../../src/modules/graphics/Graphics.cpp#L510)。
+- `getShadowBias()` → `float`；[绑定实现 L522](../../../../src/modules/graphics/Graphics.cpp#L522)。
+- `getShadowStrength()` → `float`；[绑定实现 L524](../../../../src/modules/graphics/Graphics.cpp#L524)。
+- `getType()` → `string`；[绑定实现 L499](../../../../src/modules/graphics/Graphics.cpp#L499)。
+- `getVolumetric()` → `bool`；[绑定实现 L526](../../../../src/modules/graphics/Graphics.cpp#L526)。
+- `getVolumetricIntensity()` → `float`；[绑定实现 L528](../../../../src/modules/graphics/Graphics.cpp#L528)。
+- `getVolumetricOnly()` → `bool`；[绑定实现 L530](../../../../src/modules/graphics/Graphics.cpp#L530)。
+- `getZ()` → `float`；[绑定实现 L503](../../../../src/modules/graphics/Graphics.cpp#L503)。
+- `isEnabled()` → `bool`；[绑定实现 L516](../../../../src/modules/graphics/Graphics.cpp#L516)。
+- `setEnabled(enabled: bool)` → `void`；[绑定实现 L515](../../../../src/modules/graphics/Graphics.cpp#L515)。
+- `setShadowBias(bias: float)` → `void`；[绑定实现 L521](../../../../src/modules/graphics/Graphics.cpp#L521)。
+- `setShadowStrength(strength: float)` → `void`；[绑定实现 L523](../../../../src/modules/graphics/Graphics.cpp#L523)。
+- `setVolumetricIntensity(intensity: float)` → `void`；[绑定实现 L527](../../../../src/modules/graphics/Graphics.cpp#L527)。
+- `setVolumetricOnly(enabled: bool)` → `void`；[绑定实现 L529](../../../../src/modules/graphics/Graphics.cpp#L529)。
+
 ## Material
 
 - `getAlbedoTexture()` → `Texture`；[绑定实现 L594](../../../../src/modules/graphics/Graphics.cpp#L594)。
+- `getCastShadow()` → `bool`；[绑定实现 L622](../../../../src/modules/graphics/Graphics.cpp#L622)。
+- `getHair()` → `bool`；[绑定实现 L628](../../../../src/modules/graphics/Graphics.cpp#L628)。
 - `getHeightTexture()` → `Texture`；[绑定实现 L598](../../../../src/modules/graphics/Graphics.cpp#L598)。
 - `getMetallic()` → `float`；[绑定实现 L614](../../../../src/modules/graphics/Graphics.cpp#L614)。
 - `getReceiveShadow()` → `bool`；[绑定实现 L624](../../../../src/modules/graphics/Graphics.cpp#L624)。
 - `getShadingModel()` → `string`；[绑定实现 L581](../../../../src/modules/graphics/Graphics.cpp#L581)。
 - `hasParam(name: string)` → `bool`；[绑定实现 L645](../../../../src/modules/graphics/Graphics.cpp#L645)。
+- `setReceiveShadow(receive: bool)` → `void`；[绑定实现 L623](../../../../src/modules/graphics/Graphics.cpp#L623)。
+- `setTint(r: float, g: float, b: float, a: float)` → `void`；[绑定实现 L612](../../../../src/modules/graphics/Graphics.cpp#L612)。
+
+## Mesh
+
+- `clearMorphWeights()` → `void`；[绑定实现 L356](../../../../src/modules/graphics/Graphics.cpp#L356)。
+- `getIndexCount()` → `dynamic`；[绑定实现 L350](../../../../src/modules/graphics/Graphics.cpp#L350)。
+- `getMorphCount()` → `int`；[绑定实现 L351](../../../../src/modules/graphics/Graphics.cpp#L351)。
+- `getMorphName(index: int)` → `string`；[绑定实现 L352](../../../../src/modules/graphics/Graphics.cpp#L352)。
+- `getMorphWeight(name: string)` → `float`；[绑定实现 L355](../../../../src/modules/graphics/Graphics.cpp#L355)。
+- `getVertexCount()` → `int`；[绑定实现 L349](../../../../src/modules/graphics/Graphics.cpp#L349)。
+- `hasMorph(name: string)` → `bool`；[绑定实现 L353](../../../../src/modules/graphics/Graphics.cpp#L353)。
+- `hasMorphData()` → `bool`；[绑定实现 L357](../../../../src/modules/graphics/Graphics.cpp#L357)。
+- `isMorphDirty()` → `bool`；[绑定实现 L358](../../../../src/modules/graphics/Graphics.cpp#L358)。
+- `setMorphWeight(name: string, weight: float)` → `bool`；[绑定实现 L354](../../../../src/modules/graphics/Graphics.cpp#L354)。
 
 ## Outline
 
@@ -81,21 +159,41 @@
 - `setDepthThreshold(threshold: float)` → `void`；[绑定实现 L1231](../../../../src/modules/graphics/Graphics.cpp#L1231)。
 - `setNormalThreshold(threshold: float)` → `void`；[绑定实现 L1235](../../../../src/modules/graphics/Graphics.cpp#L1235)。
 
+## Quad
+
+- `setViewport(x: int, y: int, w: int, h: int)` → `void`；[绑定实现 L363](../../../../src/modules/graphics/Graphics.cpp#L363)。
+
 ## RenderControl
 
 - `getPassCount()` → `int`；[绑定实现 L702](../../../../src/modules/graphics/Graphics.cpp#L702)。
 - `getPassName(index: int)` → `string`；[绑定实现 L703](../../../../src/modules/graphics/Graphics.cpp#L703)。
 - `hasPass(name: string)` → `bool`；[绑定实现 L704](../../../../src/modules/graphics/Graphics.cpp#L704)。
 - `isCompiled()` → `bool`；[绑定实现 L701](../../../../src/modules/graphics/Graphics.cpp#L701)。
+- `isEnabled(feature: string)` → `bool`；[绑定实现 L666](../../../../src/modules/graphics/Graphics.cpp#L666)。
 
 ## Renderable3D
 
+- `clearMeshLod()` → `void`；[绑定实现 L90](../../../../src/modules/graphics/Renderable3DBindings.cpp#L90)。
 - `clearParts()` → `void`；[绑定实现 L55](../../../../src/modules/graphics/Renderable3DBindings.cpp#L55)。
+- `getHair()` → `bool`；[绑定实现 L61](../../../../src/modules/graphics/Renderable3DBindings.cpp#L61)。
 - `getMaterial()` → `Material`；[绑定实现 L50](../../../../src/modules/graphics/Renderable3DBindings.cpp#L50)。
+- `getMeshLodCount()` → `int`；[绑定实现 L91](../../../../src/modules/graphics/Renderable3DBindings.cpp#L91)。
+- `getMeshLodLevelAtDistance(distance: float)` → `int`；[绑定实现 L92](../../../../src/modules/graphics/Renderable3DBindings.cpp#L92)。
+- `getParallaxMaxLayers()` → `float`；[绑定实现 L76](../../../../src/modules/graphics/Renderable3DBindings.cpp#L76)。
+- `getParallaxMinLayers()` → `float`；[绑定实现 L75](../../../../src/modules/graphics/Renderable3DBindings.cpp#L75)。
+- `getParallaxScale()` → `float`；[绑定实现 L74](../../../../src/modules/graphics/Renderable3DBindings.cpp#L74)。
 - `getPartCount()` → `int`；[绑定实现 L56](../../../../src/modules/graphics/Renderable3DBindings.cpp#L56)。
 - `getPartMaterial(index: int)` → `Material`；[绑定实现 L59](../../../../src/modules/graphics/Renderable3DBindings.cpp#L59)。
 - `getPartMesh(index: int)` → `Mesh`；[绑定实现 L58](../../../../src/modules/graphics/Renderable3DBindings.cpp#L58)。
 - `getPartName(index: int)` → `string`；[绑定实现 L57](../../../../src/modules/graphics/Renderable3DBindings.cpp#L57)。
+- `getTexCellBombRotation()` → `float`；[绑定实现 L72](../../../../src/modules/graphics/Renderable3DBindings.cpp#L72)。
+- `getTexCellBombScale()` → `float`；[绑定实现 L70](../../../../src/modules/graphics/Renderable3DBindings.cpp#L70)。
+- `getTexCellBombStrength()` → `float`；[绑定实现 L71](../../../../src/modules/graphics/Renderable3DBindings.cpp#L71)。
+- `getYaw()` → `float`；[绑定实现 L18](../../../../src/modules/graphics/Renderable3DBindings.cpp#L18)。
+- `setPackedNormalMask(enabled: bool)` → `void`；[绑定实现 L46](../../../../src/modules/graphics/Renderable3DBindings.cpp#L46)。
+- `setReceiveShadow(receive: bool)` → `void`；[绑定实现 L85](../../../../src/modules/graphics/Renderable3DBindings.cpp#L85)。
+- `setTint(r: float, g: float, b: float, a: float)` → `void`；[绑定实现 L62](../../../../src/modules/graphics/Renderable3DBindings.cpp#L62)。
+- `setYaw(yaw: float)` → `void`；[绑定实现 L17](../../../../src/modules/graphics/Renderable3DBindings.cpp#L17)。
 
 ## ScreenSpaceReflection
 
@@ -103,11 +201,25 @@
 - `getQuality()` → `string`；[绑定实现 L1279](../../../../src/modules/graphics/Graphics.cpp#L1279)。
 - `getStrength()` → `float`；[绑定实现 L1287](../../../../src/modules/graphics/Graphics.cpp#L1287)。
 - `hasParam(name: string)` → `bool`；[绑定实现 L1290](../../../../src/modules/graphics/Graphics.cpp#L1290)。
+- `setEnabled(enabled: bool)` → `void`；[绑定实现 L1276](../../../../src/modules/graphics/Graphics.cpp#L1276)。
 - `setMaxDistance(meters: float)` → `void`；[绑定实现 L1280](../../../../src/modules/graphics/Graphics.cpp#L1280)。
 - `setMaxSteps(steps: int)` → `void`；[绑定实现 L1282](../../../../src/modules/graphics/Graphics.cpp#L1282)。
 - `setStepLength(meters: float)` → `void`；[绑定实现 L1281](../../../../src/modules/graphics/Graphics.cpp#L1281)。
 - `setStrength(strength: float)` → `void`；[绑定实现 L1284](../../../../src/modules/graphics/Graphics.cpp#L1284)。
 - `setThickness(meters: float)` → `void`；[绑定实现 L1283](../../../../src/modules/graphics/Graphics.cpp#L1283)。
+
+## Shader
+
+- `declareFloat(name: string)` → `int`；[绑定实现 L370](../../../../src/modules/graphics/Graphics.cpp#L370)。
+- `declareMatrix(name: string)` → `int`；[绑定实现 L374](../../../../src/modules/graphics/Graphics.cpp#L374)。
+- `declareVec2(name: string)` → `int`；[绑定实现 L371](../../../../src/modules/graphics/Graphics.cpp#L371)。
+- `declareVec3(name: string)` → `int`；[绑定实现 L372](../../../../src/modules/graphics/Graphics.cpp#L372)。
+- `declareVec4(name: string)` → `int`；[绑定实现 L373](../../../../src/modules/graphics/Graphics.cpp#L373)。
+- `getUniformIndex(name: string)` → `int`；[绑定实现 L385](../../../../src/modules/graphics/Graphics.cpp#L385)。
+- `hasUniform(name: string)` → `bool`；[绑定实现 L384](../../../../src/modules/graphics/Graphics.cpp#L384)。
+- `sendVec2(name: string, x: float, y: float)` → `void`；[绑定实现 L376](../../../../src/modules/graphics/Graphics.cpp#L376)。
+- `sendVec3(name: string, x: float, y: float, z: float)` → `void`；[绑定实现 L377](../../../../src/modules/graphics/Graphics.cpp#L377)。
+- `sendVec4(name: string, x: float, y: float, z: float, w: float)` → `void`；[绑定实现 L378](../../../../src/modules/graphics/Graphics.cpp#L378)。
 
 ## Volumetric
 
@@ -153,6 +265,7 @@
 - `setRippleInterval(seconds: float)` → `void`；[绑定实现 L1146](../../../../src/modules/graphics/Graphics.cpp#L1146)。
 - `setScreenSpaceReflection(enabled: bool, strength: float)` → `void`；[绑定实现 L1163](../../../../src/modules/graphics/Graphics.cpp#L1163)。
 - `setSunIntensity(intensity: float)` → `void`；[绑定实现 L1161](../../../../src/modules/graphics/Graphics.cpp#L1161)。
+- `setViewport(width: float, height: float)` → `void`；[绑定实现 L1172](../../../../src/modules/graphics/Graphics.cpp#L1172)。
 - `setWaterColor(r: float, g: float, b: float)` → `void`；[绑定实现 L1157](../../../../src/modules/graphics/Graphics.cpp#L1157)。
 - `setWaveAmplitude(amp: float)` → `void`；[绑定实现 L1138](../../../../src/modules/graphics/Graphics.cpp#L1138)。
 - `setWaveScale(scale: float)` → `void`；[绑定实现 L1148](../../../../src/modules/graphics/Graphics.cpp#L1148)。
@@ -183,18 +296,32 @@
 
 ## 接收者见绑定源码
 
+- `bakeMeshMorph(mesh: Mesh)` → `bool`；[绑定实现 L1377](../../../../src/modules/graphics/Graphics.cpp#L1377)。
 - `drawCanvas(canvas: Canvas, x: float, y: float, w: float, h: float)` → `void`；[绑定实现 L1415](../../../../src/modules/graphics/Graphics.cpp#L1415)。
+- `drawOcclusionSolid(x: float, y: float, w: float, h: float)` → `void`；[绑定实现 L1465](../../../../src/modules/graphics/Graphics.cpp#L1465)。
+- `drawOcclusionTexture(texture: Texture, x: float, y: float, w: float, h: float)` → `void`；[绑定实现 L1466](../../../../src/modules/graphics/Graphics.cpp#L1466)。
 - `getCanvas()` → `Canvas`；[绑定实现 L1418](../../../../src/modules/graphics/Graphics.cpp#L1418)。
+- `getMsaaSamples()` → `int`；[绑定实现 L1452](../../../../src/modules/graphics/Graphics.cpp#L1452)。
+- `getName()` → `string`；[绑定实现 L1323](../../../../src/modules/graphics/Graphics.cpp#L1323)。
 - `getOutline()` → `Outline`；[绑定实现 L1461](../../../../src/modules/graphics/Graphics.cpp#L1461)。
 - `getSceneColorTexture()` → `Texture`；[绑定实现 L1453](../../../../src/modules/graphics/Graphics.cpp#L1453)。
 - `newCanvas(width: int, height: int)` → `Canvas`；[绑定实现 L1416](../../../../src/modules/graphics/Graphics.cpp#L1416)。
 - `newGrassField()` → `GrassField`；[绑定实现 L1387](../../../../src/modules/graphics/Graphics.cpp#L1387)。
 - `newGrassShader()` → `Shader`；[绑定实现 L1385](../../../../src/modules/graphics/Graphics.cpp#L1385)。
+- `newMeshCube(size: float)` → `Mesh`；[绑定实现 L1370](../../../../src/modules/graphics/Graphics.cpp#L1370)。
+- `newMeshCylinder(slices: int, stacks: int, caps: bool)` → `Mesh`；[绑定实现 L1369](../../../../src/modules/graphics/Graphics.cpp#L1369)。
+- `newMeshFromArrays(posArr: Array<dynamic>, nrmArr: Array<dynamic>, uvArr: Array<dynamic>, vertexCount: int, idxArr: Array<dynamic>, indexCount: int)` → `Mesh`；[绑定实现 L1371](../../../../src/modules/graphics/Graphics.cpp#L1371)。
+- `newMeshShaderVF(vertGlsl: string, fragGlsl: string)` → `Shader`；[绑定实现 L1381](../../../../src/modules/graphics/Graphics.cpp#L1381)。
+- `newMeshSphere(slices: int, stacks: int)` → `Mesh`；[绑定实现 L1368](../../../../src/modules/graphics/Graphics.cpp#L1368)。
 - `newOutline()` → `Outline`；[绑定实现 L1458](../../../../src/modules/graphics/Graphics.cpp#L1458)。
+- `newQuad(x: int, y: int, w: int, h: int)` → `Quad`；[绑定实现 L1454](../../../../src/modules/graphics/Graphics.cpp#L1454)。
 - `newScreenSpaceReflection()` → `ScreenSpaceReflection`；[绑定实现 L1463](../../../../src/modules/graphics/Graphics.cpp#L1463)。
 - `newShaderFromWgsl(vertWgsl: string, fragWgsl: string)` → `Shader`；[绑定实现 L1379](../../../../src/modules/graphics/Graphics.cpp#L1379)。
 - `newTextureFromFileRepeated(filename: string, repeatU: bool, repeatV: bool)` → `Texture`；[绑定实现 L1362](../../../../src/modules/graphics/Graphics.cpp#L1362)。
 - `saveFramePng(path: string)` → `bool`；[绑定实现 L1413](../../../../src/modules/graphics/Graphics.cpp#L1413)。
+- `setCanvas(obj: dynamic)` → `void`；[绑定实现 L1417](../../../../src/modules/graphics/Graphics.cpp#L1417)。
+- `setCloudShadows(strength: float, worldCell: float, time: float, windSpeed: float, windAngle: float, coverage: float, detail: float)` → `void`；[绑定实现 L1448](../../../../src/modules/graphics/Graphics.cpp#L1448)。
+- `setDirectionalLight(dx: float, dy: float, dz: float, r: float, g: float, b: float)` → `void`；[绑定实现 L1421](../../../../src/modules/graphics/Graphics.cpp#L1421)。
 - `setMesh3DCameraPos(x: float, y: float, z: float)` → `void`；[绑定实现 L1410](../../../../src/modules/graphics/Graphics.cpp#L1410)。
 - `setMesh3DView(a: Array<dynamic>)` → `void`；[绑定实现 L1409](../../../../src/modules/graphics/Graphics.cpp#L1409)。
 - `setMesh3DViewProj(a: Array<dynamic>)` → `void`；[绑定实现 L1408](../../../../src/modules/graphics/Graphics.cpp#L1408)。

@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace {
-std::filesystem::path repository() { return std::filesystem::path(__FILE__).parent_path().parent_path(); }
+std::filesystem::path repository() { return std::filesystem::path(EVENGINE_SOURCE_DIR); }
 std::string           readSource(const std::filesystem::path& path) {
     std::ifstream input(path, std::ios::binary);
     if (!input) throw std::runtime_error("cannot read documentation fixture: " + path.string());

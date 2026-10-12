@@ -7,11 +7,21 @@
 
 ## ModelData
 
+- `empty()` → `bool`；[绑定实现 L222](../../../../src/modules/model3d/Model3D.cpp#L222)。
+- `getFaceCount(meshIndex: int)` → `int`；[绑定实现 L226](../../../../src/modules/model3d/Model3D.cpp#L226)。
 - `getMaterialBaseColorA(matIndex: int)` → `float`；[绑定实现 L284](../../../../src/modules/model3d/Model3D.cpp#L284)。
 - `getMaterialBaseColorB(matIndex: int)` → `float`；[绑定实现 L283](../../../../src/modules/model3d/Model3D.cpp#L283)。
 - `getMaterialBaseColorG(matIndex: int)` → `float`；[绑定实现 L282](../../../../src/modules/model3d/Model3D.cpp#L282)。
+- `getMaterialCount()` → `int`；[绑定实现 L224](../../../../src/modules/model3d/Model3D.cpp#L224)。
+- `getMeshCount()` → `int`；[绑定实现 L223](../../../../src/modules/model3d/Model3D.cpp#L223)。
 - `getMorphTargetCount(meshIndex: int)` → `int`；[绑定实现 L299](../../../../src/modules/model3d/Model3D.cpp#L299)。
 - `getMorphTargetName(meshIndex: int, morphIndex: int)` → `string`；[绑定实现 L300](../../../../src/modules/model3d/Model3D.cpp#L300)。
+- `getVertexCount(meshIndex: int)` → `int`；[绑定实现 L225](../../../../src/modules/model3d/Model3D.cpp#L225)。
+- `hasTexCoords(meshIndex: int)` → `bool`；[绑定实现 L252](../../../../src/modules/model3d/Model3D.cpp#L252)。
+
+## 接收者见绑定源码
+
+- `getName()` → `string`；[绑定实现 L365](../../../../src/modules/model3d/Model3D.cpp#L365)。
 
 
 重建：`python3 scripts/generate_binding_contracts.py --json-output eve-api.json`，
