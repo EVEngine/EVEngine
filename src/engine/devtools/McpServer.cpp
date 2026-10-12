@@ -17,6 +17,7 @@
 #include "devtools/McpInputTools.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpRuntimeTools.hpp"
+#include "devtools/McpSceneLiteral.hpp"
 #include "devtools/McpScriptTools.hpp"
 #include "devtools/McpSquirrelJson.hpp"
 #include "devtools/McpToolFilter.hpp"
@@ -162,53 +163,6 @@ Poco::JSON::Array::Ptr vec3ToArray(const glm::vec3& v) {
 // inspect scenes through `eve_scene_modify` / `eve_scene_info` /
 // `eve_camera_generate` / `eve_scene_reset`; the kit owns the live Renderable3D /
 // Camera3D / lighting state.
-
-// Escape a string as a Squirrel single-line string literal (JSON escapes are
-// a subset Squirrel understands: \n \r \t \\ \" and \uXXXX).
-std::string sqStringLiteralEscape(const std::string& s) { return mcpJsonEscape(s); }
-
-// Encode a Poco JSON value as a Squirrel literal (table/array/scalar/null).
-std::string sqLiteralValue(const Poco::Dynamic::Var& v) {
-    if (v.isEmpty()) return "null";
-    if (v.isBoolean()) return v.convert<bool>() ? "true" : "false";
-    if (v.isInteger()) return std::to_string(v.convert<Poco::Int64>());
-    if (v.isNumeric()) {
-        const double d = v.convert<double>();
-        char         buf[64];
-        std::snprintf(buf, sizeof(buf), "%g", d);
-        return buf;
-    }
-    if (v.isString()) return std::string("\"") + sqStringLiteralEscape(v.convert<std::string>()) + "\"";
-    if (v.isArray()) {
-        std::string out = "[";
-        try {
-            auto arr = v.extract<Poco::JSON::Array::Ptr>();
-            for (size_t i = 0; i < arr->size(); ++i) {
-                if (i) out += ",";
-                out += sqLiteralValue(arr->get(static_cast<unsigned int>(i)));
-            }
-        } catch (...) {
-        }
-        out += "]";
-        return out;
-    }
-    if (v.isStruct()) {
-        std::string out   = "{";
-        bool        first = true;
-        try {
-            auto obj = v.extract<Poco::JSON::Object::Ptr>();
-            for (const auto& kv : *obj) {
-                if (!first) out += ",";
-                first = false;
-                out += "\"" + sqStringLiteralEscape(kv.first) + "\"=" + sqLiteralValue(kv.second);
-            }
-        } catch (...) {
-        }
-        out += "}";
-        return out;
-    }
-    return "null";
-}
 
 std::string snippetErrorText(HSQUIRRELVM vm, bool compile) {
     eve::script::ScriptErrorContext ctx =
@@ -1274,8 +1228,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         const std::string actor = getArgString(args, "actor");
         const std::string bone  = getArgString(args, "bone");
         if (actor.empty()) return "error: missing actor";
-        const std::string expr = "eve_mcp_skeleton_inspect(\"" + sqStringLiteralEscape(actor) +
-                                 "\",\"" + sqStringLiteralEscape(bone) + "\")";
+        const std::string expr =
+            "eve_mcp_skeleton_inspect(\"" + mcpJsonEscape(actor) + "\",\"" + mcpJsonEscape(bone) + "\")";
         auto info = dbg.evaluate(expr);
         if (info.value.empty()) return "error: eve_mcp_skeleton_inspect is unavailable";
         // Debugger string values are display-quoted. The project hook returns
@@ -1490,11 +1444,17 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             try {
                 paramsVar = Poco::Dynamic::Var(args->getObject("params"));
             } catch (...) {
+                return sceneDirectorToolError(name, "params must be a JSON object");
             }
         }
-        const std::string snippet = "return ::scene_director.modify(" + sqLiteralValue(Poco::Dynamic::Var(action)) +
-                                    "," + sqLiteralValue(Poco::Dynamic::Var(target)) + "," + sqLiteralValue(paramsVar) +
-                                    ");";
+        auto actionLiteral = sceneLiteral(Poco::Dynamic::Var(action));
+        if (!actionLiteral.ok()) return sceneDirectorToolError(name, actionLiteral.status().describe());
+        auto targetLiteral = sceneLiteral(Poco::Dynamic::Var(target));
+        if (!targetLiteral.ok()) return sceneDirectorToolError(name, targetLiteral.status().describe());
+        auto paramsLiteral = sceneLiteral(paramsVar);
+        if (!paramsLiteral.ok()) return sceneDirectorToolError(name, paramsLiteral.status().describe());
+        const std::string snippet = "return ::scene_director.modify(" + actionLiteral.value() + "," +
+                                    targetLiteral.value() + "," + paramsLiteral.value() + ");";
         const std::string out     = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
@@ -1894,7 +1854,17 @@ std::string handleToolsList(const std::string& idJson) {
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_scene_modify\",\"description\":\"Agent scene action: action in "
         "add_object|spawn|place|move_object|move|scale|rotate|rotation|remove_object|remove|visibility|material|"
-        "lighting|set_lighting|camera|cameras|info|list|reset. spawn/move params: "
+        "lighting|set_lighting|camera|cameras|info|list|reset|ground|align|screen|save|restore|undo|redo|command|bind_"
+        "host. "
+        "relations|relation_begin|relation_update|relation_check|relation_commit|relation_discard|visibility. "
+        "Mutations accept expectedRevision. relations: {value:[{id,type,subject,reference,hard,tolerance}]}; "
+        "visibility targets=[ids], width/height, preview=true or models={id:columnMajor16}; returns opaque raster "
+        "fractions/depth occluders without live mutation. "
+        "relation_begin target is one adjustable object, optional colliders/settings; "
+        "relation_update: {pos:[x,y,z],ticks:1..240}; check returns collision-proxy evidence; "
+        "commit rejects unsatisfied hard relations. ground: {height}; align: {reference,axis,gap}; "
+        "screen: {anchor:[x,y,z],screen:[u,v]} with authored camera; restore: {json}; command: {command,payload}; "
+        "bind_host: {host}. spawn/move params: "
         "{id,kind,x,y,z,sx,sy,sz,yaw_deg,scale,pos,tint,seed,mesh_params,...}; lighting params: "
         "{timeOfDay,atmosphere,intensity,background}; camera params: {eye,target,fov}. Returns JSON.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"action\":{\"type\":\"string\"},\"target\":{\"type\":"

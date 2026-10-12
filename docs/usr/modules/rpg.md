@@ -529,3 +529,7 @@ owning payload 副本，随后仍执行全部 participant codec；磁盘原文�
 
 **源码：** [`src/modules/rpg/`](../../../src/modules/rpg/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `rpg`。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](rpg/api-reference.md)，使用前先确认本章的前置条件与生命周期。

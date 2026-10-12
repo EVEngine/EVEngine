@@ -1078,3 +1078,7 @@ Body3D 都由调用者持有，函数不保存指针、不调用未知回调；�
 
 **源码：** [`src/modules/physics/`](../../../src/modules/physics/)
 **相关测试：** [`test/box2d.cpp`](../../../test/box2d.cpp)、[`test/box3d.cpp`](../../../test/box3d.cpp)、[`test/softbody.cpp`](../../../test/softbody.cpp)
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](physics/api-reference.md)，使用前先确认本章的前置条件与生命周期。
