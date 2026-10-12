@@ -1445,7 +1445,9 @@ jobs:
     runs-on: ubuntu-24.04
     # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
     # the 90-minute test guard, plus dependency/toolchain setup and reporting.
-    timeout-minutes: 270
+    # PR #526 reached ~96% of the build after 140m, so keep job headroom above
+    # the raised build guard plus the 90m test step.
+    timeout-minutes: 310
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
