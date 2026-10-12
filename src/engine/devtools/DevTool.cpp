@@ -378,25 +378,24 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         // After scripts initialize configured game systems, publish a world brief
         // so MCP Discover (eve_game_world / eve://game-world / eve_play status)
         // can tell agents what kind of world this is without eve_eval.
-        dev.addFunc("publishWorldContext", [this](ssq::Object world) {
+        const HSQUIRRELVM handle = vm.getHandle();
+        dev.addFunc("publishWorldContext", [handle](ssq::Object world) {
             auto value = script::valueFromSquirrel(world);
-            if (!value) return script::projectStatusResult(vm_.getHandle(), value.status());
-            return script::projectResult(vm_.getHandle(), publishWorldContext(std::move(value).takeValue()));
+            if (!value) return script::projectStatusResult(handle, value.status());
+            return script::projectResult(handle, publishWorldContext(std::move(value).takeValue()));
         });
         dev.addFunc("clearWorldContext", []() { clearWorldContext(); });
         dev.addFunc("hasWorldContext", []() { return hasWorldContext(); });
-        dev.addFunc("worldContext", [this]() {
+        dev.addFunc("worldContext", [handle]() {
             const Value* world = runtimeWorldContext();
             if (!world)
                 return script::projectStatusResult(
-                    vm_.getHandle(),
-                    Status::failure(Diagnostic::error(DiagnosticCode::NotFound, "no runtime world context",
-                                                      "worldContext")));
-            return script::projectStatusResult(vm_.getHandle(), Status::success(), *world);
+                    handle, Status::failure(Diagnostic::error(DiagnosticCode::NotFound, "no runtime world context",
+                                                              "worldContext")));
+            return script::projectStatusResult(handle, Status::success(), *world);
         });
-        dev.addFunc("gameWorldSnapshot", [this]() {
-            return script::projectResult(vm_.getHandle(), liveGameWorldSnapshot(),
-                                         [](Value value) { return value; });
+        dev.addFunc("gameWorldSnapshot", [handle]() {
+            return script::projectResult(handle, liveGameWorldSnapshot(), [](Value value) { return value; });
         });
         auto markSnapshotPause = [this]() {
             if (!debugger().isPaused()) return;

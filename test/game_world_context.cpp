@@ -124,7 +124,10 @@ TEST_CASE("devtools.playHost.statusIncludesGameWorldFromContract") {
             "dimensions": "2d",
             "systems": ["ui"]
           },
-          "clock": {"defaultStep": "frame"}
+          "clock": {"defaultStep": "frame"},
+          "observations": [
+            {"id": "combat-alive", "kind": "script-root", "path": "gameState", "fields": ["tick"]}
+          ]
         })json");
     } runtime;
 
