@@ -101,7 +101,6 @@ function updateLegs(dt) {
 }
 
 function screenToLake(mx, my) {
-    // Orthographic-ish mapping of the mouse onto the lake XZ plane.
     local nx = mx / gfx.getWidth().tofloat();
     local ny = my / gfx.getHeight().tofloat();
     local x = nx * LAKE;
@@ -174,7 +173,7 @@ eve_init = function() {
     print(hud + "\n");
 };
 
-eve_frame = function(dt) {
+eve_update = function(dt) {
     if (edgePressed("space") || edgePressed("Space")) paused = !paused;
     if (edgePressed("r") || edgePressed("R")) resetLake();
     if (edgePressed("g") || edgePressed("G")) {
@@ -210,4 +209,9 @@ eve_frame = function(dt) {
         requireOk(water.step(dt), "step");
         syncWaterMesh();
     }
+};
+
+eve_render = function() {
+    gfx.clear();
+    gfx.render3D();
 };

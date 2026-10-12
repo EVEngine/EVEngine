@@ -407,7 +407,16 @@ void ShallowWaterField::rasterizeCollidersCpu() {
 }
 
 void ShallowWaterField::integrateCpu(float dt) {
-    const float alpha = cellSize_ / std::max(dt, 1e-6f);
+    // Local Lax-Friedrichs wave-speed bound (gravity waves + horizontal flow).
+    float maxWave = std::sqrt(gravity_ * minDepth_) + 1.f;
+    for (int i = 0; i < cellCount(); ++i) {
+        const float h = std::max(heights_[size_t(i)], minDepth_);
+        const float u = momentumX_[size_t(i)] / h;
+        const float v = momentumZ_[size_t(i)] / h;
+        maxWave       = std::max(maxWave, std::abs(u) + std::sqrt(gravity_ * h));
+        maxWave       = std::max(maxWave, std::abs(v) + std::sqrt(gravity_ * h));
+    }
+    const float alpha = maxWave;
     auto sample = [&](int x, int z, float& h, float& hu, float& hv) {
         x  = std::clamp(x, 0, resX_ - 1);
         z  = std::clamp(z, 0, resZ_ - 1);
@@ -415,6 +424,9 @@ void ShallowWaterField::integrateCpu(float dt) {
         h  = std::max(heights_[size_t(i)] + srcH_[size_t(i)], 0.f);
         hu = momentumX_[size_t(i)] + srcHu_[size_t(i)];
         hv = momentumZ_[size_t(i)] + srcHv_[size_t(i)];
+        if (!std::isfinite(h)) h = 0.f;
+        if (!std::isfinite(hu)) hu = 0.f;
+        if (!std::isfinite(hv)) hv = 0.f;
     };
     auto sampleBed = [&](int x, int z) {
         x = std::clamp(x, 0, resX_ - 1);
@@ -445,10 +457,12 @@ void ShallowWaterField::integrateCpu(float dt) {
                                  0.5f * alpha * (qR - q);
             const glm::vec3 fL = 0.5f * (fluxX(hL, huL, hvL, gravity_, minDepth_) + fluxX(h, hu, hv, gravity_, minDepth_)) -
                                  0.5f * alpha * (q - qL);
-            const glm::vec3 gU = 0.5f * (fluxZ(h, hu, hv, gravity_, minDepth_) + fluxZ(hU, huU, hvU, gravity_, minDepth_)) -
-                                 0.5f * alpha * (qU - q);
-            const glm::vec3 gD = 0.5f * (fluxZ(hD, huD, hvD, gravity_, minDepth_) + fluxZ(h, hu, hv, gravity_, minDepth_)) -
-                                 0.5f * alpha * (q - qD);
+            const glm::vec3 gUflux =
+                0.5f * (fluxZ(h, hu, hv, gravity_, minDepth_) + fluxZ(hU, huU, hvU, gravity_, minDepth_)) -
+                0.5f * alpha * (qU - q);
+            const glm::vec3 gDflux =
+                0.5f * (fluxZ(hD, huD, hvD, gravity_, minDepth_) + fluxZ(h, hu, hv, gravity_, minDepth_)) -
+                0.5f * alpha * (q - qD);
 
             const float b  = sampleBed(x, z);
             const float bL = sampleBed(x - 1, z);
@@ -459,23 +473,36 @@ void ShallowWaterField::integrateCpu(float dt) {
             const glm::vec3 source{0.f, -gravity_ * hSafe * (bR - bL) / (2.f * cellSize_),
                                    -gravity_ * hSafe * (bU - bD) / (2.f * cellSize_)};
 
-            glm::vec3 qn = q - (dt / cellSize_) * (fR - fL + gU - gD) + dt * source;
-            qn.y += viscosity_ * (huL + huR + huD + huU - 4.f * hu);
-            qn.z += viscosity_ * (hvL + hvR + hvD + hvU - 4.f * hv);
+            glm::vec3 qn = q - (dt / cellSize_) * (fR - fL + gUflux - gDflux) + dt * source;
+            // dt-scaled Laplacian viscosity (was previously unscaled and blew up).
+            qn.y += viscosity_ * dt * (huL + huR + huD + huU - 4.f * hu);
+            qn.z += viscosity_ * dt * (hvL + hvR + hvD + hvU - 4.f * hv);
             qn.y *= std::max(0.f, 1.f - friction_ * dt);
             qn.z *= std::max(0.f, 1.f - friction_ * dt);
             qn.x = std::clamp(qn.x, 0.f, maxDepth_);
+            if (!std::isfinite(qn.x)) qn.x = 0.f;
+            if (!std::isfinite(qn.y)) qn.y = 0.f;
+            if (!std::isfinite(qn.z)) qn.z = 0.f;
             if (qn.x <= minDepth_) {
                 qn.y = 0.f;
                 qn.z = 0.f;
+            } else {
+                // Cap horizontal speed so a single splash cannot break CFL next step.
+                const float speed = std::sqrt(qn.y * qn.y + qn.z * qn.z) / std::max(qn.x, minDepth_);
+                const float maxSpeed = 8.f;
+                if (speed > maxSpeed) {
+                    const float s = maxSpeed / speed;
+                    qn.y *= s;
+                    qn.z *= s;
+                }
             }
             if (x == 0 || x == resX_ - 1) qn.y = 0.f;
             if (z == 0 || z == resZ_ - 1) qn.z = 0.f;
 
-            const int i             = index(x, z);
-            scratchH_[size_t(i)]    = qn.x;
-            scratchHu_[size_t(i)]   = qn.y;
-            scratchHv_[size_t(i)]   = qn.z;
+            const int i           = index(x, z);
+            scratchH_[size_t(i)]  = qn.x;
+            scratchHu_[size_t(i)] = qn.y;
+            scratchHv_[size_t(i)] = qn.z;
         }
     }
     heights_.swap(scratchH_);
@@ -492,8 +519,15 @@ Result<void> ShallowWaterField::step(float dt) {
     if (!std::isfinite(dt) || dt <= 0.f || dt > 1.f) return fail("dt must be in (0, 1]");
 
     float maxH = minDepth_;
-    for (float h : heights_) maxH = std::max(maxH, h);
-    const float waveSpeed = std::sqrt(gravity_ * maxH) + 1.f;
+    float maxVel = 0.f;
+    for (int i = 0; i < cellCount(); ++i) {
+        maxH = std::max(maxH, heights_[size_t(i)]);
+        const float h = std::max(heights_[size_t(i)], minDepth_);
+        const float u = momentumX_[size_t(i)] / h;
+        const float v = momentumZ_[size_t(i)] / h;
+        maxVel        = std::max(maxVel, std::sqrt(u * u + v * v));
+    }
+    const float waveSpeed = std::sqrt(gravity_ * maxH) + maxVel + 1.f;
     const float safeDt    = cfl_ * cellSize_ / std::max(waveSpeed, 1e-3f);
     int         substeps  = std::clamp(int(std::ceil(dt / safeDt)), 1, maxSubsteps_);
     const float subDt     = dt / float(substeps);

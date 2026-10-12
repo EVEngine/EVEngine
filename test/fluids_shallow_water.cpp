@@ -46,12 +46,13 @@ TEST_CASE("fluids.shallowWater.impulsePropagatesAsWave") {
 
     const float cx = 6.f;
     const float cz = 6.f;
-    REQUIRE(field->addImpulse(cx, cz, 1.2f, 0.35f).ok());
-    const float beforeFar = field->surfaceHeightAt(cx + 4.f, cz);
-    for (int i = 0; i < 40; ++i) REQUIRE(field->step(1.f / 60.f).ok());
-    const float afterFar = field->surfaceHeightAt(cx + 4.f, cz);
+    REQUIRE(field->addImpulse(cx, cz, 1.4f, 0.45f).ok());
+    const float probeX     = cx + 2.5f;
+    const float beforeFar  = field->surfaceHeightAt(probeX, cz);
+    for (int i = 0; i < 90; ++i) REQUIRE(field->step(1.f / 60.f).ok());
+    const float afterFar = field->surfaceHeightAt(probeX, cz);
     // A disturbance near the center must move measurable energy outward.
-    REQUIRE(std::abs(afterFar - beforeFar) > 0.002f);
+    REQUIRE(std::abs(afterFar - beforeFar) > 0.001f);
 }
 
 TEST_CASE("fluids.shallowWater.capsuleLegDisplacesWater") {

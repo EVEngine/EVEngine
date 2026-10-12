@@ -712,15 +712,18 @@ void Fluids::expose(ssq::Table& table) {
     sw.addFunc("clearColliders", [vm = table.getHandle()](ShallowWaterField* field) {
         return eve::script::projectResult(vm, field->setColliders({}));
     });
-    sw.addFunc("surfaceHeightAt", &ShallowWaterField::surfaceHeightAt);
-    sw.addFunc("depthAt", &ShallowWaterField::depthAt);
+    // Wrap const noexcept accessors in lambdas — simplesquirrel cannot bind
+    // `const noexcept` member pointers via addFunc(&T::method).
+    sw.addFunc("surfaceHeightAt",
+               [](ShallowWaterField* field, float x, float z) { return field->surfaceHeightAt(x, z); });
+    sw.addFunc("depthAt", [](ShallowWaterField* field, float x, float z) { return field->depthAt(x, z); });
     sw.addFunc("velocityXAt", [](ShallowWaterField* field, float x, float z) { return field->velocityAt(x, z).x; });
     sw.addFunc("velocityZAt", [](ShallowWaterField* field, float x, float z) { return field->velocityAt(x, z).y; });
-    sw.addFunc("resolutionX", &ShallowWaterField::resolutionX);
-    sw.addFunc("resolutionZ", &ShallowWaterField::resolutionZ);
-    sw.addFunc("cellSize", &ShallowWaterField::cellSize);
-    sw.addFunc("usingGpu", &ShallowWaterField::usingGpu);
-    sw.addFunc("usedBackendFallback", &ShallowWaterField::usedBackendFallback);
+    sw.addFunc("resolutionX", [](ShallowWaterField* field) { return field->resolutionX(); });
+    sw.addFunc("resolutionZ", [](ShallowWaterField* field) { return field->resolutionZ(); });
+    sw.addFunc("cellSize", [](ShallowWaterField* field) { return field->cellSize(); });
+    sw.addFunc("usingGpu", [](ShallowWaterField* field) { return field->usingGpu(); });
+    sw.addFunc("usedBackendFallback", [](ShallowWaterField* field) { return field->usedBackendFallback(); });
     sw.addFunc("buildSurfaceMesh", [vm = table.getHandle()](ShallowWaterField* field) {
         std::vector<float>    pos, nrm, uv;
         std::vector<uint32_t> idx;

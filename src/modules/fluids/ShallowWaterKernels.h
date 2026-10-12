@@ -186,24 +186,25 @@ void main() {
     vec3 qD = sampleQ(x, z - 1, resX, resZ);
     vec3 qU = sampleQ(x, z + 1, resX, resZ);
 
-    float alpha = cell / max(dt, 1e-6);
+    float hSafe = max(q.x, minH);
+    float u = q.y / hSafe;
+    float v = q.z / hSafe;
+    float alpha = abs(u) + abs(v) + sqrt(g * hSafe) + 1.0;
     vec3 fR = 0.5 * (fluxX(q, g, minH) + fluxX(qR, g, minH)) - 0.5 * alpha * (qR - q);
     vec3 fL = 0.5 * (fluxX(qL, g, minH) + fluxX(q, g, minH)) - 0.5 * alpha * (q - qL);
-    vec3 gU = 0.5 * (fluxZ(q, g, minH) + fluxZ(qU, g, minH)) - 0.5 * alpha * (qU - q);
-    vec3 gD = 0.5 * (fluxZ(qD, g, minH) + fluxZ(q, g, minH)) - 0.5 * alpha * (q - qD);
+    vec3 fluxUp = 0.5 * (fluxZ(q, g, minH) + fluxZ(qU, g, minH)) - 0.5 * alpha * (qU - q);
+    vec3 fluxDown = 0.5 * (fluxZ(qD, g, minH) + fluxZ(q, g, minH)) - 0.5 * alpha * (q - qD);
 
     float b = sampleBed(x, z, resX, resZ);
     float bL = sampleBed(x - 1, z, resX, resZ);
     float bR = sampleBed(x + 1, z, resX, resZ);
     float bD = sampleBed(x, z - 1, resX, resZ);
     float bU = sampleBed(x, z + 1, resX, resZ);
-    float hSafe = max(q.x, minH);
     vec3 source = vec3(0.0, -g * hSafe * (bR - bL) / (2.0 * cell), -g * hSafe * (bU - bD) / (2.0 * cell));
 
-    vec3 qn = q - (dt / cell) * (fR - fL + gU - gD) + dt * source;
-    // Artificial viscosity / friction for CFL-friendly lakes.
-    qn.y += viscosity * (qL.y + qR.y + qD.y + qU.y - 4.0 * q.y);
-    qn.z += viscosity * (qL.z + qR.z + qD.z + qU.z - 4.0 * q.z);
+    vec3 qn = q - (dt / cell) * (fR - fL + fluxUp - fluxDown) + dt * source;
+    qn.y += viscosity * dt * (qL.y + qR.y + qD.y + qU.y - 4.0 * q.y);
+    qn.z += viscosity * dt * (qL.z + qR.z + qD.z + qU.z - 4.0 * q.z);
     qn.y *= max(0.0, 1.0 - friction * dt);
     qn.z *= max(0.0, 1.0 - friction * dt);
 
@@ -211,6 +212,13 @@ void main() {
     if (qn.x <= minH) {
         qn.y = 0.0;
         qn.z = 0.0;
+    } else {
+        float speed = length(vec2(qn.y, qn.z)) / max(qn.x, minH);
+        if (speed > 8.0) {
+            float s = 8.0 / speed;
+            qn.y *= s;
+            qn.z *= s;
+        }
     }
     // Reflecting walls: kill normal momentum on domain edges.
     if (x == 0 || x == resX - 1) qn.y = 0.0;
