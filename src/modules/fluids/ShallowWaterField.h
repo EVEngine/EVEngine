@@ -182,18 +182,25 @@ public:
      * @param[out] normalsXYZ Vertex normals (3 floats each).
      * @param[out] uvsST Vertex UVs in [0,1]^2 (2 floats each).
      * @param[out] indices Triangle indices.
+     * @param visualHeightGain Display-only scale for `(h - rest)` relative to mean depth; 1 keeps
+     *        physical heights. Values in (0, 32] exaggerate centimetre waves for readability.
+     * @param[out] colorsRGBA Optional per-vertex RGBA (4 floats each) for coloured meshes;
+     *             pass nullptr to skip. Packs the same channel layout as `copyFieldToImage` with
+     *             rest-relative depth (`depthContrast = 0.12 * meanH`, `velocityScale = 1.5`).
      */
-    [[nodiscard("check shallow-water mesh")]] Result<void> buildSurfaceMesh(std::vector<float>&    positionsXYZ,
-                                                                            std::vector<float>&    normalsXYZ,
-                                                                            std::vector<float>&    uvsST,
-                                                                            std::vector<uint32_t>& indices) const;
+    [[nodiscard("check shallow-water mesh")]] Result<void> buildSurfaceMesh(
+        std::vector<float>& positionsXYZ, std::vector<float>& normalsXYZ, std::vector<float>& uvsST,
+        std::vector<uint32_t>& indices, float visualHeightGain = 1.f, std::vector<float>* colorsRGBA = nullptr) const;
 
     /**
      * @brief Pack per-cell depth / velocity into an RGBA8 image (`resolutionX` × `resolutionZ`).
      * @param image Destination; must be RGBA8 with width=`resolutionX` and height=`resolutionZ`.
      * @param velocityScale Horizontal speed that maps to the full channel range, in (0, 50].
+     * @param depthContrast When `<= 0`, R stores absolute `h / maxDepth`. When `> 0`, R stores a
+     *        rest-relative anomaly `0.5 + 0.5 * clamp((h - meanH) / depthContrast, -1, 1)` so centimetre
+     *        waves still paint the red channel (range `(0, maxDepth]`).
      * @details Channel layout (row `z`, column `x`, matching mesh UVs):
-     *          - R: water depth `h / maxDepth`
+     *          - R: water depth (absolute or rest-relative; see `depthContrast`)
      *          - G: `0.5 + 0.5 * clamp(vx / velocityScale, -1, 1)`
      *          - B: `0.5 + 0.5 * clamp(vz / velocityScale, -1, 1)`
      *          - A: `clamp(|v| / velocityScale, 0, 1)` (foam / speed mask)
@@ -201,7 +208,8 @@ public:
      * @return Success, or InvalidArgument when the image shape/format/scale is rejected.
      */
     [[nodiscard("check shallow-water field image")]] Result<void> copyFieldToImage(image::ImageData& image,
-                                                                                   float velocityScale = 2.f) const;
+                                                                                   float velocityScale = 2.f,
+                                                                                   float depthContrast = 0.f) const;
 
     /**
      * @brief Write a shaded water albedo (RGBA8, same size as the grid) for Material upload.

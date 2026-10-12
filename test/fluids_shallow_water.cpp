@@ -135,6 +135,16 @@ TEST_CASE("fluids.shallowWater.buildSurfaceMeshHasNormalsAndTriangles") {
     REQUIRE(uv.size() == size_t(16 * 12 * 2));
     REQUIRE(idx.size() == size_t(15 * 11 * 6));
     REQUIRE(idx.back() < uint32_t(16 * 12));
+
+    std::vector<float> colors;
+    REQUIRE(field->buildSurfaceMesh(pos, nrm, uv, idx, 4.f, &colors).ok());
+    REQUIRE(colors.size() == size_t(16 * 12 * 4));
+    float ymin = pos[1], ymax = pos[1];
+    for (size_t i = 0; i < pos.size(); i += 3) {
+        ymin = std::min(ymin, pos[i + 1]);
+        ymax = std::max(ymax, pos[i + 1]);
+    }
+    REQUIRE(ymax - ymin > 0.05f);
 }
 
 TEST_CASE("fluids.shallowWater.copyFieldToImageEncodesDepthAndVelocity") {
@@ -154,6 +164,8 @@ TEST_CASE("fluids.shallowWater.copyFieldToImageEncodesDepthAndVelocity") {
 
     eve::image::ImageData fieldImage(16, 16, "RGBA8");
     REQUIRE(field->copyFieldToImage(fieldImage, 2.f).ok());
+    eve::image::ImageData contrastImage(16, 16, "RGBA8");
+    REQUIRE(field->copyFieldToImage(contrastImage, 2.f, 0.08f).ok());
     eve::image::ImageData albedo(16, 16, "RGBA8");
     REQUIRE(field->copyShadedAlbedoToImage(albedo, 0.5f, 2.f).ok());
     eve::image::ImageData normals(16, 16, "RGBA8");
@@ -172,6 +184,16 @@ TEST_CASE("fluids.shallowWater.copyFieldToImageEncodesDepthAndVelocity") {
     }
     REQUIRE(depthVaries);
     REQUIRE(hasFlow);
+
+    // Rest-relative packing must swing R around mid-gray when waves are present.
+    const auto* contrastPx = static_cast<const uint8_t*>(contrastImage.getData());
+    uint8_t     rMin = 255, rMax = 0;
+    for (int i = 0; i < 16 * 16; ++i) {
+        const uint8_t r = contrastPx[size_t(i) * 4u + 0];
+        rMin            = std::min(rMin, r);
+        rMax            = std::max(rMax, r);
+    }
+    REQUIRE(int(rMax) - int(rMin) > 40);
 
     eve::image::ImageData wrong(8, 8, "RGBA8");
     REQUIRE(!field->copyFieldToImage(wrong, 2.f).ok());

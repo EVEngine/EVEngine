@@ -310,25 +310,54 @@ glm::vec2 ShallowWaterField::velocityAt(float worldX, float worldZ) const noexce
 }
 
 Result<void> ShallowWaterField::buildSurfaceMesh(std::vector<float>& positionsXYZ, std::vector<float>& normalsXYZ,
-                                                 std::vector<float>& uvsST, std::vector<uint32_t>& indices) const {
+                                                 std::vector<float>& uvsST, std::vector<uint32_t>& indices,
+                                                 float visualHeightGain, std::vector<float>* colorsRGBA) const {
+    if (!(visualHeightGain > 0.f) || visualHeightGain > 32.f || !std::isfinite(visualHeightGain))
+        return fail("visualHeightGain must be in (0, 32]");
+
     const int vx = resX_;
     const int vz = resZ_;
     positionsXYZ.resize(size_t(vx * vz) * 3u);
     normalsXYZ.resize(size_t(vx * vz) * 3u);
     uvsST.resize(size_t(vx * vz) * 2u);
+    if (colorsRGBA) colorsRGBA->assign(size_t(vx * vz) * 4u, 1.f);
     indices.clear();
     indices.reserve(size_t((vx - 1) * (vz - 1) * 6));
 
+    // Rest depth ≈ mean filled depth; used only for display exaggeration / vertex tint.
+    float restDepth = 0.f;
+    for (float h : heights_) restDepth += h;
+    restDepth /= float(std::max(cellCount(), 1));
+
     for (int z = 0; z < vz; ++z) {
         for (int x = 0; x < vx; ++x) {
-            const int   i  = index(x, z);
+            const int    i = index(x, z);
             const size_t p = size_t(i) * 3u;
             const size_t u = size_t(i) * 2u;
+            const float  h = heights_[size_t(i)];
+            const float  y = beds_[size_t(i)] + restDepth + (h - restDepth) * visualHeightGain;
             positionsXYZ[p]     = origin_.x + (float(x) + 0.5f) * cellSize_;
-            positionsXYZ[p + 1] = beds_[size_t(i)] + heights_[size_t(i)];
+            positionsXYZ[p + 1] = y;
             positionsXYZ[p + 2] = origin_.z + (float(z) + 0.5f) * cellSize_;
             uvsST[u]     = float(x) / float(std::max(vx - 1, 1));
             uvsST[u + 1] = float(z) / float(std::max(vz - 1, 1));
+
+            if (colorsRGBA) {
+                // Match copyFieldToImage rest-relative packing so vertex colours carry depth/velocity.
+                constexpr float kVelScale = 1.5f;
+                const float     depthContrast =
+                    std::max(0.12f * std::max(restDepth, 1e-3f), 1e-3f);
+                const float invH   = 1.f / std::max(h, minDepth_);
+                const float vxCell = momentumX_[size_t(i)] * invH;
+                const float vzCell = momentumZ_[size_t(i)] * invH;
+                const float speed  = std::sqrt(vxCell * vxCell + vzCell * vzCell);
+                const size_t c     = size_t(i) * 4u;
+                (*colorsRGBA)[c] =
+                    0.5f + 0.5f * std::clamp((h - restDepth) / depthContrast, -1.f, 1.f);
+                (*colorsRGBA)[c + 1] = 0.5f + 0.5f * std::clamp(vxCell / kVelScale, -1.f, 1.f);
+                (*colorsRGBA)[c + 2] = 0.5f + 0.5f * std::clamp(vzCell / kVelScale, -1.f, 1.f);
+                (*colorsRGBA)[c + 3] = std::clamp(speed / kVelScale, 0.f, 1.f);
+            }
         }
     }
     for (int z = 0; z < vz; ++z) {
@@ -343,10 +372,10 @@ Result<void> ShallowWaterField::buildSurfaceMesh(std::vector<float>& positionsXY
             const glm::vec3 dz = pos(x, z + 1) - pos(x, z - 1);
             glm::vec3       n  = glm::normalize(glm::cross(dz, dx));
             if (!std::isfinite(n.x) || !std::isfinite(n.y) || !std::isfinite(n.z)) n = {0.f, 1.f, 0.f};
-            const size_t p      = size_t(index(x, z)) * 3u;
-            normalsXYZ[p]       = n.x;
-            normalsXYZ[p + 1]   = n.y;
-            normalsXYZ[p + 2]   = n.z;
+            const size_t p    = size_t(index(x, z)) * 3u;
+            normalsXYZ[p]     = n.x;
+            normalsXYZ[p + 1] = n.y;
+            normalsXYZ[p + 2] = n.z;
         }
     }
     for (int z = 0; z < vz - 1; ++z) {
@@ -380,10 +409,19 @@ namespace {
 
 }  // namespace
 
-Result<void> ShallowWaterField::copyFieldToImage(image::ImageData& image, float velocityScale) const {
+Result<void> ShallowWaterField::copyFieldToImage(image::ImageData& image, float velocityScale,
+                                                 float depthContrast) const {
     if (auto shape = requireRgbaGrid(image, resX_, resZ_); !shape) return shape;
     if (!(velocityScale > 0.f) || velocityScale > 50.f || !std::isfinite(velocityScale))
         return fail("velocityScale must be in (0, 50]");
+    if (!std::isfinite(depthContrast) || depthContrast > maxDepth_)
+        return fail("depthContrast must be finite and <= maxDepth");
+
+    float meanH = 0.f;
+    if (depthContrast > 0.f) {
+        for (float h : heights_) meanH += h;
+        meanH /= float(std::max(cellCount(), 1));
+    }
 
     auto* pixels = static_cast<uint8_t*>(image.getData());
     for (int z = 0; z < resZ_; ++z) {
@@ -395,10 +433,13 @@ Result<void> ShallowWaterField::copyFieldToImage(image::ImageData& image, float 
             const float vz    = momentumZ_[size_t(i)] * invH;
             const float speed = std::sqrt(vx * vx + vz * vz);
             const size_t p    = size_t(z * resX_ + x) * 4u;
-            pixels[p + 0]     = toU8(h / std::max(maxDepth_, 1e-4f));
-            pixels[p + 1]     = toU8(0.5f + 0.5f * std::clamp(vx / velocityScale, -1.f, 1.f));
-            pixels[p + 2]     = toU8(0.5f + 0.5f * std::clamp(vz / velocityScale, -1.f, 1.f));
-            pixels[p + 3]     = toU8(std::clamp(speed / velocityScale, 0.f, 1.f));
+            if (depthContrast > 0.f)
+                pixels[p + 0] = toU8(0.5f + 0.5f * std::clamp((h - meanH) / depthContrast, -1.f, 1.f));
+            else
+                pixels[p + 0] = toU8(h / std::max(maxDepth_, 1e-4f));
+            pixels[p + 1] = toU8(0.5f + 0.5f * std::clamp(vx / velocityScale, -1.f, 1.f));
+            pixels[p + 2] = toU8(0.5f + 0.5f * std::clamp(vz / velocityScale, -1.f, 1.f));
+            pixels[p + 3] = toU8(std::clamp(speed / velocityScale, 0.f, 1.f));
         }
     }
     return Result<void>::success();
@@ -412,34 +453,36 @@ Result<void> ShallowWaterField::copyShadedAlbedoToImage(image::ImageData& image,
     if (!(velocityScale > 0.f) || velocityScale > 50.f || !std::isfinite(velocityScale))
         return fail("velocityScale must be in (0, 50]");
 
-    auto*       pixels   = static_cast<uint8_t*>(image.getData());
-    const float invRest  = 1.f / restDepth;
+    auto*       pixels  = static_cast<uint8_t*>(image.getData());
+    const float invRest = 1.f / restDepth;
     for (int z = 0; z < resZ_; ++z) {
         for (int x = 0; x < resX_; ++x) {
-            const int   i       = index(x, z);
-            const float h       = heights_[size_t(i)];
-            const float invH    = 1.f / std::max(h, minDepth_);
-            const float vx      = momentumX_[size_t(i)] * invH;
-            const float vz      = momentumZ_[size_t(i)] * invH;
-            const float speed   = std::sqrt(vx * vx + vz * vz);
-            // Exaggerate small height anomalies so crests/troughs read clearly in albedo.
-            const float anomaly = std::clamp((h - restDepth) * invRest * 4.f, -1.f, 1.f);
-            const float foam    = std::clamp(speed / velocityScale, 0.f, 1.f);
+            const int   i     = index(x, z);
+            const float h     = heights_[size_t(i)];
+            const float invH  = 1.f / std::max(h, minDepth_);
+            const float vx    = momentumX_[size_t(i)] * invH;
+            const float vz    = momentumZ_[size_t(i)] * invH;
+            const float speed = std::sqrt(vx * vx + vz * vz);
+            // Strong gain so centimetre-scale waves still read as clear crests/troughs.
+            const float anomaly = std::clamp((h - restDepth) * invRest * 14.f, -1.f, 1.f);
+            const float foam    = std::clamp(speed / (velocityScale * 0.45f), 0.f, 1.f);
             const float flowX   = std::clamp(vx / velocityScale, -1.f, 1.f);
             const float flowZ   = std::clamp(vz / velocityScale, -1.f, 1.f);
+            const float crest   = 0.5f + 0.5f * anomaly;
 
-            float r = 0.05f + 0.10f * (0.5f + 0.5f * anomaly) + 0.08f * flowX;
-            float g = 0.28f + 0.35f * (0.5f + 0.5f * anomaly) + 0.12f * flowZ;
-            float b = 0.42f + 0.45f * (0.5f + 0.5f * anomaly);
+            // Deep navy → bright turquoise with magenta/lime flow tint + white foam.
+            float r = 0.02f + 0.55f * crest + 0.35f * std::max(0.f, flowX);
+            float g = 0.12f + 0.70f * crest + 0.30f * std::max(0.f, flowZ);
+            float b = 0.28f + 0.65f * crest + 0.20f * std::max(0.f, -flowX);
             r       = r * (1.f - foam) + foam;
             g       = g * (1.f - foam) + foam;
-            b       = b * (1.f - 0.85f * foam) + 0.85f * foam;
+            b       = b * (1.f - 0.75f * foam) + 0.75f * foam;
 
             const size_t p = size_t(z * resX_ + x) * 4u;
             pixels[p + 0]  = toU8(r);
             pixels[p + 1]  = toU8(g);
             pixels[p + 2]  = toU8(b);
-            pixels[p + 3]  = toU8(0.72f + 0.28f * foam);
+            pixels[p + 3]  = toU8(0.78f + 0.22f * foam);
         }
     }
     return Result<void>::success();

@@ -724,36 +724,39 @@ void Fluids::expose(ssq::Table& table) {
     sw.addFunc("cellSize", [](ShallowWaterField* field) { return field->cellSize(); });
     sw.addFunc("usingGpu", [](ShallowWaterField* field) { return field->usingGpu(); });
     sw.addFunc("usedBackendFallback", [](ShallowWaterField* field) { return field->usedBackendFallback(); });
-    sw.addFunc("buildSurfaceMesh", [vm = table.getHandle()](ShallowWaterField* field) {
-        std::vector<float>    pos, nrm, uv;
+    sw.addFunc("buildSurfaceMesh", [vm = table.getHandle()](ShallowWaterField* field, float visualHeightGain) {
+        std::vector<float>    pos, nrm, uv, colors;
         std::vector<uint32_t> idx;
-        auto                  built = field->buildSurfaceMesh(pos, nrm, uv, idx);
+        auto                  built = field->buildSurfaceMesh(pos, nrm, uv, idx, visualHeightGain, &colors);
         if (!built) return eve::script::projectResult(vm, eve::Result<void>::failure(built.status()));
         ssq::Table mesh(vm);
         ssq::Array posArr(vm);
         ssq::Array nrmArr(vm);
         ssq::Array uvArr(vm);
+        ssq::Array colArr(vm);
         ssq::Array idxArr(vm);
         for (float v : pos) posArr.push(v);
         for (float v : nrm) nrmArr.push(v);
         for (float v : uv) uvArr.push(v);
+        for (float v : colors) colArr.push(v);
         for (uint32_t v : idx) idxArr.push(int(v));
         mesh.set("positions", posArr);
         mesh.set("normals", nrmArr);
         mesh.set("uvs", uvArr);
+        mesh.set("colors", colArr);
         mesh.set("indices", idxArr);
         mesh.set("vertexCount", int(pos.size() / 3u));
         mesh.set("indexCount", int(idx.size()));
         return eve::script::projectStatusResult(vm, eve::Status::success(), mesh);
     });
     sw.addFunc("copyFieldToImage", [vm = table.getHandle()](ShallowWaterField* field, image::ImageData* image,
-                                                            float velocityScale) {
+                                                            float velocityScale, float depthContrast) {
         if (!image)
             return eve::script::projectResult(
                 vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                       "copyFieldToImage requires an ImageData",
                                                                       "fluids.shallowWater")));
-        return eve::script::projectResult(vm, field->copyFieldToImage(*image, velocityScale));
+        return eve::script::projectResult(vm, field->copyFieldToImage(*image, velocityScale, depthContrast));
     });
     sw.addFunc("copyShadedAlbedoToImage", [vm = table.getHandle()](ShallowWaterField* field, image::ImageData* image,
                                                                    float restDepth, float velocityScale) {

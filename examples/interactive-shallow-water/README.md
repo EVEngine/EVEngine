@@ -26,6 +26,7 @@ make run/<platform>-debug GAME=examples/interactive-shallow-water
 | `Space` | 暂停 / 继续 |
 | `R` | 重置水深与角色位置 |
 | `G` | 打印当前是否走 GPU 路径 |
+| `F` | 水面贴图：场通道（R/G/B）↔ 着色水色 |
 
 ## 文件
 
@@ -38,11 +39,13 @@ make run/<platform>-debug GAME=examples/interactive-shallow-water
 
 - API：`eve.Fluids().newShallowWater(resX, resZ, cellSize)` → `ShallowWater`
 - 每帧 `setColliderCapsule` 更新左右腿，再 `step(dt)`
-- `buildSurfaceMesh()` 产出 positions/normals/uvs/indices，经 `gfx.updateMeshVertices` 上传
-- 场纹理（`copyFieldToImage`，RGBA8，格子分辨率）：
-  - **R** = 水深 `h / maxDepth`
+- `buildSurfaceMesh(visualHeightGain)` 产出 positions/normals/uvs/indices/colors，经
+  `gfx.updateMeshVertices` 上传；顶点色与场纹理共用通道语义
+- 场纹理（`copyFieldToImage(image, velocityScale, depthContrast)`，RGBA8，格子分辨率）：
+  - **R** = 水深（`depthContrast>0` 时为相对均值对比度，否则 `h/maxDepth`）
   - **G / B** = 水平速度 `vx` / `vz`（0.5 为静止，按 `velocityScale` 映射）
   - **A** = 速率 `|v| / velocityScale`（泡沫 / 扰动掩码）
+- 示例默认把场纹理贴在水面上（无光照），另有 UV 图例板；`F` 可切到着色反照率 + 法线
 - 着色：`copyShadedAlbedoToImage`（深度起伏 + 流向色偏 + 泡沫）与
-  `copyNormalToImage`（自由面斜率法线）每帧上传到 Material / Renderable3D
+  `copyNormalToImage`（自由面斜率法线）每帧上传
 - 单元测试见 `test/fluids_shallow_water.cpp`
