@@ -499,7 +499,7 @@ jobs:
     # A cold Release build took 55 minutes and the process-isolated 3510-case
     # suite reached 3060/3510 at the former 30-minute test guard. Preserve
     # bounded hang detection while budgeting setup, build, and the full suite.
-    timeout-minutes: 240
+    timeout-minutes: 300
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
@@ -545,9 +545,8 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        # Cold release builds reached the former 90- and 120-minute guards
-        # without a compiler failure in runs 35419568563 and 35436382201.
-        timeout-minutes: 160
+        # Release run 38235152198 reached 2622/2840 edges at 160 minutes.
+        timeout-minutes: 210
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1447,7 +1446,7 @@ jobs:
     runs-on: ubuntu-24.04
     # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
     # the 90-minute test guard, plus dependency/toolchain setup and reporting.
-    timeout-minutes: 270
+    timeout-minutes: 330
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1519,10 +1518,10 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux RelWithDebInfo (ASan+UBSan)
-        # PRs cannot populate the shared sccache, so sanitizer flag sets are a
-        # cold rebuild. Runs 34820985249 / 34823491554 reached ~94% after 100m;
-        # keep headroom for linking unit_test. Job budget is 270m.
-        timeout-minutes: 140
+        # Release run 38235152198 reached 92% after 140m with 1.21% cache hits.
+        # Allow cold optimized sanitizer compilation and final test links;
+        # the separate 90-minute test guard remains intact.
+        timeout-minutes: 180
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-

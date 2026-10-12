@@ -37,7 +37,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
 
     def test_release_job_budgets_cover_cold_builds_and_tests(self) -> None:
         minimums = {
-            "windows-release": 240,
+            "windows-release": 300,
             "android-release": 180,
             "macos-release": 150,
             "linux-release": 150,
@@ -52,7 +52,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
     def test_cold_native_build_steps_have_observed_headroom(self) -> None:
         minimums = {
             ("windows", "Build win32 debug"): 100,
-            ("windows-release", "Build win32 release"): 160,
+            ("windows-release", "Build win32 release"): 210,
             ("android", "Build android debug"): 85,
             ("macos", "Build macosx debug"): 75,
             ("macos", "Run macosx unit tests"): 60,
@@ -61,6 +61,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("linux-release", "Build linux release"): 105,
             ("android-release", "Build android release"): 120,
             ("profile-matrix", "Build independent profile smoke target"): 60,
+            ("linux-asan", "Build linux RelWithDebInfo (ASan+UBSan)"): 180,
         }
         for (job, step), minimum in minimums.items():
             with self.subTest(job=job, step=step):
@@ -73,6 +74,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             "macos": 240,
             "linux-coverage": 150,
             "profile-matrix": 130,
+            "linux-asan": 330,
         }
         for job, minimum in minimums.items():
             with self.subTest(job=job):
