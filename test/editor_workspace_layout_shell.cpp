@@ -1,4 +1,5 @@
-#include "common/Test.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
 #include "editor/EditorWorkspace.h"
 #include "ui/UIHost.h"
@@ -115,7 +116,7 @@ TEST_CASE("editor.ui.layout.workspace_shell_maps_regions_to_dock_areas") {
                                                         .context = "history",
                                                         .order = 1})
                 .ok());
-    REQUIRE(workspace.activatePanel("viewport").ok());
+    REQUIRE(workspace.activatePanel("viewport"));
 
     CHECK_EQ(WorkspaceLayoutShell::panelsInRegion(workspace, "bottom").size(), 2u);
     CHECK_EQ(WorkspaceLayoutShell::panelsInRegion(workspace, "left").size(), 1u);

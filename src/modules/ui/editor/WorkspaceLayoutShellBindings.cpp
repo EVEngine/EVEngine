@@ -34,7 +34,7 @@ bool mountWorkspaceShell(ui::UI* uiModule, editor::EditorWorkspace* workspace,
                                           std::move(root));
     if (auto host = ui::UIHost::resolve(handle)) {
         // Lock chrome: fixed IDE layout, not freely draggable panels.
-        auto* meta = host->get().meta();
+        auto meta = host->get().meta();
         meta->hasPos = true;
         meta->posX = 0.f;
         meta->posY = 0.f;

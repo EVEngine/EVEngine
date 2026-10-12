@@ -1581,7 +1581,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     case NodeType::Tab: {
         const std::string label = nodeLabel(n, "Tab");
         const Theme &theme = globalTheme();
-        const ImVec4 *color = n.checked ? theme.tabActive : theme.tab;
+        const float *color = n.checked ? theme.tabActive : theme.tab;
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(color[0], color[1], color[2], color[3]));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
                               ImVec4(theme.tabHovered[0], theme.tabHovered[1], theme.tabHovered[2],
