@@ -191,4 +191,8 @@ local out = stagingBuffer.readFloat32s(count);
 
 **源码：** [`src/modules/gpgpu/`](../../../src/modules/gpgpu/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `gpgpu` / `ShaderECS`。
-**示例：** [`examples/ecs/gpu_main.nut`](../../../examples/ecs/gpu_main.nut)、[`examples/basic/compute/ecs_move.comp`](../../../examples/basic/compute/ecs_move.comp)
+**示例：** [`examples/ecs/gpu_main.nut`](../../../examples/ecs/gpu_main.nut)（计算 shader 内嵌在该脚本的 kMoveKernel 中）
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](gpgpu/api-reference.md)，使用前先确认本章的前置条件与生命周期。

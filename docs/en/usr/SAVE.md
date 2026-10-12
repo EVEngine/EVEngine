@@ -1,4 +1,4 @@
-# Saving Games Across Modules (0.6)
+# Saving Games Across Modules (Current Source)
 
 [中文](../../usr/SAVE.md) · [User guide](README.md)
 
@@ -25,52 +25,42 @@ Player saves combine gameplay domains using **JSON text, strict validation and a
 
 ```squirrel
 local session = eve.RPGSaveSession();
-session.setContentVersion("mygame.content.v1");
-// New games use party schema v2.
-session.bindParty(gameState, tracker, party, bag, equipment);
-// Legacy single-character path:
-// session.bind(gameState, tracker, actor, bag, equipment);
+if (session.setContentVersion("mygame.content.v1") == 0)
+    throw "invalid content version";
+if (session.bindParty(gameState, tracker, party, bag, equipment) == 0)
+    throw "save participants are missing";
 
-local snap = session.snapshotJson(); // Strict envelope and digest.
-// The script binding returns a string (empty on failure), not a Result table.
-// Atomic writing returns 1/0 in scripts.
-if (snap == "" || fs.writeTextAtomic("slot1.json", snap) == 0) {
-    print("save failed\n");
-}
-
-// Load matching item/quest/ability definitions before restoring.
-// Validation and restore both return 1/0 in scripts.
-if (session.validateSnapshotJson(json) != 0 && session.restoreSnapshotJson(json) != 0) {
-    rpg.syncEquipModifiers(actor, equipment); // Rebuild the equipment projection.
-} else {
-    print("restore failed; try a backup\n");
-}
+// Snapshot returns a string (empty on failure); validation/restore/write return 1/0.
+local snap = session.snapshotJson();
+if (snap == "" || session.validateSnapshotJson(snap) == 0)
+    throw "cannot snapshot this checkpoint";
+if (fs.writeTextAtomic("slot1.json", snap) == 0)
+    throw "cannot commit slot1.json";
+local json = fs.readText("slot1.json");
+if (json == "" || session.validateSnapshotJson(json) == 0)
+    throw "missing or invalid save";
+if (session.restoreSnapshotJson(json) == 0)
+    throw "restore rejected; participants unchanged";
 ```
 
-These are integration fragments: `gameState`, `tracker`, `party`, `bag`, `equipment`, `actor` and `json` come from your game. Handle each failure before proceeding; do not restore a candidate that validation rejected.
+The first fragment uses party schema v2. Do not pass a party as the single actor to syncEquipModifiers. All fragments are integration code: `gameState`, `tracker`, `party`, `bag`, `equipment`, `actor` and `json` come from your game. Handle each failure before proceeding; do not restore a candidate that validation rejected.
 
 The Chinese RPG guide covers content versions, ID renames, appended quest migrations and single-character-to-party migration.
 
 ## Tactics: snapshot and optional replay log
 
 ```squirrel
+
 local baseline = battle.revision();
 local doc = battle.snapshotJson();
-// After advancing the game, capture commands accepted after baseline.
+if (!doc.ok) throw "battle snapshot failed";
+// Advance the battle with accepted commands before capturing the optional log.
 local log = battle.commandLogJson(baseline);
-
-// Check both Results before accessing their values.
-if (doc.ok && log.ok) {
-    local restored = battle.restoreJson(doc.value);
-    if (restored.ok) {
-        local replayed = battle.replayJson(log.value);
-        if (!replayed.ok) print(replayed.status.summary + "\n");
-    } else {
-        print(restored.status.summary + "\n");
-    }
-} else {
-    print("snapshot or command log failed\n");
-}
+if (!log.ok) throw "battle command log failed";
+local restored = battle.restoreJson(doc.value);
+if (!restored.ok) throw "battle restore failed";
+local replayed = battle.replayJson(log.value);
+if (!replayed.ok) throw "battle replay failed";
 ```
 
 The log must be anchored to the snapshot's baseline. HP or cooldowns owned by ECS/RPG are not automatically included in a tactics snapshot. Save them separately and restore in a defined order. A single transaction combining board and RPG state is a 0.7 roadmap goal; 0.6 callers coordinate it explicitly.
@@ -78,11 +68,19 @@ The log must be anchored to the snapshot's baseline. HP or cooldowns owned by EC
 ## Save slots and backups
 
 ```squirrel
-if (fs.writeTextAtomic("save-slot1.json", jsonText) == 0) print("save failed\n");
+
+if (fs.writeTextAtomic("save-slot1.json", jsonText) == 0)
+    throw "save write failed";
 local text = fs.readText("save-slot1.json");
+if (text == "") throw "save absent or unreadable";
 ```
 
 Check the return contract of file operations. Paths must stay inside the configured save directory. WebGPU currently cannot provide the same atomic replacement guarantee and reports failure; see [files and hot reload](modules/filesystem.md).
+
+Initialize the writable identity with checked setIdentity/setupWriteDirectory calls; config.identity does not do this.
+Validate the old primary before copying it to the backup. Check that backup writing succeeded before replacing the primary.
+If both candidates are invalid, keep the existing game state. A single-file atomic write does not provide a cross-domain transaction.
+The [complete tutorial (Chinese)](../../usr/GAME_DEVELOPMENT.md) and its [actual game source](../../../examples/game-tutorial/main.nut) implement this flow.
 
 `rpg-classic` rotates three slot files and `.backup.json` files, and lists only slots passing `validateSnapshotJson` on the title screen.
 

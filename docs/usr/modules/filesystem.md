@@ -25,7 +25,7 @@ fs.watch("config/game.json");
 
 ### 读写存档
 
-先用 `createDirectory()` 创建存档目录；重要玩家存档用 `fs.writeTextAtomic(path, text)`，并检查脚本返回值 `1/0`。读取前可用 `getRealDirectory(path)` 判断资源是否可解析；普通缓存或可重建输出可用 `write()` / `writeText()`。
+先用 `createDirectory()` 创建存档目录，再用 `write()` 写入序列化文本。读取前可用 `getRealDirectory(path)` 判断资源是否可解析；写临时文件后再替换正式存档可避免中途退出损坏数据。
 
 ### 热更新配置
 
@@ -52,7 +52,17 @@ fs.watch("config/game.json");
 - watcher 注册后从不轮询：必须在更新阶段调用 `pollWatch()`。
 - 热更新失败后把资源置空：先构造新资源，成功后原子替换。
 
-## 绑定与行为说明
+## API 快查
+
+下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
+
+- `append()`、`areSymlinksEnabled()`、`bind()`、`createDirectory()`、`getAppdataDirectory()`、`getCRequirePath()`、`getDirectoryItems()`、`getExecutablePath()`
+- `getIdentity()`、`getLastWatchPath()`、`getLastWatchRealPath()`、`getName()`、`getRealDirectory()`、`getRequirePath()`、`getSaveDirectory()`、`getSource()`
+- `getSourceBaseDirectory()`、`getUserDirectory()`、`getWatchCount()`、`getWorkingDirectory()`、`isAndroidSaveExternal()`、`isFused()`、`isRealDirectory()`、`newFile()`
+- `newFileData()`、`pollWatch()`、`read()`、`readText()`、`remove()`、`setAndroidSaveExternal()`、`setFused()`、`setIdentity()`、`setSource()`
+- `setSymlinksEnabled()`、`setupWriteDirectory()`、`tryReload()`、`unbind()`、`unwatch()`、`unwatchAll()`、`watch()`、`watchTree()`、`watchNewDirectory()`
+- `startRemoteSync()`、`stopRemoteSync()`、`isRemoteSyncing()`、`remoteSyncStatus()`、`pollRemoteChange()`、`setRemoteHotDir()`
+- `write()`、`writeText()`、`writeTextAtomic()`、`mountExternalReadOnly()`
 
 玩家存档应使用 `writeTextAtomic(relativePath, text)`：原生平台先写同目录临时文件并刷新，
 再原子替换目标，写入阶段失败时保留旧文件。路径必须位于配置的保存目录内且不能包含父级穿越。
@@ -62,6 +72,7 @@ WebGPU 当前无法提供同等级替换保证，会明确返回失败；普通�
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
+- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/filesystem/`](../../../src/modules/filesystem/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `filesystem`。
@@ -73,5 +84,9 @@ WebGPU 当前无法提供同等级替换保证，会明确返回失败；普通�
 等待已有任务或同步加载，返回共享只读 FileData；缓存卸载/重载不使已持有的快照失效。
 单文件上限 1 GiB，调用者的更小 limit 额外检查；空路径和保留的 `?` 后缀被拒绝。
 提交及同步读取在游戏线程，工作线程不访问 VM/GPU；文件系统销毁前必须排空任务。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](filesystem/api-reference.md)，使用前先确认本章的前置条件与生命周期。
 
 `getName()` 返回模块名称，适合诊断日志；它不代表所管理资源的标识。

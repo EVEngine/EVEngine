@@ -15,11 +15,12 @@
 
 高级光照 / AO / GI / AA / 体积雾等见 [高级渲染与屏幕空间效果](graphics/rendering-effects.md)。实时雾气专册见 [graphics_fog](graphics_fog.md)。
 
-## 0.6 已知边界
+## 当前源码的能力边界
 
-下列能力在 0.6 **可以宣称并写进游戏**；未完成项保持显式 Unsupported / 文档边界，不得静默假实现。
+当前源码提供下列接口；实际可用性取决于构建和设备。此表不是发布版本或画面验收报告，
+未完成项保持显式 Unsupported / 文档边界，不得静默假实现。
 
-| 主题 | 0.6 已支持 | 已知边界（勿当作完成） |
+| 主题 | 当前接口 | 已知边界（勿当作完成） |
 |------|------------|------------------------|
 | 光照模式 | `RenderControl.setLightingMode("forwardPlus"\|"hybrid")`；桌面 preset 可切 Hybrid；半透明仍 Forward+ | ClassicScenes 像素对比与 FrameGraph 录制仍待补；Lavapipe/CI 默认 ForwardPlus |
 | 体积雾 / 体积光 | `Volumetric`、[实时雾气](graphics_fog.md)（MAC / ray march / froxel） | 可选：Froxel 绑真实 CSM shadow map、物体空间 AO / RTAO |
@@ -894,6 +895,19 @@ RGBA 模式任一通道命中即启用。`setMask(imageData)` 会复制像素，
 - Groom 的 `update(dt)` 完整推进模拟；参数与可见性修改只记录变化。视图准备阶段（或直接 `draw` 的准备边界）合并几何刷新并复用同一网格。`getMesh` 等 getter 不触发刷新，返回最后发布结果；`rebuild` 是兼容的显式同步刷新。`Representation::None` 隐藏但保留网格以供再次显示复用。显式可见性掩码属于调用者当前视图，多视图时在各视图绘制前更新，不能跨视图复用最后一次掩码。
 - Groom 必须在其 Graphics owner 销毁前析构；析构移除准备回调。网格、纹理与 shader 仍由 Graphics 统一回收，不产生第二套所有权。
 
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](graphics/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：从资源到一帧
+
+先在 init 解码 CPU 图像并创建 Texture，update 只改角色状态，render 按背景、世界、HUD 顺序提交。窗口 resize 后使用实际视口尺寸，设备重建后重建 GPU 资源。教程使用程序化纹理避免外部文件条件。3D 则先准备 Camera/Light/Renderable，再提交同一场景；曝光、阴影和后处理参数放在创建/设置阶段。昂贵的探针捕获和资源 upload 不混入每实体的 draw。
+
+完整项目：[examples/game-tutorial](../../../examples/game-tutorial/README.md)，
+其 [main.nut](../../../examples/game-tutorial/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。
+详细流程：[专题](graphics/rendering-effects.md)。
 ### AI 候选遮挡测量
 
 `eve.prepareSceneVisibility(request)` 返回 owning 单次查询，`query.measure(gfx)` 返回结构化 Result。
