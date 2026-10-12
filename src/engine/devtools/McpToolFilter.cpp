@@ -113,9 +113,10 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
         add("editor");
         return tags;
     }
-    if (startsWith(name, "eve_input_")) {
+    if (startsWith(name, "eve_input_") || name == "eve_whitebox_playtest") {
         add("input");
         add("play");
+        add("scene");
         return tags;
     }
     if (startsWith(name, "eve_agent_")) {
@@ -159,8 +160,9 @@ bool mcpToolMutates(std::string_view name) {
         startsWith(name, "eve_watch_") || startsWith(name, "eve_snapshot_"))
         return true;
     if (name == "eve_ui_click" || name == "eve_play" || name == "eve_gameplay") return true;
-    if (name == "eve_scene_modify" || name == "eve_scene_reset" || name == "eve_scene_node_set" ||
-        name == "set_camera_pose" || name == "eve_camera_generate")
+    if (name == "eve_scene_modify" || name == "eve_scene_batch" || name == "eve_scene_reset" ||
+        name == "eve_scene_node_set" || name == "set_camera_pose" || name == "eve_camera_generate" ||
+        name == "eve_whitebox_playtest")
         return true;
     if (startsWith(name, "eve_editor_") &&
         (name.find("execute") != std::string_view::npos || name.find("commit") != std::string_view::npos ||
