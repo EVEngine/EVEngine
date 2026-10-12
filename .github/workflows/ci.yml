@@ -435,11 +435,10 @@ jobs:
           }
 
       - name: Build native Dawn parity lane
-        # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
-        # 95% only when the former 40-minute guard fired on windows-latest. The
-        # growing module matrix crossed the later 75-minute guard in the v0.5.1
-        # release gate, so retain a bounded 30-minute link/cache variance margin.
-        timeout-minutes: 105
+        # Run 38162266736 reached 3,844/3,846 build actions before the cold
+        # Dawn/Tint + full unit_test build hit the 105-minute guard. Allow a
+        # bounded 30-minute margin for the final compile/link and runner variance.
+        timeout-minutes: 135
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
