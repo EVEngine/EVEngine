@@ -43,8 +43,12 @@ function mouseClicked() {
 }
 
 function requireOk(result, label) {
-    if (result == null || !result.ok)
-        throw label + " failed";
+    if (result == null || !result.ok) {
+        local detail = "";
+        if (result != null && ("status" in result) && result.status != null && ("summary" in result.status))
+            detail = " (" + result.status.summary + ")";
+        throw label + " failed" + detail;
+    }
     return result;
 }
 
@@ -174,6 +178,9 @@ eve_init = function() {
 };
 
 eve_update = function(dt) {
+    // Cap hitch frames; ignore non-positive ticks from the host clock.
+    if (dt <= 0.0) return;
+    if (dt > 0.05) dt = 0.05;
     if (edgePressed("space") || edgePressed("Space")) paused = !paused;
     if (edgePressed("r") || edgePressed("R")) resetLake();
     if (edgePressed("g") || edgePressed("G")) {

@@ -516,35 +516,47 @@ void ShallowWaterField::stepCpu(float dt) {
 }
 
 Result<void> ShallowWaterField::step(float dt) {
-    if (!std::isfinite(dt) || dt <= 0.f || dt > 1.f) return fail("dt must be in (0, 1]");
-
-    float maxH = minDepth_;
-    float maxVel = 0.f;
-    for (int i = 0; i < cellCount(); ++i) {
-        maxH = std::max(maxH, heights_[size_t(i)]);
-        const float h = std::max(heights_[size_t(i)], minDepth_);
-        const float u = momentumX_[size_t(i)] / h;
-        const float v = momentumZ_[size_t(i)] / h;
-        maxVel        = std::max(maxVel, std::sqrt(u * u + v * v));
-    }
-    const float waveSpeed = std::sqrt(gravity_ * maxH) + maxVel + 1.f;
-    const float safeDt    = cfl_ * cellSize_ / std::max(waveSpeed, 1e-3f);
-    int         substeps  = std::clamp(int(std::ceil(dt / safeDt)), 1, maxSubsteps_);
-    const float subDt     = dt / float(substeps);
-
-    if (preferGpu_) {
-        if (ensureGpu()) {
-            auto gpu = stepGpu(dt);  // stepGpu handles its own CFL substeps
-            if (gpu) return gpu;
-            backendFallback_ = true;
-            gpuOk_           = false;
-        } else {
-            backendFallback_ = true;
+    if (!std::isfinite(dt) || dt < 0.f) return fail("dt must be finite and >= 0");
+    if (dt == 0.f) return Result<void>::success();
+    // Long first frames after engine startup commonly exceed 1s; advance in
+    // capped chunks instead of rejecting the call.
+    float remaining = std::min(dt, 5.f);
+    while (remaining > 1e-6f) {
+        const float chunk = std::min(remaining, 1.f / 20.f);  // <= 50 ms chunks
+        float       maxH  = minDepth_;
+        float       maxVel = 0.f;
+        for (int i = 0; i < cellCount(); ++i) {
+            maxH = std::max(maxH, heights_[size_t(i)]);
+            const float h = std::max(heights_[size_t(i)], minDepth_);
+            const float u = momentumX_[size_t(i)] / h;
+            const float v = momentumZ_[size_t(i)] / h;
+            maxVel        = std::max(maxVel, std::sqrt(u * u + v * v));
         }
-    }
+        const float waveSpeed = std::sqrt(gravity_ * maxH) + maxVel + 1.f;
+        const float safeDt    = cfl_ * cellSize_ / std::max(waveSpeed, 1e-3f);
+        int         substeps  = std::clamp(int(std::ceil(chunk / safeDt)), 1, maxSubsteps_);
+        const float subDt     = chunk / float(substeps);
 
-    for (int i = 0; i < substeps; ++i) stepCpu(subDt);
-    stateOnGpu_ = false;
+        bool advanced = false;
+        if (preferGpu_) {
+            if (ensureGpu()) {
+                auto gpu = stepGpu(chunk);
+                if (gpu) {
+                    advanced = true;
+                } else {
+                    backendFallback_ = true;
+                    gpuOk_           = false;
+                }
+            } else {
+                backendFallback_ = true;
+            }
+        }
+        if (!advanced) {
+            for (int i = 0; i < substeps; ++i) stepCpu(subDt);
+            stateOnGpu_ = false;
+        }
+        remaining -= chunk;
+    }
     return Result<void>::success();
 }
 
