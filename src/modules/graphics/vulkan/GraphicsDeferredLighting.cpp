@@ -95,6 +95,8 @@ void Graphics::drawDeferredLighting() {
     if (!gslot || !gslot->normalGpu.sampler) return;
     createDeferredLightingPipeline();
     if (!deferredLightingPipeline || !deferredLightingSet) return;
+    // This descriptor set and UBO are shared across present slots.
+    waitForSharedGpuResources();
 
     if (!shadowPipeline) createShadowResources();
     vk::ImageView shadowView = currentShadowArrayView();
@@ -148,7 +150,7 @@ void Graphics::drawDeferredLighting() {
     auto& cfslots = currentMesh3dClusteredFrameSlots();
     ensureMesh3dClusteredRing(cfslots);
     const uint32_t shadowOffset = 0;
-    std::memcpy(static_cast<uint8_t*>(cfslots.shadowRing.map()) + shadowOffset, &mesh3dShadows.ubo, sizeof(ShadowUBO));
+    cfslots.shadowRing.updateLocal(frameToken(), &mesh3dShadows.ubo, sizeof(ShadowUBO));
 
     auto writeImage = [&](uint32_t binding, vk::ImageView view, vk::Sampler sampler,
                           vk::ImageLayout layout = vk::ImageLayout::eShaderReadOnlyOptimal) {

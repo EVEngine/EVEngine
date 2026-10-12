@@ -1645,7 +1645,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                                             rt->applyReflections(&gfx, sceneColor, depth, gb->getNormalTexture(),
                                                                  reflCanvas, invVP, viewProj, eye);
                                         if (applied.ok() && applied.code() != eve::StatusCode::NoOp) {
-                                            ssrTexture = ssr->getReflectionTexture();
+                                            ssrTexture = reflCanvas->getTexture();
                                             produced   = true;
                                         } else {
                                             applied.ignore();
@@ -1678,12 +1678,11 @@ void RenderSystem3D::render(Graphics& gfx) {
                     }
                 }
 
-                // All offscreen reflection work is complete. Queue AO and the
-                // reflection overlays only now, so a later setCanvas() cannot
-                // force an early swapchain present with pending overlays.
-                applyAO();
+                // Queue AO only after selecting the final composition target;
+                // switching targets with a pending AO draw presents too early.
                 if (rtgiTexture || ssrTexture) {
-                    if (gfx.getBackendName() == "vulkan") {
+                    if (gfx.getBackendName() == "vulkan" && !doRTX) {
+                        applyAO();
                         if (rtgiTexture)
                             gfx.drawTexturedRectShaderUV(rtgiTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
                                                          Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
@@ -1698,6 +1697,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                         gfx.setCanvas(composite);
                         gfx.drawTexturedRectShaderUV(sceneColor, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
                                                      Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Opaque);
+                        applyAO();
                         if (rtgiTexture)
                             gfx.drawTexturedRectShaderUV(rtgiTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
                                                          Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);

@@ -18,6 +18,12 @@
 
 #include <cstdlib>
 
+#if defined(_WIN32)
+// The manifest-derived import keeps this DLL's static module registrations
+// reachable even when the script host calls no module API directly.
+extern "C" __declspec(dllexport) void EVE_LINK_GROUP_ANCHOR() {}
+#else
 namespace eve::internal {
 void linkGroupAnchor() {}
 }  // namespace eve::internal
+#endif

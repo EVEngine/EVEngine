@@ -159,6 +159,12 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     list(APPEND _eve_lower_groups "${_eve_group}")
 
     if(WIN32)
+        target_compile_definitions(${_eve_group} PRIVATE
+            EVE_LINK_GROUP_ANCHOR=eve_link_group_${_eve_group})
+        # Import libraries alone do not retain DLLs used only for registration.
+        # Force one manifest-derived import per linked group into each consumer.
+        target_link_options(${_eve_group} INTERFACE
+            "LINKER:/INCLUDE:__imp_eve_link_group_${_eve_group}")
         set_target_properties(${_eve_group} PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
     else()
