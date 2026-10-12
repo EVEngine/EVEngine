@@ -1,20 +1,28 @@
 #include "scene/editor/SceneEditorSession.h"
 
+#include "common/Capability.h"
+#include "common/SceneVisibilityEvidence.h"
+#include "editing/EditingProperty.h"
 #include "editing/EditingValueJson.h"
 #include "editor/EditorCommandService.h"
 #include "editor/EditorTargetCoordinator.h"
+#include "scene/editing/SceneRegions.h"
 #include "scene/editing/SceneTarget.h"
+#include "scene/editor/SceneRelationEvidence.h"
+#include "scene/editor/SceneVisualRelationEvidence.h"
 
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <optional>
+#include <set>
 #include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -36,6 +44,7 @@ const editing::Value* valueField(const editing::Value& value, const char* key) {
 
 editing::Result<SceneGraph> sceneGraphOf(const editing::Value& snapshot) {
     const auto* root = snapshot.getIf<editing::Value::Object>();
+    if (root && root->contains("hierarchy")) root = root->at("hierarchy").getIf<editing::Value::Object>();
     if (!root)
         return editing::failed<SceneGraph>(editing::Status::Failed, editing::RuleId("scene.physics-placement.snapshot"),
                                            "Scene snapshot is not an object");
@@ -78,7 +87,7 @@ editing::Result<SceneGraph> sceneGraphOf(const editing::Value& snapshot) {
 }
 
 glm::dmat4 matrixOf(const scene_editing::SceneTransformValue& value) {
-    const auto rotation = glm::dquat(glm::dvec3(value.rotationX, value.rotationY, value.rotationZ));
+    const auto rotation = glm::quat_cast(glm::yawPitchRoll(value.rotationY, value.rotationX, value.rotationZ));
     return glm::translate(glm::dmat4(1.0), glm::dvec3(value.x, value.y, value.z)) * glm::mat4_cast(rotation) *
            glm::scale(glm::dmat4(1.0), glm::dvec3(value.scaleX, value.scaleY, value.scaleZ));
 }
@@ -120,7 +129,8 @@ editing::Result<scene_editing::SceneTransformValue> transformOf(const glm::dmat4
             editing::Status::Rejected, editing::RuleId("scene.physics-placement.sheared-transform"),
             "Physics placement cannot represent a sheared hierarchy transform as TRS");
     }
-    const auto                         euler = glm::eulerAngles(glm::normalize(rotation));
+    glm::dvec3 euler{};
+    glm::extractEulerAngleYXZ(glm::mat4_cast(glm::normalize(rotation)), euler.y, euler.x, euler.z);
     scene_editing::SceneTransformValue value;
     value.x         = translation.x;
     value.y         = translation.y;
@@ -286,6 +296,8 @@ struct SceneEditorSession::Impl {
     SceneGraph                                      placementGraph;
     std::unordered_map<std::string, glm::dmat4>     placementInitialWorld;
     std::uint64_t                                   placementTick = 0;
+    std::string                                     visibilityHost;
+    std::optional<eve::Value>                       visibilityRequest, visibilityProof;
 };
 SceneEditorSession::SceneEditorSession(std::string id)
     : SceneEditorSession(std::make_unique<scene_editing::SceneDocumentTarget>(std::move(id))) {}
@@ -484,6 +496,176 @@ editing::Result<void> SceneEditorSession::beginPhysicsPlacement(PhysicsPlacement
     return editing::applied<void>();
 }
 
+editing::Result<void> SceneEditorSession::beginRelationPlacement(PhysicsPlacementRequest request) {
+    const auto  snapshot       = impl_->target->snapshotValue();
+    const auto* relationsValue = valueField(snapshot, "relations");
+    if (!relationsValue)
+        return editing::failed<void>(editing::Status::Unsupported, editing::RuleId("scene.relations.owner"),
+                                     "Relation placement requires an authoring document");
+    auto* hierarchy = static_cast<scene_editing::ISceneHierarchyEditTarget*>(
+        impl_->target->queryCapability(scene_editing::ISceneHierarchyEditTarget::editorCapabilityId()));
+    auto relations = scene_editing::parseSceneRelations(*relationsValue, *hierarchy);
+    if (!relations.ok()) return editing::Result<void>::failure(relations.status());
+    std::unordered_set<std::string> admitted, selected;
+    for (const auto& object : request.objects) {
+        if (!object.enabled || (object.locked && object.selected))
+            return editing::failed<void>(editing::Status::Rejected, editing::RuleId("scene.relations.admission"),
+                                         "Disabled objects or selected locked objects cannot enter relation placement");
+        admitted.insert(object.object.value());
+        if (object.selected) selected.insert(object.object.value());
+    }
+    if (selected.size() != 1)
+        return editing::failed<void>(editing::Status::Unsupported, editing::RuleId("scene.relations.selection"),
+                                     "This relation preview supports exactly one adjustable object");
+    for (const auto& relation : relations.value()) {
+        if (!selected.contains(relation.subject.value()) && !selected.contains(relation.reference.value())) continue;
+        if (!admitted.contains(relation.subject.value()) ||
+            (!relation.reference.empty() && !admitted.contains(relation.reference.value())))
+            return editing::failed<void>(
+                editing::Status::Rejected, editing::RuleId("scene.relations.participant"),
+                "All relations incident to the adjustable object require admitted participants");
+    }
+    request.admission                        = PhysicsPlacementAdmissionPolicy{};
+    request.admission.excludeLocked          = false;  // locks prohibit motion, not collision participation
+    request.settings.preserveSelectionLayout = false;
+    return beginPhysicsPlacement(std::move(request));
+}
+editing::Result<std::string> SceneEditorSession::geometryRevision(const editing::ObjectId& object) const {
+    return scene_editing::sceneGeometryRevision(impl_->target->snapshotValue(), object);
+}
+editing::Result<void> SceneEditorSession::prepareRelationVisibility(std::string host, editing::Value input) {
+    const auto reject = [](editing::Status status, const char* message) {
+        return editing::failed<void>(status, editing::RuleId("scene.relations.visibility-prepare"), message);
+    };
+    if (!impl_->placement || impl_->target->revision() != impl_->placement->sourceRevision())
+        return reject(editing::Status::Conflict, "Active preview and current document revision required");
+    if (impl_->visibilityRequest)
+        return reject(editing::Status::Conflict, "Projection proof is fixed for this preview; discard and begin again");
+    auto* provider = cap::query<ISceneVisibilityEvidence>();
+    if (!provider) return reject(editing::Status::Unsupported, "Native visibility provider unavailable");
+    auto  request = editing::toPresentationValue(input);
+    auto* root    = request.getIf<eve::Value::Object>();
+    if (!root || !root->contains("camera") || !root->contains("draws") || !root->contains("sourceRevision"))
+        return reject(editing::Status::Rejected, "Visibility request fields missing");
+    const auto* revision = root->at("sourceRevision").getIf<std::int64_t>();
+    if (!revision || *revision != static_cast<std::int64_t>(impl_->target->revision()))
+        return reject(editing::Status::Conflict, "Visibility request revision does not match preview");
+    auto        snapshot    = impl_->target->snapshotValue();
+    const auto* cameraValue = valueField(snapshot, "camera");
+    if (!cameraValue) return reject(editing::Status::Unsupported, "Authored camera required");
+    auto        camera   = editing::toPresentationValue(*cameraValue);
+    const auto* authored = camera.getIf<eve::Value::Object>();
+    const auto* proposed = root->at("camera").getIf<eve::Value::Object>();
+    if (!authored || !proposed) return reject(editing::Status::Rejected, "Authored camera required");
+    for (const auto* key : {"eye", "target", "up", "fov", "near", "far"})
+        if (!authored->contains(key) || !proposed->contains(key) || authored->at(key) != proposed->at(key))
+            return reject(editing::Status::Conflict, "Visibility camera does not match authored camera");
+    auto frame = impl_->placement->relationFrame();
+    if (!frame.ok()) return editing::Result<void>::failure(frame.status());
+    std::unordered_set<std::string> selected;
+    for (const auto& object : frame.value().objects)
+        if (object.selected) selected.insert(object.object.value());
+    for (const auto& [id, node] : impl_->placementGraph) {
+        (void)id;
+        if (selected.contains(node.parent))
+            return reject(editing::Status::Unsupported, "Visual candidate currently requires an adjustable leaf");
+    }
+    auto* hierarchy = static_cast<scene_editing::ISceneHierarchyEditTarget*>(
+        impl_->target->queryCapability(scene_editing::ISceneHierarchyEditTarget::editorCapabilityId()));
+    auto relations = scene_editing::parseSceneRelations(*valueField(snapshot, "relations"), *hierarchy);
+    if (!relations.ok()) return editing::Result<void>::failure(relations.status());
+    auto targets = scene_editing::sceneVisibilityTargets(relations.value(), snapshot);
+    if (!targets.ok()) return editing::Result<void>::failure(targets.status());
+    if (targets.value().empty()) return reject(editing::Status::Unsupported, "No visual relations");
+    (*root)["schemaVersion"] = 2;
+    (*root)["targets"]       = editing::toPresentationValue(targets.value());
+    // Provider validates schema, completeness and generation-qualified native mapping before model inspection.
+    auto proof = provider->inspect(host, request);
+    if (!proof.ok()) return editing::Result<void>::failure(proof.status());
+    for (const auto& draw : *root->at("draws").getIf<eve::Value::Array>()) {
+        const auto& fields = *draw.getIf<eve::Value::Object>();
+        const auto& object = *fields.at("object").getIf<std::string>();
+        const auto  matrix = impl_->placementInitialWorld.find(object);
+        if (matrix == impl_->placementInitialWorld.end())
+            return reject(editing::Status::Conflict, "Draw object has no admitted authoritative transform");
+        const auto& values = *fields.at("model").getIf<eve::Value::Array>();
+        for (int i = 0; i < 16; ++i) {
+            const double value = values[i].getIf<double>() ? *values[i].getIf<double>()
+                                                           : static_cast<double>(*values[i].getIf<std::int64_t>());
+            if (std::abs(value - matrix->second[i / 4][i % 4]) > 1e-5 * std::max(1.0, std::abs(value)))
+                return reject(editing::Status::Conflict, "Initial visibility model does not match authored transform");
+        }
+    }
+    impl_->visibilityHost    = std::move(host);
+    impl_->visibilityRequest = std::move(request);
+    impl_->visibilityProof   = std::move(proof).takeValue();
+    return editing::applied<void>();
+}
+editing::Result<editing::Value> SceneEditorSession::checkRelationPlacement() const {
+    if (!impl_->placement)
+        return editing::failed<editing::Value>(editing::Status::Rejected, editing::RuleId("scene.relations.inactive"),
+                                               "No placement preview is active");
+    if (impl_->target->revision() != impl_->placement->sourceRevision())
+        return editing::failed<editing::Value>(editing::Status::Conflict, editing::RuleId("scene.relations.stale"),
+                                               "Scene changed during relation preview");
+    const auto  snapshot       = impl_->target->snapshotValue();
+    const auto* relationsValue = valueField(snapshot, "relations");
+    if (!relationsValue)
+        return editing::failed<editing::Value>(editing::Status::Unsupported, editing::RuleId("scene.relations.owner"),
+                                               "Persisted relations require an authoring document");
+    auto* hierarchy = static_cast<scene_editing::ISceneHierarchyEditTarget*>(
+        impl_->target->queryCapability(scene_editing::ISceneHierarchyEditTarget::editorCapabilityId()));
+    auto relations = scene_editing::parseSceneRelations(*relationsValue, *hierarchy);
+    if (!relations.ok()) return editing::Result<editing::Value>::failure(relations.status());
+    auto frame = impl_->placement->relationFrame();
+    if (!frame.ok()) return editing::Result<editing::Value>::failure(frame.status());
+    auto evaluated = evaluateSceneRelations(relations.value(), frame.value());
+    if (!evaluated.ok()) return evaluated;
+    (*evaluated.value().getIf<editing::Value::Object>())["sourceRevision"] =
+        static_cast<std::int64_t>(impl_->placement->sourceRevision());
+    const bool visual = std::any_of(relations.value().begin(), relations.value().end(), [](const auto& relation) {
+        return relation.kind == scene_editing::SceneRelationKind::VisibleFraction ||
+               relation.kind == scene_editing::SceneRelationKind::Occludes ||
+               relation.kind == scene_editing::SceneRelationKind::ProjectedOverlap;
+    });
+    if (!visual) return evaluated;
+    auto* provider = cap::query<ISceneVisibilityEvidence>();
+    if (!provider || !impl_->visibilityRequest || !impl_->visibilityProof)
+        return editing::failed<editing::Value>(editing::Status::Unsupported,
+                                               editing::RuleId("scene.relations.visibility-unprepared"),
+                                               "Incident visual relations require native projection preparation");
+    auto  request               = *impl_->visibilityRequest;
+    auto& root                  = *request.getIf<eve::Value::Object>();
+    root["candidateGeneration"] = static_cast<std::int64_t>(frame.value().tick);
+    for (auto& draw : *root.at("draws").getIf<eve::Value::Array>()) {
+        auto& fields = *draw.getIf<eve::Value::Object>();
+        for (const auto& object : frame.value().objects) {
+            if (!object.selected || object.object.value() != *fields.at("object").getIf<std::string>()) continue;
+            const auto        matrix = matrixOf(object.transform);
+            eve::Value::Array values;
+            for (int c = 0; c < 4; ++c)
+                for (int r = 0; r < 4; ++r) values.emplace_back(matrix[c][r]);
+            fields["model"] = std::move(values);
+        }
+    }
+    auto evidence = provider->measure(impl_->visibilityHost, request, *impl_->visibilityProof);
+    if (!evidence.ok()) return editing::Result<editing::Value>::failure(evidence.status());
+    const auto* captured = evidence.value().getIf<eve::Value::Object>();
+    bool        matches  = captured && captured->contains("schemaId") &&
+                   captured->at("schemaId") == eve::Value("eve.scene.visibility-evidence") &&
+                   captured->contains("schemaVersion") && captured->at("schemaVersion") == eve::Value(3) &&
+                   captured->contains("readbackComplete") && captured->at("readbackComplete").getIf<bool>() &&
+                   *captured->at("readbackComplete").getIf<bool>();
+    for (const auto* key : {"sourceRevision", "candidateGeneration", "camera", "width", "height"})
+        matches = matches && captured->contains(key) && captured->at(key) == root.at(key);
+    if (!matches)
+        return editing::failed<editing::Value>(editing::Status::Failed,
+                                               editing::RuleId("scene.relations.visibility-provenance"),
+                                               "Native raster evidence does not match current candidate");
+    return evaluateSceneVisualRelations(relations.value(), frame.value(), editing::toEditingValue(evidence.value()),
+                                        std::move(evaluated.value()));
+}
+
 editing::Result<PhysicsPlacementFrame> SceneEditorSession::updatePhysicsPlacement(double x, double y, double z,
                                                                                   double fixedDelta) {
     if (!impl_->placement)
@@ -560,6 +742,16 @@ editing::Result<editing::TransactionReceipt> SceneEditorSession::commitPhysicsPl
         return editing::failed<editing::TransactionReceipt>(editing::Status::Conflict,
                                                             editing::RuleId("scene.physics-placement.stale"),
                                                             "Scene changed while physics placement was active");
+    const auto currentSnapshot = impl_->target->snapshotValue();
+    if (const auto* relationsValue = valueField(currentSnapshot, "relations");
+        relationsValue && !relationsValue->getIf<editing::Value::Array>()->empty()) {
+        auto report = checkRelationPlacement();
+        if (!report.ok()) return editing::Result<editing::TransactionReceipt>::failure(report.status());
+        if (!*report.value().getIf<editing::Value::Object>()->at("hardSatisfied").getIf<bool>())
+            return editing::failed<editing::TransactionReceipt>(
+                editing::Status::Rejected, editing::RuleId("scene.relations.hard-unsatisfied"),
+                "Hard relations are violated or unmeasurable; inspect checkRelationPlacement before commit");
+    }
     auto captured = impl_->placement->placementFrame();
     if (!captured.ok()) return editing::Result<editing::TransactionReceipt>::failure(captured.status());
     std::unordered_map<std::string, glm::dmat4> desiredWorld;
@@ -600,6 +792,8 @@ editing::Result<editing::TransactionReceipt> SceneEditorSession::commitPhysicsPl
     auto committed =
         execute("scene.transform.batch.set.v1", editing::Value::Object{{"transforms", std::move(transforms)}});
     if (committed.ok()) {
+        impl_->visibilityRequest.reset();
+        impl_->visibilityProof.reset();
         impl_->placement.reset();
         impl_->placementGraph.clear();
         impl_->placementInitialWorld.clear();
@@ -611,6 +805,8 @@ editing::Result<void> SceneEditorSession::cancelPhysicsPlacement() {
     if (!impl_->placement)
         return editing::failed<void>(editing::Status::NoOp, editing::RuleId("scene.physics-placement.inactive"),
                                      "No physics placement preview is active");
+    impl_->visibilityRequest.reset();
+    impl_->visibilityProof.reset();
     impl_->placement.reset();
     impl_->placementGraph.clear();
     impl_->placementInitialWorld.clear();

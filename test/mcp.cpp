@@ -538,22 +538,22 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(vcfgText.find("{") != std::string::npos);
     CHECK(vcfgText.find("apiKeySet") != std::string::npos);
 
-    // Scene-director tools: auto-install the Squirrel kit into the plain test VM
-    // and drive it over MCP (no Graphics / modules mounted -> geometry-only ops).
+    // A plain VM has no native authoring providers. Tools report the absence
+    // instead of creating an independent script-only scene owner.
     const std::string sdStat = textOf(11, "{\"name\":\"eve_scene_director_status\",\"arguments\":{}}");
-    CHECK(sdStat.find("\"installed\":true") != std::string::npos);
+    CHECK(sdStat.find("error") != std::string::npos);
 
     const std::string resetText = textOf(12, "{\"name\":\"eve_scene_reset\",\"arguments\":{}}");
-    CHECK(resetText.find("ok") != std::string::npos);
+    CHECK(resetText.find("error") != std::string::npos);
 
     const std::string infoText = textOf(13, "{\"name\":\"eve_scene_info\",\"arguments\":{}}");
-    CHECK(infoText.find("\"count\":0") != std::string::npos);
+    CHECK(infoText.find("error") != std::string::npos);
 
     const std::string camText = textOf(14, "{\"name\":\"eve_camera_generate\",\"arguments\":{\"count\":2}}");
-    CHECK(camText.find("\"cam_0\"") != std::string::npos);
+    CHECK(camText.find("error") != std::string::npos);
 
     const std::string modInfo = textOf(15, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"info\"}}");
-    CHECK(modInfo.find("\"count\":0") != std::string::npos);
+    CHECK(modInfo.find("error") != std::string::npos);
     // Unknown action must surface as a controlled error, not crash the server.
     const std::string modBad = textOf(16, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"no_such\"}}");
     const bool        modBadHasError =

@@ -18,6 +18,7 @@
 #include "graphics/Outline.h"
 #include "graphics/PrimitiveScene.h"
 #include "graphics/RenderControl.h"
+#include "graphics/RenderTransformProjection.h"
 #include "graphics/RenderableInstances.h"
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
@@ -67,15 +68,7 @@ uint64_t                             g_nextGpuOpaqueCollectorToken = 1;
 glm::vec3 gLightDir   = glm::normalize(glm::vec3(0.4f, 1.f, 0.3f));
 glm::vec3 gLightColor = glm::vec3(1.f);
 
-glm::mat4 modelFromTransform(const Renderable3D::Transform3D& t) {
-    glm::mat4 m(1.f);
-    m = glm::translate(m, glm::vec3(t.x, t.y, t.z));
-    m = glm::rotate(m, t.yaw, glm::vec3(0.f, 1.f, 0.f));
-    m = glm::rotate(m, t.pitch, glm::vec3(1.f, 0.f, 0.f));
-    m = glm::rotate(m, t.roll, glm::vec3(0.f, 0.f, 1.f));
-    m = glm::scale(m, glm::vec3(t.sx, t.sy, t.sz));
-    return m;
-}
+using detail::modelFromTransform;
 
 Camera3D* findDefaultCamera3D() {
     if (ecs::current()->getManager<Camera3D>() == nullptr) return nullptr;
@@ -883,7 +876,7 @@ void RenderSystem3D::render(Graphics& gfx) {
             const float       layerDistance = cv.data->layerCullDistances[size_t(mr->layer)];
             if (layerDistance > 0.f && dist > layerDistance) continue;
             const glm::mat4 model    = modelFromTransform(*xf);
-            const float     maxScale = std::max(std::abs(xf->sx), std::max(std::abs(xf->sy), std::abs(xf->sz)));
+            const float     maxScale = detail::sphereStretch(*xf);
             const bool      shadowOk = mr->effectiveCastShadow();
 
             auto pushPart = [&](Mesh* drawMesh, Material* mat, bool asHair, bool castsShadow,
@@ -1839,8 +1832,7 @@ void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* cam
                 if (!valid) throw eve::Exception("%s", valid.status().describe().c_str());
             }
             const glm::mat4 model = modelFromTransform(*xf);
-            const float maxScale =
-                std::max(std::abs(xf->sx), std::max(std::abs(xf->sy), std::abs(xf->sz)));
+            const float     maxScale  = detail::sphereStretch(*xf);
             const float dx = xf->x - eye.x;
             const float dy = xf->y - eye.y;
             const float dz = xf->z - eye.z;

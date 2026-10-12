@@ -1,12 +1,14 @@
 #include "scene/editor/SceneEditorModule.h"
+#include "scene/editor/SceneAuthoringBindings.h"
 #include "scene/editor/SceneEditorScriptBindings.h"
 
 #include "common/Capability.h"
 #include "editing/EditingCommandRegistry.h"
 #include "editor/EditorAutomationTargetFactory.h"
+#include "scene/Scene.h"
+#include "scene/editing/SceneAuthoringDocument.h"
 #include "scene/editing/SceneEditingCommands.h"
 #include "scene/editing/SceneTarget.h"
-#include "scene/Scene.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -29,12 +31,16 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
 
 class SceneEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    std::vector<std::string_view> types() const override { return {"scene", "scene-host"}; }
+    std::vector<std::string_view> types() const override { return {"scene", "scene-host", "scene-authoring"}; }
 
     editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type,
         const editor::EditorValue::Object& request) override {
         editor::AutomationOwnedTarget owned;
+        if (type == "scene-authoring") {
+            owned.target = std::make_unique<scene_editing::SceneAuthoringDocumentTarget>(target.value());
+            return eve::editing::applied<editor::AutomationOwnedTarget>(std::move(owned));
+        }
         if (type == "scene") {
             auto sceneTarget = std::make_unique<scene_editing::SceneDocumentTarget>(target.value());
             const std::string object = stringField(request, "object");
@@ -93,6 +99,7 @@ SceneEditorModule::~SceneEditorModule() {
 void SceneEditorModule::expose(ssq::Table& table) {
     auto module = table.addClass(name, SceneEditorModule::create, false);
     exposeSceneEditorSessions(table, module);
+    exposeSceneAuthoringQueries(table, module);
 }
 void SceneEditorModule::expose(ssq::Class&) {}
 

@@ -1,4 +1,6 @@
 #include "scene/editing/SceneEditingCommands.h"
+#include "scene/editing/SceneAuthoring.h"
+#include "scene/editing/SceneAuthoringDocument.h"
 #include "scene/editing/SceneTarget.h"
 
 #include <cstdint>
@@ -221,7 +223,7 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
     restore.ownerModule = "scene_editing";
     restore.displayName = "Restore scene hierarchy and transforms";
     restore.category    = "Scene";
-    return registry.registerPlannedCommand(
+    auto restored       = registry.registerPlannedCommand(
         std::move(restore),
         [](editing::IEditableTarget&      value,
            const editing::CommandRequest& request) -> editing::Result<editing::CommandPlan> {
@@ -236,6 +238,10 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             plan.operations.push_back(std::move(operation.value()));
             return editing::applied<editing::CommandPlan>(std::move(plan));
         });
+    if (!restored.ok()) return restored;
+    auto placement = registerAuthoringCommands(registry);
+    if (!placement.ok()) return placement;
+    return registerAuthoringDocumentCommands(registry);
 }
 
 }  // namespace eve::scene_editing

@@ -1086,6 +1086,28 @@ public:
         return nullptr;
     }
 
+    /** @brief Owning isolated raster evidence; depth is Vulkan NDC in [0,1]. */
+    struct VisibilityPixels {
+        int                        width = 0, height = 0;
+        std::vector<std::uint32_t> ids;
+        std::vector<float>         depth;
+    };
+    /**
+     * @brief Render opaque draw IDs and float depth into private targets and wait for readback.
+     * @ownership Draw meshes are borrowed for this synchronous call; output owns its storage.
+     * @thread Render owner thread only. No callbacks or scene mutations.
+     * @cost GPU raster and blocking readback proportional to pixels and triangles per requested pass.
+     */
+    [[nodiscard]] virtual Result<VisibilityPixels> captureVisibilityPixels(const std::vector<EntityIdDraw> &draws,
+                                                                           const glm::mat4 &viewProj, int w, int h) {
+        (void)draws;
+        (void)viewProj;
+        (void)w;
+        (void)h;
+        return Result<VisibilityPixels>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "Backend has no isolated visibility capture"));
+    }
+
     /**
      * @brief Read a G-buffer attachment back to CPU as RGBA8. name is one of
      * "depth" (RGBA8 linear depth), "normal" (world normal*0.5+0.5), "albedo".

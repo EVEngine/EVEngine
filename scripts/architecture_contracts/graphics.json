@@ -288,7 +288,7 @@
       "scope": "src/modules/graphics/**",
       "owner": "graphics-maintainers",
       "issue": "EVENGINE-MODULAR-ASSET-IMPORT",
-      "reason": "Resource factory owns cached file textures and samplers; groom mutations prepare once and reuse the same backend mesh.",
+      "reason": "Resource factory owns cached file textures and samplers; groom mutations reuse backend meshes. Authoring queries use computed vertex bounds and links preserve complete world matrices.",
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/graphics/IResourceFactory.h",
@@ -301,7 +301,9 @@
       "tests": [
         "test/resource_lifetime.cpp",
         "test/graphics_vegetation_translucency.cpp",
-        "test/graphics_resource_reuse.cpp"
+        "test/graphics_resource_reuse.cpp",
+        "test/graphics_authoring_projection.cpp",
+        "scripts/scene_authoring_smoke.py"
       ],
       "provides": [
         {
@@ -320,6 +322,24 @@
       "emits": [],
       "observes": [],
       "binds": [
+        {
+          "script_class": "eve.Mesh",
+          "methods": [
+            "getLocalBounds"
+          ]
+        },
+        {
+          "script_class": "eve.Renderable3D",
+          "methods": [
+            "getMetallic"
+          ]
+        },
+        {
+          "script_class": "eve",
+          "methods": [
+            "destroyRenderable3D"
+          ]
+        },
         {
           "script_class": "graphics.Material",
           "methods": [
@@ -447,6 +467,104 @@
         "ecs_links": "None; copied geometry and transforms are owned by the backend.",
         "hard_dependencies": "graphics Vulkan device and upload pool through existing backend adaptation.",
         "connection": "One provider, per-frame interface calls, known render consumer, ordered graphics-queue operations; existing capability discovery only at backend boundaries."
+      }
+    },
+    {
+      "id": "graphics-scene-visibility",
+      "rule": "module-interface",
+      "scope": "src/modules/graphics/SceneVisibility*",
+      "owner": "graphics::SceneVisibilityQuery",
+      "issue": "EVENGINE-AI-SCENE-AUTHORING",
+      "reason": "Bounded owning queries measure explicit authoring candidates on isolated GPU targets without mutating SceneHost or retaining native pointers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/SceneVisibility.h",
+        "src/modules/graphics/SceneVisibility.cpp",
+        "src/modules/graphics/vulkan/GraphicsVisibility.cpp",
+        "docs/dev/2026-10-11-scene-visibility-validation.md",
+        "docs/dev/2026-10-11-scene-visual-relations-validation.md",
+        "src/engine/common/SceneVisibilityEvidence.h",
+        "src/modules/graphics/SceneVisibilityProvider.cpp",
+        "docs/dev/2026-10-11-scene-regions-validation.md",
+        "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
+      ],
+      "tests": [
+        "test/scene_visibility.cpp",
+        "scripts/scene_authoring_smoke.py",
+        "test/scene_regions.cpp",
+        "test/scene_projected_overlap.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "SceneVisibilityQuery",
+          "impl": "graphics script/native owning builder and Vulkan private raster targets",
+          "absent_behavior": "Default backend capture reports Unsupported; missing script provider is observable."
+        },
+        {
+          "capability": "ISceneVisibilityEvidence",
+          "impl": "Graphics-bound VisibilityProvider",
+          "absent_behavior": "Revoked on matching Graphics teardown; consumers explicitly reject visual operations."
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve",
+          "methods": [
+            "prepareSceneVisibility"
+          ]
+        },
+        {
+          "script_class": "eve.SceneVisibilityQuery",
+          "methods": [
+            "measure"
+          ]
+        }
+      ],
+      "protocol": [
+        {
+          "schema_id": "eve.scene.visibility-request",
+          "version": 2,
+          "unknown_fields": "reject",
+          "migration": "v1 whole-object string targets remain supported; v2 adds strict local-region selectors."
+        },
+        {
+          "schema_id": "eve.scene.visibility-evidence",
+          "version": 3,
+          "unknown_fields": "owning output; consumers must check status and version",
+          "migration": "No persistent state; v3 adds directed independent full-silhouette intersection evidence."
+        },
+        {
+          "schema_id": "eve.scene.local-region",
+          "version": 1,
+          "unknown_fields": "reject",
+          "migration": "Unsupported versions/kinds rejected; local_box selects actual target surface pixels."
+        }
+      ],
+      "thread_affinity": "Engine owner thread only; synchronous prepare/measure; no callbacks or retained resource pointers.",
+      "trim": {
+        "absent_profile": "No new trim claim. Default unsupported backend contract tested without initialized GPU; Vulkan integration measured on native host."
+      },
+      "hot_path": [],
+      "cost_notes": [
+        {
+          "api": "SceneVisibilityQuery::prepare/measure",
+          "shape": "two-step",
+          "why": "Single-use bounded query: one scene plus one isolated pass per unique object; CPU target-mask intersection O(targets squared times viewport pixels)."
+        }
+      ],
+      "module_interface": {
+        "capability_in": "Graphics borrowed during explicit measure only.",
+        "capability_out": "ISceneVisibilityEvidence inspect/measure and owning generation proof; no cached pointers.",
+        "ecs_links": "Named native SceneHost mapping validated every check; host/entity/upload generations and live model prove stale state.",
+        "events": "None.",
+        "script_bindings": "Owned one-use query; prepareSceneVisibility and measure.",
+        "tool_protocol": "MCP visibility/region/depth-independent projected_overlap; authoring document v4.",
+        "hard_dependencies": "Existing graphics, common, image and Squirrel; no upward include or new module.",
+        "connection": "One caller, explicit expensive query, known backend, synchronous snapshot/readback; never per-frame lookup.",
+        "trim_claim": "No new L2/L3/L4 trimming claim."
       }
     }
   ]

@@ -1,6 +1,7 @@
 #include "common/BindingContracts.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
+#include "common/ScriptModule.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -11,6 +12,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iterator>
+#include <memory>
 #include <string>
 
 using namespace eve;
@@ -376,6 +378,31 @@ TEST_CASE("scriptCompiler.validatesConfigModulesWithoutExecution") {
 
 TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
+    // Keep corpus identities virtual while resolving imports against the same repository tree.
+    class CorpusModules final : public script::IScriptModuleProvider {
+    public:
+        script::ScriptModuleStatus resolve(const script::ScriptModuleRequest& request, std::string& canonicalUri,
+                                           std::string& error) override {
+            if (!script::ScriptModuleResolver::canonicalize(request, canonicalUri, error))
+                return script::ScriptModuleStatus::Error;
+            return canonicalUri.rfind("baseline:/", 0) == 0 ? script::ScriptModuleStatus::Found
+                                                            : script::ScriptModuleStatus::NotHandled;
+        }
+        script::ScriptModuleStatus load(std::string_view canonicalUri, script::ScriptModuleSource& source,
+                                        std::string& error) override {
+            if (canonicalUri.rfind("baseline:/", 0) != 0) return script::ScriptModuleStatus::NotHandled;
+            const auto    path = std::filesystem::path(EVENGINE_SOURCE_DIR) / std::string(canonicalUri.substr(10));
+            std::ifstream input(path, std::ios::binary);
+            if (!input) {
+                error = "missing corpus module: " + path.string();
+                return script::ScriptModuleStatus::Error;
+            }
+            source.canonicalUri = std::string(canonicalUri);
+            source.utf8Source.assign(std::istreambuf_iterator<char>(input), {});
+            source.debugOrigin = path.string();
+            return script::ScriptModuleStatus::Found;
+        }
+    };
     const std::filesystem::path root(EVENGINE_SOURCE_DIR);
     size_t                      compiled = 0;
     using Clock                          = std::chrono::steady_clock;
@@ -398,7 +425,8 @@ TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
         try {
             auto phaseStart = Clock::now();
             {
-                Runtime    runtime(1024, ssq::Libs::ALL);
+                Runtime runtime(1024, ssq::Libs::ALL);
+                REQUIRE(runtime.scriptModules().registerProvider(std::make_shared<CorpusModules>()) != 0);
                 const auto ready = Clock::now();
                 vmMs += milliseconds(ready - phaseStart);
                 runtime.compileSource(source, "baseline:/" + relative);

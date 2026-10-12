@@ -129,6 +129,12 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     # cmake/patches/sdl2-static-library-crt-entry.patch). link_group.cpp exists
     # only to give the target a source of its own.
     add_library(${_eve_group} SHARED "${CMAKE_SOURCE_DIR}/cmake/link_group.cpp")
+    target_compile_definitions(${_eve_group} PRIVATE
+        "EVENGINE_LINK_GROUP_ANCHOR=eve_link_group_anchor_${_eve_group}")
+    set(_eve_group_consumer "${CMAKE_BINARY_DIR}/link_group_consumers/${_eve_group}.cpp")
+    configure_file("${CMAKE_SOURCE_DIR}/cmake/link_group_consumer.cpp.in"
+                   "${_eve_group_consumer}" @ONLY)
+    target_sources(${_eve_group} INTERFACE "$<BUILD_INTERFACE:${_eve_group_consumer}>")
     target_link_libraries(${_eve_group} PRIVATE ${_eve_group_modules})
     target_link_libraries(${_eve_group} PRIVATE eve_engine_includes)
     if(TARGET eve_imgui)
@@ -159,12 +165,6 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     list(APPEND _eve_lower_groups "${_eve_group}")
 
     if(WIN32)
-        target_compile_definitions(${_eve_group} PRIVATE
-            EVE_LINK_GROUP_ANCHOR=eve_link_group_${_eve_group})
-        # Import libraries alone do not retain DLLs used only for registration.
-        # Force one manifest-derived import per linked group into each consumer.
-        target_link_options(${_eve_group} INTERFACE
-            "LINKER:/INCLUDE:__imp_eve_link_group_${_eve_group}")
         set_target_properties(${_eve_group} PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
     else()

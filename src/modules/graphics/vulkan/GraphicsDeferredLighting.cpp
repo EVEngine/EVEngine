@@ -24,8 +24,7 @@ void Graphics::destroyDeferredLightingResources() {
     destroyPipelineLayout(device, deferredLightingPipelineLayout);
     deferredLightingSetLayout = vk::DescriptorSetLayout{};
     deferredLightingSetLayoutUnique.reset();
-    deferredLightingSet = vk::DescriptorSet{};
-    deferredLightingUbo.release();
+    deferredLightingFrames.clear();
     if (deferredLightingSampler) {
         device->destroySampler(deferredLightingSampler);
         deferredLightingSampler = nullptr;
@@ -72,20 +71,9 @@ void Graphics::createDeferredLightingPipeline() {
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
 
-    if (!deferredLightingUbo.buffer) {
-        deferredLightingUbo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer,
-                                     sizeof(DeferredLightingUBO), kHostVisibleCoherent);
-    }
     if (!deferredLightingSampler) {
         vkb::SamplerBuilder sb;
         deferredLightingSampler = sb.nearestClamp().build(device);
-    }
-    if (!deferredLightingSet && descriptorPool) {
-        vk::DescriptorSetAllocateInfo alloc{};
-        alloc.descriptorPool     = descriptorPool;
-        alloc.descriptorSetCount = 1;
-        alloc.pSetLayouts        = &deferredLightingSetLayout;
-        deferredLightingSet      = device->allocateDescriptorSets(alloc).front();
     }
 }
 
@@ -94,9 +82,18 @@ void Graphics::drawDeferredLighting() {
     auto* gslot = currentGBufferSlot();
     if (!gslot || !gslot->normalGpu.sampler) return;
     createDeferredLightingPipeline();
-    if (!deferredLightingPipeline || !deferredLightingSet) return;
-    // This descriptor set and UBO are shared across present slots.
-    waitForSharedGpuResources();
+    if (!deferredLightingPipeline || !descriptorPool) return;
+    auto& frame = currentSlot(deferredLightingFrames, frameSlotCount(), currentFrameSlot());
+    frame.ubo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(DeferredLightingUBO),
+                       kHostVisibleCoherent);
+    if (!frame.set) {
+        vk::DescriptorSetAllocateInfo alloc{};
+        alloc.descriptorPool     = descriptorPool;
+        alloc.descriptorSetCount = 1;
+        alloc.pSetLayouts        = &deferredLightingSetLayout;
+        frame.set                = device->allocateDescriptorSets(alloc).front();
+    }
+    const auto deferredLightingSet = frame.set;
 
     if (!shadowPipeline) createShadowResources();
     vk::ImageView shadowView = currentShadowArrayView();
@@ -143,14 +140,14 @@ void Graphics::drawDeferredLighting() {
     }
     ubo.clipInfo.z = float(std::max(1, sceneColorWidth));
     ubo.clipInfo.w = float(std::max(1, sceneColorHeight));
-    deferredLightingUbo.updateLocal(frameToken(), &ubo, sizeof(ubo));
+    frame.ubo.updateLocal(frameToken(), &ubo, sizeof(ubo));
 
     // Shadow UBO: stage the latest CSM upload into the clustered shadow ring.
     ensureMesh3dStrides();
     auto& cfslots = currentMesh3dClusteredFrameSlots();
     ensureMesh3dClusteredRing(cfslots);
     const uint32_t shadowOffset = 0;
-    cfslots.shadowRing.updateLocal(frameToken(), &mesh3dShadows.ubo, sizeof(ShadowUBO));
+    updateRingLocal(cfslots.shadowRing, shadowOffset, &mesh3dShadows.ubo, sizeof(ShadowUBO));
 
     auto writeImage = [&](uint32_t binding, vk::ImageView view, vk::Sampler sampler,
                           vk::ImageLayout layout = vk::ImageLayout::eShaderReadOnlyOptimal) {
@@ -180,7 +177,7 @@ void Graphics::drawDeferredLighting() {
         device->updateDescriptorSets(w, {});
     };
 
-    writeBuffer(0, deferredLightingUbo.buffer, sizeof(DeferredLightingUBO), vk::DescriptorType::eUniformBuffer);
+    writeBuffer(0, frame.ubo.buffer, sizeof(DeferredLightingUBO), vk::DescriptorType::eUniformBuffer);
     writeImage(1, gslot->normal.imageView(), deferredLightingSampler);
     writeImage(2, gslot->depthColor.imageView(), deferredLightingSampler);
     writeImage(3, gslot->albedo.imageView(), deferredLightingSampler);
