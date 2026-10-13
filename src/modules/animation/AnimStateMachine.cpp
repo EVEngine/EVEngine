@@ -1,57 +1,69 @@
 #include "animation/AnimStateMachine.h"
-#include "animation/AnimClip.h"
-#include "animation/AnimSkeleton.h"
-
-#include "common/Capability.h"
-#include "common/Exception.h"
-#include "common/IStateProvider.h"
-
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <utility>
+#include "animation/AnimClip.h"
+#include "animation/AnimPlayer.h"
+#include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
+#include "animation/AnimSyncGroup.h"
+#include "animation/AnimTrail.h"
+#include "animation/AnimationTime.h"
+#include "common/Capability.h"
+#include "common/Exception.h"
+#include "common/IStateProvider.h"
+#include "graphics/Graphics.h"
 
+// AnimStateMachine.cpp
 namespace eve::animation {
 namespace {
 
-std::vector<AnimStateMachine*>& machines() {
-    static std::vector<AnimStateMachine*> instances;
+std::vector<AnimStateMachine *> &machines() {
+    static std::vector<AnimStateMachine *> instances;
     return instances;
 }
 
-double stateNumber(const StateValue& v) { return v.isInt() ? static_cast<double>(v.asInt()) : v.asDouble(); }
+double stateNumber(const StateValue &v) { return v.isInt() ? static_cast<double>(v.asInt()) : v.asDouble(); }
 
 /** @brief IStateProvider over every live AnimStateMachine (module registry). */
 class AnimStateProvider : public eve::caps::IStateProvider {
 public:
-    const char* stateKind() const override { return "anim"; }
+    const char *stateKind() const override { return "anim"; }
 
-    bool captureState(StateValue& out) override {
+    Result<Value> capture() override {
         StateValue arr = StateValue::array();
-        for (AnimStateMachine* m : machines()) {
+        for (AnimStateMachine *m : machines()) {
             StateValue sv;
-            if (m->captureState(sv)) arr.pushBack(std::move(sv));
+            if (!m->captureState(sv))
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Failed, "animation capture failed"));
+            arr.pushBack(std::move(sv));
         }
-        out = std::move(arr);
-        return true;
+        return Result<Value>::success(toCanonicalStateValue(arr));
     }
 
-    bool restoreState(const StateValue& in, std::string* err) override {
+    Result<void> restore(const Value &value) override {
+        const StateValue in = toLegacyStateValue(value);
         if (!in.isArray()) {
-            if (err) *err = "anim: expected array of state machines";
-            return false;
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "anim: expected array of state machines"));
         }
         const size_t n = std::min(in.arraySize(), machines().size());
         for (size_t i = 0; i < n; ++i) {
-            if (!machines()[i]->restoreState(in.at(i), err)) return false;
+            std::string error;
+            if (!machines()[i]->restoreState(in.at(i), &error))
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, error));
         }
-        return true;
+        return Result<void>::success();
     }
 
-    bool resetToDefaults() override {
-        for (AnimStateMachine* m : machines()) m->resetToDefaults();
-        return true;
+    Result<void> resetToDefaults() override {
+        for (AnimStateMachine *m : machines()) {
+            if (!m->resetToDefaults())
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "animation reset failed"));
+        }
+        return Result<void>::success();
     }
 };
 
@@ -119,12 +131,9 @@ void AnimStateMachine::setEntry(const std::string &name) {
     states_[name].clip->sample(0.f, &pose_, skeleton_);
 }
 
-bool AnimStateMachine::hasState(const std::string &name) const {
-    return states_.count(name) > 0;
-}
+bool AnimStateMachine::hasState(const std::string &name) const { return states_.count(name) > 0; }
 
-int AnimStateMachine::addTransition(const std::string &from, const std::string &to,
-                                    float blendSeconds) {
+int AnimStateMachine::addTransition(const std::string &from, const std::string &to, float blendSeconds) {
     requireState(from);
     requireState(to);
     if (blendSeconds < 0.f) {
@@ -138,11 +147,11 @@ int AnimStateMachine::addTransition(const std::string &from, const std::string &
     return static_cast<int>(transitions_.size()) - 1;
 }
 
-void AnimStateMachine::addFloatCondition(int transitionId, const std::string &param,
-                                         const std::string &op, float threshold) {
+void AnimStateMachine::addFloatCondition(int transitionId, const std::string &param, const std::string &op,
+                                         float threshold) {
     if (param.empty()) throw Exception("AnimStateMachine.addFloatCondition: param empty");
     Transition &tr = requireTransition(transitionId);
-    Condition c;
+    Condition   c;
     c.kind      = CondKind::Float;
     c.param     = param;
     c.op        = parseFloatOp(op);
@@ -154,7 +163,7 @@ void AnimStateMachine::addFloatCondition(int transitionId, const std::string &pa
 void AnimStateMachine::addBoolCondition(int transitionId, const std::string &param, bool value) {
     if (param.empty()) throw Exception("AnimStateMachine.addBoolCondition: param empty");
     Transition &tr = requireTransition(transitionId);
-    Condition c;
+    Condition   c;
     c.kind      = CondKind::Bool;
     c.param     = param;
     c.boolValue = value;
@@ -165,7 +174,7 @@ void AnimStateMachine::addBoolCondition(int transitionId, const std::string &par
 void AnimStateMachine::addTriggerCondition(int transitionId, const std::string &param) {
     if (param.empty()) throw Exception("AnimStateMachine.addTriggerCondition: param empty");
     Transition &tr = requireTransition(transitionId);
-    Condition c;
+    Condition   c;
     c.kind  = CondKind::Trigger;
     c.param = param;
     tr.conditions.push_back(c);
@@ -206,8 +215,8 @@ bool AnimStateMachine::conditionsMet(const Transition &tr) const {
     for (const Condition &c : tr.conditions) {
         switch (c.kind) {
             case CondKind::Float: {
-                const float v = getFloat(c.param);
-                bool ok       = false;
+                const float v  = getFloat(c.param);
+                bool        ok = false;
                 switch (c.op) {
                     case FloatOp::Gt: ok = v > c.threshold; break;
                     case FloatOp::Ge: ok = v >= c.threshold; break;
@@ -235,9 +244,9 @@ bool AnimStateMachine::conditionsMet(const Transition &tr) const {
 
 bool AnimStateMachine::tryTransition() {
     if (currentState_.empty() || blending_) return false;
-    const State &cur = states_.at(currentState_);
-    const float dur  = cur.clip ? cur.clip->getDuration() : 0.f;
-    const float norm = dur > 1e-8f ? clampf(stateTime_ / dur, 0.f, 1.f) : 1.f;
+    const State &cur  = states_.at(currentState_);
+    const float  dur  = cur.clip ? cur.clip->getDuration() : 0.f;
+    const float  norm = dur > 1e-8f ? clampf(stateTime_ / dur, 0.f, 1.f) : 1.f;
 
     for (const Transition &tr : transitions_) {
         if (tr.from != currentState_) continue;
@@ -273,8 +282,10 @@ bool AnimStateMachine::tryTransition() {
 void AnimStateMachine::updateUnchecked(float dt) {
     if (dt < 0.f) throw Exception("AnimStateMachine.update: dt must be >= 0");
     if (!started_) {
-        if (!stateOrder_.empty()) setEntry(stateOrder_.front());
-        else return;
+        if (!stateOrder_.empty())
+            setEntry(stateOrder_.front());
+        else
+            return;
     }
     if (currentState_.empty()) return;
 
@@ -302,7 +313,7 @@ void AnimStateMachine::updateUnchecked(float dt) {
     tryTransition();
 }
 
-eve::Result<void> AnimStateMachine::advance(const eve::SimulationStep& step) {
+eve::Result<void> AnimStateMachine::advance(const eve::SimulationStep &step) {
     if (step.delta.nanoseconds() < 0)
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                  "animation state-machine delta must be non-negative"));
@@ -336,7 +347,7 @@ void AnimStateMachine::update(float dt) {
     advance({*nextTick, std::move(duration).takeValue()}).ignore("legacy animation state-machine update facade");
 }
 
-bool AnimStateMachine::captureState(StateValue& out) const {
+bool AnimStateMachine::captureState(StateValue &out) const {
     out = StateValue::object();
     out.set("currentState", StateValue::string(currentState_));
     out.set("nextState", StateValue::string(nextState_));
@@ -349,26 +360,26 @@ bool AnimStateMachine::captureState(StateValue& out) const {
     out.set("simulationTick", StateValue::string(std::to_string(lastTick_.value())));
 
     StateValue floats = StateValue::object();
-    for (const auto& kv : floats_) floats.set(kv.first, StateValue::number(kv.second));
+    for (const auto &kv : floats_) floats.set(kv.first, StateValue::number(kv.second));
     out.set("floats", std::move(floats));
 
     StateValue bools = StateValue::object();
-    for (const auto& kv : bools_) bools.set(kv.first, StateValue::boolean(kv.second));
+    for (const auto &kv : bools_) bools.set(kv.first, StateValue::boolean(kv.second));
     out.set("bools", std::move(bools));
 
     StateValue triggers = StateValue::object();
-    for (const auto& kv : triggers_) triggers.set(kv.first, StateValue::boolean(kv.second));
+    for (const auto &kv : triggers_) triggers.set(kv.first, StateValue::boolean(kv.second));
     out.set("triggers", std::move(triggers));
     return true;
 }
 
-bool AnimStateMachine::restoreState(const StateValue& in, std::string* err) {
+bool AnimStateMachine::restoreState(const StateValue &in, std::string *err) {
     if (!in.isObject()) {
         if (err) *err = "anim: state is not an object";
         return false;
     }
-    const StateValue* current = in.find("currentState");
-    const StateValue* started = in.find("started");
+    const StateValue *current = in.find("currentState");
+    const StateValue *started = in.find("started");
     if (!current || !current->isString() || !started || !started->isBool()) {
         if (err) *err = "anim: missing currentState/started";
         return false;
@@ -382,10 +393,10 @@ bool AnimStateMachine::restoreState(const StateValue& in, std::string* err) {
 
     eve::SimulationTick restoredTick    = eve::SimulationTick::zero();
     bool                restoredHasTick = false;
-    if (const StateValue* hasTick = in.find("hasSimulationTick"); hasTick && hasTick->isBool())
+    if (const StateValue *hasTick = in.find("hasSimulationTick"); hasTick && hasTick->isBool())
         restoredHasTick = hasTick->asBool();
     if (restoredHasTick) {
-        const StateValue* tick = in.find("simulationTick");
+        const StateValue *tick = in.find("simulationTick");
         if (!tick || !tick->isString()) {
             if (err) *err = "anim: missing simulationTick";
             return false;
@@ -405,35 +416,35 @@ bool AnimStateMachine::restoreState(const StateValue& in, std::string* err) {
     bools_.clear();
     triggers_.clear();
 
-    if (const StateValue* floats = in.find("floats"); floats && floats->isObject()) {
-        for (const auto& key : floats->keys()) {
-            const StateValue* v = floats->find(key);
+    if (const StateValue *floats = in.find("floats"); floats && floats->isObject()) {
+        for (const auto &key : floats->keys()) {
+            const StateValue *v = floats->find(key);
             if (v && (v->isInt() || v->isFloat())) floats_[key] = static_cast<float>(stateNumber(*v));
         }
     }
-    if (const StateValue* bools = in.find("bools"); bools && bools->isObject()) {
-        for (const auto& key : bools->keys()) {
-            const StateValue* v = bools->find(key);
+    if (const StateValue *bools = in.find("bools"); bools && bools->isObject()) {
+        for (const auto &key : bools->keys()) {
+            const StateValue *v = bools->find(key);
             if (v && v->isBool()) bools_[key] = v->asBool();
         }
     }
-    if (const StateValue* triggers = in.find("triggers"); triggers && triggers->isObject()) {
-        for (const auto& key : triggers->keys()) {
-            const StateValue* v = triggers->find(key);
+    if (const StateValue *triggers = in.find("triggers"); triggers && triggers->isObject()) {
+        for (const auto &key : triggers->keys()) {
+            const StateValue *v = triggers->find(key);
             if (v && v->isBool()) triggers_[key] = v->asBool();
         }
     }
 
     currentState_ = stateName;
-    if (const StateValue* ns = in.find("nextState"); ns && ns->isString()) nextState_ = ns->asString();
-    if (const StateValue* st = in.find("stateTime"); st && (st->isInt() || st->isFloat()))
+    if (const StateValue *ns = in.find("nextState"); ns && ns->isString()) nextState_ = ns->asString();
+    if (const StateValue *st = in.find("stateTime"); st && (st->isInt() || st->isFloat()))
         stateTime_ = static_cast<float>(stateNumber(*st));
-    if (const StateValue* bd = in.find("blendDuration"); bd && (bd->isInt() || bd->isFloat()))
+    if (const StateValue *bd = in.find("blendDuration"); bd && (bd->isInt() || bd->isFloat()))
         blendDuration_ = static_cast<float>(stateNumber(*bd));
-    if (const StateValue* be = in.find("blendElapsed"); be && (be->isInt() || be->isFloat()))
+    if (const StateValue *be = in.find("blendElapsed"); be && (be->isInt() || be->isFloat()))
         blendElapsed_ = static_cast<float>(stateNumber(*be));
-    if (const StateValue* bl = in.find("blending"); bl && bl->isBool()) blending_ = bl->asBool();
-    started_ = wasStarted;
+    if (const StateValue *bl = in.find("blending"); bl && bl->isBool()) blending_ = bl->asBool();
+    started_     = wasStarted;
     lastTick_    = restoredTick;
     hasLastTick_ = restoredHasTick;
 
@@ -461,6 +472,335 @@ bool AnimStateMachine::resetToDefaults() {
     started_ = false;
     currentState_.clear();
     return true;
+}
+
+}  // namespace eve::animation
+
+// AnimSyncGroup.cpp
+namespace eve::animation {
+
+void AnimSyncGroup::addPlayer(AnimPlayer *player, float phaseOffset) {
+    if (!player) throw Exception("AnimSyncGroup.addPlayer: player is null");
+    entries_.push_back({player, phaseOffset});
+}
+
+void AnimSyncGroup::setLeader(int index) {
+    if (index < 0 || index >= getCount()) throw Exception("AnimSyncGroup.setLeader: invalid index %d", index);
+    leader_ = index;
+}
+
+eve::Result<void> AnimSyncGroup::advance(const eve::SimulationStep &step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "AnimSyncGroup");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    (void)std::move(seconds).takeValue();
+    usedMarkerSync_ = false;
+    if (entries_.empty()) {
+        lastTick_    = step.tick;
+        hasLastTick_ = true;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    }
+    for (const Entry &entry : entries_) {
+        if (entry.player->hasCurrentTick() && step.tick <= entry.player->currentTick())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "animation sync-group player already consumed this tick"));
+    }
+    Entry &leader       = entries_[static_cast<size_t>(leader_)];
+    auto   leaderResult = leader.player->advance(step);
+    if (!leaderResult) return eve::Result<void>::failure(leaderResult.status());
+    AnimClip *leaderClip = leader.player->getClip();
+    if (!leaderClip || leaderClip->getDuration() <= 1e-8f) {
+        lastTick_    = step.tick;
+        hasLastTick_ = true;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    }
+    phase_ = leaderClip->wrapTime(leader.player->getTime()) / leaderClip->getDuration();
+    for (int i = 0; i < getCount(); ++i) {
+        if (i == leader_) continue;
+        AnimPlayer *player       = entries_[static_cast<size_t>(i)].player;
+        auto        playerResult = player->advance(step);
+        if (!playerResult) return eve::Result<void>::failure(playerResult.status());
+        AnimClip *clip = player->getClip();
+        if (!clip || clip->getDuration() <= 1e-8f) continue;
+        float mappedTime;
+        if (leaderClip->hasCompatibleSyncMarkers(clip)) {
+            mappedTime      = leaderClip->mapSyncTimeTo(leader.player->getTime(), clip);
+            usedMarkerSync_ = true;
+        } else {
+            mappedTime = phase_ * clip->getDuration();
+        }
+        mappedTime += entries_[static_cast<size_t>(i)].phaseOffset * clip->getDuration();
+        player->setTime(clip->wrapTime(mappedTime));
+    }
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void AnimSyncGroup::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "AnimSyncGroup");
+    if (!step) {
+        step.ignore("legacy AnimSyncGroup update");
+        return;
+    }
+    advance(std::move(step).takeValue()).ignore("legacy AnimSyncGroup update");
+}
+
+}  // namespace eve::animation
+
+// AnimTrail.cpp
+namespace eve::animation {
+
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
+
+AnimTrail::AnimTrail(int capacity) { setCapacity(capacity); }
+
+void AnimTrail::setCapacity(int capacity) {
+    if (capacity < 2) throw Exception("AnimTrail.setCapacity: capacity must be >= 2");
+    capacity_ = capacity;
+    while (static_cast<int>(points_.size()) > capacity_) {
+        points_.erase(points_.begin());
+    }
+}
+
+void AnimTrail::setDuration(float seconds) { duration_ = seconds; }
+
+void AnimTrail::setMinDistance(float distance) {
+    if (distance < 0.f) throw Exception("AnimTrail.setMinDistance: must be >= 0");
+    minDistance_ = distance;
+}
+
+void AnimTrail::setWidth(float pixels) {
+    if (pixels <= 0.f) throw Exception("AnimTrail.setWidth: must be > 0");
+    width_ = pixels;
+}
+
+void AnimTrail::setColor(float r, float g, float b, float a) {
+    colorR_ = r;
+    colorG_ = g;
+    colorB_ = b;
+    colorA_ = a;
+}
+
+void AnimTrail::setFade(bool enable) { fade_ = enable; }
+
+void AnimTrail::setStyle(const std::string &style) {
+    if (style == "line") {
+        style_ = Style::Line;
+        return;
+    }
+    if (style == "points") {
+        style_ = Style::Points;
+        return;
+    }
+    throw Exception("AnimTrail.setStyle: unknown style '%s' (use line|points)", style.c_str());
+}
+
+std::string AnimTrail::getStyle() const { return style_ == Style::Line ? "line" : "points"; }
+
+void AnimTrail::setDrawScale(float sx, float sy) {
+    drawScaleX_ = sx;
+    drawScaleY_ = sy;
+}
+
+void AnimTrail::setDrawOffset(float ox, float oy) {
+    drawOffsetX_ = ox;
+    drawOffsetY_ = oy;
+}
+
+void AnimTrail::addPoint(float x, float y) { pushPoint(x, y, 0.f); }
+
+void AnimTrail::addPoint3(float x, float y, float z) { pushPoint(x, y, z); }
+
+void AnimTrail::projectPlane(float x, float y, float z, const std::string &plane, float *outX, float *outY) const {
+    if (!outX || !outY) return;
+    if (plane == "xy" || plane.empty()) {
+        *outX = x;
+        *outY = y;
+        return;
+    }
+    if (plane == "xz") {
+        *outX = x;
+        *outY = z;
+        return;
+    }
+    if (plane == "yz") {
+        *outX = y;
+        *outY = z;
+        return;
+    }
+    throw Exception("AnimTrail: unknown plane '%s' (use xy|xz|yz)", plane.c_str());
+}
+
+void AnimTrail::sampleBone(const AnimPose *pose, int boneIndex, const std::string &plane) {
+    sampleBoneOffset(pose, boneIndex, 0.f, 0.f, 0.f, plane);
+}
+
+void AnimTrail::sampleBoneOffset(const AnimPose *pose, int boneIndex, float ox, float oy, float oz,
+                                 const std::string &plane) {
+    if (!pose) throw Exception("AnimTrail.sampleBone: pose is null");
+    if (boneIndex < 0 || boneIndex >= pose->getBoneCount()) {
+        throw Exception("AnimTrail.sampleBone: boneIndex %d out of range (count=%d)", boneIndex, pose->getBoneCount());
+    }
+    const float wx = pose->getWorldPositionX(boneIndex) + ox;
+    const float wy = pose->getWorldPositionY(boneIndex) + oy;
+    const float wz = pose->getWorldPositionZ(boneIndex) + oz;
+    float       px = 0.f, py = 0.f;
+    projectPlane(wx, wy, wz, plane, &px, &py);
+    pushPoint(px, py, plane == "xy" || plane.empty() ? wz : (plane == "xz" ? wy : wx));
+}
+
+void AnimTrail::pushPoint(float x, float y, float z) {
+    if (!points_.empty() && minDistance_ > 0.f) {
+        const Point &last = points_.back();
+        const float  dx   = x - last.x;
+        const float  dy   = y - last.y;
+        const float  dz   = z - last.z;
+        if (dx * dx + dy * dy + dz * dz < minDistance_ * minDistance_) return;
+    }
+    Point p;
+    p.x   = x;
+    p.y   = y;
+    p.z   = z;
+    p.age = 0.f;
+    points_.push_back(p);
+    while (static_cast<int>(points_.size()) > capacity_) {
+        points_.erase(points_.begin());
+    }
+}
+
+void AnimTrail::clear() { points_.clear(); }
+
+void AnimTrail::updateUnchecked(float dt) {
+    if (dt < 0.f) dt = 0.f;
+    for (Point &p : points_) p.age += dt;
+    if (duration_ > 0.f) {
+        auto it = points_.begin();
+        while (it != points_.end()) {
+            if (it->age > duration_) {
+                it = points_.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+}
+
+eve::Result<void> AnimTrail::advance(const eve::SimulationStep &step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "AnimTrail");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void AnimTrail::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "AnimTrail");
+    if (!step) {
+        step.ignore("legacy AnimTrail update");
+        return;
+    }
+    advance(std::move(step).takeValue()).ignore("legacy AnimTrail update");
+}
+
+void AnimTrail::requireIndex(int index) const {
+    if (index < 0 || index >= getPointCount()) {
+        throw Exception("AnimTrail: point index %d out of range (count=%d)", index, getPointCount());
+    }
+}
+
+float AnimTrail::getPointX(int index) const {
+    requireIndex(index);
+    return points_[static_cast<size_t>(index)].x;
+}
+
+float AnimTrail::getPointY(int index) const {
+    requireIndex(index);
+    return points_[static_cast<size_t>(index)].y;
+}
+
+float AnimTrail::getPointZ(int index) const {
+    requireIndex(index);
+    return points_[static_cast<size_t>(index)].z;
+}
+
+float AnimTrail::getPointAge(int index) const {
+    requireIndex(index);
+    return points_[static_cast<size_t>(index)].age;
+}
+
+float AnimTrail::alphaFor(const Point &p) const {
+    if (!fade_ || duration_ <= 0.f) return colorA_;
+    const float t = 1.f - std::min(1.f, p.age / duration_);
+    return colorA_ * t;
+}
+
+float AnimTrail::getPointAlpha(int index) const {
+    requireIndex(index);
+    return alphaFor(points_[static_cast<size_t>(index)]);
+}
+
+void AnimTrail::toScreen(float x, float y, float *sx, float *sy) const {
+    if (!sx || !sy) return;
+    *sx = x * drawScaleX_ + drawOffsetX_;
+    *sy = y * drawScaleY_ + drawOffsetY_;
+}
+
+void AnimTrail::drawDot(graphics::Graphics *gfx, float x, float y, float alpha) const {
+    if (!gfx || alpha <= 0.f) return;
+    float sx = 0.f, sy = 0.f;
+    toScreen(x, y, &sx, &sy);
+    const float half = width_ * 0.5f;
+    gfx->drawSolidRect(sx - half, sy - half, width_, width_, Color(colorR_, colorG_, colorB_, alpha));
+}
+
+void AnimTrail::drawSegment(graphics::Graphics *gfx, float x0, float y0, float x1, float y1, float a0, float a1) const {
+    if (!gfx) return;
+    float sx0 = 0.f, sy0 = 0.f, sx1 = 0.f, sy1 = 0.f;
+    toScreen(x0, y0, &sx0, &sy0);
+    toScreen(x1, y1, &sx1, &sy1);
+    const float dx  = sx1 - sx0;
+    const float dy  = sy1 - sy0;
+    const float len = std::sqrt(dx * dx + dy * dy);
+    if (len < 1e-4f) {
+        drawDot(gfx, x1, y1, a1);
+        return;
+    }
+    const float step  = std::max(1.f, width_ * 0.75f);
+    const int   steps = std::max(1, int(len / step));
+    const float half  = width_ * 0.5f;
+    for (int i = 0; i <= steps; ++i) {
+        const float t = float(i) / float(steps);
+        const float a = a0 + (a1 - a0) * t;
+        if (a <= 0.f) continue;
+        const float px = sx0 + dx * t;
+        const float py = sy0 + dy * t;
+        gfx->drawSolidRect(px - half, py - half, width_, width_, Color(colorR_, colorG_, colorB_, a));
+    }
+}
+
+void AnimTrail::draw(graphics::Graphics *gfx) {
+    if (!gfx || points_.empty()) return;
+
+    if (style_ == Style::Points) {
+        for (const Point &p : points_) {
+            drawDot(gfx, p.x, p.y, alphaFor(p));
+        }
+        return;
+    }
+
+    // Line: connect oldest → newest with per-vertex fade.
+    for (size_t i = 1; i < points_.size(); ++i) {
+        const Point &a = points_[i - 1];
+        const Point &b = points_[i];
+        drawSegment(gfx, a.x, a.y, b.x, b.y, alphaFor(a), alphaFor(b));
+    }
+    // Emphasize the head.
+    if (!points_.empty()) {
+        const Point &head = points_.back();
+        drawDot(gfx, head.x, head.y, alphaFor(head));
+    }
 }
 
 }  // namespace eve::animation

@@ -358,3 +358,7 @@ Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgori
 `paintTerrain` / `paintTerrainRect` 解析邻域时保留没有逻辑地形归属的普通 tile。`eraseTerrainRect` 只清空指定矩形并重新解析附近地形，不清空矩形外的普通装饰。
 
 编辑文档的格式支持与运行时 importer 不同，见 [Tilemap 编辑文档与格式读写](../../dev/top-down-level-format.md)。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](map/api-reference.md)，使用前先确认本章的前置条件与生命周期。

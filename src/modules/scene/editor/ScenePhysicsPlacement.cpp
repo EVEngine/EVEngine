@@ -1,5 +1,6 @@
 #include "scene/editor/ScenePhysicsPlacement.h"
 
+#include <box3d/box3d.h>
 #include "common/Exception.h"
 #include "common/Time.h"
 #include "common/TransformEuler.h"
@@ -16,6 +17,7 @@
 #include <utility>
 
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/vec3.hpp>
 
@@ -31,8 +33,8 @@ bool finiteTransform(const scene_editing::SceneTransformValue& value) {
 }
 
 glm::quat rotationOf(const scene_editing::SceneTransformValue& value) {
-    return glm::quat(glm::vec3(static_cast<float>(value.rotationX), static_cast<float>(value.rotationY),
-                               static_cast<float>(value.rotationZ)));
+    return glm::quat_cast(glm::yawPitchRoll(static_cast<float>(value.rotationY), static_cast<float>(value.rotationX),
+                                            static_cast<float>(value.rotationZ)));
 }
 
 }  // namespace
@@ -103,9 +105,9 @@ struct ScenePhysicsPlacementBackend::Impl {
             raw = body.newBoxShape(width, height, depth, 1.0f, 0.5f, 0.0f);
         std::unique_ptr<physics::Shape3D> shape(raw);
         if (shape) {
-            const auto rotation = glm::quat(glm::vec3(static_cast<float>(collider.localRotationX),
-                                                      static_cast<float>(collider.localRotationY),
-                                                      static_cast<float>(collider.localRotationZ)));
+            const auto rotation = glm::quat_cast(glm::yawPitchRoll(static_cast<float>(collider.localRotationY),
+                                                                   static_cast<float>(collider.localRotationX),
+                                                                   static_cast<float>(collider.localRotationZ)));
             shape->setLocalTransform(
                 static_cast<float>(collider.localX * scale.x), static_cast<float>(collider.localY * scale.y),
                 static_cast<float>(collider.localZ * scale.z), rotation.x, rotation.y, rotation.z, rotation.w);
@@ -340,7 +342,8 @@ editing::Result<void> ScenePhysicsPlacementBackend::setHandleRotation(double x, 
         return editing::failed<void>(editing::Status::Rejected,
                                      editing::RuleId("scene.physics-placement.handle-rotation"),
                                      "Placement handle rotation must be finite");
-    impl_->handleRotation = glm::quat(glm::vec3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)));
+    impl_->handleRotation =
+        glm::quat_cast(glm::yawPitchRoll(static_cast<float>(y), static_cast<float>(x), static_cast<float>(z)));
     return editing::applied<void>();
 }
 
@@ -455,9 +458,9 @@ editing::Result<void> ScenePhysicsPlacementBackend::step(std::uint64_t tick, dou
                             object.shapes[index]->setConvexHullVertices(vertices, collider.convexMaxVertices);
                         } else
                             object.shapes[index]->setBoxSize(width, height, depth);
-                        const auto localRotation = glm::quat(glm::vec3(static_cast<float>(collider.localRotationX),
-                                                                       static_cast<float>(collider.localRotationY),
-                                                                       static_cast<float>(collider.localRotationZ)));
+                        const auto localRotation = glm::quat_cast(glm::yawPitchRoll(
+                            static_cast<float>(collider.localRotationY), static_cast<float>(collider.localRotationX),
+                            static_cast<float>(collider.localRotationZ)));
                         object.shapes[index]->setLocalTransform(static_cast<float>(collider.localX * desiredScale.x),
                                                                 static_cast<float>(collider.localY * desiredScale.y),
                                                                 static_cast<float>(collider.localZ * desiredScale.z),
@@ -594,6 +597,34 @@ editing::Result<PhysicsPlacementFrame> ScenePhysicsPlacementBackend::placementFr
 
 editing::Revision ScenePhysicsPlacementBackend::sourceRevision() const noexcept {
     return impl_->request.sourceRevision;
+}
+
+editing::Result<PhysicsPlacementFrame> ScenePhysicsPlacementBackend::relationFrame() const {
+    auto captured = placementFrame();
+    if (!captured.ok()) return captured;
+    auto& frame                         = captured.value();
+    frame.contactsComplete              = true;
+    frame.selectedPairCollisionsEnabled = !impl_->request.settings.preserveSelectionLayout;
+    std::map<int, editing::ObjectId> ids;
+    for (const auto& object : impl_->objects) ids.emplace(object.body->getId(), object.admitted.object);
+    for (const auto& object : impl_->objects) {
+        if (b3Body_GetContactCapacity(object.body->raw()) > 4096) frame.contactsComplete = false;
+        const int count = impl_->world.queryBodyContacts(object.body->getId(), 4096);
+        if (count == 4096) frame.contactsComplete = false;
+        for (int i = 0; i < count; ++i) {
+            const auto other = ids.find(impl_->world.getContactPointOtherBodyId(i));
+            if (other == ids.end()) {
+                frame.contactsComplete = false;
+                continue;
+            }
+            frame.contacts.push_back({object.admitted.object, other->second, impl_->world.getContactPointX(i),
+                                      impl_->world.getContactPointY(i), impl_->world.getContactPointZ(i),
+                                      impl_->world.getContactPointNormalX(i), impl_->world.getContactPointNormalY(i),
+                                      impl_->world.getContactPointNormalZ(i),
+                                      impl_->world.getContactPointSeparation(i)});
+        }
+    }
+    return captured;
 }
 
 }  // namespace eve::scene_editor

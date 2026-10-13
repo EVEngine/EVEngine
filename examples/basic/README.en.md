@@ -1,34 +1,38 @@
-# Basic — First Example
+# Basic — 2D, one step at a time
 
 [中文](README.md) · [Example guide](../README.en.md)
 
-A small collection of engine features: Tilemap (`maps/demo.json`), Box2D bodies/gravity, particles and basic 2D drawing. It also demonstrates soft hot reload: one-time initialization in `eve_init`, guards for existing state, and incremental work in `eve_reload` / `eve_asset_reload`.
+Start with one rectangle, then learn images, movement and physics before adding particles and fire.
 
-## Run
-
-With a downloaded SDK, run its bundled copy from the SDK directory:
-
-```sh
-bin/eve run share/eve/examples/basic
-# Windows:
-bin\eve.exe run share\eve\examples\basic
-```
-
-With an engine executable on PATH and the repository as your current directory:
+## Run and select a lesson
 
 ```sh
 eve run examples/basic
+# Source build: make basic
 ```
 
-For a source build, `make basic` is equivalent to `make run/<platform>-debug GAME=examples/basic` (`win32`, `linux` or `macosx`). Match example sources to the engine/SDK version; dev sources may use newer APIs.
+From an extracted SDK, run `bin/eve run share/eve/examples/basic` (Windows: `bin\eve.exe`).
+Edit `tutorialStep = 1` in that copy's `config.nut`, choose a number below, then **close the window and restart**.
+The module list is selected at startup. Within a lesson, script edits support hot reload.
+`main.nut` selects one complete script from `steps/`; no file copying is needed.
 
-## Try an edit
+## Lessons
 
-Open `main.nut`, change a drawing parameter and save. Watch the running example update through the normal reload path. Keep changes in a copy if you want to preserve the original reference game.
+1. **Rectangle** — [01-rectangle.nut](steps/01-rectangle.nut): initialization, rendering, clearing and pixel coordinates. Change its position, size and color.
+2. **Image** — [02-image.nut](steps/02-image.nut): replace the rectangle with bundled `assets/box.png`. Load once during initialization; draw each frame.
+3. **Movement** — [03-movement.nut](steps/03-movement.nut): hold arrow keys to move within the window. Multiply pixels per second by `dt` in seconds.
+4. **Physics** — [04-physics.nut](steps/04-physics.nut): replace keyboard movement with gravity and a floor. Physics owns position; rendering reads it. Bodies use center coordinates, images use top-left coordinates.
+5. **Particles** — [05-particles.nut](steps/05-particles.nut): add sparks following the box. Update physics, position the emitter, then update and render particles.
+6. **Fire** — [06-fire.nut](steps/06-fire.nut): keep the sparks and add fire. Edit colors, speed, lifetime and emission rate in [particles/fire.json](particles/fire.json); the asset reloads automatically.
 
-The directory contains two UI alternatives. In a copy of the example, replace `main.nut` with the selected script:
+Lessons 1–2 only draw; lesson 3 adds keyboard input; lesson 4 adds physics; lessons 5–6 add particles.
+`persist` plus null guards preserve textures, worlds and emitters across script reloads.
+Reloading keeps the box position; restart to watch it fall again.
+The original 16×16 RGBA checker box is included with this example and needs no external assets.
 
-- `ui_demo.nut`: multiple declarative UI hosts and dark/light themes.
-- `ui_component.nut`: reusable `eve.UIComponent` health bars, sliders and buttons.
+## Next
 
-For the console, debugger, snapshots and AI panel, continue with [DevLab](../devlab/README.en.md). See the [English user guide](../../docs/en/usr/README.md) for a first game of your own.
+`ui_demo.nut` and `ui_component.nut` are separate advanced UI alternatives. In a copy, replace `main.nut`
+with one of them and remove the `modules` field from `config.nut` so their required modules are instantiated.
+Continue with [Game Tutorial](../game-tutorial/README.md) for a small game or [DevLab](../devlab/README.en.md)
+for the debugger, console and AI panel. Match example sources to your engine/SDK version.

@@ -1,15 +1,27 @@
-#include "common/Capability.h"
-#include "common/ProcgenSceneSink.h"
-#include "procgen/Procgen.h"
-
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-
+#include <cmath>
+#include <future>
+#include <limits>
+#include <memory>
+#include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include "common/Capability.h"
+#include "common/Module.h"
+#include "common/ProcgenSceneSink.h"
+#include "common/ProcgenWorldQuery.h"
+#include "procgen/MeshBuild.h"
+#include "procgen/Procgen.h"
+#include "procgen/RuntimeGeneration.h"
+#include "procgen/ShapeGrammar.h"
+#include "procgen/SpatialData.h"
+#include "procgen/spline/SplinePath.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
+// procgen_scene_sink.cpp
 using namespace eve::procgen;
 
 namespace {
@@ -17,7 +29,7 @@ namespace {
 class MockProcgenSceneSink final : public eve::IProcgenSceneSink {
 public:
     bool applyBatch(const std::string& batchId, const std::vector<eve::ProcgenInstanceDesc>& instances) override {
-        const auto previous = batches.find(batchId);
+        const auto                            previous = batches.find(batchId);
         std::unordered_map<std::string, bool> oldIds;
         if (previous != batches.end())
             for (const auto& instance : previous->second) oldIds[instance.id] = true;
@@ -28,10 +40,10 @@ public:
             else
                 ++stats.created;
         }
-        stats.removed = int(oldIds.size());
-        batches[batchId] = instances;
+        stats.removed      = int(oldIds.size());
+        batches[batchId]   = instances;
         revisions[batchId] = revisions[batchId] + 1;
-        latest[batchId]  = stats;
+        latest[batchId]    = stats;
         return true;
     }
     eve::Result<uint64_t> replaceBatch(const std::string& batchId, uint64_t targetRevision,
@@ -69,8 +81,8 @@ public:
         if (current == revisions.end() || current->second != delta.baseRevision)
             return eve::Result<uint64_t>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "mock delta revision is stale"));
-        lastDeltaBatch     = batchId;
-        lastDelta          = delta;
+        lastDeltaBatch = batchId;
+        lastDelta      = delta;
         ++deltaCalls;
         revisions[batchId] = delta.targetRevision;
         return eve::Result<uint64_t>::success(delta.targetRevision);
@@ -140,8 +152,8 @@ public:
     std::unordered_map<std::string, Stats>                                 latest;
     std::string                                                            lastDeltaBatch;
     eve::ProcgenInstanceDelta                                              lastDelta;
-    int                                                                    replaceCalls = 0;
-    int                                                                    deltaCalls   = 0;
+    int                                                                    replaceCalls         = 0;
+    int                                                                    deltaCalls           = 0;
     bool                                                                   failBatchTransaction = false;
 };
 
@@ -569,4 +581,970 @@ TEST_CASE("procgen.sceneSink.reportsMissingProvider") {
     REQUIRE(!removeResult.ok());
     CHECK(removeResult.status().describe().find("unavailable") != std::string::npos);
     REQUIRE(proc.releasePointSet(pointsHandle).ok());
+}
+
+// procgen_schema_script.cpp
+TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        procgen <- eve.Procgen();
+        algorithm <- "cave.cellular";
+        paramsResult <- procgen.newParams();
+        paramsResultOk <- paramsResult.ok;
+        params <- paramsResult.ok ? paramsResult.value : null;
+        defaultsResult <- params == null ? { ok = false } :
+            procgen.applyAlgorithmDefaults(algorithm, params);
+        defaultsApplied <- defaultsResult.ok;
+        paramCount <- procgen.getAlgorithmParamCount(algorithm);
+        fieldsComplete <- true;
+        fillIndex <- -1;
+        for (local i = 0; i < paramCount; ++i) {
+            if (procgen.getAlgorithmParamKey(algorithm, i) == "" ||
+                procgen.getAlgorithmParamLabel(algorithm, i) == "" ||
+                procgen.getAlgorithmParamKind(algorithm, i) == "") fieldsComplete = false;
+            if (procgen.getAlgorithmParamKey(algorithm, i) == "fill") fillIndex = i;
+        }
+        widthSet <- params == null ? { ok = false } : params.setInt("width", 40);
+        heightSet <- params == null ? { ok = false } : params.setInt("height", 24);
+        seedSet <- params == null ? { ok = false } : params.setInt("seed", 77);
+        fillSet <- params == null ? { ok = false } : params.setFloat("fill", 0.38);
+        widthSetOk <- widthSet.ok;
+        heightSetOk <- heightSet.ok;
+        seedSetOk <- seedSet.ok;
+        fillSetOk <- fillSet.ok;
+        gridResult <- params == null ? { ok = false, hasValue = false } :
+            procgen.generate(algorithm, params);
+        gridOk <- gridResult.ok && gridResult.hasValue &&
+            gridResult.value.ownership() == "owned" && !gridResult.value.isStale();
+        width <- params == null ? 0 : params.getWidth();
+        height <- params == null ? 0 : params.getHeight();
+        fillKind <- fillIndex < 0 ? "" : procgen.getAlgorithmParamKind(algorithm, fillIndex);
+        fillMin <- fillIndex < 0 ? -1.0 : procgen.getAlgorithmParamMinimum(algorithm, fillIndex);
+        fillMax <- fillIndex < 0 ? -1.0 : procgen.getAlgorithmParamMaximum(algorithm, fillIndex);
+        wfcChoiceCount <- procgen.getAlgorithmParamChoiceCount("wfc.simple", 3);
+        wfcFirstChoice <- procgen.getAlgorithmParamChoice("wfc.simple", 3, 0);
+        algorithmSchemaResult <- procgen.getAlgorithmSchema(algorithm);
+        algorithmSchemaOk <- algorithmSchemaResult.ok && algorithmSchemaResult.hasValue;
+        algorithmSchema <- algorithmSchemaOk ? algorithmSchemaResult.value : null;
+        genericAlgorithmId <- algorithmSchema == null ? "" : algorithmSchema.getId();
+        textureParamsResult <- procgen.newParams();
+        textureParamsResultOk <- textureParamsResult.ok;
+        textureParams <- textureParamsResult.ok ? textureParamsResult.value : null;
+        textureDefaultsResult <- textureParams == null ? { ok = false } :
+            procgen.applyTextureRecipeDefaults("tex.rock", textureParams);
+        textureDefaultsApplied <- textureDefaultsResult.ok;
+        textureSchemaResult <- procgen.getTextureRecipeSchema("tex.rock");
+        textureSchemaOk <- textureSchemaResult.ok && textureSchemaResult.hasValue;
+        textureSchema <- textureSchemaOk ? textureSchemaResult.value : null;
+        textureCategory <- textureSchema == null ? "" : textureSchema.getCategory();
+        textureScaleFound <- false;
+        for (local i = 0; textureSchema != null && i < textureSchema.getParamCount(); ++i)
+            if (textureSchema.getParamKey(i) == "scale") textureScaleFound = true;
+        pbrParamsResult <- procgen.newParams();
+        pbrParamsResultOk <- pbrParamsResult.ok;
+        pbrParams <- pbrParamsResult.ok ? pbrParamsResult.value : null;
+        sizeSet <- pbrParams == null ? { ok = false } : pbrParams.setSize(16, 12);
+        pbrDefaultsResult <- pbrParams == null ? { ok = false } :
+            procgen.applyPbrRecipeDefaults("pbr.rock", pbrParams);
+        pbrDefaultsApplied <- pbrDefaultsResult.ok && sizeSet.ok;
+        pbrSchemaResult <- procgen.getPbrRecipeSchema("pbr.rock");
+        pbrSchemaOk <- pbrSchemaResult.ok && pbrSchemaResult.hasValue;
+        pbrSchema <- pbrSchemaOk ? pbrSchemaResult.value : null;
+        pbrMetallicFound <- false;
+        pbrNormalFound <- false;
+        for (local i = 0; pbrSchema != null && i < pbrSchema.getParamCount(); ++i) {
+            local key = pbrSchema.getParamKey(i);
+            if (key == "metallic") pbrMetallicFound = true;
+            if (key == "normalStrength") pbrNormalFound = true;
+        }
+        pbrSetResult <- pbrParams == null ? { ok = false, hasValue = false } :
+            procgen.generatePbrMaterial("pbr.rock", pbrParams);
+        pbrResultOk <- pbrSetResult.ok && pbrSetResult.hasValue &&
+            pbrSetResult.value.ownership() == "owned" && !pbrSetResult.value.isStale();
+        meshParamsResult <- procgen.newParams();
+        meshParamsResultOk <- meshParamsResult.ok;
+        meshParams <- meshParamsResult.ok ? meshParamsResult.value : null;
+        meshDefaultsResult <- meshParams == null ? { ok = false } :
+            procgen.applyMeshRecipeDefaults("mesh.fence", meshParams);
+        meshDefaultsApplied <- meshDefaultsResult.ok;
+        meshSchemaResult <- procgen.getMeshRecipeSchema("mesh.fence");
+        meshSchemaOk <- meshSchemaResult.ok && meshSchemaResult.hasValue;
+        meshSchema <- meshSchemaOk ? meshSchemaResult.value : null;
+        meshSegmentsFound <- false;
+        for (local i = 0; meshSchema != null && i < meshSchema.getParamCount(); ++i)
+            if (meshSchema.getParamKey(i) == "segments") meshSegmentsFound = true;
+        meshBuildResult <- meshParams == null ? { ok = false, hasValue = false } :
+            procgen.buildMesh("mesh.fence", meshParams);
+        meshBuildOk <- meshBuildResult.ok && meshBuildResult.hasValue &&
+            meshBuildResult.value.ownership() == "owned" && !meshBuildResult.value.isStale();
+    )"));
+
+    CHECK(vm.find("paramsResultOk").toBool());
+    CHECK(vm.find("defaultsApplied").toBool());
+    CHECK(vm.find("widthSetOk").toBool());
+    CHECK(vm.find("heightSetOk").toBool());
+    CHECK(vm.find("seedSetOk").toBool());
+    CHECK(vm.find("fillSetOk").toBool());
+    CHECK(vm.find("gridOk").toBool());
+    CHECK_GT(vm.find("paramCount").toInt(), 3);
+    CHECK(vm.find("fieldsComplete").toBool());
+    CHECK_EQ(vm.find("fillKind").toString(), std::string("float"));
+    CHECK_EQ(vm.find("fillMin").toFloat(), 0.f);
+    CHECK_EQ(vm.find("fillMax").toFloat(), 1.f);
+    CHECK_EQ(vm.find("width").toInt(), 40);
+    CHECK_EQ(vm.find("height").toInt(), 24);
+    CHECK_EQ(vm.find("wfcChoiceCount").toInt(), 3);
+    CHECK_EQ(vm.find("wfcFirstChoice").toString(), std::string("dungeon"));
+    CHECK_EQ(vm.find("genericAlgorithmId").toString(), std::string("cave.cellular"));
+    CHECK(vm.find("textureParamsResultOk").toBool());
+    CHECK(vm.find("textureDefaultsApplied").toBool());
+    CHECK_EQ(vm.find("textureCategory").toString(), std::string("Texture"));
+    CHECK(vm.find("textureScaleFound").toBool());
+    CHECK(vm.find("pbrParamsResultOk").toBool());
+    CHECK(vm.find("pbrDefaultsApplied").toBool());
+    CHECK(vm.find("pbrMetallicFound").toBool());
+    CHECK(vm.find("pbrNormalFound").toBool());
+    CHECK(vm.find("pbrResultOk").toBool());
+    CHECK(vm.find("meshParamsResultOk").toBool());
+    CHECK(vm.find("meshDefaultsApplied").toBool());
+    CHECK(vm.find("meshSegmentsFound").toBool());
+    CHECK(vm.find("meshBuildOk").toBool());
+}
+
+// procgen_shape_grammar.cpp
+using namespace eve::procgen;
+
+TEST_CASE("procgen.shapeGrammar.expandsGroupsAndFillRepetition") {
+    ShapeGrammar grammar;
+    CHECK(grammar.addModule("A", "wall-a", 2.f, 1.f));
+    CHECK(grammar.addModule("A", "wall-b", 2.f, 1.f));
+    CHECK(!grammar.addModule("A", "wrong-length", 3.f, 1.f));
+    CHECK(grammar.addModule("B", "post", 1.f, 1.f));
+    CHECK(grammar.validate("A,[B,A]*"));
+
+    PointSet spline;
+    spline.add(0.f, 0.f, 0.f);
+    spline.add(10.f, 0.f, 0.f);
+    PointSet* first  = grammar.generate("A,[B,A]*", &spline, 42, false);
+    PointSet* second = grammar.generate("A,[B,A]*", &spline, 42, false);
+    REQUIRE(bool(first));
+    REQUIRE(bool(second));
+    CHECK_EQ(first->getCount(), 5);
+    CHECK_EQ(first->getStringAttribute(0, "module", ""), std::string("A"));
+    CHECK_EQ(first->getStringAttribute(1, "module", ""), std::string("B"));
+    CHECK_EQ(first->getStringAttribute(2, "module", ""), std::string("A"));
+    CHECK_EQ(first->getX(0), 1.f);
+    CHECK_EQ(first->getX(1), 2.5f);
+    CHECK_EQ(first->getX(2), 4.f);
+    CHECK_EQ(first->getYaw(0), 0.f);
+    CHECK_EQ(first->getFloatAttribute(1, "length", 0.f), 1.f);
+    for (int i = 0; i < first->getCount(); ++i)
+        CHECK_EQ(first->getStringAttribute(i, "asset", ""), second->getStringAttribute(i, "asset", ""));
+    CHECK(grammar.debugReport().find("symbols=5") != std::string::npos);
+
+    delete second;
+    delete first;
+}
+
+TEST_CASE("procgen.shapeGrammar.supportsPlusExactAndIncompleteModes") {
+    ShapeGrammar grammar;
+    grammar.addModule("A", "wall", 2.f, 1.f);
+    grammar.addModule("B", "post", 1.f, 1.f);
+    PointSet spline;
+    spline.add(0.f, 0.f, 0.f);
+    spline.add(10.f, 0.f, 0.f);
+
+    PointSet* plus = grammar.generate("[A,B]+", &spline, 1, false);
+    REQUIRE(bool(plus));
+    CHECK_EQ(plus->getCount(), 6);
+    PointSet* exact = grammar.generate("A3,B2", &spline, 1, false);
+    REQUIRE(bool(exact));
+    CHECK_EQ(exact->getCount(), 5);
+
+    PointSet shortSpline;
+    shortSpline.add(0.f, 0.f, 0.f);
+    shortSpline.add(5.f, 0.f, 0.f);
+    CHECK(!grammar.generate("A3", &shortSpline, 1, false));
+    CHECK(grammar.getError().find("does not fit") != std::string::npos);
+    PointSet* partial = grammar.generate("A3", &shortSpline, 1, true);
+    REQUIRE(bool(partial));
+    CHECK_EQ(partial->getCount(), 2);
+
+    delete partial;
+    delete exact;
+    delete plus;
+}
+
+TEST_CASE("procgen.shapeGrammar.reportsSyntaxAndUnknownModules") {
+    ShapeGrammar grammar;
+    grammar.addModule("A", "wall", 1.f, 1.f);
+    CHECK(!grammar.validate("[A,A"));
+    CHECK(grammar.getError().find("unterminated") != std::string::npos);
+    CHECK(!grammar.validate("A,Missing"));
+    CHECK(grammar.getError().find("unknown module") != std::string::npos);
+    CHECK(!grammar.validate(""));
+}
+
+// procgen_spatial_data.cpp
+using namespace eve::procgen;
+
+namespace {
+
+class FlatProcgenWorldQuery final : public eve::IProcgenWorldQuery {
+public:
+    eve::Result<eve::ProcgenSurfaceHit> projectDown(float x, float z, float maxY, float minY, std::uint64_t) override {
+        if (maxY < 4.f || minY > 4.f) return eve::Result<eve::ProcgenSurfaceHit>::success({});
+        return eve::Result<eve::ProcgenSurfaceHit>::success({true, 91, x, 4.f, z, 0.f, 1.f, 0.f});
+    }
+};
+
+struct CapabilityReset {
+    CapabilityReset() { eve::cap::detail::clearAllRaw(); }
+    ~CapabilityReset() { eve::cap::detail::clearAllRaw(); }
+};
+
+}  // namespace
+
+TEST_CASE("procgen.pointSet.exposesProductionPointSemantics") {
+    PointSet  points;
+    const int index = points.add(1.f, 2.f, 3.f);
+    points.setRotation(index, 10.f, 20.f, 30.f);
+    points.setBounds(index, 2.f, 3.f, 4.f, -2.f, -3.f, -4.f);
+    points.setColor(index, 1.2f, 0.5f, -0.5f, 0.75f);
+    points.setSteepness(index, 2.f);
+
+    CHECK_EQ(points.getPitch(index), 10.f);
+    CHECK_EQ(points.getYaw(index), 20.f);
+    CHECK_EQ(points.getRoll(index), 30.f);
+    CHECK_EQ(points.getBoundsMinX(index), -2.f);
+    CHECK_EQ(points.getBoundsMinY(index), -3.f);
+    CHECK_EQ(points.getBoundsMinZ(index), -4.f);
+    CHECK_EQ(points.getBoundsMaxX(index), 2.f);
+    CHECK_EQ(points.getBoundsMaxY(index), 3.f);
+    CHECK_EQ(points.getBoundsMaxZ(index), 4.f);
+    CHECK_EQ(points.getColorR(index), 1.f);
+    CHECK_EQ(points.getColorG(index), 0.5f);
+    CHECK_EQ(points.getColorB(index), 0.f);
+    CHECK_EQ(points.getColorA(index), 0.75f);
+    CHECK_EQ(points.getSteepness(index), 1.f);
+}
+
+TEST_CASE("procgen.worldQuery.coversProviderPresenceAndAbsence") {
+    CapabilityReset reset;
+    Procgen         proc;
+    auto            inputResult = proc.newPointSetHandle();
+    REQUIRE(inputResult.ok());
+    const auto input = std::move(inputResult).takeValue();
+    auto       view  = proc.resolvePointSet(input);
+    REQUIRE(view.isBound());
+    view->add(2.f, 100.f, 3.f);
+
+    auto absent = proc.projectToWorldHandle(input, 20.f, -20.f, ~std::uint64_t{0}, false);
+    CHECK(!absent.ok());
+    REQUIRE(absent.error() != nullptr);
+    CHECK_EQ(absent.error()->code(), eve::DiagnosticCode::Unsupported);
+
+    FlatProcgenWorldQuery provider;
+    eve::cap::provide<eve::IProcgenWorldQuery>(&provider);
+    auto projectedResult = proc.projectToWorldHandle(input, 20.f, -20.f, ~std::uint64_t{0}, false);
+    REQUIRE(projectedResult.ok());
+    const auto projected     = std::move(projectedResult).takeValue();
+    auto       projectedView = proc.resolvePointSet(projected);
+    REQUIRE(projectedView.isBound());
+    CHECK_EQ(projectedView->getCount(), 1);
+    CHECK_EQ(projectedView->getY(0), 4.f);
+    CHECK_EQ(projectedView->getNormalY(0), 1.f);
+    CHECK_EQ(projectedView->getIntAttribute(0, "worldObjectId", 0), 91);
+    REQUIRE(proc.releasePointSet(projected).ok());
+    REQUIRE(proc.releasePointSet(input).ok());
+}
+
+TEST_CASE("procgen.spatialData.squirrelFacadeExposesComposablePrimitives") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local procgen = eve.Procgen();
+        local pointsResult = procgen.newPointSet();
+        if (pointsResult.ok) {
+            local points = pointsResult.value;
+            points.add(1.0, 0.0, 1.0);
+            points.add(5.0, 0.0, 5.0);
+            points.add(9.0, 0.0, 9.0);
+            points.setFloatAttribute(0, "priority", 2.0);
+            points.setFloatAttribute(1, "priority", 0.5);
+            points.setFloatAttribute(2, "priority", 3.0);
+            points.setIntAttribute(0, "variant", 7);
+            points.setBoolAttribute(0, "enabled", true);
+            points.setVectorAttribute(0, "wind", 1.0, 2.0, 3.0);
+            local worldResult = procgen.boxVolume(0.0, -1.0, 0.0, 10.0, 1.0, 10.0);
+            local holeResult = procgen.sphereVolume(5.0, 0.0, 5.0, 1.5);
+            if (worldResult.ok && holeResult.ok) {
+                local domainResult = procgen.differenceSpatial(worldResult.value, holeResult.value);
+                if (domainResult.ok) {
+                    local filteredResult = procgen.filterSpatial(points, domainResult.value, false);
+                    local priorityResult = procgen.filterFloatAttribute(points, "priority", 1.0, 4.0, false);
+                    local transformedResult = procgen.transformPoints(
+                        points, 2.0, 0.0, 3.0, 90.0, 1.0, 1.0, 1.0);
+                    local transformed3DResult = procgen.transformPoints3D(
+                        points, 0.0, 0.0, 0.0, 90.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+                    local unionResult = procgen.unionPoints(points, filteredResult.value);
+                    local intersectResult = procgen.intersectPoints(points, filteredResult.value);
+                    local pointDifferenceResult = procgen.differencePoints(points, filteredResult.value);
+                    local copyResult = procgen.copyPoints(filteredResult.value, points, true);
+                    local remapResult = procgen.remapDensity(points, 0.0, 1.0, 0.0, 0.5, true);
+                    local mathResult = procgen.mathFloatAttribute(
+                        points, "priority", "weightedPriority", "multiply", 2.0, 0.0);
+                    local sampledResult = procgen.sampleSpatial(domainResult.value, 5.0, 7, 0.0);
+                    local poissonResult = procgen.poissonDisk(10, 10, 2.0, 9, 32);
+                    if (points.getAttributeType(0, "variant") == "int" &&
+                        points.getAttributeType(0, "enabled") == "bool" &&
+                        points.getAttributeType(0, "wind") == "vector" &&
+                        points.getIntAttribute(0, "variant", 0) == 7 &&
+                        points.getBoolAttribute(0, "enabled", false) &&
+                        points.getVectorAttributeZ(0, "wind", 0.0) == 3.0 &&
+                        filteredResult.ok && filteredResult.value.getCount() == 2 &&
+                        priorityResult.ok && priorityResult.value.getCount() == 2 &&
+                        transformedResult.ok && transformedResult.value.getCount() == 3 &&
+                        transformed3DResult.ok && transformed3DResult.value.getY(0) == -1.0 &&
+                        unionResult.ok && unionResult.value.getCount() == 3 &&
+                        intersectResult.ok && intersectResult.value.getCount() == 2 &&
+                        pointDifferenceResult.ok && pointDifferenceResult.value.getCount() == 1 &&
+                        copyResult.ok && copyResult.value.getCount() == 6 &&
+                        remapResult.ok && remapResult.value.getDensity(0) == 0.5 &&
+                        mathResult.ok && mathResult.value.getFloatAttribute(
+                            0, "weightedPriority", 0.0) == 4.0 &&
+                        sampledResult.ok && sampledResult.value.getCount() > 0 &&
+                        poissonResult.ok && poissonResult.value.getCount() > 0)
+                        result = "ok";
+                }
+            }
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+}
+
+TEST_CASE("procgen.spatialData.volumeComposition") {
+    const SpatialData world     = SpatialData::box(0.f, 0.f, 0.f, 10.f, 4.f, 10.f);
+    const SpatialData hole      = SpatialData::sphere(5.f, 2.f, 5.f, 2.f);
+    const SpatialData buildable = SpatialData::subtract(world, hole);
+
+    CHECK_EQ(world.getKind(), std::string("volume.box"));
+    CHECK(world.contains(1.f, 1.f, 1.f));
+    CHECK(!world.contains(11.f, 1.f, 1.f));
+    CHECK(!buildable.contains(5.f, 2.f, 5.f));
+    CHECK(buildable.contains(1.f, 1.f, 1.f));
+    CHECK(buildable.hasBounds());
+    CHECK_EQ(buildable.getMaxX(), 10.f);
+
+    const SpatialData overlap = SpatialData::intersect(world, SpatialData::box(8.f, -2.f, 8.f, 12.f, 8.f, 12.f));
+    CHECK(overlap.contains(9.f, 2.f, 9.f));
+    CHECK(!overlap.contains(7.f, 2.f, 9.f));
+    CHECK_EQ(overlap.getMinX(), 8.f);
+    CHECK_EQ(overlap.getMaxZ(), 10.f);
+}
+
+TEST_CASE("procgen.spatialData.polygonTextureMaskAndMeshSurface") {
+    PointSet polygon;
+    polygon.add(0.f, 0.f, 0.f);
+    polygon.add(4.f, 0.f, 0.f);
+    polygon.add(4.f, 0.f, 4.f);
+    polygon.add(0.f, 0.f, 4.f);
+    const SpatialData polygonVolume = SpatialData::polygon(polygon, -1.f, 2.f);
+    CHECK_EQ(polygonVolume.getKind(), std::string("volume.polygon"));
+    CHECK(polygonVolume.contains(2.f, 0.f, 2.f));
+    CHECK(!polygonVolume.contains(5.f, 0.f, 2.f));
+
+    Heightmap mask(2, 2);
+    mask.setHeight(0, 0, 0.f);
+    mask.setHeight(1, 0, 1.f);
+    mask.setHeight(0, 1, 1.f);
+    mask.setHeight(1, 1, 1.f);
+    const SpatialData textureMask = SpatialData::textureMask(mask, 10.f, 20.f, 2.f, 0.75f, 1.f, -2.f, 3.f);
+    CHECK_EQ(textureMask.getKind(), std::string("volume.texture_mask"));
+    CHECK(textureMask.contains(12.f, 0.f, 22.f));
+    CHECK(!textureMask.contains(10.f, 0.f, 20.f));
+
+    MeshBuild mesh;
+    mesh.addVertex(0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f);
+    mesh.addVertex(4.f, 1.f, 0.f, 0.f, 1.f, 0.f, 1.f, 0.f);
+    mesh.addVertex(0.f, 3.f, 4.f, 0.f, 1.f, 0.f, 0.f, 1.f);
+    mesh.addTriangle(0, 1, 2);
+    const SpatialData surface = SpatialData::meshSurface(mesh, 0.1f);
+    CHECK_EQ(surface.getKind(), std::string("surface.mesh"));
+    CHECK(surface.contains(1.f, 1.5f, 1.f));
+    PointSet source;
+    source.add(1.f, 100.f, 1.f);
+    const PointSet projected = surface.project(source);
+    CHECK_EQ(projected.getY(0), 1.5f);
+    CHECK(projected.getNormalY(0) > 0.f);
+}
+
+TEST_CASE("procgen.spatialData.splineAndDeterministicSampling") {
+    PointSet control;
+    control.add(0.f, 0.f, 0.f);
+    control.add(10.f, 0.f, 0.f);
+    const SpatialData road = SpatialData::spline(control, 1.f);
+    CHECK(road.contains(5.f, 0.5f, 0.f));
+    CHECK(!road.contains(5.f, 2.f, 0.f));
+
+    const SpatialData volume = SpatialData::box(0.f, 0.f, 0.f, 4.f, 2.f, 4.f);
+    const PointSet    first  = volume.sample(2.f, 42, 0.f);
+    const PointSet    second = volume.sample(2.f, 42, 0.f);
+    CHECK_EQ(first.getCount(), 18);
+    CHECK_EQ(first.getCount(), second.getCount());
+    for (int i = 0; i < first.getCount(); ++i) {
+        CHECK_EQ(first.getX(i), second.getX(i));
+        CHECK_EQ(first.getY(i), second.getY(i));
+        CHECK_EQ(first.getZ(i), second.getZ(i));
+        CHECK_EQ(first.getPointSeed(i), second.getPointSeed(i));
+    }
+}
+
+TEST_CASE("procgen.spatialData.scriptFacingApiFiltersPoints") {
+    Procgen proc;
+    auto    includeResult = proc.boxVolumeHandle(0.f, -1.f, 0.f, 5.f, 1.f, 5.f);
+    auto    excludeResult = proc.sphereVolumeHandle(2.f, 0.f, 2.f, 1.f);
+    REQUIRE(includeResult.ok());
+    REQUIRE(excludeResult.ok());
+    auto include      = std::move(includeResult).takeValue();
+    auto exclude      = std::move(excludeResult).takeValue();
+    auto domainResult = proc.differenceSpatialHandle(include, exclude);
+    REQUIRE(domainResult.ok());
+    auto domain = std::move(domainResult).takeValue();
+
+    auto inputResult = proc.newPointSetHandle();
+    REQUIRE(inputResult.ok());
+    auto input     = std::move(inputResult).takeValue();
+    auto inputView = proc.resolvePointSet(input);
+    REQUIRE(inputView.isBound());
+    inputView->add(1.f, 0.f, 1.f);
+    inputView->add(2.f, 0.f, 2.f);
+    inputView->add(9.f, 0.f, 9.f);
+    auto acceptedResult = proc.filterSpatialHandle(input, domain, false);
+    auto rejectedResult = proc.filterSpatialHandle(input, domain, true);
+    REQUIRE(acceptedResult.ok());
+    REQUIRE(rejectedResult.ok());
+    auto accepted     = std::move(acceptedResult).takeValue();
+    auto rejected     = std::move(rejectedResult).takeValue();
+    auto acceptedView = proc.resolvePointSet(accepted);
+    auto rejectedView = proc.resolvePointSet(rejected);
+    REQUIRE(acceptedView.isBound());
+    REQUIRE(rejectedView.isBound());
+    CHECK_EQ(acceptedView->getCount(), 1);
+    CHECK_EQ(rejectedView->getCount(), 2);
+
+    REQUIRE(proc.releasePointSet(rejected).ok());
+    REQUIRE(proc.releasePointSet(accepted).ok());
+    REQUIRE(proc.releasePointSet(input).ok());
+    REQUIRE(proc.release(domain).ok());
+    REQUIRE(proc.release(exclude).ok());
+    REQUIRE(proc.release(include).ok());
+}
+
+TEST_CASE("procgen.spatialData.heightfieldSamplesAndProjectsSurface") {
+    Heightmap map(3, 3);
+    for (int z = 0; z < 3; ++z)
+        for (int x = 0; x < 3; ++x) map.setHeight(x, z, float(x + z));
+
+    const SpatialData surface = SpatialData::heightfield(map, 10.f, 20.f, 2.f, 3.f);
+    CHECK_EQ(surface.getKind(), std::string("surface.heightfield"));
+    CHECK_EQ(surface.getMinX(), 10.f);
+    CHECK_EQ(surface.getMaxZ(), 24.f);
+    CHECK(surface.contains(12.f, 6.f, 22.f));
+
+    const PointSet samples = surface.sample(2.f, 91, 0.f);
+    CHECK_EQ(samples.getCount(), 9);
+    CHECK_EQ(samples.getX(0), 10.f);
+    CHECK_EQ(samples.getZ(0), 20.f);
+    CHECK_EQ(samples.getY(4), 6.f);
+    CHECK(samples.getNormalY(4) > 0.f);
+    CHECK(samples.getNormalX(4) < 0.f);
+
+    PointSet source;
+    source.add(14.f, -100.f, 24.f);
+    const PointSet projected = surface.project(source);
+    CHECK_EQ(projected.getY(0), 12.f);
+}
+
+TEST_CASE("procgen.pointOperations.matchCorePcgNodes") {
+    PointSet  first;
+    const int a = first.add(1.f, 0.f, 0.f);
+    first.setDensity(a, 1.f);
+    first.setFloatAttribute(a, "age", 12.f);
+    first.setStringAttribute(a, "biome", "forest");
+
+    PointSet  second;
+    const int b = second.add(0.f, 0.f, 2.f);
+    second.setDensity(b, 0.f);
+    second.setFloatAttribute(b, "age", 2.f);
+    second.setStringAttribute(b, "biome", "desert");
+
+    const PointSet merged = mergePointSets(first, second);
+    CHECK_EQ(merged.getCount(), 2);
+    const PointSet transformed = transformPointSet(merged, 10.f, 3.f, 20.f, 90.f, 2.f, 1.f, 2.f);
+    CHECK(std::abs(transformed.getX(0) - 10.f) < 0.0001f);
+    CHECK(std::abs(transformed.getZ(0) - 22.f) < 0.0001f);
+    CHECK_EQ(transformed.getY(0), 3.f);
+    CHECK_EQ(transformed.getYaw(0), 90.f);
+    CHECK_EQ(transformed.getScaleX(0), 2.f);
+
+    const PointSet mature = filterPointFloatAttribute(merged, "age", 10.f, 20.f, false);
+    const PointSet forest = filterPointStringAttribute(merged, "biome", "forest", false);
+    CHECK_EQ(mature.getCount(), 1);
+    CHECK_EQ(forest.getCount(), 1);
+    CHECK_EQ(forest.getStringAttribute(0, "biome", ""), std::string("forest"));
+
+    const PointSet culledA = densityCullPoints(merged, 123, 1.f);
+    const PointSet culledB = densityCullPoints(merged, 123, 1.f);
+    CHECK_EQ(culledA.getCount(), 1);
+    CHECK_EQ(culledA.getCount(), culledB.getCount());
+    CHECK_EQ(culledA.getPointSeed(0), culledB.getPointSeed(0));
+}
+
+// procgen_spline_path.cpp
+using namespace eve::procgen;
+
+namespace {
+
+SplinePoint point(float x, float y, float z) {
+    SplinePoint value;
+    value.x = x;
+    value.y = y;
+    value.z = z;
+    return value;
+}
+
+}  // namespace
+
+TEST_CASE("procgen.splinePath.samplesLinearPathByArcLength") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("linear").ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(3.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(3.f, 4.f, 0.f)).ok());
+    auto length = path.lengthResult();
+    REQUIRE(length.ok());
+    CHECK(std::abs(length.value() - 7.f) < 1e-5f);
+    auto sample = path.evaluateDistanceResult(3.5f);
+    REQUIRE(sample.ok());
+    CHECK(std::abs(sample.value().x - 3.f) < 1e-4f);
+    CHECK(std::abs(sample.value().y - 0.5f) < 1e-4f);
+    CHECK(std::abs(sample.value().normalizedDistance - 0.5f) < 1e-5f);
+}
+
+TEST_CASE("procgen.splinePath.supportsBezierClosedAndClosestQueries") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("bezier").ok());
+    auto a = point(0.f, 0.f, 0.f);
+    a.outY = 2.f;
+    auto b = point(2.f, 0.f, 0.f);
+    b.inY  = 2.f;
+    REQUIRE(path.addPointResult(a).ok());
+    REQUIRE(path.addPointResult(b).ok());
+    auto midpoint = path.evaluateResult(0.5f);
+    REQUIRE(midpoint.ok());
+    CHECK(std::abs(midpoint.value().x - 1.f) < 1e-5f);
+    CHECK(midpoint.value().y > 1.49f);
+    auto closest = path.closestPointResult(1.f, 1.4f, 0.f, 64);
+    REQUIRE(closest.ok());
+    CHECK(std::abs(closest.value().x - 1.f) < 0.05f);
+    path.setClosed(true);
+    CHECK_EQ(path.segmentCount(), 2);
+}
+
+TEST_CASE("procgen.splinePath.supportsExplicitQuadraticBezierInterpolation") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("quadraticBezier").ok());
+    SplinePoint first{0.f, 0.f, 0.f};
+    first.outY = 2.f;
+    SplinePoint second{2.f, 0.f, 0.f};
+    second.inY = 2.f;
+    REQUIRE(path.addPointResult(first).ok());
+    REQUIRE(path.addPointResult(second).ok());
+    const auto middle = path.evaluateResult(0.5f);
+    REQUIRE(middle.ok());
+    CHECK(std::abs(middle.value().x - 1.f) < 1e-5f);
+    CHECK(std::abs(middle.value().y - 1.f) < 1e-5f);
+    CHECK(std::abs(middle.value().tangentX - 1.f) < 1e-5f);
+    CHECK(std::abs(middle.value().tangentY) < 1e-5f);
+}
+
+TEST_CASE("procgen.splinePath.rejectsInvalidStateAtomically") {
+    SplinePath path;
+    const auto revision = path.revision();
+    CHECK(!path.setKindResult("nurbs").ok());
+    CHECK_EQ(path.revision(), revision);
+    CHECK(!path.evaluateResult(0.5f).ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 0.f)).ok());
+    CHECK(!path.addPointResult(point(NAN, 0.f, 0.f)).ok());
+    CHECK_EQ(path.pointCount(), 1);
+}
+
+TEST_CASE("procgen.splinePath.parallelTransportFramesStayOrthonormal") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("catmullRom").ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(1.f, 2.f, 0.5f)).ok());
+    REQUIRE(path.addPointResult(point(-1.f, 4.f, 1.5f)).ok());
+    REQUIRE(path.addPointResult(point(0.5f, 6.f, 0.f)).ok());
+    auto frames = path.sampleFramesResult(32, true, 17.f, 32);
+    REQUIRE(frames.ok());
+    CHECK_EQ(frames.value().size(), std::size_t(33));
+    for (const auto& frame : frames.value()) {
+        const float sideLength =
+            std::sqrt(frame.sideX * frame.sideX + frame.sideY * frame.sideY + frame.sideZ * frame.sideZ);
+        const float upLength    = std::sqrt(frame.upX * frame.upX + frame.upY * frame.upY + frame.upZ * frame.upZ);
+        const float sideTangent = frame.sideX * frame.sample.tangentX + frame.sideY * frame.sample.tangentY +
+                                  frame.sideZ * frame.sample.tangentZ;
+        const float upTangent =
+            frame.upX * frame.sample.tangentX + frame.upY * frame.sample.tangentY + frame.upZ * frame.sample.tangentZ;
+        CHECK(std::abs(sideLength - 1.f) < 1e-5f);
+        CHECK(std::abs(upLength - 1.f) < 1e-5f);
+        CHECK(std::abs(sideTangent) < 1e-5f);
+        CHECK(std::abs(upTangent) < 1e-5f);
+    }
+}
+
+TEST_CASE("procgen.splinePath.closedTransportFramesCorrectHolonomy") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("catmullRom").ok());
+    path.setClosed(true);
+    REQUIRE(path.addPointResult(point(-2.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(0.f, 1.f, 2.f)).ok());
+    REQUIRE(path.addPointResult(point(2.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(0.f, -1.f, -2.f)).ok());
+    auto frames = path.sampleFramesResult(48, true);
+    REQUIRE(frames.ok());
+    const auto& first = frames.value().front();
+    const auto& last  = frames.value().back();
+    CHECK(std::abs(first.sample.x - last.sample.x) < 1e-6f);
+    CHECK(std::abs(first.sideX - last.sideX) < 1e-6f);
+    CHECK(std::abs(first.sideY - last.sideY) < 1e-6f);
+    CHECK(std::abs(first.sideZ - last.sideZ) < 1e-6f);
+    CHECK(std::abs(first.upX - last.upX) < 1e-6f);
+    CHECK(std::abs(first.upY - last.upY) < 1e-6f);
+    CHECK(std::abs(first.upZ - last.upZ) < 1e-6f);
+    CHECK(std::abs(last.sample.normalizedDistance - 1.f) < 1e-6f);
+}
+
+TEST_CASE("procgen.splinePath.interpolatesPointRollAndProfileScale") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("linear").ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 4.f)).ok());
+    REQUIRE(path.setPointProfileResult(0, 0.f, 1.f, 1.f).ok());
+    REQUIRE(path.setPointProfileResult(1, 90.f, 3.f, 2.f).ok());
+    auto midpoint = path.evaluateResult(0.5f);
+    REQUIRE(midpoint.ok());
+    CHECK(std::abs(midpoint.value().rollDegrees - 45.f) < 1e-6f);
+    CHECK(std::abs(midpoint.value().scaleX - 2.f) < 1e-6f);
+    CHECK(std::abs(midpoint.value().scaleY - 1.5f) < 1e-6f);
+    const auto revision = path.revision();
+    CHECK(!path.setPointProfileResult(1, 0.f, 0.f, 1.f).ok());
+    CHECK_EQ(path.revision(), revision);
+}
+
+TEST_CASE("procgen.splinePath.pointRotationProducesCompleteLocalOrientation") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("linear").ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 4.f)).ok());
+    REQUIRE(path.setPointRotationResult(0, 90.f, 0.f, 0.f).ok());
+    REQUIRE(path.setPointRotationResult(1, 90.f, 0.f, 0.f).ok());
+    auto frames = path.sampleFramesResult(4, true);
+    REQUIRE(frames.ok());
+    const auto& frame = frames.value()[2];
+    CHECK(std::abs(frame.forwardY + 1.f) < 1e-5f);
+    CHECK(std::abs(frame.forwardX * frame.sideX + frame.forwardY * frame.sideY + frame.forwardZ * frame.sideZ) < 1e-5f);
+    const auto revision = path.revision();
+    CHECK(!path.setPointRotationResult(0, std::numeric_limits<float>::infinity(), 0.f, 0.f).ok());
+    CHECK_EQ(path.revision(), revision);
+}
+
+TEST_CASE("procgen.splinePath.travelWrapModesAreDistanceDeterministic") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("linear").ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(10.f, 0.f, 0.f)).ok());
+    auto clamped = path.travelResult(12.f, "clamp");
+    auto looped  = path.travelResult(12.f, "loop");
+    auto bounced = path.travelResult(12.f, "pingPong");
+    REQUIRE(clamped.ok());
+    REQUIRE(looped.ok());
+    REQUIRE(bounced.ok());
+    CHECK(std::abs(clamped.value().x - 10.f) < 1e-5f);
+    CHECK(std::abs(looped.value().x - 2.f) < 1e-5f);
+    CHECK(std::abs(bounced.value().x - 8.f) < 1e-5f);
+    auto negative = path.travelResult(-2.f, "loop");
+    REQUIRE(negative.ok());
+    CHECK(std::abs(negative.value().x - 8.f) < 1e-5f);
+    CHECK(!path.travelResult(1.f, "teleport").ok());
+    auto frame = path.travelFrameResult(5.f, "clamp", 24);
+    REQUIRE(frame.ok());
+    CHECK(std::abs(frame.value().sample.x - 5.f) < 1e-5f);
+    const float sideLength =
+        std::sqrt(frame.value().sideX * frame.value().sideX + frame.value().sideY * frame.value().sideY +
+                  frame.value().sideZ * frame.value().sideZ);
+    CHECK(std::abs(sideLength - 1.f) < 1e-5f);
+    CHECK(std::abs(frame.value().sideX * frame.value().sample.tangentX +
+                   frame.value().sideY * frame.value().sample.tangentY +
+                   frame.value().sideZ * frame.value().sample.tangentZ) < 1e-5f);
+}
+
+TEST_CASE("procgen.splinePath.distributesOwningSamplesWithoutClosedDuplicate") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("linear").ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(9.f, 0.f, 0.f)).ok());
+    auto open = path.distributeResult(4, true);
+    REQUIRE(open.ok());
+    CHECK_EQ(open.value().count(), 4);
+    CHECK(std::abs(open.value().sampleResult(1).value().x - 3.f) < 1e-5f);
+    CHECK(std::abs(open.value().sampleResult(3).value().x - 9.f) < 1e-5f);
+    auto openFrame = open.value().frameResult(1);
+    REQUIRE(openFrame.ok());
+    CHECK(std::abs(openFrame.value().sample.x - 3.f) < 1e-5f);
+    CHECK(std::abs(openFrame.value().sideX * openFrame.value().upX + openFrame.value().sideY * openFrame.value().upY +
+                   openFrame.value().sideZ * openFrame.value().upZ) < 1e-5f);
+    CHECK(!open.value().sampleResult(4).ok());
+    CHECK(!open.value().frameResult(4).ok());
+
+    path.setClosed(true);
+    auto closed = path.distributeResult(4, true);
+    REQUIRE(closed.ok());
+    CHECK_EQ(closed.value().count(), 4);
+    CHECK(closed.value().sampleResult(3).value().normalizedDistance < 1.f);
+}
+
+TEST_CASE("procgen.splinePath.shapePresetsReplaceAtomically") {
+    SplinePath path;
+    REQUIRE(path.applyShapePresetResult("circle", 12, 3.f, 0.f).ok());
+    CHECK(path.isClosed());
+    CHECK_EQ(path.pointCount(), 12);
+    auto start = path.evaluateResult(0.f);
+    auto end   = path.evaluateResult(1.f);
+    REQUIRE(start.ok());
+    REQUIRE(end.ok());
+    CHECK(std::abs(start.value().x - end.value().x) < 1e-5f);
+    const auto revision = path.revision();
+    CHECK(!path.applyShapePresetResult("spiral", 1, 3.f, 4.f, 2.f).ok());
+    CHECK_EQ(path.revision(), revision);
+    CHECK_EQ(path.pointCount(), 12);
+    REQUIRE(path.applyShapePresetResult("spiral", 16, 3.f, 4.f, 2.f).ok());
+    CHECK(!path.isClosed());
+    CHECK_EQ(path.kind(), std::string_view("catmullRom"));
+    auto tip = path.evaluateResult(1.f);
+    REQUIRE(tip.ok());
+    CHECK(std::abs(tip.value().y - 4.f) < 1e-5f);
+}
+
+TEST_CASE("procgen.splinePath.buildsRendererNeutralOpenAndClosedPolylines") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("linear").ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(4.f, 0.f, 0.f)).ok());
+    auto open = path.polylineResult(5, true, 24);
+    REQUIRE(open.ok());
+    CHECK_EQ(open.value().count(), 5);
+    CHECK(!open.value().isClosed());
+    CHECK(std::abs(open.value().pointResult(4).value().x - 4.f) < 1e-6f);
+    CHECK(!open.value().pointResult(5).ok());
+
+    path.setClosed(true);
+    auto closed = path.polylineResult(8, true, 24);
+    REQUIRE(closed.ok());
+    CHECK(closed.value().isClosed());
+    CHECK_EQ(closed.value().count(), 8);
+    const auto first = closed.value().pointResult(0);
+    const auto last  = closed.value().pointResult(7);
+    REQUIRE(first.ok());
+    REQUIRE(last.ok());
+    CHECK(std::abs(first.value().x - last.value().x) > 1e-4f);
+}
+
+TEST_CASE("procgen.splinePath.disconnectedChunksExcludeGapFromLengthAndPolyline") {
+    SplinePath path;
+    REQUIRE(path.setKindResult("linear").ok());
+    REQUIRE(path.addPointResult(point(0.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(1.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(10.f, 0.f, 0.f)).ok());
+    REQUIRE(path.addPointResult(point(11.f, 0.f, 0.f)).ok());
+    REQUIRE(path.setPointChunkBreakResult(2, true).ok());
+    CHECK_EQ(path.chunkCount(), 2);
+    CHECK_EQ(path.segmentCount(), 2);
+    auto length = path.lengthResult(16);
+    REQUIRE(length.ok());
+    CHECK(std::abs(length.value() - 2.f) < 1e-5f);
+    auto afterBreak = path.evaluateDistanceResult(1.1f, 16);
+    REQUIRE(afterBreak.ok());
+    CHECK(std::abs(afterBreak.value().x - 10.1f) < 1e-4f);
+    CHECK_EQ(afterBreak.value().chunkIndex, 1);
+    auto polyline = path.polylineResult(8, true, 16);
+    REQUIRE(polyline.ok());
+    CHECK_EQ(polyline.value().chunkCount(), 2);
+    CHECK_EQ(polyline.value().chunkPointCount(0), 4);
+    CHECK_EQ(polyline.value().chunkPointCount(1), 4);
+    CHECK(std::abs(polyline.value().chunkPointResult(0, 3).value().x - 1.f) < 1e-5f);
+    CHECK(std::abs(polyline.value().chunkPointResult(1, 0).value().x - 10.f) < 1e-5f);
+    REQUIRE(path.setPointChunkBreakResult(2, false).ok());
+    CHECK_EQ(path.chunkCount(), 1);
+}
+
+// procgen_worker_contract.cpp
+using namespace eve::procgen;
+
+static_assert(std::is_copy_constructible_v<ProcgenGenerationJob>);
+static_assert(!std::is_copy_constructible_v<RuntimeGeneration>);
+static_assert(!std::is_move_constructible_v<RuntimeGeneration>);
+
+TEST_CASE("procgen.worker.rejectsJobsAfterClearAndOwnerDestruction") {
+    ProcgenGenerationJob job;
+    {
+        RuntimeGeneration original(42);
+        REQUIRE(original.addLevel(10.f, 4.f, 2.f) == 0);
+        original.updateSource(5.f, 5.f, 1.f, 0.f);
+        auto issued = original.nextGenerationJob();
+        REQUIRE(issued.ok());
+        auto value = std::move(issued).takeValue();
+        REQUIRE(value.has_value());
+        job = *value;
+        original.clear();
+        auto stale = original.completeGenerationJob({job, PointSet{}});
+        CHECK(!stale.ok());
+    }
+    RuntimeGeneration replacement(42);
+    REQUIRE(replacement.addLevel(10.f, 4.f, 2.f) == 0);
+    replacement.updateSource(5.f, 5.f, 1.f, 0.f);
+    auto issued = replacement.nextGenerationJob();
+    REQUIRE(issued.ok());
+    REQUIRE(std::move(issued).takeValue().has_value());
+    auto stale = replacement.completeGenerationJob({job, PointSet{}});
+    CHECK(!stale.ok());
+    CHECK(replacement.getGeneratingCount() == 1);
+}
+
+TEST_CASE("procgen.worker.rejectsForeignAndReplayedJobs") {
+    RuntimeGeneration first(42), second(42);
+    for (auto* runtime : {&first, &second}) {
+        REQUIRE(runtime->addLevel(10.f, 4.f, 2.f) == 0);
+        runtime->updateSource(5.f, 5.f, 1.f, 0.f);
+    }
+    auto a = first.nextGenerationJob();
+    auto b = second.nextGenerationJob();
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    auto job   = std::move(a).takeValue();
+    auto other = std::move(b).takeValue();
+    REQUIRE(job.has_value());
+    REQUIRE(other.has_value());
+    REQUIRE(job->getTicket() == other->getTicket());
+    auto foreign = second.completeGenerationJob({*job, PointSet{}});
+    CHECK(!foreign.ok());
+    CHECK(second.getGeneratingCount() == 1);
+    auto accepted = first.completeGenerationJob({*job, PointSet{}});
+    REQUIRE(accepted.ok());
+    auto replay = first.completeGenerationJob({*job, PointSet{}});
+    CHECK(!replay.ok());
+    auto own = second.completeGenerationJob({*other, PointSet{}});
+    CHECK(own.ok());
+}
+
+TEST_CASE("procgen.worker.legacyIssueRejectsWrongThread") {
+    RuntimeGeneration runtime(42);
+    REQUIRE(runtime.addLevel(10.f, 4.f, 2.f) == 0);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    auto worker = std::async(std::launch::async, [&runtime] {
+        std::unique_ptr<ProcgenCellRequest> request(runtime.nextGenerate());
+        auto                                checked = runtime.nextGenerationJob();
+        return !request && !checked.ok();
+    });
+    CHECK(worker.get());
+    CHECK(runtime.getGeneratingCount() == 0);
+    auto issued = runtime.nextGenerationJob();
+    REQUIRE(issued.ok());
+    CHECK(std::move(issued).takeValue().has_value());
+}
+
+TEST_CASE("procgen.runtimeGeneration.movesValueJobsAcrossWorkerBoundary") {
+    RuntimeGeneration runtime(4201);
+    REQUIRE(runtime.isOwnerThread());
+    const int addedLevel = runtime.addLevel(10.f, 4.f, 2.f);
+    REQUIRE_EQ(addedLevel, 0);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+
+    auto issued = runtime.nextGenerationJob();
+    REQUIRE(issued.ok());
+    auto optionalJob = std::move(issued).takeValue();
+    REQUIRE(optionalJob.has_value());
+    ProcgenGenerationJob job   = *optionalJob;
+    const int            level = job.getLevel();
+    const int            x     = job.getX();
+    const int            z     = job.getZ();
+
+    auto worker    = std::async(std::launch::async, [job] {
+        PointSet output;
+        output.add(job.getMinX(), 0.f, job.getMinZ());
+        return ProcgenGenerationCompletion(job, std::move(output));
+    });
+    auto committed = runtime.completeGenerationJob(worker.get());
+    REQUIRE(committed.ok());
+    const auto revision = std::move(committed).takeValue();
+    CHECK_EQ(revision, uint64_t(1));
+    CHECK(runtime.hasCell(level, x, z));
+}
+
+TEST_CASE("procgen.runtimeGeneration.rejectsWorkerThreadSchedulerMutation") {
+    RuntimeGeneration runtime(4202);
+    const int         addedLevel = runtime.addLevel(10.f, 4.f, 2.f);
+    REQUIRE_EQ(addedLevel, 0);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    auto issued = runtime.nextGenerationJob();
+    REQUIRE(issued.ok());
+    auto optionalJob = std::move(issued).takeValue();
+    REQUIRE(optionalJob.has_value());
+    const ProcgenGenerationJob job = *optionalJob;
+
+    auto workerAccepted = std::async(std::launch::async, [&runtime, job] {
+        PointSet output;
+        output.add(0.f, 0.f, 0.f);
+        auto result = runtime.completeGenerationJob(ProcgenGenerationCompletion(job, std::move(output)));
+        return result.ok();
+    });
+    CHECK(!workerAccepted.get());
+    CHECK_EQ(runtime.getGeneratingCount(), 1);
+
+    PointSet output;
+    output.add(0.f, 0.f, 0.f);
+    auto committed = runtime.completeGenerationJob(ProcgenGenerationCompletion(job, std::move(output)));
+    REQUIRE(committed.ok());
+}
+
+TEST_CASE("procgen.script.newShapeGrammarIsTheDocumentedEntryPoint") {
+    // docs/usr/modules/procgen/pointset-pipeline.md tells users to start from
+    // `procgen.newShapeGrammar()`. The class and all of its methods were exposed but
+    // nothing created an instance, so that documented sample could not run at all --
+    // the binding check's reverse direction reported it as "documented but not bound".
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        procgen <- eve.Procgen();
+        created <- procgen.newShapeGrammar();
+        grammar <- created.ok ? created.value : null;
+        isProxy <- grammar != null && grammar instanceof eve.ProcgenShapeGrammar;
+        added <- grammar == null ? false : grammar.addModule("Wall", "stone-wall-a", 4.0, 3.0);
+        count <- grammar == null ? -1 : grammar.getModuleCount();
+        symbol <- grammar == null ? "" : grammar.getModuleSymbol(0);
+        valid <- grammar != null && grammar.validate("Wall,Wall");
+        report <- grammar == null ? "" : grammar.debugReport();
+    )"));
+
+    REQUIRE(vm.find("created").find("ok").toBool());
+    REQUIRE(vm.find("isProxy").toBool());
+    REQUIRE(vm.find("added").toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 1);
+    REQUIRE_EQ(vm.find("symbol").toString(), std::string("Wall"));
+    REQUIRE(vm.find("valid").toBool());
+    REQUIRE(vm.find("report").toString().find("symbols=") != std::string::npos);
 }

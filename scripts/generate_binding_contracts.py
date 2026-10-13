@@ -11,12 +11,15 @@ silently publishing arg0/arg1 placeholders.
 from __future__ import annotations
 
 import argparse
+import hashlib
 from dataclasses import dataclass, field
 import json
 from pathlib import Path
 import re
 import sys
 import utf8_stdio
+from binding_architecture import attach_architecture
+from binding_semantics import attach_semantics
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -64,6 +67,9 @@ class Contract:
     platforms: list[str]
     documentation_id: str
     source: str
+    cpp_symbol: str = ""
+    architecture: dict | None = None
+    semantics: dict | None = None
 
     @property
     def key(self) -> str:
@@ -487,6 +493,9 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                                 f"{module}.{script_class + '.' if script_class else ''}{method}",
                                 f"{path.relative_to(ROOT).as_posix()}:{source.count(chr(10), 0, match.start()) + 1}")
             existing = contracts.get(contract.key)
+            direct_member = re.fullmatch(r"\s*&\s*([A-Za-z_]\w*(?:::[A-Za-z_]\w*)+)\s*", expression)
+            if direct_member:
+                contract.cpp_symbol = direct_member.group(1)
             if existing is None or sum(p.name.startswith("arg") for p in contract.parameters) < sum(
                 p.name.startswith("arg") for p in existing.parameters
             ):
@@ -526,6 +535,11 @@ def contract_to_dict(contract: Contract) -> dict:
         "platforms": contract.platforms,
         "documentationId": contract.documentation_id,
         "source": contract.source,
+        "cppSymbol": contract.cpp_symbol,
+        "semantics": contract.semantics,
+        "architecture": contract.architecture or {
+            "status": "unknown", "reason": "No reviewed owner mapping for this binding"
+        },
     }
 
 
@@ -592,7 +606,10 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
         'void addContract(BindingContractRegistry& registry, const char* module, const char* scriptClass,',
         '                 const char* method, const char* returnType, bool returnNullable, const char* ownership,',
         '                 const char* threadAffinity, std::initializer_list<const char*> platforms,',
-        '                 const char* documentationId, std::initializer_list<ParameterSeed> parameters) {',
+        '                 const char* documentationId, const char* source, const char* cppSymbol,',
+        '                 std::optional<BindingArchitectureContract> architecture,',
+        '                 std::optional<BindingSemanticContract> semantics,',
+        '                 std::initializer_list<ParameterSeed> parameters) {',
         '    BindingContract contract;',
         '    contract.module = module;',
         '    contract.scriptClass = scriptClass;',
@@ -603,6 +620,10 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
         '    contract.threadAffinity = threadAffinity;',
         '    for (const char* platform : platforms) contract.platforms.emplace_back(platform);',
         '    contract.documentationId = documentationId;',
+        '    contract.source = source;',
+        '    contract.cppSymbol = cppSymbol;',
+        '    contract.architecture = std::move(architecture);',
+        '    contract.semantics = std::move(semantics);',
         '    for (const ParameterSeed& seed : parameters) {',
         '        BindingParameterContract parameter;',
         '        parameter.name = seed.name;',
@@ -618,6 +639,22 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
     ]
     calls: list[str] = []
     for contract in contracts:
+        architecture = 'std::nullopt'
+        semantics = 'std::nullopt'
+        if contract.semantics:
+            values = [cpp_string(contract.semantics[key]) for key in ('factory', 'role', 'resultClass')]
+            values += [str(contract.semantics[key]) for key in ('identityArgument', 'relatedArgument')]
+            values += [cpp_string(json.dumps(contract.semantics['schema'], ensure_ascii=False, separators=(',', ':')))
+                       if contract.semantics.get('schema') else cpp_string('')]
+            semantics = 'BindingSemanticContract{' + ', '.join(values) + '}'
+        if contract.architecture:
+            mapping = contract.architecture
+            values = [cpp_string(mapping[key]) for key in (
+                'implementationSource', 'stateOwner', 'ownerSource', 'inputHash', 'limitations'
+            )]
+            values += ['{' + ', '.join(cpp_string(value) for value in mapping[key]) + '}'
+                       for key in ('writes', 'tests', 'reads')]
+            architecture = 'BindingArchitectureContract{' + ', '.join(values) + '}'
         parameters = []
         for parameter in contract.parameters:
             default = cpp_string(parameter.default) if parameter.default else 'nullptr'
@@ -632,7 +669,8 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
             f'{str(contract.return_nullable).lower()}, {cpp_string(contract.ownership)}, '
             f'{cpp_string(contract.thread_affinity)}, '
             f'{{{", ".join(cpp_string(platform) for platform in contract.platforms)}}}, '
-            f'{cpp_string(contract.documentation_id)}, {{{", ".join(parameters)}}});'
+            f'{cpp_string(contract.documentation_id)}, {cpp_string(contract.source)}, '
+            f'{cpp_string(contract.cpp_symbol)}, {architecture}, {semantics}, {{{", ".join(parameters)}}});'
         )
     chunk_size = 128
     chunk_count = (len(calls) + chunk_size - 1) // chunk_size
@@ -648,7 +686,18 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
             *calls[index * chunk_size : (index + 1) * chunk_size],
             '}',
         ]
-    lines += ['}  // namespace', '', 'void registerEngineBindingContracts(BindingContractRegistry& registry) {']
+    provider_hash = hashlib.sha256(b'eve-script-structure-v1')
+    for name in ('scripts/binding_semantics.py', 'src/engine/common/ScriptStructure.hpp',
+                 'src/engine/common/ScriptStructure.cpp', 'src/engine/devtools/ProjectIndexAutomatic.cpp',
+                 'src/engine/devtools/ProjectIndexGraph.cpp', 'src/engine/devtools/ProjectIndexScan.cpp',
+                 'src/engine/devtools/McpProjectIndexTools.cpp'):
+        source_path = ROOT / name
+        if source_path.exists():
+            provider_hash.update(name.encode())
+            provider_hash.update(source_path.read_text(encoding='utf-8').replace('\r\n', '\n').encode())
+    lines += ['}  // namespace', '',
+              f'std::string_view scriptStructureProviderHash() {{ return "{provider_hash.hexdigest()}"; }}', '',
+              'void registerEngineBindingContracts(BindingContractRegistry& registry) {']
     for index in range(chunk_count):
         lines.append(f'    registerChunk{index}(registry);')
     lines += ['}', '', '}  // namespace eve::script', '']
@@ -684,7 +733,17 @@ def main() -> int:
     args = parser.parse_args()
 
     enabled_modules = ({item for item in args.modules.split(",") if item} if args.modules is not None else None)
-    contracts, unresolved = extract_contracts(source_files(), enabled_modules, args.platform)
+    sources = source_files()
+    contracts, unresolved = extract_contracts(sources, enabled_modules, args.platform)
+    try:
+        metadata_files = sorted((ROOT / "src/modules").glob("*/binding_architecture.json"))
+        attach_architecture(contracts, sources, ROOT, metadata_files,
+                            mask_comments, enabled_modules)
+        attach_semantics(contracts, sources, ROOT,
+                         sorted((ROOT / "src/modules").glob("*/binding_semantics.json")), mask_comments)
+    except (ValueError, KeyError, OSError) as error:
+        print(f"Architecture mapping error: {error}", file=sys.stderr)
+        return 1
     placeholder_count = sum(parameter.name.startswith("arg") for contract in contracts for parameter in contract.parameters)
     print(f"Binding Contract: {len(contracts)} contracts, {len(unresolved)} unresolved bindings, "
           f"{placeholder_count} placeholder parameter names")

@@ -25,7 +25,7 @@ On Windows, use the equivalent absolute `eve.exe` path. These script examples do
 
 ## Learn the basics
 
-- [Basic](basic/README.en.md): the bundled starting point; edit scripts, draw, and try the UI variants.
+- [Basic](basic/README.en.md): six bundled lessons: rectangle, image, movement, physics, particles and fire; then try the UI variants.
 - [DevLab](devlab/README.en.md): console, pause, stepping, snapshots and hot reload. Run with `--debug`.
 
 ## Choose a showcase

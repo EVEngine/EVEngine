@@ -259,7 +259,7 @@ void applyTree(SceneHost *host, NodeDesc root) {
     // across full rebuilds; orphaned SceneObjects are torn down by Scene::prune).
     std::unordered_map<std::string, uint32_t> savedObjects;
     for (const auto &n : t->nodes) {
-        if (n.objectId != kNoSceneObject && !n.id.empty()) savedObjects[n.id] = n.objectId;
+        if (n.objectId != 0 && !n.id.empty()) savedObjects[n.id] = n.objectId;
     }
 
     t->nodes.clear();

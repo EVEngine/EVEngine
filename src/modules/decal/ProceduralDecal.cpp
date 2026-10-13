@@ -1,4 +1,5 @@
 #include "decal/ProceduralDecal.h"
+#include "common/StringMapInstances.h"
 
 #include "common/Diagnostic.h"
 

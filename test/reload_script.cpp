@@ -283,21 +283,17 @@ class FailFirstRestoreProvider : public eve::caps::IStateProvider {
 public:
     const char* stateKind() const override { return "reload-failure-test"; }
 
-    bool captureState(eve::StateValue& out) override {
-        out = eve::StateValue::integer(42);
-        return true;
-    }
+    eve::Result<eve::Value> capture() override { return eve::Result<eve::Value>::success(eve::Value::integer(42)); }
 
-    bool restoreState(const eve::StateValue&, std::string* err) override {
+    eve::Result<void> restore(const eve::Value&) override {
         ++restoreCount;
-        if (restoreCount == 1) {
-            if (err) *err = "intentional commit failure";
-            return false;
-        }
-        return true;
+        if (restoreCount == 1)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "intentional commit failure"));
+        return eve::Result<void>::success();
     }
 
-    bool resetToDefaults() override { return true; }
+    eve::Result<void> resetToDefaults() override { return eve::Result<void>::success(); }
 
     int restoreCount = 0;
 };
@@ -310,19 +306,19 @@ public:
         return eve::caps::StateReloadPolicy::Reset;
     }
 
-    bool captureState(eve::StateValue&) override {
+    eve::Result<eve::Value> capture() override {
         ++captureCount;
-        return true;
+        return eve::Result<eve::Value>::success(eve::Value::null());
     }
 
-    bool restoreState(const eve::StateValue&, std::string*) override {
+    eve::Result<void> restore(const eve::Value&) override {
         ++restoreCount;
-        return true;
+        return eve::Result<void>::success();
     }
 
-    bool resetToDefaults() override {
+    eve::Result<void> resetToDefaults() override {
         ++resetCount;
-        return true;
+        return eve::Result<void>::success();
     }
 
     int captureCount = 0;

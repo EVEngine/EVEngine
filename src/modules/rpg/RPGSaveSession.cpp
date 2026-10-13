@@ -1,6 +1,7 @@
 #include "rpg/RPGSaveSession.h"
 #include "rpg/Party.h"
 
+#include "common/Assert.h"
 #include "common/Snapshot.h"
 #include "common/Value.h"
 #include "inventory/InventorySaveSession.h"
@@ -196,6 +197,31 @@ eve::Result<void> applyQuestAdditions(eve::Value &payload, const std::set<std::s
 
 }  // namespace
 
+struct RPGSaveSession::PreparedRestore::Impl {
+    RPGSaveSession                                  *owner = nullptr;
+    GameState                                        gameState;
+    Tracker                                          tracker;
+    inventory::InventorySaveSession::PreparedRestore inventory;
+    std::optional<RPGActor::CheckpointCandidate>     actor;
+    std::optional<Party::CheckpointCandidate>        party;
+
+    Impl(RPGSaveSession *session, GameState &&gameStateCandidate, Tracker &&trackerCandidate,
+         inventory::InventorySaveSession::PreparedRestore &&inventoryCandidate,
+         std::optional<RPGActor::CheckpointCandidate>     &&actorCandidate,
+         std::optional<Party::CheckpointCandidate>        &&partyCandidate)
+        : owner(session),
+          gameState(std::move(gameStateCandidate)),
+          tracker(std::move(trackerCandidate)),
+          inventory(std::move(inventoryCandidate)),
+          actor(std::move(actorCandidate)),
+          party(std::move(partyCandidate)) {}
+};
+
+RPGSaveSession::PreparedRestore::PreparedRestore(std::unique_ptr<Impl> state) : state_(std::move(state)) {}
+RPGSaveSession::PreparedRestore::~PreparedRestore()                                                      = default;
+RPGSaveSession::PreparedRestore::PreparedRestore(PreparedRestore &&) noexcept                            = default;
+RPGSaveSession::PreparedRestore &RPGSaveSession::PreparedRestore::operator=(PreparedRestore &&) noexcept = default;
+
 void RPGSaveSession::bind(GameState &gameState, Tracker &tracker, RPGActor &actor, inventory::Bag &bag,
                           inventory::EquipmentSet &equipment) noexcept {
     gameState_ = &gameState;
@@ -373,36 +399,41 @@ eve::Result<std::string> RPGSaveSession::snapshotJson() const {
 }
 
 eve::Result<void> RPGSaveSession::validateSnapshotJson(std::string_view json) {
-    return restoreSnapshotJsonImpl(json, false);
+    auto prepared = prepareRestoreSnapshotJson(json);
+    if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> RPGSaveSession::restoreSnapshotJson(std::string_view json) {
-    return restoreSnapshotJsonImpl(json, true);
+    auto prepared = prepareRestoreSnapshotJson(json);
+    if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+    commitPrepared(std::move(prepared).takeValue());
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<void> RPGSaveSession::restoreSnapshotJsonImpl(std::string_view json, bool publish) {
+eve::Result<RPGSaveSession::PreparedRestore> RPGSaveSession::prepareRestoreSnapshotJson(std::string_view json) {
     if (!gameState_ || !tracker_ || (!actor_ && !party_) || !bag_ || !equipment_)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                                                                 "RPG save session requires bound participants", {}));
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "RPG save session requires bound participants", {}));
     if (contentVersion_.empty())
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                                                                 "RPG save session requires a content version", {}));
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "RPG save session requires a content version", {}));
     auto parsed = eve::parseSnapshotEnvelope(json, saveIntegrityProvider());
-    if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
+    if (!parsed.ok()) return eve::Result<PreparedRestore>::failure(parsed.status());
     const eve::SnapshotEnvelope &envelope = parsed.value();
     if (envelope.type != "rpg.save-session")
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                 "snapshot does not belong to RPGSaveSession", "type"));
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPGSaveSession", "type"));
     if (envelope.schema != saveSchema())
-        return eve::Result<void>::failure(eve::Diagnostic::error(
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPGSaveSession", "schema"));
     eve::Value root = envelope.payload;
     if (!root.isObject())
-        return eve::Result<void>::failure(eve::Diagnostic::error(
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::ParseError, "RPG save session payload must be an object", "payload"));
     eve::Value *contentVersion = root.find("contentVersion");
     if (!contentVersion || !contentVersion->isString())
-        return eve::Result<void>::failure(
+        return eve::Result<PreparedRestore>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
                                    "RPG save-session content version is missing or invalid", "payload.contentVersion"));
     const std::string sourceContentVersion = contentVersion->asString();
@@ -410,21 +441,21 @@ eve::Result<void> RPGSaveSession::restoreSnapshotJsonImpl(std::string_view json,
                                     singleActorPartyMigrations_.contains(sourceContentVersion);
     const eve::SchemaVersion expectedVersion(actor_ ? 1 : 2);
     if (envelope.schemaVersion != expectedVersion && !migrateSingleActor)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::UnknownVersion, "unsupported RPG save-session snapshot version", "schemaVersion"));
     if (migrateSingleActor) {
         const eve::Value *oldActor = root.find("actor");
         if (!oldActor || !oldActor->isObject())
-            return eve::Result<void>::failure(eve::Diagnostic::error(
+            return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "single-actor migration requires an actor payload", "payload.actor"));
         auto baselineJson = party_->checkpointJson();
-        if (!baselineJson.ok()) return eve::Result<void>::failure(baselineJson.status());
+        if (!baselineJson.ok()) return eve::Result<PreparedRestore>::failure(baselineJson.status());
         auto baseline = eve::Value::fromJson(baselineJson.value());
-        if (!baseline.ok()) return eve::Result<void>::failure(baseline.status());
+        if (!baseline.ok()) return eve::Result<PreparedRestore>::failure(baseline.status());
         eve::Value migratedParty = std::move(baseline).takeValue();
         eve::Value *members = migratedParty.find("members");
         if (!members || !members->isArray() || members->arraySize() == 0)
-            return eve::Result<void>::failure(
+            return eve::Result<PreparedRestore>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
                                        "single-actor migration requires a non-empty live party", "party"));
         members->at(0).set("actor", *oldActor);
@@ -442,11 +473,11 @@ eve::Result<void> RPGSaveSession::restoreSnapshotJsonImpl(std::string_view json,
         if (questAdditions != questAdditionMigrations_.end()) {
             hasMigration = true;
             auto added = applyQuestAdditions(root, questAdditions->second);
-            if (!added.ok()) return added;
+            if (!added.ok()) return eve::Result<PreparedRestore>::failure(added.status());
         }
         if (migrateSingleActor) hasMigration = true;
         if (!hasMigration)
-            return eve::Result<void>::failure(eve::Diagnostic::error(
+            return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Conflict, "RPG save-session content version has no compatible or migration route",
                 "payload.contentVersion"));
         root.set("contentVersion", eve::Value(contentVersion_));
@@ -457,56 +488,64 @@ eve::Result<void> RPGSaveSession::restoreSnapshotJsonImpl(std::string_view json,
     const eve::Value *inventoryValue = root.find("inventory");
     if (!gameStateValue || !gameStateValue->isObject() || !trackerValue || !trackerValue->isObject() ||
         !actorValue || !actorValue->isObject() || !inventoryValue || !inventoryValue->isObject())
-        return eve::Result<void>::failure(eve::Diagnostic::error(
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::ParseError, "RPG save-session participants must be objects", "payload"));
     auto gameStateJson = gameStateValue->toJson();
-    if (!gameStateJson.ok()) return eve::Result<void>::failure(gameStateJson.status());
+    if (!gameStateJson.ok()) return eve::Result<PreparedRestore>::failure(gameStateJson.status());
     auto trackerJson = trackerValue->toJson();
-    if (!trackerJson.ok()) return eve::Result<void>::failure(trackerJson.status());
+    if (!trackerJson.ok()) return eve::Result<PreparedRestore>::failure(trackerJson.status());
     auto actorJson = actorValue->toJson();
-    if (!actorJson.ok()) return eve::Result<void>::failure(actorJson.status());
+    if (!actorJson.ok()) return eve::Result<PreparedRestore>::failure(actorJson.status());
     auto inventoryJson = inventoryValue->toJson();
-    if (!inventoryJson.ok()) return eve::Result<void>::failure(inventoryJson.status());
+    if (!inventoryJson.ok()) return eve::Result<PreparedRestore>::failure(inventoryJson.status());
 
     GameState candidateGameState = *gameState_;
     Tracker candidateTracker = *tracker_;
     auto gameStateRestore = candidateGameState.restoreSnapshotJson(gameStateJson.value());
-    if (!gameStateRestore.ok()) return gameStateRestore;
+    if (!gameStateRestore.ok()) return eve::Result<PreparedRestore>::failure(gameStateRestore.status());
     auto trackerRestore = candidateTracker.restoreSnapshotJson(trackerJson.value());
-    if (!trackerRestore.ok()) return trackerRestore;
+    if (!trackerRestore.ok()) return eve::Result<PreparedRestore>::failure(trackerRestore.status());
     inventory::InventorySaveSession inventorySession;
     inventorySession.bind(*bag_, *equipment_);
     auto inventoryCandidate = inventorySession.prepareRestoreSnapshotJson(inventoryJson.value());
-    if (!inventoryCandidate.ok()) return eve::Result<void>::failure(inventoryCandidate.status());
+    if (!inventoryCandidate.ok()) return eve::Result<PreparedRestore>::failure(inventoryCandidate.status());
 
     std::optional<RPGActor::CheckpointCandidate> actorCandidate;
     std::optional<Party::CheckpointCandidate> partyCandidate;
     if (actor_) {
         auto prepared = actor_->prepareCheckpointJson(actorJson.value());
-        if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+        if (!prepared.ok()) return eve::Result<PreparedRestore>::failure(prepared.status());
         actorCandidate.emplace(std::move(prepared).takeValue());
     } else {
         auto prepared = party_->prepareCheckpointJson(actorJson.value());
-        if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+        if (!prepared.ok()) return eve::Result<PreparedRestore>::failure(prepared.status());
         partyCandidate.emplace(std::move(prepared).takeValue());
     }
 
-    if (!publish) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    auto state = std::make_unique<PreparedRestore::Impl>(
+        this, std::move(candidateGameState), std::move(candidateTracker), std::move(inventoryCandidate).takeValue(),
+        std::move(actorCandidate), std::move(partyCandidate));
+    return eve::Result<PreparedRestore>::success(PreparedRestore(std::move(state)));
+}
 
-    gameState_->switches_.swap(candidateGameState.switches_);
-    gameState_->variables_.swap(candidateGameState.variables_);
-    gameState_->selfVariables_.swap(candidateGameState.selfVariables_);
-    gameState_->selfStrings_.swap(candidateGameState.selfStrings_);
-    tracker_->entries.swap(candidateTracker.entries);
-    tracker_->order.swap(candidateTracker.order);
-    tracker_->pending.swap(candidateTracker.pending);
-    tracker_->polled.swap(candidateTracker.polled);
+void RPGSaveSession::commitPrepared(PreparedRestore prepared) noexcept {
+    auto &state = *prepared.state_;
+    EV_ASSERT(state.owner == this, "RPG prepared restore belongs to another session");
+    gameState_->switches_.swap(state.gameState.switches_);
+    gameState_->variables_.swap(state.gameState.variables_);
+    gameState_->selfVariables_.swap(state.gameState.selfVariables_);
+    gameState_->selfStrings_.swap(state.gameState.selfStrings_);
+    tracker_->entries.swap(state.tracker.entries);
+    tracker_->order.swap(state.tracker.order);
+    tracker_->pending.swap(state.tracker.pending);
+    tracker_->polled.swap(state.tracker.polled);
     if (actor_)
-        actor_->commitCheckpoint(std::move(*actorCandidate));
+        actor_->commitCheckpoint(std::move(*state.actor));
     else
-        party_->commitCheckpoint(std::move(*partyCandidate));
-    inventorySession.commitPrepared(std::move(inventoryCandidate).takeValue());
-    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        party_->commitCheckpoint(std::move(*state.party));
+    inventory::InventorySaveSession inventorySession;
+    inventorySession.bind(*bag_, *equipment_);
+    inventorySession.commitPrepared(std::move(state.inventory));
 }
 
 }  // namespace eve::rpg

@@ -730,7 +730,7 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     REQUIRE(p != nullptr);
 
     SceneObject *o = sceneValue(SceneObject::createObject("objid", "p"));
-    p->objectId = uint32_t(o->id);
+    p->objectId    = uint32_t(o->id) + 1u;
 
     // Full rebuild keeps the binding marker on same-id nodes, not on new ones.
     h->setTree(node("root", {node("p"), node("q")}));
@@ -738,25 +738,25 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     SceneNode *q  = sceneValue(h->findById("q"));
     REQUIRE(p2 != nullptr);
     REQUIRE(q != nullptr);
-    CHECK_EQ(uint32_t(p2->objectId), uint32_t(o->id));
-    REQUIRE_EQ(q->objectId, eve::scene::kNoSceneObject);
+    CHECK_EQ(uint32_t(p2->objectId), uint32_t(o->id) + 1u);
+    CHECK_EQ(q->objectId, 0u);
 
     // Reconcile patch keeps the marker too.
     h->setTreeReconcile(node("root", {node("p").withPosition(1.f, 0.f, 0.f)}));
     SceneNode *p3 = sceneValue(h->findById("p"));
     REQUIRE(p3 != nullptr);
-    CHECK_EQ(uint32_t(p3->objectId), uint32_t(o->id));
+    CHECK_EQ(uint32_t(p3->objectId), uint32_t(o->id) + 1u);
 
     o->release();
 }
 
-TEST_CASE("Scene.objectId.sentinelIsNotADenseEntityId") {
-    // The ECS registry allocates dense entity ids starting at 0, so the *first*
-    // SceneObject in a process is id 0. A 0 "no SceneObject" marker therefore made
-    // that object unreachable: the node looked unbound, so `Scene::rootEntity`
-    // created a fresh object each call and `forEachEntity` yielded nothing.
-    static_assert(eve::scene::kNoSceneObject != 0, "the 'no SceneObject' marker must not collide with a dense ECS id");
-    REQUIRE_EQ(eve::scene::SceneNode{}.objectId, eve::scene::kNoSceneObject);
+TEST_CASE("Scene.objectId.zeroMarkerIsUnreachableForDenseEntityIds") {
+    // The ECS registry allocates dense entity ids starting at 0, so a 0 "no SceneObject"
+    // marker would have made the *first* SceneObject in a process unreachable: the node
+    // looked unbound, so `Scene::rootEntity` created a fresh object each call and
+    // `forEachEntity` yielded nothing. The locator is `entity id + 1`, so 0 is a value
+    // no dense id can produce and the marker stays unambiguous.
+    REQUIRE_EQ(eve::scene::SceneNode{}.objectId, 0u);
 }
 
 TEST_CASE("Scene.link.genericMultiLinkAndSync") {

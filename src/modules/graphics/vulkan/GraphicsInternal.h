@@ -221,23 +221,15 @@ std::unique_ptr<Mesh> makeMeshHandle(GpuMesh &gpu) {
 
 /** @brief Assign mesh bounds. */
 void assignMeshBounds(Mesh *mesh, const std::vector<MeshVertex> &verts) {
-    if (!mesh || verts.empty()) return;
-    /** @brief C. */
-    glm::vec3 c(0.f);
-    for (const auto &v : verts) c += v.pos;
-    c /= float(verts.size());
-    mesh->boundsCx = c.x;
-    mesh->boundsCy = c.y;
-    mesh->boundsCz = c.z;
-    float r = 0.f;
+    if (!mesh) return;
+    std::vector<float> positions;
+    positions.reserve(verts.size() * 3);
     for (const auto &v : verts) {
-        const glm::vec3 d = v.pos - c;
-        const float len = std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
-        if (len > r) r = len;
+        positions.push_back(v.pos.x);
+        positions.push_back(v.pos.y);
+        positions.push_back(v.pos.z);
     }
-    // Same degenerate-mesh rule as Mesh::computeBounds: keep a tiny non-zero
-    // sphere so hasBounds() stays meaningful for culling.
-    mesh->boundsRadius = r > 0.f ? r : 1e-4f;
+    mesh->computeBounds(positions.data(), static_cast<int>(verts.size()));
 }
 
 /** Host-coherent write at a byte offset into a mapped ring buffer. */

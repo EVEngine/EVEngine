@@ -7,7 +7,17 @@
 #include <utility>
 #include <vector>
 
+#include "common/Value.h"
+
 namespace eve {
+
+class StateValue;
+
+/** @brief Copy a legacy reload tree into the canonical owning value protocol. */
+[[nodiscard]] EVENGINE_API_FOUNDATION Value toCanonicalStateValue(const StateValue& value);
+
+/** @brief Project a canonical value into the legacy reload snapshot format. */
+[[nodiscard]] EVENGINE_API_FOUNDATION StateValue toLegacyStateValue(const Value& value);
 
 /**
  * @brief JSON-compatible state value tree used by state hot reload.

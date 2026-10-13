@@ -1,21 +1,22 @@
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "common/RenderCapture.h"
 #include "editor/Editor.h"
 #include "editor/EditorSession.h"
-#include "graphics/material/editor/MaterialEditorModule.h"
-#include "graphics/material/editor/EditorMaterialTarget.h"
-#include "scene/editor/SceneEditorModule.h"
-#include "scene/editor/EditorSceneTarget.h"
-#include "graphics/RenderSystem3D.h"
 #include "graphics/GraphicsCapabilities.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/material/editor/EditorMaterialTarget.h"
+#include "graphics/material/editor/MaterialEditorModule.h"
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
+#include "scene/editor/EditorPrefab.h"
+#include "scene/editor/EditorSceneTarget.h"
+#include "scene/editor/SceneEditorModule.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
+// editor_automation_v2.cpp
 using namespace eve::editor;
 
 TEST_CASE("editor.v2.automation_capability_discovers_executes_plans_and_cancels") {
@@ -53,8 +54,8 @@ TEST_CASE("editor.v2.automation_capability_discovers_executes_plans_and_cancels"
 
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
-    CHECK(automation->invoke("target-create", R"({"target":"absent.scene","type":"scene"})")
-              .find("unsupported") != std::string::npos);
+    CHECK(automation->invoke("target-create", R"({"target":"absent.scene","type":"scene"})").find("unsupported") !=
+          std::string::npos);
     const std::string commands = automation->invoke("commands", "{}");
     CHECK(commands.find("park.add-tree") != std::string::npos);
     CHECK(commands.find("park.build-path") != std::string::npos);
@@ -79,8 +80,8 @@ namespace {
 
 void addSceneObject(SceneDocumentTarget& target, const char* id) {
     CreateSceneObjectRequest request;
-    request.id   = ObjectId(id);
-    request.name = id;
+    request.id     = ObjectId(id);
+    request.name   = id;
     auto operation = target.makeCreate(request);
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
@@ -94,7 +95,7 @@ TEST_CASE("editor.automation.editing_commands_keep_level_histories_independent")
     addSceneObject(village, "player");
     addSceneObject(forest, "player");
 
-    Editor                          editor;
+    Editor                                     editor;
     eve::scene_editor::SceneEditorModule       sceneAdapter;
     eve::material_editor::MaterialEditorModule materialAdapter;
     REQUIRE(editor.registerEditingTarget(village).ok());
@@ -108,13 +109,11 @@ TEST_CASE("editor.automation.editing_commands_keep_level_histories_independent")
 
     const std::string villageResult = automation->invoke(
         "execute",
-        R"({"target":"level.village","command":"scene.transform.set.v1","payload":{"object":"player","position":[1,2,3]}})"
-    );
+        R"({"target":"level.village","command":"scene.transform.set.v1","payload":{"object":"player","position":[1,2,3]}})");
     CHECK(villageResult.find("\"status\":\"applied\"") != std::string::npos);
     const std::string forestResult = automation->invoke(
         "execute",
-        R"({"target":"level.forest","command":"scene.transform.set.v1","payload":{"object":"player","position":[7,8,9]}})"
-    );
+        R"({"target":"level.forest","command":"scene.transform.set.v1","payload":{"object":"player","position":[7,8,9]}})");
     CHECK(forestResult.find("\"status\":\"applied\"") != std::string::npos);
 
     auto villageTransform = village.readTransform(ObjectId("player"));
@@ -148,8 +147,8 @@ TEST_CASE("editor.automation.editing_commands_keep_level_histories_independent")
 }
 
 TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path") {
-    MaterialDocumentTarget material("material.player");
-    Editor                                         editor;
+    MaterialDocumentTarget                     material("material.player");
+    Editor                                     editor;
     eve::material_editor::MaterialEditorModule materialAdapter;
     REQUIRE(editor.registerEditingTarget(material).ok());
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
@@ -157,8 +156,7 @@ TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path
 
     const std::string changed = automation->invoke(
         "execute",
-        R"({"target":"material.player","command":"material.property.set.v1","payload":{"path":"shading.roughness","value":0.65}})"
-    );
+        R"({"target":"material.player","command":"material.property.set.v1","payload":{"path":"shading.roughness","value":0.65}})");
     CHECK(changed.find("\"status\":\"applied\"") != std::string::npos);
     CHECK(material.snapshotValue().getIf<EditorValue::Object>()->at("shading.roughness") == EditorValue(0.65));
 
@@ -170,13 +168,13 @@ TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path
 }
 
 TEST_CASE("editor.automation_owns_headless_targets_for_agent_lifecycle") {
-    Editor                                   editor;
+    Editor                               editor;
     eve::scene_editor::SceneEditorModule sceneAdapter;
-    auto* automation = eve::cap::query<eve::IEditorAutomation>();
+    auto*                                automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
-    const std::string created = automation->invoke(
-        "target-create", R"({"target":"agent.scene","type":"scene","object":"player"})");
+    const std::string created =
+        automation->invoke("target-create", R"({"target":"agent.scene","type":"scene","object":"player"})");
     REQUIRE(created.find("\"status\":\"applied\"") != std::string::npos);
     const std::string moved = automation->invoke(
         "execute",
@@ -193,37 +191,36 @@ TEST_CASE("editor.automation_owns_headless_targets_for_agent_lifecycle") {
 }
 
 TEST_CASE("editor.automation_rx_observation_session_deduplicates_and_cancels") {
-    Editor                                   editor;
+    Editor                               editor;
     eve::scene_editor::SceneEditorModule sceneAdapter;
-    auto* automation = eve::cap::query<eve::IEditorAutomation>();
+    auto*                                automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
     const std::string started = automation->invoke(
         "observe-start",
-        R"({"descriptor":{"observer":"scene-node","host":"world","node":"player"},"event":{"observation":{"status":"ok","x":1},"converged":false}})"
-    );
+        R"({"descriptor":{"observer":"scene-node","host":"world","node":"player"},"event":{"observation":{"status":"ok","x":1},"converged":false}})");
     REQUIRE(started.find("\"status\":\"applied\"") != std::string::npos);
     const std::size_t idStart = started.find("editor.observe.");
     REQUIRE(idStart != std::string::npos);
-    const std::size_t idEnd = started.find('"', idStart);
+    const std::size_t idEnd     = started.find('"', idStart);
     const std::string sessionId = started.substr(idStart, idEnd - idStart);
-    const std::string request = "{\"sessionId\":\"" + sessionId + "\"}";
+    const std::string request   = "{\"sessionId\":\"" + sessionId + "\"}";
 
     CHECK(started.find("\"x\":1") != std::string::npos);
     const std::string initial = automation->invoke("observe-poll", request);
     CHECK(initial.find("\"events\":[]") != std::string::npos);
-    REQUIRE(automation->invoke(
-                "observe-publish",
-                "{\"sessionId\":\"" + sessionId +
-                    "\",\"event\":{\"observation\":{\"status\":\"ok\",\"x\":1},\"converged\":false}}")
+    REQUIRE(automation
+                ->invoke("observe-publish",
+                         "{\"sessionId\":\"" + sessionId +
+                             "\",\"event\":{\"observation\":{\"status\":\"ok\",\"x\":1},\"converged\":false}}")
                 .find("\"status\":\"applied\"") != std::string::npos);
     const std::string duplicate = automation->invoke("observe-poll", request);
     CHECK(duplicate.find("\"events\":[]") != std::string::npos);
 
-    REQUIRE(automation->invoke(
-                "observe-publish",
-                "{\"sessionId\":\"" + sessionId +
-                    "\",\"event\":{\"observation\":{\"status\":\"ok\",\"x\":4},\"converged\":true}}")
+    REQUIRE(automation
+                ->invoke("observe-publish",
+                         "{\"sessionId\":\"" + sessionId +
+                             "\",\"event\":{\"observation\":{\"status\":\"ok\",\"x\":4},\"converged\":true}}")
                 .find("\"status\":\"applied\"") != std::string::npos);
     const std::string changed = automation->invoke("observe-poll", request);
     CHECK(changed.find("\"x\":4") != std::string::npos);
@@ -240,13 +237,13 @@ TEST_CASE("editor.automation_binds_live_scene_host_and_preserves_host_ownership"
     REQUIRE(mounted.ok());
     eve::scene::SceneHost* host = mounted.value();
 
-    Editor editor;
+    Editor                               editor;
     eve::scene_editor::SceneEditorModule sceneAdapter;
-    auto* automation = eve::cap::query<eve::IEditorAutomation>();
+    auto*                                automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
-    const std::string created = automation->invoke(
-        "target-create", R"({"target":"agent.live","type":"scene-host","host":"agent-live"})");
+    const std::string created =
+        automation->invoke("target-create", R"({"target":"agent.live","type":"scene-host","host":"agent-live"})");
     CHECK(created.find("\"status\":\"applied\"") != std::string::npos);
     const std::string moved = automation->invoke(
         "execute",
@@ -281,15 +278,15 @@ TEST_CASE("editor.automation_publishes_material_transactions_to_live_renderable"
     REQUIRE(initial.ok());
     REQUIRE_EQ(initial.value().tintG, 0.3f);
 
-    Editor editor;
+    Editor                                     editor;
     eve::material_editor::MaterialEditorModule materialAdapter;
-    auto* automation = eve::cap::query<eve::IEditorAutomation>();
+    auto*                                      automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
-    const std::string handle = "{\"target\":\"agent.material\",\"type\":\"material-renderable3d\","
-                               "\"entityId\":" + std::to_string(renderable->id) +
-                               ",\"generation\":" + std::to_string(renderable->generation) + "}";
-    REQUIRE(automation->invoke("target-create", handle).find("\"status\":\"applied\"") !=
-            std::string::npos);
+    const std::string handle =
+        "{\"target\":\"agent.material\",\"type\":\"material-renderable3d\","
+        "\"entityId\":" +
+        std::to_string(renderable->id) + ",\"generation\":" + std::to_string(renderable->generation) + "}";
+    REQUIRE(automation->invoke("target-create", handle).find("\"status\":\"applied\"") != std::string::npos);
 
     const std::string changed = automation->invoke(
         "execute",
@@ -307,23 +304,23 @@ TEST_CASE("editor.automation_publishes_material_transactions_to_live_renderable"
     REQUIRE(corrected.find("\"status\":\"applied\"") != std::string::npos);
     REQUIRE_EQ(renderable->meshRenderer()->g, 0.9f);
 
-    REQUIRE(automation->invoke("undo", R"({"target":"agent.material"})")
-                .find("\"status\":\"applied\"") != std::string::npos);
+    REQUIRE(automation->invoke("undo", R"({"target":"agent.material"})").find("\"status\":\"applied\"") !=
+            std::string::npos);
     REQUIRE_EQ(renderable->meshRenderer()->g, 0.8f);
-    REQUIRE(automation->invoke("undo", R"({"target":"agent.material"})")
-                .find("\"status\":\"applied\"") != std::string::npos);
+    REQUIRE(automation->invoke("undo", R"({"target":"agent.material"})").find("\"status\":\"applied\"") !=
+            std::string::npos);
     REQUIRE_EQ(renderable->meshRenderer()->g, 0.3f);
-    REQUIRE(automation->invoke("redo", R"({"target":"agent.material"})")
-                .find("\"status\":\"applied\"") != std::string::npos);
+    REQUIRE(automation->invoke("redo", R"({"target":"agent.material"})").find("\"status\":\"applied\"") !=
+            std::string::npos);
     REQUIRE_EQ(renderable->meshRenderer()->g, 0.8f);
-    REQUIRE(automation->invoke("redo", R"({"target":"agent.material"})")
-                .find("\"status\":\"applied\"") != std::string::npos);
+    REQUIRE(automation->invoke("redo", R"({"target":"agent.material"})").find("\"status\":\"applied\"") !=
+            std::string::npos);
     REQUIRE_EQ(renderable->meshRenderer()->g, 0.9f);
 
-    REQUIRE(automation->invoke("target-close", R"({"target":"agent.material"})")
-                .find("\"status\":\"applied\"") != std::string::npos);
+    REQUIRE(automation->invoke("target-close", R"({"target":"agent.material"})").find("\"status\":\"applied\"") !=
+            std::string::npos);
     REQUIRE_EQ(renderable->meshRenderer()->g, 0.9f);
-    const std::uint32_t id = renderable->id;
+    const std::uint32_t id         = renderable->id;
     const std::uint32_t generation = renderable->generation;
     ecs::DestroyEntity(renderable);
     auto stale = renderInspection->inspectRenderable3D(id, generation);
@@ -334,38 +331,36 @@ TEST_CASE("editor.composition.developer_runtime_and_automation_share_target_tran
     SceneDocumentTarget scene("level.shared-host-path");
     addSceneObject(scene, "player");
 
-    Editor editor;
+    Editor                               editor;
     eve::scene_editor::SceneEditorModule sceneAdapter;
     REQUIRE(editor.registerEditingTarget(scene).ok());
 
     auto developer = editor.newSession();
     REQUIRE(editor.bindEditingTarget(*developer, TargetId(scene.targetId())).ok());
-    const CommandId transform("scene.transform.set.v1");
-    const EditorValue developerPayload = EditorValue::Object{
-        {"object", "player"}, {"position", EditorValue::Array{1.0, 2.0, 3.0}}};
+    const CommandId   transform("scene.transform.set.v1");
+    const EditorValue developerPayload =
+        EditorValue::Object{{"object", "player"}, {"position", EditorValue::Array{1.0, 2.0, 3.0}}};
     auto developerPlan = developer->planCommand(transform, developerPayload);
     REQUIRE(developerPlan.ok());
     REQUIRE(developer->executePlan(developerPlan.value(), developerPayload).ok());
 
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
-    const std::string developerUndo = automation->invoke(
-        "undo", R"({"target":"level.shared-host-path"})");
+    const std::string developerUndo = automation->invoke("undo", R"({"target":"level.shared-host-path"})");
     CHECK(developerUndo.find("\"status\":\"applied\"") != std::string::npos);
 
-    auto runtime = editor.newSession();
+    auto        runtime        = editor.newSession();
     HostProfile runtimeProfile = HostProfile::runtimeBuilder();
     runtimeProfile.allowCommand(transform);
     runtime->setHostProfile(std::move(runtimeProfile));
     REQUIRE(editor.bindEditingTarget(*runtime, TargetId(scene.targetId())).ok());
-    const EditorValue runtimePayload = EditorValue::Object{
-        {"object", "player"}, {"position", EditorValue::Array{7.0, 8.0, 9.0}}};
+    const EditorValue runtimePayload =
+        EditorValue::Object{{"object", "player"}, {"position", EditorValue::Array{7.0, 8.0, 9.0}}};
     auto runtimePlan = runtime->planCommand(transform, runtimePayload);
     REQUIRE(runtimePlan.ok());
     REQUIRE(runtime->executePlan(runtimePlan.value(), runtimePayload).ok());
 
-    const std::string runtimeUndo = automation->invoke(
-        "undo", R"({"target":"level.shared-host-path"})");
+    const std::string runtimeUndo = automation->invoke("undo", R"({"target":"level.shared-host-path"})");
     CHECK(runtimeUndo.find("\"status\":\"applied\"") != std::string::npos);
     const auto restored = scene.readTransform(ObjectId("player"));
     REQUIRE(restored.ok());
@@ -374,4 +369,140 @@ TEST_CASE("editor.composition.developer_runtime_and_automation_share_target_tran
     CHECK_EQ(restored.value().z, 0.0);
 
     CHECK(editor.unregisterEditingTarget(TargetId(scene.targetId())).ok());
+}
+
+// editor_prefab.cpp
+using namespace eve::editor;
+
+namespace {
+
+void applyAll(SceneTargetBase& scene, const std::vector<DomainOperation>& operations) {
+    for (const DomainOperation& operation : operations) REQUIRE(scene.applyDomainOperation(operation).ok());
+}
+
+SceneDocumentTarget sourceScene() {
+    SceneDocumentTarget scene("source");
+    auto                root = scene.makeCreate({ObjectId("vehicle"), {}, "Vehicle", {1.0, 2.0, 3.0}});
+    REQUIRE(root.ok());
+    REQUIRE(scene.applyDomainOperation(root.value()).ok());
+    auto wheel = scene.makeCreate(
+        {ObjectId("wheel"), ObjectId("vehicle"), "Wheel", {0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.8}});
+    REQUIRE(wheel.ok());
+    REQUIRE(scene.applyDomainOperation(wheel.value()).ok());
+    return scene;
+}
+
+}  // namespace
+
+TEST_CASE("editor.prefab.capture_and_instantiate_preserve_stable_mapping") {
+    ScenePrefabService  prefabs;
+    SceneDocumentTarget source   = sourceScene();
+    auto                captured = prefabs.capture(AssetGuid("asset://prefabs/vehicle"), source, ObjectId("vehicle"));
+    REQUIRE(captured.ok());
+    CHECK_EQ(captured.value().objects.size(), size_t{2});
+
+    SceneDocumentTarget level("level");
+    auto                parent = level.makeCreate({ObjectId("garage"), {}, "Garage", {}});
+    REQUIRE(parent.ok());
+    REQUIRE(level.applyDomainOperation(parent.value()).ok());
+    auto instance = prefabs.instantiate(captured.value(), "vehicle-01", ObjectId("garage"), level);
+    REQUIRE(instance.ok());
+    CHECK_EQ(instance.value().sourceRevision, captured.value().revision);
+    CHECK_EQ(instance.value().operations.size(), size_t{2});
+    applyAll(level, instance.value().operations);
+    CHECK_EQ(level.sceneObject(ObjectId("vehicle-01/vehicle")).value().parent, ObjectId("garage"));
+    CHECK_EQ(level.sceneObject(ObjectId("vehicle-01/wheel")).value().parent, ObjectId("vehicle-01/vehicle"));
+
+    const auto collision = prefabs.instantiate(captured.value(), "vehicle-01", ObjectId("garage"), level);
+    CHECK_EQ(static_cast<int>(collision.code()), static_cast<int>(EditorStatus::Conflict));
+}
+
+TEST_CASE("editor.prefab_apply_and_revert_overrides_are_revisioned_and_reversible") {
+    ScenePrefabService  prefabs;
+    SceneDocumentTarget source   = sourceScene();
+    auto                captured = prefabs.capture(AssetGuid("vehicle"), source, ObjectId("vehicle"));
+    REQUIRE(captured.ok());
+    SceneDocumentTarget level("level-overrides");
+    auto                instance = prefabs.instantiate(captured.value(), "instance", {}, level);
+    REQUIRE(instance.ok());
+    applyAll(level, instance.value().operations);
+
+    auto rename = level.makeRename(ObjectId("instance/wheel"), "Big Wheel");
+    REQUIRE(rename.ok());
+    REQUIRE(level.applyDomainOperation(rename.value()).ok());
+    SceneTransformValue changed{2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.5, 1.5, 1.5};
+    auto                transform = level.makeSetTransform(ObjectId("instance/wheel"), changed);
+    REQUIRE(transform.ok());
+    REQUIRE(level.applyDomainOperation(transform.value()).ok());
+
+    auto badges = prefabs.inspectOverrides(captured.value(), "instance", {}, level);
+    REQUIRE(badges.ok());
+    CHECK_EQ(badges.value().size(), size_t{2});
+    CHECK_EQ(badges.value().at(0).instanceObject, ObjectId("instance/wheel"));
+
+    auto applied = prefabs.applyOverrides(captured.value(), "instance", {}, level);
+    REQUIRE(applied.ok());
+    CHECK_EQ(applied.value().revision, captured.value().revision + 1);
+    CHECK_EQ(applied.value().objects[1].name, "Big Wheel");
+    CHECK_EQ(applied.value().objects[1].transform, changed);
+
+    auto revert = prefabs.revertOverrides(captured.value(), "instance", {}, level);
+    REQUIRE(revert.ok());
+    CHECK_EQ(revert.value().size(), size_t{2});
+    applyAll(level, revert.value());
+    CHECK_EQ(level.sceneObject(ObjectId("instance/wheel")).value().name, "Wheel");
+    CHECK_EQ(level.readTransform(ObjectId("instance/wheel")).value(), captured.value().objects[1].transform);
+}
+
+TEST_CASE("editor.prefab_nested_dependencies_detect_cycles_and_refresh_revision_pins") {
+    ScenePrefabService prefabs;
+    auto               parent = prefabs.capture(AssetGuid("parent"), sourceScene(), ObjectId("vehicle"));
+    auto               child  = prefabs.capture(AssetGuid("wheel-prefab"), sourceScene(), ObjectId("wheel"));
+    REQUIRE(parent.ok());
+    REQUIRE(child.ok());
+    child.value().revision                   = 3;
+    parent.value().objects[1].nestedPrefab   = child.value().asset;
+    parent.value().objects[1].nestedRevision = 1;
+    const auto resolver                      = [&](const AssetGuid& asset) {
+        if (asset == child.value().asset) return eve::editing::applied<PrefabAssetSnapshot>(child.value());
+        return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::NotFound, RuleId("test.missing"), "missing");
+    };
+    const auto dependencies = prefabs.inspectDependencies(parent.value(), resolver);
+    CHECK_EQ(static_cast<int>(dependencies.status), static_cast<int>(EditorStatus::Applied));
+    REQUIRE(!dependencies.diagnostics.empty());
+    auto refreshed = prefabs.refreshNestedRevisions(parent.value(), resolver);
+    REQUIRE(refreshed.ok());
+    CHECK_EQ(refreshed.value().revision, parent.value().revision + 1);
+    CHECK_EQ(refreshed.value().objects[1].nestedRevision, 3U);
+
+    child.value().objects[0].nestedPrefab   = parent.value().asset;
+    child.value().objects[0].nestedRevision = parent.value().revision;
+    const auto cyclicResolver               = [&](const AssetGuid& asset) {
+        if (asset == child.value().asset) return eve::editing::applied<PrefabAssetSnapshot>(child.value());
+        if (asset == parent.value().asset) return eve::editing::applied<PrefabAssetSnapshot>(parent.value());
+        return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::NotFound, RuleId("test.missing"), "missing");
+    };
+    CHECK_EQ(static_cast<int>(prefabs.inspectDependencies(parent.value(), cyclicResolver).status),
+             static_cast<int>(EditorStatus::Rejected));
+}
+
+TEST_CASE("editor.prefab_snapshot_round_trip_rejects_invalid_hierarchy") {
+    ScenePrefabService  prefabs;
+    SceneDocumentTarget source   = sourceScene();
+    auto                captured = prefabs.capture(AssetGuid("vehicle"), source, ObjectId("vehicle"));
+    REQUIRE(captured.ok());
+    const EditorValue snapshot = prefabs.snapshotValue(captured.value());
+    auto              restored = prefabs.loadSnapshot(snapshot);
+    REQUIRE(restored.ok());
+    CHECK_EQ(prefabs.snapshotValue(restored.value()), snapshot);
+
+    EditorValue broken = snapshot;
+    auto*       object = broken.getIf<EditorValue::Object>();
+    REQUIRE(object);
+    auto* rows = object->at("objects").getIf<EditorValue::Array>();
+    REQUIRE(rows);
+    auto* wheel = rows->at(1).getIf<EditorValue::Object>();
+    REQUIRE(wheel);
+    (*wheel)["parentSourceId"] = "missing";
+    CHECK_EQ(static_cast<int>(prefabs.loadSnapshot(broken).code()), static_cast<int>(EditorStatus::Rejected));
 }

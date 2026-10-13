@@ -869,12 +869,12 @@ SceneHost *Scene::resolveHost(const std::string &hostName) const {
 }
 
 SceneObject *Scene::findSceneObjectById(uint32_t id) const {
-    if (id == kNoSceneObject) return nullptr;
+    if (id == 0) return nullptr;
     if (ecs::current()->getManager<SceneObject>() == nullptr) return nullptr;
     auto view = ecs::View<SceneObject, SceneObject::Meta>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [meta] = *it;
-        if (meta->entity && uint32_t(meta->entity->id) == id) return meta->entity;
+        if (meta->entity && uint32_t(meta->entity->id) == id - 1u) return meta->entity;
     }
     return nullptr;
 }
@@ -891,16 +891,16 @@ SceneObject *Scene::findSceneObjectByPersistentId(eve::SceneObjectId id) const {
 
 SceneObject *Scene::ensureSceneObject(SceneHost *host, SceneNode *node,
                                       const std::string &hostName) {
-    if (node->objectId != kNoSceneObject) {
+    if (node->objectId != 0) {
         if (SceneObject *o = findSceneObjectById(node->objectId)) {
             if (!node->persistentId.isNil()) o->meta()->persistentId = node->persistentId;
             return o;
         }
-        node->objectId = kNoSceneObject;  // stale id (entity was released)
+        node->objectId = 0;  // stale id (entity was released)
     }
     if (!node->persistentId.isNil()) {
         if (SceneObject *o = findSceneObjectByPersistentId(node->persistentId)) {
-            node->objectId      = uint32_t(o->id);
+            node->objectId      = uint32_t(o->id) + 1u;
             o->meta()->hostName = hostName;
             o->meta()->nodeId   = node->id;
             return o;
@@ -909,7 +909,7 @@ SceneObject *Scene::ensureSceneObject(SceneHost *host, SceneNode *node,
     auto created = SceneObject::createObject(hostName, node->id, node->persistentId);
     if (!created.ok()) return nullptr;
     SceneObject *o = std::move(created).takeValue();
-    node->objectId = uint32_t(o->id);
+    node->objectId = uint32_t(o->id) + 1u;
     return o;
 }
 
@@ -940,7 +940,7 @@ bool Scene::unrootEntityAt(const std::string &hostName, const std::string &nodeI
     if (!h) return false;
     SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return false;
-    SceneObject* obj = n->objectId != kNoSceneObject ? findSceneObjectById(n->objectId) : nullptr;
+    SceneObject* obj = n->objectId != 0 ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return false;
     auto &vec = obj->scriptBindings()->instances;
     if (index < 0 || index >= int(vec.size())) return false;
@@ -948,7 +948,7 @@ bool Scene::unrootEntityAt(const std::string &hostName, const std::string &nodeI
     vec.erase(vec.begin() + index);
     sq_release(vm_, &raw);
     if (vec.empty()) {
-        n->objectId = kNoSceneObject;
+        n->objectId = 0;
         obj->release();
     }
     return true;
@@ -961,7 +961,7 @@ int Scene::forEachEntity(const std::string &hostName, const std::string &nodeId,
     if (!h) return 0;
     SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return 0;
-    SceneObject* obj = n->objectId != kNoSceneObject ? findSceneObjectById(n->objectId) : nullptr;
+    SceneObject* obj = n->objectId != 0 ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return 0;
     // Copy + addref: the callback may attach/detach and mutate the live list.
     auto vec = obj->scriptBindings()->instances;
@@ -984,7 +984,7 @@ std::vector<ssq::Object> Scene::scriptEntitiesAt(const std::string& hostName, co
     if (!h) return out;
     SceneNode* n = borrowSceneResult(h->findById(nodeId));
     if (!n) return out;
-    SceneObject* obj = n->objectId != kNoSceneObject ? findSceneObjectById(n->objectId) : nullptr;
+    SceneObject* obj = n->objectId != 0 ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return out;
 
     // 与 `forEachEntity` 同样的"拷贝 + addref"：交给调用方的每个 `ssq::Object` 都持有一次引用。
@@ -1155,7 +1155,7 @@ void Scene::pruneOrphanObjects() {
                 continue;
             }
             SceneNode *n = borrowSceneResult(h->findById(meta->nodeId));
-            if (!n || n->objectId != uint32_t(meta->entity->id)) {
+            if (!n || n->objectId != uint32_t(meta->entity->id) + 1u) {
                 orphans.push_back(meta->entity);
                 continue;
             }

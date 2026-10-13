@@ -940,3 +940,16 @@ Unknown versions, trailing data, invalid names, nonfinite/unsorted keys and
 resource limits are rejected. Regenerate older contact script tables using
 `scripts/build_unreal_contact_curves.py --library ...`; the binary layout and
 limits are documented in `tools/unreal-uasset-converter/README.md`.
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](animation/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：从动作到角色属性
+
+先加载同一 Skeleton 对应的 Clip，创建 Animator/播放状态，update 用唯一模拟 dt 求值，再把姿态交给对应渲染角色。Tween/Motion 只计算或投影值，不自动移动你的实体；保存 playback handle，取消角色时取消播放和回调。组合 upper-body/lower-body 时检查骨骼 mask 与基准姿态，不能每帧重建 skeleton。事件在规定阶段消费；热更候选 clip 验证完成后再替换，旧借用停止后释放资源。
+
+完整项目：[examples/layered-animation](../../../examples/layered-animation/README.md)，
+其 [main.nut](../../../examples/layered-animation/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。

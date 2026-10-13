@@ -534,6 +534,44 @@ void UI::beginSidebar(const std::string &id, float width) {
 
 void UI::beginStatusBar(const std::string &id) { pushOpen(statusBar({}, id)); }
 
+void UI::beginTabBar(const std::string &id) { pushOpen(tabBar({}, id)); }
+
+void UI::beginTabContainer(const std::string &activePageId, const std::string &id) {
+    WidgetDesc d;
+    d.type = NodeType::TabContainer;
+    d.id = id;
+    d.key = id;
+    d.valueText = activePageId;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::beginPanelFrame(const std::string &title, const std::string &id) {
+    pushOpen(panelFrame(title, {}, id));
+}
+
+void UI::beginDockArea(const std::string &region, const std::string &id) {
+    pushOpen(dockArea(region, {}, id));
+}
+
+void UI::beginAppFrame(const std::string &id) {
+    WidgetDesc d;
+    d.type = NodeType::AppFrame;
+    d.id = id;
+    d.key = id;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow = 1.f;
+    d.percentW = 1.f;
+    d.percentH = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::addTab(const std::string &label, const std::string &pageId, bool selected,
+                const std::string &id) {
+    currentParent().children.push_back(tab(label, pageId, selected, id));
+}
+
 void UI::beginScrollList(const std::string &id, float height, float itemHeight) {
     pushOpen(scrollList(id, {}, height, itemHeight));
 }
@@ -1850,6 +1888,12 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Sidebar: return "sidebar";
     case NodeType::StatusBar: return "statusBar";
     case NodeType::SplitPane: return "splitPane";
+    case NodeType::Tab: return "tab";
+    case NodeType::TabBar: return "tabBar";
+    case NodeType::TabContainer: return "tabContainer";
+    case NodeType::PanelFrame: return "panelFrame";
+    case NodeType::DockArea: return "dockArea";
+    case NodeType::AppFrame: return "appFrame";
     }
     return "text";
 }
@@ -1889,6 +1933,12 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "sidebar") return NodeType::Sidebar;
     if (s == "statusBar") return NodeType::StatusBar;
     if (s == "splitPane") return NodeType::SplitPane;
+    if (s == "tab") return NodeType::Tab;
+    if (s == "tabBar") return NodeType::TabBar;
+    if (s == "tabContainer") return NodeType::TabContainer;
+    if (s == "panelFrame") return NodeType::PanelFrame;
+    if (s == "dockArea") return NodeType::DockArea;
+    if (s == "appFrame") return NodeType::AppFrame;
     return NodeType::Text;
 }
 
@@ -2514,6 +2564,12 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginSidebar", &UI::beginSidebar);
     cls.addFunc("beginStatusBar", &UI::beginStatusBar);
     cls.addFunc("beginSplitPane", &UI::beginSplitPane);
+    cls.addFunc("beginTabBar", &UI::beginTabBar);
+    cls.addFunc("beginTabContainer", &UI::beginTabContainer);
+    cls.addFunc("beginPanelFrame", &UI::beginPanelFrame);
+    cls.addFunc("beginDockArea", &UI::beginDockArea);
+    cls.addFunc("beginAppFrame", &UI::beginAppFrame);
+    cls.addFunc("addTab", &UI::addTab);
     cls.addFunc("beginScrollList", &UI::beginScrollList);
     cls.addFunc("beginFlex", &UI::beginFlex);
     cls.addFunc("beginRow", &UI::beginRow);

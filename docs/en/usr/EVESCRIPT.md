@@ -423,66 +423,21 @@ Common diagnostics:
 - `required module is missing`: use a matching SDK/profile, or make the feature optional with a fallback.
 - Import cycle: extract shared definitions into an acyclic dependency.
 
-## 19. A complete example
+## 19. A complete game
 
-Use the configuration from section 1. `scripts/player.nut`:
+Follow the [complete game development tutorial (Chinese)](../../usr/GAME_DEVELOPMENT.md)
+and its runnable [game-tutorial example (Chinese)](../../../examples/game-tutorial/README.md).
+The actual files cover config/import, rules, keyboard input, CPU image and GPU texture ownership,
+HUD actions, versioned saves, validated backups, restart, hot reload and archive delivery.
+Tests execute those files instead of maintaining another copied tutorial implementation.
 
-```squirrel
-export class PlayerState {
-    @editor("slider", min: 0, max: 100, step: 1)
-    health: int = 100
-    @editor("combo")
-    mode: "idle" | "run" | "hurt" = "idle"
-    x: float = 100.0
-}
-export function update_player(player: PlayerState, dt: float, speed: float) {
-    if (keyboard.isDown("right")) {
-        player.x += speed * dt
-        player.mode = "run"
-    } else {
-        player.mode = "idle"
-    }
-}
-export function render_player(player: PlayerState) {
-    match player.mode {
-        "idle" => gfx.drawSolidRect(player.x, 220.0, 48.0, 48.0, 0.3, 0.75, 1.0, 1.0)
-        "run" => gfx.drawSolidRect(player.x, 220.0, 48.0, 48.0, 0.2, 1.0, 0.5, 1.0)
-        "hurt" => gfx.drawSolidRect(player.x, 220.0, 48.0, 48.0, 1.0, 0.2, 0.2, 1.0)
-    }
-}
-```
+Current module compilation has a limitation: an exported function referring to another export
+by bare name can perform root lookup. Share implementation through a private local closure,
+then export wrappers, as scripts/rules.nut does. Do not assume another SDK version fixes this.
+Image has no default script slot: construct eve.Image() explicitly. Optional eve_reload is
+not pre-created by the loader, so create it with <-. persist retains script state during
+reload, not disk state; device rebuilding also invalidates borrowed GPU caches.
 
-`main.nut`:
-
-```squirrel
-import { PlayerState, update_player, render_player } from "./scripts/player.nut"
-persist player: PlayerState = PlayerState()
-local notice: string? = null
-
-async function show_ready_message() {
-    notice = "Get ready"
-    await asyncSleep(750ms)
-    notice = "Go!"
-    await asyncSleep(500ms)
-    notice = null
-}
-eve_init <- function() {
-    gfx.setBackgroundColor(0.08, 0.10, 0.16, 1.0)
-    show_ready_message().then(
-        function(_) {},
-        function(error) { print("message sequence failed: " + error + "\n") }
-    )
-}
-eve_update <- function(dt: float) {
-    update_player(player: player, speed: 180.0, dt: dt)
-}
-eve_render <- function() {
-    gfx.clear()
-    render_player(player)
-    // A bar shows whether the async notice is still active.
-    if (notice != null)
-        gfx.drawSolidRect(32.0, 32.0, 180.0, 8.0, 1.0, 0.8, 0.2, 1.0)
-}
-```
-
-Learn Squirrel tables, arrays, classes and closures first; use modules and types to establish boundaries; add async when a workflow actually waits. Consult your SDK's API catalog for exact rendering and input signatures.
+The Chinese language guide additionally explains table slot creation/deletion, shallow clone,
+array operations, closure ownership, and module state. See its [Squirrel foundations](../../usr/EVESCRIPT.md).
+Use the current SDK binding catalogue for exact parameter projections and Result handling.

@@ -260,6 +260,20 @@ else()
   set(EVENGINE_TEST_DOMAIN_SPLIT "${_eve_test_split_default}" CACHE BOOL
       "Build one test executable per domain instead of a single unit_test (default: on for SHARED, off for OBJECT)")
 
+  # Compile the heavy graphics fixture headers once across desktop test domains.
+  add_library(eve_graphics_window_fixtures STATIC GraphicsWindowFixtures.cpp)
+  # Fixtures.h reaches Assimp's generated config.h through Graphics.h.
+  add_dependencies(eve_graphics_window_fixtures third-party)
+  target_link_libraries(eve_graphics_window_fixtures PRIVATE eve_engine_includes zeroerr)
+  target_compile_options(eve_graphics_window_fixtures PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_compile_definitions(eve_graphics_window_fixtures PRIVATE
+      POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  endif()
+  list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/GraphicsWindowFixtures.cpp")
+
   if(EVENGINE_TEST_DOMAIN_SPLIT)
     foreach(_eve_domain IN LISTS EVE_TEST_DOMAINS)
       if(NOT DEFINED EVE_TEST_DOMAIN_${_eve_domain}_SOURCES)
@@ -267,12 +281,18 @@ else()
         continue()
       endif()
       set(_eve_test_target "unit_test_${_eve_domain}")
+      set(_eve_domain_helpers ${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES})
+      set(_eve_window_helper "${CMAKE_CURRENT_SOURCE_DIR}/GraphicsWindowFixtures.cpp")
+      list(REMOVE_ITEM _eve_domain_helpers "${_eve_window_helper}")
       add_executable(${_eve_test_target}
         ${EVE_TEST_DOMAIN_${_eve_domain}_SOURCES}
-        ${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES}
+        ${_eve_domain_helpers}
         ${_eve_test_runner}
       )
       target_link_libraries(${_eve_test_target} eve_engine_includes eve_nut_fixtures)
+      if("${_eve_window_helper}" IN_LIST EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES)
+        target_link_libraries(${_eve_test_target} eve_graphics_window_fixtures)
+      endif()
       # CTest includes <target>_zeroerr_tests.cmake, which that target's POST_BUILD
       # discovery step writes. Seed an empty stub at configure time when it is
       # absent: otherwise ctest refuses to run at all ("include" error) until every
@@ -294,7 +314,7 @@ else()
     message(STATUS "Test units: ${_eve_test_target_count} domain executables")
   else()
     add_executable(unit_test ${all_test_cpp})
-    target_link_libraries(unit_test eve_engine_includes eve_nut_fixtures)
+    target_link_libraries(unit_test eve_engine_includes eve_nut_fixtures eve_graphics_window_fixtures)
     set(_eve_test_discovery
       "${CMAKE_CURRENT_BINARY_DIR}/unit_test_zeroerr_tests.cmake")
     if(NOT EXISTS "${_eve_test_discovery}")
@@ -421,6 +441,25 @@ else()
   endif()
   # Manual real-backend asset admission/visual probe; purchased inputs are never test fixtures.
   if(TARGET EVAsset_graphics AND TARGET EVAsset_scene)
+    if(TARGET EVAsset_import)
+      if(NOT ANDROID AND NOT EVENGINE_ANDROID AND NOT EVENGINE_IOS AND NOT IOS AND NOT EMSCRIPTEN)
+        add_executable(scad_compiler_timeout_fixture asset_import/ScadCompilerTimeoutFixture.cpp)
+        target_compile_features(scad_compiler_timeout_fixture PRIVATE cxx_std_20)
+        set_property(SOURCE asset_import_structured_models.cpp APPEND PROPERTY COMPILE_DEFINITIONS
+          EVE_SCAD_TEST_COMPILER="$<TARGET_FILE:scad_compiler_timeout_fixture>")
+        if(TARGET unit_test_asset)
+          add_dependencies(unit_test_asset scad_compiler_timeout_fixture)
+        elseif(TARGET unit_test)
+          add_dependencies(unit_test scad_compiler_timeout_fixture)
+        endif()
+      endif()
+      add_executable(structured_model_graphics_probe EXCLUDE_FROM_ALL asset_import/StructuredModelGraphicsProbe.cpp)
+      target_link_libraries(structured_model_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+        ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+      if(WIN32)
+        target_link_libraries(structured_model_graphics_probe EVBacktrace)
+      endif()
+    endif()
     add_executable(unity_graphics_probe EXCLUDE_FROM_ALL asset_import/UnityGraphicsProbe.cpp)
     add_executable(unity_sprite_graphics_probe EXCLUDE_FROM_ALL asset_import/UnitySpriteGraphicsProbe.cpp)
     target_link_libraries(unity_sprite_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
@@ -616,3 +655,31 @@ foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
 endforeach()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
+
+# Focused composition proof for trimmed authoring hosts. The normal per-domain
+# suite still discovers these module-owned sources; this target avoids linking
+# unrelated optional-domain consumers into a minimal host.
+if(TARGET EVScene_editor AND TARGET EVGraphics AND NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
+  add_executable(scene_authoring_contract_test EXCLUDE_FROM_ALL
+    main.cpp scene_authoring.cpp scene_authoring_script.cpp graphics_authoring_projection.cpp
+    scene_relations.cpp
+    scene_regions.cpp scene_projected_overlap.cpp scene_visibility.cpp
+    scene_editing_commands.cpp scene_editor_session.cpp scene_editor_live_session.cpp)
+  if(TARGET EVDevTools)
+    target_sources(scene_authoring_contract_test PRIVATE mcp_scene_literal.cpp)
+  endif()
+  target_link_libraries(scene_authoring_contract_test eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+    ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  target_compile_options(scene_authoring_contract_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(scene_authoring_contract_test EVBacktrace)
+    target_compile_definitions(scene_authoring_contract_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/scene_authoring_contract_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/scene_authoring_contract_test_zeroerr_tests.cmake" "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(scene_authoring_contract_test LABEL "scene_authoring_contract_test"
+    NAME_PREFIX "authoring-contract/")
+endif()

@@ -1,27 +1,30 @@
+#include <cstdint>
+#include <initializer_list>
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
+#include <utility>
+#include "common/Capability.h"
+#include "common/GameplayControl.h"
+#include "common/GameplayControlJson.h"
+#include "common/GameplayInstanceCatalog.h"
+#include "common/Module.h"
+#include "common/Value.h"
+#include "inventory/Bag.h"
+#include "inventory/Equipment.h"
+#include "inventory/Inventory.h"
+#include "inventory/InventorySaveSession.h"
+#include "inventory/InventorySystem.h"
+#include "inventory/Item.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+// inventory_gameplay_control.cpp
 // 背包玩法域契约测试：真实 Inventory 模块 + Bag + EquipmentSet 走共享玩法协议，
 // 覆盖发现、动作词表、权限档位、修订号账本、事件游标与 JSON 门面路由。
 //
 // 注意：zeroerr 的 CHECK_EQ(lhs, rhs) 会把 lhs 求值两次（一次判等、一次打印），
 // 因此有副作用的调用必须先赋给局部变量，再断言变量。
 
-#include "common/Capability.h"
-#include "common/GameplayControl.h"
-#include "common/GameplayControlJson.h"
-#include "common/GameplayInstanceCatalog.h"
-#include "common/Module.h"
-#include "inventory/Bag.h"
-#include "inventory/Equipment.h"
-#include "inventory/Inventory.h"
-
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-
-#include <simplesquirrel/simplesquirrel.hpp>
-
-#include <cstdint>
-#include <initializer_list>
-#include <string>
-#include <utility>
 
 namespace {
 
@@ -567,4 +570,76 @@ TEST_CASE("gameplay.control.inventoryScriptPublishesAndUnpublishesItsInstance") 
     CHECK(catalog.value().find(kScriptInstanceId) != std::string::npos);
     inventory->clearGameplayControls();
     bag->destroy();
+}
+
+// inventory_save_session.cpp
+using namespace eve::inventory;
+
+TEST_CASE("inventory.saveSession.roundTripAndAtomicFailure") {
+    ItemRegistry::clear();
+    InventorySystem::ensureBuiltins();
+    ItemDefinition potion;
+    potion.id       = "potion";
+    potion.maxStack = 20;
+    potion.tags     = {"consumable"};
+    ItemRegistry::registerItem(potion);
+    ItemDefinition sword;
+    sword.id        = "sword";
+    sword.equipSlot = "weapon";
+    sword.tags      = {"weapon"};
+    ItemRegistry::registerItem(sword);
+
+    Bag sourceBag(4);
+    sourceBag.setId("hero.bag");
+    sourceBag.setMaxWeight(50.f);
+    sourceBag.addItem("potion", 3);
+    sourceBag.addItem("sword", 1);
+    sourceBag.setSlotDurability(sourceBag.findItem("sword"), 0.75f);
+    EquipmentSet sourceEquipment;
+    sourceEquipment.setId("hero.equipment");
+    sourceEquipment.defineSlot("weapon");
+    sourceEquipment.addSlotAllowedTag("weapon", "weapon");
+    REQUIRE(sourceEquipment.equipFromBag("weapon", &sourceBag, sourceBag.findItem("sword")));
+
+    InventorySaveSession source;
+    source.bind(sourceBag, sourceEquipment);
+    auto encoded = source.snapshotJson();
+    REQUIRE(encoded.ok());
+
+    Bag restoredBag(1);
+    restoredBag.addItem("potion", 1);
+    EquipmentSet         restoredEquipment;
+    InventorySaveSession restored;
+    restored.bind(restoredBag, restoredEquipment);
+    REQUIRE(restored.restoreSnapshotJson(encoded.value()).ok());
+    CHECK_EQ(restoredBag.getId(), std::string("hero.bag"));
+    CHECK_EQ(restoredBag.getSlotCount(), 4);
+    CHECK_EQ(restoredBag.countItem("potion"), 3);
+    CHECK_EQ(restoredEquipment.getId(), std::string("hero.equipment"));
+    CHECK_EQ(restoredEquipment.getSlotItemId("weapon"), std::string("sword"));
+    CHECK_EQ(restoredEquipment.stackAt("weapon")->durability, 0.75f);
+
+    const auto before = restored.snapshotJson();
+    REQUIRE(before.ok());
+    auto parsed = eve::Value::fromJson(encoded.value());
+    REQUIRE(parsed.ok());
+    eve::Value  corrupted = std::move(parsed).takeValue();
+    eve::Value* equipment = corrupted.find("equipment");
+    REQUIRE(equipment != nullptr);
+    eve::Value* slots = equipment->find("slots");
+    REQUIRE(slots != nullptr);
+    slots->at(0).find("stack")->set("itemId", eve::Value("missing.definition"));
+    auto corruptedJson = corrupted.toJson();
+    REQUIRE(corruptedJson.ok());
+    CHECK(!restored.restoreSnapshotJson(corruptedJson.value()).ok());
+    auto after = restored.snapshotJson();
+    REQUIRE(after.ok());
+    CHECK_EQ(after.value(), before.value());
+    ItemRegistry::clear();
+}
+
+TEST_CASE("inventory.saveSession.unboundOperationsFailStructurally") {
+    InventorySaveSession session;
+    CHECK(!session.snapshotJson().ok());
+    CHECK(!session.restoreSnapshotJson("{}").ok());
 }

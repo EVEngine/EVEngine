@@ -642,11 +642,9 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 rtAsEnable.accelerationStructure = VK_TRUE;
                 rtPipeEnable.sType               = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
                 rtPipeEnable.rayTracingPipeline  = VK_TRUE;
-                rtPipeEnable.pNext               = &rtAsEnable;
                 if (rayTracingCaps_.rayQuery) {
                     rtQueryEnable.sType    = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
                     rtQueryEnable.rayQuery = VK_TRUE;
-                    rtAsEnable.pNext       = &rtQueryEnable;
                 }
                 enableRtFeatures = true;
             }
@@ -661,7 +659,11 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
         if (enableRtFeatures) {
             vk12Enable.bufferDeviceAddress = VK_TRUE;
+            // DeviceBuilder reconstructs the chain from individually registered
+            // structures, overwriting any prelinked pNext pointers.
             deviceBuilder.add_pNext(&rtPipeEnable);
+            deviceBuilder.add_pNext(&rtAsEnable);
+            if (rayTracingCaps_.rayQuery) deviceBuilder.add_pNext(&rtQueryEnable);
         }
         if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
@@ -1051,17 +1053,14 @@ bool Graphics::beginPresentCommandBuffer() {
 }
 
 bool Graphics::isRenderSurfaceReady() const {
-#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
     auto* window = static_cast<SDL_Window*>(sdlWindow);
     if (!window) return false;
-    // During background/resume and orientation changes the native window is
-    // torn down and rebuilt; SDL reports a zero drawable size until it settles.
+    // Mobile background/resume and desktop minimize can report a zero drawable
+    // size until the native window settles — skip present rather than touching
+    // an invalid swapchain.
     int pw = 0, ph = 0;
     SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
     return pw > 0 && ph > 0;
-#else
-    return true;
-#endif
 }
 
 bool Graphics::isRenderSurfaceStable() {

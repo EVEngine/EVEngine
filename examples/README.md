@@ -46,17 +46,19 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
 | [devlab](devlab/README.md) | 运行时即编辑器：`--debug` 下的控制台 / REPL、快照、暂停、热重载、错误切片、AI 面板（**旗舰示例，先跑这个**） |
 | [ai-game](ai-game/README.md) | AI 驾驶真实游戏：Agent 通过 MCP 读状态 / 改数值 / 截图 / 快照复位（含一键复现脚本 `agent_demo.py`） |
 | [ai-editor](ai-editor/README.md) | AI 现场生成项目专属编辑器：`eve mcp` 无头主机 + JSON View + ViewModel 双向绑定（含 `editor_demo.py`） |
 | [inspector-demo](inspector-demo/README.md) | DevTools 属性检视器：自动扫描脚本类及其属性并渲染为可编辑面板（MVVM） |
 | [editor-ui-gallery](editor-ui-gallery/README.md) | 可复用编辑器 UI 套件展示：图标字体、菜单栏、工具栏、搜索侧栏、分屏、卡片、表单控件与游戏内 HUD 共存 |
+| [editor-workspace-shell](editor-workspace-shell/README.md) | 固定 IDE 布局壳：AppFrame / DockArea / PanelFrame / TabContainer + WorkspaceLayoutShell，替代可任意拖动的多 Panel |
 
 ## 入门与基础
 
 | 示例 | 演示能力 |
 |---|---|
-| [basic](basic/README.md) | Tilemap、Box2D 物理、粒子、基础 2D 绘制；另含两个 UI 变体（`ui_demo.nut` / `ui_component.nut`） |
+| [basic](basic/README.md) | 六步 2D 入门：矩形 → 图片 → 移动 → 物理 → 粒子 → 火焰；另含两个 UI 变体 |
 | [ecs](ecs/README.md) | 脚本 ECS（Component / Entity / System）；`gpu_main.nut` 为 compute shader 变体 |
 | [scene-ecs](scene-ecs/README.md) | 场景树与脚本 ECS 打通：SceneEntity 行为、eve.view 批量查询 |
 | [primitive-drawing](primitive-drawing/README.md) | 长期 `Primitive3D` 脚本 API：2D / 3D 基础图形绘制 |
@@ -141,6 +143,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [pcg-thunder-strike](pcg-thunder-strike/README.md) | 雷击事件：确定性 seed 决定落点 / 半径 / 音频片段索引，并逐帧驱动点光源衰减 |
 | [pcg-ui-scaler](pcg-ui-scaler/README.md) | UI 父级缩放：按画布高度自适应并夹紧到上限，求值结果直接落地成面板 |
 | [pcg-underwater](pcg-underwater/README.md) | 水下效果全链路：深度雾与颜色梯度、时间驱动后期、水焦散 cookie、水下材质、三路音频、粒子与触发体 |
+| [pcg-solar-planet](pcg-solar-planet/README.md) | SebLague Episode 02 行星实验：UV/Fibonacci/Cube/Icosphere + fBm/山脊/扭曲/陨石坑高度场 + 三平面着色与海洋壳 |
 | [roguelike-generator](roguelike-generator/README.md) | 种子驱动的房间走廊地牢：autotile、装饰、2D ↔ 2.5D |
 | [dungeon-generator-3d](dungeon-generator-3d/README.md) | `procgen.generate("level.roguelike", ...)` 的 3D 可配置呈现 |
 | [tree-generator](tree-generator/README.md) | 确定性树木：Weber-Penn / 空间殖民两种骨架算法 |
@@ -190,6 +193,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [ink-arena](ink-arena/README.md) | GPU 表面喷墨：片元着色器向持久 RGBA8 画布绘制 |
 | [uv-texture-paint](uv-texture-paint/README.md) | 点击网格经 Box3D 三角形命中映射回模型 UV 并绘制贴图 |
 | [tensor](tensor/README.md) | 张量编译管线：策略网络 / conv / SDPA / 批量模拟（纯计算） |
+| [gpu-formation](gpu-formation/README.md) | 纯脚本 GPU 阵型：`eve.TF()` 齐次 matmul 部署 + compile 软追逐与阵型 morph |
 | [interior-mapping](interior-mapping/README.md) | 无室内几何的室内映射：预投影 Atlas、切线空间射线–AABB、伪透视缩放、过程化家具遮挡与掠射菲涅尔 |
 | [triplanar-decal](triplanar-decal/README.md) | 三维投射贴花：局部空间三平面混合解决单轴投射在立面上的拉伸，含混合锐度对照 |
 

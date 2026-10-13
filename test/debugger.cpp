@@ -374,18 +374,18 @@ class MockStateProvider : public eve::caps::IStateProvider {
 public:
     const char* stateKind() const override { return "mock"; }
 
-    bool captureState(eve::StateValue& out) override {
-        out = eve::StateValue::object();
-        out.set("value", eve::StateValue::integer(7));
-        return true;
+    eve::Result<eve::Value> capture() override {
+        eve::Value out(eve::Value::Object{});
+        out.set("value", eve::Value::integer(7));
+        return eve::Result<eve::Value>::success(std::move(out));
     }
 
-    bool restoreState(const eve::StateValue& in, std::string* /*err*/) override {
-        lastRestored = in;
-        return true;
+    eve::Result<void> restore(const eve::Value& in) override {
+        lastRestored = eve::toLegacyStateValue(in);
+        return eve::Result<void>::success();
     }
 
-    bool resetToDefaults() override { return true; }
+    eve::Result<void> resetToDefaults() override { return eve::Result<void>::success(); }
 
     eve::StateValue lastRestored;
 };
