@@ -47,7 +47,7 @@ TEST_CASE("SimpleSquirrel.DirectMemberConversionsAndLifetime") {
         cls.addFunc("statelessPair",
                     [](MemberBindingProbe* p) { return std::tuple<int, std::string>{p->value, "pair"}; });
         cls.addFunc("statelessFail", [](MemberBindingProbe*) -> int { throw std::runtime_error("stateless failure"); });
-        vm.addFunc("sum", +[](int a, int b) noexcept { return a + b; });
+        vm.addFunc("sum", +[](int a, int b) { return a + b; });
         vm.addFunc("zero", []() { return 0; });
         vm.run(vm.compileSource(R"(
             function verifyMembers() {
