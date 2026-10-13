@@ -269,15 +269,41 @@ private:
     bool                                     committed_ = false;
 };
 
+class ReceiptParticipant final : public transaction::ITransactionParticipant {
+public:
+    ReceiptParticipant(OrderParticipant& order, ProductionParticipant& production, ActionParticipant& action,
+                       std::shared_ptr<RTSBuildReceipt> output)
+        : order_(order), production_(production), action_(action), output_(std::move(output)) {}
+    Result<void> prepare(const transaction::TransactionContext&) override {
+        output_->orderId          = order_.orderId();
+        output_->productionTaskId = production_.taskId();
+        output_->actionExecution  = action_.executionId();
+        return Result<void>::success();
+    }
+    Result<void> commit(const transaction::TransactionContext&) override { return Result<void>::success(); }
+    Result<void> rollback(const transaction::TransactionContext&) override {
+        *output_ = {};
+        return Result<void>::success();
+    }
+    Result<void> compensate(const transaction::TransactionContext&) override {
+        *output_ = {};
+        return Result<void>::success();
+    }
+
+private:
+    OrderParticipant&                order_;
+    ProductionParticipant&           production_;
+    ActionParticipant&               action_;
+    std::shared_ptr<RTSBuildReceipt> output_;
+};
+
 }  // namespace
 
-eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(Building& building, action::ActionRuntime& action,
-                                                               resource::IResourceAccount& account,
-                                                               resource::CostSpec cost, std::string product,
-                                                               Duration duration, std::string productionKind,
-                                                               int priority, std::string transactionId,
-                                                               std::vector<RTSProductionResourceReserve> resourceReserves,
-                                                               eve::definition::DefinitionHandle definition) {
+eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(
+    Building& building, action::ActionRuntime& action, resource::IResourceAccount& account, resource::CostSpec cost,
+    std::string product, Duration duration, std::string productionKind, int priority, std::string transactionId,
+    std::vector<RTSProductionResourceReserve> resourceReserves, eve::definition::DefinitionHandle definition,
+    std::span<transaction::ITransactionParticipant*> effects) {
     const auto subject = building.identity()->subject;
     if (!subject.isValid())
         return eve::Result<RTSBuildReceipt>::failure(
@@ -305,23 +331,24 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(Building& buildin
     request.definition           = std::move(definition);
     request.transactionId        = std::move(transactionId);
     request.actionRequest.source = ecs::handle_of(&building);
+    request.additionalEffects.assign(effects.begin(), effects.end());
     return build(std::move(request));
 }
 
-eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(RTSBuildRequest request) {
+eve::Result<RTSBuildStage> RTSProductionActionAdapter::stage(RTSBuildRequest request) {
     if (request.production == nullptr || request.orders == nullptr || request.action == nullptr ||
         request.account == nullptr)
-        return eve::Result<RTSBuildReceipt>::failure(
+        return eve::Result<RTSBuildStage>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                    "RTS build requires production, orders, Action and account ports", "request"));
     if (request.owner.empty() || request.productionKind.empty() || request.product.empty())
-        return eve::Result<RTSBuildReceipt>::failure(eve::Diagnostic::error(
+        return eve::Result<RTSBuildStage>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "RTS build requires owner, kind and product", "request"));
     if (!request.cost.isValid())
-        return eve::Result<RTSBuildReceipt>::failure(eve::Diagnostic::error(
+        return eve::Result<RTSBuildStage>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "RTS build requires a validated resource cost", "cost"));
     if (request.duration.nanoseconds() <= 0 || request.actionDelta.nanoseconds() < 0)
-        return eve::Result<RTSBuildReceipt>::failure(eve::Diagnostic::error(
+        return eve::Result<RTSBuildStage>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "RTS build durations are invalid", "duration"));
     request.settlementRequired = request.settlementRequired || request.productionKind == "unit" ||
                                  request.productionKind == "research";
@@ -329,64 +356,80 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(RTSBuildRequest r
     std::vector<resource::ResourceCost> protectedItems = request.cost.items();
     for (const auto& reserve : request.resourceReserves) {
         if (!reserve.resource.resource.isValid() || reserve.resource.amount.isZero())
-            return eve::Result<RTSBuildReceipt>::failure(eve::Diagnostic::error(
+            return eve::Result<RTSBuildStage>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "RTS production reserve must contain a positive resource amount",
                 "resourceReserves"));
         if (request.priority < reserve.minimumPriority) protectedItems.push_back(reserve.resource);
     }
     auto protectedCost = resource::CostSpec::create(std::move(protectedItems));
-    if (!protectedCost) return eve::Result<RTSBuildReceipt>::failure(protectedCost.status());
+    if (!protectedCost) return eve::Result<RTSBuildStage>::failure(protectedCost.status());
     auto protectedAffordability = request.account->canAfford(protectedCost.value());
-    if (!protectedAffordability)
-        return eve::Result<RTSBuildReceipt>::failure(protectedAffordability.status());
+    if (!protectedAffordability) return eve::Result<RTSBuildStage>::failure(protectedAffordability.status());
     if (!protectedAffordability.value().isAffordable())
-        return eve::Result<RTSBuildReceipt>::failure(
+        return eve::Result<RTSBuildStage>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
                                    "RTS production would consume a protected resource reserve", "resourceReserves"));
 
     if (!request.actionDefinition.id.isValid()) {
         auto id = eve::LogicalId::fromParts("rts", "build." + request.product);
         if (!id)
-            return eve::Result<RTSBuildReceipt>::failure(eve::Diagnostic::error(
+            return eve::Result<RTSBuildStage>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "RTS product cannot form an Action id", "product"));
         request.actionDefinition.id = *id;
     }
     if (request.actionDefinition.cost || request.actionDefinition.activeExecutionRequired ||
         !request.actionDefinition.effectIds.empty())
-        return eve::Result<RTSBuildReceipt>::failure(eve::Diagnostic::error(
+        return eve::Result<RTSBuildStage>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "RTS build Action must be effect-free; effect is a transaction port",
             "actionDefinition"));
     request.actionDefinition.timing = {};
     if (!request.actionRequest.actionId.isValid()) request.actionRequest.actionId = request.actionDefinition.id;
     if (request.actionRequest.actionId != request.actionDefinition.id)
-        return eve::Result<RTSBuildReceipt>::failure(
+        return eve::Result<RTSBuildStage>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                    "RTS build Action request does not match definition", "actionRequest"));
     request.actionRequest.requestedTick = request.tick;
 
-    if (request.transactionId.empty()) request.transactionId = "rts.build." + request.product;
-    transaction::TransactionContext context(std::move(request.transactionId));
-    OrderParticipant      order(*request.orders, request.orderKind, request.orderPriority, request.orderTimeoutSeconds,
-                                request.product, request.owner);
-    ProductionParticipant production(*request.production, request.owner, request.productionKind, request.product,
-                                     std::move(request.context), std::move(request.definition),
-                                     std::move(request.reservation), request.duration, request.priority,
-                                     request.settlementRequired);
-    ActionParticipant     action(*request.action, std::move(request.actionDefinition), std::move(request.actionRequest),
-                                 request.tick, request.actionDelta);
-    std::vector<transaction::ITransactionParticipant*> participants;
-    participants.reserve(request.effect ? 4u : 3u);
-    participants.push_back(&order);
-    participants.push_back(&production);
-    if (request.effect != nullptr) participants.push_back(request.effect);
-    participants.push_back(&action);
+    auto order      = std::make_unique<OrderParticipant>(*request.orders, request.orderKind, request.orderPriority,
+                                                         request.orderTimeoutSeconds, request.product, request.owner);
+    auto production = std::make_unique<ProductionParticipant>(
+        *request.production, request.owner, request.productionKind, request.product, std::move(request.context),
+        std::move(request.definition), std::move(request.reservation), request.duration, request.priority,
+        request.settlementRequired);
+    auto action =
+        std::make_unique<ActionParticipant>(*request.action, std::move(request.actionDefinition),
+                                            std::move(request.actionRequest), request.tick, request.actionDelta);
+    RTSBuildStage result;
+    result.output = std::make_shared<RTSBuildReceipt>();
+    auto receipt  = std::make_unique<ReceiptParticipant>(*order, *production, *action, result.output);
+    result.effects.push_back(std::move(order));
+    result.effects.push_back(std::move(production));
+    result.effects.push_back(std::move(action));
+    result.effects.push_back(std::move(receipt));
+    return Result<RTSBuildStage>::success(std::move(result));
+}
 
-    auto committed = transaction::AtomicResourcePayment::execute(
-        context, *request.account, request.cost, std::span<transaction::ITransactionParticipant*>(participants));
-    if (!committed) return eve::Result<RTSBuildReceipt>::failure(committed.status());
-    auto            receipt = std::move(committed).takeValue();
-    RTSBuildReceipt result{std::move(receipt), order.orderId(), production.taskId(), action.executionId()};
-    return eve::Result<RTSBuildReceipt>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
+eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(RTSBuildRequest request) {
+    auto*      account       = request.account;
+    const auto cost          = request.cost;
+    auto       extras        = request.additionalEffects;
+    auto*      effect        = request.effect;
+    auto       transactionId = request.transactionId.empty() ? "rts.build." + request.product : request.transactionId;
+    auto       staged        = stage(std::move(request));
+    if (!staged) return Result<RTSBuildReceipt>::failure(staged.status());
+    auto                                               batch = std::move(staged).takeValue();
+    std::vector<transaction::ITransactionParticipant*> parts;
+    parts.push_back(batch.effects[0].get());
+    parts.push_back(batch.effects[1].get());
+    if (effect) parts.push_back(effect);
+    parts.insert(parts.end(), extras.begin(), extras.end());
+    parts.push_back(batch.effects[2].get());
+    parts.push_back(batch.effects[3].get());
+    auto result = transaction::AtomicResourcePayment::execute(transaction::TransactionContext(transactionId), *account,
+                                                              cost, parts);
+    if (!result) return Result<RTSBuildReceipt>::failure(result.status());
+    batch.output->transaction = std::move(result).takeValue();
+    return Result<RTSBuildReceipt>::success(*batch.output);
 }
 
 eve::Result<RTSCancelProductionReceipt> RTSProductionActionAdapter::cancel(

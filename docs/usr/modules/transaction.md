@@ -61,3 +61,9 @@ C++ Coordinator 的 prepare/commit/rollback/compensate 契约见
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](transaction/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 脚本事务组合
+
+脚本可用 `transaction.newAtomicBatch()` 组合真实领域参与者，并通过 `batch.commit()` 提交。
+
+生命周期、费用合并与完整示例见 [玩法事务组合](../GAMEPLAY_PAYMENT_COMPOSITION.md#script-composition)。

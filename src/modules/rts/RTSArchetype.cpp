@@ -140,6 +140,12 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
                                                        "rts.archetype"));
 
     auto capacity = number(object, "cargoCapacity", role.value() == "worker" ? 10.0f : 0.0f, 0.0f);
+    auto gatherResource = text(object, "gatherResource", role.value() == "worker" ? "minerals" : "");
+    if (!gatherResource) return Result<void>::failure(gatherResource.status());
+    if (!gatherResource.value().empty()) {
+        auto validResource = resource::ResourceId::parse(gatherResource.value());
+        if (!validResource) return Result<void>::failure(validResource.status());
+    }
     auto gather = number(object, "gatherRate", role.value() == "worker" ? 5.0f : 0.0f, 0.0f);
     auto buildRate = number(object, "buildRate", 1.0f, 0.0f);
     auto repairRate = number(object, "repairRate", 0.0f, 0.0f);
@@ -225,6 +231,7 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
     unit.durability()->state.maxHealth = health.value();
     unit.durability()->alive = health.value() > 0.0f;
     unit.worker()->capacity = capacity.value();
+    unit.worker()->resourceType              = std::move(gatherResource).takeValue();
     unit.worker()->gatherRate = gather.value();
     unit.worker()->buildRate = buildRate.value();
     unit.worker()->repairRate = repairRate.value();
@@ -299,6 +306,12 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
     auto powerPriority = integer(object, "powerPriority", 0);
     auto influence = number(object, "buildInfluenceRadius", 0.0f, 0.0f);
     auto incomeResource = text(object, "incomeResource");
+    auto       dropoffResources = tags(object, "dropoffResources");
+    if (!dropoffResources) return Result<void>::failure(dropoffResources.status());
+    for (const auto& name : dropoffResources.value().values()) {
+        auto validResource = resource::ResourceId::parse(name);
+        if (!validResource) return Result<void>::failure(validResource.status());
+    }
     auto incomeRate = number(object, "incomeRate", 0.0f, 0.0f);
     auto repairCost = number(object, "repairCostPerHealth", 0.0f, 0.0f);
     auto repairResource = text(object, "repairResource", "minerals");
@@ -378,7 +391,9 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
     building.combat()->targetHeight = targetHeight.value();
     building.dropoff()->radius = radius.value();
     if (const auto dropoff = boolean(object, "dropoff", false); dropoff && dropoff.value())
-        building.dropoff()->acceptedResources.push_back("minerals");
+        building.dropoff()->acceptedResources = field(object, "dropoffResources")
+                                                    ? dropoffResources.value().values()
+                                                    : std::vector<std::string>{"minerals"};
     if (weapon != nullptr) {
         auto link = WeaponLink::bind(ecs::handle_of(weapon));
         if (!link) return Result<void>::failure(link.status());

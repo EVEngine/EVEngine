@@ -1,4 +1,5 @@
 #include "transaction/Transaction.h"
+#include "transaction/AtomicBatch.h"
 
 #include "common/Json.h"
 #include "common/SquirrelBinding.h"
@@ -916,6 +917,7 @@ void Transaction::expose(ssq::Table& table) {
 
     auto cls = table.addClass(name, Transaction::create, false);
     expose(cls);
+    script_internal::exposeAtomicBatch(table, cls);
 }
 
 void Transaction::expose(ssq::Class& cls) {
