@@ -142,6 +142,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [pcg-thunder-strike](pcg-thunder-strike/README.md) | 雷击事件：确定性 seed 决定落点 / 半径 / 音频片段索引，并逐帧驱动点光源衰减 |
 | [pcg-ui-scaler](pcg-ui-scaler/README.md) | UI 父级缩放：按画布高度自适应并夹紧到上限，求值结果直接落地成面板 |
 | [pcg-underwater](pcg-underwater/README.md) | 水下效果全链路：深度雾与颜色梯度、时间驱动后期、水焦散 cookie、水下材质、三路音频、粒子与触发体 |
+| [pcg-solar-planet](pcg-solar-planet/README.md) | SebLague Episode 02 行星实验：UV/Fibonacci/Cube/Icosphere + fBm/山脊/扭曲/陨石坑高度场 + 三平面着色与海洋壳 |
 | [roguelike-generator](roguelike-generator/README.md) | 种子驱动的房间走廊地牢：autotile、装饰、2D ↔ 2.5D |
 | [dungeon-generator-3d](dungeon-generator-3d/README.md) | `procgen.generate("level.roguelike", ...)` 的 3D 可配置呈现 |
 | [tree-generator](tree-generator/README.md) | 确定性树木：Weber-Penn / 空间殖民两种骨架算法 |
