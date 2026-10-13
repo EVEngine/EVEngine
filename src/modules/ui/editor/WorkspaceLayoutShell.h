@@ -45,7 +45,7 @@ struct WorkspaceShellOptions {
  * @reentrancy Does not invoke content builders while holding locks; builders
  *             must not mutate the workspace they are reading.
  */
-class EVENGINE_API_WORLD WorkspaceLayoutShell {
+class EVENGINE_API_EDITORS WorkspaceLayoutShell {
 public:
     /**
      * @brief Build panel body content for one workspace descriptor.
