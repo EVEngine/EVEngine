@@ -9,7 +9,7 @@ Player saves combine gameplay domains using **JSON text, strict validation and a
 ## Principles
 
 1. Each mutable fact has one authoritative owner, such as `GameState`, `Tracker`, a bag or a battle. Serialize that state.
-2. Validate the entire candidate before publishing it. If a participant fails, all participants keep their original state.
+2. For a cross-domain restore, use `GameSaveSession` to prepare the whole candidate before publication. A failed participant preparation leaves all domains unchanged. Separate script calls only restore their own domains.
 3. Item, quest and ability definitions belong to content, not the player's save. Load matching `contentVersion` definitions before restoring.
 4. Write to disk with `fs.writeTextAtomic` and check success. `fs` is the startup filesystem instance. Validate before restoring and try a backup if the primary save is invalid.
 
@@ -63,7 +63,15 @@ local replayed = battle.replayJson(log.value);
 if (!replayed.ok) throw "battle replay failed";
 ```
 
-The log must be anchored to the snapshot's baseline. HP or cooldowns owned by ECS/RPG are not automatically included in a tactics snapshot. Save them separately and restore in a defined order. A single transaction combining board and RPG state is a 0.7 roadmap goal; 0.6 callers coordinate it explicitly.
+The log must be anchored to the snapshot's baseline. HP or cooldowns owned by ECS/RPG are not automatically included in a tactics snapshot.
+
+## C++: restore RPG and tactics together
+
+Register an already-bound `RPGSaveSession` through `RPGGameSaveParticipant`, and a live `Battle` through `TacticsGameSaveParticipant`, in one `eve::GameSaveSession(contentVersion)`. The adapters and their borrowed domain owners must outlive the coordinator. Perform save and load at a paused boundary on the simulation thread. The [integration test](../../../test/game_save_integration.cpp) shows the complete C++ wiring.
+
+`snapshotJson(hashProvider)` produces one sealed JSON document. Write that document to one slot with a checked atomic file write. On load, restore matching content definitions first, then call `restoreJson(json, hashProvider)` on the primary or backup. The coordinator checks integrity, schema, content version and the exact participant set; every participant prepares a candidate before any state is published. An error leaves all live domains unchanged. Register explicit `addContentMigration` functions for older content versions; migrations operate on unpublished JSON. Use the same injected digest algorithm for save and load. The digest detects accidental corruption and does not authenticate the save.
+
+The Squirrel bindings still expose independent RPG and tactics restore calls. Games requiring the cross-domain transaction must wire this C++ coordinator rather than treating two script calls as atomic.
 
 ## Save slots and backups
 

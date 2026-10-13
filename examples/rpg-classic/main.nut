@@ -5,6 +5,8 @@
 // 战斗：1/2/3 行动，C 查看状态（占位），R 重开。
 // ============================================================================
 
+dofile("quest_scene.nut");
+
 persist rpg = null
 persist gs = null
 persist player = null
@@ -924,6 +926,7 @@ function claimQuestRewards(questId) {
     }
     gold = gs.getVariable("gold").tointeger();
     logMessage("quest.completed", {quest = questTitle(questId), rewards = rewardText});
+    if (!recordQuestCompletion(quest, questId)) print("rpg-classic: quest presentation event unavailable\n");
     return true;
 }
 
@@ -1479,6 +1482,7 @@ function toggleProductLanguage() {
 }
 
 function refreshHud() {
+    synchronizeQuestScene(quest);
     ui.select("player");
     ui.setValue("hpbar", (player.getCurrent("hp") / player.getMax("hp")).tofloat());
     ui.setText("hptext", "HP " + roundi(player.getCurrent("hp")) + "/" + roundi(player.getMax("hp")));
@@ -1919,6 +1923,7 @@ eve_init = function() {
     titleMessage = tr("ui.title.prompt");
     pauseMessage = tr("ui.pause.status");
     setupWorld();
+    initializeQuestScene(quest);
     buildUI();
     if (player == null) {
         startNewGame(activeSaveSlot);
@@ -1932,6 +1937,7 @@ eve_init = function() {
 
 eve_reload <- function() {
     publishNarrativeContentPackage(true);
+    initializeQuestScene(quest);
 };
 
 eve_update = function(dt) {
@@ -2054,7 +2060,11 @@ eve_render = function() {
             local oy = worldLayer.tileToWorldY(map.getObjectX(i).tointeger(), map.getObjectY(i).tointeger());
             if (type == "encounter") gfx.drawSolidRect(ox + 7.0, oy + 7.0, 18.0, 18.0, 0.3, 0.9, 0.35, 1.0);
             else if (type == "merchant") gfx.drawSolidRect(ox + 6.0, oy + 4.0, 20.0, 24.0, 0.95, 0.72, 0.25, 1.0);
-            else if (type == "quest_npc") gfx.drawSolidRect(ox + 6.0, oy + 3.0, 20.0, 26.0, 0.7, 0.55, 0.95, 1.0);
+            else if (type == "quest_npc") {
+                gfx.drawSolidRect(ox + 6.0, oy + 3.0, 20.0, 26.0, 0.7, 0.55, 0.95, 1.0);
+                if (questSceneMarkerVisible() && map.getObjectProperty(i, "questId", "") == "quest.slayer")
+                    gfx.drawSolidRect(ox + 12.0, oy - 3.0, 8.0, 4.0, 1.0, 0.85, 0.2, 1.0);
+            }
             else if (type == "loot") gfx.drawSolidRect(ox + 5.0, oy + 11.0, 22.0, 15.0, 0.7, 0.4, 0.12, 1.0);
             else if (type == "portal") gfx.drawSolidRect(ox + 9.0, oy + 2.0, 14.0, 28.0, 0.25, 0.85, 0.95, 1.0);
         }

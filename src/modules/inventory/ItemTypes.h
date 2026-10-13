@@ -1,5 +1,6 @@
 #pragma once
 #include "common/Export.h"
+#include "common/StringMapInstances.h"
 
 
 // 背包模块的核心数据结构：物品定义、运行时堆叠、变更事件。

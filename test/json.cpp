@@ -1,3 +1,4 @@
+#include "common/StringMapInstances.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

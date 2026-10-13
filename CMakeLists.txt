@@ -12,17 +12,23 @@ set(EVENGINE_BUILD_PLATFORM "" CACHE STRING
     "EVEngine target platform override; unlike legacy BUILD_PLATFORM this cannot collide with dependencies")
 
 set(EVENGINE_COMPILER_CACHE "AUTO" CACHE STRING
-    "Compiler cache mode: AUTO detects sccache, SCCACHE requires it, OFF disables auto-detection")
-set_property(CACHE EVENGINE_COMPILER_CACHE PROPERTY STRINGS AUTO SCCACHE OFF)
+    "Compiler cache mode: AUTO, SCCACHE, CCACHE_HARDLINK (Windows Ninja), or OFF")
+set_property(CACHE EVENGINE_COMPILER_CACHE PROPERTY STRINGS AUTO SCCACHE CCACHE_HARDLINK OFF)
 string(TOUPPER "${EVENGINE_COMPILER_CACHE}" _eve_compiler_cache_mode)
-if(NOT _eve_compiler_cache_mode MATCHES "^(AUTO|SCCACHE|OFF)$")
+if(NOT _eve_compiler_cache_mode MATCHES "^(AUTO|SCCACHE|CCACHE_HARDLINK|OFF)$")
     message(FATAL_ERROR
-        "EVENGINE_COMPILER_CACHE must be AUTO, SCCACHE, or OFF "
+        "EVENGINE_COMPILER_CACHE must be AUTO, SCCACHE, CCACHE_HARDLINK, or OFF "
         "(got: ${EVENGINE_COMPILER_CACHE})")
 endif()
 
 set(_eve_sccache_enabled OFF)
-if(_eve_compiler_cache_mode STREQUAL "AUTO" AND
+set(_eve_ccache_enabled OFF)
+if(_eve_compiler_cache_mode STREQUAL "CCACHE_HARDLINK")
+    include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/ccache_hardlink.cmake")
+    eve_prepare_ccache_hardlink()
+    set(_eve_ccache_enabled ON)
+    set(_eve_compiler_cache_status "ccache hardlinks (${EVENGINE_CCACHE_EXECUTABLE})")
+elseif(_eve_compiler_cache_mode STREQUAL "AUTO" AND
    (CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER))
     set(_eve_compiler_cache_status "custom launcher supplied")
 elseif(NOT _eve_compiler_cache_mode STREQUAL "OFF")
@@ -60,7 +66,11 @@ endif()
 
 project(EVEngine)
 
-if(WIN32 AND MSVC AND CMAKE_GENERATOR MATCHES "Ninja")
+if(_eve_ccache_enabled)
+    eve_finish_ccache_hardlink()
+endif()
+
+if(WIN32 AND MSVC AND CMAKE_GENERATOR MATCHES "Ninja" AND NOT _eve_ccache_enabled)
     # sccache (and any other launcher) CreateProcess()es cl.exe with a pipe;
     # localized cl then writes ACP /showIncludes (GBK) while Ninja's
     # msvc_deps_prefix is UTF-8, so every header leaks into the build log.
@@ -265,7 +275,9 @@ if(EXISTS "${_vkbuilder_header}")
 endif()
 
 
-# This is the main function of the build script
+# Build order: platform -> manifest/profile -> dependencies -> engine modules
+# -> link groups -> consumers -> SDK installation. Keep target creation here;
+# helper implementations below are loaded before main() is called.
 function(main)
     # Central include/link-usage target for every engine module, platform
     # library and test runner. Replaces the old global include_directories() /
@@ -298,7 +310,7 @@ function(main)
     load_asset_utf8proc()
     load_webgpu_backend()
     set_include()
-    check_ipo()
+    eve_configure_ipo()
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     # cl.exe already sees the STL/UCRT via %INCLUDE% from cmake/with-msvc.cmd.
@@ -326,77 +338,7 @@ function(main)
     # Enabled by CI and by local `make build/win32-debug` / `make build/linux-debug`
     # (see DEBUG_STRICT_WARNINGS_FLAG in the root Makefile). Opt out with:
     #   make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF
-    if(EVENGINE_ENABLE_STRICT_WARNINGS)
-        target_compile_options(eve_engine_includes INTERFACE
-            $<$<CXX_COMPILER_ID:MSVC>:/W4>
-            $<$<CXX_COMPILER_ID:MSVC>:/WX>
-            # C4251/C4275: STL members/base classes in __declspec(dllexport)
-            # classes are safe with MSVC's own STL; the warnings are noise for
-            # an engine DLL. C4100 mirrors the GCC side's -Wno-unused-parameter:
-            # callback APIs keep unused parameters for stability until the
-            # legacy interface is cleaned up. C4244 loss-of-data conversions
-            # stay enabled and are fixed at the call sites.
-            # /external:W0 silences warnings from third-party headers marked
-            # with eve_external_include() (defined below), so /W4 /WX applies
-            # only to EVEngine's own code.
-            # _CRT_SECURE_NO_WARNINGS: the engine deliberately uses standard C
-            # APIs (getenv, etc.) for portability; MSVC's secure-CRT
-            # deprecations are reviewed in code review instead of forcing
-            # _s variants at every call site.
-            $<$<CXX_COMPILER_ID:MSVC>:/wd4251>
-            $<$<CXX_COMPILER_ID:MSVC>:/wd4275>
-            $<$<CXX_COMPILER_ID:MSVC>:/wd4100>
-            # C4702: unreachable code emitted by third-party header-only code
-            # (vkbuilder.hpp) at flow-analysis level; engine-side dead code is
-            # removed at the call sites instead.
-            $<$<CXX_COMPILER_ID:MSVC>:/wd4702>
-            # C4456/4457/4458: "declaration hides class member" family. The
-            # legacy codebase pervasively names parameters after the member they
-            # set (setWidth(int width) etc.); renaming ~60+ call sites is a
-            # dedicated cleanup PR, not a gate blocker. C4244/C4267/C4099/
-            # C4389/C4189 stay enabled and are fixed at the call sites.
-            $<$<CXX_COMPILER_ID:MSVC>:/wd4456>
-            $<$<CXX_COMPILER_ID:MSVC>:/wd4457>
-            $<$<CXX_COMPILER_ID:MSVC>:/wd4458>
-            $<$<CXX_COMPILER_ID:MSVC>:/external:W0>
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall>
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wextra>
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Werror>
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-unused-parameter>
-            # -Wno-unused-function: shared per-TU helper headers (GraphicsInternal.h,
-            # SceneInternal.h, ...) deliberately give every including TU its own
-            # internal copy, so a helper unused in one TU is structural, not a
-            # defect. Unused variables and unused-but-set stay enabled.
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-unused-function>
-            # Third-party template headers (simplesquirrel) emit these during
-            # instantiation in engine TUs. The third-party install root stays a
-            # plain -I (marking it -isystem would demote it below the Vulkan SDK
-            # -I and flip which <vulkan/vulkan.hpp> wins, breaking VKBuilder),
-            # so the leaks cannot be silenced per-directory on GCC and are
-            # downgraded from errors to warnings here. Engine-side instances of
-            # these warnings are still reported.
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=unused-variable>
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=unused-but-set-parameter>
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=sign-compare>
-            # Poco::Data Date/Time implicit-copy deprecations and
-            # -Wdelete-non-virtual-dtor (the ECS.hpp base Entity has virtuals
-            # but no virtual dtor) fire from third-party headers during template
-            # instantiation in engine TUs; same treatment as above.
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=deprecated-copy>
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=delete-non-virtual-dtor>
-            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-missing-field-initializers>)
-        target_compile_definitions(eve_engine_includes INTERFACE
-            $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
-            # POSIX-name deprecations (fileno etc.) are the same category as
-            # the secure-CRT warnings above; the ISO C++ name is used where
-            # practical.
-            $<$<CXX_COMPILER_ID:MSVC>:_CRT_NONSTDC_NO_WARNINGS>)
-        # Vendored third-party source roots (third-party/Box2D, imgui, ...) are
-        # external for warning purposes. Safe on GCC: the third-party install
-        # tree stays a plain -I and is searched first, so the vendored
-        # vulkan.hpp still beats the SDK's.
-        eve_external_include(${CMAKE_SOURCE_DIR}/third-party)
-    endif()
+    eve_configure_strict_warnings(eve_engine_includes)
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
     set(BUILD_TEST OFF CACHE BOOL "" FORCE)
@@ -473,7 +415,9 @@ function(main)
     elseif(BUILD_PLATFORM STREQUAL "webgpu" AND BUILD_TESTING)
         message(STATUS "webgpu (native Dawn) build: unit tests enabled")
     endif()
+    include(cmake/zeroerr_compiled_diagnostics.cmake)
     add_subdirectory(external/zeroerr)
+    eve_enable_zeroerr_compiled_diagnostics()
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug builds (upstream ZEROERR_NO_ASSERT under
     # NDEBUG is commented out), unless assertions were explicitly enabled with
@@ -560,14 +504,16 @@ function(main)
                 "update cmake/patches/ecs-shared-default-table.patch.")
         endif()
     endif()
+    # set_include() generated the ECS overlay before the patch above. Refresh
+    # it now so a clean checkout compiles the patched default-table API.
+    eve_prepare_ecs_container_headers()
 
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
 
-# Group the module OBJECT libraries into the link units consumers use
-# (EVENGINE_MODULE_LINKAGE=SHARED). Must come after src/modules so every module
-# target exists, and before anything that links EVE_LINK_TARGETS.
-include(${CMAKE_SOURCE_DIR}/cmake/link_groups.cmake)
+    # Group module objects after their targets exist and before consumers link
+    # EVE_LINK_TARGETS (SHARED builds).
+    include(${CMAKE_SOURCE_DIR}/cmake/link_groups.cmake)
     if(EVENGINE_BUILD_PIXELWORLD_BENCHMARK)
         add_subdirectory(benchmarks/pixelworld)
     endif()
@@ -596,589 +542,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/link_groups.cmake)
     endif()
 endfunction()
 
-# Zstd is part of the stable .evpack wire contract rather than the legacy
-# aggregate dependency checkout. Keep it independently pinned so prebuilt
-# third-party trees remain read-only and native/Web builds use the same codec.
-function(load_asset_zstd)
-    eve_module_enabled(asset _eve_has_asset)
-    if(NOT _eve_has_asset)
-        set(EVENGINE_ASSET_ZSTD_TARGET "" CACHE INTERNAL "Asset Zstd target" FORCE)
-        return()
-    endif()
-
-    include(FetchContent)
-    set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
-    set(ZSTD_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
-    set(ZSTD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
-    set(ZSTD_BUILD_STATIC ON CACHE BOOL "" FORCE)
-    set(ZSTD_LEGACY_SUPPORT OFF CACHE BOOL "" FORCE)
-    FetchContent_Declare(evengine_zstd
-        URL https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
-        URL_HASH SHA256=eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3
-        DOWNLOAD_EXTRACT_TIMESTAMP FALSE
-        SOURCE_SUBDIR build/cmake)
-    FetchContent_MakeAvailable(evengine_zstd)
-    if(TARGET deps)
-        add_dependencies(deps libzstd_static)
-    endif()
-    set(EVENGINE_ASSET_ZSTD_TARGET libzstd_static CACHE INTERNAL "Asset Zstd target" FORCE)
-endfunction()
-
-# Unicode NFC is part of the .eva path wire contract. Pin the Unicode table and
-# normalization algorithm so every host accepts exactly the same archive names.
-function(load_asset_utf8proc)
-    eve_module_enabled(asset _eve_has_asset)
-    if(NOT _eve_has_asset)
-        set(EVENGINE_ASSET_UTF8PROC_TARGET "" CACHE INTERNAL "Asset utf8proc target" FORCE)
-        return()
-    endif()
-
-    include(FetchContent)
-    set(BUILD_SHARED_LIBS OFF)
-    set(UTF8PROC_INSTALL OFF CACHE BOOL "" FORCE)
-    FetchContent_Declare(evengine_utf8proc
-        URL https://github.com/JuliaStrings/utf8proc/archive/refs/tags/v2.11.3.tar.gz
-        URL_HASH SHA256=abfed50b6d4da51345713661370290f4f4747263ee73dc90356299dfc7990c78
-        DOWNLOAD_EXTRACT_TIMESTAMP FALSE)
-    FetchContent_MakeAvailable(evengine_utf8proc)
-    if(TARGET deps)
-        add_dependencies(deps utf8proc)
-    endif()
-    set(EVENGINE_ASSET_UTF8PROC_TARGET utf8proc CACHE INTERNAL "Asset utf8proc target" FORCE)
-endfunction()
-
-
-# configure_file() always updates the output timestamp. A Ninja CMake re-run
-# would then rebuild every TU that includes config.h / BuildInfo.h even when
-# the generated text is identical.
-function(eve_configure_file_if_changed input output)
-    set(_eve_cfg_tmp "${output}.configure.tmp")
-    configure_file("${input}" "${_eve_cfg_tmp}")
-    execute_process(
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/${_eve_cfg_tmp}"
-            "${CMAKE_CURRENT_BINARY_DIR}/${output}")
-    file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/${_eve_cfg_tmp}")
-endfunction()
-
-# This marco will create a module with the given name and folder
-# It will scan the source code and create a xxx_src.txt file in the build folder. 
-
-macro(create_module libname folder)
-    # Join the exclude lists with ',' instead of ';': scan_source.cmake is
-    # run through a shell (Ninja on Linux/macOS), where both ';' and '|' are
-    # shell metacharacters (command separator / pipe) that would split or
-    # execute the -D argument. ',' is safe unquoted on every shell (POSIX sh,
-    # cmd.exe, emcc). The scan script splits on ','.
-    eve_module_scan_dir("${folder}" _eve_scan_dir)
-    eve_module_nested_scan_excludes("${folder}" _eve_nested_dirs)
-    set(_eve_excl_dirs ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS} ${_eve_nested_dirs})
-    string(JOIN "," _eve_excl_dirs_arg ${_eve_excl_dirs})
-    string(JOIN "," _eve_excl_files_arg ${EVENGINE_EXCLUDED_MODULE_FILES})
-    # Scan .cpp files at configure time. New files are picked up by the next
-    # cmake configure (`make debug` reconfigures when the module directory is
-    # newer than this list). Do not attach ALL rescan targets or
-    # CMAKE_CONFIGURE_DEPENDS to the list file: rewriting it at build time
-    # restacks Ninja cmake re-runs and rebuilds every TU.
-    execute_process(COMMAND ${CMAKE_COMMAND}
-        -Doutput_dir=${CMAKE_CURRENT_BINARY_DIR}
-        -Dscan_dir=${_eve_scan_dir}
-        -Dlist_name=${folder}
-        -Dexclude_dirs=${_eve_excl_dirs_arg}
-        -Dexclude_files=${_eve_excl_files_arg}
-        -P ${CMAKE_SOURCE_DIR}/cmake/scan_source.cmake
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-    file(READ ${CMAKE_CURRENT_BINARY_DIR}/${folder}_src.txt module_src)
-    string(REPLACE "\n" ";" module_src "${module_src}")
-    # Drop empty entries from trailing newlines. A module whose only TUs were
-    # optional-bridge exclusions must not call add_library with no SOURCES.
-    list(FILTER module_src EXCLUDE REGEX "^$")
-    if(NOT module_src)
-        message(FATAL_ERROR
-            "Module '${folder}' (${libname}) has no sources after "
-            "EVENGINE_EXCLUDED_MODULE_FILES filtering. Either keep a stub TU, "
-            "remove the module from this profile, or make its optional dep a "
-            "hard DEPS so the module is disabled when the bridge is absent.")
-    endif()
-
-    # Xcode + OBJECT libraries often emit hashed object filenames that the
-    # dependent link phase still references without the hash (duplicate basenames
-    # like Window.cpp). Use STATIC archives under Xcode to keep linking stable.
-    if(CMAKE_GENERATOR MATCHES "Xcode")
-        add_library(${libname} STATIC ${module_src})
-    else()
-        add_library(${libname} OBJECT ${module_src})
-    endif()
-    # In SHARED mode these objects are aggregated into a link-group shared
-    # library (cmake/link_groups.cmake), so they must be position independent on
-    # ELF/Mach-O. The module stays an OBJECT library: the manifest, profiles,
-    # per-module compile settings and the source scan are unchanged, and the
-    # grouping lives entirely in EVE_LINK_GROUP_TABLE.
-    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
-        set_target_properties(${libname} PROPERTIES POSITION_INDEPENDENT_CODE ON)
-        # These objects are the defining side of the module DLL boundary, so the
-        # EVENGINE_API-annotated declarations compile to dllexport (see
-        # src/engine/common/Export.h). Checked before EVENGINE_MODULE_DLL, which
-        # eve_engine_includes hands to every target including these.
-        target_compile_definitions(${libname} PRIVATE EVENGINE_ENGINE_EXPORTS)
-        # ...but only for THIS module's own link group. The group DLL exports
-        # what its own modules declare and imports everything the lower groups
-        # declare -- re-exporting a lower group's declaration would reference
-        # the plain symbol instead of __imp_<symbol>, which nothing defines for
-        # data (see the EVENGINE_API_<GROUP> block in
-        # src/engine/common/Export.h). Exactly one define, never the other six.
-        # EVE_MODULE_<name>_LINK_GROUP is resolved by eve_resolve_modules()
-        # (cmake/modules.cmake), which main() runs before src/engine and
-        # src/modules are added.
-        set(_eve_module_group "${EVE_MODULE_${folder}_LINK_GROUP}")
-        if(NOT _eve_module_group)
-            message(FATAL_ERROR
-                "Module '${folder}' has no EVE_MODULE_${folder}_LINK_GROUP; "
-                "eve_resolve_modules() must run before create_module()")
-        endif()
-        string(REGEX REPLACE "^EV" "" _eve_module_group "${_eve_module_group}")
-        string(TOUPPER "${_eve_module_group}" _eve_module_group)
-        target_compile_definitions(${libname} PRIVATE
-            "EVENGINE_EXPORTS_${_eve_module_group}")
-        # The vulkan-hpp default dispatcher is a data symbol defined by exactly
-        # one TU (src/modules/graphics/vulkan/Graphics.cpp, via VKB_IMPL) and
-        # referenced by every group that calls vulkan-hpp enhanced-mode
-        # overloads. Its owning group declares it dllexport here while every
-        # other consumer gets dllimport from VULKAN_HPP_STORAGE_SHARED
-        # (cmake/link_groups.cmake): vulkan-hpp offers exactly this pair of
-        # hooks, and data symbols cannot cross a DLL boundary without it.
-        if(_eve_module_group STREQUAL "BACKENDS")
-            target_compile_definitions(${libname} PRIVATE VULKAN_HPP_STORAGE_SHARED_EXPORT)
-        endif()
-    endif()
-    # Opt the module into the shared engine include set (was global
-    # include_directories before; see eve_engine_includes in main()).
-    target_link_libraries(${libname} PUBLIC eve_engine_includes)
-
-    if(NOT EVENGINE_PROFILE_HOSTLESS)
-        add_dependencies(${libname} third-party)
-    endif()
-endmacro()
-
-
-# Mark a third-party include root as "external" for strict builds, so the
-# warning-as-error flags stay scoped to EVEngine's own code:
-#   MSVC: /external:I + /external:W0 (does not change search order)
-#   GCC/Clang: -isystem (suppresses header warnings from template
-#              instantiations), except the third-party install tree: on GCC a
-#              directory listed in both -I and -isystem has its -I entry
-#              ignored and is searched after every -I, which would flip which
-#              <vulkan/vulkan.hpp> wins (the vendored 261 must beat the SDK's).
-function(eve_external_include dir)
-    if(EVENGINE_ENABLE_STRICT_WARNINGS)
-        if(MSVC)
-            target_compile_options(eve_engine_includes INTERFACE "/external:I${dir}")
-        else()
-            # The third-party install tree stays a plain -I on GCC (see the
-            # function comment); everything else (external/*, header-only
-            # vendored roots) can be marked system without reordering.
-            if(NOT dir MATCHES "third-party-binary")
-                target_compile_options(eve_engine_includes INTERFACE "-isystem${dir}")
-            endif()
-        endif()
-    endif()
-endfunction()
-
-
-# This function will set the include directories for the project
-function(set_include)
-    target_include_directories(eve_engine_includes INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/engine
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/modules
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts
-        ${CMAKE_BINARY_DIR}/src/engine
-        ${CMAKE_CURRENT_SOURCE_DIR}/platform
-        # Override only zeroerr/unittest.h so fixture-generated types include
-        # their fixture name. This avoids cross-TU ODR collisions under LTO
-        # without mutating the pinned zeroerr submodule checkout.
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/overrides/zeroerr
-        # sunxfancy/ECS.hpp + ik.hpp (git submodules) + zeroerr headers
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include
-        # DTL is header-only and includes itself through the DTL/... prefix.
-        # Its prebuilt install is flat, so keep the pinned source include root
-        # authoritative in both source and prebuilt dependency modes.
-        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include
-        # sunxfancy/VKBuilder (git submodule) — header-only Vulkan wrapper. Exposed
-        # globally (like the old third-party flattened install) so any module that
-        # pulls in Graphics.h can resolve <vkbuilder.hpp>.
-        ${EVENGINE_VKBUILDER_INCLUDE_DIR}
-    )
-    if(EVENGINE_VULKAN_USE_VMA AND NOT EVENGINE_WEBGPU AND NOT EMSCRIPTEN)
-        # The Vulkan instance is deliberately created against the 1.0 contract.
-        # Keep VMA on that same contract so Android does not statically import
-        # newer core entry points that its loader only exposes dynamically.
-        target_compile_definitions(eve_engine_includes INTERFACE
-            VKB_ENABLE_VMA=1
-            VMA_VULKAN_VERSION=1000000
-            VMA_STATIC_VULKAN_FUNCTIONS=0
-            VMA_DYNAMIC_VULKAN_FUNCTIONS=1
-        )
-    endif()
-    if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
-        # Raw source-checkout headers for medialoader/assimp. In prebuilt
-        # mode (EVENGINE_THIRD_PARTY_BINARY_DIR) these headers come from the
-        # install tree (include/medialoader and include/assimp);
-        # mixing source headers with prebuilt libraries silently produces
-        # ABI/behavior drift when the two are not the same commit.
-        target_include_directories(eve_engine_includes INTERFACE
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include)
-        # Hostless/core profiles still compile selected domain translation units
-        # without building the aggregate third-party project. Expose the pinned
-        # source headers for those compile-only targets; normal host builds still
-        # receive the same roots in addition to the installed prefix.
-        target_include_directories(eve_engine_includes INTERFACE
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL2/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/squirrel/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/simplesquirrel/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Foundation/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/JSON/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Net/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/XML/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Data/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Data/SQLite/include)
-        # Third-party headers are external for warning purposes on strict
-        # builds (vendored header-only libraries).
-        eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include)
-        eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include)
-        eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
-    endif()
-    # Third-party headers are external for warning purposes on MSVC strict
-    # builds (submodule / vendored header-only libraries).
-    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src)
-    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp)
-    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include)
-    eve_external_include(${EVENGINE_VKBUILDER_INCLUDE_DIR})
-
-    # Prefer system Vulkan SDK (find_package). No vendored vulkan-1.lib fallback.
-    # On Apple desktop, MoltenVK from the LunarG Vulkan SDK is required.
-    # On iOS, link/embed the SDK's MoltenVK.xcframework (iphoneos arm64 slice).
-    # On Android, link the NDK loader (libvulkan.so).
-    #
-    # WebGPU builds (browser WASM or native Dawn) use webgpu.h and do not touch
-    # the Vulkan SDK at all; the Vulkan backend directories are excluded by the
-    # source scanner, so this probe would only ever FATAL_ERROR a valid build.
-    if(NOT EVENGINE_BUILD_HOST)
-        message(STATUS "Hostless profile: skipping Vulkan SDK probe")
-        set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target (unused by hostless profiles)")
-        return()
-    endif()
-    if(EVENGINE_WEBGPU)
-        message(STATUS "WebGPU build: skipping Vulkan SDK probe")
-        set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target (unused on webgpu)")
-        return()
-    endif()
-    #
-    # Windows: installer sets Machine-level VULKAN_SDK, but long-lived IDEs (Cursor)
-    # often still lack it in the process env. Probe C:/VulkanSDK/* when unset.
-    if(WIN32 AND (NOT DEFINED ENV{VULKAN_SDK} OR "$ENV{VULKAN_SDK}" STREQUAL ""))
-        file(GLOB _eve_vk_sdk_dirs "C:/VulkanSDK/*")
-        list(SORT _eve_vk_sdk_dirs COMPARE NATURAL ORDER DESCENDING)
-        foreach(_eve_vk_sdk IN LISTS _eve_vk_sdk_dirs)
-            if(EXISTS "${_eve_vk_sdk}/Include/vulkan/vulkan.h"
-               AND (EXISTS "${_eve_vk_sdk}/Lib/vulkan-1.lib"
-                    OR EXISTS "${_eve_vk_sdk}/Lib/vulkan.lib"))
-                set(ENV{VULKAN_SDK} "${_eve_vk_sdk}")
-                message(STATUS "Vulkan: VULKAN_SDK unset in this process; using ${_eve_vk_sdk}")
-                break()
-            endif()
-        endforeach()
-        unset(_eve_vk_sdk_dirs)
-        unset(_eve_vk_sdk)
-    endif()
-    unset(Vulkan_INCLUDE_DIR CACHE)
-    unset(Vulkan_LIBRARY CACHE)
-    find_package(Vulkan QUIET)
-    # LunarG Linux SDK 1.4.357+ may package the loader in its own install
-    # prefix instead of directly under $VULKAN_SDK/lib. FindVulkan only probes
-    # the legacy location, so retry with the packaged loader while retaining
-    # the headers and shader tools discovered from the SDK root.
-    if(NOT Vulkan_FOUND AND UNIX AND NOT APPLE
-       AND DEFINED ENV{VULKAN_SDK}
-       AND EXISTS "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so")
-        set(Vulkan_LIBRARY
-            "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so"
-            CACHE FILEPATH "Vulkan loader library" FORCE)
-        find_package(Vulkan QUIET)
-    endif()
-    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-        find_library(ANDROID_VULKAN_LIB vulkan)
-        if(NOT ANDROID_VULKAN_LIB)
-            message(FATAL_ERROR "Android NDK libvulkan not found (need ANDROID_PLATFORM >= 24)")
-        endif()
-        if(Vulkan_INCLUDE_DIRS)
-            target_include_directories(eve_engine_includes INTERFACE ${Vulkan_INCLUDE_DIRS})
-        else()
-            target_include_directories(eve_engine_includes INTERFACE
-                ${CMAKE_CURRENT_SOURCE_DIR}/third-party/vulkan)
-        endif()
-        set(EVENGINE_VULKAN_LIB ${ANDROID_VULKAN_LIB} CACHE INTERNAL "Vulkan link target")
-        message(STATUS "Vulkan (Android): ${ANDROID_VULKAN_LIB}")
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-        # Resolve MoltenVK for iphoneos arm64.
-        # LunarG ships two different xcframeworks:
-        #   iOS/lib/.../ios-arm64/MoltenVK.framework  (dynamic; preferred, embeddable)
-        #   macOS/lib/.../ios-arm64/libMoltenVK.a      (static; CI zip often only has this)
-        # Prefer the framework; fall back to the static archive.
-        # Pick the xcframework slice matching the active SDK: simulator builds
-        # need the universal ios-arm64_x86_64-simulator framework, not the
-        # device-only ios-arm64 one.
-        if(CMAKE_OSX_SYSROOT MATCHES "simulator")
-            set(_eve_mvk_slice "ios-arm64_x86_64-simulator")
-        else()
-            set(_eve_mvk_slice "ios-arm64")
-        endif()
-        set(_eve_mvk_candidates "")
-        if(DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
-            list(APPEND _eve_mvk_candidates
-                "$ENV{VULKAN_SDK}/../iOS/lib/MoltenVK.xcframework"
-                "$ENV{VULKAN_SDK}/iOS/lib/MoltenVK.xcframework"
-                "$ENV{VULKAN_SDK}/lib/MoltenVK.xcframework"
-                "$ENV{VULKAN_SDK}/MoltenVK.xcframework")
-        endif()
-        file(GLOB _eve_vk_ios_glob
-            "$ENV{HOME}/VulkanSDK/*/iOS/lib/MoltenVK.xcframework"
-            "$ENV{HOME}/VulkanSDK/*/macOS/lib/MoltenVK.xcframework")
-        list(APPEND _eve_mvk_candidates ${_eve_vk_ios_glob})
-
-        set(_eve_moltenvk_xcframework "")
-        set(_eve_moltenvk_link_mode "")
-        set(_eve_moltenvk_framework_dir "")
-        set(_eve_moltenvk_static_lib "")
-        foreach(_cand IN LISTS _eve_mvk_candidates)
-            get_filename_component(_abs "${_cand}" ABSOLUTE)
-            if(NOT EXISTS "${_abs}")
-                continue()
-            endif()
-            set(_slice "${_abs}/${_eve_mvk_slice}")
-            if(EXISTS "${_slice}/MoltenVK.framework")
-                set(_eve_moltenvk_xcframework "${_abs}")
-                set(_eve_moltenvk_link_mode "framework")
-                set(_eve_moltenvk_framework_dir "${_slice}")
-                break()
-            endif()
-            if(NOT _eve_moltenvk_xcframework AND EXISTS "${_slice}/libMoltenVK.a")
-                set(_eve_moltenvk_xcframework "${_abs}")
-                set(_eve_moltenvk_link_mode "static")
-                set(_eve_moltenvk_static_lib "${_slice}/libMoltenVK.a")
-                # Keep scanning: a later candidate may still provide the framework.
-            endif()
-        endforeach()
-
-        if(NOT _eve_moltenvk_link_mode)
-            message(FATAL_ERROR
-                "MoltenVK ios-arm64 not found (need MoltenVK.framework or libMoltenVK.a).\n"
-                "  Install the LunarG Vulkan SDK (full tree with iOS/lib preferred),\n"
-                "  or set VULKAN_SDK to the SDK macOS/ or iOS/ root.\n"
-                "  Current VULKAN_SDK='$ENV{VULKAN_SDK}'")
-        endif()
-
-        set(EVENGINE_MOLTENVK_XCFRAMEWORK "${_eve_moltenvk_xcframework}" CACHE INTERNAL "MoltenVK xcframework")
-        set(EVENGINE_MOLTENVK_LINK_MODE "${_eve_moltenvk_link_mode}" CACHE INTERNAL "MoltenVK link mode: framework|static")
-        set(EVENGINE_MOLTENVK_FRAMEWORK_DIR "${_eve_moltenvk_framework_dir}" CACHE INTERNAL "MoltenVK framework search path")
-        set(EVENGINE_MOLTENVK_STATIC_LIB "${_eve_moltenvk_static_lib}" CACHE INTERNAL "MoltenVK static archive")
-        if(Vulkan_INCLUDE_DIRS)
-            target_include_directories(eve_engine_includes INTERFACE ${Vulkan_INCLUDE_DIRS})
-        else()
-            target_include_directories(eve_engine_includes INTERFACE
-                ${CMAKE_CURRENT_SOURCE_DIR}/third-party/vulkan)
-        endif()
-        # Placeholder when using -framework; static mode sets the .a below in engine CMake.
-        set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target")
-        message(STATUS "Vulkan (iOS MoltenVK ${_eve_moltenvk_link_mode}): ${EVENGINE_MOLTENVK_XCFRAMEWORK}")
-    elseif(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
-        message(STATUS "Vulkan found: ${Vulkan_LIBRARY}")
-        target_include_directories(eve_engine_includes INTERFACE ${Vulkan_INCLUDE_DIRS})
-        set(EVENGINE_VULKAN_LIB Vulkan::Vulkan CACHE INTERNAL "Vulkan link target")
-    elseif(APPLE)
-        message(FATAL_ERROR
-            "Vulkan SDK with MoltenVK is required on macOS.\n"
-            "  1. Install the LunarG Vulkan SDK for macOS from https://vulkan.lunarg.com/\n"
-            "  2. Source the SDK env:  source ~/VulkanSDK/<version>/setup-env.sh\n"
-            "  3. Re-run CMake (Vulkan_LIBRARY should resolve to libvulkan / MoltenVK).\n"
-            "Current hints: VULKAN_SDK='$ENV{VULKAN_SDK}'")
-    else()
-        message(FATAL_ERROR
-            "Vulkan SDK is required but was not found via find_package(Vulkan).\n"
-            "  Windows:\n"
-            "    1. Install the LunarG Vulkan SDK from https://vulkan.lunarg.com/\n"
-            "    2. Confirm system env VULKAN_SDK points at C:/VulkanSDK/<version>\n"
-            "       and %VULKAN_SDK%/Bin is on PATH (for glslc)\n"
-            "    3. Fully restart the terminal / Cursor, then re-run CMake\n"
-            "       (IDE processes often miss newly set Machine env vars)\n"
-            "  Linux:\n"
-            "    Install libvulkan-dev (+ glslang-tools), or the LunarG SDK and set VULKAN_SDK\n"
-            "  Current VULKAN_SDK='$ENV{VULKAN_SDK}'")
-    endif()
-endfunction()
-
-
-#  Get available build based on the platform you are using
-macro(get_available_build)
-    set(AVAILABLE_PLATFORM "")
-
-    # BUILD_PLATFORM predates FetchContent usage and is also owned by Dawn.
-    # Prefer the namespaced override when supplied so dependency configuration
-    # and automatic top-level reconfiguration cannot change EVEngine's target.
-    if(EVENGINE_BUILD_PLATFORM)
-        set(BUILD_PLATFORM "${EVENGINE_BUILD_PLATFORM}")
-        set(BUILD_PLATFORM "${EVENGINE_BUILD_PLATFORM}" CACHE STRING
-            "The EVEngine target build platform" FORCE)
-    endif()
-
-    # Cross-compiling for Emscripten (web/WASM, browser WebGPU) must win over host detection.
-    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        list(APPEND AVAILABLE_PLATFORM "webgpu")
-        set(BUILD_PLATFORM "webgpu" CACHE STRING "The build platform (${AVAILABLE_PLATFORM})")
-        SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
-    # Cross-compiling for Android (NDK toolchain) must win over host Apple/Linux detection.
-    elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-        list(APPEND AVAILABLE_PLATFORM "android")
-        set(BUILD_PLATFORM "android" CACHE STRING "The build platform (${AVAILABLE_PLATFORM})")
-        SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-        list(APPEND AVAILABLE_PLATFORM "ios")
-        set(BUILD_PLATFORM "ios" CACHE STRING "The build platform (${AVAILABLE_PLATFORM})")
-        SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
-    elseif(UNIX)
-        if(APPLE)
-            list(APPEND AVAILABLE_PLATFORM "macosx")
-            list(APPEND AVAILABLE_PLATFORM "ios")
-            list(APPEND AVAILABLE_PLATFORM "android")
-            list(APPEND AVAILABLE_PLATFORM "webgpu")
-            set(BUILD_PLATFORM "macosx" CACHE STRING "The build platform (${AVAILABLE_PLATFORM})")
-            SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
-        else() # Linux
-            list(APPEND AVAILABLE_PLATFORM "linux")
-            list(APPEND AVAILABLE_PLATFORM "android")
-            list(APPEND AVAILABLE_PLATFORM "webgpu")
-            set(BUILD_PLATFORM "linux" CACHE STRING "The build platform (${AVAILABLE_PLATFORM})")
-            SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
-        endif()
-    else()
-        if(WIN32)
-            list(APPEND AVAILABLE_PLATFORM "win32")
-            list(APPEND AVAILABLE_PLATFORM "android")
-            list(APPEND AVAILABLE_PLATFORM "webgpu")
-            set(BUILD_PLATFORM "win32" CACHE STRING "The build platform (${AVAILABLE_PLATFORM})")
-            MESSAGE("Build Platform:  ${BUILD_PLATFORM}")
-            SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
-        endif()
-    endif()
-
-    # Clear previous platform defines so configure_file / #cmakedefine stay accurate
-    # when switching BUILD_PLATFORM in the same build tree.
-    foreach(_eve_plat_var IN ITEMS
-            EVENGINE_WINDOWS EVENGINE_MACOSX EVENGINE_LINUX
-            EVENGINE_ANDROID EVENGINE_IOS EVENGINE_WEBGPU)
-        unset(${_eve_plat_var} CACHE)
-        unset(${_eve_plat_var})
-    endforeach()
-
-    macro(set_platform_var name varname)
-        string(COMPARE EQUAL "${BUILD_PLATFORM}" ${name} _cmp)
-
-        if(_cmp)
-            # CACHE INTERNAL so values survive function(main) and reach configure_file.
-            set(${varname} 1 CACHE INTERNAL "EVEngine platform define")
-        endif()
-    endmacro()
-
-    set_platform_var(win32 EVENGINE_WINDOWS)
-    set_platform_var(macosx EVENGINE_MACOSX)
-    set_platform_var(linux EVENGINE_LINUX)
-    set_platform_var(android EVENGINE_ANDROID)
-    set_platform_var(ios EVENGINE_IOS)
-    set_platform_var(webgpu EVENGINE_WEBGPU)
-
-    # BUILD_PLATFORM selects the renderer/runtime profile, while native Dawn
-    # still needs the host OS branches for filesystem, process and UTF-8 APIs.
-    # Emscripten does not report WIN32, so browser builds remain WebGPU-only.
-    if(BUILD_PLATFORM STREQUAL "webgpu" AND WIN32)
-        set(EVENGINE_WINDOWS 1 CACHE INTERNAL "EVEngine native host platform define")
-    endif()
-
-    # Backend directories compiled out of the active build. Native backends
-    # (graphics/vulkan, gpgpu/vulkan) are excluded from a webgpu build; the
-    # webgpu backend is excluded from every other platform. ui/imgui stays in
-    # the scan — ImGuiBackend.cpp is the EVUI implementation and gains a
-    # webgpu branch instead.
-    if(BUILD_PLATFORM STREQUAL "webgpu")
-        set(_eve_excluded_backend_subdirs "vulkan")
-        set(_eve_backend_exclusion_help "Backend subdirs excluded from webgpu builds")
-    else()
-        set(_eve_excluded_backend_subdirs "webgpu")
-        set(_eve_backend_exclusion_help "Backend subdirs excluded from native builds")
-    endif()
-    # Keep both bindings synchronized. With CMP0126=NEW, updating a CACHE entry
-    # does not replace a same-named normal variable in the current scope, and
-    # create_module() reads the normal variable first.
-    set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "${_eve_excluded_backend_subdirs}")
-    set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "${_eve_excluded_backend_subdirs}"
-        CACHE INTERNAL "${_eve_backend_exclusion_help}" FORCE)
-
-    # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
-    # module keeps ByteData (needed by gpgpu/webgpu) but drops the JSON/XML/
-    # DataModule files that require Poco. Font/FreeType is supported on WASM
-    # via the Emscripten port. Snow.cpp follows weather's OPTIONAL_DEPS procgen
-    # (see src/modules/CMakeLists.txt) rather than an Emscripten-only list.
-    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        set(_eve_excluded_module_files
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp")
-        set(_eve_module_exclusion_help
-            "Exact basenames excluded from module source scan on Emscripten")
-    else()
-        set(_eve_excluded_module_files "ImGuiHostPanels.cpp")
-        set(_eve_module_exclusion_help "Exact basenames excluded from module source scan")
-    endif()
-    set(EVENGINE_EXCLUDED_MODULE_FILES "${_eve_excluded_module_files}")
-    set(EVENGINE_EXCLUDED_MODULE_FILES "${_eve_excluded_module_files}"
-        CACHE INTERNAL "${_eve_module_exclusion_help}" FORCE)
-
-    message(STATUS "Backend source exclusions: ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS}")
-
-    message("Available: ${AVAILABLE_PLATFORM}")
-
-    if("${BUILD_PLATFORM}" IN_LIST AVAILABLE_PLATFORM)
-        message("Build Platform:  ${BUILD_PLATFORM}")
-    else()
-        message(FATAL_ERROR "Unsupported Platform: ${BUILD_PLATFORM}")
-    endif()
-endmacro()
-
-
-# This macro will find the package and print out the version
-macro(findpkg name)
-    find_package(${name} REQUIRED)
-
-    if(${name}_FOUND)
-        message(STATUS "Library ${name} ${${name}_VERSION} found")
-    endif()
-endmacro()
-
-# This function will check if the compiler support IPO and LTO
-function(check_ipo)
-    include(CheckIPOSupported)
-    check_ipo_supported(RESULT ipo_supported OUTPUT error)
-
-    if(ipo_supported)
-        message(STATUS "IPO / LTO enabled")
-        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-    else()
-        message(STATUS "IPO / LTO not supported: <${error}>")
-    endif()
-endfunction()
-
-
 # Ensure third-party sources exist at configure time and sit on the pinned
 # commit. ExternalProject only downloads during the build of target
 # `third-party`, but modules (e.g. eve_imgui) list files under third-party/
@@ -1186,4 +549,15 @@ endfunction()
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party_build.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/webgpu_backend.cmake)
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/module_targets.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/platform_selection.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/asset_dependencies.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler_options.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/engine_usage.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/ecs_container_headers.cmake")
+
 main()
+
+if(_eve_ccache_enabled)
+    eve_attach_ccache_source_map("${CMAKE_SOURCE_DIR}")
+endif()

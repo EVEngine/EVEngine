@@ -283,7 +283,7 @@
       ],
       "tests": [
         "test/procgen_scene_sink.cpp",
-        "test/procgen_spatial_data.cpp",
+        "test/procgen_scene_sink.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],

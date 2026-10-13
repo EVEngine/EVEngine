@@ -31,3 +31,9 @@ struct FocusSnapshot {
     std::uint64_t sequence = 0;
 };
 }  // namespace eve::editing
+
+// Share container operations through Platform; SelectionItem stays an owning
+// aggregate and consumer CRT/iterator settings match the owner.
+#if defined(_WIN32) && defined(EVENGINE_MODULE_DLL) && !defined(EVENGINE_EXPORTS_PLATFORM)
+extern template class __declspec(dllimport) std::vector<eve::editing::SelectionItem>;
+#endif

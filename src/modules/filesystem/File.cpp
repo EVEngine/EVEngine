@@ -1,6 +1,10 @@
 #include "File.h"
 #include <cstring>
+#include <iostream>
+#include <limits>
+#include "FileData.h"
 
+// File.cpp
 namespace eve {
 namespace filesystem {
 
@@ -44,7 +48,7 @@ bool File::write(const Data *data, int64_t size) {
 }
 
 std::string File::getExtension() const {
-    const std::string &    filename = getFilename();
+    const std::string     &filename = getFilename();
     std::string::size_type idx      = filename.rfind('.');
 
     if (idx != std::string::npos)
@@ -52,6 +56,44 @@ std::string File::getExtension() const {
     else
         return std::string();
 }
+
+}  // namespace filesystem
+}  // namespace eve
+
+// FileData.cpp
+namespace eve {
+namespace filesystem {
+
+FileData::FileData(const std::string &filename, uint64_t size) : data(nullptr), size((size_t)size), filename(filename) {
+    try {
+        data = new uint8_t[size];
+    } catch (std::bad_alloc &) {
+        throw eve::Exception("Out of memory.");
+    }
+
+    size_t dotpos = filename.rfind('.');
+
+    if (dotpos != std::string::npos) {
+        extension = filename.substr(dotpos + 1);
+        name      = filename.substr(0, dotpos);
+    } else
+        name = filename;
+}
+
+FileData::FileData(const FileData &c)
+    : data(nullptr), size(c.size), filename(c.filename), extension(c.extension), name(c.name) {
+    try {
+        data = new uint8_t[size];
+    } catch (std::bad_alloc &) {
+        throw eve::Exception("Out of memory.");
+    }
+    memcpy(data, c.data, size);
+}
+
+FileData::~FileData() { delete[] data; }
+
+FileData *FileData::clone() const { return new FileData(*this); }
+
 
 }  // namespace filesystem
 }  // namespace eve

@@ -1,16 +1,19 @@
 #include "vehicle/VehicleDefinitionRuntime.h"
-
-#include "common/Value.h"
-#include "vehicle/Vehicle.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <limits>
 #include <set>
 #include <stdexcept>
+#include <unordered_map>
 #include <utility>
+#include "common/Value.h"
+#include "orders/CommandQueue.h"
+#include "vehicle/Vehicle.h"
+#include "vehicle/VehicleEffects.h"
+#include "vehicle/VehicleOrderQueueAdapter.h"
 
+// VehicleDefinitionRuntime.cpp
 namespace eve::vehicle {
 namespace {
 
@@ -529,5 +532,328 @@ eve::Result<void> VehicleDefinitionRuntime::restore(const eve::SnapshotEnvelope&
     return eve::definition::restoreRuntimeInstance(runtime_, snapshotValue, "vehicle.runtime", vehicleSchema(),
                                                    eve::SchemaVersion(1), hashProvider, decoder);
 }
+
+}  // namespace eve::vehicle
+
+// VehicleEffects.cpp
+namespace eve::vehicle {
+namespace {
+
+const char* kindTag(VehicleEffectKind kind) {
+    switch (kind) {
+        case VehicleEffectKind::Damage: return "vehicle:damage";
+        case VehicleEffectKind::Repair: return "vehicle:repair";
+        case VehicleEffectKind::Disable: return "vehicle:disable";
+    }
+    return "vehicle:unknown";
+}
+
+double zoneMultiplier(const VehicleEffectTarget& target, const std::vector<std::string>& tags) {
+    const auto has = [&tags](const std::string& tag) { return std::find(tags.begin(), tags.end(), tag) != tags.end(); };
+    if (has("vehicle:zone:front")) return target.frontArmorMultiplier;
+    if (has("vehicle:zone:rear")) return target.rearArmorMultiplier;
+    return target.sideArmorMultiplier;
+}
+
+}  // namespace
+
+eve::Result<void> VehicleEffectExecutor::validate(const VehicleEffectTarget& target) const {
+    if (!std::isfinite(target.hull) || !std::isfinite(target.maxHull) || target.maxHull <= 0.0 || target.hull < 0.0 ||
+        target.hull > target.maxHull || target.frontArmorMultiplier < 0.0 || target.sideArmorMultiplier < 0.0 ||
+        target.rearArmorMultiplier < 0.0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "vehicle effect target state is invalid", "target"));
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> VehicleEffectExecutor::applyImmediate(VehicleEffectTarget&           target,
+                                                        const effects::EffectInstance& effect) const {
+    auto valid = validate(target);
+    if (!valid) return valid;
+    if (effect.hasTag("vehicle:disable")) target.disabled = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<VehicleEffectUpdate> VehicleEffectExecutor::settle(VehicleEffectTarget&         target,
+                                                               effects::EffectUpdateSummary lifecycle) const {
+    auto valid = validate(target);
+    if (!valid) return eve::Result<VehicleEffectUpdate>::failure(valid.status());
+    VehicleEffectUpdate result;
+    result.lifecycle = std::move(lifecycle);
+    for (const auto& tick : result.lifecycle.periodicTicks) {
+        if (tick.stackCount == 0 || tick.magnitude < 0.0 || !std::isfinite(tick.magnitude))
+            return eve::Result<VehicleEffectUpdate>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "vehicle periodic effect value is invalid", "periodic"));
+        const double amount = tick.magnitude * static_cast<double>(tick.stackCount);
+        if (!std::isfinite(amount))
+            return eve::Result<VehicleEffectUpdate>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "vehicle periodic settlement overflows", "periodic"));
+        const auto has = [&tick](const char* tag) {
+            return std::find(tick.tags.begin(), tick.tags.end(), tag) != tick.tags.end();
+        };
+        if (has("vehicle:repair")) {
+            target.hull = std::min(target.maxHull, target.hull + amount);
+        } else if (has("vehicle:disable")) {
+            target.disabled = true;
+        } else {
+            const double damage = amount * zoneMultiplier(target, tick.tags);
+            if (!std::isfinite(damage))
+                return eve::Result<VehicleEffectUpdate>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "vehicle armor settlement overflows", "periodic"));
+            target.hull = std::max(0.0, target.hull - damage);
+            if (damage >= target.maxHull * 0.5) {
+                ++target.criticalHits;
+                ++result.criticalHits;
+            }
+        }
+        ++result.settled;
+    }
+    return eve::Result<VehicleEffectUpdate>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<effects::EffectHandle> VehicleEffectAdapter::apply(const VehicleEffectDefinition& definition,
+                                                               eve::SubjectRef                subject) {
+    if (definition.id.empty() || !subject.isValid() || definition.armorZone.empty())
+        return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "vehicle effect requires id, zone and valid subject", "effect"));
+    effects::EffectDefinition common;
+    common.id        = definition.id;
+    common.stackKey  = definition.id;
+    common.duration  = definition.duration;
+    common.period    = definition.period;
+    common.magnitude = definition.magnitude;
+    common.policy    = definition.policy;
+    common.tags      = definition.tags;
+    common.tags.push_back(kindTag(definition.kind));
+    common.tags.push_back("vehicle:zone:" + definition.armorZone);
+    auto valid = common.validate();
+    if (!valid) return eve::Result<effects::EffectHandle>::failure(valid.status());
+    auto candidate = container_.clone();
+    auto applied   = candidate.apply(common, subject.format(), definition.source);
+    if (!applied) return eve::Result<effects::EffectHandle>::failure(applied.status());
+    const std::string id       = std::move(applied).takeValue();
+    const auto*       instance = candidate.find(id);
+    if (!instance)
+        return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "vehicle effect candidate disappeared", "effect"));
+    auto targetCandidate = target_;
+    auto immediate       = executor_.applyImmediate(targetCandidate, *instance);
+    if (!immediate) return eve::Result<effects::EffectHandle>::failure(immediate.status());
+    auto handle = candidate.handleFor(id);
+    if (!handle) return eve::Result<effects::EffectHandle>::failure(handle.status());
+    target_    = std::move(targetCandidate);
+    container_ = std::move(candidate);
+    return eve::Result<effects::EffectHandle>::success(std::move(handle).takeValue(),
+                                                       eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> VehicleEffectAdapter::remove(effects::EffectHandle handle) {
+    auto resolved = container_.resolve(handle);
+    if (!resolved) return eve::Result<void>::failure(resolved.status());
+    return container_.remove(handle.instanceId);
+}
+
+eve::Result<VehicleEffectUpdate> VehicleEffectAdapter::advance(const eve::SimulationStep& step) {
+    auto candidate = container_.clone();
+    auto lifecycle = effects::EffectExecutor{}.advance(candidate, step);
+    if (!lifecycle) return eve::Result<VehicleEffectUpdate>::failure(lifecycle.status());
+    auto targetCandidate = target_;
+    auto settled         = executor_.settle(targetCandidate, std::move(lifecycle).takeValue());
+    if (!settled) return settled;
+    auto result = std::move(settled).takeValue();
+    target_     = std::move(targetCandidate);
+    container_  = std::move(candidate);
+    return eve::Result<VehicleEffectUpdate>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
+}
+
+VehicleEffectSnapshot VehicleEffectAdapter::snapshot() const { return {container_.snapshot(), target_}; }
+
+eve::Result<void> VehicleEffectAdapter::restore(const VehicleEffectSnapshot& snapshotValue) {
+    auto valid = executor_.validate(snapshotValue.target);
+    if (!valid) return valid;
+    auto restored = container_.restore(snapshotValue.effects);
+    if (!restored) return restored;
+    target_ = snapshotValue.target;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<const effects::EffectInstance*> VehicleEffectAdapter::resolve(effects::EffectHandle handle) const {
+    return container_.resolve(handle);
+}
+
+}  // namespace eve::vehicle
+
+// VehicleOrderQueueAdapter.cpp
+namespace eve::vehicle {
+
+namespace {}  // namespace
+
+struct VehicleOrderQueueAdapter::Impl {
+    orders::CommandQueue                          queue;
+    std::unordered_map<std::string, VehicleOrder> payloads;
+};
+
+void VehicleOrderQueueAdapter::pruneTerminalPayloads() {
+    for (auto it = impl_->payloads.begin(); it != impl_->payloads.end();) {
+        auto                 recordRef = impl_->queue.find(it->first);
+        const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+        if (record == nullptr ||
+            (record->state != orders::OrderState::Queued && record->state != orders::OrderState::Active)) {
+            it = impl_->payloads.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+VehicleOrderQueueAdapter::VehicleOrderQueueAdapter() : impl_(std::make_unique<Impl>()) {}
+
+VehicleOrderQueueAdapter::~VehicleOrderQueueAdapter() = default;
+
+VehicleOrderQueueAdapter::VehicleOrderQueueAdapter(const VehicleOrderQueueAdapter& other)
+    : impl_(std::make_unique<Impl>(*other.impl_)) {}
+
+VehicleOrderQueueAdapter& VehicleOrderQueueAdapter::operator=(const VehicleOrderQueueAdapter& other) {
+    if (this != &other) *impl_ = *other.impl_;
+    return *this;
+}
+
+VehicleOrderQueueAdapter::VehicleOrderQueueAdapter(VehicleOrderQueueAdapter&&) noexcept = default;
+
+VehicleOrderQueueAdapter& VehicleOrderQueueAdapter::operator=(VehicleOrderQueueAdapter&&) noexcept = default;
+
+eve::Result<std::string> VehicleOrderQueueAdapter::append(const VehicleOrder& order, int priority,
+                                                          double timeoutSeconds) {
+    auto id = impl_->queue.append(vehicleOrderTypeName(order.type), priority, timeoutSeconds);
+    if (!id) return id;
+    const std::string key = std::move(id).takeValue();
+    impl_->payloads.emplace(key, order);
+    return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<std::string> VehicleOrderQueueAdapter::replace(const VehicleOrder& order, int priority,
+                                                           double timeoutSeconds) {
+    auto id = impl_->queue.replace(vehicleOrderTypeName(order.type), priority, timeoutSeconds);
+    if (!id) return id;
+    const std::string key = std::move(id).takeValue();
+    pruneTerminalPayloads();
+    impl_->payloads.emplace(key, order);
+    return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<std::string> VehicleOrderQueueAdapter::interrupt(const VehicleOrder& order, int priority,
+                                                             double timeoutSeconds) {
+    auto id = impl_->queue.interrupt(vehicleOrderTypeName(order.type), priority, timeoutSeconds);
+    if (!id) return id;
+    const std::string key = std::move(id).takeValue();
+    pruneTerminalPayloads();
+    impl_->payloads.emplace(key, order);
+    return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> VehicleOrderQueueAdapter::completeCurrent() {
+    auto           currentRef = impl_->queue.current();
+    orders::Order* current    = currentRef ? &currentRef->get() : nullptr;
+    if (current == nullptr)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order", {}, "vehicle.orders"));
+    auto completed = impl_->queue.complete(current->id);
+    if (completed) pruneTerminalPayloads();
+    return completed;
+}
+
+eve::Result<void> VehicleOrderQueueAdapter::failCurrent(const std::string& reason) {
+    auto           currentRef = impl_->queue.current();
+    orders::Order* current    = currentRef ? &currentRef->get() : nullptr;
+    if (current == nullptr)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order", {}, "vehicle.orders"));
+    auto failed = impl_->queue.fail(current->id, reason);
+    if (failed) pruneTerminalPayloads();
+    return failed;
+}
+
+eve::Result<void> VehicleOrderQueueAdapter::cancel(const std::string& id, const std::string& reason) {
+    auto cancelled = impl_->queue.cancel(id, reason);
+    if (cancelled) pruneTerminalPayloads();
+    return cancelled;
+}
+
+void VehicleOrderQueueAdapter::update(double dtSeconds) {
+    auto updated = impl_->queue.update(dtSeconds);
+    updated.ignore("VehicleOrderQueueAdapter exposes a legacy void update boundary");
+    pruneTerminalPayloads();
+}
+
+void VehicleOrderQueueAdapter::clear() {
+    impl_->queue.clear();
+    impl_->payloads.clear();
+}
+
+const VehicleOrder* VehicleOrderQueueAdapter::current() const {
+    auto                 recordRef = impl_->queue.current();
+    const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+    if (record == nullptr) return nullptr;
+    const auto it = impl_->payloads.find(record->id);
+    return it == impl_->payloads.end() ? nullptr : &it->second;
+}
+
+int VehicleOrderQueueAdapter::activeOrQueuedCount() const {
+    int count = 0;
+    for (int i = 0; i < impl_->queue.orderCount(); ++i) {
+        auto                 recordRef = impl_->queue.orderAt(i);
+        const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+        if (record != nullptr &&
+            (record->state == orders::OrderState::Queued || record->state == orders::OrderState::Active)) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+void VehicleOrderQueueAdapter::syncCompatibility(VehicleEntity::Orders& legacy) const {
+    legacy.queue.clear();
+    legacy.current = -1;
+    for (int i = 0; i < impl_->queue.orderCount(); ++i) {
+        auto                 recordRef = impl_->queue.orderAt(i);
+        const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+        if (record == nullptr ||
+            (record->state != orders::OrderState::Queued && record->state != orders::OrderState::Active)) {
+            continue;
+        }
+        const auto it = impl_->payloads.find(record->id);
+        if (it == impl_->payloads.end()) continue;
+        if (record->state == orders::OrderState::Active) legacy.current = static_cast<int>(legacy.queue.size());
+        legacy.queue.push_back(it->second);
+    }
+}
+
+VehicleEntity::Orders::Orders() : adapter(std::make_unique<VehicleOrderQueueAdapter>()) {}
+
+VehicleEntity::Orders::~Orders() = default;
+
+VehicleEntity::Orders::Orders(const Orders& other)
+    : queue(other.queue),
+      current(other.current),
+      adapter(other.adapter == nullptr ? std::make_unique<VehicleOrderQueueAdapter>()
+                                       : std::make_unique<VehicleOrderQueueAdapter>(*other.adapter)) {}
+
+VehicleEntity::Orders& VehicleEntity::Orders::operator=(const Orders& other) {
+    if (this == &other) return *this;
+    queue   = other.queue;
+    current = other.current;
+    if (other.adapter == nullptr) {
+        adapter = std::make_unique<VehicleOrderQueueAdapter>();
+    } else if (adapter == nullptr) {
+        adapter = std::make_unique<VehicleOrderQueueAdapter>(*other.adapter);
+    } else {
+        *adapter = *other.adapter;
+    }
+    return *this;
+}
+
+VehicleEntity::Orders::Orders(Orders&&) noexcept = default;
+
+VehicleEntity::Orders& VehicleEntity::Orders::operator=(Orders&&) noexcept = default;
 
 }  // namespace eve::vehicle

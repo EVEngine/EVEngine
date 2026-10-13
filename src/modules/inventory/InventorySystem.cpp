@@ -1,4 +1,5 @@
 #include "inventory/InventorySystem.h"
+#include "common/StringMapInstances.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "inventory/Item.h"

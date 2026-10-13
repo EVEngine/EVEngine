@@ -418,11 +418,21 @@ bool Snapshot::captureState(HSQUIRRELVM vm, StateValue& out, std::string* error)
         }
 
         StateValue native = StateValue::object();
+        std::string nativeCaptureError;
         eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* p) {
             if (p->reloadPolicy() == eve::caps::StateReloadPolicy::Reset) return;
-            StateValue captured;
-            if (p->captureState(captured)) native.set(p->stateKind(), std::move(captured));
+            auto captured = p->capture();
+            if (captured.ok()) {
+                native.set(p->stateKind(), toLegacyStateValue(std::move(captured).takeValue()));
+            } else {
+                nativeCaptureError +=
+                    std::string(p->stateKind()) + ": " + captured.diagnostics().front().message() + "; ";
+            }
         });
+        if (!nativeCaptureError.empty()) {
+            if (error) *error = nativeCaptureError;
+            return false;
+        }
 
         out = StateValue::object();
         out.set("version", StateValue::integer(2));
@@ -481,20 +491,22 @@ bool Snapshot::restoreState(HSQUIRRELVM vm, const StateValue& state, std::string
         std::string       nativeErr;
         eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* p) {
             if (p->reloadPolicy() == eve::caps::StateReloadPolicy::Reset) {
-                if (!p->resetToDefaults()) {
+                auto reset = p->resetToDefaults();
+                if (!reset.ok()) {
                     failed = true;
-                    nativeErr += std::string(p->stateKind()) + ": reset failed; ";
+                    nativeErr += std::string(p->stateKind()) + ": " + reset.diagnostics().front().message() + "; ";
                 }
                 return;
             }
             if (native && native->isObject()) {
                 const StateValue* v = native->find(p->stateKind());
                 if (!v) return;  // provider not present in the snapshot
-                std::string perr;
-                if (!p->restoreState(*v, &perr)) {
+                auto restored = p->restore(toCanonicalStateValue(*v));
+                if (!restored.ok()) {
                     failed = true;
-                    nativeErr += std::string(p->stateKind()) + ": " + perr + "; ";
-                    p->resetToDefaults();
+                    nativeErr += std::string(p->stateKind()) + ": " + restored.diagnostics().front().message() + "; ";
+                    auto reset = p->resetToDefaults();
+                    if (!reset.ok()) nativeErr += "reset failed; ";
                 }
             }
         });

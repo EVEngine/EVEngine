@@ -4,6 +4,9 @@ asset 是原生资源包层，**没有通用 `eve.Asset()` 脚本加载器**。�
 `eve asset` 与运行时的 Image/Model3D/Font/Audio 绑定是不同入口。普通小型游戏可直接
 用游戏目录内资源；生产管线需要稳定引用、验证和目标平台 Cook。
 
+[SCAD 与 LDraw 导入](asset-structured-models.md)支持程序化实体与零件组合模型，
+通过同一 `.eva` / `.evpack` 管线生成原生静态 prefab。
+
 ## 任务一：接入外部资源包
 
 先按[Unity 导入指南](asset-unity-import.md)执行 scan，查看源索引、缺失引用和有限转换

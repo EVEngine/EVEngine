@@ -1,5 +1,6 @@
 #pragma once
 #include "common/Export.h"
+#include "common/StringMapInstances.h"
 
 
 // 效果系统：数据驱动的 Effect "定义/模板"（类似 GAS 的 GameplayEffect）。

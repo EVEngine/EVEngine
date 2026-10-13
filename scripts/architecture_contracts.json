@@ -751,7 +751,7 @@
         "src/modules/rts/RTSSystemMovementInternal.h",
         "src/modules/rts/RTSMovementGroups.cpp",
         "src/modules/rts/RTSCommands.cpp",
-        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSSnapshot.cpp",
         "src/modules/rts/RTSSnapshotInternal.h"
       ],
       "tests": [
@@ -1044,7 +1044,6 @@
       "evidence": [
         "src/modules/rts/RTSSnapshot.h",
         "src/modules/rts/RTSSnapshot.cpp",
-        "src/modules/rts/RTSRestore.cpp",
         "src/modules/rts/RTSMovementGroups.cpp",
         "docs/usr/modules/crowd.md"
       ],
@@ -1425,6 +1424,70 @@
       }
     },
     {
+      "id": "asset-import-structured-models-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/asset/import/*",
+      "owner": "asset-import maintainers",
+      "issue": "EVENGINE-STRUCTURED-MODEL-IMPORT",
+      "reason": "SCAD compiler output and native LDraw expansion prepare canonical mesh/material/scene candidates; only the existing asset store publishes them.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/asset/import/StructuredModelImporter.h",
+        "src/modules/asset/import/AssetCommand.cpp",
+        "docs/usr/modules/asset-structured-models.md"
+      ],
+      "tests": [
+        "test/asset_import_structured_models.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "eve asset import --from scad|ldraw prepares .eva; existing asset cook produces .evpack"
+      ],
+      "thread_affinity": "Pure parsing/encoding is worker-safe and reentrant; external OpenSCAD process is desktop authoring only. GPU consumption uses the existing graphics-thread adapter.",
+      "hot_path": [],
+      "cost_notes": [
+        "Offline builder-style requests expand/copy geometry once per import; no runtime per-frame compilation or string lookup."
+      ],
+      "trim": {
+        "absent_profile": "L4 observable: OpenSCAD executable absent returns a checked failure, covered by structuredModelsScadCompilerAbsent; mobile/browser compiler adapter returns Unsupported. Cooked consumers do not invoke the compiler. No new independently trimmable module is claimed."
+      }
+    },
+    {
+      "id": "asset-unity-character-import-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/asset/import/UnityFbx.cpp",
+      "owner": "asset import",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "A bounded FBX conversion prepares mesh, skeleton, skin and clip assets without publishing live renderer state.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/asset/import/UnityFbx.cpp",
+        "docs/usr/modules/asset-unity-import.md"
+      ],
+      "tests": [
+        "test/asset_import_unity_fbx.cpp",
+        "test/asset_import_gltf_animation.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "web profile reports Unsupported when the desktop Assimp provider is unavailable"
+      },
+      "thread_affinity": "worker-safe import preparation; publication remains the caller's transaction",
+      "hot_path": [],
+      "cost_notes": [
+        "Whole-file FBX decode and bounded glTF conversion occur once per explicit asset import."
+      ]
+    },
+    {
       "id": "attributes-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/attributes/**",
@@ -1506,6 +1569,49 @@
       "hot_path": [
         "src/modules/audio/EventSink.cpp"
       ]
+    },
+    {
+      "id": "binding-architecture-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/ScriptCompiler*",
+      "owner": "foundation binding contracts; scene owns reviewed domain metadata",
+      "issue": "EVENGINE-SEMANTIC-WORLD-PHASE1",
+      "reason": "Existing API query returns generated implementation and bounded owner evidence without live state reads.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/ScriptCompiler.h",
+        "src/engine/common/ScriptCompiler.cpp",
+        "scripts/binding_architecture.py",
+        "src/modules/scene/binding_architecture.json",
+        "docs/dev/脚本契约架构映射.md"
+      ],
+      "tests": [
+        "test/scene_binding_architecture.cpp",
+        "test/mcp_binding_architecture.cpp",
+        "scripts/tests/test_binding_architecture.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Build-time static registration and reviewed owner/test references; no world state reads."
+      ],
+      "binds": [
+        "Existing eve_api_get/eve_api_search serialize the generated BindingContract."
+      ],
+      "protocol": [
+        "eve.binding-api v1 additive source/cppSymbol/architecture; mapped architecture schemaVersion 1; unknown coverage explicit."
+      ],
+      "cost_notes": [
+        "Generation scans source; serialization scales with contract metadata, outside simulation hot paths."
+      ],
+      "hot_path": [],
+      "thread_affinity": "Registry/main MCP poll thread; owning immutable metadata; no script callbacks.",
+      "trim": {
+        "claim": "Catalogue presence only; no general binary trim claim",
+        "absent_profile": "Scene-disabled generation omits scene contracts entirely.",
+        "evidence": "scripts/tests/test_binding_architecture.py"
+      }
     },
     {
       "id": "crowd-module-interface",
@@ -1767,6 +1873,49 @@
       "cost_notes": []
     },
     {
+      "id": "game-save-session-module-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/GameSaveSession*",
+      "owner": "foundation save coordinator",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "One versioned envelope prepares every registered gameplay owner before a no-fail cross-domain publication.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/GameSaveSession.h",
+        "docs/usr/SAVE.md"
+      ],
+      "tests": [
+        "test/common_game_save_session.cpp",
+        "test/game_save_integration.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameSaveParticipant",
+          "impl": "GameSaveSession registration contract",
+          "absent_behavior": "an unregistered domain is not part of this save schema"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "SnapshotHashProvider",
+          "required": true,
+          "fallback": "save or restore fails with a structured diagnostic"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "a game without a gameplay domain omits its participant and uses a distinct explicit save schema"
+      },
+      "thread_affinity": "paused owning simulation thread",
+      "hot_path": [],
+      "cost_notes": [
+        "Capture and restore scale with the complete serialized game state and run only at explicit save/load boundaries."
+      ]
+    },
+    {
       "id": "graphics-import-surface",
       "rule": "module-interface",
       "scope": "src/modules/graphics/**",
@@ -1780,7 +1929,7 @@
         "docs/usr/modules/graphics.md",
         "src/modules/graphics/vulkan/GraphicsSampler.cpp",
         "src/modules/graphics/webgpu/GraphicsSampler.cpp",
-        "src/modules/graphics/hair/GroomInstance.cpp"
+        "src/modules/graphics/hair/GroomAsset.cpp"
       ],
       "tests": [
         "test/resource_lifetime.cpp",
@@ -1879,7 +2028,7 @@
       ],
       "hot_path": [
         "src/modules/graphics/RenderSystem3D.cpp",
-        "src/modules/graphics/hair/GroomInstance.cpp",
+        "src/modules/graphics/hair/GroomAsset.cpp",
         "src/modules/graphics/vulkan/GraphicsSampler.cpp",
         "src/modules/graphics/webgpu/GraphicsSampler.cpp"
       ]
@@ -2223,6 +2372,95 @@
       ]
     },
     {
+      "id": "mcp-architecture-graph-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/McpArchitectureTools*",
+      "owner": "foundation graph projection; scene and inventory own reviewed domain evidence",
+      "issue": "EVENGINE-SEMANTIC-WORLD-PHASE2",
+      "reason": "Read-only typed evidence graph, conservative state-access impact and bounded task context from the existing binding registry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/McpArchitectureTools.hpp",
+        "src/engine/devtools/McpArchitectureTools.cpp",
+        "src/modules/inventory/binding_architecture.json",
+        "docs/dev/架构行为图与任务上下文.md"
+      ],
+      "tests": [
+        "test/mcp_architecture_graph.cpp",
+        "test/inventory_binding_architecture.cpp",
+        "scripts/tests/test_binding_architecture.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Build-generated registry and reviewed metadata; no live world state."
+      ],
+      "binds": [
+        "eve_architecture_query",
+        "eve_architecture_impact",
+        "eve_task_context"
+      ],
+      "protocol": [
+        "eve.architecture-graph v1 and eve.task-context v1; unknown coverage, truncation and stale source evidence rejection."
+      ],
+      "cost_notes": [
+        "First call builds an O(bindings + edges) process-owned immutable graph and adjacency index; subsequent traversal/output query budgets; no simulation hot path."
+      ],
+      "hot_path": [],
+      "thread_affinity": "Registry/main MCP poll thread; no script execution, runtime pointers or callbacks.",
+      "trim": {
+        "claim": "Catalogue projection only, no binary-trim claim",
+        "absent_profile": "Disabled domains have no matching graph nodes.",
+        "evidence": "scripts/tests/test_binding_architecture.py"
+      }
+    },
+    {
+      "id": "mcp-project-semantic-index-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/*ProjectIndex*",
+      "owner": "foundation project-source projection; RPG and Scene retain gameplay authority",
+      "issue": "EVENGINE-SEMANTIC-WORLD-PHASE2",
+      "reason": "Compiler-derived source indexing connects reflected fields, calls and engine semantics to versioned context; legacy declarations remain compatible.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/McpProjectIndexTools.hpp",
+        "src/engine/devtools/McpProjectIndexTools.cpp",
+        "examples/rpg-classic/game.semantic.json",
+        "docs/dev/ProjectSemanticIndex设计.md"
+      ],
+      "tests": [
+        "test/mcp_project_index.cpp",
+        "test/rpg_classic_semantic_index.cpp",
+        "test/script_structure.cpp",
+        "scripts/tests/test_binding_semantics.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Bounded source files and generated binding contracts; never executes project code."
+      ],
+      "binds": [
+        "eve_project_index_refresh",
+        "eve_project_index_query",
+        "eve_task_context"
+      ],
+      "protocol": [
+        "eve.project-semantic v1, eve.project-index v1 and eve.project-context v1; content revision, source diagnostics, stale-version rejection."
+      ],
+      "cost_notes": [
+        "Each refresh reads and hashes the bounded source set; parses only changed files, rebuilds a candidate graph on changes, caches up to four projects. No simulation hot path."
+      ],
+      "hot_path": [],
+      "thread_affinity": "Main MCP poll thread. Owning process cache, no callbacks or runtime pointers; candidate publication is not filesystem MVCC.",
+      "trim": {
+        "claim": "Source projection only; no binary-trim claim",
+        "absent_profile": "Project tools require desktop devtools; unavailable bindings remain unknown.",
+        "evidence": "test/mcp_project_index.cpp"
+      }
+    },
+    {
       "id": "model3d-import-surface",
       "rule": "module-interface",
       "scope": "src/modules/model3d/**",
@@ -2523,7 +2761,7 @@
       ],
       "tests": [
         "test/procgen_scene_sink.cpp",
-        "test/procgen_spatial_data.cpp",
+        "test/procgen_scene_sink.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -2612,6 +2850,43 @@
       "cost_notes": []
     },
     {
+      "id": "rpg-game-save-participant-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/rpg/RPGGameSaveParticipant*",
+      "owner": "rpg::RPGSaveSession",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "RPG preparation validates the complete bound domain state before joining the cross-domain commit.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rpg/RPGGameSaveParticipant.h",
+        "src/modules/rpg/RPGSaveSession.h"
+      ],
+      "tests": [
+        "test/rpg_save_prepare.cpp",
+        "test/game_save_integration.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameSaveParticipant",
+          "impl": "RPGGameSaveParticipant",
+          "absent_behavior": "RPG state is excluded from saves without this explicit participant"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "games without RPG omit this adapter and do not link the RPG package"
+      },
+      "thread_affinity": "paused RPG owner thread",
+      "hot_path": [],
+      "cost_notes": [
+        "Full RPG snapshot parsing and candidate preparation per load."
+      ]
+    },
+    {
       "id": "rts-movement-group-interface",
       "rule": "module-interface",
       "scope": "src/modules/rts/RTSMovementGroups.cpp",
@@ -2624,7 +2899,7 @@
         "src/modules/rts/RTSMovementGroups.cpp",
         "src/modules/rts/RTSFormationBindings.cpp",
         "src/modules/rts/RTSReplay.cpp",
-        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSSnapshot.cpp",
         "docs/dev/群体行为与流场模块设计.md"
       ],
       "tests": [
@@ -2738,7 +3013,7 @@
         "src/modules/scene/SceneCapabilities.cpp",
         "docs/dev/场景对象模型使用指南.md",
         "src/modules/scene/SceneComponent.h",
-        "src/modules/scene/SceneComponent.cpp",
+        "src/modules/scene/SceneCameraQueries.cpp",
         "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [
@@ -2806,6 +3081,45 @@
       ]
     },
     {
+      "id": "script-structure-reflection-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/ScriptStructure*",
+      "owner": "foundation compiler source structure; project tooling projects derived values",
+      "issue": "EVENGINE-SEMANTIC-WORLD-PHASE2",
+      "reason": "Compiler and index share owning lexical/function/field/call structure without executing project code.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/ScriptStructure.hpp",
+        "src/engine/common/ScriptStructure.cpp",
+        "docs/dev/ProjectSemanticIndex设计.md"
+      ],
+      "tests": [
+        "test/script_structure.cpp",
+        "test/mcp_project_index.cpp",
+        "scripts/tests/test_binding_semantics.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Bounded source text, not runtime values or event causality."
+      ],
+      "binds": [],
+      "protocol": [
+        "Owning structure records and immutable build-generated analyzer source identity; dynamic expressions remain unknown."
+      ],
+      "cost_notes": [
+        "65536 tokens, depth 64, 512 named classes/functions, 4096 calls and 2048 bindings. No VM execution. Provider hash is constant-time immutable text."
+      ],
+      "hot_path": [],
+      "thread_affinity": "Pure independent analysis; owning returns. No callbacks or pointers to live world state.",
+      "trim": {
+        "claim": "Compiler metadata, no binary-trim claim",
+        "absent_profile": "Source structure lives in common; native facts only exist for linked contracts.",
+        "evidence": "test/script_structure.cpp"
+      }
+    },
+    {
       "id": "statepatch-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/statepatch/**",
@@ -2854,6 +3168,49 @@
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
+    },
+    {
+      "id": "tactics-game-save-participant-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/tactics/TacticsGameSaveParticipant*",
+      "owner": "tactics::Battle",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Battle candidate preparation joins the one-commit game-save transaction without restoring live components early.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/tactics/TacticsGameSaveParticipant.h",
+        "src/modules/tactics/TacticsPersistence.h"
+      ],
+      "tests": [
+        "test/common_game_save_session.cpp",
+        "test/game_save_integration.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameSaveParticipant",
+          "impl": "TacticsGameSaveParticipant",
+          "absent_behavior": "battle state is excluded from saves without this explicit participant"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "SnapshotHashProvider",
+          "required": true,
+          "fallback": "capture or preparation returns failure"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "games without tactics omit this adapter and do not link the tactics package"
+      },
+      "thread_affinity": "paused battle owner thread",
+      "hot_path": [],
+      "cost_notes": [
+        "Full battle snapshot parsing and candidate preparation per load."
+      ]
     },
     {
       "id": "tactics-module-interface",

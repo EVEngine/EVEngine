@@ -1,5 +1,6 @@
 #include "agent/Agent.h"
 #include "agent/Learning.h"
+#include "common/Assert.h"
 #include "common/Capability.h"
 
 #include <algorithm>
