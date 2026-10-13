@@ -1,4 +1,5 @@
 #include "physics/World.h"
+#include "physics/WorldSnapshotParsing.h"
 
 #include "physics/Body.h"
 #include "physics/Body3D.h"
@@ -9,7 +10,7 @@
 #include "physics/World3D.h"
 
 #include <Box2D/Box2D.h>
-#include <box3d/box3d.h>
+#include <glm/gtc/quaternion.hpp>
 
 #include <algorithm>
 #include <charconv>
@@ -25,6 +26,7 @@
 #include <vector>
 
 namespace eve::physics {
+using namespace snapshot_detail;
 
 struct WorldSnapshotAccess {
     static eve::Value shapeSource(const Shape3D& shape) {
@@ -32,9 +34,9 @@ struct WorldSnapshotAccess {
         object.emplace("bodyId", eve::Value(std::to_string(shape.body_ ? shape.body_->getId() : -1)));
         object.emplace("id", eve::Value(std::to_string(shape.id_)));
         object.emplace("kind", eve::Value(shape.getKind()));
-        object.emplace("a", eve::Value(shape.a_));
-        object.emplace("b", eve::Value(shape.b_));
-        object.emplace("c", eve::Value(shape.c_));
+        object.emplace("a", eve::Value(shape.geometry_.a));
+        object.emplace("b", eve::Value(shape.geometry_.b));
+        object.emplace("c", eve::Value(shape.geometry_.c));
         auto floats = [](const std::vector<float>& source) {
             eve::Value::Array values;
             values.reserve(source.size());
@@ -47,23 +49,23 @@ struct WorldSnapshotAccess {
             for (auto value : source) values.emplace_back(std::to_string(static_cast<std::int64_t>(value)));
             return eve::Value(std::move(values));
         };
-        object.emplace("hullVertices", floats(shape.hullVertices_));
-        object.emplace("hullMaxVertices", eve::Value(std::to_string(shape.hullMaxVertices_)));
-        object.emplace("meshVertices", floats(shape.meshVertices_));
-        object.emplace("meshIndices", integers(shape.meshIndices_));
-        object.emplace("meshWeldVertices", eve::Value(shape.meshWeldVertices_));
-        object.emplace("meshWeldTolerance", eve::Value(shape.meshWeldTolerance_));
-        object.emplace("meshIdentifyEdges", eve::Value(shape.meshIdentifyEdges_));
-        object.emplace("meshUseMedianSplit", eve::Value(shape.meshUseMedianSplit_));
-        object.emplace("meshMaterialIndices", integers(shape.meshMaterialIndices_));
-        object.emplace("heightValues", floats(shape.heightValues_));
-        object.emplace("heightCountX", eve::Value(std::to_string(shape.heightCountX_)));
-        object.emplace("heightCountZ", eve::Value(std::to_string(shape.heightCountZ_)));
-        object.emplace("heightCellSizeX", eve::Value(shape.heightCellSizeX_));
-        object.emplace("heightCellSizeZ", eve::Value(shape.heightCellSizeZ_));
-        object.emplace("heightGlobalMin", eve::Value(shape.heightGlobalMin_));
-        object.emplace("heightGlobalMax", eve::Value(shape.heightGlobalMax_));
-        object.emplace("heightClockwise", eve::Value(shape.heightClockwise_));
+        object.emplace("hullVertices", floats(shape.geometry_.hullVertices));
+        object.emplace("hullMaxVertices", eve::Value(std::to_string(shape.geometry_.hullMaxVertices)));
+        object.emplace("meshVertices", floats(shape.geometry_.meshVertices));
+        object.emplace("meshIndices", integers(shape.geometry_.meshIndices));
+        object.emplace("meshWeldVertices", eve::Value(shape.geometry_.meshWeldVertices));
+        object.emplace("meshWeldTolerance", eve::Value(shape.geometry_.meshWeldTolerance));
+        object.emplace("meshIdentifyEdges", eve::Value(shape.geometry_.meshIdentifyEdges));
+        object.emplace("meshUseMedianSplit", eve::Value(shape.geometry_.meshUseMedianSplit));
+        object.emplace("meshMaterialIndices", integers(shape.geometry_.meshMaterialIndices));
+        object.emplace("heightValues", floats(shape.geometry_.heightValues));
+        object.emplace("heightCountX", eve::Value(std::to_string(shape.geometry_.heightCountX)));
+        object.emplace("heightCountZ", eve::Value(std::to_string(shape.geometry_.heightCountZ)));
+        object.emplace("heightCellSizeX", eve::Value(shape.geometry_.heightCellSizeX));
+        object.emplace("heightCellSizeZ", eve::Value(shape.geometry_.heightCellSizeZ));
+        object.emplace("heightGlobalMin", eve::Value(shape.geometry_.heightGlobalMin));
+        object.emplace("heightGlobalMax", eve::Value(shape.geometry_.heightGlobalMax));
+        object.emplace("heightClockwise", eve::Value(shape.geometry_.heightClockwise));
         return eve::Value(std::move(object));
     }
 
@@ -71,9 +73,9 @@ struct WorldSnapshotAccess {
     static void setBodyId(Body3D& body, int id) { body.id_ = id; }
     static void setShapeId(Shape3D& shape, int id) { shape.id_ = id; }
     static void setJointId(Joint3D& joint, int id) { joint.id_ = id; }
-    static std::unique_ptr<World3D> makeDetachedWorld3D(float gx, float gy, float gz,
-                                                        eve::PersistentId instanceId) {
-        return std::unique_ptr<World3D>(new World3D(gx, gy, gz, false, instanceId, false));
+    static std::unique_ptr<World3D> makeDetachedWorld3D(float gx, float gy, float gz, eve::PersistentId instanceId,
+                                                        RigidBackend3D backend) {
+        return std::unique_ptr<World3D>(new World3D(gx, gy, gz, false, instanceId, false, backend));
     }
     static eve::Result<void> finishPrepared(World& world, int nextId,
                                             const SimulationObservation& observation) {
@@ -104,80 +106,6 @@ constexpr std::string_view kWorld2DSchema   = "physics:world2d";
 constexpr std::string_view kWorld3DType     = "physics.world3d";
 constexpr std::string_view kWorld3DSchema   = "physics:world3d";
 constexpr std::uint64_t    kSnapshotVersion = 2;
-
-bool hasExactFields(const eve::Value::Object& object, std::initializer_list<std::string_view> expected) {
-    if (object.size() != expected.size()) return false;
-    for (const std::string_view field : expected) {
-        if (!object.contains(std::string(field))) return false;
-    }
-    return true;
-}
-
-const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
-    const auto found = object.find(std::string(name));
-    return found == object.end() ? nullptr : &found->second;
-}
-
-eve::Result<std::string> readString(const eve::Value::Object& object, std::string_view name) {
-    const eve::Value* value = field(object, name);
-    if (!value || !value->isString())
-        return eve::Result<std::string>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, "snapshot field must be a string", std::string(name)));
-    return eve::Result<std::string>::success(value->asString());
-}
-
-eve::Result<std::uint64_t> readUint64(const eve::Value::Object& object, std::string_view name) {
-    auto text = readString(object, name);
-    if (!text) return eve::Result<std::uint64_t>::failure(text.status());
-    std::uint64_t      output = 0;
-    const std::string& value  = text.value();
-    const auto [end, error]   = std::from_chars(value.data(), value.data() + value.size(), output);
-    if (value.empty() || error != std::errc{} || end != value.data() + value.size())
-        return eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, "snapshot integer is not a uint64 decimal string", std::string(name)));
-    return eve::Result<std::uint64_t>::success(output);
-}
-
-eve::Result<std::int64_t> readInt64(const eve::Value::Object& object, std::string_view name) {
-    auto text = readString(object, name);
-    if (!text) return eve::Result<std::int64_t>::failure(text.status());
-    std::int64_t       output = 0;
-    const std::string& value  = text.value();
-    const auto [end, error]   = std::from_chars(value.data(), value.data() + value.size(), output);
-    if (value.empty() || error != std::errc{} || end != value.data() + value.size())
-        return eve::Result<std::int64_t>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, "snapshot integer is not an int64 decimal string", std::string(name)));
-    return eve::Result<std::int64_t>::success(output);
-}
-
-eve::Result<double> readNumber(const eve::Value::Object& object, std::string_view name) {
-    const eve::Value* value = field(object, name);
-    if (!value || !value->isNumeric())
-        return eve::Result<double>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, "snapshot field must be numeric", std::string(name)));
-    const double result = value->isDouble() ? value->asDouble() : static_cast<double>(value->asInt());
-    if (!std::isfinite(result))
-        return eve::Result<double>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "snapshot numeric field must be finite", std::string(name)));
-    return eve::Result<double>::success(result);
-}
-
-eve::Result<float> readFloat(const eve::Value::Object& object, std::string_view name) {
-    auto number = readNumber(object, name);
-    if (!number) return eve::Result<float>::failure(number.status());
-    if (number.value() < -std::numeric_limits<float>::max() || number.value() > std::numeric_limits<float>::max())
-        return eve::Result<float>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "snapshot numeric field is outside float range", std::string(name)));
-    return eve::Result<float>::success(static_cast<float>(number.value()));
-}
-
-eve::Result<bool> readBool(const eve::Value::Object& object, std::string_view name) {
-    const eve::Value* value = field(object, name);
-    if (!value || !value->isBool())
-        return eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                                                 "snapshot field must be boolean", std::string(name)));
-    return eve::Result<bool>::success(value->asBool());
-}
 
 eve::Result<eve::LogicalId> snapshotSchema(std::string_view text) {
     const auto parsed = eve::LogicalId::parse(text);
@@ -473,7 +401,7 @@ eve::Value shapesTopologyValue(const std::vector<Shape3D*>& shapes) {
     return eve::Value(std::move(values));
 }
 
-eve::Value jointsTopologyValue(const std::vector<Joint3D*>& joints) {
+eve::Result<eve::Value> jointsTopologyValue(const std::vector<Joint3D*>& joints) {
     std::vector<Joint3D*> sorted = joints;
     std::sort(sorted.begin(), sorted.end(), [](const Joint3D* left, const Joint3D* right) {
         return left->getId() < right->getId();
@@ -486,18 +414,15 @@ eve::Value jointsTopologyValue(const std::vector<Joint3D*>& joints) {
         object.emplace("kind", eve::Value(joint->getKind()));
         object.emplace("bodyAId", eve::Value(std::to_string(joint->getBodyAId())));
         object.emplace("bodyBId", eve::Value(std::to_string(joint->getBodyBId())));
-        const b3Transform frameA = b3Joint_GetLocalFrameA(joint->raw());
-        const b3Transform frameB = b3Joint_GetLocalFrameB(joint->raw());
+        auto local = joint->localFrames();
+        if (!local) return eve::Result<eve::Value>::failure(local.status());
         eve::Value::Array frames;
-        for (float component : {static_cast<float>(frameA.p.x), static_cast<float>(frameA.p.y),
-                                static_cast<float>(frameA.p.z), frameA.q.v.x, frameA.q.v.y, frameA.q.v.z, frameA.q.s,
-                                static_cast<float>(frameB.p.x), static_cast<float>(frameB.p.y),
-                                static_cast<float>(frameB.p.z), frameB.q.v.x, frameB.q.v.y, frameB.q.v.z, frameB.q.s})
-            frames.emplace_back(component);
+        for (float component : local.value().bodyA) frames.emplace_back(component);
+        for (float component : local.value().bodyB) frames.emplace_back(component);
         object.emplace("localFrames", eve::Value(std::move(frames)));
         values.emplace_back(std::move(object));
     }
-    return eve::Value(std::move(values));
+    return eve::Result<eve::Value>::success(eve::Value(std::move(values)));
 }
 
 eve::Value::Object observationFields(const SimulationObservation& observation, eve::SimulationTick tick) {
@@ -531,8 +456,8 @@ eve::Value make2DPayload(const World& world, const std::vector<Body*>& bodies) {
     return eve::Value(std::move(object));
 }
 
-eve::Value make3DPayload(const World3D& world, const std::vector<Body3D*>& bodies,
-                         const std::vector<Shape3D*>& shapes, const std::vector<Joint3D*>& joints) {
+eve::Result<eve::Value> make3DPayload(const World3D& world, const std::vector<Body3D*>& bodies,
+                                      const std::vector<Shape3D*>& shapes, const std::vector<Joint3D*>& joints) {
     const auto         observation = world.simulationObservation();
     eve::Value::Object object      = observationFields(observation, world.simulationTick());
     object.emplace("gravityX", eve::Value(world.getGravityX()));
@@ -547,8 +472,10 @@ eve::Value make3DPayload(const World3D& world, const std::vector<Body3D*>& bodie
         if (body && body->isValid()) values.push_back(bodyValue(*body));
     object.emplace("bodies", eve::Value(std::move(values)));
     object.emplace("shapes", shapesTopologyValue(shapes));
-    object.emplace("joints", jointsTopologyValue(joints));
-    return eve::Value(std::move(object));
+    auto jointValues = jointsTopologyValue(joints);
+    if (!jointValues) return eve::Result<eve::Value>::failure(jointValues.status());
+    object.emplace("joints", std::move(jointValues).takeValue());
+    return eve::Result<eve::Value>::success(eve::Value(std::move(object)));
 }
 
 template <typename BodyState>
@@ -704,13 +631,12 @@ eve::Result<std::vector<std::int32_t>> readIntArray(const eve::Value::Object& ob
 }
 
 eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DState>& states,
-                                                     const eve::Value::Array& shapes,
-                                                     const eve::Value::Array& joints,
+                                                     const eve::Value::Array& shapes, const eve::Value::Array& joints,
                                                      float gravityX, float gravityY, float gravityZ,
                                                      const SimulationObservation& observation,
-                                                     eve::PersistentId instanceId) {
+                                                     eve::PersistentId instanceId, RigidBackend3D backend) {
     try {
-        auto prepared = WorldSnapshotAccess::makeDetachedWorld3D(gravityX, gravityY, gravityZ, instanceId);
+        auto prepared = WorldSnapshotAccess::makeDetachedWorld3D(gravityX, gravityY, gravityZ, instanceId, backend);
         std::unordered_map<int, Body3D*> bodyById;
         int maxBodyId = 0;
         for (const Body3DState& state : states) {
@@ -792,32 +718,54 @@ eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DSta
                     eve::DiagnosticCode::Conflict, "3D joint references invalid bodies or frames", "payload.joints"));
             Body3D* aBody = bodyById.at(static_cast<int>(bodyAId.value())); Body3D* bBody = bodyById.at(static_cast<int>(bodyBId.value()));
             const auto& f = frames.value();
-            const b3Pos anchorA = b3Body_GetWorldPoint(aBody->raw(), b3Pos{f[0], f[1], f[2]});
-            const b3Pos anchorB = b3Body_GetWorldPoint(bBody->raw(), b3Pos{f[7], f[8], f[9]});
-            const b3Quat qa{{f[3], f[4], f[5]}, f[6]}; const b3Quat qb{{f[10], f[11], f[12]}, f[13]};
+            auto        anchorAResult = aBody->localToWorldPointOwned(f[0], f[1], f[2]);
+            if (!anchorAResult) return eve::Result<std::unique_ptr<World3D>>::failure(anchorAResult.status());
+            auto anchorBResult = bBody->localToWorldPointOwned(f[7], f[8], f[9]);
+            if (!anchorBResult) return eve::Result<std::unique_ptr<World3D>>::failure(anchorBResult.status());
+            const auto      anchorA = anchorAResult.value();
+            const auto      anchorB = anchorBResult.value();
+            const glm::quat qa(f[6], f[3], f[4], f[5]);
+            const glm::quat qb(f[13], f[10], f[11], f[12]);
+            const auto      worldAxis = [](const Body3D& body, const glm::quat& frame, const glm::vec3& axis) {
+                const auto local = frame * axis;
+                return body.localToWorldVectorOwned(local.x, local.y, local.z);
+            };
             Joint3D* joint = nullptr;
             if (kind.value() == "distance") {
-                const b3Vec3 d = anchorB - anchorA; const float length = std::sqrt(b3Dot(d, d));
+                const glm::vec3 d(anchorB.x - anchorA.x, anchorB.y - anchorA.y, anchorB.z - anchorA.z);
+                const float     length = glm::length(d);
                 joint = prepared->newDistanceJoint(aBody, bBody, anchorA.x, anchorA.y, anchorA.z, anchorB.x, anchorB.y, anchorB.z, length);
             } else if (kind.value() == "revolute") {
-                const b3Vec3 axis = b3Body_GetWorldVector(aBody->raw(), b3RotateVector(qa, b3Vec3_axisZ));
+                auto axisResult = worldAxis(*aBody, qa, glm::vec3(0.f, 0.f, 1.f));
+                if (!axisResult) return eve::Result<std::unique_ptr<World3D>>::failure(axisResult.status());
+                const auto axis = axisResult.value();
                 joint = prepared->newRevoluteJoint(aBody, bBody, anchorA.x, anchorA.y, anchorA.z, axis.x, axis.y, axis.z);
             } else if (kind.value() == "prismatic") {
-                const b3Vec3 axis = b3Body_GetWorldVector(aBody->raw(), b3RotateVector(qa, b3Vec3_axisX));
+                auto axisResult = worldAxis(*aBody, qa, glm::vec3(1.f, 0.f, 0.f));
+                if (!axisResult) return eve::Result<std::unique_ptr<World3D>>::failure(axisResult.status());
+                const auto axis = axisResult.value();
                 joint = prepared->newPrismaticJoint(aBody, bBody, anchorA.x, anchorA.y, anchorA.z, axis.x, axis.y, axis.z);
             } else if (kind.value() == "spherical") {
-                const b3Vec3 axis = b3Body_GetWorldVector(aBody->raw(), b3RotateVector(qa, b3Vec3_axisZ));
+                auto axisResult = worldAxis(*aBody, qa, glm::vec3(0.f, 0.f, 1.f));
+                if (!axisResult) return eve::Result<std::unique_ptr<World3D>>::failure(axisResult.status());
+                const auto axis = axisResult.value();
                 joint = prepared->newSphericalJoint(aBody, bBody, anchorA.x, anchorA.y, anchorA.z, axis.x, axis.y, axis.z);
             } else if (kind.value() == "wheel") {
-                const b3Vec3 suspension = b3Body_GetWorldVector(aBody->raw(), b3RotateVector(qa, b3Vec3_axisX));
-                const b3Vec3 wheel = b3Body_GetWorldVector(bBody->raw(), b3RotateVector(qb, b3Vec3_axisZ));
+                auto suspensionResult = worldAxis(*aBody, qa, glm::vec3(1.f, 0.f, 0.f));
+                if (!suspensionResult) return eve::Result<std::unique_ptr<World3D>>::failure(suspensionResult.status());
+                const auto suspension  = suspensionResult.value();
+                auto       wheelResult = worldAxis(*bBody, qb, glm::vec3(0.f, 0.f, 1.f));
+                if (!wheelResult) return eve::Result<std::unique_ptr<World3D>>::failure(wheelResult.status());
+                const auto wheel = wheelResult.value();
                 joint = prepared->newWheelJoint(aBody, bBody, anchorA.x, anchorA.y, anchorA.z, suspension.x, suspension.y, suspension.z, wheel.x, wheel.y, wheel.z);
             } else if (kind.value() == "weld") {
                 joint = prepared->newWeldJoint(aBody, bBody, anchorA.x, anchorA.y, anchorA.z);
             } else if (kind.value() == "motor") {
                 joint = prepared->newMotorJoint(aBody, bBody);
             } else if (kind.value() == "parallel") {
-                const b3Vec3 axis = b3Body_GetWorldVector(aBody->raw(), b3RotateVector(qa, b3Vec3_axisZ));
+                auto axisResult = worldAxis(*aBody, qa, glm::vec3(0.f, 0.f, 1.f));
+                if (!axisResult) return eve::Result<std::unique_ptr<World3D>>::failure(axisResult.status());
+                const auto axis = axisResult.value();
                 joint = prepared->newParallelJoint(aBody, bBody, axis.x, axis.y, axis.z);
             } else if (kind.value() == "filter") {
                 joint = prepared->newFilterJoint(aBody, bBody);
@@ -935,11 +883,12 @@ eve::Result<eve::SnapshotEnvelope> World3D::snapshot(const eve::SnapshotHashProv
     if (!schema) return eve::Result<eve::SnapshotEnvelope>::failure(schema.status());
     const auto           observation = simulationObservation();
     std::vector<Body3D*> bodies(bodies_.begin(), bodies_.end());
-    return eve::makeSnapshotEnvelope(std::string(kWorld3DType), std::move(schema).takeValue(),
-                                     eve::SchemaVersion(kSnapshotVersion), instanceId_,
-                                     eve::Revision(observation.stepCount), simulationTick(),
-                                     make3DPayload(*this, bodies, std::vector<Shape3D*>(shapes_.begin(), shapes_.end()),
-                                                   std::vector<Joint3D*>(joints_.begin(), joints_.end())), hashProvider);
+    auto                 payload = make3DPayload(*this, bodies, std::vector<Shape3D*>(shapes_.begin(), shapes_.end()),
+                                                 std::vector<Joint3D*>(joints_.begin(), joints_.end()));
+    if (!payload) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
+    return eve::makeSnapshotEnvelope(
+        std::string(kWorld3DType), std::move(schema).takeValue(), eve::SchemaVersion(kSnapshotVersion), instanceId_,
+        eve::Revision(observation.stepCount), simulationTick(), std::move(payload).takeValue(), hashProvider);
 }
 
 eve::Result<void> World3D::restore(const eve::SnapshotEnvelope&     snapshotValue,
@@ -964,7 +913,9 @@ eve::Result<void> World3D::restore(const eve::SnapshotEnvelope&     snapshotValu
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
                                                                      "v1 3D physics payload is malformed", "payload"));
         migrated->emplace("shapes", shapesTopologyValue(std::vector<Shape3D*>(shapes_.begin(), shapes_.end())));
-        migrated->emplace("joints", jointsTopologyValue(std::vector<Joint3D*>(joints_.begin(), joints_.end())));
+        auto joints = jointsTopologyValue(std::vector<Joint3D*>(joints_.begin(), joints_.end()));
+        if (!joints) return eve::Result<void>::failure(joints.status());
+        migrated->emplace("joints", std::move(joints).takeValue());
         const eve::Value* bodyValues = field(*migrated, "bodies");
         if (!bodyValues || bodyValues->arraySize() != bodies_.size())
             return eve::Result<void>::failure(
@@ -997,9 +948,8 @@ eve::Result<void> World3D::restore(const eve::SnapshotEnvelope&     snapshotValu
     auto handleRefresh = prepareRuntimeHandleRefresh();
     if (!handleRefresh) return handleRefresh;
     auto prepared = prepareWorld3D(bodies.value(), *snapshotShapes->getIf<eve::Value::Array>(),
-                                   *snapshotJoints->getIf<eve::Value::Array>(),
-                                   gravityX.value(), gravityY.value(), gravityZ.value(),
-                                   observation.value().value, instanceId_);
+                                   *snapshotJoints->getIf<eve::Value::Array>(), gravityX.value(), gravityY.value(),
+                                   gravityZ.value(), observation.value().value, instanceId_, rigidBackendKind_);
     if (!prepared) return eve::Result<void>::failure(prepared.status());
     auto restoredObservation = simulation_->restoreObservation(observation.value().value);
     if (!restoredObservation) return restoredObservation;
@@ -1044,8 +994,7 @@ void World3D::refreshRuntimeHandlesAfterRestore() {
     for (Shape3D* shape : shapes_) {
         if (!shape || !shape->isValid()) continue;
         shape->runtimeHandle_ = nextShapeRuntimeHandle();
-        shapeHandles_[shape->runtimeHandle_] = shape;
-        shapeRawHandles_[b3StoreShapeId(shape->raw())] = shape->runtimeHandle_;
+        indexShapeHandle(shape);
     }
     for (Joint3D* joint : joints_) {
         if (!joint || !joint->isValid()) continue;

@@ -2303,6 +2303,91 @@
       "cost_notes": []
     },
     {
+      "id": "physics-owned-contacts-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/physics/*3D*",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Rigid backend interfaces isolate Box3D and optional Jolt native state; facades own identity, portable geometry and query projections.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/physics/OwnedQuery3D.h",
+        "src/modules/physics/World3D.h",
+        "src/modules/scene/editor/ScenePhysicsPlacement.cpp",
+        "docs/dev/物理系统分层与后端契约.md",
+        "src/modules/physics/Joint3D.h",
+        "src/modules/physics/WorldSnapshot.cpp",
+        "src/modules/physics/rigid/WorldBackend3D.h",
+        "src/modules/physics/backend/BodyBackend3D.h",
+        "src/modules/physics/backend/ShapeBackend3D.h",
+        "src/modules/physics/backend/JointBackend3D.h",
+        "src/modules/physics/box3d/Box3DWorld.cpp",
+        "src/modules/physics/jolt/JoltWorld.cpp",
+        "src/modules/physics/jolt/JoltState.cpp",
+        "src/modules/physics/jolt/JoltWorldJoints.cpp",
+        "src/modules/physics/jolt/JoltMesh.cpp",
+        "src/modules/physics/jolt/JoltWorldMover.cpp",
+        "src/modules/physics/jolt/JoltContactPolicy.cpp",
+        "src/modules/physics/jolt/JoltGeometryQueries.cpp",
+        "src/modules/physics/jolt/JoltExplosion.cpp",
+        "src/modules/physics/jolt/JoltSolvedContacts.cpp",
+        "cmake/patches/jolt-solved-contacts-rolling.patch"
+      ],
+      "tests": [
+        "test/physics_contact_query.cpp",
+        "test/box3d.cpp",
+        "test/physics_joint_frames.cpp",
+        "test/physics_world_snapshot_topology.cpp",
+        "test/physics_rigid_backend.cpp",
+        "test/physics_jolt.cpp",
+        "test/physics_jolt_cooking.cpp",
+        "test/physics_jolt_contacts.cpp"
+      ],
+      "thread_affinity": "Owning physics thread, between simulation steps; no callbacks or persistent borrowed result storage.",
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "protocol": [],
+      "binds": [
+        "Physics::newWorld3DWithBackend"
+      ],
+      "hot_path": [
+        "src/modules/physics/World3DContacts.cpp",
+        "src/modules/physics/box3d/Box3DWorld.cpp",
+        "src/modules/physics/box3d/Box3DWorldContacts.cpp",
+        "src/modules/physics/jolt/JoltWorld.cpp",
+        "src/modules/physics/jolt/JoltState.cpp",
+        "src/modules/physics/jolt/JoltWorldJoints.cpp",
+        "src/modules/physics/jolt/JoltMesh.cpp",
+        "src/modules/physics/jolt/JoltWorldMover.cpp",
+        "src/modules/physics/jolt/JoltContactPolicy.cpp",
+        "src/modules/physics/jolt/JoltGeometryQueries.cpp",
+        "src/modules/physics/jolt/JoltExplosion.cpp",
+        "src/modules/physics/jolt/JoltSolvedContacts.cpp"
+      ],
+      "trim": {
+        "absent_profile": "No new trim claim; the contact implementation is included in the existing physics-core-only compilation surface."
+      },
+      "cost_notes": [
+        {
+          "api": "World3D::queryBodyContactsOwned",
+          "shape": "bounded-owning-query",
+          "why": "Reads at most 4097 contact pairs (one overflow probe) and retains at most 4096 points; no topology cook or rebuild."
+        },
+        {
+          "api": "Joint3D::localFrames",
+          "shape": "owning-value",
+          "why": "Constant-size read of two solver frames, without allocation or topology mutation."
+        },
+        {
+          "api": "World3D::createWithBackend",
+          "shape": "owning-result-factory",
+          "why": "One solver allocation per world; absent solver rejected before allocation, never substituted silently."
+        }
+      ]
+    },
+    {
       "id": "platform-event-input-injection-interface",
       "rule": "module-interface",
       "scope": "src/modules/platform_event/sdl/InputInjection.cpp",
