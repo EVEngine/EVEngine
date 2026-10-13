@@ -3,6 +3,7 @@
 
 #include "common/Identity.h"
 #include "common/RuntimeHandle.h"
+#include "common/UuidV7.h"
 #include "effects/EffectContainer.h"
 #include "transaction/Transaction.h"
 

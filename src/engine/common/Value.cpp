@@ -1,4 +1,5 @@
 #include "common/Value.h"
+#include "common/Assert.h"
 
 #include "common/Json.h"
 
@@ -205,3 +206,20 @@ std::string Value::toString() const {
 }
 
 }  // namespace eve
+
+#if defined(_WIN32) && defined(EVENGINE_MODULE_DLL)
+template __declspec(dllexport) std::monostate* eve::Value::getIf<std::monostate>() noexcept;
+template __declspec(dllexport) const std::monostate* eve::Value::getIf<std::monostate>() const noexcept;
+template __declspec(dllexport) bool*                 eve::Value::getIf<bool>() noexcept;
+template __declspec(dllexport) const bool*           eve::Value::getIf<bool>() const noexcept;
+template __declspec(dllexport) std::int64_t* eve::Value::getIf<std::int64_t>() noexcept;
+template __declspec(dllexport) const std::int64_t* eve::Value::getIf<std::int64_t>() const noexcept;
+template __declspec(dllexport) double*             eve::Value::getIf<double>() noexcept;
+template __declspec(dllexport) const double*       eve::Value::getIf<double>() const noexcept;
+template __declspec(dllexport) std::string* eve::Value::getIf<std::string>() noexcept;
+template __declspec(dllexport) const std::string* eve::Value::getIf<std::string>() const noexcept;
+template __declspec(dllexport) eve::Value::Array* eve::Value::getIf<eve::Value::Array>() noexcept;
+template __declspec(dllexport) const eve::Value::Array* eve::Value::getIf<eve::Value::Array>() const noexcept;
+template __declspec(dllexport) eve::Value::Object* eve::Value::getIf<eve::Value::Object>() noexcept;
+template __declspec(dllexport) const eve::Value::Object* eve::Value::getIf<eve::Value::Object>() const noexcept;
+#endif

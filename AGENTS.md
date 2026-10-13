@@ -331,11 +331,14 @@ composed dependency contract, see
   declarations and Pimpl so a low-level type change does not recompile every
   dependent module. Check `python3 scripts/module_depgraph.py` for `*` marks
   (leaks into a module's own headers).
-- **Big files get split, not extended.** A `.cpp` over ~1000 lines is a
-  single-agent-at-a-time file. Split it along existing section comments into
-  multiple TUs (pure moves, no behavior change) instead of appending more
-  methods. The same ownership rule applies to shared catalogues: put
-  module-scoped architecture-contract entries and user-manual topics in
+- **Group cohesive implementation, split contention hotspots.** A stable,
+  cohesive `.cpp` may grow when combining closely related small TUs reduces
+  repeated debug information and build overhead. Above 2000 lines, review
+  unrelated responsibilities, edit frequency, and concurrent ownership.
+  At 5000 lines or more, decide whether to split along stable sections based on
+  that review. Do not merge actively edited files owned by different agents
+  merely to reduce the OBJ count. Shared catalogues still put module-scoped
+  architecture-contract entries and user-manual topics in
   module-owned fragments (`cmake/module_manifest/modules/<host>.cmake`,
   `scripts/architecture_contracts/<host>.json`), and keep only
   order/composition in the hub file.

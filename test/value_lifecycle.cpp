@@ -68,3 +68,37 @@ TEST_CASE("value.initializer_factories_preserve_container_semantics") {
     const auto         moved = eve::Value::object(std::move(members));
     CHECK_EQ(moved.find("moved")->asInt(), std::int64_t{7});
 }
+
+TEST_CASE("value.getIfInstances.directConstAndMutableBorrows") {
+    using V = eve::Value;
+    static_assert(noexcept(std::declval<V&>().getIf<std::string>()));
+    static_assert(noexcept(std::declval<const V&>().getIf<std::string>()));
+    V text(std::string(4096, 'a'));
+    CHECK(static_cast<bool>(text.getIf<std::string>() == static_cast<const V&>(text).getIf<std::string>()));
+    text.getIf<std::string>()->append("changed");
+    CHECK(static_cast<const V&>(text).getIf<std::string>()->size() == 4103u);
+    CHECK(text.getIf<bool>() == nullptr);
+    V null;
+    CHECK(null.getIf<std::monostate>() != nullptr);
+    CHECK(static_cast<const V&>(null).getIf<std::monostate>() != nullptr);
+    V boolean(true);
+    *boolean.getIf<bool>() = false;
+    CHECK(!*static_cast<const V&>(boolean).getIf<bool>());
+    V integer(std::int64_t(42));
+    *integer.getIf<std::int64_t>() = 43;
+    CHECK(*static_cast<const V&>(integer).getIf<std::int64_t>() == 43);
+    V number(2.5);
+    *number.getIf<double>() = 3.5;
+    CHECK(*static_cast<const V&>(number).getIf<double>() == 3.5);
+    V array(V::Array{1, "two"});
+    array.getIf<V::Array>()->push_back(true);
+    CHECK(static_cast<const V&>(array).getIf<V::Array>()->size() == 3u);
+    V object(V::Object{{"key", "value"}});
+    (*object.getIf<V::Object>())["other"] = 4;
+    CHECK(static_cast<const V&>(object).getIf<V::Object>()->size() == 2u);
+    auto json = object.toJson();
+    REQUIRE(json.ok());
+    auto parsed = V::fromJson(json.value());
+    REQUIRE(parsed.ok());
+    CHECK(parsed.value() == object);
+}

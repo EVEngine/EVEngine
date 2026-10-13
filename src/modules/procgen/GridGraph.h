@@ -1,4 +1,5 @@
 #pragma once
+#include "common/StringMapInstances.h"
 
 #include "common/BorrowedRef.h"
 #include "procgen/Grid2D.h"

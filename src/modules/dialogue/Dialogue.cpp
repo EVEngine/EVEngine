@@ -1,4 +1,5 @@
 #include "dialogue/Dialogue.h"
+#include "common/StringMapInstances.h"
 #include "dialogue/DnutParser.h"
 
 #include "avatar/AvatarInstance.h"

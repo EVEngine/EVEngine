@@ -1,4 +1,5 @@
 #include "graphics/RenderSystem3D.h"
+#include "common/Assert.h"
 #include "common/Capability.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"

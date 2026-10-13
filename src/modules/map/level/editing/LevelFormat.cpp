@@ -1,5 +1,6 @@
 #include "map/level/editing/LevelFormat.h"
 #include "common/Json.h"
+#include "common/StringMapInstances.h"
 #include "map/level/editing/LevelDocument.h"
 
 #include <algorithm>

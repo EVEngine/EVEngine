@@ -20,6 +20,7 @@
 #include "common/Subscription.h"
 #include "common/Time.h"
 #include "common/Uri.h"
+#include "common/UuidV7.h"
 #include "common/Value.h"
 #include "common/VersionedRegistry.h"
 

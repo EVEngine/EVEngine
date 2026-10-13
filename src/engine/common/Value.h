@@ -260,3 +260,22 @@ extern template class __declspec(dllimport) std::map<std::string, eve::Value>;
 extern template class std::vector<eve::Value>;
 extern template class std::map<std::string, eve::Value>;
 #endif
+
+// Foundation shares common Windows DLL getters. The variant and directly
+// borrowed pointers retain their original layout, lifetime and noexcept contract.
+#if defined(_WIN32) && defined(EVENGINE_MODULE_DLL) && !defined(EVENGINE_EXPORTS_FOUNDATION)
+extern template __declspec(dllimport) std::monostate* eve::Value::getIf<std::monostate>() noexcept;
+extern template __declspec(dllimport) const std::monostate* eve::Value::getIf<std::monostate>() const noexcept;
+extern template __declspec(dllimport) bool*                 eve::Value::getIf<bool>() noexcept;
+extern template __declspec(dllimport) const bool*           eve::Value::getIf<bool>() const noexcept;
+extern template __declspec(dllimport) std::int64_t* eve::Value::getIf<std::int64_t>() noexcept;
+extern template __declspec(dllimport) const std::int64_t* eve::Value::getIf<std::int64_t>() const noexcept;
+extern template __declspec(dllimport) double*             eve::Value::getIf<double>() noexcept;
+extern template __declspec(dllimport) const double*       eve::Value::getIf<double>() const noexcept;
+extern template __declspec(dllimport) std::string* eve::Value::getIf<std::string>() noexcept;
+extern template __declspec(dllimport) const std::string* eve::Value::getIf<std::string>() const noexcept;
+extern template __declspec(dllimport) eve::Value::Array* eve::Value::getIf<eve::Value::Array>() noexcept;
+extern template __declspec(dllimport) const eve::Value::Array* eve::Value::getIf<eve::Value::Array>() const noexcept;
+extern template __declspec(dllimport) eve::Value::Object* eve::Value::getIf<eve::Value::Object>() noexcept;
+extern template __declspec(dllimport) const eve::Value::Object* eve::Value::getIf<eve::Value::Object>() const noexcept;
+#endif

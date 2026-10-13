@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include "common/Assert.h"
 #include "common/Exception.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"

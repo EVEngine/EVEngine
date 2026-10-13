@@ -69,3 +69,37 @@ TEST_CASE("ecs.containers_publish_deferred_inherited_components") {
     }
     CHECK_EQ(visible, 1);
 }
+
+TEST_CASE("ecs.handle_containers_preserve_generation_and_table_projection") {
+    static_assert(std::is_aggregate_v<ecs::EntityHandle>);
+    ecs::Table                     first;
+    ecs::Table                     second;
+    auto*                          entity   = ContainerDerived::create(first);
+    const auto                     original = ecs::handle_of(entity);
+    std::vector<ecs::EntityHandle> handles(64, original);
+    auto                           copied = handles;
+    handles.front()                       = {&second, std::type_index(typeid(ContainerDerived)), 99, 88};
+    CHECK(copied.front().table == &first);
+    CHECK(copied.front().id == original.id);
+    CHECK(copied.front().generation == original.generation);
+    CHECK(ecs::try_get(copied.front()) == entity);
+    auto moved = std::move(copied);
+    copied.clear();
+    copied.push_back({});
+    CHECK(copied.front().table == nullptr);
+    std::vector<ecs::EntityHandle> assigned;
+    assigned = handles;
+    CHECK(assigned.front().table == &second);
+    assigned = std::move(moved);
+    assigned.reserve(512);
+    assigned.erase(assigned.begin());
+    CHECK(assigned.size() == 63u);
+    CHECK(assigned.front().type == std::type_index(typeid(ContainerDerived)));
+    ecs::DestroyEntity(entity);
+    CHECK(ecs::try_get(assigned.front()) == nullptr);
+    auto* replacement = ContainerDerived::create(first);
+    CHECK(replacement->id == original.id);
+    CHECK(replacement->generation != assigned.front().generation);
+    CHECK(ecs::try_get(assigned.front()) == nullptr);
+    CHECK(ecs::try_get(ecs::handle_of(replacement)) == replacement);
+}

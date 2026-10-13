@@ -577,9 +577,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainStamp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailLayer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailPlacement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainTreePlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainObjectPlacement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlan.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlanCodec.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBiomePreset.cpp
@@ -587,7 +585,6 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainCollisionMask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainPolygonMask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainProbePlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBakedMaskCache.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainNoiseMask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSplatmap.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWorldWorkspace.cpp

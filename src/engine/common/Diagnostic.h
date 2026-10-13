@@ -107,6 +107,15 @@ public:
     Diagnostic& operator=(Diagnostic&& other) noexcept;
 
     /**
+     * @brief Construct a diagnostic without allocating a caller-side detail container.
+     * @param code Stable machine-readable code.
+     * @param severity Display and logging severity.
+     * @param message Owned human-readable explanation.
+     * @param path Owned optional field, URI, or logical path.
+     */
+    Diagnostic(DiagnosticCode code, Severity severity, std::string message, std::string path = {});
+
+    /**
      * @brief Construct a diagnostic with its stable code and human text.
      * @param code Stable machine-readable code.
      * @param severity Display and logging severity.
@@ -116,15 +125,19 @@ public:
      * @param source Optional producer/boundary name, such as a Squirrel
      *               binding or a serialized document importer.
      */
-    Diagnostic(DiagnosticCode code, Severity severity, std::string message, std::string path = {},
-               DiagnosticDetails details = {}, std::string source = {});
+    Diagnostic(DiagnosticCode code, Severity severity, std::string message, std::string path, DiagnosticDetails details,
+               std::string source = {});
 
     /** @brief Construct an error diagnostic with the standard error severity. */
-    static Diagnostic error(DiagnosticCode code, std::string message, std::string path = {},
-                            DiagnosticDetails details = {}, std::string source = {});
+    static Diagnostic error(DiagnosticCode code, std::string message, std::string path = {});
+    /** @brief Construct an error diagnostic with owned structured context and source. */
+    static Diagnostic error(DiagnosticCode code, std::string message, std::string path, DiagnosticDetails details,
+                            std::string source = {});
     /** @brief Construct a warning diagnostic. */
-    static Diagnostic warning(DiagnosticCode code, std::string message, std::string path = {},
-                              DiagnosticDetails details = {}, std::string source = {});
+    static Diagnostic warning(DiagnosticCode code, std::string message, std::string path = {});
+    /** @brief Construct a warning diagnostic with owned structured context and source. */
+    static Diagnostic warning(DiagnosticCode code, std::string message, std::string path, DiagnosticDetails details,
+                              std::string source = {});
 
     /** @brief Stable machine-readable code. */
     DiagnosticCode code() const noexcept { return code_; }
@@ -195,3 +208,12 @@ inline std::ostream& operator<<(std::ostream& stream, DiagnosticCode code) {
 }
 
 }  // namespace eve
+
+
+// Every sequence keeps its own allocation and Diagnostic elements. Cross-group
+// Windows consumers share only the non-template operations; all participants
+// use the same CRT and iterator-debug configuration. Foundation, static and
+// non-Windows consumers retain the standard-library bodies.
+#if defined(_WIN32) && defined(EVENGINE_MODULE_DLL) && !defined(EVENGINE_EXPORTS_FOUNDATION)
+extern template class __declspec(dllimport) std::vector<eve::Diagnostic>;
+#endif

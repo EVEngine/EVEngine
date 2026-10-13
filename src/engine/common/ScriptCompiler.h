@@ -3,6 +3,7 @@
 #include "common/BorrowedRef.h"
 
 #include "common/Export.h"
+#include "common/StringMapInstances.h"
 
 #include <simplesquirrel/script.hpp>
 
