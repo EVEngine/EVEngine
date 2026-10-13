@@ -751,7 +751,7 @@
         "src/modules/rts/RTSSystemMovementInternal.h",
         "src/modules/rts/RTSMovementGroups.cpp",
         "src/modules/rts/RTSCommands.cpp",
-        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSSnapshot.cpp",
         "src/modules/rts/RTSSnapshotInternal.h"
       ],
       "tests": [
@@ -1044,7 +1044,6 @@
       "evidence": [
         "src/modules/rts/RTSSnapshot.h",
         "src/modules/rts/RTSSnapshot.cpp",
-        "src/modules/rts/RTSRestore.cpp",
         "src/modules/rts/RTSMovementGroups.cpp",
         "docs/usr/modules/crowd.md"
       ],
@@ -2012,7 +2011,7 @@
         "docs/usr/modules/graphics.md",
         "src/modules/graphics/vulkan/GraphicsSampler.cpp",
         "src/modules/graphics/webgpu/GraphicsSampler.cpp",
-        "src/modules/graphics/hair/GroomInstance.cpp"
+        "src/modules/graphics/hair/GroomAsset.cpp"
       ],
       "tests": [
         "test/resource_lifetime.cpp",
@@ -2111,7 +2110,7 @@
       ],
       "hot_path": [
         "src/modules/graphics/RenderSystem3D.cpp",
-        "src/modules/graphics/hair/GroomInstance.cpp",
+        "src/modules/graphics/hair/GroomAsset.cpp",
         "src/modules/graphics/vulkan/GraphicsSampler.cpp",
         "src/modules/graphics/webgpu/GraphicsSampler.cpp"
       ]
@@ -2844,7 +2843,7 @@
       ],
       "tests": [
         "test/procgen_scene_sink.cpp",
-        "test/procgen_spatial_data.cpp",
+        "test/procgen_scene_sink.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -2982,7 +2981,7 @@
         "src/modules/rts/RTSMovementGroups.cpp",
         "src/modules/rts/RTSFormationBindings.cpp",
         "src/modules/rts/RTSReplay.cpp",
-        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSSnapshot.cpp",
         "docs/dev/群体行为与流场模块设计.md"
       ],
       "tests": [
@@ -3181,7 +3180,7 @@
         "src/modules/scene/SceneCapabilities.cpp",
         "docs/dev/场景对象模型使用指南.md",
         "src/modules/scene/SceneComponent.h",
-        "src/modules/scene/SceneComponent.cpp",
+        "src/modules/scene/SceneCameraQueries.cpp",
         "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [

@@ -56,7 +56,7 @@
         "src/modules/rts/RTSSystemMovementInternal.h",
         "src/modules/rts/RTSMovementGroups.cpp",
         "src/modules/rts/RTSCommands.cpp",
-        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSSnapshot.cpp",
         "src/modules/rts/RTSSnapshotInternal.h"
       ],
       "tests": [
@@ -123,7 +123,6 @@
       "evidence": [
         "src/modules/rts/RTSSnapshot.h",
         "src/modules/rts/RTSSnapshot.cpp",
-        "src/modules/rts/RTSRestore.cpp",
         "src/modules/rts/RTSMovementGroups.cpp",
         "docs/usr/modules/crowd.md"
       ],
@@ -150,7 +149,7 @@
         "src/modules/rts/RTSMovementGroups.cpp",
         "src/modules/rts/RTSFormationBindings.cpp",
         "src/modules/rts/RTSReplay.cpp",
-        "src/modules/rts/RTSRestore.cpp",
+        "src/modules/rts/RTSSnapshot.cpp",
         "docs/dev/群体行为与流场模块设计.md"
       ],
       "tests": [

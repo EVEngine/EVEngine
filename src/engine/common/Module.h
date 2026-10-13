@@ -2,9 +2,8 @@
 #include "common/Export.h"
 #include "common/Result.h"
 
+#include <memory>
 #include <string>
-#include <unordered_map>
-#include <vector>
 
 namespace ssq {
 class VM;
@@ -185,20 +184,17 @@ private:
      */
     static Module* requireInstanceRaw(const char* name);
 
-protected:
-    /** @brief ModuleInfo public API. */
-    struct ModuleInfo {
-        creator_t creator = nullptr;
-        exposer_t exposer = nullptr;
-        Module*   instance = nullptr;
-        bool      exposed  = false;
-    };
+private:
+    // The singleton owns its registry; only its implementation sees container types.
+    struct State;
+    std::unique_ptr<State> state_;
 
-    std::unordered_map<std::string, ModuleInfo> registered_modules;
-    bool plugin_registration_active_ = false;
-    std::vector<std::string> plugin_registration_added_;
-    std::string plugin_registration_error_;
-    Runtime* active_runtime_ = nullptr;
+    ModuleManager();
+    ~ModuleManager();
+    ModuleManager(const ModuleManager&)            = delete;
+    ModuleManager& operator=(const ModuleManager&) = delete;
+    ModuleManager(ModuleManager&&)                 = delete;
+    ModuleManager& operator=(ModuleManager&&)      = delete;
 
     friend struct ModuleBindAccess;
 };

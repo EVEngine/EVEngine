@@ -1,6 +1,7 @@
 #include "rpg/RPGSaveSession.h"
 #include "rpg/Party.h"
 
+#include "common/Assert.h"
 #include "common/Snapshot.h"
 #include "common/Value.h"
 #include "inventory/InventorySaveSession.h"

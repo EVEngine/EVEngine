@@ -1,4 +1,5 @@
 #include "graphics/Light.h"
+#include "common/Assert.h"
 
 #include <algorithm>
 

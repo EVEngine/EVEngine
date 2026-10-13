@@ -4,6 +4,7 @@
 
 #include "common/Export.h"
 #include "common/ScriptStructure.hpp"
+#include "common/StringMapInstances.h"
 
 #include <simplesquirrel/script.hpp>
 
