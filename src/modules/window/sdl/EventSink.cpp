@@ -97,8 +97,7 @@ int SDLCALL watchAppEvents(void * /*udata*/, SDL_Event *event) {
                     // Do not tear down the VkSurfaceKHR (unlike mobile resume).
                     resumePresenting(surfaceHost, /*recreateSurface=*/false);
                     break;
-                default:
-                    break;
+                default: break;
             }
             break;
         default:
