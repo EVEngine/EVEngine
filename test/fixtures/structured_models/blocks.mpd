@@ -1,0 +1,13 @@
+0 Original EVEngine fixture: two coloured boxes, no external library needed.
+0 FILE blocks.ldr
+1 4 -25 0 0 1 0 0 0 1 0 0 0 1 box.dat
+1 1 25 -20 0 1 0 0 0 1 0 0 0 1 box.dat
+0 FILE box.dat
+0 BFC CERTIFY CCW
+4 16 -20 0 -20 -20 -40 -20 20 -40 -20 20 0 -20
+4 16 -20 0 20 20 0 20 20 -40 20 -20 -40 20
+4 16 -20 0 -20 -20 0 20 -20 -40 20 -20 -40 -20
+4 16 20 0 -20 20 -40 -20 20 -40 20 20 0 20
+4 16 -20 0 -20 20 0 -20 20 0 20 -20 0 20
+4 16 -20 -40 -20 -20 -40 20 20 -40 20 20 -40 -20
+0 NOFILE
