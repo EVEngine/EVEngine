@@ -20,7 +20,7 @@ Value::Value(const char* value) : storage_(std::string(value ? value : "")) {}
 Value::Value(std::string value) : storage_(std::move(value)) {}
 Value::Value(Array value) : storage_(std::move(value)) {}
 Value::Value(Object value) : storage_(std::move(value)) {}
-bool Value::operator==(const Value&) const = default;
+bool Value::operator==(const Value& other) const { return storage_ == other.storage_; }
 
 Value::Type Value::type() const { return static_cast<Type>(storage_.index()); }
 

@@ -36,7 +36,7 @@ Value::Value(const Value& other)                = default;
 Value::Value(Value&& other) noexcept            = default;
 Value& Value::operator=(const Value& other)     = default;
 Value& Value::operator=(Value&& other) noexcept = default;
-bool   Value::operator==(const Value&) const    = default;
+bool   Value::operator==(const Value& other) const { return storage_ == other.storage_; }
 
 Value Value::array(Array value) { return Value(std::move(value)); }
 Value Value::object(Object value) { return Value(std::move(value)); }
