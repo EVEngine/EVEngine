@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Export.h"
+#include "common/Result.h"
 #include "common/StateValue.h"
 
 #include <string>
@@ -34,18 +35,23 @@ public:
     /** @brief Stable kind label, e.g. "dialogue" / "anim" / "rpg.casting". */
     virtual const char* stateKind() const = 0;
 
-    /** @brief Serialize current runtime state into `out`. */
-    virtual bool captureState(StateValue& out) = 0;
+    /**
+     * @brief Capture an owning, canonical snapshot of this provider.
+     * @return Snapshot or a structured failure; no state is changed on failure.
+     * @thread Owner thread during a paused reload transaction.
+     * @reentrancy Does not invoke script callbacks.
+     */
+    [[nodiscard]] virtual Result<Value> capture() = 0;
 
     /**
      * @brief Restore captured state onto the (possibly new) definitions.
      * @return false when the captured state is incompatible with the new
      *         definitions; the reload session then falls back to resetToDefaults().
      */
-    virtual bool restoreState(const StateValue& in, std::string* err = nullptr) = 0;
+    [[nodiscard]] virtual Result<void> restore(const Value& in) = 0;
 
     /** @brief Reset this provider to its default state (restore fallback). */
-    virtual bool resetToDefaults() = 0;
+    [[nodiscard]] virtual Result<void> resetToDefaults() = 0;
 
     /** @brief Whether live state is preserved or reset across code reload. */
     virtual StateReloadPolicy reloadPolicy() const { return StateReloadPolicy::Preserve; }

@@ -49,6 +49,43 @@
       "events": "status tick/change, cast, vitals, level-up and battle events polled after update",
       "services": "injected dt/turn time and named seed streams; no global mutable time or wall clock",
       "phase": "script/game-driven simulation; Battle is turn-based, others are update(dt)-driven"
+    },
+    {
+      "id": "rpg-game-save-participant-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/rpg/RPGGameSaveParticipant*",
+      "owner": "rpg::RPGSaveSession",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "RPG preparation validates the complete bound domain state before joining the cross-domain commit.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rpg/RPGGameSaveParticipant.h",
+        "src/modules/rpg/RPGSaveSession.h"
+      ],
+      "tests": [
+        "test/rpg_save_prepare.cpp",
+        "test/game_save_integration.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameSaveParticipant",
+          "impl": "RPGGameSaveParticipant",
+          "absent_behavior": "RPG state is excluded from saves without this explicit participant"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "games without RPG omit this adapter and do not link the RPG package"
+      },
+      "thread_affinity": "paused RPG owner thread",
+      "hot_path": [],
+      "cost_notes": [
+        "Full RPG snapshot parsing and candidate preparation per load."
+      ]
     }
   ]
 }

@@ -27,31 +27,38 @@ class AnimStateProvider : public eve::caps::IStateProvider {
 public:
     const char* stateKind() const override { return "anim"; }
 
-    bool captureState(StateValue& out) override {
+    Result<Value> capture() override {
         StateValue arr = StateValue::array();
         for (AnimStateMachine* m : machines()) {
             StateValue sv;
-            if (m->captureState(sv)) arr.pushBack(std::move(sv));
+            if (!m->captureState(sv))
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Failed, "animation capture failed"));
+            arr.pushBack(std::move(sv));
         }
-        out = std::move(arr);
-        return true;
+        return Result<Value>::success(toCanonicalStateValue(arr));
     }
 
-    bool restoreState(const StateValue& in, std::string* err) override {
+    Result<void> restore(const Value &value) override {
+        const StateValue in = toLegacyStateValue(value);
         if (!in.isArray()) {
-            if (err) *err = "anim: expected array of state machines";
-            return false;
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "anim: expected array of state machines"));
         }
         const size_t n = std::min(in.arraySize(), machines().size());
         for (size_t i = 0; i < n; ++i) {
-            if (!machines()[i]->restoreState(in.at(i), err)) return false;
+            std::string error;
+            if (!machines()[i]->restoreState(in.at(i), &error))
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, error));
         }
-        return true;
+        return Result<void>::success();
     }
 
-    bool resetToDefaults() override {
-        for (AnimStateMachine* m : machines()) m->resetToDefaults();
-        return true;
+    Result<void> resetToDefaults() override {
+        for (AnimStateMachine *m : machines()) {
+            if (!m->resetToDefaults())
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "animation reset failed"));
+        }
+        return Result<void>::success();
     }
 };
 

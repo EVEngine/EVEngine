@@ -1165,6 +1165,22 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
 
 }  // namespace
 
+struct TacticsPersistence::PreparedRestore::Impl {
+    Battle*        battle = nullptr;
+    Candidate      candidate;
+    Revision       revision;
+    SimulationTick tick;
+
+    Impl(Battle& target, Candidate&& state, Revision savedRevision, SimulationTick savedTick)
+        : battle(&target), candidate(std::move(state)), revision(savedRevision), tick(savedTick) {}
+};
+
+TacticsPersistence::PreparedRestore::PreparedRestore(std::unique_ptr<Impl> state) : state_(std::move(state)) {}
+TacticsPersistence::PreparedRestore::~PreparedRestore()                          = default;
+TacticsPersistence::PreparedRestore::PreparedRestore(PreparedRestore&&) noexcept = default;
+TacticsPersistence::PreparedRestore& TacticsPersistence::PreparedRestore::operator=(PreparedRestore&&) noexcept =
+    default;
+
 Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const SnapshotHashProvider& hashProvider) {
     Value::Array cells;
     for (const auto& record : battle.board()->value.records()) {
@@ -1289,14 +1305,22 @@ Result<Battle::Commands> TacticsPersistence::parseCommandLog(const Value& value,
 
 Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope& source,
                                           const SnapshotHashProvider& hashProvider) {
+    auto prepared = prepareRestore(battle, source, hashProvider);
+    if (!prepared.ok()) return Result<void>::failure(prepared.status());
+    commitPrepared(std::move(prepared).takeValue());
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<TacticsPersistence::PreparedRestore> TacticsPersistence::prepareRestore(
+    Battle& battle, const SnapshotEnvelope& source, const SnapshotHashProvider& hashProvider) {
     if (source.type != kType || source.schema != schema())
-        return Result<void>::failure(
+        return Result<PreparedRestore>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot does not belong to tactics battle", {}));
     if (source.instanceId != battle.identity()->subject.persistentId())
-        return Result<void>::failure(
+        return Result<PreparedRestore>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "snapshot battle identity differs from target", {}));
     auto verified = verifySnapshotEnvelope(source, hashProvider);
-    if (!verified) return Result<void>::failure(verified.status());
+    if (!verified) return Result<PreparedRestore>::failure(verified.status());
     // V1 predates board edges; V2 predates stable policy ids; V3 predates the
     // UseAbility command kind; V4 predates persisted scheduling charge and the
     // explicit round schedule; V5 predates the ability target unit and payload. Each is
@@ -1306,14 +1330,21 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
         source.schemaVersion != SchemaVersion(3) && source.schemaVersion != SchemaVersion(4) &&
         source.schemaVersion != SchemaVersion(5) && source.schemaVersion != SchemaVersion(6) &&
         source.schemaVersion != SchemaVersion(7))
-        return Result<void>::failure(
+        return Result<PreparedRestore>::failure(
             Diagnostic::error(DiagnosticCode::UnknownVersion, "unsupported tactics battle snapshot version", {}));
     auto metadata = validateSnapshotPayloadMetadata(source.payload, source.revision, source.tick);
-    if (!metadata) return Result<void>::failure(metadata.status());
+    if (!metadata) return Result<PreparedRestore>::failure(metadata.status());
     auto candidate = parseCandidate(battle, source.payload, source.revision, source.schemaVersion);
-    if (!candidate) return Result<void>::failure(candidate.status());
+    if (!candidate) return Result<PreparedRestore>::failure(candidate.status());
 
-    Candidate restored = std::move(candidate).takeValue();
+    auto state =
+        std::make_unique<PreparedRestore::Impl>(battle, std::move(candidate).takeValue(), source.revision, source.tick);
+    return Result<PreparedRestore>::success(PreparedRestore(std::move(state)));
+}
+
+void TacticsPersistence::commitPrepared(PreparedRestore prepared) noexcept {
+    auto&      battle       = *prepared.state_->battle;
+    Candidate& restored     = prepared.state_->candidate;
     battle.board()->value = std::move(restored.board);
     battle.identity()->seed = restored.seed;
     for (auto& unit : restored.units) {
@@ -1328,8 +1359,8 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     turn->status = restored.status;
     turn->phase = restored.phase;
     turn->policyId = std::move(restored.policyId);
-    turn->tick = source.tick;
-    turn->revision = source.revision;
+    turn->tick           = prepared.state_->tick;
+    turn->revision       = prepared.state_->revision;
     turn->round = restored.round;
     turn->cursor = restored.cursor;
     turn->activeUnit = restored.activeUnit;
@@ -1340,8 +1371,7 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     *battle.reactions() = std::move(restored.reactions);
     *battle.commands() = std::move(restored.commands);
     *battle.objectives() = std::move(restored.objectives);
-    *battle.random() = std::move(restored.random);
-    return Result<void>::success(Status::success(StatusCode::Applied));
+    *battle.random()     = std::move(restored.random);
 }
 
 }  // namespace eve::tactics

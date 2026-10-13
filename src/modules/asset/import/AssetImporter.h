@@ -108,7 +108,7 @@ struct PreparedAssetImport {
  * @thread Worker-safe.
  * @reentrancy Does not execute extensions, scripts, callbacks, filesystem or network access.
  * @remarks v1 accepts float POSITION/NORMAL/TEXCOORD_0 and unsigned scalar indices;
- * Unsupported primitive modes, sparse/compressed accessors, matrix skeletal nodes,
+ * Unsupported primitive modes, sparse/compressed accessors, non-decomposable skeletal matrices,
  * non-LINEAR skeletal channels and
  * morph animation fail explicitly. All contiguous
  * weight sets (FLOAT or normalized unsigned bytes/shorts) are
