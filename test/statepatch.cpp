@@ -19,7 +19,7 @@ TEST_CASE("statepatch.batch.commitsCanonicalValuesAtomically") {
     REQUIRE(batch.view.isBound());
     CHECK(batch.view->set("entity-b", "health", "{ \"max\": 10, \"now\": 8 }"));
     CHECK(batch.view->set("entity-a", "active", "true"));
-    REQUIRE(store.commit(batch.view.get()));
+    REQUIRE(store.commit(batch.view.get()).ok());
     CHECK_EQ(store.revision(), uint64_t{1});
     CHECK_EQ(store.get("entity-b", "health"), std::string("{\"max\":10,\"now\":8}"));
     CHECK_EQ(store.valueRevision("entity-a", "active"), uint64_t{1});
@@ -31,12 +31,12 @@ TEST_CASE("statepatch.batch.conflictProducesNoPartialWrites") {
     auto  seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("one", "value", "1");
-    REQUIRE(store.commit(seed.view.get()));
+    REQUIRE(store.commit(seed.view.get()).ok());
     auto batch = eve::test_support::openStatePatchBatch(store);
     REQUIRE(batch.view.isBound());
     batch.view->set("two", "value", "2");
     batch.view->setExpected("one", "value", "3", "99");
-    CHECK(!store.commit(batch.view.get()));
+    CHECK(!store.commit(batch.view.get()).ok());
     CHECK(!store.has("two", "value"));
     CHECK_EQ(store.get("one", "value"), std::string("1"));
     CHECK_EQ(store.revision(), uint64_t{1});
@@ -51,7 +51,7 @@ TEST_CASE("statepatch.batch.validatesEverythingBeforeCommit") {
     CHECK(!batch.view->set("ok", "bad-json", "{"));
     batch.view->set("", "missing-subject", "1");
     batch.view->remove("ok", "");
-    CHECK(!store.commit(batch.view.get()));
+    CHECK(!store.commit(batch.view.get()).ok());
     CHECK_EQ(batch.view->result().errors.size(), size_t{3});
     CHECK_EQ(store.revision(), uint64_t{0});
 }
@@ -62,14 +62,14 @@ TEST_CASE("statepatch.batch.sequentialCasAndNoopRevision") {
     REQUIRE(batch.view.isBound());
     batch.view->set("subject", "key", "1");
     batch.view->setExpected("subject", "key", "2", "1");
-    REQUIRE(store.commit(batch.view.get()));
+    REQUIRE(store.commit(batch.view.get()).ok());
     CHECK_EQ(store.get("subject", "key"), std::string("2"));
     CHECK_EQ(store.revision(), uint64_t{1});
     auto noop = eve::test_support::openStatePatchBatch(store);
     REQUIRE(noop.view.isBound());
     noop.view->set("subject", "key", "2");
     noop.view->remove("subject", "absent");
-    REQUIRE(store.commit(noop.view.get()));
+    REQUIRE(store.commit(noop.view.get()).ok());
     CHECK_EQ(store.revision(), uint64_t{1});
     CHECK_EQ(noop.view->result().changedCount, 0);
 }
@@ -81,7 +81,7 @@ TEST_CASE("statepatch.query.dirtyAndEventsAreDeterministic") {
     batch.view->set("z", "b", "2");
     batch.view->set("a", "c", "3");
     batch.view->set("a", "a", "1");
-    REQUIRE(store.commit(batch.view.get()));
+    REQUIRE(store.commit(batch.view.get()).ok());
     CHECK_EQ(store.querySubjects(), 2);
     CHECK_EQ(store.queryAt(0), std::string("a"));
     CHECK_EQ(store.queryKeys("a"), 2);
@@ -101,12 +101,12 @@ TEST_CASE("statepatch.remove.recordsOldValue") {
     auto  seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("s", "k", "{\"x\":1}");
-    REQUIRE(store.commit(seed.view.get()));
+    REQUIRE(store.commit(seed.view.get()).ok());
     store.clearEvents();
     auto removal = eve::test_support::openStatePatchBatch(store);
     REQUIRE(removal.view.isBound());
     removal.view->removeExpected("s", "k", "{ \"x\": 1 }");
-    REQUIRE(store.commit(removal.view.get()));
+    REQUIRE(store.commit(removal.view.get()).ok());
     CHECK(!store.has("s", "k"));
     REQUIRE(store.eventCount() == 1);
     CHECK(store.eventAt(0)->removed);
@@ -120,7 +120,7 @@ TEST_CASE("statepatch.snapshot.roundTripsAndRestoreIsTransactional") {
     REQUIRE(batch.view.isBound());
     batch.view->set("b", "x", "[3,2,1]");
     batch.view->set("a", "x", "{\"z\":0,\"a\":true}");
-    REQUIRE(store.commit(batch.view.get()));
+    REQUIRE(store.commit(batch.view.get()).ok());
     const std::string snapshot = store.snapshotJson();
     Store             restored;
     auto              restoredResult = restored.restoreJson(snapshot);
@@ -148,12 +148,12 @@ TEST_CASE("statepatch.script.batchConflictQueryAndSnapshot") {
         local firstResult = store != null ? store.newBatch() : { ok = false };
         local first = firstResult.ok ? firstResult.value : null;
         if (store != null && first != null && first.set("actor-1", "rank", "3").ok &&
-            first.set("actor-1", "loyalty", "0.75").ok && store.commit(first)) {
+            first.set("actor-1", "loyalty", "0.75").ok && store.commit(first).ok) {
             local conflictResult = store.newBatch();
             local conflict = conflictResult.ok ? conflictResult.value : null;
             if (conflict != null && conflict.set("actor-2", "rank", "1").ok &&
                 conflict.setExpected("actor-1", "rank", "4", "2").ok &&
-                !store.commit(conflict) && conflict.result().errorAt(0).getCode() == "conflict" &&
+                !store.commit(conflict).ok && conflict.result().errorAt(0).getCode() == "conflict" &&
                 !store.has("actor-2", "rank")) {
                 local copyResult = module.newStore();
                 local copy = copyResult.ok ? copyResult.value : null;

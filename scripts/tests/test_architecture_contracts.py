@@ -16,13 +16,23 @@ import check_architecture_contracts as contracts  # noqa: E402
 
 class ArchitectureContractTests(unittest.TestCase):
     def test_repository_catalogue_covers_all_rules(self):
+        self.assertEqual(len(contracts.RULES), len(set(contracts.RULES)))
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
         self.assertEqual([], contracts.validate_catalogue(metadata, today=date(2026, 8, 26)))
         self.assertEqual([], contracts.composed_snapshot_matches())
         self.assertIn("module-interface", contracts.RULES)
 
-    def test_module_interface_requires_explicit_empty_faces_and_trim_profile(self):
+    def test_module_interface_requires_bindings_and_absent_profile(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        entry = next(item for item in metadata["entries"] if item["rule"] == "module-interface")
+        del entry["binds"]
+        del entry["trim"]["absent_profile"]
+        errors = contracts.validate_catalogue(metadata, today=date(2026, 9, 22))
+        self.assertTrue(any("missing binds" in error for error in errors))
+        self.assertTrue(any("trim.absent_profile" in error for error in errors))
+
+    def test_module_interface_requires_explicit_empty_faces_and_trim_profile(self):
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
         reduced = copy.deepcopy(metadata)
         entry = next(item for item in reduced["entries"] if item["rule"] == "module-interface")
         del entry["provides"]
@@ -40,6 +50,16 @@ class ArchitectureContractTests(unittest.TestCase):
         errors = contracts.validate_catalogue(reduced, today=date(2026, 8, 26))
         self.assertTrue(any("binds must be an array" in error for error in errors))
         self.assertTrue(any("missing trim" in error for error in errors))
+
+    def test_module_interface_requires_explicit_surface_arrays(self):
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
+        reduced = copy.deepcopy(metadata)
+        entry = next(item for item in reduced["entries"] if item["rule"] == "module-interface")
+        del entry["binds"]
+        entry["provides"] = "none"
+        errors = contracts.validate_catalogue(reduced, today=date(2026, 8, 26))
+        self.assertTrue(any("missing binds" in error for error in errors))
+        self.assertTrue(any("provides must be an array" in error for error in errors))
 
     def test_missing_required_contract_field_is_rejected(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts")
@@ -115,7 +135,7 @@ class ArchitectureContractTests(unittest.TestCase):
                 }
             ]
         }
-        lines = [contracts.SourceLine("src/modules/test/Link.h", 3, "struct TestLink {};" )]
+        lines = [contracts.SourceLine("src/modules/test/Link.h", 3, "struct TestLink {};")]
         self.assertEqual([], contracts.lint_contract_coverage(lines, metadata))
 
     def test_annotated_established_system_is_not_new_surface(self):
@@ -197,6 +217,24 @@ class ArchitectureContractTests(unittest.TestCase):
 
         self.assertEqual("HEAD", captured["changed"])
         self.assertEqual("HEAD", captured["lint"])
+
+    def test_owned_container_members_are_not_returning_apis(self):
+        declarations = [
+            "std::vector<std::uint8_t> albedo;",
+            "std::vector<std::uint8_t> normal{};",
+            "std::vector<std::uint8_t> params = {};",
+            "std::map<int, std::vector<int>> values;",
+            "std::vector<std::string> collectIds();",
+            "std::map<int, std::vector<int>> values();",
+        ]
+        lines = [
+            contracts.SourceLine("fixture.h", number, text)
+            for number, text in enumerate(declarations, 1)
+        ]
+        findings = contracts.lint_module_interface(lines, {"entries": []})
+        self.assertEqual(
+            [5, 6], [item.line for item in findings if item.code == "missing-cost-annotation"]
+        )
 
     def test_valid_module_interface_fixture_has_cost(self):
         path = ROOT / "scripts/tests/fixtures_architecture_contracts/valid_module_interface.h"

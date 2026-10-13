@@ -65,9 +65,8 @@ void Graphics::initGpuDrivenResources() {
     frameArenas_.resize(frameSlotCount());
     for (auto &arena : frameArenas_) {
         arena.ensure(device, 8u << 20,
-                     vk::BufferUsageFlagBits::eStorageBuffer |
-                         vk::BufferUsageFlagBits::eIndirectBuffer |
-                         vk::BufferUsageFlagBits::eTransferDst);
+                     vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eStorageBuffer |
+                         vk::BufferUsageFlagBits::eIndirectBuffer | vk::BufferUsageFlagBits::eTransferDst);
     }
     createBindlessSet();
     createMesh3DGpuDrivenPipeline();

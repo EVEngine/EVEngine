@@ -113,20 +113,20 @@ TEST_CASE("ui.presentation.dynamic_model_validates_and_notifies") {
     auto subscription = model.subscribe(
         [&changes](const PropertyChange &change) { changes.push_back(change); });
 
-    CHECK(model.write("movement.speed", Value(8.0)).accepted);
+    CHECK(model.write("movement.speed", Value(8.0)).ok());
     REQUIRE_EQ(changes.size(), static_cast<std::size_t>(1));
     CHECK_EQ(changes.front().path, std::string("movement.speed"));
     CHECK_EQ(model.revision(), std::uint64_t(1));
     REQUIRE(model.read("movement.speed").has_value());
     CHECK_EQ(*model.read("movement.speed")->getIf<double>(), 8.0);
 
-    CHECK(!model.write("movement.speed", Value(20.0)).accepted);
-    CHECK(!model.write("movement.mode", Value("swim")).accepted);
-    CHECK(!model.write("debug.label", Value("changed")).accepted);
+    CHECK(!model.write("movement.speed", Value(20.0)).ok());
+    CHECK(!model.write("movement.mode", Value("swim")).ok());
+    CHECK(!model.write("debug.label", Value("changed")).ok());
     CHECK_EQ(changes.size(), static_cast<std::size_t>(1));
 
     subscription.dispose();
-    CHECK(model.write("state.alive", Value(false)).accepted);
+    CHECK(model.write("state.alive", Value(false)).ok());
     CHECK_EQ(changes.size(), static_cast<std::size_t>(1));
 }
 
@@ -169,7 +169,7 @@ TEST_CASE("ui.presentation.generated_view_binds_two_way") {
     REQUIRE(model.read("movement.mode").has_value());
     CHECK_EQ(*model.read("movement.mode")->getIf<std::string>(), std::string("fly"));
 
-    CHECK(model.write("movement.speed", Value(3.0)).accepted);
+    CHECK(model.write("movement.speed", Value(3.0)).ok());
     syncPropertyView(*host, model, options);
     CHECK_EQ(node(*host, "player/movement_speed")->value, 3.0f);
 
@@ -215,7 +215,7 @@ TEST_CASE("ui.presentation.component_tracks_model_revision") {
     component.rebuild();
     CHECK(!component.isDirty());
 
-    CHECK(model.write("state.alive", Value(false)).accepted);
+    CHECK(model.write("state.alive", Value(false)).ok());
     CHECK(component.isDirty());
     CHECK(component.updateIfDirty());
     CHECK(!component.isDirty());

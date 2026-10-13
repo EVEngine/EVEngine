@@ -284,6 +284,32 @@
       "projections": "Froxel AtmosphereVolume, BeerLightCache, FogRayResult and ContinuousArtOutput are invalidatable projections of the density/optics owners."
     },
     {
+      "id": "scene-authoring-document-owner",
+      "rule": "state-owner",
+      "scope": "src/modules/scene/editing/SceneAuthoring*",
+      "owner": "scene_editing maintainers",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Authoring values have one owner; render resources and scene-link matrices are rebuildable projections.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/editing/SceneAuthoringDocument.h",
+        "src/scripts/scene_director.nut",
+        "docs/dev/2026-10-11-ai-scene-authoring.md",
+        "docs/dev/2026-10-11-scene-relations-validation.md",
+        "docs/dev/2026-10-11-scene-regions-validation.md"
+      ],
+      "tests": [
+        "test/scene_authoring.cpp",
+        "test/graphics_authoring_projection.cpp",
+        "test/scene_authoring_script.cpp",
+        "test/scene_relations.cpp",
+        "test/scene_regions.cpp"
+      ],
+      "state": "Hierarchy/TRS, source recipes, camera/lighting and persisted relation intent.",
+      "authoritative_owner": "SceneAuthoringDocumentTarget owns values; SceneEditorSession owns the target and its transaction history. Bound imported SceneHost remains its own live authority.",
+      "projections": "Director resource cache contains geometry/resources only; native SceneHost projection and Renderable3D linkedWorld are rebuilt. No duplicate script TRS owner."
+    },
+    {
       "id": "state-owner-policy",
       "rule": "state-owner",
       "scope": "src/**",
@@ -341,7 +367,7 @@
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/climbing/ClimbingInput.h",
-        "docs/dev/superpowers/specs/2026-08-28-climbing-parkour-system.md"
+        "docs/usr/modules/climbing.md"
       ],
       "tests": [
         "test/climbing_input.cpp",
@@ -546,7 +572,7 @@
       "evidence": [
         "src/modules/npc_ai/NpcAiECS.h",
         "src/modules/npc_ai/NpcAiECS.cpp",
-        "docs/dev/superpowers/specs/2026-08-30-npc-ai-framework.md"
+        "docs/usr/modules/npc_ai.md"
       ],
       "tests": [
         "test/npc_ai_ecs.cpp",
@@ -826,11 +852,14 @@
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/ui/UISystem.h",
-        "docs/dev/重构代码质量与系统完整性规范.md"
+        "docs/dev/重构代码质量与系统完整性规范.md",
+        "src/modules/ui/Component.cpp",
+        "src/modules/ui/UIComponentScript.cpp"
       ],
       "tests": [
         "test/ui_control_semantics.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/UIComponentScheduling.cpp"
       ],
       "systems": [
         "UISystem"
@@ -839,7 +868,7 @@
       "view": "Generation-checked UI component tree plus per-frame input state.",
       "read_set": "Widget state, layout inputs, input events and backend availability.",
       "write_set": "Widget interaction state, dirty flags, layout/render submissions.",
-      "structural_changes": "Widget structural edits are queued by UI owner; traversal does not mutate tree topology directly.",
+      "structural_changes": "Dirty native components flush before the widget View is opened; widget structural edits never occur during traversal.",
       "events": "UI input/change events are emitted after state mutation; backend callbacks are not retained.",
       "services": "Borrowed UIBackend, injected input frame and script bindings on the owner thread.",
       "phase": "UI input/layout/render phase."
@@ -1029,6 +1058,36 @@
       "restore_atomicity": "Stage member references and order validation before root mutation, then publish groups with the validated restored roots."
     },
     {
+      "id": "scene-authoring-document-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/scene/editing/SceneAuthoringDocument.*",
+      "owner": "scene_editing maintainers",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Complete owning authoring snapshots validate before reversible transactional publication.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/editing/SceneAuthoringDocument.cpp",
+        "docs/dev/2026-10-11-ai-scene-authoring.md",
+        "docs/dev/2026-10-11-scene-relations-validation.md",
+        "src/modules/scene/editing/SceneRegions.cpp",
+        "src/engine/common/SceneLocalRegion.h",
+        "docs/dev/2026-10-11-scene-regions-validation.md",
+        "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
+      ],
+      "tests": [
+        "test/scene_authoring.cpp",
+        "test/scene_authoring_script.cpp",
+        "test/scene_relations.cpp",
+        "test/scene_regions.cpp",
+        "test/scene_projected_overlap.cpp"
+      ],
+      "schema": "eve.scene.authoring; hierarchy, sources, camera, lighting, relations and schemaId/schemaVersion. No native pointers or simulation state.",
+      "version": "Integer 4; hierarchy v1, optional local-region v1.",
+      "migration": "Explicit v1/v2/v3 to v4, preserve relations; v1 adds empty relations. Regions require v3; projected_overlap requires v4; unknown fields/versions reject atomically.",
+      "unknown_fields": "Reject unknown document and payload fields, invalid vector shapes, nonfinite numbers, invalid materials and camera basis.",
+      "restore_atomicity": "Validate complete candidate and prepare owning copies before swapping hierarchy and payloads. Source preparation occurs before Director command publication; projection failures restore the old document."
+    },
+    {
       "id": "sky-profile-persistence-contract",
       "rule": "persistence",
       "scope": "src/modules/daynight/sky/SkyProfile.*",
@@ -1075,6 +1134,48 @@
       "restore_atomicity": "Load builds owned immutable candidates; GPU preparation validates material semantics and copies data before any contributor is published. Existing runtime state is untouched on failure."
     },
     {
+      "id": "smooth-mountain-terraingenerationsession-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/procgen/heightmap/TerrainGenerationSession.cpp",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainGenerationSession.cpp"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp_persistence.cpp"
+      ],
+      "schema": "eve.procgen.terrain-generation-session",
+      "version": "2",
+      "migration": "Read v1 with zero smoothWidth/edgeFade; reject new operation 6 in old records.",
+      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
+      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
+    },
+    {
+      "id": "smooth-mountain-terrainspawnplancodec-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp_persistence.cpp"
+      ],
+      "schema": "eve.procgen.terrain-spawn-plan",
+      "version": "4",
+      "migration": "Read versions 0-3 with zero smoothWidth/edgeFade; preserve prior enabled migration; reject operations outside the version-supported Raise..SmoothRaise range.",
+      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
+      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
+    },
+    {
       "id": "tactics-persistence-contract",
       "rule": "persistence",
       "scope": "src/modules/tactics/TacticsPersistence.h",
@@ -1089,11 +1190,12 @@
       ],
       "tests": [
         "test/tactics_replay.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/tactics_graph.cpp"
       ],
       "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
-      "version": "SchemaVersion 1; battle Revision and SimulationTick remain separate typed envelope fields.",
-      "migration": "There is no older released tactics schema; version 1 is exact and newer/unknown versions are rejected until an explicit migration is registered.",
+      "version": "Grid boards emit schema 6; ExplicitGraph boards emit schema 7. Revision and SimulationTick remain distinct.",
+      "migration": "Versions 1-6 retain existing migrations. Version 7 adds explicit graph topology with the existing directed edge records; graph topology in older versions and unknown versions are rejected.",
       "unknown_fields": "Envelope and tactics payload objects reject unknown or missing fields; arrays validate every owning record.",
       "restore_atomicity": "Hash, identity, version, complete payload, links and invariants are validated in a local Candidate before one commit to battle/components."
     },
@@ -1322,6 +1424,39 @@
       }
     },
     {
+      "id": "asset-import-structured-models-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/asset/import/*",
+      "owner": "asset-import maintainers",
+      "issue": "EVENGINE-STRUCTURED-MODEL-IMPORT",
+      "reason": "SCAD compiler output and native LDraw expansion prepare canonical mesh/material/scene candidates; only the existing asset store publishes them.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/asset/import/StructuredModelImporter.h",
+        "src/modules/asset/import/AssetCommand.cpp",
+        "docs/usr/modules/asset-structured-models.md"
+      ],
+      "tests": [
+        "test/asset_import_structured_models.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "eve asset import --from scad|ldraw prepares .eva; existing asset cook produces .evpack"
+      ],
+      "thread_affinity": "Pure parsing/encoding is worker-safe and reentrant; external OpenSCAD process is desktop authoring only. GPU consumption uses the existing graphics-thread adapter.",
+      "hot_path": [],
+      "cost_notes": [
+        "Offline builder-style requests expand/copy geometry once per import; no runtime per-frame compilation or string lookup."
+      ],
+      "trim": {
+        "absent_profile": "L4 observable: OpenSCAD executable absent returns a checked failure, covered by structuredModelsScadCompilerAbsent; mobile/browser compiler adapter returns Unsupported. Cooked consumers do not invoke the compiler. No new independently trimmable module is claimed."
+      }
+    },
+    {
       "id": "attributes-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/attributes/**",
@@ -1405,6 +1540,49 @@
       ]
     },
     {
+      "id": "binding-architecture-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/ScriptCompiler*",
+      "owner": "foundation binding contracts; scene owns reviewed domain metadata",
+      "issue": "EVENGINE-SEMANTIC-WORLD-PHASE1",
+      "reason": "Existing API query returns generated implementation and bounded owner evidence without live state reads.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/ScriptCompiler.h",
+        "src/engine/common/ScriptCompiler.cpp",
+        "scripts/binding_architecture.py",
+        "src/modules/scene/binding_architecture.json",
+        "docs/dev/脚本契约架构映射.md"
+      ],
+      "tests": [
+        "test/scene_binding_architecture.cpp",
+        "test/mcp_binding_architecture.cpp",
+        "scripts/tests/test_binding_architecture.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Build-time static registration and reviewed owner/test references; no world state reads."
+      ],
+      "binds": [
+        "Existing eve_api_get/eve_api_search serialize the generated BindingContract."
+      ],
+      "protocol": [
+        "eve.binding-api v1 additive source/cppSymbol/architecture; mapped architecture schemaVersion 1; unknown coverage explicit."
+      ],
+      "cost_notes": [
+        "Generation scans source; serialization scales with contract metadata, outside simulation hot paths."
+      ],
+      "hot_path": [],
+      "thread_affinity": "Registry/main MCP poll thread; owning immutable metadata; no script callbacks.",
+      "trim": {
+        "claim": "Catalogue presence only; no general binary trim claim",
+        "absent_profile": "Scene-disabled generation omits scene contracts entirely.",
+        "evidence": "scripts/tests/test_binding_architecture.py"
+      }
+    },
+    {
       "id": "crowd-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/crowd/Crowd*",
@@ -1415,7 +1593,7 @@
       "evidence": [
         "src/modules/crowd/Crowd.h",
         "src/modules/crowd/CrowdBindings.cpp",
-        "docs/dev/2026-09-22-rts-crowd-implementation.md",
+        "docs/dev/群体行为与流场模块设计.md",
         "cmake/profile_checks.cmake"
       ],
       "tests": [
@@ -1537,6 +1715,97 @@
       ]
     },
     {
+      "id": "devtools-mcp-input-tools-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/McpInputTools*",
+      "owner": "devtools::McpInputTools",
+      "issue": "EVENGINE-MCP-PLAYTEST",
+      "reason": "Playtest input batches inject through IInputInjection / IUIAutomation without upward includes; wait/capture completes across poll ticks.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/InputInjection.h",
+        "src/engine/devtools/McpInputTools.cpp",
+        "docs/dev/AI与MCP支持.md"
+      ],
+      "tests": [
+        "test/mcp_input_tools.cpp",
+        "test/mcp_tool_filter.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IInputInjection",
+          "required": false,
+          "fallback": "eve_input_batch returns unavailable JSON; ui_click-only batches may still use IUIAutomation"
+        },
+        {
+          "capability": "IUIAutomation",
+          "required": false,
+          "fallback": "ui_click actions fail with named unavailable; device ops still work"
+        },
+        {
+          "capability": "IRenderCapture",
+          "required": false,
+          "fallback": "capture=true completes with retryable/unavailable diagnostics"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "desktop builds provide IInputInjection via platform_event; trimmed mobile/web omit EVDevTools MCP entirely"
+      },
+      "thread_affinity": "MCP poll / game-loop thread only",
+      "hot_path": [],
+      "protocol": [
+        "eve_input_batch / eve_input_poll / eve_input_status; EVE_MCP_TOOLSET/READONLY/EXCLUDE filter tools/list and tools/call"
+      ],
+      "cost_notes": [
+        "Batch size is agent-bounded; waitFrames advances one count per McpServer::poll"
+      ]
+    },
+    {
+      "id": "devtools-play-host-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/PlayHost*",
+      "owner": "devtools maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "Game observation projects only declared fields and invalid protocol input returns diagnostics without unchecked Results.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/PlayHost.h",
+        "docs/dev/hex-planet-civilization.md"
+      ],
+      "tests": [
+        "test/play_host.cpp",
+        "test/play_trace.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        "Existing IRenderCapture for capture (Unsupported when absent); existing gameplay control for gameplay-domain actions. Script observation invokes neither provider."
+      ],
+      "emits": [
+        "Existing PlayTraceBuffer receipts for successful requests unless trace is off."
+      ],
+      "observes": [
+        "Declared, snapshot-policy-eligible Squirrel root fields; no ECS or native snapshot enumeration for observe."
+      ],
+      "binds": [],
+      "protocol": [
+        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 unchanged. Unknown request fields remain rejected."
+      ],
+      "thread_affinity": "Owner simulation thread; synchronous owning Value projection. Raw table path lookup invokes no getters or callbacks and retains no VM pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "This change validates the existing host tooling build and injected runtime, not a new trimmed profile.",
+        "absent_profile": "No absent-provider profile validated by this change; existing full host tooling only, with no trim claim."
+      },
+      "cost_notes": [
+        "Observe scales with selected fields and converted values, bounded by the common Squirrel conversion limits. Whole-root observation remains explicit through an empty fields list."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "devtools-soft-restart-module-interface",
       "rule": "module-interface",
       "scope": "src/engine/devtools/**",
@@ -1578,22 +1847,28 @@
       "scope": "src/modules/graphics/**",
       "owner": "graphics-maintainers",
       "issue": "EVENGINE-MODULAR-ASSET-IMPORT",
-      "reason": "Changed import faces retain backend-owned shared textures and explicit foliage material state; existing faces are unchanged.",
+      "reason": "Resource factory owns cached file textures and samplers; groom mutations reuse backend meshes. Authoring queries use computed vertex bounds and links preserve complete world matrices.",
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/graphics/IResourceFactory.h",
         "src/modules/graphics/Graphics.h",
-        "docs/usr/modules/graphics.md"
+        "docs/usr/modules/graphics.md",
+        "src/modules/graphics/vulkan/GraphicsSampler.cpp",
+        "src/modules/graphics/webgpu/GraphicsSampler.cpp",
+        "src/modules/graphics/hair/GroomAsset.cpp"
       ],
       "tests": [
         "test/resource_lifetime.cpp",
-        "test/graphics_vegetation_translucency.cpp"
+        "test/graphics_vegetation_translucency.cpp",
+        "test/graphics_resource_reuse.cpp",
+        "test/graphics_authoring_projection.cpp",
+        "scripts/scene_authoring_smoke.py"
       ],
       "provides": [
         {
           "capability": "IResourceFactory",
           "impl": "vulkan::Graphics and webgpu::Graphics",
-          "absent_behavior": "Default newSharedTexture reports Unsupported; no implicit uncached allocation."
+          "absent_behavior": "Default newSharedTexture and loadTexture report Unsupported; no implicit uncached allocation."
         }
       ],
       "requires": [
@@ -1607,6 +1882,24 @@
       "observes": [],
       "binds": [
         {
+          "script_class": "eve.Mesh",
+          "methods": [
+            "getLocalBounds"
+          ]
+        },
+        {
+          "script_class": "eve.Renderable3D",
+          "methods": [
+            "getMetallic"
+          ]
+        },
+        {
+          "script_class": "eve",
+          "methods": [
+            "destroyRenderable3D"
+          ]
+        },
+        {
           "script_class": "graphics.Material",
           "methods": [
             "setFoliageTranslucency"
@@ -1616,7 +1909,9 @@
           "script_class": "graphics",
           "methods": [
             "configureFoliageWind",
-            "setFoliageWindTime"
+            "setFoliageWindTime",
+            "loadTexture",
+            "setTextureSampler"
           ]
         }
       ],
@@ -1635,10 +1930,243 @@
           "api": "configureFoliageWind",
           "shape": "two-step",
           "why": "Prepare once, then explicit setFoliageWindTime updates per frame."
+        },
+        {
+          "api": "loadTexture",
+          "shape": "owned-result",
+          "why": "Canonical ready load returns ResultRef borrowing the graphics cache; a miss completes preparation, resident hits do not probe the source or upload."
+        },
+        {
+          "api": "newTextureFromFile",
+          "shape": "named-load",
+          "why": "Legacy facade: first use prepares pixels; resident cache hits do not probe files or upload. Reload is explicit."
+        },
+        {
+          "api": "setTextureSampler",
+          "shape": "scheduled-setter",
+          "why": "Equal state does no backend work; edits publish before consuming draws, with one Vulkan descriptor drain per changed batch."
+        },
+        {
+          "api": "GroomInstance::update",
+          "shape": "scheduled-derived",
+          "why": "Every simulation dt executes; derived geometry publishes once in view preparation or explicit draw. Mesh identity/capacity is reused."
         }
       ],
       "hot_path": [
-        "src/modules/graphics/RenderSystem3D.cpp"
+        "src/modules/graphics/RenderSystem3D.cpp",
+        "src/modules/graphics/hair/GroomAsset.cpp",
+        "src/modules/graphics/vulkan/GraphicsSampler.cpp",
+        "src/modules/graphics/webgpu/GraphicsSampler.cpp"
+      ]
+    },
+    {
+      "id": "graphics-raytracing-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/graphics/raytracing/**",
+      "owner": "graphics::raytracing::VulkanRayTracing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Optional Vulkan reflections own acceleration structures, retire in-flight resources, and publish premultiplied material-weighted visible hits.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/IRayTracing.h",
+        "src/modules/graphics/raytracing/vulkan/VulkanRayTracing.cpp",
+        "src/modules/graphics/shaders/rt_reflection.rgen",
+        "cmake/module_manifest/modules/graphics.cmake"
+      ],
+      "tests": [
+        "test/graphics_raytracing.cpp",
+        "test/graphics_raytracing_alignment.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IRayTracing",
+          "impl": "VulkanRayTracing",
+          "absent_behavior": "RenderSystem3D selects portable SSR when absent, unsupported, failed, or NoOp."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IRayTracing",
+          "required": false,
+          "fallback": "RayTracing facade reports unavailable."
+        },
+        {
+          "capability": "Graphics",
+          "required": true,
+          "fallback": "Non-Vulkan or unsupported devices return Unsupported before allocation."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.RayTracing",
+          "methods": [
+            "isAvailable",
+            "capsAvailable"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "2d / minimal / web exclude graphics_raytracing; no new L2 trim claim."
+      },
+      "thread_affinity": "Render thread; no callbacks. Graphics owns the device and detaches the provider before device destruction.",
+      "cost_notes": [
+        {
+          "api": "addMesh / rebuildScene / applyReflections / clearScene",
+          "shape": "two-step",
+          "why": "Registration and acceleration build precede tracing; the current implementation rebuilds each frame and retires GPU references synchronously."
+        }
+      ],
+      "hot_path": [
+        "src/modules/graphics/raytracing/vulkan/VulkanRayTracing.cpp"
+      ],
+      "module_interface": {
+        "ecs_links": "None; copied geometry and transforms are owned by the backend.",
+        "hard_dependencies": "graphics Vulkan device and upload pool through existing backend adaptation.",
+        "connection": "One provider, per-frame interface calls, known render consumer, ordered graphics-queue operations; existing capability discovery only at backend boundaries."
+      }
+    },
+    {
+      "id": "graphics-scene-visibility",
+      "rule": "module-interface",
+      "scope": "src/modules/graphics/SceneVisibility*",
+      "owner": "graphics::SceneVisibilityQuery",
+      "issue": "EVENGINE-AI-SCENE-AUTHORING",
+      "reason": "Bounded owning queries measure explicit authoring candidates on isolated GPU targets without mutating SceneHost or retaining native pointers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/SceneVisibility.h",
+        "src/modules/graphics/SceneVisibility.cpp",
+        "src/modules/graphics/vulkan/GraphicsVisibility.cpp",
+        "docs/dev/2026-10-11-scene-visibility-validation.md",
+        "docs/dev/2026-10-11-scene-visual-relations-validation.md",
+        "src/engine/common/SceneVisibilityEvidence.h",
+        "src/modules/graphics/SceneVisibilityProvider.cpp",
+        "docs/dev/2026-10-11-scene-regions-validation.md",
+        "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
+      ],
+      "tests": [
+        "test/scene_visibility.cpp",
+        "scripts/scene_authoring_smoke.py",
+        "test/scene_regions.cpp",
+        "test/scene_projected_overlap.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "SceneVisibilityQuery",
+          "impl": "graphics script/native owning builder and Vulkan private raster targets",
+          "absent_behavior": "Default backend capture reports Unsupported; missing script provider is observable."
+        },
+        {
+          "capability": "ISceneVisibilityEvidence",
+          "impl": "Graphics-bound VisibilityProvider",
+          "absent_behavior": "Revoked on matching Graphics teardown; consumers explicitly reject visual operations."
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve",
+          "methods": [
+            "prepareSceneVisibility"
+          ]
+        },
+        {
+          "script_class": "eve.SceneVisibilityQuery",
+          "methods": [
+            "measure"
+          ]
+        }
+      ],
+      "protocol": [
+        {
+          "schema_id": "eve.scene.visibility-request",
+          "version": 2,
+          "unknown_fields": "reject",
+          "migration": "v1 whole-object string targets remain supported; v2 adds strict local-region selectors."
+        },
+        {
+          "schema_id": "eve.scene.visibility-evidence",
+          "version": 3,
+          "unknown_fields": "owning output; consumers must check status and version",
+          "migration": "No persistent state; v3 adds directed independent full-silhouette intersection evidence."
+        },
+        {
+          "schema_id": "eve.scene.local-region",
+          "version": 1,
+          "unknown_fields": "reject",
+          "migration": "Unsupported versions/kinds rejected; local_box selects actual target surface pixels."
+        }
+      ],
+      "thread_affinity": "Engine owner thread only; synchronous prepare/measure; no callbacks or retained resource pointers.",
+      "trim": {
+        "absent_profile": "No new trim claim. Default unsupported backend contract tested without initialized GPU; Vulkan integration measured on native host."
+      },
+      "hot_path": [],
+      "cost_notes": [
+        {
+          "api": "SceneVisibilityQuery::prepare/measure",
+          "shape": "two-step",
+          "why": "Single-use bounded query: one scene plus one isolated pass per unique object; CPU target-mask intersection O(targets squared times viewport pixels)."
+        }
+      ],
+      "module_interface": {
+        "capability_in": "Graphics borrowed during explicit measure only.",
+        "capability_out": "ISceneVisibilityEvidence inspect/measure and owning generation proof; no cached pointers.",
+        "ecs_links": "Named native SceneHost mapping validated every check; host/entity/upload generations and live model prove stale state.",
+        "events": "None.",
+        "script_bindings": "Owned one-use query; prepareSceneVisibility and measure.",
+        "tool_protocol": "MCP visibility/region/depth-independent projected_overlap; authoring document v4.",
+        "hard_dependencies": "Existing graphics, common, image and Squirrel; no upward include or new module.",
+        "connection": "One caller, explicit expensive query, known backend, synchronous snapshot/readback; never per-frame lookup.",
+        "trim_claim": "No new L2/L3/L4 trimming claim."
+      }
+    },
+    {
+      "id": "hexmap-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/hexmap/**",
+      "owner": "hexmap maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "Sphere direction queries must project native xyz arrays usable by script camera and marker consumers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/hex-planet-civilization.md",
+        "docs/usr/modules/hexmap.md"
+      ],
+      "tests": [
+        "test/hexmap_sphere_script.cpp",
+        "test/hexmap_sphere.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "HexMap.sphereDirection",
+        "HexMap.sphereCornerDirection"
+      ],
+      "protocol": [],
+      "thread_affinity": "simulation/main; no unknown callbacks while holding locks",
+      "trim": {
+        "layer": "L1",
+        "absent_profile": "server",
+        "evidence": "server profile omits hexmap and graphics; tactics graph compiles independently."
+      },
+      "cost_notes": [
+        "Direction queries copy three scalar values to a native Squirrel array; no mesh generation or borrowed pointer."
+      ],
+      "hot_path": [
+        "src/modules/hexmap/HexSphereMap.cpp",
+        "src/modules/hexmap/HexSphereTopology.cpp"
+      ],
+      "hard_dependencies": [
+        "common",
+        "graphics"
       ]
     },
     {
@@ -1726,6 +2254,50 @@
       ]
     },
     {
+      "id": "math-smooth-max-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/math/*Smooth*",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Declare the changed scalar-math surface, ownership, cost and trim evidence explicitly.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/SmoothMax.h",
+        "src/modules/math/MathSmooth.cpp",
+        "docs/usr/modules/math.md"
+      ],
+      "tests": [
+        "test/math_smooth_max.cpp"
+      ],
+      "thread_affinity": "Pure scalar calculation on any thread; no module registration or RNG access.",
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "protocol": [],
+      "binds": [
+        {
+          "script_class": "Math",
+          "methods": [
+            "smoothMax"
+          ]
+        }
+      ],
+      "hot_path": [
+        "src/engine/common/SmoothMax.h"
+      ],
+      "trim": {
+        "absent_profile": "No trim claim; the scalar header and analyzer adapter compile independently of graphics."
+      },
+      "cost_notes": [
+        {
+          "api": "smoothMax",
+          "shape": "scalar-value",
+          "why": "Constant arithmetic per height sample, no allocations."
+        }
+      ]
+    },
+    {
       "id": "model3d-import-surface",
       "rule": "module-interface",
       "scope": "src/modules/model3d/**",
@@ -1801,6 +2373,40 @@
         "absent_profile": "policy envelope only; concrete modules declare their trim profile"
       },
       "thread_affinity": "policy envelope; concrete modules declare affinity",
+      "hot_path": [],
+      "protocol": [],
+      "cost_notes": []
+    },
+    {
+      "id": "platform-event-input-injection-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/platform_event/sdl/InputInjection.cpp",
+      "owner": "platform_event",
+      "issue": "EVENGINE-MCP-PLAYTEST",
+      "reason": "SDL_PushEvent-backed IInputInjection keeps Keyboard/Mouse isDown consistent after the next pump.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/InputInjection.h",
+        "src/modules/platform_event/sdl/InputInjection.cpp"
+      ],
+      "tests": [
+        "test/mcp_input_tools.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IInputInjection",
+          "impl": "platform_event/sdl/InputInjection.cpp",
+          "absent_behavior": "cap::query returns null when platform_event is trimmed"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "profiles without platform_event omit the provider; MCP reports unavailable"
+      },
+      "thread_affinity": "game-loop / MCP poll thread; SDL_PushEvent is not for worker threads",
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
@@ -1925,6 +2531,110 @@
       "hot_path": []
     },
     {
+      "id": "procgen-mountain-stamp-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/heightmap/Terrain*Stamp*",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Declare the mountain-stamp bake and SmoothRaise surfaces, ownership, cost and trim evidence explicitly.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainMeshStamp.h",
+        "src/modules/procgen/heightmap/TerrainStamp.h"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp.cpp",
+        "test/terrain_smooth_stamp_script.cpp"
+      ],
+      "thread_affinity": "Caller owns output rasters; source mutations serialized; read-only builder bakes may use distinct outputs concurrently.",
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "protocol": [],
+      "binds": [
+        {
+          "script_class": "TerrainMeshStampBuilder",
+          "methods": [
+            "setSource",
+            "bake"
+          ]
+        },
+        {
+          "script_class": "ProcgenHeightmap",
+          "methods": [
+            "applyStamp"
+          ]
+        }
+      ],
+      "hot_path": [
+        "src/modules/procgen/heightmap/TerrainStamp.cpp",
+        "src/modules/procgen/heightmap/TerrainMeshStamp.cpp"
+      ],
+      "trim": {
+        "absent_profile": "procgen-core-only compiles both native translation units; standalone native tests additionally link/run without graphics."
+      },
+      "cost_notes": [
+        {
+          "api": "TerrainMeshStampBuilder.bake",
+          "shape": "builder",
+          "why": "Bounded triangle projection; bake once and reuse rasters."
+        }
+      ]
+    },
+    {
+      "id": "procgen-script-binding-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/Procgen*.cpp",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Script-facing instance publish and PointSet world projection optionally query scene/physics capabilities; absent providers return structured Result failures.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/ProcgenInstances.cpp",
+        "src/modules/procgen/ProcgenPointSetApi.cpp",
+        "docs/usr/modules/procgen/pointset-pipeline.md"
+      ],
+      "tests": [
+        "test/procgen_scene_sink.cpp",
+        "test/procgen_scene_sink.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IProcgenSceneSink",
+          "required": false,
+          "fallback": "publish/remove/reconcile instance APIs return Failed when the scene sink is absent"
+        },
+        {
+          "capability": "IProcgenWorldQuery",
+          "required": false,
+          "fallback": "projectToWorld returns Unsupported when no world-query provider is registered"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Procgen",
+          "methods": [
+            "publishInstances",
+            "removeInstances",
+            "projectToWorld"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime without scene/physics drops the matching capability; script APIs stay linked and fail with structured Result"
+      },
+      "thread_affinity": "Squirrel owning thread / module owner thread; capability pointers are not retained across calls",
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
       "id": "profiler-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/profiler/**",
@@ -1990,7 +2700,7 @@
         "src/modules/rts/RTSFormationBindings.cpp",
         "src/modules/rts/RTSReplay.cpp",
         "src/modules/rts/RTSSnapshot.cpp",
-        "docs/dev/2026-09-22-rts-crowd-implementation.md"
+        "docs/dev/群体行为与流场模块设计.md"
       ],
       "tests": [
         "test/rts_groups.cpp",
@@ -2030,6 +2740,68 @@
       ]
     },
     {
+      "id": "scene-authoring-editor-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/scene/editor/Scene*",
+      "owner": "scene_editor maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "MCP, script and editor commands share native document ownership and transaction history.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/editor/SceneAuthoringBindings.cpp",
+        "src/modules/scene/editor/SceneEditorModule.cpp",
+        "docs/dev/2026-10-11-ai-scene-authoring.md",
+        "docs/dev/2026-10-11-scene-relations-validation.md",
+        "docs/dev/2026-10-11-scene-visual-relations-validation.md",
+        "docs/dev/2026-10-11-scene-regions-validation.md",
+        "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
+      ],
+      "tests": [
+        "test/scene_authoring.cpp",
+        "test/scene_authoring_script.cpp",
+        "test/graphics_authoring_projection.cpp",
+        "tools/scene-qc-agent/tests/test_reference.py",
+        "test/scene_relations.cpp",
+        "test/scene_regions.cpp",
+        "test/scene_projected_overlap.cpp"
+      ],
+      "provides": [
+        "Existing IEditorAutomationTargetFactory adds scene-authoring; target exposes standard hierarchy/transform/snapshot interfaces."
+      ],
+      "requires": [
+        "Scene editing command registry and Editor coordinator. Authoring documents/queries do not require a graphics provider; Director resource projection requires one and reports preparation failure when absent.",
+        {
+          "capability": "ISceneVisibilityEvidence",
+          "required": false,
+          "fallback": "Explicit Unsupported for visual preview/check; physics-only placement remains available."
+        }
+      ],
+      "emits": [],
+      "observes": [
+        "Stable object ids and owning Value snapshots; optional live targets use existing generation-checked SceneHost links."
+      ],
+      "binds": [
+        "SceneEditorModule.createAuthoringSession and inspectAuthoringSnapshot; existing SceneEditorSession command/history/snapshot methods.",
+        "SceneEditorSession.beginRelationPlacement/checkRelationPlacement reuse existing update/commit/cancel physics placement.",
+        "SceneEditorSession.prepareRelationVisibility validates owning projection proof; check/commit rerasterize all persisted visual relations.",
+        "SceneEditorSession.geometryRevision; Director geometry_revision and regional relations auto-bind missing geometry tokens."
+      ],
+      "protocol": [
+        "eve_scene_modify adds ground/align/screen/save/restore/undo/redo/command/bind_host and expectedRevision. Formal scene.authoring.*.v1 and scene.placement.*.v1 commands are owned by scene_editing.",
+        "eve_scene_modify relations/relation_begin/relation_update/relation_check/relation_commit/relation_discard; pair-qualified collision-proxy reports and hard relation checks."
+      ],
+      "thread_affinity": "Owner thread; synchronous owning Value conversion, no locks or unknown callbacks. Resources and native scene links use render-thread affinity.",
+      "trim": {
+        "claim": "none",
+        "absent_profile": "No new trim claim. Native document tests exercise renderer independence; provider absence returns explicit errors."
+      },
+      "hot_path": [],
+      "cost_notes": [
+        "Geometry inspection transforms eight bounds corners and traverses ancestors per edit. Snapshot and staging copy per document edit; source resource preparation is expensive and precedes publication. Unchanged per-frame refresh checks revision only.",
+        "Private world per begin; contacts plus blocking GPU raster/readback per explicit visual check/commit. One adjustable leaf, no per-frame lookup."
+      ]
+    },
+    {
       "id": "scene-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/scene/**",
@@ -2039,11 +2811,16 @@
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/scene/SceneCapabilities.cpp",
-        "docs/dev/场景对象模型使用指南.md"
+        "docs/dev/场景对象模型使用指南.md",
+        "src/modules/scene/SceneComponent.h",
+        "src/modules/scene/SceneCameraQueries.cpp",
+        "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [
         "test/scene.cpp",
-        "scripts/tests/test_architecture_contracts.py"
+        "scripts/tests/test_architecture_contracts.py",
+        "test/scene_component_scheduling.cpp",
+        "test/scene_object_lifetime.cpp"
       ],
       "provides": [
         {
@@ -2095,7 +2872,13 @@
         "src/modules/scene/TransformSystem.cpp"
       ],
       "protocol": [],
-      "cost_notes": []
+      "cost_notes": [
+        {
+          "api": "SceneComponent::markDirty",
+          "shape": "scheduled-setter",
+          "why": "One weak registration per dirty component; flush before TransformSystem traversal, preserving edits raised by build and cancelling destroyed owners."
+        }
+      ]
     },
     {
       "id": "statepatch-module-interface",
@@ -2146,6 +2929,78 @@
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
+    },
+    {
+      "id": "tactics-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/tactics/**",
+      "owner": "tactics maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "A spherical hex consumer needs explicit graph adjacency without a dependency from tactics to hexmap.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/hex-planet-civilization.md",
+        "src/modules/tactics/TacticsTypes.h"
+      ],
+      "tests": [
+        "test/tactics_graph.cpp",
+        "test/tactics_script.cpp",
+        "examples/hex-planet/civilization_test.nut"
+      ],
+      "provides": [
+        {
+          "capability": "IGameplayControlProvider",
+          "impl": "tactics::Tactics",
+          "absent_behavior": "no tactics gameplay instances"
+        },
+        {
+          "capability": "IGameplayInstanceCatalog",
+          "impl": "tactics::Tactics",
+          "absent_behavior": "no tactics gameplay instances"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "ILineOfSightPolicy",
+          "required": false,
+          "fallback": "grid policy for grid boards; Unsupported for graph boards"
+        },
+        {
+          "capability": "ISnapshotContentHasher",
+          "required": false,
+          "fallback": "existing deterministic noncryptographic hasher"
+        }
+      ],
+      "emits": [
+        "BattleEvent, accepted command log; deterministic sequence, simulation phase"
+      ],
+      "observes": [],
+      "binds": [
+        "Tactics.newBattle",
+        "TacticsBattle.setTopology(graph), addCell, addEdge, reachable, move, snapshotJson, restoreJson"
+      ],
+      "protocol": [
+        "existing gameplay control observations and commands; no new protocol"
+      ],
+      "thread_affinity": "simulation/main; no unknown callbacks while holding locks",
+      "trim": {
+        "layer": "L1",
+        "absent_profile": "server",
+        "evidence": "server eve_profile_smoke compiles tactics without graphics or hexmap; capability present/absent executables run separately. No L2 tactics link claim."
+      },
+      "cost_notes": [
+        "Board setup is a builder: create battle, choose topology, add cells and edges, start. Graph neighbour lookup O(log E + degree); cache reachability between commands."
+      ],
+      "hot_path": [
+        "src/modules/tactics/TacticsPath.cpp",
+        "src/modules/tactics/TacticsBattle.cpp",
+        "src/modules/tactics/TacticsTypes.cpp"
+      ],
+      "hard_dependencies": [
+        "common",
+        "action",
+        "sensing"
+      ]
     },
     {
       "id": "tags-module-interface",
@@ -2239,6 +3094,44 @@
       ]
     },
     {
+      "id": "ui-component-scheduling-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/Component*",
+      "owner": "ui::Component",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Native component edits coalesce before UI traversal; weak scheduling lifetime is owned by each component.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/ui/Component.h",
+        "src/modules/ui/Component.cpp",
+        "docs/usr/modules/ui.md",
+        "src/modules/ui/UIComponentScript.cpp"
+      ],
+      "tests": [
+        "test/UIComponentScheduling.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No new trim claim. Component scheduling is compiled only with UI; no provider or backend is required to queue/flush descriptions."
+      },
+      "thread_affinity": "UI owner thread; no locks across virtual build; component must not destroy itself during build.",
+      "cost_notes": [
+        {
+          "api": "Component::markDirty",
+          "shape": "scheduled-setter",
+          "why": "Repeated edits coalesce; build cost is paid once before UI traversal, not by getters."
+        }
+      ],
+      "hot_path": [
+        "src/modules/ui/Component.cpp"
+      ]
+    },
+    {
       "id": "ui-eventsink-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/ui/EventSink.cpp",
@@ -2271,6 +3164,46 @@
       "cost_notes": [],
       "hot_path": [
         "src/modules/ui/EventSink.cpp"
+      ]
+    },
+    {
+      "id": "ui-progress-render-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/UISystem.cpp",
+      "owner": "ui maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "Retained progress rendering must honor the dimensions already owned by widget descriptors and layout.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/hex-planet-civilization.md",
+        "src/modules/ui/Layout.cpp"
+      ],
+      "tests": [
+        "test/ui_progress_size.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [
+        "Existing UIHost/UINode tree; no new ECS data or links."
+      ],
+      "binds": [
+        "Existing UI.progress and UI.setItemSize; signatures unchanged."
+      ],
+      "protocol": [
+        "No protocol or persistent format change."
+      ],
+      "thread_affinity": "Existing UI/render owner thread; no new callbacks or retained pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "Existing full host UI renderer; no new trimmed-build claim.",
+        "absent_profile": "No UI-absent profile validated by this change; existing full host renderer only, with no trim claim."
+      },
+      "cost_notes": [
+        "Constant-size forwarding during the existing progress draw call."
+      ],
+      "hot_path": [
+        "src/modules/ui/UISystem.cpp"
       ]
     },
     {

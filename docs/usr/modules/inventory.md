@@ -73,18 +73,8 @@ developer-cheat 档位广播与接受。`remove-item` 沿用容器"最多取 N"�
 - 多种物品共享容量时不要逐项 `canAddItem` 后再添加；C++ 使用 `prepareAddBatch` / `commitAddBatch`。
 - `maxWeight` / `maxVolume` 为 `<=0` 时该维度不限制（仍受所选 `capacityPolicy` 约束）。
 
-## API 快查
+## 绑定与行为说明
 
-- `addAcceptTag()`、`addItem()`、`addRejectTag()`、`addSlotAllowedTag()`、`addSlotTag()`、`canAddItem()`、`canAddItemReason()`、`clear()`、`clearAcceptTags()`
-- `clearChangeEvents()`、`clearItemDefinitions()`、`clearRejectTags()`、`clearSlot()`、`clearSlotAllowedTags()`、`countItem()`、`defineSlot()`、`destroy()`、`equipFromBag()`
-- `findItem()`、`findItemByTag()`、`getAcceptRule()`、`getAcceptTag()`、`getAcceptTagCount()`、`getCapacityPolicy()`、`getChangeEventAction()`、`getChangeEventBagId()`、`getChangeEventCount()`
-- `getChangeEventEquipSlot()`、`getChangeEventItemId()`、`getChangeEventOtherBagId()`、`getChangeEventOtherSlot()`、`getChangeEventQuantity()`、`getChangeEventSlot()`、`getExtra()`、`getId()`、`getItemCategory()`
-- `getItemDefinitionCount()`、`getItemDisplayName()`、`getItemEquipSlot()`、`getItemExtra()`、`getItemMaxStack()`、`getItemVolume()`、`getItemWeight()`、`getKind()`、`getMaxVolume()`
-- `getMaxWeight()`、`getName()`、`getRejectTag()`、`getRejectTagCount()`、`getSlotCount()`、`getSlotDurability()`、`getSlotInstanceId()`、`getSlotItemId()`、`getSlotName()`
-- `getSlotProp()`、`getSlotQuantity()`、`getStackRule()`、`getUsedSlotCount()`、`getUsedVolume()`、`getUsedWeight()`、`hasAcceptRule()`、`hasCapacityPolicy()`、`hasItemDefinition()`
-- `hasSlot()`、`hasStackRule()`、`isSlotEmpty()`、`itemHasTag()`、`moveSlot()`、`newBag()`、`newEquipmentSet()`、`registerItemsFromJson()`、`removeAt()`
-- `removeItem()`、`restoreSnapshotJson()`、`setAcceptRule()`、`setCapacityPolicy()`、`setExtra()`、`setId()`、`setKind()`、`setMaxVolume()`、`setMaxWeight()`、`setSlotCount()`、`snapshotJson()`
-- `setSlotDurability()`、`setSlotProp()`、`setStackRule()`、`slotHasTag()`、`splitStack()`、`swapSlots()`、`transferItem()`、`transferSlot()`、`unequipToBag()`
 - `eve.Inventory()` 玩法协议发布：`publishGameplay(instanceId, ownerId, bag, equipment)`、`unpublishGameplay(instanceId)`、`clearGameplayControls`、`getGameplayControlCount`
 
 ## 使用要点

@@ -831,7 +831,8 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
             Diagnostic::error(DiagnosticCode::ParseError, "invalid board object", "payload.board"));
     auto topology = intField(*boardObject.value(), "topology", "payload.board");
     auto cellsMember = field(*boardObject.value(), "cells", "payload.board");
-    if (!everyResultValid(topology, cellsMember) || topology.value() < 0 || topology.value() > 2)
+    if (!everyResultValid(topology, cellsMember) || topology.value() < 0 ||
+        topology.value() > (sourceVersion >= SchemaVersion(7) ? 3 : 2))
         return Result<Candidate>::failure(
             Diagnostic::error(DiagnosticCode::ParseError, "invalid board topology", "payload.board.topology"));
     const auto* cells = cellsMember.value()->getIf<Value::Array>();
@@ -1036,7 +1037,8 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
         const int facingCount = result.board.topology() == BoardTopology::Square4   ? 4
                                 : result.board.topology() == BoardTopology::Square8 ? 8
                                                                                     : 6;
-        if (facing.value() < 0 || facing.value() >= facingCount)
+        if (facing.value() < 0 || facing.value() >= facingCount ||
+            (result.board.topology() == BoardTopology::ExplicitGraph && facing.value() != 0))
             return Result<Candidate>::failure(
                 Diagnostic::error(DiagnosticCode::InvariantViolation, "unit facing is invalid", path + ".facing"));
         result.units.push_back(
@@ -1255,9 +1257,9 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
         {"status", Value(static_cast<int>(battle.turn()->status))},
         {"units", Value(std::move(units))},
     });
-    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(6),
-                                battle.identity()->subject.persistentId(), battle.turn()->revision,
-                                battle.turn()->tick,
+    const auto version = battle.board()->value.topology() == BoardTopology::ExplicitGraph ? 7u : 6u;
+    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(version),
+                                battle.identity()->subject.persistentId(), battle.turn()->revision, battle.turn()->tick,
                                 std::move(payload), hashProvider);
 }
 
@@ -1302,7 +1304,8 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     // list only ever grows.
     if (source.schemaVersion != SchemaVersion(1) && source.schemaVersion != SchemaVersion(2) &&
         source.schemaVersion != SchemaVersion(3) && source.schemaVersion != SchemaVersion(4) &&
-        source.schemaVersion != SchemaVersion(5) && source.schemaVersion != SchemaVersion(6))
+        source.schemaVersion != SchemaVersion(5) && source.schemaVersion != SchemaVersion(6) &&
+        source.schemaVersion != SchemaVersion(7))
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::UnknownVersion, "unsupported tactics battle snapshot version", {}));
     auto metadata = validateSnapshotPayloadMetadata(source.payload, source.revision, source.tick);

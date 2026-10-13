@@ -25,6 +25,14 @@ add_custom_command(
             --json-output "${_eve_binding_contract_json}"
             --dts-output "${_eve_binding_contract_dts}"
     DEPENDS "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
+            "${CMAKE_SOURCE_DIR}/scripts/binding_architecture.py"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_architecture.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/Scene.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneCameraQueries.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.h"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneHost.h"
+            "${CMAKE_SOURCE_DIR}/test/scene.cpp"
+            "${CMAKE_SOURCE_DIR}/test/scene_binding_architecture.cpp"
     COMMENT "Generating strict EveScript Binding Contracts"
     VERBATIM)
 target_sources(EVCommon PRIVATE "${_eve_binding_contract_cpp}")

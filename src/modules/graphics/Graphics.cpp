@@ -10,6 +10,7 @@
 #include "graphics/DepthPyramid.h"
 #include "graphics/Exposure.h"
 #include "graphics/GraphicsCapabilities.h"
+#include "graphics/GraphicsMeshBindings.h"
 #include "graphics/Grass.h"
 #include "graphics/HairCards.h"
 #include "graphics/HairShader.h"
@@ -345,19 +346,7 @@ void Graphics::expose(ssq::Table& table) {
     // Texture / Mesh expose occlusion flags used by volumetric light shafts.
     // (create returns null — instances come from Graphics::newTexture / newMesh*)
 
-    auto meshCls = table.addClass<Mesh>("Mesh", std::function<Mesh*()>([]() -> Mesh* { return nullptr; }), true);
-    meshCls.addFunc("getVertexCount", &Mesh::getVertexCount);
-    meshCls.addFunc("getIndexCount", std::function<int(Mesh*)>([](Mesh* mesh) { return mesh->indexCount; }));
-    meshCls.addFunc("getMorphCount", &Mesh::getMorphCount);
-    meshCls.addFunc("getMorphName", &Mesh::getMorphName);
-    meshCls.addFunc("hasMorph", &Mesh::hasMorph);
-    meshCls.addFunc("setMorphWeight", &Mesh::setMorphWeight);
-    meshCls.addFunc("getMorphWeight", &Mesh::getMorphWeight);
-    meshCls.addFunc("clearMorphWeights", &Mesh::clearMorphWeights);
-    meshCls.addFunc("hasMorphData", &Mesh::hasMorphData);
-    meshCls.addFunc("isMorphDirty", &Mesh::isMorphDirty);
-    meshCls.addFunc("setCastOcclusion", &Mesh::setCastOcclusion);
-    meshCls.addFunc("getCastOcclusion", &Mesh::getCastOcclusion);
+    exposeGraphicsMeshes(table);
 
     auto quad = table.addClass<Quad>("Quad", std::function<Quad*()>([]() -> Quad* { return nullptr; }), true);
     quad.addFunc("setViewport", &Quad::setViewport);
@@ -1335,6 +1324,11 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getFont", &Graphics::getFont);
     cls.addFunc("drawText", &Graphics::drawTextRGBA);
     cls.addFunc("print", &Graphics::printRGBA);
+    cls.addFunc("loadTexture", [](Graphics* self, const std::string& filename) {
+        auto loaded = self->loadTexture(filename);
+        if (!loaded.ok()) throw eve::Exception("%s", loaded.status().describe().c_str());
+        return &loaded.value().get();
+    });
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
                 static_cast<Texture* (Graphics::*)(image::ImageData*, bool, bool)>(&Graphics::newTextureFromImageData));
@@ -1793,57 +1787,6 @@ bool Graphics::uploadDeferredFileTexture(Texture* texture, image::ImageData* dat
     return updateTexture(texture, data->getWidth(), data->getHeight(), static_cast<const uint8_t*>(data->getData()));
 }
 
-void Graphics::ensureFileTexturesReady() {
-    if (deferredFileTextures_.empty() || realizingFileTextures_) return;
-    realizingFileTextures_ = true;
-    StartupStage stage("graphics: realize file textures");
-    struct Guard {
-        Graphics* g;
-        ~Guard() { g->realizingFileTextures_ = false; }
-    } guard{this};
-
-    std::vector<DeferredFileTexture> pending = std::move(deferredFileTextures_);
-    deferredFileTextures_.clear();
-
-    auto restoreUnrealized = [&]() {
-        for (const auto& item : pending) {
-            if (item.texture && item.texture->hasDeferredFilePixels()) deferredFileTextures_.push_back(item);
-        }
-    };
-
-    auto& resources = eve::ResourceManager::getInstance();
-    for (const auto& item : pending) {
-        auto waited = resources.waitFor(item.key);
-        if (!waited.ok()) {
-            restoreUnrealized();
-            throw eve::Exception("%s", waited.status().describe().c_str());
-        }
-    }
-
-    try {
-        for (const auto& item : pending) {
-            auto waited = resources.waitFor(item.key);
-            if (!waited.ok()) throw eve::Exception("%s", waited.status().describe().c_str());
-            auto* data = dynamic_cast<image::ImageData*>(&waited.value().get());
-            if (!data || !uploadDeferredFileTexture(item.texture, data))
-                throw eve::Exception("newTextureFromFile: GPU upload failed '%s'", item.key.c_str());
-            if (item.texture) item.texture->clearDeferredFilePixels();
-        }
-    } catch (...) {
-        restoreUnrealized();
-        throw;
-    }
-}
-
-Texture* Graphics::newTextureFromFileRepeated(const std::string& filename, bool repeatU, bool repeatV) {
-    if (filename.empty()) throw eve::Exception("newTextureFromFileRepeated: empty filename");
-    auto*                                      fs = eve::filesystem::Filesystem::create();
-    std::unique_ptr<eve::filesystem::FileData> fileData(fs->read(filename));
-    if (!fileData) throw eve::Exception("newTextureFromFileRepeated: failed to read '%s'", filename.c_str());
-    auto*                                  imgMod = eve::image::Image::create();
-    std::unique_ptr<eve::image::ImageData> data(imgMod->newImageData(fileData.get()));
-    return newTextureFromImageData(data.get(), repeatU, repeatV);
-}
 
 Texture* Graphics::newTextureWithSampler(image::ImageData* data, bool repeatU, bool repeatV, bool generateMipmaps,
                                          float maxAnisotropy, const std::string& filter, const std::string& mipmap,

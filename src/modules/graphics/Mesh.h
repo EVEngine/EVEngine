@@ -5,6 +5,7 @@
 #include "common/Result.h"
 #include "graphics/Drawable.h"
 
+#include <array>
 #include <cstdint>
 #include <map>
 #include <span>
@@ -64,9 +65,25 @@ public:
     /** @brief True when a valid bounding sphere is available for culling. */
     bool hasBounds() const { return boundsRadius > 0.f; }
 
+    /** @brief Copy CPU-uploaded mesh-local minimum XYZ and maximum XYZ.
+     * @return Owning bounds or NotFound when no finite vertex bounds are available.
+     * @thread Render thread only; no callbacks or retained references.
+     * @remarks CPU morph baking updates bounds; GPU skinning is excluded. Static placement uses bind geometry.
+     */
+    [[nodiscard]] Result<std::array<float, 6>> localBounds() const;
+
     /** @brief Compute the bounding sphere (centroid + max radius) from positions. */
     void computeBounds(const float *posXYZ, int vertexCount);
 
+    /** @brief Native upload generation; changes on each position upload, owner thread only. */
+    uint64_t geometryGeneration() const { return geometryGeneration_; }
+
+private:
+    uint64_t             geometryGeneration_ = 0;
+    std::array<float, 6> localBounds_{};
+    bool                 hasLocalBounds_ = false;
+
+public:
     /** @brief Draws . */
     void draw(Graphics * /*gfx*/, const glm::mat4 & /*matrix*/) const override {}
     /**

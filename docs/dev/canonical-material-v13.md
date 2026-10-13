@@ -1,5 +1,7 @@
 # Canonical material schema v13
 
+Historical schema: the current write format is [material v15](canonical-material-v15.md).
+
 Schema v13 adds the optional `vegetationEmission` object. Its exact members are
 `minimum`, `maximum`, `phase`, and `global`; every member is finite and in
 `[0,1]`. Presence enables the TVE 12.6 emissive stage and requires an

@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <cstring>
 #include <map>
 #include <tuple>
 #include <vector>
@@ -17,9 +18,12 @@ namespace eve::graphics::vulkan {
 void Graphics::flushToOffscreen(OffscreenCanvas* canvas) {
     auto solid    = std::move(solidBatches);
     auto textured = std::move(texturedBatches);
-    auto lit      = std::move(litBatches);
-    auto spans    = std::move(overlaySpans);
-    clear2DBatches();
+    auto lit = std::move(litBatches);
+    auto spans    = std::move(recordingEngine3D_ ? engine3DSpans : overlaySpans);
+    // Drain this target's draws without resetting the pending scene/UI resolves.
+    solidBatches.clear();
+    texturedBatches.clear();
+    litBatches.clear();
 
     const Color cc        = canvas->pendingClearColor();
     const bool  needClear = canvas->takePendingClear();
@@ -64,27 +68,41 @@ void Graphics::flushToOffscreen(OffscreenCanvas* canvas) {
         const int                           vw          = canvas->getWidth();
         const int                           vh          = canvas->getHeight();
 
-        auto offscreenTexPipe = [&](BlendMode mode) -> vk::Pipeline {
-            switch (mode) {
-                case BlendMode::Additive: return offscreenAdditiveTexPipeline;
-                case BlendMode::Premultiplied: return offscreenPremultipliedTexPipeline;
-                case BlendMode::Multiply: return offscreenMultiplyTexPipeline;
-                case BlendMode::Opaque:
-                    return canvas->isHDR() ? hdrOffscreenOpaqueTexPipeline : offscreenOpaqueTexPipeline;
-                case BlendMode::Alpha:
-                default: return canvas->isHDR() ? hdrOffscreenTexPipeline : offscreenTexPipeline;
-            }
-        };
-        auto offscreenSolidPipe = [&](BlendMode mode) -> vk::Pipeline {
-            switch (mode) {
-                case BlendMode::Additive: return offscreenAdditiveSolidPipeline;
-                case BlendMode::Premultiplied: return offscreenPremultipliedSolidPipeline;
-                case BlendMode::Multiply: return offscreenMultiplySolidPipeline;
-                case BlendMode::Alpha: return offscreenSolidAlphaPipeline;
-                case BlendMode::Opaque:
-                default: return offscreenSolidPipeline;
-            }
-        };
+                                auto offscreenTexPipe = [&](BlendMode mode) -> vk::Pipeline {
+                                    switch (mode) {
+                                        case BlendMode::Additive:
+                                            return canvas->isHDR() ? hdrOffscreenAdditiveTexPipeline
+                                                                   : offscreenAdditiveTexPipeline;
+                                        case BlendMode::Premultiplied:
+                                            return canvas->isHDR() ? hdrOffscreenPremultipliedTexPipeline
+                                                                   : offscreenPremultipliedTexPipeline;
+                                        case BlendMode::Multiply:
+                                            return canvas->isHDR() ? hdrOffscreenMultiplyTexPipeline
+                                                                   : offscreenMultiplyTexPipeline;
+                                        case BlendMode::Opaque:
+                                            return canvas->isHDR() ? hdrOffscreenOpaqueTexPipeline
+                                                                   : offscreenOpaqueTexPipeline;
+                                        case BlendMode::Alpha:
+                                        default:
+                                            return canvas->isHDR() ? hdrOffscreenTexPipeline
+                                                                   : offscreenTexPipeline;
+                                    }
+                                };
+                                auto offscreenSolidPipe = [&](BlendMode mode) -> vk::Pipeline {
+                                    switch (mode) {
+                                        case BlendMode::Additive:
+                                            return offscreenAdditiveSolidPipeline;
+                                        case BlendMode::Premultiplied:
+                                            return offscreenPremultipliedSolidPipeline;
+                                        case BlendMode::Multiply:
+                                            return offscreenMultiplySolidPipeline;
+                                        case BlendMode::Alpha:
+                                            return offscreenSolidAlphaPipeline;
+                                        case BlendMode::Opaque:
+                                        default:
+                                            return offscreenSolidPipeline;
+                                    }
+                                };
 
         auto drawOffscreenTextured = [&](TexturedBatch& tb) {
             if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
@@ -105,37 +123,68 @@ void Graphics::flushToOffscreen(OffscreenCanvas* canvas) {
             gpuVerts.reserve(ndc.vertices().size());
             for (const auto& v : ndc.vertices()) gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
 
-            if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
-            vkb::HostVertexBuffer& vb = texBufs[texBufIndex++];
-            vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
+                                    vk::Buffer     vertexBuffer{};
+                                    vk::DeviceSize vertexOffset = 0;
+                                    if (canRecordPostSceneGpuWork()) {
+                                        // Each recorded pass needs immutable vertices until submission.
+                                        auto &arena = currentFrameArena();
+                                        if (!arena.ensure(device, 8u << 20,
+                                                          vk::BufferUsageFlagBits::eVertexBuffer |
+                                                              vk::BufferUsageFlagBits::eStorageBuffer |
+                                                              vk::BufferUsageFlagBits::eIndirectBuffer |
+                                                              vk::BufferUsageFlagBits::eTransferDst))
+                                            throw Exception("Offscreen frame arena unavailable");
+                                        auto allocation = arena.alloc(gpuVerts.size() * sizeof(TexturedVertex),
+                                                                      alignof(TexturedVertex));
+                                        if (!allocation.mapped) throw Exception("Offscreen frame arena exhausted");
+                                        std::memcpy(allocation.mapped, gpuVerts.data(), size_t(allocation.size));
+                                        vertexBuffer = arena.buffer();
+                                        vertexOffset = allocation.offset;
+                                    } else {
+                                        if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
+                                        vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
+                                        vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
+                                        vertexBuffer = vb.buffer;
+                                    }
 
-            if (tb.shader && tb.shader->gpuHandle) {
-                if (canvas->isHDR())
-                    ensureShaderHdrOffscreenPipeline(tb.shader);
-                else
-                    ensureShaderOffscreenPipeline(tb.shader);
-                auto*        gs        = static_cast<GpuShader*>(tb.shader->gpuHandle);
-                vk::Pipeline alphaPipe = canvas->isHDR() ? gs->hdrOffscreenPipeline : gs->offscreenPipeline;
-                vk::Pipeline opaquePipe =
-                    canvas->isHDR() ? gs->hdrOffscreenOpaquePipeline : gs->offscreenOpaquePipeline;
-                if (!alphaPipe) return;
-                vk::Pipeline customPipeline = tb.blend == BlendMode::Opaque && opaquePipe ? opaquePipe : alphaPipe;
-                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, customPipeline);
-                cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1, &texSet, 0,
-                                      nullptr);
-                cb.pushConstants(shaderPipelineLayout,
-                                 vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
-                                 Shader::kPushConstantBytes, tb.shader->pushConstantData());
-            } else {
-                vk::Pipeline pipe = offscreenTexPipe(tb.blend);
-                if (!pipe) return;
-                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
-                cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0, nullptr);
-            }
-            vk::DeviceSize offset = 0;
-            cb.bindVertexBuffers(0, 1, vb, &offset);
-            cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
-        };
+                                    if (tb.shader && tb.shader->gpuHandle) {
+                                        if (canvas->isHDR())
+                                            ensureShaderHdrOffscreenPipeline(tb.shader);
+                                        else
+                                            ensureShaderOffscreenPipeline(tb.shader);
+                                        auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
+                                        vk::Pipeline alphaPipe = canvas->isHDR()
+                                                                     ? gs->hdrOffscreenPipeline
+                                                                     : gs->offscreenPipeline;
+                                        vk::Pipeline opaquePipe =
+                                            canvas->isHDR() ? gs->hdrOffscreenOpaquePipeline
+                                                            : gs->offscreenOpaquePipeline;
+                                        if (!alphaPipe) return;
+                                        vk::Pipeline customPipeline =
+                                            tb.blend == BlendMode::Opaque && opaquePipe
+                                                ? opaquePipe
+                                                : alphaPipe;
+                                        cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                                        customPipeline);
+                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                              shaderPipelineLayout, 0, 1,
+                                                              &texSet, 0, nullptr);
+                                        cb.pushConstants(shaderPipelineLayout,
+                                                         vk::ShaderStageFlagBits::eVertex |
+                                                             vk::ShaderStageFlagBits::eFragment,
+                                                         0, Shader::kPushConstantBytes,
+                                                         tb.shader->pushConstantData());
+                                    } else {
+                                        vk::Pipeline pipe = offscreenTexPipe(tb.blend);
+                                        if (!pipe) return;
+                                        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
+                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                              texPipelineLayout, 0, 1,
+                                                              &texSet, 0, nullptr);
+                                    }
+                                    cb.bindVertexBuffers(0, 1, &vertexBuffer, &vertexOffset);
+                                    cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
+                                };
 
         std::vector<bool> solidUploaded(solid.size(), false);
         auto              uploadSolid = [&](size_t idx) {
@@ -184,10 +233,10 @@ void Graphics::flushToOffscreen(OffscreenCanvas* canvas) {
             if (litOk) drawLitBatches(cb, vw, vh, lit, texBufs, texBufIndex, true, canvas->isHDR());
         }
 
-        cb.endRenderPass();
-        canvas->colorImage().endSampledLayout();
-    };
-    if (swapchainPassOpen && !sceneColorPassOpen && presentRecording) {
+                                cb.endRenderPass();
+                                canvas->colorImage().endSampledLayout();
+                            };
+    if (canRecordPostSceneGpuWork()) {
         recordOffscreen(currentPresentCb());
     } else {
         vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),

@@ -38,6 +38,9 @@ struct TextureSampler {
     /** @brief Inclusive upper LOD clamp. Large values mean "use all available mips". */
     float maxLod = 1000.f;
 
+    /** @brief Compare requested state without creating a backend sampler. */
+    bool operator==(const TextureSampler &) const = default;
+
     /** @brief Nearest. */
     static TextureSampler nearest() {
         TextureSampler s;

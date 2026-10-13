@@ -1,5 +1,8 @@
 # EVEngine 示例总览
 
+[English](README.en.md)
+
+
 所有示例的统一运行方式（`<platform>` = `win32` / `linux` / `macosx`）：
 
 ```bash
@@ -43,6 +46,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
 | [devlab](devlab/README.md) | 运行时即编辑器：`--debug` 下的控制台 / REPL、快照、暂停、热重载、错误切片、AI 面板（**旗舰示例，先跑这个**） |
 | [ai-game](ai-game/README.md) | AI 驾驶真实游戏：Agent 通过 MCP 读状态 / 改数值 / 截图 / 快照复位（含一键复现脚本 `agent_demo.py`） |
 | [ai-editor](ai-editor/README.md) | AI 现场生成项目专属编辑器：`eve mcp` 无头主机 + JSON View + ViewModel 双向绑定（含 `editor_demo.py`） |
@@ -53,7 +57,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
-| [basic](basic/README.md) | Tilemap、Box2D 物理、粒子、基础 2D 绘制；另含两个 UI 变体（`ui_demo.nut` / `ui_component.nut`） |
+| [basic](basic/README.md) | 六步 2D 入门：矩形 → 图片 → 移动 → 物理 → 粒子 → 火焰；另含两个 UI 变体 |
 | [ecs](ecs/README.md) | 脚本 ECS（Component / Entity / System）；`gpu_main.nut` 为 compute shader 变体 |
 | [scene-ecs](scene-ecs/README.md) | 场景树与脚本 ECS 打通：SceneEntity 行为、eve.view 批量查询 |
 | [primitive-drawing](primitive-drawing/README.md) | 长期 `Primitive3D` 脚本 API：2D / 3D 基础图形绘制 |
@@ -138,6 +142,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [pcg-thunder-strike](pcg-thunder-strike/README.md) | 雷击事件：确定性 seed 决定落点 / 半径 / 音频片段索引，并逐帧驱动点光源衰减 |
 | [pcg-ui-scaler](pcg-ui-scaler/README.md) | UI 父级缩放：按画布高度自适应并夹紧到上限，求值结果直接落地成面板 |
 | [pcg-underwater](pcg-underwater/README.md) | 水下效果全链路：深度雾与颜色梯度、时间驱动后期、水焦散 cookie、水下材质、三路音频、粒子与触发体 |
+| [pcg-solar-planet](pcg-solar-planet/README.md) | SebLague Episode 02 行星实验：UV/Fibonacci/Cube/Icosphere + fBm/山脊/扭曲/陨石坑高度场 + 三平面着色与海洋壳 |
 | [roguelike-generator](roguelike-generator/README.md) | 种子驱动的房间走廊地牢：autotile、装饰、2D ↔ 2.5D |
 | [dungeon-generator-3d](dungeon-generator-3d/README.md) | `procgen.generate("level.roguelike", ...)` 的 3D 可配置呈现 |
 | [tree-generator](tree-generator/README.md) | 确定性树木：Weber-Penn / 空间殖民两种骨架算法 |
@@ -156,7 +161,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [topdown-procmap](topdown-procmap/README.md) | 俯视角程序化地图：噪声大陆 + 生物群系 splat + 河湖 + 植被点缀与平移浏览 |
 | [procgen-nature-quality](procgen-nature-quality/README.md) | 近景程序化树/灌木/崖石材质画廊：`tex.tree_atlas` / `tex.moss` / cliff 造型 |
 | [hex-terrain-3d](hex-terrain-3d/README.md) | 可交互 3D 六边形地图：高程台地与悬崖、水面、河流、道路、城墙与地物、战争迷雾、单位寻路、程序化地图生成、存档、相机操控与笔刷编辑 |
-| [hex-planet](hex-planet/README.md) | 球面 hex 地形：二十面体（Goldberg）六边形拓扑、径向高程与台地/悬崖、程序化大陆与海洋、轨道相机（`hexmap` 球面后端） |
+| [hex-planet](hex-planet/README.md) | 球面文明竞赛：探索、城市、粮食/金币/科研、建造与奇观胜利；economy + tactics 图拓扑 + production + ECS |
 | [terrain-preview](terrain-preview/README.md) | 直写交换链的 3D 地形预览：三种侵蚀 + 河湖水面 + 自动抓帧 |
 | [terrain-gallery](terrain-gallery/README.md) | 三个固定 seed 在相同生成参数、光照与材质下的并排对比 |
 | [mesh-modifier-lab](mesh-modifier-lab/README.md) | 13 种网格变形变体并排对照：类型化修饰图（bend / twist / FFD / 切面 / 样条 / 声波）、雕刻笔刷、粘液回弹、Mesh Fit、顶点编辑器 |
@@ -166,6 +171,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [mesh-impact-lab](mesh-impact-lab/README.md) | Box3D 命中事件驱动网格塑性冲击：法向冲量 → 形变会话 → 重新上传 |
 | [geometry-stroke-lab](geometry-stroke-lab/README.md) | 几何笔刷轨迹：quad / 三棱柱 / 立方体截面、平面与空间输入、最小间距过滤、撤销、CPU 生成 + GPU 上传 |
 | [terrain-stamping](terrain-stamping/README.md) | 地形盖章：旋转印章、距离遮罩、对比度、阶地、平滑与热力核，含 Pcg GTS 雪 / 雨 albedo 分支 |
+| [terrain-smooth-mountain](terrain-smooth-mountain/README.md) | 山体融合：普通 max 与 SmoothRaise 对比，手工高度图和 CPU 模型烘焙 |
 
 ## 渲染与效果
 
@@ -186,6 +192,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [ink-arena](ink-arena/README.md) | GPU 表面喷墨：片元着色器向持久 RGBA8 画布绘制 |
 | [uv-texture-paint](uv-texture-paint/README.md) | 点击网格经 Box3D 三角形命中映射回模型 UV 并绘制贴图 |
 | [tensor](tensor/README.md) | 张量编译管线：策略网络 / conv / SDPA / 批量模拟（纯计算） |
+| [gpu-formation](gpu-formation/README.md) | 纯脚本 GPU 阵型：`eve.TF()` 齐次 matmul 部署 + compile 软追逐与阵型 morph |
 | [interior-mapping](interior-mapping/README.md) | 无室内几何的室内映射：预投影 Atlas、切线空间射线–AABB、伪透视缩放、过程化家具遮挡与掠射菲涅尔 |
 | [triplanar-decal](triplanar-decal/README.md) | 三维投射贴花：局部空间三平面混合解决单轴投射在立面上的拉伸，含混合锐度对照 |
 

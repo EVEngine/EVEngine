@@ -2,6 +2,97 @@
   "schema_version": 1,
   "entries": [
     {
+      "id": "devtools-mcp-input-tools-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/McpInputTools*",
+      "owner": "devtools::McpInputTools",
+      "issue": "EVENGINE-MCP-PLAYTEST",
+      "reason": "Playtest input batches inject through IInputInjection / IUIAutomation without upward includes; wait/capture completes across poll ticks.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/InputInjection.h",
+        "src/engine/devtools/McpInputTools.cpp",
+        "docs/dev/AI与MCP支持.md"
+      ],
+      "tests": [
+        "test/mcp_input_tools.cpp",
+        "test/mcp_tool_filter.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IInputInjection",
+          "required": false,
+          "fallback": "eve_input_batch returns unavailable JSON; ui_click-only batches may still use IUIAutomation"
+        },
+        {
+          "capability": "IUIAutomation",
+          "required": false,
+          "fallback": "ui_click actions fail with named unavailable; device ops still work"
+        },
+        {
+          "capability": "IRenderCapture",
+          "required": false,
+          "fallback": "capture=true completes with retryable/unavailable diagnostics"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "desktop builds provide IInputInjection via platform_event; trimmed mobile/web omit EVDevTools MCP entirely"
+      },
+      "thread_affinity": "MCP poll / game-loop thread only",
+      "hot_path": [],
+      "protocol": [
+        "eve_input_batch / eve_input_poll / eve_input_status; EVE_MCP_TOOLSET/READONLY/EXCLUDE filter tools/list and tools/call"
+      ],
+      "cost_notes": [
+        "Batch size is agent-bounded; waitFrames advances one count per McpServer::poll"
+      ]
+    },
+    {
+      "id": "devtools-play-host-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/PlayHost*",
+      "owner": "devtools maintainers",
+      "issue": "EVENGINE-HEX-PLANET-CIV",
+      "reason": "Game observation projects only declared fields and invalid protocol input returns diagnostics without unchecked Results.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/PlayHost.h",
+        "docs/dev/hex-planet-civilization.md"
+      ],
+      "tests": [
+        "test/play_host.cpp",
+        "test/play_trace.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        "Existing IRenderCapture for capture (Unsupported when absent); existing gameplay control for gameplay-domain actions. Script observation invokes neither provider."
+      ],
+      "emits": [
+        "Existing PlayTraceBuffer receipts for successful requests unless trace is off."
+      ],
+      "observes": [
+        "Declared, snapshot-policy-eligible Squirrel root fields; no ECS or native snapshot enumeration for observe."
+      ],
+      "binds": [],
+      "protocol": [
+        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 unchanged. Unknown request fields remain rejected."
+      ],
+      "thread_affinity": "Owner simulation thread; synchronous owning Value projection. Raw table path lookup invokes no getters or callbacks and retains no VM pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "This change validates the existing host tooling build and injected runtime, not a new trimmed profile.",
+        "absent_profile": "No absent-provider profile validated by this change; existing full host tooling only, with no trim claim."
+      },
+      "cost_notes": [
+        "Observe scales with selected fields and converted values, bounded by the common Squirrel conversion limits. Whole-root observation remains explicit through an empty fields list."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "devtools-soft-restart-module-interface",
       "rule": "module-interface",
       "scope": "src/engine/devtools/**",
@@ -33,6 +124,40 @@
         "absent_profile": "devtools soft-restart remains available; IStateProvider listeners may be empty when modules are trimmed"
       },
       "thread_affinity": "main / MCP poll thread that owns the VM; forEach is not cross-thread",
+      "hot_path": [],
+      "protocol": [],
+      "cost_notes": []
+    },
+    {
+      "id": "platform-event-input-injection-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/platform_event/sdl/InputInjection.cpp",
+      "owner": "platform_event",
+      "issue": "EVENGINE-MCP-PLAYTEST",
+      "reason": "SDL_PushEvent-backed IInputInjection keeps Keyboard/Mouse isDown consistent after the next pump.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/InputInjection.h",
+        "src/modules/platform_event/sdl/InputInjection.cpp"
+      ],
+      "tests": [
+        "test/mcp_input_tools.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IInputInjection",
+          "impl": "platform_event/sdl/InputInjection.cpp",
+          "absent_behavior": "cap::query returns null when platform_event is trimmed"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "absent_profile": "profiles without platform_event omit the provider; MCP reports unavailable"
+      },
+      "thread_affinity": "game-loop / MCP poll thread; SDL_PushEvent is not for worker threads",
       "hot_path": [],
       "protocol": [],
       "cost_notes": []

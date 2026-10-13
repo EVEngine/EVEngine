@@ -1,5 +1,7 @@
 # Canonical material schema v11
 
+Historical schema: the current write format is [material v15](canonical-material-v15.md).
+
 Schema v11 adds the optional `vegetationMotion` object. It stores exactly the
 21 TVE 12.6 material-local controls consumed by native vegetation deformation:
 

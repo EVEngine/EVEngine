@@ -136,9 +136,22 @@ void initVulkanDispatcher() {
     }
 }
 
+uint32_t negotiatedInstanceApiVersion() {
+    // Vulkan 1.0 loaders do not expose vkEnumerateInstanceVersion. Newer
+    // loaders let us advertise the highest core version used by this backend,
+    // capped at 1.2 because that is the newest feature struct queried below.
+    uint32_t loaderVersion = VK_API_VERSION_1_0;
+    if (VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumerateInstanceVersion) {
+        if (VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumerateInstanceVersion(&loaderVersion) != VK_SUCCESS)
+            loaderVersion = VK_API_VERSION_1_0;
+    }
+    return std::min(loaderVersion, static_cast<uint32_t>(VK_API_VERSION_1_2));
+}
+
 vkb::Instance createInstanceFast() {
     initVulkanDispatcher();
     disableImplicitLayersIfSafe();
+    const uint32_t apiVersion = negotiatedInstanceApiVersion();
     // Enumerate instance extensions only. vk-bootstrap's SystemInfo::query() also
     // walks every implicit layer (and each layer's extensions), which is the
     // bulk of "instance + surface" on a Windows SDK install.
@@ -148,7 +161,7 @@ vkb::Instance createInstanceFast() {
 
     if (wantVulkanValidation()) {
         vkb::InstanceBuilder builder;
-        builder.require_api_version(1, 0);
+        builder.require_api_version(VK_API_VERSION_MAJOR(apiVersion), VK_API_VERSION_MINOR(apiVersion));
         builder.request_validation_layers();
         builder.use_default_debug_messenger();
         for (auto* e : exts) builder.enable_extension(e);
@@ -163,7 +176,7 @@ vkb::Instance createInstanceFast() {
     vk::ApplicationInfo app{};
     app.pApplicationName = "EVEngine";
     app.pEngineName      = "EVEngine";
-    app.apiVersion       = VK_MAKE_VERSION(1, 0, 0);
+    app.apiVersion       = apiVersion;
 
     vk::InstanceCreateInfo ci{};
     ci.flags                   = flags;
@@ -280,8 +293,9 @@ void VmaAllocatorOwner::create(const vkb::Instance& instance, const vkb::Physica
         throw Exception("VMA could not resolve vkGetDeviceProcAddr");
     }
     createInfo.pVulkanFunctions = &vulkanFunctions;
-    // InstanceBuilder requests Vulkan 1.0. VMA requires this value to describe
-    // the application's instance contract, not the physical device maximum.
+    // VMA is compiled with VMA_VULKAN_VERSION=1.0 so Android never statically
+    // imports newer core entry points. Keep the allocator on that contract even
+    // when the application instance negotiates a newer API version.
     createInfo.vulkanApiVersion = VK_API_VERSION_1_0;
     const VkResult result       = vmaCreateAllocator(&createInfo, &allocator_);
     if (result != VK_SUCCESS) throw Exception("vmaCreateAllocator failed: %d", int(result));
@@ -324,9 +338,11 @@ Graphics::~Graphics() {
     ownedGpuMeshes.clear();
     ownedTextures.clear();
     for (auto& g : ownedGpuTextures) {
-        if (g->sampler) device->destroySampler(g->sampler);
+        if (g->sampler && !g->sharedSampler) device->destroySampler(g->sampler);
     }
     ownedGpuTextures.clear();
+    cachedSamplers_.clear();
+    samplerChangesPending_ = false;
     texturesByPath.clear();
     for (auto& g : ownedGpuShaders) {
         if (g->swapchainPipeline) device->destroyPipeline(g->swapchainPipeline);
@@ -526,12 +542,15 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
             // universal, so treat it as present.
             gpuDrivenCaps_ = GpuDrivenCaps{};
             vk::PhysicalDeviceVulkan12Features vk12{};
-            vk::PhysicalDeviceFeatures2        features2{};
-            vk12.sType      = vk::StructureType::ePhysicalDeviceVulkan12Features;
-            features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
-            features2.pNext = &vk12;
-            phys->getFeatures2(&features2);
-            gpuDrivenCaps_.api12             = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            gpuDrivenCaps_.api12 = negotiatedInstanceApiVersion() >= VK_API_VERSION_1_2 &&
+                                   phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            if (gpuDrivenCaps_.api12) {
+                vk::PhysicalDeviceFeatures2 features2{};
+                vk12.sType      = vk::StructureType::ePhysicalDeviceVulkan12Features;
+                features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+                features2.pNext = &vk12;
+                phys->getFeatures2(&features2);
+            }
             gpuDrivenCaps_.computeShader     = true;
             gpuDrivenCaps_.multiDrawIndirect = supported.multiDrawIndirect == VK_TRUE;
             gpuDrivenCaps_.shaderSampledImageArrayDynamicIndexing =
@@ -623,11 +642,9 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 rtAsEnable.accelerationStructure = VK_TRUE;
                 rtPipeEnable.sType               = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
                 rtPipeEnable.rayTracingPipeline  = VK_TRUE;
-                rtPipeEnable.pNext               = &rtAsEnable;
                 if (rayTracingCaps_.rayQuery) {
                     rtQueryEnable.sType    = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
                     rtQueryEnable.rayQuery = VK_TRUE;
-                    rtAsEnable.pNext       = &rtQueryEnable;
                 }
                 enableRtFeatures = true;
             }
@@ -642,9 +659,13 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
         if (enableRtFeatures) {
             vk12Enable.bufferDeviceAddress = VK_TRUE;
+            // DeviceBuilder reconstructs the chain from individually registered
+            // structures, overwriting any prelinked pNext pointers.
             deviceBuilder.add_pNext(&rtPipeEnable);
+            deviceBuilder.add_pNext(&rtAsEnable);
+            if (rayTracingCaps_.rayQuery) deviceBuilder.add_pNext(&rtQueryEnable);
         }
-        deviceBuilder.add_pNext(&vk12Enable);
+        if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
         // Load device-level extension entry points (needed for KHR RT).
         VULKAN_HPP_DEFAULT_DISPATCHER.init(device.instance);

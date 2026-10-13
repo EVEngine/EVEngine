@@ -193,10 +193,8 @@ check/examples:
 check/module-layers:
 	python3 scripts/module_depgraph.py --check-layers
 
-# Verify every script-facing addFunc is actually documented (see
-# docs/usr/REVIEW.md). Pre-existing debt is registered in
-# scripts/check_bindings_gaps.txt (regenerate with --write-gaps); new gaps
-# fail, so docs cannot silently drift from the bindings.
+# Verify script-facing bindings have a guide explanation or generated SDK
+# signature. Unresolved signatures and new unreferenced bindings fail CI.
 check/bindings:
 	python3 scripts/check_bindings.py --strict
 
@@ -214,7 +212,7 @@ check/nodiscard:
 check/adhoc-result-tables:
 	python3 scripts/check_adhoc_result_tables.py
 
-# Validate the eleven top-level architecture contracts and lint changed C/C++
+# Validate the top-level architecture contracts and lint changed C/C++
 # lines. The source-only gate never configures or builds the engine.
 # The unit test runs with -X utf8: its own stdout/stderr would otherwise follow
 # the host ANSI code page (cp936 on a Chinese Windows) and mangle test output.
@@ -824,21 +822,7 @@ reinstall/third-party/ios-debug:
 # In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
 # otherwise it is the engine's src/engine/libmain.so.
 sync/android-libs:
-	mkdir -p $(JNI_LIBS)
-	@if [ -f $(BUILD_DIR)/test/libmain.so ]; then \
-	  echo "syncing test runner libmain.so"; \
-	  cp -f $(BUILD_DIR)/test/libmain.so $(JNI_LIBS)/; \
-	else \
-	  cp -f $(BUILD_DIR)/src/engine/libmain.so $(JNI_LIBS)/; \
-	fi
-	@TP_DIR=build/third-party-binary/$$(basename $(BUILD_DIR)); \
-	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android-debug; fi; \
-	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android; fi; \
-	  cp -f "$$TP_DIR/lib/libSDL2.so" $(JNI_LIBS)/; \
-	  if [ -f "$$TP_DIR/lib/libhidapi.so" ]; then cp -f "$$TP_DIR/lib/libhidapi.so" $(JNI_LIBS)/; fi
-	cp -f "$(ANDROID_NDK)/toolchains/llvm/prebuilt/"*"/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so" $(JNI_LIBS)/
-	@echo "Synced native libs -> $(JNI_LIBS)"
-	ls -la $(JNI_LIBS)
+	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_NDK="$(ANDROID_NDK)" -DANDROID_ABI="$(ANDROID_ABI)" -P cmake/sync_android_libs.cmake
 
 # Populate APK assets/game from a source tree (do not hand-edit assets/game).
 #   make sync/android-assets                 # default: demo shell

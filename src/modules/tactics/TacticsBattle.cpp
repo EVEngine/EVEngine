@@ -661,7 +661,11 @@ Result<void> BattleSystem::previewFace(Battle& battle, SubjectRef actor, int fac
     if (!unit)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics active unit is stale", "battle.activeUnit"));
     if (unit->identity()->subject != actor)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics actor does not own the active turn", "actor"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "tactics actor does not own the active turn", "actor"));
+    if (battle.board()->value.topology() == BoardTopology::ExplicitGraph)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "graph boards have no coordinate facing", "facing"));
     const int facingCount = battle.board()->value.topology() == BoardTopology::Square4   ? 4
                             : battle.board()->value.topology() == BoardTopology::Square8 ? 8
                                                                                          : 6;

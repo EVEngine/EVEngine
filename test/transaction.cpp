@@ -148,6 +148,20 @@ TEST_CASE("transaction.script.api") {
 }
 
 // transaction_participant.cpp
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "StatePatchTestSupport.h"
+#include "statepatch/StatePatch.h"
+#include "transaction/Transaction.h"
+
+#include <array>
+#include <initializer_list>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
 namespace {
 
 using eve::Diagnostic;
@@ -343,7 +357,7 @@ TEST_CASE("transaction.statepatchParticipantCommitsCandidateAtomically") {
     auto                   seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     CHECK(seed.view->set("actor", "value", "1"));
-    REQUIRE(store.commit(seed.view.get()));
+    REQUIRE(store.commit(seed.view.get()).ok());
 
     auto batch = eve::test_support::openStatePatchBatch(store);
     REQUIRE(batch.view.isBound());
@@ -366,7 +380,7 @@ TEST_CASE("transaction.statepatchParticipantPrepareFailureKeepsOriginalState") {
     auto                   seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("actor", "value", "1");
-    REQUIRE(store.commit(seed.view.get()));
+    REQUIRE(store.commit(seed.view.get()).ok());
     const std::string before = store.snapshotJson();
 
     auto batch = eve::test_support::openStatePatchBatch(store);
@@ -388,7 +402,7 @@ TEST_CASE("transaction.statepatchParticipantRejectsExternalRevisionChangeAfterPr
     auto                   seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("actor", "value", "1");
-    REQUIRE(store.commit(seed.view.get()));
+    REQUIRE(store.commit(seed.view.get()).ok());
     auto batch = eve::test_support::openStatePatchBatch(store);
     REQUIRE(batch.view.isBound());
     batch.view->setExpected("actor", "value", "2", "1");
@@ -400,7 +414,7 @@ TEST_CASE("transaction.statepatchParticipantRejectsExternalRevisionChangeAfterPr
     auto external = eve::test_support::openStatePatchBatch(store);
     REQUIRE(external.view.isBound());
     external.view->set("actor", "other", "9");
-    REQUIRE(store.commit(external.view.get()));
+    REQUIRE(store.commit(external.view.get()).ok());
 
     auto committed = participant.commit(context);
     CHECK(!committed);
@@ -416,7 +430,7 @@ TEST_CASE("transaction.statepatchParticipantCompensateRestoresBeforeState") {
     auto                   seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("actor", "value", "1");
-    REQUIRE(store.commit(seed.view.get()));
+    REQUIRE(store.commit(seed.view.get()).ok());
     const std::string before = store.snapshotJson();
 
     auto batch = eve::test_support::openStatePatchBatch(store);

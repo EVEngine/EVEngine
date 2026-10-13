@@ -98,8 +98,8 @@ TEST_CASE("editor.property_model_routes_runtime_writes_through_command_intent") 
 
     std::string changedPath;
     auto        subscription =
-        model.subscribe([&](const eve::property_access::PropertyChange& change) { changedPath = change.path; });
-    CHECK(model.write("movement.speed", eve::Value(9.5)).accepted);
+        model.subscribe([&](const eve::property_access::PropertyChange &change) { changedPath = change.path; });
+    CHECK(model.write("movement.speed", eve::Value(9.5)).ok());
     CHECK(sinkCalled);
     CHECK_EQ(provider.speed, 9.5);
     CHECK_EQ(changedPath, std::string("movement.speed"));
@@ -201,6 +201,22 @@ TEST_CASE("editor.property_model_runtime_surface_requires_runtime_world_feature"
 }
 
 // editor_property_v2.cpp
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "editor/EditorAuthority.h"
+#include "editor/EditorCommandService.h"
+#include "editor/EditorPropertyModel.h"
+#include "editor/EditorPropertyPresenter.h"
+#include "editor/EditorSession.h"
+#include "editor/EditorTransactionService.h"
+
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 using namespace eve::editor;
 
 namespace {
@@ -209,10 +225,10 @@ class TransformPropertyTarget final : public IDomainOperationTarget, public IDom
 public:
     explicit TransformPropertyTarget(unsigned long long initialRevision = 0) : revision_(initialRevision) {}
 
-    TargetId      targetId() const override { return TargetId(id_); }
+    TargetId targetId() const override { return TargetId(id_); }
     std::uint64_t revision() const override { return revision_; }
-    EditRegion    dirtyRegion() const override { return {}; }
-    void          clearDirtyRegion() override {}
+    EditRegion         dirtyRegion() const override { return {}; }
+    void               clearDirtyRegion() override {}
 
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override {
         return std::make_unique<TransformPropertyTarget>(*this);
@@ -222,7 +238,7 @@ public:
         auto* typed = dynamic_cast<TransformPropertyTarget*>(candidate.get());
         if (!typed)
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("scene.property.candidate"),
-                                              "Compensation candidate has an incompatible type");
+                                             "Compensation candidate has an incompatible type");
         position_ = typed->position_;
         revision_ = typed->revision_;
         return eve::editing::applied<void>();
@@ -231,10 +247,10 @@ public:
     Result<void> applyDomainOperation(const DomainOperation& operation) override {
         if (operation.type != "scene.transform.position.set.v1")
             return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
-                                              "Unsupported property operation");
+                                             "Unsupported property operation");
         if (!operation.payload.getIf<EditorValue::Array>())
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("scene.property.invalid-value"),
-                                              "Position must be an array");
+                                             "Position must be an array");
         position_ = operation.payload;
         ++revision_;
         return eve::editing::applied<void>();
@@ -292,11 +308,10 @@ public:
     }
 
     Result<DomainOperation> makeSet(const SelectionSnapshot&, const PropertyPath& path, const EditorValue& value,
-                                    PropertySetMode mode) const override {
+                                          PropertySetMode mode) const override {
         if (path != PropertyPath("transform.position") || mode != PropertySetMode::Absolute)
-            return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
-                                                         RuleId("scene.property.unsupported"),
-                                                         "Only absolute position changes are supported");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
+                                                        "Only absolute position changes are supported");
         DomainOperation operation;
         operation.type       = "scene.transform.position.set.v1";
         operation.target     = TargetId(target_->targetId());
@@ -307,7 +322,8 @@ public:
         return eve::editing::applied<DomainOperation>(std::move(operation));
     }
 
-    Result<DomainOperation> makeReset(const SelectionSnapshot& selection, const PropertyPath& path) const override {
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
+                                            const PropertyPath&      path) const override {
         return makeSet(selection, path, EditorValue::Array{0.0, 0.0, 0.0}, PropertySetMode::Absolute);
     }
 
@@ -324,10 +340,11 @@ public:
         return provider_.read(selection, path);
     }
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
-                                    const EditorValue& value, PropertySetMode mode) const override {
+                                          const EditorValue& value, PropertySetMode mode) const override {
         return provider_.makeSet(selection, path, value, mode);
     }
-    Result<DomainOperation> makeReset(const SelectionSnapshot& selection, const PropertyPath& path) const override {
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
+                                            const PropertyPath&      path) const override {
         return provider_.makeReset(selection, path);
     }
 
@@ -402,8 +419,8 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
                       const auto* payload = request.payload.getIf<EditorValue::Object>();
                       if (!payload || !payload->contains("path") || !payload->contains("value"))
                           return eve::editing::failed<CommandPlan>(EditorStatus::Rejected,
-                                                                   RuleId("editor.property.payload"),
-                                                                   "Property command payload is incomplete");
+                                                                  RuleId("editor.property.payload"),
+                                                                  "Property command payload is incomplete");
                       const auto* path = payload->at("path").getIf<std::string>();
                       if (!path)
                           return eve::editing::failed<CommandPlan>(
@@ -424,7 +441,7 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
                       auto begun                 = backend.begin(std::move(specification));
                       if (!begun.ok())
                           return eve::editing::failed<TransactionReceipt>(begun.code(), RuleId("editor.property.begin"),
-                                                                          "Could not begin property transaction");
+                                                                         "Could not begin property transaction");
                       for (const DomainOperation& operation : plan.operations) {
                           const auto appended = backend.append(operation);
                           if (!appended.ok())
@@ -499,7 +516,7 @@ TEST_CASE("editor.v2.property_model_uses_transaction_backend_for_commit_undo_and
 
     const EditorValue desired = EditorValue::Array{10.0, 11.0, 12.0};
     const auto        write   = model.write("transform.position", toPresentationValue(desired));
-    CHECK(write.accepted);
+    CHECK(write.ok());
     CHECK(!legacySinkCalled);
     CHECK(target.position() == desired);
     CHECK(backend.canUndo());
@@ -528,7 +545,7 @@ TEST_CASE("editor.v2.property_model_explicit_transaction_previews_without_mutati
     auto begun = model.beginTransaction("Set transform position");
     CHECK(begun.ok());
     const auto staged = model.write("transform.position", toPresentationValue(desired));
-    CHECK(staged.accepted);
+    CHECK(staged.ok());
     CHECK(target.position() != desired);
 
     auto previewed = model.previewTransaction();
@@ -551,7 +568,7 @@ TEST_CASE("editor.v2.property_model_failed_commit_keeps_target_unchanged_and_is_
     const EditorValue         before = target.position();
 
     const auto failed = model.write("transform.position", toPresentationValue(EditorValue::Array{16.0, 17.0, 18.0}));
-    CHECK(!failed.accepted);
+    CHECK(!failed.ok());
     CHECK(target.position() == before);
     CHECK(backend.active());
 
@@ -572,7 +589,7 @@ TEST_CASE("editor.v2.property_model_binds_non_zero_provider_revision") {
 
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(41));
     const auto write = model.write("transform.position", toPresentationValue(EditorValue::Array{1.0, 2.0, 3.0}));
-    CHECK(write.accepted);
+    CHECK(write.ok());
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(42));
 }
 
@@ -589,8 +606,8 @@ TEST_CASE("editor.v2.property_model_rejects_external_change_until_refresh_rebase
     target.externalSet(external);
     const EditorValue beforeRejectedWrite = target.position();
     const auto rejected = model.write("transform.position", toPresentationValue(EditorValue::Array{8.0, 9.0, 10.0}));
-    CHECK(!rejected.accepted);
-    CHECK_EQ(rejected.code, std::string("editor.property.revision-conflict"));
+    CHECK(!rejected.ok());
+    CHECK_EQ(eve::property_access::writeRule(rejected), std::string("editor.property.revision-conflict"));
     CHECK(target.position() == beforeRejectedWrite);
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(7));
 
@@ -600,7 +617,7 @@ TEST_CASE("editor.v2.property_model_rejects_external_change_until_refresh_rebase
     CHECK(model.read("transform.position") == std::optional<eve::Value>(toPresentationValue(external)));
 
     const auto accepted = model.write("transform.position", toPresentationValue(EditorValue::Array{8.0, 9.0, 10.0}));
-    CHECK(accepted.accepted);
+    CHECK(accepted.ok());
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(9));
 }
 
@@ -616,7 +633,7 @@ TEST_CASE("editor.v2.property_model_external_change_conflict_preserves_failed_tr
     const auto begun = model.beginTransaction("stale property edit");
     CHECK(begun.ok());
     const auto staged = model.write("transform.position", toPresentationValue(EditorValue::Array{30.0, 31.0, 32.0}));
-    CHECK(staged.accepted);
+    CHECK(staged.ok());
     const EditorValue external = EditorValue::Array{40.0, 41.0, 42.0};
     target.externalSet(external);
 
@@ -642,8 +659,8 @@ TEST_CASE("editor.v2.legacy_property_provider_fails_closed_without_implicit_zero
     model.setEditSink([](const PropertyEditIntent&) { return eve::editing::applied<void>(); });
 
     const auto rejected = model.write("transform.position", toPresentationValue(EditorValue::Array{2.0, 3.0, 4.0}));
-    CHECK(!rejected.accepted);
-    CHECK_EQ(rejected.code, std::string("editor.property.revision-unsupported"));
+    CHECK(!rejected.ok());
+    CHECK_EQ(eve::property_access::writeRule(rejected), std::string("editor.property.revision-unsupported"));
     const EditorValue expected = EditorValue::Array{2.0, 3.0, 4.0};
     CHECK(target.position() != expected);
 }

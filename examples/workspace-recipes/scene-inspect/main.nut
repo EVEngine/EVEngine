@@ -18,7 +18,9 @@ class Pulse extends eve.SceneEntity {
         demo.ticks += 1;
         if (demo.ticks == 1) {
             // Safe detach from inside update — drained at end of scene.update.
-            getScene().scheduleDetachEntity(nodeId, this);
+            if (!scene().scheduleDetachEntity(nodeId, this)) {
+                throw "scene-inspect: failed to schedule entity detach";
+            }
         }
     }
     function onDetach() { print("[workspace-recipe] SceneEntity detached"); }
@@ -27,14 +29,15 @@ class Pulse extends eve.SceneEntity {
 function eve_init() {
     demo.scene = eve.Scene();
     demo.scene.beginBuild();
-    demo.scene.beginNode("root");
-    demo.scene.addNode("marker");
+    demo.scene.beginNode("root", "Recipe Root");
+    demo.scene.addNode("marker", "Marker");
     demo.scene.end();
-    demo.scene.mountBuildAs("recipe");
+    if (!demo.scene.mountBuildAs("recipe")) {
+        throw "scene-inspect: failed to mount recipe";
+    }
     local e = demo.scene.attachEntity("marker", Pulse);
     if (e == null) {
-        print("[workspace-recipe] scene-inspect: attachEntity failed");
-        return;
+        throw "scene-inspect: attachEntity failed";
     }
     e.disable();
     e.enable();

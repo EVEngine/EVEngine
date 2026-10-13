@@ -1,4 +1,15 @@
 #include "scene/editor/SceneEditorModule.h"
+#include "scene/editor/SceneAuthoringBindings.h"
+#include "scene/editor/SceneEditorScriptBindings.h"
+
+#include "common/Capability.h"
+#include "editing/EditingCommandRegistry.h"
+#include "editor/EditorAutomationTargetFactory.h"
+#include "scene/Scene.h"
+#include "scene/editing/SceneAuthoringDocument.h"
+#include "scene/editing/SceneEditingCommands.h"
+#include "scene/editing/SceneTarget.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <stdexcept>
 #include <string>
@@ -30,11 +41,15 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
 
 class SceneEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    std::vector<std::string_view> types() const override { return {"scene", "scene-host"}; }
+    std::vector<std::string_view> types() const override { return {"scene", "scene-host", "scene-authoring"}; }
 
     editor::Result<editor::AutomationOwnedTarget> create(const editor::TargetId& target, std::string_view type,
                                                          const editor::EditorValue::Object& request) override {
         editor::AutomationOwnedTarget owned;
+        if (type == "scene-authoring") {
+            owned.target = std::make_unique<scene_editing::SceneAuthoringDocumentTarget>(target.value());
+            return eve::editing::applied<editor::AutomationOwnedTarget>(std::move(owned));
+        }
         if (type == "scene") {
             auto              sceneTarget = std::make_unique<scene_editing::SceneDocumentTarget>(target.value());
             const std::string object      = stringField(request, "object");
@@ -89,12 +104,23 @@ SceneEditorModule::~SceneEditorModule() {
 void SceneEditorModule::expose(ssq::Table& table) {
     auto module = table.addClass(name, SceneEditorModule::create, false);
     exposeSceneEditorSessions(table, module);
+    exposeSceneAuthoringQueries(table, module);
 }
 void SceneEditorModule::expose(ssq::Class&) {}
 
 }  // namespace eve::scene_editor
 
 // SceneEditorScriptBindings.cpp
+#include "scene/editor/SceneEditorScriptBindings.h"
+#include "common/SquirrelBinding.h"
+#include "common/SquirrelOwnership.h"
+#include "scene/Scene.h"
+#include "scene/editing/SceneTarget.h"
+#include "scene/editor/SceneEditorModule.h"
+#include "scene/editor/SceneEditorSession.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
 namespace eve::scene_editor {
 namespace {
 const editing::Value* field(const editing::Value& value, const char* key) {
@@ -552,6 +578,30 @@ void exposeSceneEditorSessions(ssq::Table& table, ssq::Class& module) {
         if (!request.ok()) return script::projectStatusResult(vm, request.status());
         auto result = self->beginPhysicsPlacement(std::move(request.value()));
         return script::projectStatusResult(vm, result.status());
+    });
+    cls.addFunc("beginRelationPlacement", [vm](SceneEditorSession* self, ssq::Object payload) {
+        auto value = script::valueFromSquirrel(payload);
+        if (!value.ok()) return script::projectStatusResult(vm, value.status());
+        auto request = placementRequest(editing::toEditingValue(value.value()));
+        if (!request.ok()) return script::projectStatusResult(vm, request.status());
+        auto result = self->beginRelationPlacement(std::move(request.value()));
+        return script::projectStatusResult(vm, result.status());
+    });
+    cls.addFunc("geometryRevision", [vm](SceneEditorSession* self, std::string object) {
+        auto result = self->geometryRevision(editing::ObjectId(std::move(object)));
+        if (!result.ok()) return script::projectStatusResult(vm, result.status());
+        return script::projectStatusResult(vm, result.status(), eve::Value(result.value()));
+    });
+    cls.addFunc("prepareRelationVisibility", [vm](SceneEditorSession* self, std::string host, ssq::Object payload) {
+        auto value = script::valueFromSquirrel(payload);
+        if (!value.ok()) return script::projectStatusResult(vm, value.status());
+        auto result = self->prepareRelationVisibility(std::move(host), editing::toEditingValue(value.value()));
+        return script::projectStatusResult(vm, result.status());
+    });
+    cls.addFunc("checkRelationPlacement", [vm](SceneEditorSession* self) {
+        auto report = self->checkRelationPlacement();
+        if (!report.ok()) return script::projectStatusResult(vm, report.status());
+        return script::projectStatusResult(vm, report.status(), editing::toPresentationValue(report.value()));
     });
     cls.addFunc("updatePhysicsPlacement", [vm](SceneEditorSession* self, float x, float y, float z, float dt) {
         auto result = self->updatePhysicsPlacement(x, y, z, dt);

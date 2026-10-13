@@ -649,13 +649,21 @@ void HexMapModule::expose(ssq::Class& cls) {
     cls.addFunc("sphereNeighbor", [](HexMapModule* self, int cell, int direction) {
         return self ? self->sphere().neighbor(cell, direction) : kNoHexSphereCell;
     });
-    cls.addFunc("sphereDirection", [](HexMapModule* self, int cell) {
+    cls.addFunc("sphereDirection", [vm](HexMapModule* self, int cell) {
         const HexVec3 direction = self ? self->sphere().direction(cell) : HexVec3{};
-        return Value(Value::Array{Value(direction.x), Value(direction.y), Value(direction.z)});
+        ssq::Array    result(vm);
+        result.push(direction.x);
+        result.push(direction.y);
+        result.push(direction.z);
+        return result;
     });
-    cls.addFunc("sphereCornerDirection", [](HexMapModule* self, int cell, int corner) {
+    cls.addFunc("sphereCornerDirection", [vm](HexMapModule* self, int cell, int corner) {
         const HexVec3 direction = self ? self->sphere().cornerDirection(cell, corner) : HexVec3{};
-        return Value(Value::Array{Value(direction.x), Value(direction.y), Value(direction.z)});
+        ssq::Array    result(vm);
+        result.push(direction.x);
+        result.push(direction.y);
+        result.push(direction.z);
+        return result;
     });
     cls.addFunc("sphereCornerCount",
                 [](HexMapModule* self, int cell) { return self ? self->sphere().cornerCountOf(cell) : 0; });

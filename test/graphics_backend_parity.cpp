@@ -632,6 +632,13 @@ TEST_CASE("graphics.backendParity.pbrNormalParallaxAndCellBomb") {
     const uint8_t *nearestRed = pixel(*baseline, 32, 32);
     REQUIRE(nearestBlue[2] > nearestBlue[0] + 50);
     REQUIRE(nearestRed[0] > nearestRed[2] + 50);
+    // A cached material binding must follow sampler edits between offscreen frames.
+    gfx->setTextureSampler(albedo, TextureSampler::linear());
+    auto linearSampled = render(flat, height, 0.f, 0.f, "pbr_material_linear_sampler");
+    REQUIRE(imageRgbDifference(*baseline, *linearSampled) > 0u);
+    gfx->setTextureSampler(albedo, TextureSampler::nearest());
+    auto nearestAgain = render(flat, height, 0.f, 0.f, "pbr_material_nearest_sampler_restored");
+    REQUIRE(imageRgbDifference(*baseline, *nearestAgain) == 0u);
     REQUIRE(imageRgbDifference(*baseline, *normalMapped) > 100000u);
     REQUIRE(imageRgbDifference(*baseline, *parallaxMapped) > 50000u);
     REQUIRE(imageRgbDifference(*baseline, *cellBombed) > 50000u);

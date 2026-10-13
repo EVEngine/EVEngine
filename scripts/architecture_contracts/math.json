@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "math-smooth-max-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/math/*Smooth*",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Declare the changed scalar-math surface, ownership, cost and trim evidence explicitly.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/SmoothMax.h",
+        "src/modules/math/MathSmooth.cpp",
+        "docs/usr/modules/math.md"
+      ],
+      "tests": [
+        "test/math_smooth_max.cpp"
+      ],
+      "thread_affinity": "Pure scalar calculation on any thread; no module registration or RNG access.",
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "protocol": [],
+      "binds": [
+        {
+          "script_class": "Math",
+          "methods": [
+            "smoothMax"
+          ]
+        }
+      ],
+      "hot_path": [
+        "src/engine/common/SmoothMax.h"
+      ],
+      "trim": {
+        "absent_profile": "No trim claim; the scalar header and analyzer adapter compile independently of graphics."
+      },
+      "cost_notes": [
+        {
+          "api": "smoothMax",
+          "shape": "scalar-value",
+          "why": "Constant arithmetic per height sample, no allocations."
+        }
+      ]
+    }
+  ]
+}

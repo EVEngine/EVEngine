@@ -127,6 +127,22 @@ struct EVENGINE_API_FOUNDATION_INLINE BindingParameterContract {
     std::vector<std::string>   choices;
 };
 
+/**
+ * @brief Static implementation evidence and reviewed owner metadata for a binding.
+ * @ownership Owns strings and collections; no pointers to runtime state.
+ * @lifetime Value independent of scene objects; inputHash identifies source evidence.
+ * @thread Read on the registry thread; does not query or mutate the world.
+ */
+struct EVENGINE_API_FOUNDATION_INLINE BindingArchitectureContract {
+    std::string              implementationSource;
+    std::string              stateOwner;
+    std::string              ownerSource;
+    std::string              inputHash;
+    std::string              limitations;
+    std::vector<std::string> writes;
+    std::vector<std::string> tests;
+};
+
 /** @brief Complete script-facing contract for a native function or method. */
 struct EVENGINE_API_FOUNDATION BindingContract {
     std::string                           module;
@@ -139,6 +155,12 @@ struct EVENGINE_API_FOUNDATION BindingContract {
     std::string                           threadAffinity = "main";
     std::vector<std::string>              platforms;
     std::string                           documentationId;
+    /** @brief Actual native registration location. */
+    std::string source;
+    /** @brief Direct member target; empty for unresolved lambda/dynamic targets. */
+    std::string cppSymbol;
+    /** @brief Optional reviewed mapping; absence is explicitly reported as unknown. */
+    std::optional<BindingArchitectureContract> architecture;
 
     /** @brief Stable lookup key in the form module/class.method. */
     std::string key() const;

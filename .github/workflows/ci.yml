@@ -7,6 +7,8 @@
 #   ios     → ios debug; ios-release when asked
 #   linux   → linux debug (+ unit tests); linux-release when asked
 #   webgpu  → webgpu (Emscripten/WASM) release
+# Native Dawn: Windows owns parity; macOS checks Metal on relevant changes.
+# Scheduled/manual/reusable runs retain the complete native Dawn test selection.
 #
 # iOS signing (optional repo secrets):
 #   IOS_CERTIFICATE_P12_BASE64, IOS_CERTIFICATE_PASSWORD, IOS_DEVELOPMENT_TEAM
@@ -71,6 +73,7 @@ jobs:
       asan: ${{ steps.scope.outputs.asan }}
       fuzz: ${{ steps.scope.outputs.fuzz }}
       webgpu: ${{ steps.scope.outputs.webgpu }}
+      dawn_metal: ${{ steps.scope.outputs.dawn_metal }}
       tools: ${{ steps.scope.outputs.tools }}
       test_mode: ${{ steps.scope.outputs.test_mode }}
       test_label_regex: ${{ steps.scope.outputs.test_label_regex }}
@@ -327,15 +330,9 @@ jobs:
 
       - name: Build win32 debug
         # A PR that changes the third-party patch/cache key must do a full cold
-        # dependency plus engine/test build. Recent windows-2025 runners can
-        # exceed 60 minutes without any compiler failure as the full test manifest
-        # grows, so retain a bounded hang guard while allowing the cold build and
-        # final unit-test link to finish. Measured on 2026-09-19: a passing cold
-        # build took 51.6 min, while two dev pushes and this PR were killed by the
-        # former 60-minute guard standing at 98% of the compile steps — the win32
-        # build genuinely needs ~62-66 min now — so keep the 80-minute guard the
-        # Dawn lane already uses.
-        timeout-minutes: 80
+        # dependency plus engine/test build. Release run 35419568563 was still
+        # compiling normally when the former 60-minute guard terminated it.
+        timeout-minutes: 100
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -438,11 +435,10 @@ jobs:
           }
 
       - name: Build native Dawn parity lane
-        # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
-        # 95% only when the former 40-minute guard fired on windows-latest. The
-        # growing module matrix crossed the later 75-minute guard in the v0.5.1
-        # release gate, so retain a bounded 30-minute link/cache variance margin.
-        timeout-minutes: 105
+        # Cold Dawn/Tint + full unit_test builds hit the 105-minute guard near
+        # completion: run 38162266736 at 3,844/3,846 actions and run 38156754042
+        # at 3,847/3,848. Keep a bounded 30-minute final-link / runner margin.
+        timeout-minutes: 135
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
@@ -501,7 +497,7 @@ jobs:
     # A cold Release build took 55 minutes and the process-isolated 3510-case
     # suite reached 3060/3510 at the former 30-minute test guard. Preserve
     # bounded hang detection while budgeting setup, build, and the full suite.
-    timeout-minutes: 120
+    timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
@@ -547,7 +543,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        timeout-minutes: 90
+        # Cold release builds reached the former 90- and 120-minute guards
+        # without a compiler failure in runs 35419568563 and 35436382201.
+        timeout-minutes: 160
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -624,6 +622,10 @@ jobs:
         with:
           version: "v0.16.0"
 
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: sccache --start-server
+
       - name: Setup Java 17
         timeout-minutes: 10
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
@@ -675,7 +677,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # The release build step alone may take up to 90 minutes on a cold runner.
+    # Leave room for toolchain setup and cache reporting at the job level.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
@@ -702,6 +706,10 @@ jobs:
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
         with:
           version: "v0.16.0"
+
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: sccache --start-server
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -752,13 +760,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    # The full isolated test suite now exceeds 30 minutes on hosted Apple
-    # Silicon, and the native Dawn lane still follows it in this job. Measured
-    # on 2026-09-21: the standard build plus its test suite took 24.8 + 31.9
-    # minutes, and a cache-cold Dawn Metal build needs more than 40 minutes on
-    # its own (sccache reported 163 hits against 2533 misses), so keep a hang
-    # guard that a cold cache can still finish inside.
-    timeout-minutes: 180
+    # The debug unit suite exceeded its former 30-minute step guard in release
+    # run 35566503055. Budget the suite and the separate Dawn lane together.
+    timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
@@ -811,10 +815,7 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        # Run 37420229018 reached 5492/5868 passing cases before the 40-minute
-        # guard terminated ctest (Linux finished the same 5868 cases). Match the
-        # Windows 50-minute margin for hosted-runner variance.
-        timeout-minutes: 50
+        timeout-minutes: 60
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
@@ -830,6 +831,7 @@ jobs:
           fi
 
       - name: Configure native Dawn Metal lane
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil/glfw3 (and friends)
         # from chromium.googlesource.com. That clone can land an empty
         # directory without CMakeLists.txt (run 34850493956 / job 103997514884;
@@ -866,6 +868,7 @@ jobs:
           exit 1
 
       - name: Verify native Dawn Metal platform selection
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         timeout-minutes: 5
         run: |
           grep -Eq '^#define EVENGINE_WEBGPU[[:space:]]*$' \
@@ -879,6 +882,7 @@ jobs:
           fi
 
       - name: Build native Dawn Metal lane
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         # A warm sccache builds this lane in 10-29 minutes (10.4 on PR #443,
         # 28.6 on dev), but a cache-cold pull-request ref compiles the whole
         # webgpu-native unit_test target and ran past the former 40-minute guard
@@ -891,7 +895,20 @@ jobs:
         timeout-minutes: 5
         run: sccache --show-stats
 
-      - name: Test native Dawn Metal surface and rendering
+      - name: Test native Dawn Metal surface and rendering (targeted)
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' && (github.event_name == 'pull_request' || github.event_name == 'push') && inputs.build_type != 'release' && inputs.build_type != 'both' }}
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+        # Present/readback exercises the native surface; texture updates/blending
+        # and 3D lighting cover Metal translation without duplicating Windows parity.
+        run: |
+          ctest --test-dir build/webgpu-macos \
+            -R '^(Graphics\.screenGetPixelAfterPresent|graphics\.backendParity\.textureUpdateAndAlphaBlend|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels))$' \
+            --no-tests=error --output-on-failure
+
+      - name: Test native Dawn Metal surface and rendering (full)
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' && (github.event_name != 'pull_request' && github.event_name != 'push' || inputs.build_type == 'release' || inputs.build_type == 'both') }}
         timeout-minutes: 20
         env:
           ALSOFT_DRIVERS: "null"
@@ -905,7 +922,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    timeout-minutes: 60
+    # The 75-minute build and 30-minute test guards must both fit inside the
+    # job budget, together with checkout and toolchain setup.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-release
@@ -1308,7 +1327,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # The 75-minute build and 30-minute test guards must both fit inside the
+    # job budget, together with checkout and toolchain setup.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-release
@@ -1421,7 +1442,8 @@ jobs:
     runs-on: ubuntu-24.04
     # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
     # the 90-minute test guard, plus dependency/toolchain setup and reporting.
-    timeout-minutes: 270
+    # Build step alone can approach 180m on a cold PR; keep job headroom.
+    timeout-minutes: 330
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1495,8 +1517,9 @@ jobs:
       - name: Build linux RelWithDebInfo (ASan+UBSan)
         # PRs cannot populate the shared sccache, so sanitizer flag sets are a
         # cold rebuild. Runs 34820985249 / 34823491554 reached ~94% after 100m;
-        # keep headroom for linking unit_test. Job budget is 270m.
-        timeout-minutes: 140
+        # run 38181213947 hit the 140m step budget at ~97% still compiling
+        # unit_test_* shards. Keep headroom for linking. Job budget is 330m.
+        timeout-minutes: 180
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1524,7 +1547,9 @@ jobs:
     needs: [source-quality]
     if: ${{ needs.source-quality.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    # The build plus half of the coverage test suite consumed the former
+    # 90-minute job budget in release run 35436382201.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-coverage

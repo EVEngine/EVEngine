@@ -66,6 +66,7 @@ void exposeRenderable3DBindings(ssq::Table& table) {
     ent.addFunc("getTintG", &Renderable3D::getTintG);
     ent.addFunc("getTintB", &Renderable3D::getTintB);
     ent.addFunc("getRoughness", &Renderable3D::getRoughness);
+    ent.addFunc("getMetallic", &Renderable3D::getMetallic);
     ent.addFunc("setMetallic", &Renderable3D::setMetallic);
     ent.addFunc("setRoughness", &Renderable3D::setRoughness);
     ent.addFunc("setTexCellBomb", &Renderable3D::setTexCellBomb);
