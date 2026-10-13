@@ -59,8 +59,8 @@ game.reset <- function() {
 // Param-only soft restart path (eve_restart with reloadScripts=false).
 function publish_ai_game_world() {
     // Tell MCP agents what this live session is after systems are up.
-    // Contract world in game.agent.json is the authored baseline; this overlay
-    // records which root systems the script actually relies on at runtime.
+    // World identity is runtime-only (not game.agent.json): modules/domains
+    // plus this brief are what eve_game_world / eve://game-world expose.
     if (!("dev" in eve) || !("publishWorldContext" in eve.dev)) return;
     local result = eve.dev.publishWorldContext({
         title = "AI Game"

@@ -1645,7 +1645,7 @@
       "scope": "src/engine/devtools/GameWorldContext*",
       "owner": "devtools maintainers",
       "issue": "EVENGINE-MCP-GAME-WORLD",
-      "reason": "AI Discover must learn the live game world from MCP without eve_eval: contract world + script overlay + configured/live modules + gameplay domains.",
+      "reason": "AI Discover must learn the live game world from MCP without eve_eval: script publishWorldContext + configured/live modules + gameplay domains (not a passthrough of on-disk prose).",
       "expiry": "2027-12-31",
       "evidence": [
         "src/engine/devtools/GameWorldContext.hpp",
@@ -1667,11 +1667,11 @@
       ],
       "emits": [],
       "observes": [
-        "Optional game.agent.json world object and eve.dev.publishWorldContext overlay; config.modules / optionalModules and instantiated eve.moduleList slots."
+        "eve.dev.publishWorldContext overlay; config.modules / optionalModules and instantiated eve.moduleList slots."
       ],
       "binds": [],
       "protocol": [
-        "eve_game_world tool, eve://game-world resource, eve_play op=status.gameWorld; schema evengine.game-world v1. Soft restart with reloadScripts clears the runtime overlay."
+        "eve_game_world tool, eve://game-world resource, eve_play op=status.gameWorld; schema evengine.game-world v1. Soft restart with reloadScripts clears the runtime overlay. game.agent.json is not world authority."
       ],
       "thread_affinity": "Game-loop / MCP poll thread only; snapshot is an owning Value with no retained VM pointers.",
       "trim": {
@@ -1762,7 +1762,7 @@
       ],
       "binds": [],
       "protocol": [
-        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 may include optional world brief. status returns gameWorld snapshot. Unknown request/contract fields remain rejected."
+        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 has no world field. status returns runtime gameWorld snapshot. Unknown request/contract fields remain rejected."
       ],
       "thread_affinity": "Owner simulation thread; synchronous owning Value projection. Raw table path lookup invokes no getters or callbacks and retains no VM pointers.",
       "trim": {

@@ -2,18 +2,18 @@
 
 /**
  * @file GameWorldContext.hpp
- * @brief Authored + runtime world brief for AI Discover over MCP / Play Host.
+ * @brief Runtime game-world Discover snapshot for MCP / Play Host.
  *
- * After game scripts initialize dynamically configured systems (modules,
- * gameplay domains), agents need a first-class way to learn what kind of world
- * they are looking at. This module owns:
+ * After scripts initialize dynamically configured systems, agents need a
+ * first-class MCP path to learn what is actually live — not a second copy of
+ * on-disk prose. This module owns:
  *
- * - optional `world` objects from `game.agent.json`
- * - a script-published runtime overlay (`eve.dev.publishWorldContext`)
- * - a merged snapshot for `eve_play` status, `eve_game_world`, and `eve://game-world`
+ * - a script-published runtime brief (`eve.dev.publishWorldContext`)
+ * - live `configuredModules` / `liveModules` / gameplay `domains`
+ * - the snapshot for `eve_play` status, `eve_game_world`, and `eve://game-world`
  *
- * Narrative identity stays in the world object; live systems (domains / modules)
- * are reported alongside it and are never treated as a second GDD.
+ * Authored files such as `game.agent.json` are not a world authority here;
+ * agents that want static text can read those files directly.
  */
 
 #include "common/Export.h"
@@ -30,13 +30,13 @@ typedef struct SQVM* HSQUIRRELVM;
 
 namespace eve::dev {
 
-/** @brief Schema id for the merged game-world snapshot returned to agents. */
+/** @brief Schema id for the game-world snapshot returned to agents. */
 inline constexpr std::string_view kGameWorldSchemaId = "evengine.game-world";
-/** @brief Schema version for the merged game-world snapshot. */
+/** @brief Schema version for the game-world snapshot. */
 inline constexpr std::int64_t kGameWorldSchemaVersion = 1;
 
 /**
- * @brief Validate one `world` object (contract or runtime).
+ * @brief Validate one runtime-published `world` object.
  * @param world Candidate object; unknown fields fail.
  * @return Normalized owning object on success.
  * @remarks Allowed keys: title, summary, genre, tags, dimensions, perspective,
@@ -45,20 +45,20 @@ inline constexpr std::int64_t kGameWorldSchemaVersion = 1;
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> parseWorldObject(const Value& world);
 
 /**
- * @brief Replace the runtime world overlay published by the live game script.
+ * @brief Replace the runtime world brief published by the live game script.
  * @param world Owning object; validated with parseWorldObject.
  * @thread Game-loop / MCP poll thread only.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<void> publishWorldContext(Value world);
 
-/** @brief Drop the runtime world overlay (soft restart with script reload). */
+/** @brief Drop the runtime world brief (soft restart with script reload). */
 EVENGINE_API_FOUNDATION void clearWorldContext();
 
-/** @brief Whether a runtime overlay is currently published. */
+/** @brief Whether a runtime brief is currently published. */
 [[nodiscard]] EVENGINE_API_FOUNDATION bool hasWorldContext() noexcept;
 
 /**
- * @brief Current runtime overlay, or null when none is published.
+ * @brief Current runtime brief, or null when none is published.
  * @ownership Borrowed; valid until the next publish/clear on this thread.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION const Value* runtimeWorldContext() noexcept;
@@ -68,11 +68,9 @@ EVENGINE_API_FOUNDATION void clearWorldContext();
  * @ownership Callers own the pointed-to Values; they are not retained.
  */
 struct GameWorldSnapshotInput {
-    /** @brief Optional `world` object already parsed from `game.agent.json`. */
-    const Value* contractWorld = nullptr;
-    /** @brief Contract `id` when a contract loaded; empty otherwise. */
+    /** @brief Contract `id` when a Play contract loaded; empty otherwise. */
     std::string contractId;
-    /** @brief Whether `game.agent.json` was present and valid enough to read. */
+    /** @brief Whether `game.agent.json` was present (Play Host only; not world authority). */
     bool contractLoaded = false;
     /** @brief Absolute or relative game root reported to agents. */
     std::string gameRoot;
@@ -85,7 +83,7 @@ struct GameWorldSnapshotInput {
 };
 
 /**
- * @brief Merge contract world, runtime overlay, and live system lists.
+ * @brief Assemble runtime world brief plus live system lists.
  * @param input Snapshot ingredients; pointers are not retained.
  * @return Owning Value with schemaId `evengine.game-world`.
  */
@@ -104,8 +102,8 @@ struct GameWorldSnapshotInput {
 [[nodiscard]] EVENGINE_API_FOUNDATION std::vector<std::string> readLiveModules(HSQUIRRELVM vm);
 
 /**
- * @brief Build the Discover snapshot against the live engine / Play contract.
- * @return Owning snapshot, or a diagnostic when the contract world is malformed.
+ * @brief Build the Discover snapshot against the live engine.
+ * @return Owning snapshot.
  * @thread Game-loop / MCP poll thread only.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> liveGameWorldSnapshot();

@@ -375,9 +375,8 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         dev.addFunc("clearStateRoots", []() { Snapshot::instance().clearRoots(); });
         dev.addFunc("stateRoots", [this]() { return snapshot().rootsFor(vm_); });
         dev.addFunc("transientStateRoots", []() { return Snapshot::instance().transientRoots(); });
-        // After scripts initialize configured game systems, publish a world brief
-        // so MCP Discover (eve_game_world / eve://game-world / eve_play status)
-        // can tell agents what kind of world this is without eve_eval.
+        // After scripts initialize configured game systems, publish a runtime
+        // world brief so MCP Discover can report what is live (not on-disk prose).
         const HSQUIRRELVM handle = vm.getHandle();
         dev.addFunc("publishWorldContext", [handle](ssq::Object world) {
             auto value = script::valueFromSquirrel(world);

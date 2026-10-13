@@ -3,15 +3,6 @@
   "schemaVersion": 1,
   "id": "examples/hex-planet",
   "entry": "main.nut",
-  "world": {
-    "title": "Hex Planet",
-    "summary": "Turn-based civilization on a hexagonal planet: found cities, run projects, and send scouts.",
-    "genre": ["turn-based", "4X", "hex"],
-    "dimensions": "3d",
-    "perspective": "orbital",
-    "tags": ["civ", "procedural-planet"],
-    "systems": ["ui", "graphics"]
-  },
   "smoke": {
     "scene": "default",
     "seed": 20260918,

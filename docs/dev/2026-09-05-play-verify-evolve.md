@@ -64,7 +64,7 @@ Play Host 的 `step` 必须显式选择 `kind`：
 
 ## 4. 项目契约：`game.agent.json`
 
-每个要对 Agent 可验证的游戏目录在根放置一份契约。它不是第二份 GDD，也不拥有 Scene。它声明 **世界简述、入口、观察面、合法动作来源、证据容差**。
+每个要对 Agent 可验证的游戏目录在根放置一份契约。它不是第二份 GDD，也不拥有 Scene。它只声明 **入口、观察面、合法动作来源、证据容差**。
 
 ```json
 {
@@ -72,14 +72,6 @@ Play Host 的 `step` 必须显式选择 `kind`：
   "schemaVersion": 1,
   "id": "examples/ai-game",
   "entry": "main.nut",
-  "world": {
-    "title": "AI Game",
-    "summary": "Minimal turn-timed duel for MCP Play Host demos.",
-    "genre": ["arcade", "combat"],
-    "dimensions": "2d",
-    "perspective": "ui-panel",
-    "systems": ["ui"]
-  },
   "smoke": {
     "scene": "default",
     "seed": 42,
@@ -111,8 +103,7 @@ Play Host 的 `step` 必须显式选择 `kind`：
 
 规则：
 
-- 未知根字段失败，不静默忽略（与 `GameplayControlJson` 相同）。
-- 可选 `world`：`title` / `summary` / `genre` / `tags` / `dimensions`(`2d|3d|hybrid`) / `perspective` / `systems`。至少提供 title、summary、genre、systems 之一。脚本在初始化动态配置的系统后，可用 `eve.dev.publishWorldContext(table)` 覆盖/并入同一形状；MCP 通过 `eve_game_world`、`eve://game-world` 与 `eve_play` `op=status.gameWorld` 读取合并快照（含 `configuredModules` / `liveModules` / gameplay `domains`）。
+- 未知根字段失败，不静默忽略（与 `GameplayControlJson` 相同）。契约**不**承载世界简述：静态文案 Agent 可直接读仓库文件；「当前装了哪些系统 / 是什么世界」走运行时 MCP（`eve_game_world` / `eve://game-world` / `eve_play` `op=status.gameWorld`），由 `config.modules`、已实例化模块、gameplay domains，以及脚本在 init 后调用的 `eve.dev.publishWorldContext(table)` 组成。
 - `observations.kind` 第一版只允许：`gameplay-domain`（走 `observeGameplay`）、`script-root`（走已 `markStateRoot` 的快照投影，**不是任意 eval**）、`editor-target`（走 editing 查询）。
 - `actions.source` 为 `gameplay-domain` 时，动作集合必须来自 `availableGameplayActions`；脚本游戏可用 `script-map`，但每条动作仍要有稳定 `id` 和 Result 回执，禁止开放 `eve_run_script` 当主路径。
 - `capture.backend` 只能是引擎 `IRenderCapture`。Xvfb / 桌面 framebuffer 不是合法证据。
@@ -150,7 +141,7 @@ Play Host 的 `step` 必须显式选择 `kind`：
 
 | op | 含义 | 权威系统 |
 | --- | --- | --- |
-| `status` | 暂停否、当前 host frame、活跃 gameplay domains、契约摘要、`gameWorld` 世界快照 | Debugger + cap 查询 + `game.agent.json` + 脚本 world overlay |
+| `status` | 暂停否、当前 host frame、活跃 gameplay domains、契约摘要、`gameWorld` 运行时世界快照 | Debugger + cap 查询 + 脚本 `publishWorldContext` + 已配置/已实例化模块 |
 | `clock` | `pause` / `play` | Debugger，与现有 `eve_pause` / `eve_continue` 同一条路径 |
 | `step` | 推进 `count` 个 `frame` 或一次 `gameplay` | Host loop 或 `advanceGameplay` |
 | `observe` | 按契约 id 取 owning 快照 | GameplayControl / marked script root / editing query |

@@ -75,44 +75,6 @@ std::vector<std::string> uniqueSorted(std::vector<std::string> values) {
     return values;
 }
 
-Value mergeWorldObjects(const Value* contractWorld, const Value* runtimeWorld, std::string* source) {
-    const bool hasContract = contractWorld && contractWorld->isObject();
-    const bool hasRuntime  = runtimeWorld && runtimeWorld->isObject();
-    if (!hasContract && !hasRuntime) {
-        *source = "none";
-        return Value{};
-    }
-    if (hasContract && !hasRuntime) {
-        *source = "contract";
-        return *contractWorld;
-    }
-    if (!hasContract && hasRuntime) {
-        *source = "runtime";
-        return *runtimeWorld;
-    }
-    *source = "merged";
-    Value::Object merged = *contractWorld->getIf<Value::Object>();
-    for (const auto& [key, value] : *runtimeWorld->getIf<Value::Object>()) {
-        if (key == "systems" || key == "genre" || key == "tags") {
-            std::vector<std::string> combined;
-            if (const auto found = merged.find(key); found != merged.end() && found->second.isArray()) {
-                for (const auto& entry : *found->second.getIf<Value::Array>()) {
-                    if (entry.isString()) combined.push_back(entry.asString());
-                }
-            }
-            if (value.isArray()) {
-                for (const auto& entry : *value.getIf<Value::Array>()) {
-                    if (entry.isString()) combined.push_back(entry.asString());
-                }
-            }
-            merged[key] = encodeStrings(uniqueSorted(std::move(combined)));
-            continue;
-        }
-        merged[key] = value;
-    }
-    return Value(std::move(merged));
-}
-
 Result<Value> readRootMember(HSQUIRRELVM vm, const char* name) {
     if (!vm) return Result<Value>::failure(Diagnostic::error(
         DiagnosticCode::NotFound, "no VM attached", "vm"));
@@ -215,17 +177,9 @@ const Value* runtimeWorldContext() noexcept {
 }
 
 Result<Value> buildGameWorldSnapshot(const GameWorldSnapshotInput& input) {
-    const Value* contractWorld = nullptr;
-    Value        parsedContract;
-    if (input.contractWorld) {
-        auto parsed = parseWorldObject(*input.contractWorld);
-        if (!parsed) return Result<Value>::failure(parsed.status());
-        parsedContract = std::move(parsed).takeValue();
-        contractWorld  = &parsedContract;
-    }
-
-    std::string source;
-    Value       world = mergeWorldObjects(contractWorld, runtimeWorldContext(), &source);
+    const Value* runtime = runtimeWorldContext();
+    const bool   hasRuntime = runtime && runtime->isObject();
+    std::string  source     = hasRuntime ? "runtime" : "none";
 
     Value::Object snapshot{{"schemaId", Value(std::string(kGameWorldSchemaId))},
                            {"schemaVersion", Value(kGameWorldSchemaVersion)},
@@ -236,7 +190,7 @@ Result<Value> buildGameWorldSnapshot(const GameWorldSnapshotInput& input) {
                            {"liveModules", encodeStrings(uniqueSorted(input.liveModules))}};
     if (!input.contractId.empty()) snapshot.emplace("contractId", Value(input.contractId));
     if (!input.gameRoot.empty()) snapshot.emplace("gameRoot", Value(input.gameRoot));
-    if (!world.isNull()) snapshot.emplace("world", std::move(world));
+    if (hasRuntime) snapshot.emplace("world", *runtime);
     else snapshot.emplace("world", Value{});
     return Result<Value>::success(Value(std::move(snapshot)));
 }
@@ -313,6 +267,7 @@ Result<Value> liveGameWorldSnapshot() {
         if (candidate) input.domains.emplace_back(candidate->gameplayDomain());
     });
 
+    // Play contract id is optional Discover metadata only — never world authority.
     std::filesystem::path root = input.gameRoot;
     if (root.empty()) {
         std::error_code ec;
@@ -321,26 +276,22 @@ Result<Value> liveGameWorldSnapshot() {
     }
     const auto      path = root / "game.agent.json";
     std::error_code ec;
-    Value           contractWorld;
     if (std::filesystem::is_regular_file(path, ec)) {
         std::ifstream in(path, std::ios::binary);
         if (in) {
             std::ostringstream contents;
             contents << in.rdbuf();
             auto parsed = Value::fromJson(contents.str());
-            if (!parsed) return Result<Value>::failure(parsed.status());
-            if (parsed.value().isObject()) {
+            if (parsed && parsed.value().isObject()) {
                 input.contractLoaded = true;
                 const auto* object   = parsed.value().getIf<Value::Object>();
                 const auto  id       = object->find("id");
                 if (id != object->end() && id->second.isString()) input.contractId = id->second.asString();
-                const auto world = object->find("world");
-                if (world != object->end()) {
-                    auto normalized = parseWorldObject(world->second);
-                    if (!normalized) return Result<Value>::failure(normalized.status());
-                    contractWorld       = std::move(normalized).takeValue();
-                    input.contractWorld = &contractWorld;
-                }
+            } else if (parsed) {
+                parsed.ignore();
+            } else {
+                // Malformed Play contract must not block runtime world Discover.
+                parsed.ignore();
             }
         }
     }

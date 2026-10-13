@@ -3,15 +3,6 @@
   "schemaVersion": 1,
   "id": "examples/ai-game",
   "entry": "main.nut",
-  "world": {
-    "title": "AI Game",
-    "summary": "Minimal turn-timed duel: player and enemy trade timed attacks until one HP reaches zero.",
-    "genre": ["arcade", "combat"],
-    "dimensions": "2d",
-    "perspective": "ui-panel",
-    "tags": ["agent-demo", "mcp-play"],
-    "systems": ["ui"]
-  },
   "smoke": {
     "scene": "default",
     "seed": 42,

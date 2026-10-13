@@ -35,27 +35,21 @@ TEST_CASE("devtools.gameWorld.parseRejectsUnknownAndEmptyWorld") {
     CHECK(!badDim.ok());
 }
 
-TEST_CASE("devtools.gameWorld.publishMergeAndClear") {
+TEST_CASE("devtools.gameWorld.publishRuntimeBriefAndClear") {
     clearWorldContext();
     CHECK(!hasWorldContext());
 
     auto published = publishWorldContext(parse(R"({
       "title":"Runtime World",
-      "summary":"Overlay after systems init",
+      "summary":"Published after systems init",
       "systems":["physics","ui"],
-      "tags":["runtime"]
+      "tags":["runtime"],
+      "dimensions":"2d"
     })"));
     REQUIRE(published.ok());
     CHECK(hasWorldContext());
 
-    const Value contract = parse(R"({
-      "title":"Contract World",
-      "genre":["arcade"],
-      "systems":["ui"],
-      "dimensions":"2d"
-    })");
     GameWorldSnapshotInput input;
-    input.contractWorld      = &contract;
     input.contractId         = "examples/test";
     input.contractLoaded     = true;
     input.gameRoot           = "/tmp/game";
@@ -68,7 +62,7 @@ TEST_CASE("devtools.gameWorld.publishMergeAndClear") {
     const auto* root = snapshot.value().getIf<Value::Object>();
     REQUIRE(root);
     CHECK_EQ(root->at("schemaId").asString(), std::string(kGameWorldSchemaId));
-    CHECK_EQ(root->at("source").asString(), std::string("merged"));
+    CHECK_EQ(root->at("source").asString(), std::string("runtime"));
     CHECK_EQ(root->at("contractId").asString(), std::string("examples/test"));
     const auto* world = root->at("world").getIf<Value::Object>();
     REQUIRE(world);
@@ -77,16 +71,26 @@ TEST_CASE("devtools.gameWorld.publishMergeAndClear") {
     const auto* systems = world->at("systems").getIf<Value::Array>();
     REQUIRE(systems);
     CHECK_EQ(systems->size(), std::size_t{2});
+    CHECK_EQ(root->at("configuredModules").getIf<Value::Array>()->size(), std::size_t{2});
+    CHECK_EQ(root->at("liveModules").getIf<Value::Array>()->size(), std::size_t{4});
 
     clearWorldContext();
     CHECK(!hasWorldContext());
     auto afterClear = buildGameWorldSnapshot(input);
     REQUIRE(afterClear.ok());
-    CHECK_EQ(afterClear.value().getIf<Value::Object>()->at("source").asString(), std::string("contract"));
+    CHECK_EQ(afterClear.value().getIf<Value::Object>()->at("source").asString(), std::string("none"));
+    CHECK(afterClear.value().getIf<Value::Object>()->at("world").isNull());
 }
 
-TEST_CASE("devtools.playHost.statusIncludesGameWorldFromContract") {
+TEST_CASE("devtools.playHost.statusIncludesRuntimeGameWorld") {
     clearWorldContext();
+    REQUIRE(publishWorldContext(parse(R"({
+      "title":"AI Game",
+      "summary":"Minimal duel after systems init",
+      "systems":["ui"]
+    })"))
+                .ok());
+
     class Runtime final : public IPlayHostRuntime {
     public:
         bool paused() const override { return false; }
@@ -117,13 +121,6 @@ TEST_CASE("devtools.playHost.statusIncludesGameWorldFromContract") {
           "schemaVersion": 1,
           "id": "examples/ai-game",
           "entry": "main.nut",
-          "world": {
-            "title": "AI Game",
-            "summary": "Minimal duel",
-            "genre": ["arcade"],
-            "dimensions": "2d",
-            "systems": ["ui"]
-          },
           "clock": {"defaultStep": "frame"},
           "observations": [
             {"id": "combat-alive", "kind": "script-root", "path": "gameState", "fields": ["tick"]}
@@ -140,7 +137,24 @@ TEST_CASE("devtools.playHost.statusIncludesGameWorldFromContract") {
     CHECK_EQ(object->at("contractId").asString(), std::string("examples/ai-game"));
     const auto* gameWorld = object->at("gameWorld").getIf<Value::Object>();
     REQUIRE(gameWorld);
-    CHECK_EQ(gameWorld->at("source").asString(), std::string("contract"));
+    CHECK_EQ(gameWorld->at("source").asString(), std::string("runtime"));
     CHECK_EQ(gameWorld->at("world").getIf<Value::Object>()->at("title").asString(), std::string("AI Game"));
+
+    // Contract must reject a static world field — agents read files / runtime publish instead.
+    runtime.contract = parse(R"json({
+      "schemaId": "evengine.game-agent-contract",
+      "schemaVersion": 1,
+      "id": "examples/ai-game",
+      "entry": "main.nut",
+      "world": {"title":"should-fail"},
+      "observations": [
+        {"id": "combat-alive", "kind": "script-root", "path": "gameState"}
+      ]
+    })json");
+    auto rejected = executePlayRequest(
+        parse(R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"status"})"), runtime);
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.status().diagnostics().front().code(), DiagnosticCode::ParseError);
+
     clearWorldContext();
 }

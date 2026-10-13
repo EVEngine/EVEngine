@@ -12,8 +12,8 @@ Discover -> Modify -> Run -> Observe -> Verify -> Complete
                                       Verify -> Modify（未收敛时继续迭代）
 ```
 
-- **Discover**：先调用 `eve_game_world`（或读 `eve://game-world` / `eve_play` `op=status.gameWorld`）了解世界类型与已加载系统，再读 `game.agent.json`（入口、观察面、合法动作、截图后端），并枚举 MCP tools、
-  Editor commands、模块能力和当前 runtime 状态。没有契约时 `eve_play` 仍可 `status`/`clock`，但 `observe` 会返回 `Unsupported`。
+- **Discover**：先调用 `eve_game_world`（或读 `eve://game-world` / `eve_play` `op=status.gameWorld`）了解**运行时**已加载系统与脚本发布的世界简述，再读 `game.agent.json`（Play 入口、观察面、合法动作、截图后端；不是世界文案权威），并枚举 MCP tools、
+  Editor commands 与当前 runtime 状态。没有契约时 `eve_play` 仍可 `status`/`clock`，但 `observe` 会返回 `Unsupported`。
 - **Modify**：编辑 `config.nut/main.nut`、资源或 Editor target；副作用通过明确的文件保存、热重载或
   Editor transaction 发生。
 - **Run**：启动/继续真实帧循环，或执行一个确定性 smoke/update 路径。
