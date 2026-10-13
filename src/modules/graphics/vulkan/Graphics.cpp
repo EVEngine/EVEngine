@@ -642,11 +642,9 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 rtAsEnable.accelerationStructure = VK_TRUE;
                 rtPipeEnable.sType               = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
                 rtPipeEnable.rayTracingPipeline  = VK_TRUE;
-                rtPipeEnable.pNext               = &rtAsEnable;
                 if (rayTracingCaps_.rayQuery) {
                     rtQueryEnable.sType    = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
                     rtQueryEnable.rayQuery = VK_TRUE;
-                    rtAsEnable.pNext       = &rtQueryEnable;
                 }
                 enableRtFeatures = true;
             }
@@ -661,7 +659,11 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
         if (enableRtFeatures) {
             vk12Enable.bufferDeviceAddress = VK_TRUE;
+            // DeviceBuilder reconstructs the chain from individually registered
+            // structures, overwriting any prelinked pNext pointers.
             deviceBuilder.add_pNext(&rtPipeEnable);
+            deviceBuilder.add_pNext(&rtAsEnable);
+            if (rayTracingCaps_.rayQuery) deviceBuilder.add_pNext(&rtQueryEnable);
         }
         if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
