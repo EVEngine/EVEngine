@@ -8,12 +8,14 @@
  * first-class MCP path to learn what is actually live — not a second copy of
  * on-disk prose. This module owns:
  *
- * - a script-published runtime brief (`eve.dev.publishWorldContext`)
- * - live `configuredModules` / `liveModules` / gameplay `domains`
+ * - `config.title` and `config.modules` / `optionalModules` from the live VM
+ * - live module slots / gameplay `domains`
+ * - an optional script brief (`eve.dev.publishWorldContext`) for summary / genre /
+ *   tags / dimensions / perspective (and any title override)
  * - the snapshot for `eve_play` status, `eve_game_world`, and `eve://game-world`
  *
  * Authored files such as `game.agent.json` are not a world authority here;
- * agents that want static text can read those files directly.
+ * agents that want static prose can read those files directly.
  */
 
 #include "common/Export.h"
@@ -74,6 +76,8 @@ struct GameWorldSnapshotInput {
     bool contractLoaded = false;
     /** @brief Absolute or relative game root reported to agents. */
     std::string gameRoot;
+    /** @brief `config.title` when readable from the VM (window / project title). */
+    std::string configTitle;
     /** @brief Published gameplay-control domain names (sorted). */
     std::vector<std::string> domains;
     /** @brief `config.modules` (+ optionalModules) when readable from the VM. */
@@ -88,6 +92,12 @@ struct GameWorldSnapshotInput {
  * @return Owning Value with schemaId `evengine.game-world`.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> buildGameWorldSnapshot(const GameWorldSnapshotInput& input);
+
+/**
+ * @brief Read `config.title` from the attached VM root.
+ * @param vm Live Squirrel VM, or null (returns empty).
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION std::string readConfigTitle(HSQUIRRELVM vm);
 
 /**
  * @brief Read `config.modules` / `optionalModules` from the attached VM root.

@@ -1721,7 +1721,7 @@
       "scope": "src/engine/devtools/GameWorldContext*",
       "owner": "devtools maintainers",
       "issue": "EVENGINE-MCP-GAME-WORLD",
-      "reason": "AI Discover must learn the live game world from MCP without eve_eval: script publishWorldContext + configured/live modules + gameplay domains (not a passthrough of on-disk prose).",
+      "reason": "AI Discover must learn the live game world from MCP without eve_eval: config.title/modules + live slots + gameplay domains; publishWorldContext only for optional narrative fields (not a passthrough of on-disk prose).",
       "expiry": "2027-12-31",
       "evidence": [
         "src/engine/devtools/GameWorldContext.hpp",
@@ -1743,11 +1743,11 @@
       ],
       "emits": [],
       "observes": [
-        "eve.dev.publishWorldContext overlay; config.modules / optionalModules and instantiated eve.moduleList slots."
+        "config.title; config.modules / optionalModules; instantiated eve.moduleList slots; optional eve.dev.publishWorldContext overlay."
       ],
       "binds": [],
       "protocol": [
-        "eve_game_world tool, eve://game-world resource, eve_play op=status.gameWorld; schema evengine.game-world v1. Soft restart with reloadScripts clears the runtime overlay. game.agent.json is not world authority."
+        "eve_game_world tool, eve://game-world resource, eve_play op=status.gameWorld; schema evengine.game-world v1. source is config|runtime|none. Soft restart with reloadScripts clears the runtime overlay. game.agent.json is not world authority."
       ],
       "thread_affinity": "Game-loop / MCP poll thread only; snapshot is an owning Value with no retained VM pointers.",
       "trim": {

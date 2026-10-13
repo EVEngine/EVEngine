@@ -347,8 +347,10 @@ Result<Value> opStatus(IPlayHostRuntime& runtime) {
     GameWorldSnapshotInput worldInput;
     worldInput.domains  = runtime.gameplayDomains();
     worldInput.gameRoot = McpServer::instance().gameRoot();
-    worldInput.configuredModules = readConfiguredModules(Debugger::instance().vm());
-    worldInput.liveModules       = readLiveModules(Debugger::instance().vm());
+    const HSQUIRRELVM      vm = Debugger::instance().vm();
+    worldInput.configTitle       = readConfigTitle(vm);
+    worldInput.configuredModules = readConfiguredModules(vm);
+    worldInput.liveModules       = readLiveModules(vm);
 
     auto loaded = runtime.loadContract();
     if (loaded) {

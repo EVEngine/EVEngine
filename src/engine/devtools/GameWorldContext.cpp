@@ -177,9 +177,25 @@ const Value* runtimeWorldContext() noexcept {
 }
 
 Result<Value> buildGameWorldSnapshot(const GameWorldSnapshotInput& input) {
-    const Value* runtime = runtimeWorldContext();
+    const Value* runtime    = runtimeWorldContext();
     const bool   hasRuntime = runtime && runtime->isObject();
-    std::string  source     = hasRuntime ? "runtime" : "none";
+
+    // Title / systems already live on the VM config table for nearly every game.
+    // publishWorldContext is only needed for narrative fields (summary, genre, …)
+    // or to override title; module lists stay at the snapshot root.
+    Value       world;
+    std::string source = "none";
+    if (hasRuntime) {
+        source                  = "runtime";
+        const auto*   published = runtime->getIf<Value::Object>();
+        Value::Object merged    = published ? *published : Value::Object{};
+        if (!merged.contains("title") && !input.configTitle.empty())
+            merged.emplace("title", Value(input.configTitle));
+        world = Value(std::move(merged));
+    } else if (!input.configTitle.empty()) {
+        world  = Value(Value::Object{{"title", Value(input.configTitle)}});
+        source = "config";
+    }
 
     Value::Object snapshot{{"schemaId", Value(std::string(kGameWorldSchemaId))},
                            {"schemaVersion", Value(kGameWorldSchemaVersion)},
@@ -190,9 +206,24 @@ Result<Value> buildGameWorldSnapshot(const GameWorldSnapshotInput& input) {
                            {"liveModules", encodeStrings(uniqueSorted(input.liveModules))}};
     if (!input.contractId.empty()) snapshot.emplace("contractId", Value(input.contractId));
     if (!input.gameRoot.empty()) snapshot.emplace("gameRoot", Value(input.gameRoot));
-    if (hasRuntime) snapshot.emplace("world", *runtime);
+    if (!input.configTitle.empty()) snapshot.emplace("configTitle", Value(input.configTitle));
+    if (world.isObject()) snapshot.emplace("world", std::move(world));
     else snapshot.emplace("world", Value{});
     return Result<Value>::success(Value(std::move(snapshot)));
+}
+
+std::string readConfigTitle(HSQUIRRELVM vm) {
+    auto config = readRootMember(vm, "config");
+    if (!config || !config.value().isObject()) {
+        if (config) config.ignore();
+        return {};
+    }
+    const auto* object = config.value().getIf<Value::Object>();
+    const auto  found  = object->find("title");
+    std::string title;
+    if (found != object->end() && found->second.isString()) title = found->second.asString();
+    config.ignore();
+    return title;
 }
 
 std::vector<std::string> readConfiguredModules(HSQUIRRELVM vm) {
@@ -261,8 +292,10 @@ std::vector<std::string> readLiveModules(HSQUIRRELVM vm) {
 Result<Value> liveGameWorldSnapshot() {
     GameWorldSnapshotInput input;
     input.gameRoot          = McpServer::instance().gameRoot();
-    input.configuredModules = readConfiguredModules(Debugger::instance().vm());
-    input.liveModules       = readLiveModules(Debugger::instance().vm());
+    const HSQUIRRELVM      vm = Debugger::instance().vm();
+    input.configTitle       = readConfigTitle(vm);
+    input.configuredModules = readConfiguredModules(vm);
+    input.liveModules       = readLiveModules(vm);
     eve::cap::forEach<IGameplayControlProvider>([&](auto* candidate) {
         if (candidate) input.domains.emplace_back(candidate->gameplayDomain());
     });

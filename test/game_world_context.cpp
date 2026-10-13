@@ -35,6 +35,32 @@ TEST_CASE("devtools.gameWorld.parseRejectsUnknownAndEmptyWorld") {
     CHECK(!badDim.ok());
 }
 
+TEST_CASE("devtools.gameWorld.configTitleAndModulesWithoutPublish") {
+    clearWorldContext();
+    CHECK(!hasWorldContext());
+
+    GameWorldSnapshotInput input;
+    input.contractId        = "examples/test";
+    input.contractLoaded    = true;
+    input.gameRoot          = "/tmp/game";
+    input.configTitle       = "EVEngine AI Game";
+    input.domains           = {"inventory"};
+    input.configuredModules = {"physics", "particles"};
+    input.liveModules       = {"physics", "ui", "win", "gfx"};
+
+    auto snapshot = buildGameWorldSnapshot(input);
+    REQUIRE(snapshot.ok());
+    const auto* root = snapshot.value().getIf<Value::Object>();
+    REQUIRE(root);
+    CHECK_EQ(root->at("schemaId").asString(), std::string(kGameWorldSchemaId));
+    CHECK_EQ(root->at("source").asString(), std::string("config"));
+    CHECK_EQ(root->at("configTitle").asString(), std::string("EVEngine AI Game"));
+    CHECK_EQ(root->at("world").getIf<Value::Object>()->at("title").asString(),
+             std::string("EVEngine AI Game"));
+    CHECK_EQ(root->at("configuredModules").getIf<Value::Array>()->size(), std::size_t{2});
+    CHECK_EQ(root->at("liveModules").getIf<Value::Array>()->size(), std::size_t{4});
+}
+
 TEST_CASE("devtools.gameWorld.publishRuntimeBriefAndClear") {
     clearWorldContext();
     CHECK(!hasWorldContext());
@@ -53,6 +79,7 @@ TEST_CASE("devtools.gameWorld.publishRuntimeBriefAndClear") {
     input.contractId         = "examples/test";
     input.contractLoaded     = true;
     input.gameRoot           = "/tmp/game";
+    input.configTitle        = "From Config";
     input.domains            = {"inventory"};
     input.configuredModules  = {"physics", "particles"};
     input.liveModules        = {"physics", "ui", "win", "gfx"};
@@ -74,8 +101,20 @@ TEST_CASE("devtools.gameWorld.publishRuntimeBriefAndClear") {
     CHECK_EQ(root->at("configuredModules").getIf<Value::Array>()->size(), std::size_t{2});
     CHECK_EQ(root->at("liveModules").getIf<Value::Array>()->size(), std::size_t{4});
 
+    // Summary-only publish still fills title from config.
+    clearWorldContext();
+    REQUIRE(publishWorldContext(parse(R"({"summary":"Narrative only"})")).ok());
+    auto merged = buildGameWorldSnapshot(input);
+    REQUIRE(merged.ok());
+    CHECK_EQ(merged.value().getIf<Value::Object>()->at("source").asString(), std::string("runtime"));
+    CHECK_EQ(merged.value().getIf<Value::Object>()->at("world").getIf<Value::Object>()->at("title").asString(),
+             std::string("From Config"));
+    CHECK_EQ(merged.value().getIf<Value::Object>()->at("world").getIf<Value::Object>()->at("summary").asString(),
+             std::string("Narrative only"));
+
     clearWorldContext();
     CHECK(!hasWorldContext());
+    input.configTitle.clear();
     auto afterClear = buildGameWorldSnapshot(input);
     REQUIRE(afterClear.ok());
     CHECK_EQ(afterClear.value().getIf<Value::Object>()->at("source").asString(), std::string("none"));

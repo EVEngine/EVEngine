@@ -58,14 +58,11 @@ game.reset <- function() {
 
 // Param-only soft restart path (eve_restart with reloadScripts=false).
 function publish_ai_game_world() {
-    // Tell MCP agents what this live session is after systems are up.
-    // World identity is runtime-only (not game.agent.json): modules/domains
-    // plus this brief are what eve_game_world / eve://game-world expose.
+    // Title comes from config.title; systems from config.modules / live slots.
+    // publishWorldContext is only for narrative the config table does not carry.
     if (!("dev" in eve) || !("publishWorldContext" in eve.dev)) return;
     local result = eve.dev.publishWorldContext({
-        title = "AI Game"
         summary = "Minimal timed duel driven through eve_play; UI hud is the only live system surface."
-        systems = ["ui"]
         tags = ["runtime"]
     });
     if (!result.ok) print("publishWorldContext failed: " + result.status.summary + "\n");
