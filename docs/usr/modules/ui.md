@@ -124,6 +124,13 @@ ui.end();
 稳定 Host ID 自动写入和恢复 ini 布局。无标题 Overlay 的不透明度由
 `setHostOverlayAlpha(0..1)` 控制。
 
+系统化的编辑器壳优先用固定布局组件，而不是为每个面板开一个可任意拖动的 Window host：
+
+- `beginAppFrame` — 工具栏 + 主体 + 状态栏的固定外框
+- `beginDockArea(region)` — left/right/top/bottom/center 填充槽
+- `beginPanelFrame(title)` — 带标题的面板框（不是自由浮动 Window）
+- `beginTabBar` / `addTab` / `beginTabContainer` — 同一区域内多面板页签堆叠
+
 ```squirrel
 ui.beginToolbar("toolbar");
 ui.iconButton("save", "", "save");
@@ -145,6 +152,34 @@ ui.sectionHeader("Inspector", "inspector");
 ui.end();
 ui.end();
 ```
+
+```squirrel
+ui.beginAppFrame("shell");
+ui.beginToolbar("toolbar");
+ui.badge("EDIT", "mode");
+ui.end();
+ui.beginDockArea("center", "center");
+ui.beginTabContainer("viewport", "tabs");
+ui.beginTabBar("tabs/bar");
+ui.addTab("Viewport", "viewport", true);
+ui.addTab("Graph", "graph", false);
+ui.end();
+ui.beginPanelFrame("Viewport", "viewport");
+ui.text("Preview", "preview");
+ui.end();
+ui.beginPanelFrame("Graph", "graph");
+ui.text("Nodes", "nodes");
+ui.end();
+ui.end();
+ui.end();
+ui.beginStatusBar("status");
+ui.text("Ready", "ready");
+ui.end();
+ui.end();
+```
+
+`EditorWorkspace` 描述符可由 `UiEditorModule.mountWorkspaceShell(ui, workspace, hostName)`
+映射到上述固定壳（`WorkspaceLayoutShell`）；见 `examples/editor-workspace-shell`。
 
 ### 使用内置编辑器图标
 

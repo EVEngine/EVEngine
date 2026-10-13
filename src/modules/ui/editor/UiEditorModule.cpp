@@ -1,5 +1,6 @@
 #include "ui/editor/UiEditorModule.h"
 #include "ui/editor/UiThemeEditorScriptBindings.h"
+#include "ui/editor/WorkspaceLayoutShellBindings.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -12,6 +13,7 @@ UiEditorModule::UiEditorModule() = default;
 void UiEditorModule::expose(ssq::Table& table) {
     auto module = table.addClass(name, UiEditorModule::create, false);
     exposeUiThemeEditorScriptBindings(table, module);
+    exposeWorkspaceLayoutShellBindings(table, module);
 }
 void UiEditorModule::expose(ssq::Class&) {}
 
