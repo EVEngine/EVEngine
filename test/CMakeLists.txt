@@ -262,6 +262,8 @@ else()
 
   # Compile the heavy graphics fixture headers once across desktop test domains.
   add_library(eve_graphics_window_fixtures STATIC GraphicsWindowFixtures.cpp)
+  # Fixtures.h reaches Assimp's generated config.h through Graphics.h.
+  add_dependencies(eve_graphics_window_fixtures third-party)
   target_link_libraries(eve_graphics_window_fixtures PRIVATE eve_engine_includes zeroerr)
   target_compile_options(eve_graphics_window_fixtures PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
