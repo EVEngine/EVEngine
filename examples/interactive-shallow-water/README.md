@@ -23,7 +23,7 @@ make run/<platform>-debug GAME=examples/interactive-shallow-water
 
 | 输入 | 作用 |
 |---|---|
-| `A` / `D` / `W` / `S` | 移动角色（双腿 capsule 跟随） |
+| `A` / `D` / `W` / `S` | 移动角色（双腿 capsule 跟随；无输入时会慢速巡逻以显涟漪） |
 | 鼠标左键 | 在水面点击处制造冲击波 |
 | `Space` | 暂停 / 继续 |
 | `R` | 重置水深与角色位置 |

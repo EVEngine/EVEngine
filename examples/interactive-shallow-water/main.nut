@@ -14,7 +14,7 @@ persist fieldImage = null
 persist fieldTex = null
 persist fieldBoard = null
 persist fieldBoardVert = null
-persist showFieldBoards = true
+persist showFieldBoards = false
 persist ground = null
 persist cam = null
 persist leftLeg = null
@@ -28,19 +28,31 @@ persist characterZ = 4.0
 persist characterVx = 0.0
 persist characterVz = 0.0
 persist elapsed = 0.0
+persist nextAmbientSplash = 1.2
+persist prevStrideS = 0.0
 persist hud = ""
 
-const RES = 64;
-const CELL = 0.2;
+const RES = 96;
+const CELL = 0.1333333; // LAKE / RES ≈ 12.8
 const LAKE = 12.8;
 const HALF = 6.4; // LAKE * 0.5 — water mesh is centered; sim is [0, LAKE]
 const WATER_DEPTH = 0.55;
-const LEG_RADIUS = 0.11;
+const LEG_RADIUS = 0.12;
 const LEG_HALF = 0.42;
-const MOVE_SPEED = 2.4;
+const MOVE_SPEED = 1.55;
 const VEL_SCALE = 0.75;
 const DEPTH_CONTRAST = 0.06;
-const VISUAL_GAIN = 6.0;
+// Display gain: high enough to read rings, low enough to avoid one giant mound.
+const VISUAL_GAIN = 7.0;
+const STRIDE_FREQ_WALK = 3.0; // was 8 — about 0.5 Hz gait
+const STRIDE_FREQ_IDLE = 1.4; // slow in-place march when standing
+const STRIDE_AMP_WALK = 0.22;
+const STRIDE_AMP_IDLE = 0.10;
+const FOOT_LIFT = 0.12;
+const COLLIDER_DISPLACE = 2.2;
+const COLLIDER_DRAG = 1.25;
+const FOOT_SPLASH_RADIUS = 0.55;
+const FOOT_SPLASH_STRENGTH = 0.22;
 
 const WATER_STYLE_JSON = @"
 {
@@ -54,25 +66,25 @@ const WATER_STYLE_JSON = @"
     ""reflectionTint"": [0.70, 0.85, 1.0]
   },
   ""waves"": {
-    ""speed"": 0.9,
-    ""amplitude"": 0.035,
-    ""scale"": 9.0,
-    ""sharpness"": 1.2,
-    ""rippleAmplitude"": 0.04,
-    ""rippleCount"": 2,
-    ""rippleInterval"": 2.4
+    ""speed"": 0.55,
+    ""amplitude"": 0.012,
+    ""scale"": 7.0,
+    ""sharpness"": 1.0,
+    ""rippleAmplitude"": 0.012,
+    ""rippleCount"": 1,
+    ""rippleInterval"": 3.5
   },
-  ""depth"": { ""distance"": 2.2, ""opacity"": 0.55 },
-  ""foam"": { ""width"": 0.50, ""softness"": 0.10, ""strength"": 0.85 },
+  ""depth"": { ""distance"": 1.8, ""opacity"": 0.62 },
+  ""foam"": { ""width"": 0.55, ""softness"": 0.12, ""strength"": 0.95 },
   ""lighting"": {
-    ""fresnelPower"": 4.0,
-    ""reflectionIntensity"": 0.55,
-    ""sunIntensity"": 0.85,
+    ""fresnelPower"": 3.5,
+    ""reflectionIntensity"": 0.45,
+    ""sunIntensity"": 0.90,
     ""screenSpaceReflection"": false,
     ""screenSpaceReflectionStrength"": 0.85
   },
-  ""refraction"": { ""strength"": 0.045 },
-  ""caustics"": { ""strength"": 0.22, ""scale"": 4.0 }
+  ""refraction"": { ""strength"": 0.06 },
+  ""caustics"": { ""strength"": 0.05, ""scale"": 3.0 }
 }
 ";
 
@@ -156,7 +168,7 @@ function resetLake() {
     characterZ = LAKE * 0.45;
     characterVx = 0.0;
     characterVz = 0.0;
-    requireOk(sim.addImpulse(LAKE * 0.65, LAKE * 0.55, 2.2, 0.22), "seedImpulse");
+    requireOk(sim.addImpulse(LAKE * 0.65, LAKE * 0.55, 2.8, 0.32), "seedImpulse");
     syncWaterMesh();
 }
 
@@ -165,20 +177,49 @@ function updateLegs(dt) {
     local visualSurface = WATER_DEPTH + (surface - WATER_DEPTH) * VISUAL_GAIN;
     local physHipY = surface + 0.15;
     local visHipY = visualSurface + 0.15;
-    local stride = sin(elapsed * 8.0) * 0.18;
+
+    local speed = sqrt(characterVx * characterVx + characterVz * characterVz);
+    local walking = speed > 0.08;
+    local freq = walking ? STRIDE_FREQ_WALK : STRIDE_FREQ_IDLE;
+    local amp = walking ? STRIDE_AMP_WALK : STRIDE_AMP_IDLE;
+    local phase = elapsed * freq;
+    local s = sin(phase);
+    local c = cos(phase);
+    // Analytic foot velocity so drag / downward plant write momentum + height.
+    local stride = s * amp;
+    local strideVel = c * freq * amp;
+    local leftLift = (s > 0.0) ? s * FOOT_LIFT : 0.0;
+    local rightLift = (s < 0.0) ? (-s) * FOOT_LIFT : 0.0;
+    local leftVy = (s > 0.0) ? c * freq * FOOT_LIFT : 0.0;
+    local rightVy = (s < 0.0) ? (-c) * freq * FOOT_LIFT : 0.0;
+
     local leftX = characterX - 0.16;
     local rightX = characterX + 0.16;
     local leftZ = characterZ + stride;
     local rightZ = characterZ - stride;
-    local physLeftY = physHipY - LEG_HALF;
-    local physRightY = physHipY - LEG_HALF;
-    local visLeftY = visHipY - LEG_HALF;
-    local visRightY = visHipY - LEG_HALF;
+    local physLeftY = physHipY - LEG_HALF + leftLift;
+    local physRightY = physHipY - LEG_HALF + rightLift;
+    local visLeftY = visHipY - LEG_HALF + leftLift;
+    local visRightY = visHipY - LEG_HALF + rightLift;
+
+    local leftVx = characterVx;
+    local rightVx = characterVx;
+    local leftVz = characterVz + strideVel;
+    local rightVz = characterVz - strideVel;
 
     requireOk(sim.setColliderCapsule(1, leftX, physLeftY, leftZ, LEG_HALF, LEG_RADIUS,
-                                     characterVx, 0.0, characterVz, 0.85, 0.55), "leftLeg");
+                                     leftVx, leftVy, leftVz, COLLIDER_DISPLACE, COLLIDER_DRAG), "leftLeg");
     requireOk(sim.setColliderCapsule(2, rightX, physRightY, rightZ, LEG_HALF, LEG_RADIUS,
-                                     characterVx, 0.0, characterVz, 0.85, 0.55), "rightLeg");
+                                     rightVx, rightVy, rightVz, COLLIDER_DISPLACE, COLLIDER_DRAG), "rightLeg");
+
+    // Ring splash when a foot plants (stride phase crosses zero).
+    if (prevStrideS > 0.0 && s <= 0.0) {
+        requireOk(sim.addImpulse(leftX, leftZ, FOOT_SPLASH_RADIUS, FOOT_SPLASH_STRENGTH), "leftPlant");
+    }
+    if (prevStrideS < 0.0 && s >= 0.0) {
+        requireOk(sim.addImpulse(rightX, rightZ, FOOT_SPLASH_RADIUS, FOOT_SPLASH_STRENGTH), "rightPlant");
+    }
+    prevStrideS = s;
 
     if (leftLeg != null) {
         leftLeg.setPosition(leftX, visLeftY, leftZ);
@@ -229,15 +270,19 @@ eve_init = function() {
         // Matching vertex count: (RES-1)+1 squared == RES*RES.
         waterFx.createPlane(LAKE, LAKE, RES - 1, RES - 1);
         requireOk(waterFx.applyConfigJson(WATER_STYLE_JSON), "water style");
+        // Keep procedural displacement tiny so sim mesh heights / normals read.
+        waterFx.setWaveAmplitude(0.008);
+        waterFx.setRippleAmplitude(0.0);
         waterFx.setViewport(gfx.getWidth().tofloat(), gfx.getHeight().tofloat());
     }
 
     if (cam == null) {
         cam = eve.Camera3D();
-        cam.setEye(LAKE * 0.55, 9.5, LAKE * 1.40);
-        cam.setTarget(LAKE * 0.5, 0.35, LAKE * 0.45);
+        // Lower side angle so heightfield ripples silhouette against the bed.
+        cam.setEye(LAKE * 0.55, 5.8, LAKE * 1.15);
+        cam.setTarget(LAKE * 0.5, 0.45, LAKE * 0.45);
         cam.setUp(0.0, 1.0, 0.0);
-        cam.setFov(42.0);
+        cam.setFov(40.0);
         cam.setAmbient(0.40, 0.46, 0.52);
         cam.setActive(true);
         gfx.setDirectionalLight(-0.35, -1.0, -0.25, 1.15, 1.1, 1.0);
@@ -331,14 +376,29 @@ eve_update = function(dt) {
     characterVx = 0.0;
     characterVz = 0.0;
     if (!paused) {
-        if (keyboard.isDown("a") || keyboard.isDown("A") || keyboard.isDown("Left"))
+        local steered = false;
+        if (keyboard.isDown("a") || keyboard.isDown("A") || keyboard.isDown("Left")) {
             characterVx -= MOVE_SPEED;
-        if (keyboard.isDown("d") || keyboard.isDown("D") || keyboard.isDown("Right"))
+            steered = true;
+        }
+        if (keyboard.isDown("d") || keyboard.isDown("D") || keyboard.isDown("Right")) {
             characterVx += MOVE_SPEED;
-        if (keyboard.isDown("w") || keyboard.isDown("W") || keyboard.isDown("Up"))
+            steered = true;
+        }
+        if (keyboard.isDown("w") || keyboard.isDown("W") || keyboard.isDown("Up")) {
             characterVz -= MOVE_SPEED;
-        if (keyboard.isDown("s") || keyboard.isDown("S") || keyboard.isDown("Down"))
+            steered = true;
+        }
+        if (keyboard.isDown("s") || keyboard.isDown("S") || keyboard.isDown("Down")) {
             characterVz += MOVE_SPEED;
+            steered = true;
+        }
+        // Gentle auto patrol so idle viewing still shows a wake / ripples.
+        if (!steered) {
+            local patrol = sin(elapsed * 0.35);
+            characterVz = MOVE_SPEED * 0.55 * ((patrol >= 0.0) ? 1.0 : -1.0);
+            characterVx = MOVE_SPEED * 0.18 * sin(elapsed * 0.22);
+        }
         characterX += characterVx * dt;
         characterZ += characterVz * dt;
         if (characterX < 0.6) characterX = 0.6;
@@ -348,11 +408,14 @@ eve_update = function(dt) {
 
         if (mouseClicked()) {
             local p = screenToLake(mouse.getX(), mouse.getY());
-            requireOk(sim.addImpulse(p[0], p[1], 2.0, 0.28), "mouseImpulse");
+            requireOk(sim.addImpulse(p[0], p[1], 2.6, 0.38), "mouseImpulse");
         }
 
-        local pulse = 0.5 + 0.5 * sin(elapsed * 2.2);
-        requireOk(sim.addImpulse(LAKE * 0.55, LAKE * 0.40, 1.3, 0.02 * pulse), "pulseImpulse");
+        // Occasional ambient ripple away from the character (not a continuous drizzle).
+        if (elapsed >= nextAmbientSplash) {
+            requireOk(sim.addImpulse(LAKE * 0.72, LAKE * 0.30, 1.6, 0.16), "pulseImpulse");
+            nextAmbientSplash = elapsed + 2.6;
+        }
 
         elapsed += dt;
         updateLegs(dt);
@@ -360,6 +423,12 @@ eve_update = function(dt) {
         syncWaterMesh();
         waterFx.update(dt);
         waterFx.bindParams();
+
+        // Follow the walker so the wake stays framed.
+        if (cam != null) {
+            cam.setTarget(characterX, 0.40, characterZ);
+            cam.setEye(characterX + 0.8, 5.6, characterZ + 6.8);
+        }
     }
 };
 
