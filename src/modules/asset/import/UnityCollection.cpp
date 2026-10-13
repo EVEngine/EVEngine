@@ -85,7 +85,7 @@ Result<PreparedAssetImport> importSource(const UnityProjectImportRequest& reques
         if (!result) return result;
         result.value().findings.push_back(
             {source.path, "Model.rendering", ImportDisposition::Unsupported,
-             "mesh primitives imported; materials, skinning, animation and scene binding are not converted"});
+             "mesh, skin and clip assets may be imported; Unity renderer and Animator bindings are not converted"});
         return result;
     }
     if (source.kind == UnitySourceKind::Prefab) {

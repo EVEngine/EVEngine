@@ -19,7 +19,7 @@ The capture script uses `scripts/capture_root.nut`, a wrapper reproducing the `l
 
 | Example | Frame | What it shows | Run |
 | --- | --- | --- | --- |
-| `basic` | <img src="basic.png" width="360"> | 2D basics: tilemap, physics, particles and debug drawing | `eve run examples/basic` |
+| `basic` | <img src="basic.png" width="360"> | Lesson 6: physics, sparks and fire (set `tutorialStep = 6` in `config.nut`, then restart) | `eve run examples/basic` |
 | `weather` | <img src="weather.png" width="360"> | 3D weather: rain, snow, fog, storm atmosphere and orbit camera | `eve run examples/weather` |
 | `waterfall-demo` | <img src="waterfall-demo.png" width="360"> | Flowing-water shader: waterfall, foam, turbulence and reflections | `eve run examples/waterfall-demo` |
 | `building-3d` | <img src="building-3d.png" width="360"> | 3D buildings and basic lighting | `eve run examples/building-3d` |
