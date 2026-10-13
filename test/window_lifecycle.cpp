@@ -50,6 +50,14 @@ void presentClearFrames(eve::graphics::Graphics* gfx, int frames = 3) {
     }
 }
 
+/** Fire a WINDOWEVENT through the same EventWatch the engine installs. */
+void pushWindowEvent(Uint8 windowEvent) {
+    SDL_Event e{};
+    e.type         = SDL_WINDOWEVENT;
+    e.window.event = windowEvent;
+    REQUIRE(SDL_PushEvent(&e) == 1);
+}
+
 }  // namespace
 
 TEST_CASE("window.minimizeRestoreRoundTrip") {
@@ -63,32 +71,35 @@ TEST_CASE("window.minimizeRestoreRoundTrip") {
     CHECK(gfx->isActive());
     presentClearFrames(gfx);
 
-    win->minimize();
-    // Allow the WM / Xvfb to apply the iconified state.
-    SDL_Delay(50);
-    SDL_PumpEvents();
-
-    if (!win->isMinimized()) {
-        // Some headless hosts refuse iconify; API must still be callable.
-        win->restore();
-        win->close();
-        return;
-    }
-
-    CHECK(win->isMinimized());
-    CHECK(!win->isVisible());
+    // Portable path: synthesize the desktop minimize/restore events the
+    // EventSink watches. Real SDL_MinimizeWindow is WM-dependent (Xvfb often
+    // ignores iconify), so the synthetic events are the CI-stable contract.
+    pushWindowEvent(SDL_WINDOWEVENT_MINIMIZED);
     CHECK(!gfx->isActive());
-    // Present while minimized must be a no-op (no crash / no driver fault).
     presentClearFrames(gfx, 2);
 
-    win->restore();
-    SDL_Delay(50);
-    SDL_PumpEvents();
-
-    CHECK(!win->isMinimized());
-    CHECK(win->isVisible());
+    pushWindowEvent(SDL_WINDOWEVENT_RESTORED);
     CHECK(gfx->isActive());
     presentClearFrames(gfx);
+
+    // Best-effort real iconify when the host supports it.
+    win->minimize();
+    SDL_Delay(50);
+    SDL_PumpEvents();
+    if (win->isMinimized()) {
+        CHECK(!win->isVisible());
+        CHECK(!gfx->isActive());
+        presentClearFrames(gfx, 1);
+        win->restore();
+        SDL_Delay(50);
+        SDL_PumpEvents();
+        CHECK(!win->isMinimized());
+        CHECK(win->isVisible());
+        CHECK(gfx->isActive());
+        presentClearFrames(gfx);
+    } else {
+        win->restore();
+    }
 
     win->close();
 }
@@ -127,11 +138,10 @@ TEST_CASE("window.focusObservationSoft") {
     openWindow(win, gfx);
     installLifecycleWatch();
 
-    // Freshly created windows usually own keyboard focus under Xvfb; if the
-    // host disagrees, still require the query to be callable and stable.
-    const bool focused = win->hasFocus();
+    // Focus queries must be callable; exact focus ownership is WM-dependent
+    // under Xvfb, so we only require that present stays active while visible.
+    (void)win->hasFocus();
     (void)win->hasMouseFocus();
-    CHECK(focused || !focused);
 
     // Losing focus alone must NOT pause presenting (alt-tab while visible).
     CHECK(gfx->isActive());
@@ -180,24 +190,25 @@ TEST_CASE("graphics.lifecycle.minimizeRestoreStillPresents") {
     installLifecycleWatch();
     presentClearFrames(gfx);
 
-    win->minimize();
-    SDL_Delay(50);
-    SDL_PumpEvents();
-    if (!win->isMinimized()) {
-        win->restore();
-        win->close();
-        return;
-    }
+    // Desktop EventSink path: MINIMIZED pauses, RESTORED resumes + marks the
+    // swapchain dirty. Synthetic events keep this deterministic on headless CI.
+    pushWindowEvent(SDL_WINDOWEVENT_MINIMIZED);
     CHECK(!gfx->isActive());
+    presentClearFrames(gfx, 2);
 
-    win->restore();
-    SDL_Delay(50);
-    SDL_PumpEvents();
+    pushWindowEvent(SDL_WINDOWEVENT_RESTORED);
     CHECK(gfx->isActive());
-    // Several frames after restore: swapchain dirty path + present must work.
     presentClearFrames(gfx, 5);
     CHECK_GT(win->getPixelWidth(), 0);
     CHECK_GT(win->getPixelHeight(), 0);
+
+    // HIDDEN / SHOWN is the other desktop pair some WMs emit instead of
+    // MINIMIZED / RESTORED.
+    pushWindowEvent(SDL_WINDOWEVENT_HIDDEN);
+    CHECK(!gfx->isActive());
+    pushWindowEvent(SDL_WINDOWEVENT_SHOWN);
+    CHECK(gfx->isActive());
+    presentClearFrames(gfx, 2);
 
     win->close();
 }
