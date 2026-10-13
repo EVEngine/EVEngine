@@ -71,7 +71,7 @@ struct SceneNode {
     /** @brief Generic links (renderable / physics / camera / audio). Target owned elsewhere. */
     std::vector<SceneLink> links;
 
-    /** @brief Lazy companion SceneObject ECS runtime id; 0 = none. Never a persisted identity. */
+    /** @brief Lazy companion SceneObject ECS slot plus one; 0 = none. Never a persisted identity. */
     uint32_t objectId = 0;
 
     int firstChild = -1;

@@ -33,7 +33,11 @@ void main() {
     vec4 worldH = pc.invViewProj * clip;
     vec3 worldPos = worldH.xyz / max(worldH.w, 1e-6);
 
-    vec3 N = normalize(texture(worldNormal, uv).xyz * 2.0 - 1.0);
+    vec4 normalMaterial = texture(worldNormal, uv);
+    uint pbr = uint(round(normalMaterial.a * 255.0));
+    float roughness = float(pbr & 7u) / 7.0;
+    float metallic = float((pbr >> 3) & 7u) / 7.0;
+    vec3 N = normalize(normalMaterial.xyz * 2.0 - 1.0);
     vec3 V = normalize(pc.eye.xyz - worldPos);
     vec3 R = reflect(-V, N);
 
@@ -57,8 +61,23 @@ void main() {
             imageStore(outImage, pixel, vec4(0.0));
             return;
         }
+        // Scene color belongs to the frontmost surface at the projected pixel.
+        // Reject hidden hits rather than reflecting the occluder's color.
+        float visibleDepth = texture(hwDepth, hitUv).r;
+        vec4 visibleH = pc.invViewProj * vec4(hitNdc.xy, visibleDepth, 1.0);
+        vec3 visibleWorld = visibleH.xyz / visibleH.w;
+        float tolerance = max(0.02, length(payload.xyz - pc.eye.xyz) * 0.001);
+        if (visibleDepth >= 0.9999 || distance(visibleWorld, payload.xyz) > tolerance) {
+            imageStore(outImage, pixel, vec4(0.0));
+            return;
+        }
         vec3 radiance = texture(sceneColor, hitUv).rgb;
-        imageStore(outImage, pixel, vec4(radiance, 1.0));
+        // The destination is composited with premultiplied alpha. A hit is not
+        // an opaque replacement for the entire surface (including its diffuse).
+        float F0 = mix(0.04, 1.0, metallic);
+        float fresnel = F0 + (1.0 - F0) * pow(1.0 - max(dot(N, V), 0.0), 5.0);
+        float weight = fresnel * (1.0 - smoothstep(0.35, 1.0, roughness));
+        imageStore(outImage, pixel, vec4(radiance * weight, weight));
     } else {
         imageStore(outImage, pixel, vec4(0.0));
     }
