@@ -1,4 +1,5 @@
 #include "scene/loader/SceneLoader.h"
+#include "common/StringMapInstances.h"
 #include "scene/loader/PrefabActionCapabilities.h"
 
 #include "animation/AnimClip.h"

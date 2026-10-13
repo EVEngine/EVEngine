@@ -1,5 +1,6 @@
 #pragma once
 #include "common/Export.h"
+#include "common/StringMapInstances.h"
 
 #include "common/StateValue.h"
 #include "dnut_interpreter/SequenceAsset.h"

@@ -1,9 +1,13 @@
 #include "asset/EvpackRegistry.h"
-
-#include <limits>
-#include <set>
+#include <algorithm>
 #include <exception>
+#include <limits>
+#include <new>
+#include <set>
+#include <tuple>
+#include "asset/EvpackResourceReader.h"
 
+// EvpackRegistry.cpp
 namespace eve::asset {
 namespace {
 
@@ -12,9 +16,8 @@ bool sameGeneration(const EvpackHandle& handle, const Entry& entry) {
     return handle.generation == entry.generation && handle.buildId == entry.pack->buildId();
 }
 
-std::vector<Diagnostic> dispatchCallbacks(
-    const std::vector<EvpackRegistry::Callback>& callbacks,
-    const EvpackRegistryEvent& event) {
+std::vector<Diagnostic> dispatchCallbacks(const std::vector<EvpackRegistry::Callback>& callbacks,
+                                          const EvpackRegistryEvent&                   event) {
     std::vector<Diagnostic> diagnostics;
     for (const auto& callback : callbacks) {
         try {
@@ -22,14 +25,12 @@ std::vector<Diagnostic> dispatchCallbacks(
             if (!notified && notified.error()) diagnostics.push_back(*notified.error());
         } catch (const std::exception& error) {
             diagnostics.push_back(Diagnostic::error(DiagnosticCode::CallbackFailure,
-                                                     "registry callback threw: " + std::string(error.what()),
-                                                     event.handle.packageId.format(), {},
-                                                     "asset.evpack.registry"));
+                                                    "registry callback threw: " + std::string(error.what()),
+                                                    event.handle.packageId.format(), {}, "asset.evpack.registry"));
         } catch (...) {
             diagnostics.push_back(Diagnostic::error(DiagnosticCode::CallbackFailure,
-                                                     "registry callback threw a non-standard exception",
-                                                     event.handle.packageId.format(), {},
-                                                     "asset.evpack.registry"));
+                                                    "registry callback threw a non-standard exception",
+                                                    event.handle.packageId.format(), {}, "asset.evpack.registry"));
         }
     }
     return diagnostics;
@@ -37,8 +38,7 @@ std::vector<Diagnostic> dispatchCallbacks(
 
 }  // namespace
 
-Result<PreparedEvpackMount> prepareEvpackMount(std::span<const std::uint8_t> bytes,
-                                               const EvpackLimits& limits,
+Result<PreparedEvpackMount> prepareEvpackMount(std::span<const std::uint8_t> bytes, const EvpackLimits& limits,
                                                const EvpackTrust& trust) {
     auto parsed = parseEvpack(bytes, limits, trust);
     if (!parsed) return Result<PreparedEvpackMount>::failure(parsed.status());
@@ -62,12 +62,13 @@ Result<EvpackRegistrySubscription> EvpackRegistry::subscribe(Callback callback) 
 
 Result<void> EvpackRegistry::unsubscribe(EvpackRegistrySubscription subscription) {
     if (subscription.value == 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "registry subscription identity is invalid", {}, {},
-                                                   "asset.evpack.registry"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "registry subscription identity is invalid", {}, {},
+                                                       "asset.evpack.registry"));
     std::lock_guard lock(mutex_);
     if (callbacks_.erase(subscription.value) == 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "registry subscription is not active", {}, {},
-                                                   "asset.evpack.registry"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "registry subscription is not active",
+                                                       {}, {}, "asset.evpack.registry"));
     return Result<void>::success();
 }
 
@@ -76,12 +77,12 @@ Result<EvpackMountReceipt> EvpackRegistry::commit(PreparedEvpackMount candidate)
         return Result<EvpackMountReceipt>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                                      "mount candidate has already been consumed", {},
                                                                      {}, "asset.evpack.registry"));
-    const PersistentId packageId = candidate.pack_->packageId();
-    bool replaced = false;
-    EvpackHandle handle;
+    const PersistentId    packageId = candidate.pack_->packageId();
+    bool                  replaced  = false;
+    EvpackHandle          handle;
     std::vector<Callback> callbacks;
     {
-        std::lock_guard lock(mutex_);
+        std::lock_guard        lock(mutex_);
         std::set<PersistentId> available;
         std::set<PersistentId> candidateAssets;
         for (const auto& chunk : candidate.pack_->chunks()) {
@@ -117,7 +118,7 @@ Result<EvpackMountReceipt> EvpackRegistry::commit(PreparedEvpackMount candidate)
                 }
             }
         }
-        replaced = packages_.contains(packageId);
+        replaced            = packages_.contains(packageId);
         std::uint64_t& next = nextGenerations_[packageId];
         if (next == std::numeric_limits<std::uint64_t>::max())
             return Result<EvpackMountReceipt>::failure(
@@ -125,7 +126,7 @@ Result<EvpackMountReceipt> EvpackRegistry::commit(PreparedEvpackMount candidate)
                                   packageId.format(), {}, "asset.evpack.registry"));
         ++next;
         auto pack = std::move(candidate.pack_);
-        handle = {packageId, pack->buildId(), next};
+        handle    = {packageId, pack->buildId(), next};
         packages_.insert_or_assign(packageId, Entry{std::move(pack), next});
         callbacks.reserve(callbacks_.size());
         for (const auto& [id, callback] : callbacks_) {
@@ -133,8 +134,7 @@ Result<EvpackMountReceipt> EvpackRegistry::commit(PreparedEvpackMount candidate)
             callbacks.push_back(callback);
         }
     }
-    const EvpackRegistryEvent event{replaced ? EvpackRegistryEventKind::Replaced
-                                             : EvpackRegistryEventKind::Mounted,
+    const EvpackRegistryEvent event{replaced ? EvpackRegistryEventKind::Replaced : EvpackRegistryEventKind::Mounted,
                                     handle};
     auto callbackDiagnostics = dispatchCallbacks(callbacks, event);
     return Result<EvpackMountReceipt>::success({handle, replaced, std::move(callbackDiagnostics)});
@@ -142,7 +142,7 @@ Result<EvpackMountReceipt> EvpackRegistry::commit(PreparedEvpackMount candidate)
 
 Result<std::shared_ptr<const Evpack>> EvpackRegistry::resolve(const EvpackHandle& handle) const {
     std::lock_guard lock(mutex_);
-    const auto found = packages_.find(handle.packageId);
+    const auto      found = packages_.find(handle.packageId);
     if (found == packages_.end())
         return Result<std::shared_ptr<const Evpack>>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "runtime package is not mounted", handle.packageId.format(), {},
@@ -154,24 +154,23 @@ Result<std::shared_ptr<const Evpack>> EvpackRegistry::resolve(const EvpackHandle
     return Result<std::shared_ptr<const Evpack>>::success(found->second.pack);
 }
 
-Result<EvpackAssetHandle> EvpackRegistry::resolveAsset(
-    const AssetRef& assetRef, std::string_view expectedType,
-    const EvpackCapabilities& capabilities) const {
+Result<EvpackAssetHandle> EvpackRegistry::resolveAsset(const AssetRef& assetRef, std::string_view expectedType,
+                                                       const EvpackCapabilities& capabilities) const {
     if (expectedType.empty())
         return Result<EvpackAssetHandle>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "expected runtime asset type is empty", {}, {}, "asset.evpack.registry"));
     std::lock_guard lock(mutex_);
-    bool identityFound = false;
-    bool typeFound = false;
+    bool            identityFound = false;
+    bool            typeFound     = false;
     for (const auto& [packageId, entry] : packages_) {
         const EvpackChunk* representative = nullptr;
         for (const auto& chunk : entry.pack->chunks()) {
             if (chunk.assetId != assetRef.id()) continue;
-            identityFound = true;
-            representative = &chunk;
-            const std::string actual = chunk.type + "/" +
-                                       std::to_string(chunk.schemaVersion.value());
-            if (actual == expectedType) typeFound = true;
+            identityFound            = true;
+            representative           = &chunk;
+            const std::string actual = chunk.type + "/" + std::to_string(chunk.schemaVersion.value());
+            if (actual == expectedType)
+                typeFound = true;
             else
                 return Result<EvpackAssetHandle>::failure(Diagnostic::error(
                     DiagnosticCode::TypeMismatch, "runtime asset provider has a different canonical type",
@@ -181,8 +180,7 @@ Result<EvpackAssetHandle> EvpackRegistry::resolveAsset(
         auto selected = selectEvpackVariant(*entry.pack, capabilities);
         if (!selected) continue;
         return Result<EvpackAssetHandle>::success(
-            {{packageId, entry.pack->buildId(), entry.generation}, assetRef,
-             std::string(expectedType), capabilities});
+            {{packageId, entry.pack->buildId(), entry.generation}, assetRef, std::string(expectedType), capabilities});
     }
     if (identityFound && typeFound)
         return Result<EvpackAssetHandle>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
@@ -193,20 +191,17 @@ Result<EvpackAssetHandle> EvpackRegistry::resolveAsset(
                                                                 assetRef.format(), {}, "asset.evpack.registry"));
 }
 
-Result<RuntimeAssetPayload> EvpackRegistry::readAsset(
-    const EvpackAssetHandle& handle, std::uint64_t maximumDecodedBytes) const {
+Result<RuntimeAssetPayload> EvpackRegistry::readAsset(const EvpackAssetHandle& handle,
+                                                      std::uint64_t            maximumDecodedBytes) const {
     auto pack = resolve(handle.package);
     if (!pack) return Result<RuntimeAssetPayload>::failure(pack.status());
     EvpackResourceReader reader(std::move(pack).takeValue());
-    return reader.read(handle.asset, handle.expectedType, handle.capabilities,
-                       maximumDecodedBytes);
+    return reader.read(handle.asset, handle.expectedType, handle.capabilities, maximumDecodedBytes);
 }
 
-Result<EvpackChunkHandle> EvpackRegistry::resolveChunk(const EvpackHandle& handle,
-                                                       const PersistentId& assetId, std::string_view type,
-                                                       EvpackChunkKind kind,
-                                                       std::uint32_t chunkId,
-                                                       std::uint32_t variantIndex) const {
+Result<EvpackChunkHandle> EvpackRegistry::resolveChunk(const EvpackHandle& handle, const PersistentId& assetId,
+                                                       std::string_view type, EvpackChunkKind kind,
+                                                       std::uint32_t chunkId, std::uint32_t variantIndex) const {
     auto resolved = resolve(handle);
     if (!resolved) return Result<EvpackChunkHandle>::failure(resolved.status());
     const auto pack = std::move(resolved).takeValue();
@@ -234,7 +229,7 @@ Result<EvpackUnmountReceipt> EvpackRegistry::unmount(const EvpackHandle& handle)
     std::vector<Callback> callbacks;
     {
         std::lock_guard lock(mutex_);
-        const auto found = packages_.find(handle.packageId);
+        const auto      found = packages_.find(handle.packageId);
         if (found == packages_.end())
             return Result<EvpackUnmountReceipt>::failure(Diagnostic::error(
                 DiagnosticCode::NotFound, "runtime package is not mounted", {}, {}, "asset.evpack.registry"));
@@ -249,8 +244,102 @@ Result<EvpackUnmountReceipt> EvpackRegistry::unmount(const EvpackHandle& handle)
         }
     }
     const EvpackRegistryEvent event{EvpackRegistryEventKind::Unmounted, handle};
-    auto callbackDiagnostics = dispatchCallbacks(callbacks, event);
+    auto                      callbackDiagnostics = dispatchCallbacks(callbacks, event);
     return Result<EvpackUnmountReceipt>::success({handle, std::move(callbackDiagnostics)});
 }
 
+}  // namespace eve::asset
+
+// EvpackResourceReader.cpp
+namespace eve::asset {
+namespace {}  // namespace
+
+Result<RuntimeAssetPayload> EvpackResourceReader::read(const AssetRef& asset, std::string_view expectedType,
+                                                       const EvpackCapabilities& capabilities,
+                                                       std::uint64_t             maximumDecodedBytes) const {
+    if (!pack_ || asset.id().isNil() || expectedType.empty())
+        return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "pack, asset and expected type are required", {},
+                                                                      {}, "asset.evpack.reader"));
+    auto selected = selectEvpackVariant(*pack_, capabilities);
+    if (!selected) return Result<RuntimeAssetPayload>::failure(selected.status());
+    RuntimeAssetPayload result{asset, {}, {}, selected.value(), {}};
+    bool                identityFound = false;
+    bool                typeFound     = false;
+    std::uint64_t       decodedTotal  = 0;
+    for (std::size_t index = 0; index < pack_->chunks().size(); ++index) {
+        const auto& chunk = pack_->chunks()[index];
+        if (chunk.assetId != asset.id()) continue;
+        identityFound                = true;
+        const std::string actualType = chunk.type + "/" + std::to_string(chunk.schemaVersion.value());
+        if (actualType != expectedType) continue;
+        typeFound = true;
+        if (chunk.variantIndex != selected.value().index) continue;
+        if (decodedTotal > maximumDecodedBytes || chunk.decodedSize > maximumDecodedBytes - decodedTotal)
+            return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                          "asset payload exceeds decoded budget",
+                                                                          asset.format(), {}, "asset.evpack.reader"));
+        auto bytes = pack_->decodeChunk(index, maximumDecodedBytes - decodedTotal);
+        if (!bytes) return Result<RuntimeAssetPayload>::failure(bytes.status());
+        decodedTotal += bytes.value().size();
+        result.type          = chunk.type;
+        result.schemaVersion = chunk.schemaVersion;
+        result.chunks.push_back({chunk.kind, chunk.chunkId, std::move(bytes).takeValue()});
+    }
+    if (result.chunks.empty()) {
+        if (identityFound && !typeFound)
+            return Result<RuntimeAssetPayload>::failure(
+                Diagnostic::error(DiagnosticCode::TypeMismatch, "asset does not provide the expected type/version",
+                                  asset.format(), {}, "asset.evpack.reader"));
+        if (typeFound)
+            return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                                          "asset has no chunk for the selected variant",
+                                                                          asset.format(), {}, "asset.evpack.reader"));
+        return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::NotFound, "asset is not present",
+                                                                      asset.format(), {}, "asset.evpack.reader"));
+    }
+    std::sort(result.chunks.begin(), result.chunks.end(), [](const auto& left, const auto& right) {
+        return std::tie(left.kind, left.chunkId) < std::tie(right.kind, right.chunkId);
+    });
+    if (result.chunks.front().kind != EvpackChunkKind::Definition)
+        return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                      "asset has no definition chunk", asset.format(),
+                                                                      {}, "asset.evpack.reader"));
+    return Result<RuntimeAssetPayload>::success(std::move(result));
+}
+
+Result<std::vector<AssetRef>> EvpackResourceReader::listAssets(std::string_view          expectedType,
+                                                               const EvpackCapabilities& capabilities,
+                                                               std::uint32_t             maximumAssets) const {
+    if (!pack_ || expectedType.empty() || maximumAssets == 0)
+        return Result<std::vector<AssetRef>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "pack, expected type and asset budget are required", {},
+                              {}, "asset.evpack.reader"));
+    auto selected = selectEvpackVariant(*pack_, capabilities);
+    if (!selected) return Result<std::vector<AssetRef>>::failure(selected.status());
+    try {
+        std::vector<PersistentId> identities;
+        for (const auto& chunk : pack_->chunks()) {
+            const std::string actualType = chunk.type + "/" + std::to_string(chunk.schemaVersion.value());
+            if (chunk.variantIndex != selected.value().index || actualType != expectedType) continue;
+            identities.push_back(chunk.assetId);
+        }
+        std::sort(identities.begin(), identities.end());
+        identities.erase(std::unique(identities.begin(), identities.end()), identities.end());
+        if (identities.size() > maximumAssets)
+            return Result<std::vector<AssetRef>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "asset listing exceeds result budget", {}, {}, "asset.evpack.reader"));
+        std::vector<AssetRef> result;
+        result.reserve(identities.size());
+        for (const auto& identity : identities) {
+            auto reference = AssetRef::fromId(identity);
+            if (!reference) return Result<std::vector<AssetRef>>::failure(reference.status());
+            result.push_back(std::move(reference).takeValue());
+        }
+        return Result<std::vector<AssetRef>>::success(std::move(result));
+    } catch (const std::bad_alloc&) {
+        return Result<std::vector<AssetRef>>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "asset listing allocation failed", {}, {}, "asset.evpack.reader"));
+    }
+}
 }  // namespace eve::asset

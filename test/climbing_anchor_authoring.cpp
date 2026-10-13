@@ -1,12 +1,18 @@
+#include <algorithm>
+#include <cmath>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <utility>
+#include "climbing/ClimbingAnchorAuthoring.h"
+#include "climbing/ClimbingCodec.h"
+#include "climbing/ClimbingTelemetry.h"
+#include "common/Runtime.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "climbing/ClimbingAnchorAuthoring.h"
-
-#include <algorithm>
-#include <string>
-#include <utility>
-
+// climbing_anchor_authoring.cpp
 namespace {
 
 eve::climbing::ClimbingAnchorBakeRequest request() {
@@ -127,4 +133,251 @@ TEST_CASE("climbing.anchorAuthoring.rejectsInvalidSourceWithoutPartialGraph") {
     auto rejected                         = eve::climbing::bakeClimbingAnchorGraph(candidate);
     CHECK(!rejected.ok());
     CHECK_EQ(static_cast<int>(rejected.error()->code()), static_cast<int>(eve::DiagnosticCode::InvalidArgument));
+}
+
+// climbing_codec.cpp
+namespace {
+
+eve::climbing::ClimbingActionDefinition action(std::string id) {
+    eve::climbing::ClimbingActionDefinition result;
+    result.id                     = std::move(id);
+    result.kind                   = eve::climbing::ClimbingActionKind::Vault;
+    result.minHeight              = 0.3f;
+    result.maxHeight              = 1.1f;
+    result.duration               = eve::Duration::fromNanoseconds(450000000);
+    result.requiredNotifies       = {"contact.left_hand", "land"};
+    result.tags                   = {"parkour", "vault"};
+    result.sourceModes            = eve::climbing::ClimbingSourceMode::Grounded;
+    result.requiredCommand        = eve::climbing::ClimbingCommandRequirement::Jump;
+    result.probeRecipe            = eve::climbing::ClimbingProbeRecipe::Obstacle;
+    result.minDepth               = 0.2f;
+    result.maxDepth               = 1.4f;
+    result.minDistance            = 0.1f;
+    result.maxDistance            = 1.5f;
+    result.minSurfaceNormalY      = -0.2f;
+    result.maxSlopeRadians        = 1.2f;
+    result.maxCurvature           = 0.3f;
+    result.requiredSupportTags    = {"solid"};
+    result.trajectory             = eve::climbing::ClimbingTrajectoryKind::BallisticArc;
+    result.animation              = {"anim:vault_low", "climbing.vault", "Root", false};
+    result.branchWindows          = {{0.45f, 0.7f, "combo:mantle"}};
+    result.contactConstraints     = {{eve::climbing::ClimbingContactTarget::LeftHand, 0.2f, 0.6f, 0.9f}};
+    result.landingPolicy          = eve::climbing::ClimbingLandingPolicy::PreserveMomentum;
+    result.terminalVelocityPolicy = eve::climbing::ClimbingTerminalVelocityPolicy::ClampDownward;
+    result.comboTags              = {"combo:flow", "combo:mantle"};
+    result.repetitionPenalty      = 125;
+    result.requiredConditionTags  = {"ability:parkour"};
+    result.staminaCost            = 7.5f;
+    result.cameraCue              = "camera:vault";
+    result.eventMetadata          = {"event:parkour"};
+    result.extensionMetadata      = {{"plugin.cameraCue", eve::Value("close_follow")}};
+    return result;
+}
+
+}  // namespace
+
+TEST_CASE("climbing.codec.profileRoundTripPreservesUnknownFields") {
+    eve::climbing::ClimbingProfileDefinition profile;
+    profile.inputBufferTicks       = 9;
+    profile.coyoteTicks            = 7;
+    profile.pathValidationSegments = 18;
+    profile.maxPelvisDeviation     = 0.28f;
+    profile.groundAcceleration     = 31.f;
+    profile.groundBraking          = 35.f;
+    profile.airControl             = 0.55f;
+    profile.gravity                = 26.f;
+    profile.jumpSpeed              = 7.4f;
+    profile.probeSectors           = 12;
+    profile.maxCandidates          = 5;
+    profile.autoAssistStrength     = 0.7f;
+    profile.scoreWeights           = {900, 800, 700, 600, 500, 400, 300};
+    profile.maxTotalWarpBudget     = 1.35f;
+    profile.defaultActionIds       = {"parkour:vault_low"};
+    profile.allowedActionTags      = {"parkour"};
+    profile.deniedActionTags       = {"disabled"};
+    profile.staminaPolicy          = eve::climbing::ClimbingStaminaPolicy::UseWhenPresent;
+    profile.staminaAdapter         = "attributes:stamina";
+    profile.cameraCueProfile       = "camera:climbing";
+    auto vault                     = action("parkour:vault_low");
+    vault.rootMotionScaleMin       = 0.8f;
+    vault.rootMotionScaleMax       = 1.2f;
+    vault.warpWindows              = {{0.1f, 0.45f, true, false, true}, {0.6f, 0.9f, false, true, false}};
+    profile.actions.push_back(vault);
+    profile.extensionMetadata.emplace("studio.balanceRevision", eve::Value(std::int64_t(7)));
+
+    auto encoded = eve::climbing::encodeClimbingProfileDefinition(profile);
+    REQUIRE(encoded.ok());
+    auto decoded = eve::climbing::decodeClimbingProfileDefinition(encoded.value());
+    REQUIRE(decoded.ok());
+    REQUIRE_EQ(decoded.value().actions.size(), std::size_t{1});
+    CHECK_EQ(decoded.value().actions.front().id, std::string("parkour:vault_low"));
+    CHECK(decoded.value().extensionMetadata.contains("studio.balanceRevision"));
+    CHECK(decoded.value().actions.front().extensionMetadata.contains("plugin.cameraCue"));
+    CHECK_EQ(decoded.value().inputBufferTicks, std::uint64_t(9));
+    CHECK_EQ(decoded.value().coyoteTicks, std::uint64_t(7));
+    CHECK_EQ(decoded.value().pathValidationSegments, std::uint32_t(18));
+    CHECK(std::fabs(decoded.value().maxPelvisDeviation - 0.28f) < 0.0001f);
+    CHECK_EQ(decoded.value().probeSectors, std::uint32_t(12));
+    CHECK_EQ(decoded.value().maxCandidates, std::uint32_t(5));
+    CHECK_EQ(decoded.value().cameraCueProfile, std::string("camera:climbing"));
+    CHECK_EQ(decoded.value().actions.front().cameraCue, std::string("camera:vault"));
+    CHECK_EQ(decoded.value().actions.front().animation.clipId, std::string("anim:vault_low"));
+    CHECK_EQ(decoded.value().actions.front().branchWindows.front().comboTag, std::string("combo:mantle"));
+    CHECK_EQ(decoded.value().actions.front().contactConstraints.size(), std::size_t(1));
+    REQUIRE_EQ(decoded.value().actions.front().warpWindows.size(), std::size_t(2));
+    CHECK(decoded.value().actions.front().warpWindows.front().horizontal);
+    CHECK(!decoded.value().actions.front().warpWindows.front().vertical);
+
+    auto reencoded = eve::climbing::encodeClimbingProfileDefinition(decoded.value());
+    REQUIRE(reencoded.ok());
+    CHECK(reencoded.value() == encoded.value());
+}
+
+TEST_CASE("climbing.codec.migratesV3ActionWithExplicitV4Defaults") {
+    auto encoded = eve::climbing::encodeClimbingActionDefinition(action("parkour:vault_legacy"));
+    REQUIRE(encoded.ok());
+    auto* object = encoded.value().getIf<eve::Value::Object>();
+    REQUIRE(object != nullptr);
+    object->at("schemaVersion")             = eve::Value(std::int64_t(3));
+    const std::vector<std::string> v4Fields = {"tags",
+                                               "sourceModes",
+                                               "requiredCommand",
+                                               "probeRecipe",
+                                               "minDepth",
+                                               "maxDepth",
+                                               "minDistance",
+                                               "maxDistance",
+                                               "minSurfaceNormalY",
+                                               "maxSlopeRadians",
+                                               "maxCurvature",
+                                               "requiredSupportTags",
+                                               "trajectory",
+                                               "animation",
+                                               "branchWindows",
+                                               "contactConstraints",
+                                               "landingPolicy",
+                                               "terminalVelocityPolicy",
+                                               "comboTags",
+                                               "repetitionPenalty",
+                                               "requiredConditionTags",
+                                               "staminaCost",
+                                               "cameraCue",
+                                               "eventMetadata"};
+    for (const std::string& field : v4Fields) object->erase(field);
+
+    auto decoded = eve::climbing::decodeClimbingActionDefinition(encoded.value());
+    REQUIRE(decoded.ok());
+    CHECK(decoded.value().tags.empty());
+    CHECK_EQ(static_cast<int>(decoded.value().sourceModes), static_cast<int>(eve::climbing::ClimbingSourceMode::Any));
+    CHECK_EQ(decoded.value().animation.rootBone, std::string("Root"));
+}
+
+TEST_CASE("climbing.codec.rejectsUnknownVersionAndInvalidKnownFields") {
+    auto encoded = eve::climbing::encodeClimbingActionDefinition(action("parkour:vault_low"));
+    REQUIRE(encoded.ok());
+
+    eve::Value future = encoded.value();
+    future.set("schemaVersion", eve::Value(std::int64_t(eve::climbing::ClimbingActionDefinition::SchemaVersion + 1)));
+    auto unknown = eve::climbing::decodeClimbingActionDefinition(future);
+    CHECK(!unknown.ok());
+    CHECK_EQ(static_cast<int>(unknown.error()->code()), static_cast<int>(eve::DiagnosticCode::UnknownVersion));
+
+    eve::Value malformed = encoded.value();
+    malformed.set("maxHeight", eve::Value(-1.0));
+    auto invalid = eve::climbing::decodeClimbingActionDefinition(malformed);
+    CHECK(!invalid.ok());
+    CHECK_EQ(static_cast<int>(invalid.code()), static_cast<int>(eve::StatusCode::Rejected));
+}
+
+TEST_CASE("climbing.codec.duplicateActionsRejectWholeProfileCandidate") {
+    eve::climbing::ClimbingProfileDefinition profile;
+    profile.actions.push_back(action("parkour:vault_low"));
+    profile.actions.push_back(action("parkour:vault_low"));
+    auto encoded = eve::climbing::encodeClimbingProfileDefinition(profile);
+    CHECK(!encoded.ok());
+    CHECK_EQ(static_cast<int>(encoded.code()), static_cast<int>(eve::StatusCode::Conflict));
+}
+
+TEST_CASE("climbing.codec.rejectsInvalidInputTickWindows") {
+    eve::climbing::ClimbingProfileDefinition profile;
+    profile.inputBufferTicks = 0;
+    auto encoded             = eve::climbing::encodeClimbingProfileDefinition(profile);
+    CHECK(!encoded.ok());
+    CHECK_EQ(static_cast<int>(encoded.code()), static_cast<int>(eve::StatusCode::Rejected));
+}
+
+TEST_CASE("climbing.codec.rejectsOverlappingAndChannelLessWarpWindows") {
+    auto overlapping        = action("parkour:vault_overlap");
+    overlapping.warpWindows = {{0.f, 0.6f, true, false, false}, {0.5f, 1.f, false, true, false}};
+    auto overlapResult      = eve::climbing::encodeClimbingActionDefinition(overlapping);
+    CHECK(!overlapResult.ok());
+    CHECK_EQ(static_cast<int>(overlapResult.code()), static_cast<int>(eve::StatusCode::Rejected));
+
+    auto channelLess        = action("parkour:vault_empty_window");
+    channelLess.warpWindows = {{0.f, 1.f, false, false, false}};
+    auto channelResult      = eve::climbing::encodeClimbingActionDefinition(channelLess);
+    CHECK(!channelResult.ok());
+    CHECK_EQ(static_cast<int>(channelResult.code()), static_cast<int>(eve::StatusCode::Rejected));
+}
+
+// climbing_playground.cpp
+TEST_CASE("climbing.playground.mainScriptCompilesThroughEveScriptFrontend") {
+    const std::filesystem::path sourceRoot = std::filesystem::path(__FILE__).parent_path().parent_path();
+    const std::filesystem::path scriptPath = sourceRoot / "examples" / "climbing-playground" / "main.nut";
+    std::ifstream               input(scriptPath, std::ios::binary);
+    REQUIRE(input.is_open());
+    std::ostringstream source;
+    source << input.rdbuf();
+    CHECK(source.str().find("math.sin") == std::string::npos);
+
+    eve::Runtime runtime(2048, ssq::Libs::ALL);
+    bool         compiled = true;
+    try {
+        runtime.runSource("climbing_playground_sine_probe <- sin(0.0);", "climbing-playground-sine-probe.nut");
+        runtime.compileSource(source.str(), "examples/climbing-playground/main.nut");
+    } catch (...) {
+        compiled = false;
+    }
+    CHECK(compiled);
+}
+
+// climbing_telemetry.cpp
+using namespace eve;
+using namespace eve::climbing;
+
+TEST_CASE("climbing.telemetry.fixedRingReportsExactPercentilesAndBudgets") {
+    ClimbingTelemetryBuffer buffer;
+    for (std::uint64_t index = 1; index <= 100; ++index) {
+        ClimbingRuntimeCounters counters;
+        counters.workload    = ClimbingWorkload::CandidateProbe;
+        counters.queryCount  = static_cast<std::uint32_t>(index % 17);
+        counters.queryBudget = ClimbingQueryBudgets::CandidateProbe;
+        counters.budgetState = counters.queryCount > counters.queryBudget ? ClimbingQueryBudgetState::Exceeded
+                                                                          : ClimbingQueryBudgetState::WithinBudget;
+        buffer.record({SimulationTick(index), index * 100, counters});
+    }
+
+    const auto summary = buffer.summarize(ClimbingWorkload::CandidateProbe);
+    CHECK(summary.sampleCount == 100);
+    CHECK(summary.p50Nanoseconds == 5000);
+    CHECK(summary.p95Nanoseconds == 9500);
+    CHECK(summary.maxQueryCount == 16);
+    CHECK(summary.budgetExceededCount == 0);
+    CHECK(buffer.samples().size() == 100);
+}
+
+TEST_CASE("climbing.telemetry.ringOverwritesWithoutGrowing") {
+    ClimbingTelemetryBuffer buffer;
+    for (std::uint64_t index = 0; index < ClimbingTelemetryBuffer::Capacity + 20; ++index) {
+        ClimbingRuntimeCounters counters;
+        counters.workload    = ClimbingWorkload::Active;
+        counters.queryBudget = ClimbingQueryBudgets::Active;
+        counters.queryCount  = 9;
+        counters.budgetState = ClimbingQueryBudgetState::Exceeded;
+        buffer.record({SimulationTick(index + 1), index, counters});
+    }
+    const auto summary = buffer.summarize(ClimbingWorkload::Active);
+    CHECK(buffer.samples().size() == ClimbingTelemetryBuffer::Capacity);
+    CHECK(summary.sampleCount == ClimbingTelemetryBuffer::Capacity);
+    CHECK(summary.budgetExceededCount == ClimbingTelemetryBuffer::Capacity);
 }

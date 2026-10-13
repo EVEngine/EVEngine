@@ -1,4 +1,5 @@
 #include "rpg/GameState.h"
+#include "common/StringMapInstances.h"
 
 #include "common/Value.h"
 

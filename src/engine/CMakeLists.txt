@@ -38,7 +38,7 @@ add_custom_command(
             "${CMAKE_SOURCE_DIR}/src/modules/rpg/binding_semantics.json"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_architecture.json"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/Scene.cpp"
-            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneCameraQueries.cpp"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.h"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneHost.h"
             "${CMAKE_SOURCE_DIR}/test/scene.cpp"

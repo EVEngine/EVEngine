@@ -1,21 +1,25 @@
 #include "graphics/Water.h"
-
-#include "graphics/Graphics.h"
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
+#include <vector>
+#include "common/SquirrelBinding.h"
 #include "graphics/GBuffer.h"
+#include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
+#include "graphics/WaterPlanarReflection.h"
+#include "graphics/WaterReflectionMasker.h"
 #include "graphics/shaders/WaterWgsl.h"
 #include "graphics/shaders/water_frag_spv.inc"
 #include "graphics/shaders/water_vert_spv.inc"
 #include "image/ImageData.h"
 
-#include <cmath>
-#include <limits>
-#include <string>
-#include <vector>
-
+// Water.cpp
 namespace eve::graphics {
 
 namespace {
@@ -29,12 +33,31 @@ namespace {
 //   26 causticsStrength, 27 signedSsrStrength, 28 refractionStrength,
 //   29 signedOpacityAndDepthAvailability, 30 causticsScale, 31 waveSharpness.
 
-const char *kUniformNames[] = {
-    "time",       "waveSpeed", "waveAmp",   "waveScale",   "rippleAmp",
-    "rippleCnt",  "rippleInt", "foamWidth", "foamSoftness", "foamStrength",
-    "deepColor",  "shallowColor", "depthDistance", "foamColor", "reflInten",
-    "reflTint",   "sunInten", "fresnelPower", "causticsStrength", "ssrStrength",
-    "refractionStrength", "opacityAndDepth", "causticsScale", "waveSharpness",
+const char* kUniformNames[] = {
+    "time",
+    "waveSpeed",
+    "waveAmp",
+    "waveScale",
+    "rippleAmp",
+    "rippleCnt",
+    "rippleInt",
+    "foamWidth",
+    "foamSoftness",
+    "foamStrength",
+    "deepColor",
+    "shallowColor",
+    "depthDistance",
+    "foamColor",
+    "reflInten",
+    "reflTint",
+    "sunInten",
+    "fresnelPower",
+    "causticsStrength",
+    "ssrStrength",
+    "refractionStrength",
+    "opacityAndDepth",
+    "causticsScale",
+    "waveSharpness",
 };
 const int kUniformCount = int(sizeof(kUniformNames) / sizeof(kUniformNames[0]));
 
@@ -44,15 +67,16 @@ namespace {
 Result<glm::ivec2> waterPointCounts(const WaterMeshSettings& settings) {
     if ((settings.type != WaterMeshType::Plane && settings.type != WaterMeshType::Circle) ||
         !std::isfinite(settings.sizeX) || !std::isfinite(settings.sizeY) || !std::isfinite(settings.sizeZ) ||
-        !std::isfinite(settings.densityX) || !std::isfinite(settings.densityY) ||
-        !std::isfinite(settings.height) || settings.sizeX <= 0.0F || settings.sizeY <= 0.0F ||
-        settings.sizeZ <= 0.0F || settings.densityX <= 0.0F || settings.densityY <= 0.0F) {
-        return Result<glm::ivec2>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "water.mesh: finite positive size/density and a supported shape are required"));
+        !std::isfinite(settings.densityX) || !std::isfinite(settings.densityY) || !std::isfinite(settings.height) ||
+        settings.sizeX <= 0.0F || settings.sizeY <= 0.0F || settings.sizeZ <= 0.0F || settings.densityX <= 0.0F ||
+        settings.densityY <= 0.0F) {
+        return Result<glm::ivec2>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "water.mesh: finite positive size/density and a supported shape are required"));
     }
     const double scale = settings.type == WaterMeshType::Plane ? 1.0 : 0.5;
-    const double rawX = double(settings.densityX) / 40.0 * double(settings.sizeX) * scale;
-    const double rawY = double(settings.densityY) / 40.0 * double(settings.sizeZ) * scale;
+    const double rawX  = double(settings.densityX) / 40.0 * double(settings.sizeX) * scale;
+    const double rawY  = double(settings.densityY) / 40.0 * double(settings.sizeZ) * scale;
     if (rawX > 4096.0 || rawY > 4096.0)
         return Result<glm::ivec2>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "water.mesh: generated axis point count exceeds 4096"));
@@ -83,36 +107,44 @@ template <typename Stop, typename Value, typename Project>
 Value sampleStops(const std::vector<Stop>& stops, float time, Project project) {
     if (time <= stops.front().time) return project(stops.front());
     if (time >= stops.back().time) return project(stops.back());
-    for (std::size_t i = 1; i < stops.size(); ++i) if (time <= stops[i].time) {
-        const auto& a = stops[i - 1]; const auto& b = stops[i];
-        const float t = (time - a.time) / (b.time - a.time);
-        return project(a) + (project(b) - project(a)) * t;
-    }
+    for (std::size_t i = 1; i < stops.size(); ++i)
+        if (time <= stops[i].time) {
+            const auto& a = stops[i - 1];
+            const auto& b = stops[i];
+            const float t = (time - a.time) / (b.time - a.time);
+            return project(a) + (project(b) - project(a)) * t;
+        }
     return project(stops.back());
 }
 }  // namespace
 
 Result<void> WaterDepthGradient::addColorStop(float time, float red, float green, float blue) {
-    if (!std::isfinite(time) || !std::isfinite(red) || !std::isfinite(green) || !std::isfinite(blue) ||
-        time < 0.0F || time > 1.0F || red < 0.0F || red > 1.0F || green < 0.0F || green > 1.0F ||
-        blue < 0.0F || blue > 1.0F)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "water.gradient: normalized finite RGB stop required"));
-    auto candidate = colorStops; candidate.push_back({time, {red, green, blue}});
+    if (!std::isfinite(time) || !std::isfinite(red) || !std::isfinite(green) || !std::isfinite(blue) || time < 0.0F ||
+        time > 1.0F || red < 0.0F || red > 1.0F || green < 0.0F || green > 1.0F || blue < 0.0F || blue > 1.0F)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "water.gradient: normalized finite RGB stop required"));
+    auto candidate = colorStops;
+    candidate.push_back({time, {red, green, blue}});
     std::stable_sort(candidate.begin(), candidate.end(), [](const auto& a, const auto& b) { return a.time < b.time; });
-    colorStops = std::move(candidate); return Result<void>::success();
+    colorStops = std::move(candidate);
+    return Result<void>::success();
 }
 
 Result<void> WaterDepthGradient::addAlphaStop(float time, float alpha) {
     if (!std::isfinite(time) || !std::isfinite(alpha) || time < 0.0F || time > 1.0F || alpha < 0.0F || alpha > 1.0F)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "water.gradient: normalized finite alpha stop required"));
-    auto candidate = alphaStops; candidate.push_back({time, alpha});
+    auto candidate = alphaStops;
+    candidate.push_back({time, alpha});
     std::stable_sort(candidate.begin(), candidate.end(), [](const auto& a, const auto& b) { return a.time < b.time; });
-    alphaStops = std::move(candidate); return Result<void>::success();
+    alphaStops = std::move(candidate);
+    return Result<void>::success();
 }
 
-void WaterDepthGradient::clear() { colorStops.clear(); alphaStops.clear(); }
+void WaterDepthGradient::clear() {
+    colorStops.clear();
+    alphaStops.clear();
+}
 
 Result<int> calculateWaterMeshTriangles(const WaterMeshSettings& settings) {
     auto counts = waterPointCounts(settings);
@@ -126,10 +158,10 @@ Result<int> calculateWaterMeshTriangles(const WaterMeshSettings& settings) {
     return Result<int>::success(static_cast<int>(triangles));
 }
 
-Shader *newWaterShader(Graphics *gfx) {
+Shader* newWaterShader(Graphics* gfx) {
     // Use precompiled SPIR-V (not runtime glslc) so the water shader also works
     // on platforms without a runtime compiler (e.g. Windows).
-    Shader *sh = nullptr;
+    Shader* sh = nullptr;
     if (gfx->getBackendName() == "webgpu") {
         sh = gfx->newMeshShaderFromWgsl(shaders::kWaterVertWgsl, shaders::kWaterFragWgsl);
     } else {
@@ -156,12 +188,11 @@ std::string Water::paramName(int index) {
     return kUniformNames[index];
 }
 
-Water::Water(Graphics *gfx) : gfx_(gfx) {
+Water::Water(Graphics* gfx) : gfx_(gfx) {
     shader_ = newWaterShader(gfx);
     bindParams();
     captureDrawerToken_ = RenderSystem3D::addCaptureExtraDrawer(
-        0xffffffffu,
-        [this](Graphics &, const Camera3D::Data &, const glm::mat4 &, float, uint32_t mask) {
+        0xffffffffu, [this](Graphics&, const Camera3D::Data&, const glm::mat4&, float, uint32_t mask) {
             if (!reflectionCaptureEnabled_ || (reflectionCaptureMask_ & mask) == 0u) return;
             drawReflectionCapture();
         });
@@ -172,7 +203,7 @@ Water::~Water() { RenderSystem3D::removeCaptureExtraDrawer(captureDrawerToken_);
 void Water::createPlane(float sizeX, float sizeZ, int segX, int segZ) {
     segX = std::max(1, segX);
     segZ = std::max(1, segZ);
-    std::vector<float> pos, nrm, uv;
+    std::vector<float>    pos, nrm, uv;
     std::vector<uint32_t> idx;
     for (int z = 0; z <= segZ; ++z) {
         for (int x = 0; x <= segX; ++x) {
@@ -200,8 +231,8 @@ void Water::createPlane(float sizeX, float sizeZ, int segX, int segZ) {
             idx.push_back(d);
         }
     }
-    mesh_ = gfx_->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3),
-                                    idx.data(), int(idx.size()));
+    mesh_ =
+        gfx_->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3), idx.data(), int(idx.size()));
 }
 
 Result<int> Water::createProceduralMesh(const WaterMeshSettings& settings) {
@@ -213,35 +244,42 @@ Result<int> Water::createProceduralMesh(const WaterMeshSettings& settings) {
         return Result<int>::failure(
             Diagnostic::error(DiagnosticCode::PreconditionViolation, "water.mesh: graphics owner is unavailable"));
 
-    std::vector<float> pos, nrm, uv;
+    std::vector<float>    pos, nrm, uv;
     std::vector<uint32_t> idx;
     if (settings.type == WaterMeshType::Plane) {
         const int nx = counts.value().x, nz = counts.value().y;
-        pos.reserve(std::size_t(nx) * nz * 3); nrm.reserve(std::size_t(nx) * nz * 3);
-        uv.reserve(std::size_t(nx) * nz * 2); idx.reserve(std::size_t(triangleCount.value()) * 3);
+        pos.reserve(std::size_t(nx) * nz * 3);
+        nrm.reserve(std::size_t(nx) * nz * 3);
+        uv.reserve(std::size_t(nx) * nz * 2);
+        idx.reserve(std::size_t(triangleCount.value()) * 3);
         const float sx = settings.sizeX / float(nx - 1), sz = settings.sizeZ / float(nz - 1);
-        for (int z = 0; z < nz; ++z) for (int x = 0; x < nx; ++x) {
-            pos.insert(pos.end(), {(float(nx - 1) * 0.5F - x) * sx, settings.height * settings.sizeY,
-                                   (float(nz - 1) * 0.5F - z) * sz});
-            nrm.insert(nrm.end(), {0.0F, 1.0F, 0.0F});
-            uv.insert(uv.end(), {(float(nx / 2) - x) / float(nx), (float(nz / 2) - z) / float(nz)});
-        }
-        for (int z = 0; z < nz - 1; ++z) for (int x = 0; x < nx - 1; ++x) {
-            const uint32_t a = uint32_t(z * nx + x), b = a + 1, c = a + uint32_t(nx), d = c + 1;
-            idx.insert(idx.end(), {a, c, b, c, d, b});
-        }
+        for (int z = 0; z < nz; ++z)
+            for (int x = 0; x < nx; ++x) {
+                pos.insert(pos.end(), {(float(nx - 1) * 0.5F - x) * sx, settings.height * settings.sizeY,
+                                       (float(nz - 1) * 0.5F - z) * sz});
+                nrm.insert(nrm.end(), {0.0F, 1.0F, 0.0F});
+                uv.insert(uv.end(), {(float(nx / 2) - x) / float(nx), (float(nz / 2) - z) / float(nz)});
+            }
+        for (int z = 0; z < nz - 1; ++z)
+            for (int x = 0; x < nx - 1; ++x) {
+                const uint32_t a = uint32_t(z * nx + x), b = a + 1, c = a + uint32_t(nx), d = c + 1;
+                idx.insert(idx.end(), {a, c, b, c, d, b});
+            }
     } else {
-        const int rings = counts.value().x;
+        const int         rings       = counts.value().x;
         const std::size_t vertexCount = 1u + 3u * std::size_t(rings) * std::size_t(rings + 1);
-        pos.reserve(vertexCount * 3); nrm.reserve(vertexCount * 3); uv.reserve(vertexCount * 2);
+        pos.reserve(vertexCount * 3);
+        nrm.reserve(vertexCount * 3);
+        uv.reserve(vertexCount * 2);
         idx.reserve(std::size_t(triangleCount.value()) * 3);
         const float scaleX = (settings.sizeX * 0.5F) / float(rings);
         const float scaleZ = (settings.sizeZ * 0.5F) / float(counts.value().y);
-        pos.insert(pos.end(), {0.0F, 0.0F, 0.0F}); nrm.insert(nrm.end(), {0.0F, 1.0F, 0.0F});
+        pos.insert(pos.end(), {0.0F, 0.0F, 0.0F});
+        nrm.insert(nrm.end(), {0.0F, 1.0F, 0.0F});
         uv.insert(uv.end(), {0.0F, 0.0F});
         for (int ring = 0; ring < rings; ++ring) {
-            const int ringPoints = (ring + 1) * 6;
-            const float step = 2.0F * 3.14159265358979323846F / float(ringPoints);
+            const int   ringPoints = (ring + 1) * 6;
+            const float step       = 2.0F * 3.14159265358979323846F / float(ringPoints);
             for (int point = 0; point < ringPoints; ++point) {
                 const float cx = std::cos(step * point) * float(ring + 1);
                 const float cz = std::sin(-step * point) * float(ring + 1);
@@ -254,23 +292,22 @@ Result<int> Water::createProceduralMesh(const WaterMeshSettings& settings) {
             int other = 0;
             for (int point = 0; point < (ring + 1) * 6; ++point) {
                 if (point % (ring + 1) != 0) {
-                    idx.insert(idx.end(), {uint32_t(waterCirclePoint(ring - 1, other + 1)),
-                                           uint32_t(waterCirclePoint(ring - 1, other)),
-                                           uint32_t(waterCirclePoint(ring, point)),
-                                           uint32_t(waterCirclePoint(ring, point)),
-                                           uint32_t(waterCirclePoint(ring, point + 1)),
-                                           uint32_t(waterCirclePoint(ring - 1, other + 1))});
+                    idx.insert(
+                        idx.end(),
+                        {uint32_t(waterCirclePoint(ring - 1, other + 1)), uint32_t(waterCirclePoint(ring - 1, other)),
+                         uint32_t(waterCirclePoint(ring, point)), uint32_t(waterCirclePoint(ring, point)),
+                         uint32_t(waterCirclePoint(ring, point + 1)), uint32_t(waterCirclePoint(ring - 1, other + 1))});
                     ++other;
                 } else {
-                    idx.insert(idx.end(), {uint32_t(waterCirclePoint(ring, point)),
-                                           uint32_t(waterCirclePoint(ring, point + 1)),
-                                           uint32_t(waterCirclePoint(ring - 1, other))});
+                    idx.insert(idx.end(),
+                               {uint32_t(waterCirclePoint(ring, point)), uint32_t(waterCirclePoint(ring, point + 1)),
+                                uint32_t(waterCirclePoint(ring - 1, other))});
                 }
             }
         }
     }
-    Mesh* candidate = gfx_->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3), idx.data(),
-                                               int(idx.size()));
+    Mesh* candidate =
+        gfx_->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3), idx.data(), int(idx.size()));
     if (!candidate)
         return Result<int>::failure(
             Diagnostic::error(DiagnosticCode::Failed, "water.mesh: graphics mesh allocation failed"));
@@ -280,30 +317,31 @@ Result<int> Water::createProceduralMesh(const WaterMeshSettings& settings) {
 
 Result<int> Water::setDepthGradient(const WaterDepthGradient& gradient, int resolution) {
     if (!gfx_ || resolution < 2 || resolution > 4096 || gradient.colorStops.empty() || gradient.alphaStops.empty())
-        return Result<int>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "water.gradient: graphics, color/alpha keys and resolution 2..4096 required"));
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "water.gradient: graphics, color/alpha keys and resolution 2..4096 required"));
     for (std::size_t i = 1; i < gradient.colorStops.size(); ++i)
         if (gradient.colorStops[i - 1].time == gradient.colorStops[i].time)
             return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                           "water.gradient: duplicate color times are ambiguous"));
+                                                          "water.gradient: duplicate color times are ambiguous"));
     for (std::size_t i = 1; i < gradient.alphaStops.size(); ++i)
         if (gradient.alphaStops[i - 1].time == gradient.alphaStops[i].time)
             return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                           "water.gradient: duplicate alpha times are ambiguous"));
+                                                          "water.gradient: duplicate alpha times are ambiguous"));
     image::ImageData pixels(resolution, resolution, "RGBA8");
     for (int x = 0; x < resolution; ++x) {
-        const float t = float(x) / float(resolution);
+        const float     t     = float(x) / float(resolution);
         const glm::vec3 color = sampleStops<WaterGradientColorStop, glm::vec3>(
             gradient.colorStops, t, [](const auto& stop) { return stop.color; });
-        const float alpha = sampleStops<WaterGradientAlphaStop, float>(
-            gradient.alphaStops, t, [](const auto& stop) { return stop.alpha; });
+        const float alpha = sampleStops<WaterGradientAlphaStop, float>(gradient.alphaStops, t,
+                                                                       [](const auto& stop) { return stop.alpha; });
         for (int y = 0; y < resolution; ++y)
             pixels.setPixel(x, y, image::ImageData::Colorf{color.r, color.g, color.b, alpha});
     }
     Texture* candidate = gfx_->newTextureFromImageData(&pixels, false, false);
     if (!candidate)
-        return Result<int>::failure(Diagnostic::error(DiagnosticCode::Failed,
-                                                       "water.gradient: texture allocation failed"));
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "water.gradient: texture allocation failed"));
     depthGradientTexture_ = candidate;
     return Result<int>::success(resolution * resolution);
 }
@@ -318,13 +356,13 @@ void Water::setTime(float seconds) {
     bindParams();
 }
 
-void Water::setWaveSpeed(float v) { config_.waveSpeed = std::clamp(v, -20.0F, 20.0F); }
-void Water::setWaveAmplitude(float v) { config_.waveAmplitude = std::clamp(v, 0.0F, 4.0F); }
-void Water::setRippleAmplitude(float v) { config_.rippleAmplitude = std::clamp(v, 0.0F, 4.0F); }
-void Water::setEdgeFalloff(float v) { config_.foamWidth = std::clamp(v, 0.001F, 1000.0F); }
-void Water::setRippleCount(int v) { config_.rippleCount = std::clamp(v, 0, 8); }
-void Water::setRippleInterval(float v) { config_.rippleInterval = std::clamp(v, 0.05F, 60.0F); }
-void Water::setWaveScale(float v) { config_.waveScale = std::clamp(v, 0.01F, 256.0F); }
+void         Water::setWaveSpeed(float v) { config_.waveSpeed = std::clamp(v, -20.0F, 20.0F); }
+void         Water::setWaveAmplitude(float v) { config_.waveAmplitude = std::clamp(v, 0.0F, 4.0F); }
+void         Water::setRippleAmplitude(float v) { config_.rippleAmplitude = std::clamp(v, 0.0F, 4.0F); }
+void         Water::setEdgeFalloff(float v) { config_.foamWidth = std::clamp(v, 0.001F, 1000.0F); }
+void         Water::setRippleCount(int v) { config_.rippleCount = std::clamp(v, 0, 8); }
+void         Water::setRippleInterval(float v) { config_.rippleInterval = std::clamp(v, 0.05F, 60.0F); }
+void         Water::setWaveScale(float v) { config_.waveScale = std::clamp(v, 0.01F, 256.0F); }
 Result<void> Water::setWaveDirectionAngle(float degrees) {
     if (!std::isfinite(degrees))
         return Result<void>::failure(
@@ -342,7 +380,7 @@ void Water::setReflectionTint(float r, float g, float b) {
 void Water::setReflectionIntensity(float v) { config_.reflectionIntensity = std::clamp(v, 0.0F, 4.0F); }
 void Water::setSunIntensity(float v) { config_.sunIntensity = std::clamp(v, 0.0F, 8.0F); }
 void Water::setScreenSpaceReflection(bool enabled, float strength) {
-    config_.screenSpaceReflection = enabled;
+    config_.screenSpaceReflection         = enabled;
     config_.screenSpaceReflectionStrength = std::clamp(strength, 0.0F, 4.0F);
 }
 void Water::setViewport(float w, float h) {
@@ -399,19 +437,19 @@ void Water::drawWithPlanarReflection(Texture* planarReflection, float strength) 
 void Water::drawWithReflection(Texture* requestedReflection, float requestedStrength) {
     if (!gfx_ || !mesh_ || !shader_) return;
     bindParams();
-    Texture *reflection = requestedReflection;
-    float reflectionStrength = requestedReflection ? requestedStrength : -1.0F;
-    RenderControl *rc = gfx_->getRenderControl();
+    Texture*       reflection         = requestedReflection;
+    float          reflectionStrength = requestedReflection ? requestedStrength : -1.0F;
+    RenderControl* rc                 = gfx_->getRenderControl();
     if (!reflection && config_.screenSpaceReflection && rc && rc->isEnabled("ssr")) {
-        ScreenSpaceReflection *ssr = gfx_->pipelineScreenSpaceReflection();
+        ScreenSpaceReflection* ssr = gfx_->pipelineScreenSpaceReflection();
         if (ssr->hasValidHistory()) {
-            reflection = ssr->getReflectionTexture();
+            reflection         = ssr->getReflectionTexture();
             reflectionStrength = config_.screenSpaceReflectionStrength;
         }
     }
     shader_->sendFloat("ssrStrength", reflection ? reflectionStrength : -1.0F);
-    Texture *depth = rc && rc->getGBuffer() ? rc->getGBuffer()->getDepthTexture() : nullptr;
-    Texture *sceneColor = gfx_->getSceneColorTexture();
+    Texture* depth      = rc && rc->getGBuffer() ? rc->getGBuffer()->getDepthTexture() : nullptr;
+    Texture* sceneColor = gfx_->getSceneColorTexture();
     shader_->sendFloat("opacityAndDepth", depth ? config_.opacity : -(config_.opacity + 1.0F));
     shader_->sendFloat("refractionStrength", sceneColor ? config_.refractionStrength : 0.0F);
     gfx_->setMesh3DHeightTexture(reflection);
@@ -438,6 +476,262 @@ void Water::drawReflectionCapture() {
     // Restore the authored state for a subsequent main-view draw in the same frame.
     shader_->sendFloat("ssrStrength", config_.screenSpaceReflection ? config_.screenSpaceReflectionStrength : -1.0F);
     shader_->sendFloat("refractionStrength", config_.refractionStrength);
+}
+
+}  // namespace eve::graphics
+
+// WaterPlanarReflection.cpp
+namespace eve::graphics {
+namespace {
+bool finite3(const glm::vec3& v) { return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z); }
+
+float resolutionScale(WaterReflectionResolution value) {
+    switch (value) {
+        case WaterReflectionResolution::Full: return 1.0F;
+        case WaterReflectionResolution::Half: return 0.5F;
+        case WaterReflectionResolution::Third: return 0.33F;
+        case WaterReflectionResolution::Quarter: return 0.25F;
+    }
+    return 0.0F;
+}
+}  // namespace
+
+Result<WaterPlanarReflectionPlan> buildWaterPlanarReflectionPlan(const WaterPlanarReflectionSettings& settings,
+                                                                 const WaterPlanarReflectionInput&    input) {
+    const float multiplier = resolutionScale(settings.resolutionMultiplier);
+    if (multiplier == 0.0F || settings.textureResolution <= 0 || settings.textureResolution > 16384 ||
+        !std::isfinite(settings.clipPlaneOffset) || !std::isfinite(settings.customRenderDistance) ||
+        settings.customRenderDistance < 0.0F || !std::isfinite(settings.lodBias) || settings.lodBias <= 0.0F ||
+        !finite3(input.cameraPosition) || !finite3(input.cameraForward) ||
+        glm::dot(input.cameraForward, input.cameraForward) <= 0.0F || !std::isfinite(input.waterPlaneY) ||
+        !std::isfinite(input.renderScale) || input.renderScale <= 0.0F) {
+        return Result<WaterPlanarReflectionPlan>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "water.planarReflection: finite camera, plane, scale and valid settings required"));
+    }
+    for (float distance : settings.customRenderDistances) {
+        if (!std::isfinite(distance) || distance < 0.0F)
+            return Result<WaterPlanarReflectionPlan>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "water.planarReflection: layer distances must be finite and nonnegative"));
+    }
+
+    WaterPlanarReflectionPlan plan;
+    const float               planeY = input.waterPlaneY + settings.clipPlaneOffset;
+    plan.reflectionMatrix            = glm::mat4(1.0F);
+    plan.reflectionMatrix[1][1]      = -1.0F;
+    plan.reflectionMatrix[3][1]      = 2.0F * planeY;
+    plan.cameraPosition = {input.cameraPosition.x, 2.0F * planeY - input.cameraPosition.y, input.cameraPosition.z};
+    plan.cameraForward =
+        glm::normalize(glm::vec3(input.cameraForward.x, -input.cameraForward.y, input.cameraForward.z));
+    plan.worldClipPlane = {0.0F, 1.0F, 0.0F, -planeY};
+    plan.cullingMask    = settings.enabled ? (settings.reflectLayers & ~(1U << 4U)) : 0U;
+    plan.renderShadows  = settings.shadows;
+    plan.shouldRender   = settings.enabled && !settings.disableSkyboxReflections && !input.orthographic &&
+                        !input.reflectionOrPreviewCamera;
+    const double pixels = static_cast<double>(settings.textureResolution) * input.renderScale * multiplier;
+    plan.textureWidth = plan.textureHeight = std::max(1, static_cast<int>(pixels));
+    if (settings.enableRenderDistance) {
+        if (settings.enablePerLayerDistances) {
+            for (std::size_t i = 0; i < plan.layerCullDistances.size(); ++i)
+                plan.layerCullDistances[i] = settings.customRenderDistances[i] * settings.lodBias;
+        } else
+            plan.layerCullDistances.fill(settings.customRenderDistance * settings.lodBias);
+    }
+    return Result<WaterPlanarReflectionPlan>::success(plan);
+}
+
+}  // namespace eve::graphics
+
+// WaterPlanarReflectionBindings.cpp
+namespace eve::graphics {
+
+void exposeWaterPlanarReflectionBindings(ssq::Table& table) {
+    auto settings =
+        table.addClass("WaterPlanarReflectionSettings", ssq::Class::Ctor<WaterPlanarReflectionSettings()>());
+    settings.addVar("enabled", &WaterPlanarReflectionSettings::enabled);
+    settings.addVar("disableSkyboxReflections", &WaterPlanarReflectionSettings::disableSkyboxReflections);
+    settings.addVar("clipPlaneOffset", &WaterPlanarReflectionSettings::clipPlaneOffset);
+    settings.addVar("reflectLayers", &WaterPlanarReflectionSettings::reflectLayers);
+    settings.addVar("shadows", &WaterPlanarReflectionSettings::shadows);
+    settings.addVar("enableRenderDistance", &WaterPlanarReflectionSettings::enableRenderDistance);
+    settings.addVar("enablePerLayerDistances", &WaterPlanarReflectionSettings::enablePerLayerDistances);
+    settings.addVar("customRenderDistance", &WaterPlanarReflectionSettings::customRenderDistance);
+    settings.addVar("lodBias", &WaterPlanarReflectionSettings::lodBias);
+    settings.addVar("textureResolution", &WaterPlanarReflectionSettings::textureResolution);
+    settings.addFunc("setResolutionMultiplier", [](WaterPlanarReflectionSettings* value, int multiplier) {
+        value->resolutionMultiplier = static_cast<WaterReflectionResolution>(multiplier);
+    });
+    settings.addFunc("setLayerDistance", [](WaterPlanarReflectionSettings* value, int layer, float distance) {
+        if (value && layer >= 0 && layer < 32) value->customRenderDistances[static_cast<std::size_t>(layer)] = distance;
+    });
+
+    auto input = table.addClass("WaterPlanarReflectionInput", ssq::Class::Ctor<WaterPlanarReflectionInput()>());
+    input.addVar("waterPlaneY", &WaterPlanarReflectionInput::waterPlaneY);
+    input.addVar("renderScale", &WaterPlanarReflectionInput::renderScale);
+    input.addVar("orthographic", &WaterPlanarReflectionInput::orthographic);
+    input.addVar("reflectionOrPreviewCamera", &WaterPlanarReflectionInput::reflectionOrPreviewCamera);
+    input.addFunc("setCameraPosition", [](WaterPlanarReflectionInput* value, float x, float y, float z) {
+        value->cameraPosition = {x, y, z};
+    });
+    input.addFunc("setCameraForward", [](WaterPlanarReflectionInput* value, float x, float y, float z) {
+        value->cameraForward = {x, y, z};
+    });
+
+    auto plan = table.addClass("WaterPlanarReflectionPlan", ssq::Class::Ctor<WaterPlanarReflectionPlan()>());
+    plan.addVar("textureWidth", &WaterPlanarReflectionPlan::textureWidth);
+    plan.addVar("textureHeight", &WaterPlanarReflectionPlan::textureHeight);
+    plan.addVar("cullingMask", &WaterPlanarReflectionPlan::cullingMask);
+    plan.addVar("renderShadows", &WaterPlanarReflectionPlan::renderShadows);
+    plan.addVar("shouldRender", &WaterPlanarReflectionPlan::shouldRender);
+    plan.addFunc("getCameraX", [](const WaterPlanarReflectionPlan* value) { return value->cameraPosition.x; });
+    plan.addFunc("getCameraY", [](const WaterPlanarReflectionPlan* value) { return value->cameraPosition.y; });
+    plan.addFunc("getCameraZ", [](const WaterPlanarReflectionPlan* value) { return value->cameraPosition.z; });
+    plan.addFunc("getForwardY", [](const WaterPlanarReflectionPlan* value) { return value->cameraForward.y; });
+    plan.addFunc("getLayerDistance", [](const WaterPlanarReflectionPlan* value, int layer) {
+        return value && layer >= 0 && layer < 32 ? value->layerCullDistances[static_cast<std::size_t>(layer)] : -1.0F;
+    });
+    plan.addFunc("getReflectionMatrix", [](const WaterPlanarReflectionPlan* value, int column, int row) {
+        return value && column >= 0 && column < 4 && row >= 0 && row < 4
+                   ? value->reflectionMatrix[static_cast<std::size_t>(column)][static_cast<std::size_t>(row)]
+                   : 0.0F;
+    });
+
+    table.addFunc(
+        "buildWaterPlanarReflectionPlan",
+        [vm = table.getHandle()](WaterPlanarReflectionPlan* output, const WaterPlanarReflectionSettings* settings,
+                                 const WaterPlanarReflectionInput* input) {
+            if (!output || !settings || !input)
+                return eve::script::projectResult(
+                    vm, Result<void>::failure(
+                            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                              "water.planarReflection: non-null output, settings and input required")));
+            auto result = buildWaterPlanarReflectionPlan(*settings, *input);
+            if (!result) return eve::script::projectResult(vm, Result<void>::failure(result.status()));
+            *output = std::move(result).takeValue();
+            return eve::script::projectResult(vm, Result<void>::success());
+        });
+}
+
+}  // namespace eve::graphics
+
+// WaterReflectionMasker.cpp
+namespace eve::graphics {
+namespace {
+bool finite6(float a, float b, float c, float d, float e, float f) {
+    return std::isfinite(a) && std::isfinite(b) && std::isfinite(c) && std::isfinite(d) && std::isfinite(e) &&
+           std::isfinite(f);
+}
+}  // namespace
+
+Result<void> WaterReflectionMasker::configure(WaterReflectionMaskChannel channel, float minimum, float maximum,
+                                              bool reflectionsEnabled) {
+    const int c = static_cast<int>(channel);
+    if (c < 0 || c > 4 || !std::isfinite(minimum) || !std::isfinite(maximum) || minimum > maximum)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "valid channel and finite ordered thresholds are required", {},
+                                                       {}, "graphics.waterReflectionMasker"));
+    channel_               = channel;
+    minimum_               = minimum;
+    maximum_               = maximum;
+    enabled_               = reflectionsEnabled;
+    heightFeaturesEnabled_ = reflectionsEnabled;
+    return Result<void>::success();
+}
+
+Result<void> WaterReflectionMasker::setMask(const image::ImageData& mask) {
+    const int width = mask.getWidth(), height = mask.getHeight();
+    if (width <= 0 || height <= 0)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "mask dimensions must be positive", {}, {},
+                                                       "graphics.waterReflectionMasker"));
+    std::vector<Pixel> next;
+    next.reserve(static_cast<size_t>(width) * static_cast<size_t>(height));
+    for (int y = 0; y < height; ++y)
+        for (int x = 0; x < width; ++x) {
+            const auto c = mask.getPixel(x, y);
+            next.push_back({c.r, c.g, c.b, c.a});
+        }
+    width_   = width;
+    height_  = height;
+    pixels_  = std::move(next);
+    sampleX_ = sampleY_ = -1;
+    return Result<void>::success();
+}
+
+void WaterReflectionMasker::clearMask() noexcept {
+    width_ = height_ = 0;
+    pixels_.clear();
+    sampleX_ = sampleY_ = -1;
+}
+
+Result<WaterReflectionMaskTransition> WaterReflectionMasker::evaluate(float playerX, float playerZ, float terrainX,
+                                                                      float terrainZ, float terrainWidth,
+                                                                      float                          terrainDepth,
+                                                                      WaterPlanarReflectionSettings& settings) {
+    if (!finite6(playerX, playerZ, terrainX, terrainZ, terrainWidth, terrainDepth) || terrainWidth <= 0.f ||
+        terrainDepth <= 0.f)
+        return Result<WaterReflectionMaskTransition>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "finite player, terrain origin and positive terrain size are required", {},
+            {}, "graphics.waterReflectionMasker"));
+    bool next = false;
+    sampleX_ = sampleY_ = -1;
+    const float u = (playerX - terrainX) / terrainWidth, v = (playerZ - terrainZ) / terrainDepth;
+    if (!pixels_.empty() && u >= 0.f && u <= 1.f && v >= 0.f && v <= 1.f) {
+        const int x = static_cast<int>(std::lround(u * static_cast<float>(width_)));
+        const int y = static_cast<int>(std::lround(v * static_cast<float>(height_)));
+        sampleX_    = x;
+        sampleY_    = y;
+        if (x >= 0 && x < width_ && y >= 0 && y < height_) {
+            const auto& p   = pixels_[static_cast<size_t>(y) * static_cast<size_t>(width_) + static_cast<size_t>(x)];
+            const auto  hit = [&](float value) { return value >= minimum_ && value <= maximum_; };
+            switch (channel_) {
+                case WaterReflectionMaskChannel::R: next = hit(p.r); break;
+                case WaterReflectionMaskChannel::G: next = hit(p.g); break;
+                case WaterReflectionMaskChannel::B: next = hit(p.b); break;
+                case WaterReflectionMaskChannel::A: next = hit(p.a); break;
+                case WaterReflectionMaskChannel::RGBA: next = hit(p.r) || hit(p.g) || hit(p.b) || hit(p.a); break;
+            }
+        }
+    }
+    if (next == enabled_)
+        return Result<WaterReflectionMaskTransition>::success(WaterReflectionMaskTransition::Unchanged);
+    enabled_               = next;
+    heightFeaturesEnabled_ = next;
+    settings.enabled       = next;
+    return Result<WaterReflectionMaskTransition>::success(next ? WaterReflectionMaskTransition::Enabled
+                                                               : WaterReflectionMaskTransition::Disabled);
+}
+
+void exposeWaterReflectionMaskerBindings(ssq::Table& table) {
+    auto c  = table.addClass("WaterReflectionMasker", ssq::Class::Ctor<WaterReflectionMasker()>());
+    auto vm = table.getHandle();
+    c.addFunc("configure", [vm](WaterReflectionMasker* s, int channel, float min, float max, bool enabled) {
+        return eve::script::projectResult(
+            vm, s->configure(static_cast<WaterReflectionMaskChannel>(channel), min, max, enabled));
+    });
+    c.addFunc("setMask", [vm](WaterReflectionMasker* s, const image::ImageData* mask) {
+        auto r =
+            mask
+                ? s->setMask(*mask)
+                : Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "ImageData mask is required",
+                                                          {}, {}, "graphics.waterReflectionMasker"));
+        return eve::script::projectResult(vm, std::move(r));
+    });
+    c.addFunc("clearMask", [](WaterReflectionMasker* s) { s->clearMask(); });
+    c.addFunc("evaluate", [vm](WaterReflectionMasker* s, float px, float pz, float tx, float tz, float tw, float td,
+                               WaterPlanarReflectionSettings* settings) {
+        auto r = settings ? s->evaluate(px, pz, tx, tz, tw, td, *settings)
+                          : Result<WaterReflectionMaskTransition>::failure(
+                                Diagnostic::error(DiagnosticCode::InvalidArgument, "reflection settings are required",
+                                                  {}, {}, "graphics.waterReflectionMasker"));
+        return eve::script::projectResult(
+            vm, std::move(r), [](WaterReflectionMaskTransition v) { return eve::Value(static_cast<int>(v)); });
+    });
+    c.addFunc("getEnabled", [](const WaterReflectionMasker* s) { return s->getEnabled(); });
+    c.addFunc("getHeightFeaturesEnabled", [](const WaterReflectionMasker* s) { return s->getHeightFeaturesEnabled(); });
+    c.addFunc("getSampleX", [](const WaterReflectionMasker* s) { return s->getSampleX(); });
+    c.addFunc("getSampleY", [](const WaterReflectionMasker* s) { return s->getSampleY(); });
 }
 
 }  // namespace eve::graphics
