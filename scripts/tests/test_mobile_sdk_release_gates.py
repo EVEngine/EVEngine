@@ -60,6 +60,10 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn('expected_count="${2:-3}"', self.apk_runner)
         self.assertIn('"$apksigner" sign', self.apk_runner)
         self.assertIn('adb install -r "$signed_apk"', self.apk_runner)
+        proof = self.apk_runner.index('echo "OK: $apk_name printed $success_marker on the emulator"')
+        cleanup = self.apk_runner.index("adb uninstall com.evengine.example")
+        self.assertGreater(cleanup, proof)
+        self.assertNotIn("|| true", self.apk_runner[cleanup : self.apk_runner.index("\ndone", cleanup)])
         self.assertEqual(3, self.workflow.count("name: android-apk-${{ env.HOST }}"))
 
     def test_ios_artifact_and_simulator_are_hard_gates(self) -> None:

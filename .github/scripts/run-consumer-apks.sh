@@ -76,4 +76,10 @@ for apk_file in "${apk_files[@]}"; do
     exit 1
   fi
   echo "OK: $apk_name printed $success_marker on the emulator"
+  # Each host builds the same package. Release APKs contain large native libs;
+  # retaining the previous install while staging its replacement can exhaust
+  # the emulator's data partition. Release it only after runtime proof passed.
+  adb shell am force-stop com.evengine.example
+  adb uninstall com.evengine.example
+  rm -f "$aligned_apk" "$signed_apk"
 done
