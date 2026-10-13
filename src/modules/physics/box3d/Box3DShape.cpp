@@ -1,4 +1,5 @@
 #include "physics/box3d/Box3DShape.h"
+#include "common/Assert.h"
 #include <cmath>
 #include "common/Exception.h"
 #include "physics/Shape3D.h"

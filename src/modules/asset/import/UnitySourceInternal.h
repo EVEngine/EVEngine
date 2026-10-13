@@ -27,7 +27,12 @@ struct UnityExpandedPrefab {
 /** @brief Prepare one prefab without copying or re-indexing the source collection. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityPrefab(const UnityProjectImportRequest& request,
                                                              const std::string&               path);
-/** @brief Convert a static FBX with explicit Unity importer settings and hashed subasset identities. */
+/** @brief Prepare static meshes or a skinned FBX character with explicit Unity importer settings.
+ * @return Owning candidate or a structured unsupported-feature/budget diagnostic.
+ * @thread Worker-safe; source bytes are borrowed for this call only.
+ * @reentrancy Does not invoke game callbacks or publish assets.
+ * @cost Whole-file decode and character conversion, amortized over asset import.
+ */
 [[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityFbx(
     const UnityProjectImportRequest& request, const UnitySourceAsset& source);
 /** @brief Decode a bounded static Unity text Mesh into owning canonical submesh candidates. */

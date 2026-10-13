@@ -1,4 +1,5 @@
 #include "physics/box3d/Box3DBody.h"
+#include "common/Assert.h"
 #include <box3d/box3d.h>
 #include <cmath>
 #include "common/Exception.h"

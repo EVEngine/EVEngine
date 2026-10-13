@@ -1,8 +1,11 @@
 #include "procgen/Biome.h"
-
 #include <algorithm>
+#include <functional>
+#include <simplesquirrel/simplesquirrel.hpp>
 #include <sstream>
+#include "procgen/BiomeScript.h"
 
+// Biome.cpp
 namespace eve::procgen {
 namespace {
 
@@ -44,8 +47,8 @@ bool BiomeRules::removeLayer(const std::string& name) {
     return true;
 }
 
-bool BiomeRules::hasLayer(const std::string& name) const { return findLayer(name) != nullptr; }
-int  BiomeRules::getLayerCount() const { return int(layers_.size()); }
+bool        BiomeRules::hasLayer(const std::string& name) const { return findLayer(name) != nullptr; }
+int         BiomeRules::getLayerCount() const { return int(layers_.size()); }
 std::string BiomeRules::getLayerName(int index) const {
     return index >= 0 && index < int(layers_.size()) ? layers_[size_t(index)].name : std::string();
 }
@@ -74,7 +77,7 @@ int BiomeRules::getAssetCount(const std::string& layerName) const {
 std::string BiomeRules::getAssetName(const std::string& layerName, int index) const {
     const auto* layer = findLayer(layerName);
     return layer && index >= 0 && index < int(layer->assets.size()) ? layer->assets[size_t(index)].asset
-               : std::string();
+                                                                    : std::string();
 }
 
 bool BiomeRules::addExclusion(SpatialData* spatial) {
@@ -101,7 +104,7 @@ PointSet* BiomeRules::generate(SpatialData* domain, float spacing, uint32_t seed
     PointSet output;
     for (size_t candidateIndex = 0; candidateIndex < candidates.points().size(); ++candidateIndex) {
         const auto& candidate = candidates.points()[candidateIndex];
-        bool excluded = false;
+        bool        excluded  = false;
         for (const auto& exclusion : exclusions_) {
             if (exclusion->contains(candidate.x, candidate.y, candidate.z)) {
                 excluded = true;
@@ -121,7 +124,7 @@ PointSet* BiomeRules::generate(SpatialData* domain, float spacing, uint32_t seed
 
         float totalWeight = 0.f;
         for (const auto& asset : selected->assets) totalWeight += asset.weight;
-        float choice = biomeUnit(densitySeed ^ 0xb7e15162u) * totalWeight;
+        float                 choice        = biomeUnit(densitySeed ^ 0xb7e15162u) * totalWeight;
         const BiomeAssetRule* selectedAsset = &selected->assets.back();
         for (const auto& asset : selected->assets) {
             choice -= asset.weight;
@@ -132,7 +135,7 @@ PointSet* BiomeRules::generate(SpatialData* domain, float spacing, uint32_t seed
         }
 
         ProcgenPoint point = candidate;
-        point.density = selected->density;
+        point.density      = selected->density;
         const float scaleT = biomeUnit(densitySeed ^ 0x9e3779b9u);
         const float scale  = selectedAsset->minScale + (selectedAsset->maxScale - selectedAsset->minScale) * scaleT;
         point.scaleX = point.scaleY = point.scaleZ = scale;
@@ -165,6 +168,32 @@ const BiomeLayerRule* BiomeRules::findLayer(const std::string& name) const {
     const auto found =
         std::find_if(layers_.begin(), layers_.end(), [&](const BiomeLayerRule& layer) { return layer.name == name; });
     return found == layers_.end() ? nullptr : &*found;
+}
+
+}  // namespace eve::procgen
+
+// BiomeScript.cpp
+namespace eve::procgen {
+
+void exposeBiomeRules(ssq::Table& table) {
+    auto biome = table.addClass<BiomeRules>(
+        "ProcgenBiomeRules", std::function<BiomeRules*()>([]() -> BiomeRules* { return nullptr; }), true);
+    biome.addFunc("clear", &BiomeRules::clear);
+    biome.addFunc("addLayer", &BiomeRules::addLayer);
+    biome.addFunc("removeLayer", &BiomeRules::removeLayer);
+    biome.addFunc("hasLayer", &BiomeRules::hasLayer);
+    biome.addFunc("getLayerCount", &BiomeRules::getLayerCount);
+    biome.addFunc("getLayerName", &BiomeRules::getLayerName);
+    biome.addFunc("getLayerPriority", &BiomeRules::getLayerPriority);
+    biome.addFunc("getLayerDensity", &BiomeRules::getLayerDensity);
+    biome.addFunc("addAsset", &BiomeRules::addAsset);
+    biome.addFunc("getAssetCount", &BiomeRules::getAssetCount);
+    biome.addFunc("getAssetName", &BiomeRules::getAssetName);
+    biome.addFunc("addExclusion", &BiomeRules::addExclusion);
+    biome.addFunc("getExclusionCount", &BiomeRules::getExclusionCount);
+    biome.addFunc("generate", &BiomeRules::generate);
+    biome.addFunc("getError", &BiomeRules::getError);
+    biome.addFunc("debugReport", &BiomeRules::debugReport);
 }
 
 }  // namespace eve::procgen

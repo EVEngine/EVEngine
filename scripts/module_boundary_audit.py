@@ -724,8 +724,10 @@ def findings(mod: Module, matrix: dict, catalogue: list[dict]) -> list[tuple[str
             )
         )
 
-    if mod.max_cpp[0] > 1000:
-        out.append(("S1", f"{mod.max_cpp[1]} 达 {mod.max_cpp[0]} 行（超过 1000 行拆分阈值）"))
+    if mod.max_cpp[0] >= 5000:
+        out.append(("S1", f"{mod.max_cpp[1]} 达 {mod.max_cpp[0]} 行（需结合内聚性和冲突风险判断是否拆分）"))
+    elif mod.max_cpp[0] > 2000:
+        out.append(("S1", f"{mod.max_cpp[1]} 达 {mod.max_cpp[0]} 行（提示审查职责、修改频率和并发所有权）"))
 
     return out
 

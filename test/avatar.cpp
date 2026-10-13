@@ -1,6 +1,9 @@
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-
+#include "avatar/Avatar.h"
+#include <cmath>
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
+#include <unordered_map>
+#include <vector>
 #include "animation/AnimClip.h"
 #include "animation/AnimLayerMixer.h"
 #include "animation/AnimPlayer.h"
@@ -8,24 +11,19 @@
 #include "animation/AnimSkin.h"
 #include "animation/Animation.h"
 #include "animation/Tween.h"
-#include "avatar/Avatar.h"
 #include "avatar/AvatarInstance.h"
 #include "avatar/Live2DNullBackend.h"
 #include "common/ECS.h"
 #include "common/Module.h"
-#include "graphics/Mesh.h"
 #include "graphics/Material.h"
+#include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "inventory/Equipment.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
-#include <cmath>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
-#include <simplesquirrel/simplesquirrel.hpp>
-
+// avatar.cpp
 using namespace eve::avatar;
 using eve::graphics::Mesh;
 using eve::graphics::Renderable2D;
@@ -36,41 +34,41 @@ namespace {
 class FakeLive2D : public ILive2DBackend {
 public:
     std::string getName() const override { return "fake"; }
-    bool loadModel(const std::string &path) override {
+    bool        loadModel(const std::string& path) override {
         loadedPath = path;
         return !path.empty();
     }
-    void update(float) override { ++updates; }
-    void setParameter(const std::string &name, float value) override { params[name] = value; }
-    float getParameter(const std::string &name) const override {
+    void  update(float) override { ++updates; }
+    void  setParameter(const std::string& name, float value) override { params[name] = value; }
+    float getParameter(const std::string& name) const override {
         auto it = params.find(name);
         return it == params.end() ? 0.f : it->second;
     }
-    bool setExpression(const std::string &name) override {
+    bool setExpression(const std::string& name) override {
         expression = name;
         return true;
     }
-    bool setMotion(const std::string &name) override {
+    bool setMotion(const std::string& name) override {
         motion = name;
         return true;
     }
 
-    std::string loadedPath;
-    std::string expression;
-    std::string motion;
-    int updates = 0;
+    std::string                            loadedPath;
+    std::string                            expression;
+    std::string                            motion;
+    int                                    updates = 0;
     std::unordered_map<std::string, float> params;
 };
 
-ILive2DBackend *makeFakeLive2D() { return new FakeLive2D(); }
+ILive2DBackend* makeFakeLive2D() { return new FakeLive2D(); }
 
 }  // namespace
 
 TEST_CASE("avatar.image.layersAndExpression") {
-    Avatar *mod = Avatar::create();
+    Avatar* mod = Avatar::create();
     REQUIRE(mod != nullptr);
 
-    AvatarInstance *av = mod->newImageAvatar();
+    AvatarInstance* av = mod->newImageAvatar();
     CHECK_EQ(av->getKind(), std::string("image"));
     CHECK(av->addLayer("body", nullptr, 0));
     CHECK(av->addLayer("face", nullptr, 1));
@@ -122,8 +120,8 @@ TEST_CASE("avatar.image.layersAndExpression") {
 
 TEST_CASE("avatar.live2d.nullBackendDefault") {
     Avatar::registerLive2DBackend(nullptr);  // restore NullLive2DBackend
-    Avatar *mod = Avatar::create();
-    AvatarInstance *av = mod->newLive2DAvatar();
+    Avatar*         mod = Avatar::create();
+    AvatarInstance* av  = mod->newLive2DAvatar();
     CHECK_EQ(av->getKind(), std::string("live2d"));
     CHECK(!av->hasLive2DBackend());
     CHECK(!Avatar::hasLive2DBackend());
@@ -192,8 +190,8 @@ TEST_CASE("avatar.script.buildsInspectorAndMotionBrowserFromMetadata") {
 
 TEST_CASE("avatar.live2d.backendPlugIn") {
     Avatar::registerLive2DBackend(&makeFakeLive2D);
-    Avatar *mod = Avatar::create();
-    AvatarInstance *av = mod->newLive2DAvatar();
+    Avatar*         mod = Avatar::create();
+    AvatarInstance* av  = mod->newLive2DAvatar();
     CHECK(av->hasLive2DBackend());
     CHECK(Avatar::hasLive2DBackend());
     CHECK(av->loadLive2DModel("models/hiyori"));
@@ -210,8 +208,8 @@ TEST_CASE("avatar.live2d.backendPlugIn") {
 }
 
 TEST_CASE("avatar.vroid.pathAndTransform") {
-    Avatar *mod = Avatar::create();
-    AvatarInstance *av = mod->newVroidAvatar();
+    Avatar*         mod = Avatar::create();
+    AvatarInstance* av  = mod->newVroidAvatar();
     CHECK_EQ(av->getKind(), std::string("vroid"));
     CHECK(!av->loadVroidModelPath("chars/hero.vrm"));
     CHECK(av->getVroidModelPath().empty());
@@ -230,20 +228,19 @@ TEST_CASE("avatar.vroid.pathAndTransform") {
 }
 
 TEST_CASE("avatar.equipment.2dProjectionTracksAuthoritativeSlots") {
-    Avatar* mod = Avatar::create();
-    AvatarInstance* av = mod->newImageAvatar();
+    Avatar*                      mod = Avatar::create();
+    AvatarInstance*              av  = mod->newImageAvatar();
     eve::inventory::EquipmentSet equipment;
     equipment.defineSlot("body");
 
     CHECK_EQ(static_cast<int>(av->defineEquipmentVisual2D("armor.red", "body", "armor", nullptr, 5)),
              static_cast<int>(EquipmentVisualChange::Applied));
-    CHECK_EQ(static_cast<int>(av->bindEquipment(&equipment)),
-             static_cast<int>(EquipmentVisualChange::Applied));
+    CHECK_EQ(static_cast<int>(av->bindEquipment(&equipment)), static_cast<int>(EquipmentVisualChange::Applied));
     CHECK_EQ(av->getEquipmentVisualItem("body"), std::string{});
 
     auto* stack = equipment.stackAt("body");
     REQUIRE(stack != nullptr);
-    stack->itemId = "armor.red";
+    stack->itemId   = "armor.red";
     stack->quantity = 1;
     av->update(0.f);
     CHECK_EQ(av->getEquipmentVisualItem("body"), std::string("armor.red"));
@@ -259,20 +256,19 @@ TEST_CASE("avatar.equipment.2dProjectionTracksAuthoritativeSlots") {
 }
 
 TEST_CASE("avatar.equipment.3dProjectionSwapsRootAndBoneParts") {
-    Avatar* mod = Avatar::create();
-    AvatarInstance* av = mod->newVroidAvatar();
+    Avatar*                      mod = Avatar::create();
+    AvatarInstance*              av  = mod->newVroidAvatar();
     eve::inventory::EquipmentSet equipment;
     equipment.defineSlot("weapon");
     auto* sword = Renderable3D::create();
     REQUIRE(sword != nullptr);
 
-    CHECK_EQ(static_cast<int>(av->defineEquipmentVisual3D(
-                 "sword.iron", "weapon", sword, "", 1.f, 2.f, 3.f)),
+    CHECK_EQ(static_cast<int>(av->defineEquipmentVisual3D("sword.iron", "weapon", sword, "", 1.f, 2.f, 3.f)),
              static_cast<int>(EquipmentVisualChange::Applied));
     av->bindEquipment(&equipment);
     auto* stack = equipment.stackAt("weapon");
     REQUIRE(stack != nullptr);
-    stack->itemId = "sword.iron";
+    stack->itemId   = "sword.iron";
     stack->quantity = 1;
     av->setPosition3D(10.f, 20.f, 30.f);
     av->sync();
@@ -287,32 +283,29 @@ TEST_CASE("avatar.equipment.3dProjectionSwapsRootAndBoneParts") {
 }
 
 TEST_CASE("avatar.equipment.skinnedPartsSharePoseAndRespectWearOcclusion") {
-    Avatar* mod = Avatar::create();
-    AvatarInstance* av = mod->newVroidAvatar();
+    Avatar*                  mod = Avatar::create();
+    AvatarInstance*          av  = mod->newVroidAvatar();
     eve::animation::AnimSkin bodySkin;
     eve::animation::AnimSkin shirtSkin;
     eve::animation::AnimSkin coatSkin;
-    Mesh bodyMesh;
-    Mesh shirtMesh;
-    Mesh coatMesh;
-    eve::graphics::Material bodyMaterial;
-    eve::graphics::Material shirtMaterial;
-    eve::graphics::Material coatMaterial;
+    Mesh                     bodyMesh;
+    Mesh                     shirtMesh;
+    Mesh                     coatMesh;
+    eve::graphics::Material  bodyMaterial;
+    eve::graphics::Material  shirtMaterial;
+    eve::graphics::Material  coatMaterial;
 
-    CHECK_EQ(static_cast<int>(av->bindSkinnedPart(
-                 0, "body", &bodyMesh, &bodyMaterial, &bodySkin)),
+    CHECK_EQ(static_cast<int>(av->bindSkinnedPart(0, "body", &bodyMesh, &bodyMaterial, &bodySkin)),
              static_cast<int>(EquipmentVisualChange::Applied));
     REQUIRE(av->getRenderable3D() != nullptr);
     CHECK_EQ(av->getRenderable3D()->getPartName(0), std::string("body"));
     CHECK(av->getRenderable3D()->getPartMaterial(0) == &bodyMaterial);
 
-    CHECK_EQ(static_cast<int>(av->defineEquipmentSkinnedVisual3D(
-                 "linen.shirt", "shirt", 1, "shirt", &shirtMesh, &shirtMaterial,
-                 &shirtSkin)),
+    CHECK_EQ(static_cast<int>(av->defineEquipmentSkinnedVisual3D("linen.shirt", "shirt", 1, "shirt", &shirtMesh,
+                                                                 &shirtMaterial, &shirtSkin)),
              static_cast<int>(EquipmentVisualChange::Applied));
-    CHECK_EQ(static_cast<int>(av->defineEquipmentSkinnedVisual3D(
-                 "plate.coat", "outerwear", 2, "coat", &coatMesh, &coatMaterial,
-                 &coatSkin)),
+    CHECK_EQ(static_cast<int>(av->defineEquipmentSkinnedVisual3D("plate.coat", "outerwear", 2, "coat", &coatMesh,
+                                                                 &coatMaterial, &coatSkin)),
              static_cast<int>(EquipmentVisualChange::Applied));
     av->setEquipmentVisualLayer("linen.shirt", "shirt", "shirt", 0);
     av->setEquipmentVisualLayer("plate.coat", "outerwear", "outerwear", 0);
@@ -321,13 +314,13 @@ TEST_CASE("avatar.equipment.skinnedPartsSharePoseAndRespectWearOcclusion") {
     equipment.defineSlot("shirt");
     equipment.defineSlot("outerwear");
     auto* shirt = equipment.stackAt("shirt");
-    auto* coat = equipment.stackAt("outerwear");
+    auto* coat  = equipment.stackAt("outerwear");
     REQUIRE(shirt != nullptr);
     REQUIRE(coat != nullptr);
-    shirt->itemId = "linen.shirt";
+    shirt->itemId   = "linen.shirt";
     shirt->quantity = 1;
-    coat->itemId = "plate.coat";
-    coat->quantity = 1;
+    coat->itemId    = "plate.coat";
+    coat->quantity  = 1;
     av->bindEquipment(&equipment);
     CHECK_EQ(av->getRenderable3D()->getPartName(1), std::string("shirt"));
     CHECK_EQ(av->getRenderable3D()->getPartName(2), std::string("coat"));
@@ -340,8 +333,7 @@ TEST_CASE("avatar.equipment.skinnedPartsSharePoseAndRespectWearOcclusion") {
     eve::animation::AnimPlayer player(&skeleton);
     CHECK(av->bindAnimPlayer(&player));
     av->update(0.f);
-    CHECK_EQ(static_cast<int>(av->getSkinnedPartUpdateMode(0)),
-             static_cast<int>(SkinnedPartUpdateMode::Unavailable));
+    CHECK_EQ(static_cast<int>(av->getSkinnedPartUpdateMode(0)), static_cast<int>(SkinnedPartUpdateMode::Unavailable));
 
     CHECK_EQ(static_cast<int>(av->addEquipmentLayerOcclusion("outerwear", "shirt")),
              static_cast<int>(EquipmentVisualChange::Applied));
@@ -352,16 +344,15 @@ TEST_CASE("avatar.equipment.skinnedPartsSharePoseAndRespectWearOcclusion") {
     av->sync();
     CHECK(av->getRenderable3D()->getPartMesh(1) == &shirtMesh);
     CHECK(av->getRenderable3D()->getPartMesh(2) == nullptr);
-    CHECK_EQ(static_cast<int>(av->unbindSkinnedPart(0)),
-             static_cast<int>(EquipmentVisualChange::Removed));
+    CHECK_EQ(static_cast<int>(av->unbindSkinnedPart(0)), static_cast<int>(EquipmentVisualChange::Removed));
     CHECK(av->getRenderable3D()->getPartMesh(0) == nullptr);
     av->release();
     delete av;
 }
 
 TEST_CASE("avatar.equipment.layerHierarchyOrdersAndOccludesClothing") {
-    Avatar*         mod = Avatar::create();
-    AvatarInstance* av  = mod->newImageAvatar();
+    Avatar*                      mod = Avatar::create();
+    AvatarInstance*              av  = mod->newImageAvatar();
     eve::inventory::EquipmentSet equipment;
     equipment.defineSlot("underwear");
     equipment.defineSlot("shirt");
@@ -377,7 +368,7 @@ TEST_CASE("avatar.equipment.layerHierarchyOrdersAndOccludesClothing") {
     auto equip = [&](const std::string& slot, const std::string& item) {
         auto* stack = equipment.stackAt(slot);
         REQUIRE(stack != nullptr);
-        stack->itemId  = item;
+        stack->itemId   = item;
         stack->quantity = 1;
     };
     equip("underwear", "briefs");
@@ -399,11 +390,11 @@ TEST_CASE("avatar.equipment.layerHierarchyOrdersAndOccludesClothing") {
 }
 
 TEST_CASE("avatar.vroid.meshMorphWeights") {
-    Avatar *mod = Avatar::create();
-    AvatarInstance *av = mod->newVroidAvatar();
+    Avatar*         mod = Avatar::create();
+    AvatarInstance* av  = mod->newVroidAvatar();
 
-    Mesh mesh;
-    const float base[] = {0.f, 0.f, 0.f, 1.f, 0.f, 0.f};
+    Mesh        mesh;
+    const float base[]   = {0.f, 0.f, 0.f, 1.f, 0.f, 0.f};
     const float joyAbs[] = {0.f, 1.f, 0.f, 1.f, 1.f, 0.f};  // lift Y by 1
     mesh.initMorphBase(2, base, nullptr, nullptr);
     CHECK(mesh.addMorphTargetAbsolute("Joy", joyAbs));
@@ -531,12 +522,12 @@ TEST_CASE("avatar.vroid.humanoidAndVisemeSemantics") {
 }
 
 TEST_CASE("avatar.tween.bindDrivesPosition") {
-    Avatar *mod = Avatar::create();
-    auto *anim = eve::animation::Animation::create();
-    AvatarInstance *av = mod->newImageAvatar();
+    Avatar*         mod  = Avatar::create();
+    auto*           anim = eve::animation::Animation::create();
+    AvatarInstance* av   = mod->newImageAvatar();
     av->setPosition(0.f, 0.f);
 
-    eve::animation::Tween *tw = anim->newTween(1.f);
+    eve::animation::Tween* tw = anim->newTween(1.f);
     tw->setFrom("x", 0.f);
     tw->setTo("x", 100.f);
     tw->setFrom("y", 10.f);
@@ -556,10 +547,10 @@ TEST_CASE("avatar.tween.bindDrivesPosition") {
 }
 
 TEST_CASE("avatar.module.updateSyncCounts") {
-    Avatar *mod = Avatar::create();
-    const int before = mod->getAvatarCount();
-    AvatarInstance *a = mod->newImageAvatar();
-    AvatarInstance *b = mod->newVroidAvatar();
+    Avatar*         mod    = Avatar::create();
+    const int       before = mod->getAvatarCount();
+    AvatarInstance* a      = mod->newImageAvatar();
+    AvatarInstance* b      = mod->newVroidAvatar();
     CHECK_EQ(mod->getAvatarCount(), before + 2);
     mod->update(0.01f);
     mod->sync();
@@ -571,8 +562,8 @@ TEST_CASE("avatar.module.updateSyncCounts") {
 }
 
 TEST_CASE("graphics.mesh.morphCpuBake") {
-    Mesh mesh;
-    const float base[] = {0.f, 0.f, 0.f, 2.f, 0.f, 0.f, 0.f, 2.f, 0.f};
+    Mesh        mesh;
+    const float base[]  = {0.f, 0.f, 0.f, 2.f, 0.f, 0.f, 0.f, 2.f, 0.f};
     const float delta[] = {0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f};
     mesh.initMorphBase(3, base, nullptr, nullptr);
     CHECK(mesh.addMorphTarget("open", delta));
@@ -583,4 +574,41 @@ TEST_CASE("graphics.mesh.morphCpuBake") {
     CHECK(std::fabs(pos[1] - 1.f) < 1e-5f);
     CHECK(std::fabs(pos[4] - 1.f) < 1e-5f);
     CHECK(std::fabs(pos[7] - 3.f) < 1e-5f);
+}
+
+// avatar_attachment_point.cpp
+TEST_CASE("avatar.attachment_point samples an owned world-pose snapshot") {
+    eve::animation::AnimSkeleton skeleton;
+    const int                    root  = skeleton.addBone("Root", -1);
+    const int                    blade = skeleton.addBone("BladeRoot", root);
+    skeleton.setBindPosition(blade, 0.f, 2.f, 0.f);
+    eve::animation::AnimPlayer  player(&skeleton);
+    eve::avatar::AvatarInstance avatar("vroid");
+    REQUIRE(avatar.bindAnimPlayer(&player));
+    REQUIRE(avatar.mapHumanoidBone("weaponRoot", "BladeRoot"));
+    avatar.setPosition3D(10.f, 20.f, 30.f);
+    avatar.setScale3D(2.f, 3.f, 4.f);
+    avatar.setRotation3D(1.57079632679f, 0.f, 0.f);
+    avatar.update(0.f);
+
+    auto semantic = avatar.sampleAttachmentPoint("weaponRoot", {1.f, 0.f, 0.f});
+    REQUIRE(semantic.ok());
+    CHECK(std::fabs(semantic.value().x - 10.f) < 1e-4f);
+    CHECK(std::fabs(semantic.value().y - 26.f) < 1e-4f);
+    CHECK(std::fabs(semantic.value().z - 28.f) < 1e-4f);
+    auto native = avatar.sampleAttachmentPoint("BladeRoot", {1.f, 0.f, 0.f});
+    REQUIRE(native.ok());
+    CHECK(std::fabs(native.value().x - semantic.value().x) < 1e-5f);
+    REQUIRE(!avatar.sampleAttachmentPoint("missing").ok());
+
+    eve::animation::AnimSkeleton replacementSkeleton;
+    replacementSkeleton.addBone("Replacement", -1);
+    eve::animation::AnimPlayer replacementPlayer(&replacementSkeleton);
+    REQUIRE(avatar.bindAnimPlayer(&replacementPlayer));
+    REQUIRE(!avatar.sampleAttachmentPoint("BladeRoot").ok());
+    avatar.update(0.f);
+    REQUIRE(!avatar.sampleAttachmentPoint("BladeRoot").ok());
+
+    avatar.release();
+    REQUIRE(!avatar.sampleAttachmentPoint("Replacement").ok());
 }

@@ -1,4 +1,5 @@
 #include "physics/Joint3D.h"
+#include "common/Assert.h"
 #include "common/Exception.h"
 #include "physics/Body3D.h"
 #include "physics/World3D.h"

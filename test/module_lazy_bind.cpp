@@ -1,12 +1,13 @@
+#include <squirrel.h>
+#include <zeroerr/assert.h>
+#include <zeroerr/unittest.h>
+#include "Fixtures.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
-#include "Fixtures.h"
-
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include <squirrel.h>
-
+// module_lazy_bind.cpp
 using namespace eve;
 
 namespace {
@@ -49,7 +50,7 @@ TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
     ModuleManager::expose(runtime);
 
     runtime.runSource("if (eve._bindAllNativeClasses() < 0) throw \"native binding failed\"\n",
-        "eager-native-binding-setup.nut");
+                      "eager-native-binding-setup.nut");
     CHECK(eveRawHas(runtime.handle(), "_ecsSlotsCache"));
     CHECK(eveRawHas(runtime.handle(), "_ecsTypes"));
 
@@ -92,7 +93,8 @@ TEST_CASE("moduleExpose.lazyGraphicsPreservesReturnedSpriteSurface") {
         s.setBlend("alpha")
         s.setAnchor(0.25, 0.75)
         s.destroy()
-    )", "lazy-graphics-sprite.nut");
+    )",
+                      "lazy-graphics-sprite.nut");
 }
 
 TEST_CASE("moduleExpose.allBindingsPreserveScriptEcsOverrides") {
@@ -124,7 +126,8 @@ TEST_CASE("moduleExpose.allBindingsPreserveScriptEcsOverrides") {
         if (lazyEntity.position.x != 0.5) throw "script ECS override was lost"
         hostOS <- eve.OS()
         if (hostOS.getName() != "OS") throw "OS module binding was lost"
-    )", "lazy-script-ecs.nut");
+    )",
+                      "lazy-script-ecs.nut");
 }
 
 TEST_CASE("moduleExpose.osSlotUsesUnambiguousName") {
@@ -140,7 +143,8 @@ TEST_CASE("moduleExpose.osSlotUsesUnambiguousName") {
         os <- eve.OS()
         if (!moduleSlotLive("os")) throw "OS instance was not accepted"
         os.limitFrame()
-    )", "os-slot.nut");
+    )",
+                      "os-slot.nut");
 }
 
 TEST_CASE("moduleExpose.allBindingsPreserveRenderable3DSurface") {
@@ -159,7 +163,8 @@ TEST_CASE("moduleExpose.allBindingsPreserveRenderable3DSurface") {
         if (renderable.getLayer() != 8) throw "Renderable3D layer binding was lost"
         renderable.setCastShadow(true)
         renderable.setReceiveShadow(true)
-    )", "lazy-graphics-3d.nut");
+    )",
+                      "lazy-graphics-3d.nut");
 }
 
 TEST_CASE("moduleExpose.allBindingsPreserveProcgenRockSurface") {
@@ -193,7 +198,8 @@ TEST_CASE("moduleExpose.allBindingsPreserveProcgenRockSurface") {
         camera.setEye(3.25, 2.15, 5.1)
         camera.setTarget(-0.4, -0.1, 0.0)
         camera.setFov(37.0)
-    )", "lazy-procgen-rock.nut");
+    )",
+                      "lazy-procgen-rock.nut");
 }
 
 TEST_CASE("moduleExpose.allBindingsPreserveVehicleFrameSurface") {
@@ -218,5 +224,58 @@ TEST_CASE("moduleExpose.allBindingsPreserveVehicleFrameSurface") {
             if (candidate.getId() == probeVehicle.getId()) visible = true
         }
         if (!visible) throw "Vehicle ECS view binding was lost"
-    )", "lazy-vehicle-frame.nut");
+    )",
+                      "lazy-vehicle-frame.nut");
+}
+
+// module_manager_registry.cpp
+namespace {
+class RegistryProbe final : public eve::Module {
+public:
+    inline static int live = 0;
+    RegistryProbe() { ++live; }
+    ~RegistryProbe() override { --live; }
+    std::string         getName() const override { return "RegistryStorageProbe"; }
+    static eve::Module* create() {
+        auto* instance = new RegistryProbe;
+        eve::ModuleManager::insert("RegistryStorageProbe", instance);
+        return instance;
+    }
+};
+}  // namespace
+
+TEST_CASE("ModuleManager.RegistryRollbackOwnsCreatedInstance") {
+    using eve::ModuleManager;
+    auto started = ModuleManager::beginPluginRegistration();
+    REQUIRE(started.ok());
+    ModuleManager::register_module("RegistryStorageProbe", &RegistryProbe::create, nullptr);
+    auto* instance = ModuleManager::requireInstance<RegistryProbe>("RegistryStorageProbe");
+    REQUIRE(instance != nullptr);
+    CHECK_EQ(ModuleManager::find("RegistryStorageProbe"), instance);
+    CHECK_EQ(RegistryProbe::live, 1);
+    auto nested = ModuleManager::beginPluginRegistration();
+    CHECK(!nested.ok());
+    auto rolledBack = ModuleManager::finishPluginRegistration(false);
+    REQUIRE(rolledBack.ok());
+    CHECK_EQ(RegistryProbe::live, 0);
+    CHECK(ModuleManager::find("RegistryStorageProbe") == nullptr);
+    auto inactive = ModuleManager::finishPluginRegistration(true);
+    CHECK(!inactive.ok());
+}
+
+TEST_CASE("ModuleManager.RegistryConflictPreservesCommittedInstance") {
+    using eve::ModuleManager;
+    auto started = ModuleManager::beginPluginRegistration();
+    REQUIRE(started.ok());
+    ModuleManager::register_module("RegistryStorageProbe", &RegistryProbe::create, nullptr);
+    auto* instance  = ModuleManager::requireInstance<RegistryProbe>("RegistryStorageProbe");
+    auto  committed = ModuleManager::finishPluginRegistration(true);
+    REQUIRE(committed.ok());
+    auto again = ModuleManager::beginPluginRegistration();
+    REQUIRE(again.ok());
+    ModuleManager::register_module("RegistryStorageProbe", &RegistryProbe::create, nullptr);
+    auto conflicted = ModuleManager::finishPluginRegistration(true);
+    CHECK(!conflicted.ok());
+    CHECK_EQ(ModuleManager::find("RegistryStorageProbe"), instance);
+    CHECK_EQ(RegistryProbe::live, 1);
 }
