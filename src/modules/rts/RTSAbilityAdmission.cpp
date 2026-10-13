@@ -74,7 +74,7 @@ namespace {
 class AbilityAdmission final : public transaction::ITransactionParticipant {
 public:
     AbilityAdmission(Unit& caster, AbilitySpec spec, ecs::EntityHandle target, WorldPosition point)
-        : caster_(ecs::handle_of(&caster)), spec_(std::move(spec)), target_(target), point_(point) {}
+        : caster_(ecs::handle_of(&caster)), target_(target), spec_(std::move(spec)), point_(point) {}
     std::string_view name() const noexcept override { return "rts-ability-admission"; }
     Result<void>     prepare(const transaction::TransactionContext&) override {
         if (phase_ != Phase::Idle) return conflict("ability stage is already in flight");
