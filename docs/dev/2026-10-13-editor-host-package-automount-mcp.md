@@ -1,7 +1,7 @@
 # EditorHost / EditorPackage：自动装配与 MCP 投影
 
 日期：2026-10-13  
-状态：设计提案（未实施）  
+状态：实施中（P0 + P1 骨架已落地：Command schema 导出、EditorPackage/Host、Action 包适配）  
 存放：`docs/dev/`
 
 相关：

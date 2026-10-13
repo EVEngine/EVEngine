@@ -1,15 +1,18 @@
 #include "editor/EditorAutomationProvider.h"
 
-#include "editor/EditorTargetCoordinator.h"
-#include "editor/EditorCommandService.h"
-#include "editor/EditorValueJson.h"
 #include "common/Capability.h"
+#include "editing/EditorPackage.h"
+#include "editing/PropertySchemaJson.h"
+#include "editor/EditorCommandService.h"
+#include "editor/EditorTargetCoordinator.h"
+#include "editor/EditorValueJson.h"
 #include "rx/Rx.h"
 
 #include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -317,7 +320,15 @@ std::string EditorAutomationProvider::targetList() const {
     if (!bound.empty()) (*value)["boundTarget"] = bound.value();
 
     // Type discovery: the accepted names come from the loaded factories, so the
-    // advertised list cannot drift from what create actually accepts.
+    // advertised list cannot drift from what create actually accepts. createSchema
+    // is projected from IEditorPackageProvider when the domain advertises one.
+    std::unordered_map<std::string, editing::PropertySchema> createSchemas;
+    eve::cap::forEach<editing::IEditorPackageProvider>([&](editing::IEditorPackageProvider* provider) {
+        if (!provider) return;
+        for (const editing::EditorTargetTypeSpec& target : provider->package().targetTypes)
+            createSchemas.emplace(target.type, target.createSchema);
+    });
+
     std::vector<std::string> types;
     eve::cap::forEach<IEditorAutomationTargetFactory>([&](IEditorAutomationTargetFactory* factory) {
         if (!factory) return;
@@ -327,7 +338,15 @@ std::string EditorAutomationProvider::targetList() const {
     types.erase(std::unique(types.begin(), types.end()), types.end());
     EditorValue::Array advertised;
     advertised.reserve(types.size());
-    for (auto& type : types) advertised.emplace_back(std::move(type));
+    for (const std::string& type : types) {
+        EditorValue::Object item;
+        item["type"] = type;
+        if (const auto found = createSchemas.find(type); found != createSchemas.end()) {
+            auto schema = editing::propertySchemaToJsonSchema(found->second, type);
+            if (schema.ok()) item["createSchema"] = std::move(schema).takeValue();
+        }
+        advertised.emplace_back(std::move(item));
+    }
     (*value)["supportedTypes"] = std::move(advertised);
 
     return editorValueToJson(response);
@@ -400,6 +419,15 @@ std::string EditorAutomationProvider::commandsJson() {
         descriptor["category"]    = command.category;
         descriptor["owner"]       = command.ownerModule;
         descriptor["planned"]     = commands_->supportsPlanning(command.id);
+        if (!command.panelCapability.empty()) descriptor["panelCapability"] = command.panelCapability;
+        if (!command.panelContext.empty()) descriptor["panelContext"] = command.panelContext;
+        if (!command.targetKinds.empty()) {
+            EditorValue::Array kinds;
+            for (const std::string& kind : command.targetKinds) kinds.emplace_back(kind);
+            descriptor["targetKinds"] = std::move(kinds);
+        }
+        auto schema = editing::propertySchemaToJsonSchema(command.payloadSchema, command.id.value());
+        if (schema.ok()) descriptor["inputSchema"] = std::move(schema).takeValue();
         descriptors.emplace_back(std::move(descriptor));
     }
     EditorValue response = resultValue(EditorStatus::Applied, {});
