@@ -572,6 +572,9 @@ function(main)
                 "update cmake/patches/ecs-shared-default-table.patch.")
         endif()
     endif()
+    # set_include() generated the ECS overlay before the patch above. Refresh
+    # it now so a clean checkout compiles the patched default-table API.
+    eve_prepare_ecs_container_headers()
 
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
