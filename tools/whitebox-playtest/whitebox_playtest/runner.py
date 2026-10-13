@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import json
 from copy import deepcopy
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from .mcp_client import McpClient, McpError
 from .recipe import default_recipe, eval_assert, validate_recipe
