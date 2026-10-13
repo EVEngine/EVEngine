@@ -1,6 +1,6 @@
 #version 450
-// YSA mesh vertex. Keeps the stylized varying contract of mesh3d_toon.vert
-// (normal/uv/tint/light/world/camera for the YSA fragment lobes) but mirrors the
+// Shared stylize mesh vertex. Keeps the varying contract of mesh3d_toon.vert
+// (normal/uv/tint/light/world/camera for the material fragments) but mirrors the
 // default mesh3d vertex contract for the two inputs the toon vertex drops: the
 // GPU skin palette and the vertex color.
 //
