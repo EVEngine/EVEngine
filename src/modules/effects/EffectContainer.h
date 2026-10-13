@@ -3,6 +3,7 @@
 
 
 #include "common/Time.h"
+#include "common/UuidV7.h"
 
 /**
  * @file EffectContainer.h

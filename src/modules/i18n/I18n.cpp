@@ -1,4 +1,5 @@
 #include "i18n/I18n.h"
+#include "common/StringMapInstances.h"
 
 #include "common/Json.h"
 #include "common/Module.h"

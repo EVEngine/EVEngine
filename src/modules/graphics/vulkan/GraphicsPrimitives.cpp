@@ -1,3 +1,4 @@
+#include "common/Assert.h"
 #include "graphics/PrimitiveDrawList.h"
 #include "graphics/PrimitiveTessellator.h"
 #include "graphics/vulkan/Canvas.h"

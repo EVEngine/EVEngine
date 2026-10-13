@@ -185,7 +185,7 @@
         "src/modules/scene/SceneCapabilities.cpp",
         "docs/dev/场景对象模型使用指南.md",
         "src/modules/scene/SceneComponent.h",
-        "src/modules/scene/SceneComponent.cpp",
+        "src/modules/scene/SceneCameraQueries.cpp",
         "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [

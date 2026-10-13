@@ -1,5 +1,6 @@
 #pragma once
 #include "common/Export.h"
+#include "common/StringMapInstances.h"
 
 
 // 技能系统：数据驱动的 SkillDefinition（消耗、冷却、读条时间、命中后授予的效果……）。

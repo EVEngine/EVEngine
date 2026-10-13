@@ -5,7 +5,7 @@
     {
       "symbol": "SceneNodeRef::setVisible",
       "module": "scene",
-      "implementationFile": "src/modules/scene/SceneNodeRef.cpp",
+      "implementationFile": "src/modules/scene/SceneCameraQueries.cpp",
       "owner": "eve::scene::SceneHost",
       "ownerFile": "src/modules/scene/SceneHost.h",
       "ownerAnchor": "class EVENGINE_API_PLATFORM SceneHost",

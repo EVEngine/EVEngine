@@ -111,3 +111,20 @@ struct PropertyPathHash {
 };
 
 }  // namespace eve::editing
+
+
+// Keep open domain tags and the original representation. Only common authoring
+// adapters share compiled operations across Windows link groups, with identical
+// CRT/iterator configuration. Platform itself retains the inline definitions.
+#if defined(_WIN32) && defined(EVENGINE_MODULE_DLL) && !defined(EVENGINE_EXPORTS_PLATFORM)
+extern template class __declspec(dllimport) eve::UuidIdAdapter<eve::editing::RuleIdTag>;
+extern template class __declspec(dllimport) eve::UuidIdAdapter<eve::editing::TargetIdTag>;
+extern template class __declspec(dllimport) eve::UuidIdAdapter<eve::editing::StableIdTag>;
+extern template class __declspec(dllimport) eve::UuidIdAdapter<eve::editing::ObjectIdTag>;
+extern template class __declspec(dllimport) eve::UuidIdAdapter<eve::editing::CapabilityIdTag>;
+#endif
+
+#if defined(_WIN32) && defined(EVENGINE_MODULE_DLL) && !defined(EVENGINE_EXPORTS_PLATFORM)
+#include <vector>
+extern template class __declspec(dllimport) std::vector<eve::editing::CapabilityId>;
+#endif

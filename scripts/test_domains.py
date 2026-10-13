@@ -45,6 +45,8 @@ SHARED_RUNNER = "main"
 # not partitioned: it belongs to no single domain, and the generated
 # `EVE_TEST_DOMAIN_<domain>_SHARED_SOURCES` lists carry it to test/CMakeLists.txt.
 SHARED_SOURCES: dict[str, tuple[str, ...]] = {
+    # Window initialization helpers used by Fixtures.h consumers in these domains.
+    "GraphicsWindowFixtures": ("core", "graphics", "procgen", "map", "voxel", "weather"),
     # saveImagePng: referenced by the graphics image-audit tests that own
     # RenderImageAudit.cpp (plus ClassicScenes/decal/hex_level_simulation/
     # procgen_*), by procgen.cpp, and by the voxel render tests through
