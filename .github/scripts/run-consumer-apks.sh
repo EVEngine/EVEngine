@@ -53,7 +53,11 @@ for apk_file in "${apk_files[@]}"; do
   "$apksigner" verify "$signed_apk"
 
   adb logcat -c
-  adb install -r "$signed_apk"
+  echo "Emulator data partition before $apk_name:"
+  adb shell df -h /data
+  # Fully install each artifact; incremental staging can retain backing data
+  # between large APKs even after the prior package has been uninstalled.
+  adb install --no-incremental -r "$signed_apk"
   adb shell am force-stop com.evengine.example || true
   adb shell am start -W -n com.evengine.example/.EVEngineActivity
 

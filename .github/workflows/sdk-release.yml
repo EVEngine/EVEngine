@@ -907,6 +907,8 @@ jobs:
             -no-window
             -gpu swiftshader
             -no-snapshot
+            -partition-size 8192
+            -wipe-data
             -noaudio
             -no-boot-anim
             -accel on
