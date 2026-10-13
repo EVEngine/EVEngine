@@ -14,10 +14,10 @@
 #include "stylize/shaders/ink_mesh_frag_spv.inc"
 #include "stylize/shaders/ink_post_frag_spv.inc"
 #include "stylize/shaders/pixel_post_frag_spv.inc"
+#include "stylize/shaders/stylize_mesh_vert_spv.inc"
 #include "stylize/shaders/watercolor_post_frag_spv.inc"
 #include "stylize/shaders/xray_mesh_frag_spv.inc"
 #include "stylize/shaders/ysa_mesh_frag_spv.inc"
-#include "stylize/shaders/ysa_mesh_vert_spv.inc"
 #include "stylize/shaders/ysa_mesh_wgsl.inc"
 
 #include <algorithm>
@@ -545,14 +545,12 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
     if (isEffectStyle(style)) return createEffectMeshShader(gfx, style);
 
     if (style == "ysa") {
-        // The Vulkan path needs its own vertex shader: mesh3d_toon.vert (shared
-        // with anime/cartoon) has no joint/weight inputs, no skin-palette
-        // transform and no vertex-color multiply, while the WebGPU path runs the
-        // backend's standard mesh vertex shader, which does all three.
+        // Vulkan stylize meshes share the skinning and vertex-color contract
+        // of the backend's standard WebGPU mesh vertex shader.
         graphics::Shader *shader =
             gfx->getBackendName() == "webgpu"
                 ? gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kYsaMesh)
-                : gfx->newMeshShaderFromSpv(copySpv(ysa_mesh_vert_spv, ysa_mesh_vert_spv_count),
+                : gfx->newMeshShaderFromSpv(copySpv(stylize_mesh_vert_spv, stylize_mesh_vert_spv_count),
                                             copySpv(ysa_mesh_frag_spv, ysa_mesh_frag_spv_count));
         if (!shader || !shader->gpuHandle) throw eve::Exception("createMeshShader: failed to create ysa mesh shader");
         bindMeshUniforms(shader, style);
@@ -563,7 +561,7 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
         graphics::Shader *shader =
             gfx->getBackendName() == "webgpu"
                 ? gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kAnimeMesh)
-                : gfx->newMeshShaderFromSpv(copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count),
+                : gfx->newMeshShaderFromSpv(copySpv(stylize_mesh_vert_spv, stylize_mesh_vert_spv_count),
                                             copySpv(anime_mesh_frag_spv, anime_mesh_frag_spv_count));
         if (!shader || !shader->gpuHandle) throw eve::Exception("createMeshShader: failed to create anime mesh shader");
         bindMeshUniforms(shader, style);
@@ -572,18 +570,16 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
 
     if (style == "cartoon") {
         if (gfx->getBackendName() == "webgpu") {
-            graphics::Shader *sh = gfx->newMeshShaderFromWgsl(
-                {}, std::string(shaders::kMeshCommon) + shaders::kCartoonMesh);
-            if (!sh || !sh->gpuHandle)
-                throw eve::Exception("createMeshShader: failed to create cartoon WGSL");
+            graphics::Shader *sh =
+                gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kCartoonMesh);
+            if (!sh || !sh->gpuHandle) throw eve::Exception("createMeshShader: failed to create cartoon WGSL");
             bindMeshUniforms(sh, style);
             return sh;
         }
-        auto vert = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);
-        auto frag = copySpv(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv_count);
-        graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);
-        if (!sh || !sh->gpuHandle)
-            throw eve::Exception("createMeshShader: failed to create cartoon mesh shader");
+        auto              vert = copySpv(stylize_mesh_vert_spv, stylize_mesh_vert_spv_count);
+        auto              frag = copySpv(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv_count);
+        graphics::Shader *sh   = gfx->newMeshShaderFromSpv(vert, frag);
+        if (!sh || !sh->gpuHandle) throw eve::Exception("createMeshShader: failed to create cartoon mesh shader");
         bindMeshUniforms(sh, style);
         return sh;
     }
