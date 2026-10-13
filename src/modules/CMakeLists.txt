@@ -261,6 +261,12 @@ if(EVENGINE_BUILD_JOLT AND (_eve_jolt_physics OR EVENGINE_BUILD_PHYSICS_CORE_CHE
   include(${CMAKE_SOURCE_DIR}/third-party/cmake/Jolt.cmake)
   eve_add_jolt()
   set_target_properties(Jolt PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  # This private native subclass must match Jolt's default no-RTTI ABI. Keep
+  # RTTI enabled for engine-facing provider types in the other translation units.
+  if(NOT MSVC AND NOT CPP_RTTI_ENABLED)
+    set_property(SOURCE physics/jolt/JoltDistanceConstraint.cpp APPEND PROPERTY
+      COMPILE_OPTIONS -fno-rtti)
+  endif()
 else()
   list(APPEND EVENGINE_EXCLUDED_BACKEND_SUBDIRS jolt)
 endif()
