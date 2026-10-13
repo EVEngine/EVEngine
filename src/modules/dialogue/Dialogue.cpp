@@ -123,31 +123,35 @@ class DialogueStateProvider : public eve::caps::IStateProvider {
 public:
     const char* stateKind() const override { return "dialogue"; }
 
-    bool captureState(StateValue& out) override {
+    Result<Value> capture() override {
         StateValue arr = StateValue::array();
         for (Dialogue* d : liveDialogues()) {
             StateValue sv;
-            if (d->captureState(sv)) arr.pushBack(std::move(sv));
+            if (!d->captureState(sv))
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Failed, "dialogue capture failed"));
+            arr.pushBack(std::move(sv));
         }
-        out = std::move(arr);
-        return true;
+        return Result<Value>::success(toCanonicalStateValue(arr));
     }
 
-    bool restoreState(const StateValue& in, std::string* err) override {
+    Result<void> restore(const Value &value) override {
+        const StateValue in = toLegacyStateValue(value);
         if (!in.isArray()) {
-            if (err) *err = "dialogue: expected array of instances";
-            return false;
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "dialogue: expected array of instances"));
         }
         const size_t n = std::min(in.arraySize(), liveDialogues().size());
         for (size_t i = 0; i < n; ++i) {
-            if (!liveDialogues()[i]->restoreState(in.at(i), err)) return false;
+            std::string error;
+            if (!liveDialogues()[i]->restoreState(in.at(i), &error))
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, error));
         }
-        return true;
+        return Result<void>::success();
     }
 
-    bool resetToDefaults() override {
+    Result<void> resetToDefaults() override {
         for (Dialogue* d : liveDialogues()) d->reset();
-        return true;
+        return Result<void>::success();
     }
 };
 

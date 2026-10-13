@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "asset-unity-character-import-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/asset/import/UnityFbx.cpp",
+      "owner": "asset import",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "A bounded FBX conversion prepares mesh, skeleton, skin and clip assets without publishing live renderer state.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/asset/import/UnityFbx.cpp",
+        "docs/usr/modules/asset-unity-import.md"
+      ],
+      "tests": [
+        "test/asset_import_unity_fbx.cpp",
+        "test/asset_import_gltf_animation.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "web profile reports Unsupported when the desktop Assimp provider is unavailable"
+      },
+      "thread_affinity": "worker-safe import preparation; publication remains the caller's transaction",
+      "hot_path": [],
+      "cost_notes": [
+        "Whole-file FBX decode and bounded glTF conversion occur once per explicit asset import."
+      ]
+    }
+  ]
+}

@@ -1457,6 +1457,37 @@
       }
     },
     {
+      "id": "asset-unity-character-import-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/asset/import/UnityFbx.cpp",
+      "owner": "asset import",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "A bounded FBX conversion prepares mesh, skeleton, skin and clip assets without publishing live renderer state.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/asset/import/UnityFbx.cpp",
+        "docs/usr/modules/asset-unity-import.md"
+      ],
+      "tests": [
+        "test/asset_import_unity_fbx.cpp",
+        "test/asset_import_gltf_animation.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "web profile reports Unsupported when the desktop Assimp provider is unavailable"
+      },
+      "thread_affinity": "worker-safe import preparation; publication remains the caller's transaction",
+      "hot_path": [],
+      "cost_notes": [
+        "Whole-file FBX decode and bounded glTF conversion occur once per explicit asset import."
+      ]
+    },
+    {
       "id": "attributes-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/attributes/**",
@@ -1840,6 +1871,49 @@
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
+    },
+    {
+      "id": "game-save-session-module-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/GameSaveSession*",
+      "owner": "foundation save coordinator",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "One versioned envelope prepares every registered gameplay owner before a no-fail cross-domain publication.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/GameSaveSession.h",
+        "docs/usr/SAVE.md"
+      ],
+      "tests": [
+        "test/common_game_save_session.cpp",
+        "test/game_save_integration.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameSaveParticipant",
+          "impl": "GameSaveSession registration contract",
+          "absent_behavior": "an unregistered domain is not part of this save schema"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "SnapshotHashProvider",
+          "required": true,
+          "fallback": "save or restore fails with a structured diagnostic"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "a game without a gameplay domain omits its participant and uses a distinct explicit save schema"
+      },
+      "thread_affinity": "paused owning simulation thread",
+      "hot_path": [],
+      "cost_notes": [
+        "Capture and restore scale with the complete serialized game state and run only at explicit save/load boundaries."
+      ]
     },
     {
       "id": "graphics-import-surface",
@@ -2687,6 +2761,43 @@
       "cost_notes": []
     },
     {
+      "id": "rpg-game-save-participant-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/rpg/RPGGameSaveParticipant*",
+      "owner": "rpg::RPGSaveSession",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "RPG preparation validates the complete bound domain state before joining the cross-domain commit.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rpg/RPGGameSaveParticipant.h",
+        "src/modules/rpg/RPGSaveSession.h"
+      ],
+      "tests": [
+        "test/rpg_save_prepare.cpp",
+        "test/game_save_integration.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameSaveParticipant",
+          "impl": "RPGGameSaveParticipant",
+          "absent_behavior": "RPG state is excluded from saves without this explicit participant"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "games without RPG omit this adapter and do not link the RPG package"
+      },
+      "thread_affinity": "paused RPG owner thread",
+      "hot_path": [],
+      "cost_notes": [
+        "Full RPG snapshot parsing and candidate preparation per load."
+      ]
+    },
+    {
       "id": "rts-movement-group-interface",
       "rule": "module-interface",
       "scope": "src/modules/rts/RTSMovementGroups.cpp",
@@ -2929,6 +3040,49 @@
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
+    },
+    {
+      "id": "tactics-game-save-participant-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/tactics/TacticsGameSaveParticipant*",
+      "owner": "tactics::Battle",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Battle candidate preparation joins the one-commit game-save transaction without restoring live components early.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/tactics/TacticsGameSaveParticipant.h",
+        "src/modules/tactics/TacticsPersistence.h"
+      ],
+      "tests": [
+        "test/common_game_save_session.cpp",
+        "test/game_save_integration.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameSaveParticipant",
+          "impl": "TacticsGameSaveParticipant",
+          "absent_behavior": "battle state is excluded from saves without this explicit participant"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "SnapshotHashProvider",
+          "required": true,
+          "fallback": "capture or preparation returns failure"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "games without tactics omit this adapter and do not link the tactics package"
+      },
+      "thread_affinity": "paused battle owner thread",
+      "hot_path": [],
+      "cost_notes": [
+        "Full battle snapshot parsing and candidate preparation per load."
+      ]
     },
     {
       "id": "tactics-module-interface",
