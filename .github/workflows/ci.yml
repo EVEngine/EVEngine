@@ -137,7 +137,18 @@ jobs:
         # Same entry point as local `make check`. Groups inside
         # scripts/check_source_quality.sh show up in the job log.
         timeout-minutes: 15
-        run: make check CI_BASE="${{ github.event.pull_request.base.sha || 'origin/dev' }}"
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          CHECK_REF: ${{ inputs.ref || github.ref }}
+        run: |
+          base="${PR_BASE:-origin/dev}"
+          # An isolated release must check its own complete changes, not
+          # reversals of interface migrations that landed on dev afterwards.
+          if [ -z "$PR_BASE" ] && [[ "$CHECK_REF" =~ ^(refs/(heads|tags)/)?v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            base="$(git merge-base HEAD origin/dev)"
+          fi
+          echo "Source-quality comparison base: $base"
+          make check CI_BASE="$base"
 
       - name: Report dependency graph
         timeout-minutes: 5
