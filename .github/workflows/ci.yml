@@ -1838,7 +1838,10 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
-          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release
+          # Keep Release object compilation; avoid expensive -O3 Binaryen
+          # optimization in this browser smoke lane. Asyncify still runs.
+          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXE_LINKER_FLAGS_RELEASE=-O1
 
       - name: Build webgpu (Emscripten/WASM)
         timeout-minutes: 60
