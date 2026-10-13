@@ -212,7 +212,6 @@ void main() {
     vec3 fluxUp = 0.5 * (fluxZ(q, g, minH) + fluxZ(qU, g, minH)) - 0.5 * alpha * (qU - q);
     vec3 fluxDown = 0.5 * (fluxZ(qD, g, minH) + fluxZ(q, g, minH)) - 0.5 * alpha * (q - qD);
 
-    float b = sampleBed(x, z, resX, resZ);
     float bL = sampleBed(x - 1, z, resX, resZ);
     float bR = sampleBed(x + 1, z, resX, resZ);
     float bD = sampleBed(x, z - 1, resX, resZ);

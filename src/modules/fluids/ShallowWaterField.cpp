@@ -623,7 +623,6 @@ void ShallowWaterField::integrateCpu(float dt) {
                 0.5f * (fluxZ(hD, huD, hvD, gravity_, minDepth_) + fluxZ(h, hu, hv, gravity_, minDepth_)) -
                 0.5f * alpha * (q - qD);
 
-            const float b  = sampleBed(x, z);
             const float bL = sampleBed(x - 1, z);
             const float bR = sampleBed(x + 1, z);
             const float bD = sampleBed(x, z - 1);
