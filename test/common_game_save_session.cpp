@@ -26,7 +26,7 @@ eve::SnapshotHashProvider testHash() {
 
 class FakeParticipant final : public eve::IGameSaveParticipant {
 public:
-    FakeParticipant(std::string key, int value) : key_(std::move(key)), value(value) {}
+    FakeParticipant(std::string key, int value) : value(value), key_(std::move(key)) {}
     std::string_view        saveKey() const noexcept override { return key_; }
     eve::Result<eve::Value> capture() const override { return eve::Result<eve::Value>::success(eve::Value(value)); }
     eve::Result<std::unique_ptr<eve::IPreparedGameRestore>> prepare(const eve::Value& state) override {
