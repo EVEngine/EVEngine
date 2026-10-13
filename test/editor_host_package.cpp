@@ -9,6 +9,9 @@
 #include "editing/PropertySchemaJson.h"
 #include "editor/Editor.h"
 #include "editor/EditorHost.h"
+#include "editor/EditorMcpProjector.h"
+#include "fluids/editor/FluidsEditorModule.h"
+#include "voxel/editor/VoxelEditorModule.h"
 
 using namespace eve::editor;
 
@@ -72,6 +75,68 @@ TEST_CASE("editor.host.reject_incomplete_package") {
     CHECK(!rejected.ok());
     auto allowed = eve::editing::validateEditorPackage(incomplete, true);
     CHECK(allowed.ok());
+}
+
+TEST_CASE("editor.host.attach_filters_commands_and_skips_incomplete") {
+    Editor                                 editor;
+    eve::action_editor::ActionEditorModule action;
+    eve::fluids_editor::FluidsEditorModule fluids;
+
+    auto host = editor.newHost("world", "World Host");
+    REQUIRE(host.ok());
+    auto report = host.value()->autoMount();
+    REQUIRE(report.ok());
+    CHECK(host.value()->isMounted("action_editor"));
+    CHECK(!host.value()->isMounted("fluids_editor"));
+
+    REQUIRE(host.value()->exportMcp().ok());
+    CHECK(editorMcpProjector().isAttached());
+
+    auto* automation = eve::cap::query<eve::IEditorAutomation>();
+    REQUIRE(automation != nullptr);
+    const std::string commands = automation->invoke("commands", "{}");
+    CHECK(commands.find("action.property.set.v1") != std::string::npos);
+    // Unmounted / non-package owners must not leak through an attached host.
+    CHECK(commands.find("script:") == std::string::npos);
+
+    const std::string targets = automation->invoke("target-list", "{}");
+    CHECK(targets.find("action-timeline") != std::string::npos);
+    CHECK(targets.find("fluid-simulation") == std::string::npos);
+
+    const std::string audit = automation->invoke("package-audit", "{}");
+    CHECK(audit.find("fluids_editor") != std::string::npos);
+    CHECK(audit.find("incompletePackages") != std::string::npos);
+
+    REQUIRE(host.value()->unmount("action_editor").ok());
+    const std::string afterUnmount = automation->invoke("commands", "{}");
+    CHECK(afterUnmount.find("action.property.set.v1") == std::string::npos);
+
+    editorMcpProjector().detach();
+}
+
+TEST_CASE("editor.host.mounts_voxel_and_routes_selection") {
+    Editor                               editor;
+    eve::voxel_editor::VoxelEditorModule voxel;
+
+    auto host = editor.newHost("voxel-world", "Voxel Host");
+    REQUIRE(host.ok());
+    auto report = host.value()->mount({"voxel_editing"});
+    REQUIRE(report.ok());
+    CHECK(host.value()->isMounted("voxel_editing"));
+    CHECK(host.value()->workspace().getPanelCount() >= 4);
+
+    REQUIRE(host.value()->undo().focusOwner("voxel_editing").ok());
+    CHECK(host.value()->undo().focusedPolicy() == eve::editing::EditorUndoPolicy::Private);
+    CHECK(!host.value()->undo().canUndo(nullptr));
+
+    SelectionItem item;
+    item.domain = SelectionDomain::Asset;
+    item.target = TargetId("voxel.demo");
+    item.item   = StableId("model.a");
+    item.type   = "voxel.model";
+    auto routed = host.value()->selection().select(item, false);
+    REQUIRE(routed.ok());
+    CHECK(routed.value().find("voxel.") != std::string::npos);
 }
 
 TEST_CASE("editor.script.automated_command_requires_panel_binding") {

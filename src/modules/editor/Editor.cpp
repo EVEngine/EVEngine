@@ -2,11 +2,13 @@
 
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
+#include "common/EditorMcpAttach.h"
 #include "editing/PropertySchemaJson.h"
 #include "editor/EditorAutomationProvider.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorHost.h"
 #include "editor/EditorInspector.h"
+#include "editor/EditorMcpProjector.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorToolbar.h"
@@ -289,14 +291,28 @@ bool registerAutomatedScriptCommand(Editor* editor, const std::string& id, const
 
 }  // namespace
 
+namespace {
+
+bool attachEditorHostOpaque(void* host) {
+    auto* editorHost = static_cast<EditorHost*>(host);
+    if (!editorHost) return false;
+    return editorHost->exportMcp(EditorMcpExportMode::Commands).ok();
+}
+
+void detachEditorHostOpaque() { editorMcpProjector().detach(); }
+
+}  // namespace
+
 Editor::Editor()
     : targets_(std::make_unique<EditorTargetCoordinator>(commandService_)),
       automation_(std::make_unique<EditorAutomationProvider>(commandService_, *targets_)) {
     eve::cap::provide<eve::editing::IEditingCommandRegistry>(targets_.get());
     eve::cap::provide<eve::IEditorAutomation>(automation_.get());
+    eve::setEditorMcpAttachHooks(&attachEditorHostOpaque, &detachEditorHostOpaque);
 }
 
 Editor::~Editor() {
+    eve::setEditorMcpAttachHooks(nullptr, nullptr);
     eve::cap::revoke<eve::IEditorAutomation>(automation_.get());
     eve::cap::revoke<eve::editing::IEditingCommandRegistry>(targets_.get());
 }
@@ -770,12 +786,21 @@ void Editor::expose(ssq::Table& table) {
         auto report = self->autoMount();
         return report.ok() ? static_cast<int>(report.value().mountedPackages) : -1;
     });
+    host.addFunc("mount", [](EditorHost* self, const std::string& owner) {
+        if (!self) return 0;
+        auto report = self->mount(std::vector<std::string>{owner});
+        return report.ok() ? static_cast<int>(report.value().mountedPackages) : -1;
+    });
     host.addFunc("unmount",
                  [](EditorHost* self, const std::string& owner) { return self && self->unmount(owner).ok(); });
     host.addFunc("isMounted",
                  [](EditorHost* self, const std::string& owner) { return self && self->isMounted(owner); });
     host.addFunc("getPanelCount",
                  [](EditorHost* self) { return self ? static_cast<int>(self->workspace().getPanelCount()) : 0; });
+    host.addFunc("exportMcp", [](EditorHost* self) { return self && self->exportMcp().ok(); });
+    host.addFunc("focusUndoOwner", [](EditorHost* self, const std::string& owner) {
+        return self && self->undo().focusOwner(owner).ok();
+    });
 
     auto workspace = table.addClass<EditorWorkspace>(
         "EditorWorkspace", std::function<EditorWorkspace*()>([]() -> EditorWorkspace* { return nullptr; }), true);

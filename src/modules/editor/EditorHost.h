@@ -3,11 +3,15 @@
 
 #include "editing/EditorPackage.h"
 #include "editor/EditorHostProfile.h"
+#include "editor/EditorMcpProjector.h"
 #include "editor/EditorResult.h"
+#include "editor/EditorSelectionRouter.h"
+#include "editor/EditorUndoCoordinator.h"
 #include "editor/EditorValue.h"
 #include "editor/EditorWorkspace.h"
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -58,7 +62,7 @@ public:
     /** @brief Create a host bound to an Editor module's command service. */
     explicit EditorHost(Editor& editor, Options options);
 
-    /** @brief Destroy host and unmount every package. */
+    /** @brief Destroy host, detach MCP projection if attached, and unmount packages. */
     ~EditorHost();
 
     EditorHost(const EditorHost&)            = delete;
@@ -86,14 +90,48 @@ public:
     /** @brief Workspace receiving merged panels. */
     [[nodiscard]] const EditorWorkspace& workspace() const { return workspace_; }
 
+    /** @brief Host selection channel used by SelectionRouter. */
+    [[nodiscard]] const std::string& selectionChannel() const { return options_.selectionChannel; }
+
+    /** @brief Default selection → inspector router. */
+    [[nodiscard]] EditorSelectionRouter& selection() { return *selection_; }
+    /** @brief Default selection → inspector router. */
+    [[nodiscard]] const EditorSelectionRouter& selection() const { return *selection_; }
+
+    /** @brief Focus-aware undo coordinator. */
+    [[nodiscard]] EditorUndoCoordinator& undo() { return *undo_; }
+    /** @brief Focus-aware undo coordinator. */
+    [[nodiscard]] const EditorUndoCoordinator& undo() const { return *undo_; }
+
+    /** @brief Attach this host as the active Mode A MCP projection scope. */
+    [[nodiscard]] Result<void> exportMcp(EditorMcpExportMode mode = EditorMcpExportMode::Commands);
+
     /** @brief Export mounted command catalog (id + inputSchema) for tests/MCP. */
     [[nodiscard]] Result<EditorValue> exportCommandCatalog() const;
 
     /** @brief Export discovered target types with createSchema when known. */
     [[nodiscard]] Result<EditorValue> exportTargetCatalog() const;
 
+    /** @brief Completeness audit (incomplete packages + orphan factory types). */
+    [[nodiscard]] Result<EditorValue> auditPackages() const;
+
     /** @brief True when owner is currently mounted. */
     [[nodiscard]] bool isMounted(std::string_view ownerModule) const;
+
+    /**
+     * @brief Mounted package owner names.
+     * @cost Linear in mounted package count; returns an owning vector copy.
+     */
+    [[nodiscard]] std::vector<std::string> mountedOwnerNames() const;
+
+    /**
+     * @brief Target types contributed by mounted packages.
+     * @cost Linear in mounted target types; returns a sorted owning vector copy.
+     */
+    [[nodiscard]] std::vector<std::string> mountedTargetTypeNames() const;
+
+    /** @brief Undo policy recorded for a mounted owner (Share when unknown). */
+    [[nodiscard]] editing::EditorUndoPolicy mountedUndoPolicy(std::string_view ownerModule) const;
 
 private:
     struct MountedPackage {
@@ -109,6 +147,8 @@ private:
     EditorCommandService*                           commands_ = nullptr;
     Options                                         options_;
     EditorWorkspace                                 workspace_;
+    std::unique_ptr<EditorSelectionRouter>          selection_;
+    std::unique_ptr<EditorUndoCoordinator>          undo_;
     std::unordered_map<std::string, MountedPackage> mounted_;
     bool                                            hasPrimaryViewport_ = false;
 };

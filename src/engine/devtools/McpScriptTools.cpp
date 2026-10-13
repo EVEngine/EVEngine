@@ -1,10 +1,10 @@
 #include "devtools/McpScriptTools.hpp"
 
+#include "common/EditorMcpAttach.h"
+#include "common/ScriptError.h"
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpSquirrelJson.hpp"
-
-#include "common/ScriptError.h"
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
@@ -363,6 +363,39 @@ void exposeMcpScriptApi(ssq::VM& vm) {
             clearScriptTools(raw);
             ConsolePanel::instance().addLog("info", "eve.mcp.tool cleared " + std::to_string(count) + " tool(s)");
             return count;
+        });
+
+        mcp.addFunc("attachEditor", [](ssq::Object hostObject) -> bool {
+            const auto attach = eve::editorMcpAttachHook();
+            if (!attach) {
+                ConsolePanel::instance().addLog("warn", "eve.mcp.attachEditor: editor hooks are not registered");
+                return false;
+            }
+            HSQUIRRELVM vm = hostObject.getHandle();
+            if (!vm || hostObject.isEmpty()) {
+                ConsolePanel::instance().addLog("warn", "eve.mcp.attachEditor requires an EditorHost instance");
+                return false;
+            }
+            SQUserPointer   pointer = nullptr;
+            const SQInteger top     = sq_gettop(vm);
+            sq_pushobject(vm, hostObject.getRaw());
+            const bool ok = SQ_SUCCEEDED(sq_getinstanceup(vm, -1, &pointer, nullptr));
+            sq_settop(vm, top);
+            if (!ok || !pointer) {
+                ConsolePanel::instance().addLog("warn", "eve.mcp.attachEditor requires an EditorHost instance");
+                return false;
+            }
+            const bool attached = attach(pointer);
+            if (attached) ConsolePanel::instance().addLog("info", "eve.mcp.attachEditor: host attached (mode A)");
+            return attached;
+        });
+
+        mcp.addFunc("detachEditor", []() -> bool {
+            const auto detach = eve::editorMcpDetachHook();
+            if (!detach) return false;
+            detach();
+            ConsolePanel::instance().addLog("info", "eve.mcp.detachEditor: host detached");
+            return true;
         });
     } catch (...) {
         // `eve` table missing: leave the MCP export API unavailable rather than

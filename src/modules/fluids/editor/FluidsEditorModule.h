@@ -11,6 +11,8 @@
 
 namespace eve::fluids_editor {
 
+class FluidsEditorPackageProvider;
+
 /**
  * @brief Creates schema-driven fluid documents for editor automation.
  * @ownership Returned targets own their authoring state; the factory retains nothing.
@@ -42,6 +44,7 @@ public:
 
 private:
     std::unique_ptr<FluidsAutomationTargetFactory> factory_;
+    std::unique_ptr<FluidsEditorPackageProvider>   packageProvider_;
 };
 
 }  // namespace eve::fluids_editor

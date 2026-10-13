@@ -5,6 +5,7 @@
 #include "editor/Editor.h"
 #include "editor/EditorAutomationTargetFactory.h"
 #include "editor/EditorCommandService.h"
+#include "editor/EditorMcpProjector.h"
 
 #include <algorithm>
 #include <utility>
@@ -23,14 +24,19 @@ EditorHost::EditorHost(Editor& editor, Options options)
     : editor_(&editor),
       commands_(&editor.commandService()),
       options_(std::move(options)),
-      workspace_(options_.id, options_.title.empty() ? options_.id : options_.title) {
+      workspace_(options_.id, options_.title.empty() ? options_.id : options_.title),
+      selection_(std::make_unique<EditorSelectionRouter>(*this)),
+      undo_(std::make_unique<EditorUndoCoordinator>(*this)) {
     // Default-constructed HostProfile is Developer but denies commands; promote to the
     // unrestricted developer profile unless the caller already configured one.
     if (options_.profile.kind() == HostKind::Developer && !options_.profile.allowsAllCommands())
         options_.profile = HostProfile::developer();
 }
 
-EditorHost::~EditorHost() { unmountAll(); }
+EditorHost::~EditorHost() {
+    if (editorMcpProjector().host() == this) editorMcpProjector().detach();
+    unmountAll();
+}
 
 Result<EditorHostMountReport> EditorHost::autoMount() { return mount({}); }
 
@@ -86,10 +92,38 @@ void EditorHost::unmountAll() {
         for (const auto& [owner, _] : mounted_) values.push_back(owner);
         return values;
     }();
-    for (const std::string& owner : owners) (void)unmount(owner);
+    for (const std::string& owner : owners)
+        unmount(owner).ignore("EditorHost teardown discards per-owner unmount status");
 }
 
 bool EditorHost::isMounted(std::string_view ownerModule) const { return mounted_.contains(std::string(ownerModule)); }
+
+std::vector<std::string> EditorHost::mountedOwnerNames() const {
+    std::vector<std::string> owners;
+    owners.reserve(mounted_.size());
+    for (const auto& [owner, _] : mounted_) owners.push_back(owner);
+    std::sort(owners.begin(), owners.end());
+    return owners;
+}
+
+std::vector<std::string> EditorHost::mountedTargetTypeNames() const {
+    std::vector<std::string> types;
+    for (const auto& [_, mounted] : mounted_)
+        for (const editing::EditorTargetTypeSpec& target : mounted.package.targetTypes) types.push_back(target.type);
+    std::sort(types.begin(), types.end());
+    types.erase(std::unique(types.begin(), types.end()), types.end());
+    return types;
+}
+
+editing::EditorUndoPolicy EditorHost::mountedUndoPolicy(std::string_view ownerModule) const {
+    const auto found = mounted_.find(std::string(ownerModule));
+    if (found == mounted_.end()) return editing::EditorUndoPolicy::Share;
+    return found->second.package.undoPolicy;
+}
+
+Result<void> EditorHost::exportMcp(EditorMcpExportMode mode) { return editorMcpProjector().attach(this, mode); }
+
+Result<EditorValue> EditorHost::auditPackages() const { return editorMcpProjector().auditCompleteness(); }
 
 Result<EditorHostMountEntry> EditorHost::mountPackage(const editing::EditorPackage&  package,
                                                       const EditorHostMountOverride& override) {
@@ -153,8 +187,11 @@ Result<EditorValue> EditorHost::exportCommandCatalog() const {
     if (!commands_)
         return eve::editing::failed<EditorValue>(EditorStatus::Failed, RuleId("editor.host.no-commands"),
                                                  "EditorHost has no command service");
+    const auto         owners = mountedOwnerNames();
+    const bool         filter = !owners.empty();
     EditorValue::Array commands;
     for (const CommandDescriptor& command : commands_->commands(options_.profile)) {
+        if (filter && std::find(owners.begin(), owners.end(), command.ownerModule) == owners.end()) continue;
         EditorValue::Object item;
         item["id"]                = command.id.value();
         item["displayName"]       = command.displayName;
@@ -181,16 +218,14 @@ Result<EditorValue> EditorHost::exportTargetCatalog() const {
         for (const editing::EditorTargetTypeSpec& target : mounted.package.targetTypes)
             createSchemas[target.type] = target.createSchema;
     }
-    eve::cap::forEach<editing::IEditorPackageProvider>([&](editing::IEditorPackageProvider* provider) {
-        if (!provider) return;
-        for (const editing::EditorTargetTypeSpec& target : provider->package().targetTypes)
-            createSchemas.emplace(target.type, target.createSchema);
-    });
 
+    const auto         allowed = mountedTargetTypeNames();
+    const bool         filter  = !allowed.empty();
     EditorValue::Array types;
     eve::cap::forEach<IEditorAutomationTargetFactory>([&](IEditorAutomationTargetFactory* factory) {
         if (!factory) return;
         for (const std::string_view type : factory->types()) {
+            if (filter && std::find(allowed.begin(), allowed.end(), type) == allowed.end()) continue;
             EditorValue::Object item;
             item["type"] = std::string(type);
             if (const auto found = createSchemas.find(std::string(type)); found != createSchemas.end()) {

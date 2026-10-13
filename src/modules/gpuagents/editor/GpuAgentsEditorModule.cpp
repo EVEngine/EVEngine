@@ -1,7 +1,9 @@
 #include "gpuagents/editor/GpuAgentsEditorModule.h"
 
 #include "common/Capability.h"
+#include "editing/EditorPackage.h"
 #include "gpuagents/editing/GpuAgentsDocument.h"
+#include "gpuagents/editor/GpuAgentsEditorPackage.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -43,11 +45,15 @@ editor::Result<editor::AutomationOwnedTarget> GpuAgentsAutomationTargetFactory::
     return makeTarget(target, request);
 }
 
-GpuAgentsEditorModule::GpuAgentsEditorModule() : factory_(std::make_unique<GpuAgentsAutomationTargetFactory>()) {
+GpuAgentsEditorModule::GpuAgentsEditorModule()
+    : factory_(std::make_unique<GpuAgentsAutomationTargetFactory>()),
+      packageProvider_(std::make_unique<GpuAgentsEditorPackageProvider>()) {
     eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
+    eve::cap::addListener<editing::IEditorPackageProvider>(packageProvider_.get());
 }
 
 GpuAgentsEditorModule::~GpuAgentsEditorModule() {
+    eve::cap::removeListener<editing::IEditorPackageProvider>(packageProvider_.get());
     eve::cap::removeListener<editor::IEditorAutomationTargetFactory>(factory_.get());
 }
 
