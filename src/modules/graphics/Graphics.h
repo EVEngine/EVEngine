@@ -1578,7 +1578,7 @@ public:
     /** @brief Returns the msaa samples. */
     virtual int getMsaaSamples() const { return msaaSamples; }
 
-    /** @brief Pause/resume presenting (Android background / foreground). */
+    /** @brief Pause/resume presenting (mobile background/foreground, desktop minimize/restore). */
     void setActive(bool active) override {
         graphicsActive = active;
         if (active) markSwapchainDirty();

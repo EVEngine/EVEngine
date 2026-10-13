@@ -10,6 +10,7 @@
 #include "common/Result.h"
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <string_view>
@@ -47,6 +48,22 @@ enum class RPGSaveIdDomain {
  */
 class EVENGINE_API_PLATFORM RPGSaveSession {
 public:
+    /** @brief Validated owning RPG state that can be published without another fallible parse. */
+    class EVENGINE_API_PLATFORM PreparedRestore {
+    public:
+        ~PreparedRestore();
+        PreparedRestore(PreparedRestore &&) noexcept;
+        PreparedRestore &operator=(PreparedRestore &&) noexcept;
+        PreparedRestore(const PreparedRestore &)            = delete;
+        PreparedRestore &operator=(const PreparedRestore &) = delete;
+
+    private:
+        friend class RPGSaveSession;
+        struct Impl;
+        explicit PreparedRestore(std::unique_ptr<Impl> state);
+        std::unique_ptr<Impl> state_;
+    };
+
     /** @brief Rpg save session. */
     RPGSaveSession() = default;
 
@@ -151,6 +168,24 @@ public:
     [[nodiscard]] eve::Result<std::string> snapshotJson() const;
 
     /**
+     * @brief Parse, migrate and validate every RPG participant without publishing live state.
+     * @return Owning prepared state or a structured failure; failure leaves every owner unchanged.
+     * @thread Owning simulation thread only. Bound objects and registries must remain stable until commit.
+     * @reentrancy No callbacks or scripts are invoked.
+     * @cost Comparable to a full save restore; once per load, not per frame.
+     */
+    [[nodiscard]] eve::Result<PreparedRestore> prepareRestoreSnapshotJson(std::string_view json);
+
+    /**
+     * @brief Publish previously prepared RPG, quest, actor and inventory state together.
+     * @param prepared Owning single-use state from this session's prepare method.
+     * @pre The bound owners and content registries have not changed since preparation.
+     * @thread Owning simulation thread only.
+     * @reentrancy No callbacks or scripts are invoked.
+     */
+    void commitPrepared(PreparedRestore prepared) noexcept;
+
+    /**
      * @brief Parse and fully prepare a save without publishing participant state.
      * @param json UTF-8 JSON produced by snapshotJson().
      * @return Success only when restoreSnapshotJson() can reach its no-fail commit boundary.
@@ -188,7 +223,6 @@ private:
         }
     };
 
-    [[nodiscard]] eve::Result<void> restoreSnapshotJsonImpl(std::string_view json, bool publish);
 
     GameState *gameState_ = nullptr;
     Tracker *tracker_ = nullptr;

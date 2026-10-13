@@ -52,14 +52,17 @@ Cook 后可通过 `TerrainDetailRuntime::load` 直接加载生成的 `eve.instan
   Shader、脚本和数据资源。fileID 使用有符号 64 位值；内置 Unity GUID 不当作丢失文件。
 - PNG/JPEG：复用现有 `eve.image/3` 导入。读取 `sRGBTexture`，normal map 按 linear
   标记。现有 PNG Cook 链路可用；JPEG 是否可 Cook 仍受已有 image Cook 编码支持限制。
-- glTF/GLB：复用当前三角网格导入器，依赖文件从所在目录的相对路径解析。
+- glTF/GLB：复用三角网格导入器；有 skin/animation 时还生成 `eve.skeleton`、
+  `eve.skin`、`eve.animation-clip`。依赖文件从所在目录的相对路径解析。
 - FBX：桌面 Assimp 解码静态三角网格。Unity `fileIdsGeneration: 2` 通过节点名称哈希恢复
   子资源 fileID；generation 1（以及省略该字段的旧导入器）通过 Prefab 中唯一的显式 Mesh
   引用或 Unity 的 `4300000 + 2 * meshIndex` 规则恢复。多个材质子网格保留为同一 Unity Mesh
   fileID 下的独立 canonical mesh，并按 Prefab 材质槽重新绑定。当前要求 mesh-bearing 节点名称
   唯一、导入原始 normals/UV0、正数 globalScale 和 file scale；无法消歧的多节点旧式非索引
   fileID 会明确拒绝。轴向转换为 `(-x,y,-z)`，UV 转为 `(u,1-v)`，单位比例为
-  `UnitScaleFactor * 0.01 * globalScale`。蒙皮、morph 和动画明确不支持。所有 UV、顶点颜色和
+  `UnitScaleFactor * 0.01 * globalScale`。带骨骼/动画的 FBX 在桌面端作为完整角色层级
+  转成 glTF 2.0，再生成 canonical 网格、骨架、蒙皮与 clip；无透视/剪切的节点矩阵会
+  分解为 TRS，不能表达的变换明确拒绝。morph 仍不支持。所有 UV、顶点颜色和
   float4 tangent 流进入 canonical mesh；缺少 tangent 时从法线和 UV0 生成。Web 没有 Assimp
   provider 时明确报告 Unsupported。
 - TVE preset：`.tvepreset` 转成 `eve.vegetation-conversion-preset/1`，有序保留命令、
@@ -89,7 +92,7 @@ Cook 后可通过 `TerrainDetailRuntime::load` 直接加载生成的 `eve.instan
   `reports/import.json` 记录源文件哈希、转换结果和未支持项。只有未支持资源的包会失败，
   不发布一个看似成功的空资源包。
 
-尚未完成：任意组件/数组的 Prefab Variant 覆盖、角色蒙皮与动画、
+尚未完成：任意组件/数组的 Prefab Variant 覆盖、SkinnedMeshRenderer 的 Prefab 绑定与运行时角色加载、
 独立 Sprite 资产、九宫格/UI 行为、Animator 状态机、AudioClip/字体 canonical 转换，以及编辑器拖放/预览流程。
 这些属于后续保真转换工作，不能以本阶段的索引或源文件保留代替验收。
 

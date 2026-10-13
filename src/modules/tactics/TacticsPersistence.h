@@ -8,6 +8,7 @@
 #include "tactics/TacticsReplay.h"
 #include "tactics/TacticsTypes.h"
 
+#include <memory>
 #include <string_view>
 
 namespace eve::tactics {
@@ -22,9 +23,35 @@ namespace eve::tactics {
  */
 class EVENGINE_API_DOMAINS TacticsPersistence {
 public:
+    /** @brief Fully validated battle candidate awaiting a no-fail publication. */
+    class EVENGINE_API_DOMAINS PreparedRestore {
+    public:
+        ~PreparedRestore();
+        PreparedRestore(PreparedRestore&&) noexcept;
+        PreparedRestore& operator=(PreparedRestore&&) noexcept;
+        PreparedRestore(const PreparedRestore&)            = delete;
+        PreparedRestore& operator=(const PreparedRestore&) = delete;
+
+    private:
+        friend class TacticsPersistence;
+        struct Impl;
+        explicit PreparedRestore(std::unique_ptr<Impl> state);
+        std::unique_ptr<Impl> state_;
+    };
+
     /** @brief Capture a version-one, integrity-sealed battle snapshot. */
     [[nodiscard]] static Result<SnapshotEnvelope> snapshot(Battle& battle,
                                                            const SnapshotHashProvider& hashProvider);
+    /**
+     * @brief Verify and resolve a battle snapshot without changing live state.
+     * @thread Owning simulation thread; battle and registries must remain stable until commit.
+     * @reentrancy No callbacks or scripts are invoked.
+     * @cost Comparable to a full battle restore; once per load, not per frame.
+     */
+    [[nodiscard]] static Result<PreparedRestore> prepareRestore(Battle& battle, const SnapshotEnvelope& snapshot,
+                                                                const SnapshotHashProvider& hashProvider);
+    /** @brief Publish a previously prepared battle state without further fallible work. */
+    static void commitPrepared(PreparedRestore prepared) noexcept;
     /** @brief Restore a verified compatible snapshot without partial mutation on failure. */
     [[nodiscard]] static Result<void> restore(Battle& battle, const SnapshotEnvelope& snapshot,
                                               const SnapshotHashProvider& hashProvider);
