@@ -8,7 +8,7 @@ include_guard(GLOBAL)
 #              instantiations), except the third-party install tree: on GCC a
 #              directory listed in both -I and -isystem has its -I entry
 #              ignored and is searched after every -I, which would flip which
-#              <vulkan/vulkan.hpp> wins (the vendored 261 must beat the SDK's).
+#              <vulkan/vulkan.hpp> wins on GCC (the vendored 261 must beat the SDK's).
 function(eve_external_include dir)
     if(EVENGINE_ENABLE_STRICT_WARNINGS)
         if(MSVC)
@@ -235,7 +235,13 @@ function(set_include)
         message(STATUS "Vulkan (iOS MoltenVK ${_eve_moltenvk_link_mode}): ${EVENGINE_MOLTENVK_XCFRAMEWORK}")
     elseif(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
         message(STATUS "Vulkan found: ${Vulkan_LIBRARY}")
-        target_include_directories(eve_engine_includes INTERFACE ${Vulkan_INCLUDE_DIRS})
+        if(APPLE AND EVENGINE_THIRD_PARTY_BINARY_DIR)
+            # macOS source builds use the SDK's Vulkan-Hpp. Preserve that choice
+            # with prebuilt dependencies so every TU sees the same dispatcher layout.
+            target_include_directories(eve_engine_includes BEFORE INTERFACE ${Vulkan_INCLUDE_DIRS})
+        else()
+            target_include_directories(eve_engine_includes INTERFACE ${Vulkan_INCLUDE_DIRS})
+        endif()
         set(EVENGINE_VULKAN_LIB Vulkan::Vulkan CACHE INTERNAL "Vulkan link target")
     elseif(APPLE)
         message(FATAL_ERROR
