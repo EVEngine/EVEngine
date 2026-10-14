@@ -830,7 +830,7 @@ jobs:
           EVENGINE_VULKAN_DISPATCH_PROBE: "1"
         run: |
           if ! ctest --test-dir build/macosx-debug --output-on-failure -R '^ao\.qualityAndModePresets$'; then
-            lldb --batch -o 'run --testcase=^ao\.qualityAndModePresets$' -o 'thread backtrace all' -- build/macosx-debug/test/unit_test
+            lldb --batch -o 'run --testcase=^ao\.qualityAndModePresets$' -k 'thread backtrace all' -- build/macosx-debug/test/unit_test
             exit 1
           fi
 
