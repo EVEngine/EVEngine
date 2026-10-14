@@ -571,6 +571,9 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         selector.add_desired_extension(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
         selector.add_desired_extension(VK_KHR_RAY_QUERY_EXTENSION_NAME);
         auto phys = selector.select();
+#if defined(EVENGINE_MACOSX)
+        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] selected device\n");
+#endif
         {
             // Record the GPU identity into the crash/error log before any Vulkan
             // work, so a device/driver crash can be tied to the exact GPU+driver.
@@ -723,6 +726,9 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         }
 
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
+#if defined(EVENGINE_MACOSX)
+        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] device builder created\n");
+#endif
         // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws) and BDA for RT.
         vk::PhysicalDeviceVulkan12Features vk12Enable{};
         vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
@@ -737,10 +743,19 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         }
         if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
+#if defined(EVENGINE_MACOSX)
+        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] logical device built\n");
+#endif
         // Load device-level extension entry points (needed for KHR RT).
         VULKAN_HPP_DEFAULT_DISPATCHER.init(device.instance);
+#if defined(EVENGINE_MACOSX)
+        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] dispatcher initialized\n");
+#endif
 #if defined(VKB_ENABLE_VMA)
         vmaAllocatorOwner_.create(inst, phys, device);
+#if defined(EVENGINE_MACOSX)
+        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] allocator created\n");
+#endif
 #endif
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
         eve::recordLogEvent("info",
