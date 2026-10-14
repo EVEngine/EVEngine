@@ -132,7 +132,10 @@ Result<bool> callSoftRestartGame(HSQUIRRELVM vm, bool reloadScripts) {
 std::uint32_t resetNativeStateProviders() {
     std::uint32_t ok = 0;
     eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* provider) {
-        if (provider && provider->resetToDefaults()) ++ok;
+        if (provider) {
+            auto reset = provider->resetToDefaults();
+            if (reset.ok()) ++ok;
+        }
     });
     return ok;
 }

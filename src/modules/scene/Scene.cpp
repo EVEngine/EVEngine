@@ -305,7 +305,7 @@ eve.Scene["getEntity"] <- function(nodeId, cls) {
 
 eve.Scene["getEntityAt"] <- function(hostName, nodeId, cls) {
     local out = null
-    forEachEntity(hostName, nodeId, function(e) {
+    forEachEntity(hostName, nodeId, function(e, index) {
         if (out == null && e instanceof cls) out = e
     })
     return out
@@ -325,7 +325,7 @@ eve.Scene["entitiesOf"] <- function(nodeId) {
 
 eve.Scene["entitiesOfAt"] <- function(hostName, nodeId) {
     local out = []
-    forEachEntity(hostName, nodeId, function(e) { out.push(e) })
+    forEachEntity(hostName, nodeId, function(e, index) { out.push(e) })
     return out
 }
 
@@ -876,7 +876,7 @@ SceneObject *Scene::findSceneObjectById(uint32_t id) const {
     auto view = ecs::View<SceneObject, SceneObject::Meta>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [meta] = *it;
-        if (meta->entity && uint32_t(meta->entity->id) == id) return meta->entity;
+        if (meta->entity && uint32_t(meta->entity->id) == id - 1u) return meta->entity;
     }
     return nullptr;
 }
@@ -902,7 +902,7 @@ SceneObject *Scene::ensureSceneObject(SceneHost *host, SceneNode *node,
     }
     if (!node->persistentId.isNil()) {
         if (SceneObject *o = findSceneObjectByPersistentId(node->persistentId)) {
-            node->objectId      = uint32_t(o->id);
+            node->objectId      = uint32_t(o->id) + 1u;
             o->meta()->hostName = hostName;
             o->meta()->nodeId   = node->id;
             return o;
@@ -911,7 +911,7 @@ SceneObject *Scene::ensureSceneObject(SceneHost *host, SceneNode *node,
     auto created = SceneObject::createObject(hostName, node->id, node->persistentId);
     if (!created.ok()) return nullptr;
     SceneObject *o = std::move(created).takeValue();
-    node->objectId = uint32_t(o->id);
+    node->objectId = uint32_t(o->id) + 1u;
     return o;
 }
 
@@ -1128,7 +1128,7 @@ void Scene::pruneOrphanObjects() {
                 continue;
             }
             SceneNode *n = borrowSceneResult(h->findById(meta->nodeId));
-            if (!n || n->objectId != uint32_t(meta->entity->id)) {
+            if (!n || n->objectId != uint32_t(meta->entity->id) + 1u) {
                 orphans.push_back(meta->entity);
                 continue;
             }
@@ -1218,9 +1218,10 @@ bool Scene::callCallback(HSQOBJECT fn, HSQOBJECT inst, int index) {
     if (!vm_) return false;
     const SQInteger top = sq_gettop(vm_);
     sq_pushobject(vm_, fn);
+    sq_pushroottable(vm_);
     sq_pushobject(vm_, inst);
     sq_pushinteger(vm_, SQInteger(index));
-    if (SQ_FAILED(sq_call(vm_, 2, SQFalse, SQTrue))) {
+    if (SQ_FAILED(sq_call(vm_, 3, SQFalse, SQTrue))) {
         sq_settop(vm_, top);
         return false;
     }

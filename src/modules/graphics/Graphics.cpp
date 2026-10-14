@@ -10,6 +10,7 @@
 #include "graphics/DepthPyramid.h"
 #include "graphics/Exposure.h"
 #include "graphics/GraphicsCapabilities.h"
+#include "graphics/GraphicsMeshBindings.h"
 #include "graphics/Grass.h"
 #include "graphics/HairCards.h"
 #include "graphics/HairShader.h"
@@ -345,19 +346,7 @@ void Graphics::expose(ssq::Table& table) {
     // Texture / Mesh expose occlusion flags used by volumetric light shafts.
     // (create returns null — instances come from Graphics::newTexture / newMesh*)
 
-    auto meshCls = table.addClass<Mesh>("Mesh", std::function<Mesh*()>([]() -> Mesh* { return nullptr; }), true);
-    meshCls.addFunc("getVertexCount", &Mesh::getVertexCount);
-    meshCls.addFunc("getIndexCount", std::function<int(Mesh*)>([](Mesh* mesh) { return mesh->indexCount; }));
-    meshCls.addFunc("getMorphCount", &Mesh::getMorphCount);
-    meshCls.addFunc("getMorphName", &Mesh::getMorphName);
-    meshCls.addFunc("hasMorph", &Mesh::hasMorph);
-    meshCls.addFunc("setMorphWeight", &Mesh::setMorphWeight);
-    meshCls.addFunc("getMorphWeight", &Mesh::getMorphWeight);
-    meshCls.addFunc("clearMorphWeights", &Mesh::clearMorphWeights);
-    meshCls.addFunc("hasMorphData", &Mesh::hasMorphData);
-    meshCls.addFunc("isMorphDirty", &Mesh::isMorphDirty);
-    meshCls.addFunc("setCastOcclusion", &Mesh::setCastOcclusion);
-    meshCls.addFunc("getCastOcclusion", &Mesh::getCastOcclusion);
+    exposeGraphicsMeshes(table);
 
     auto quad = table.addClass<Quad>("Quad", std::function<Quad*()>([]() -> Quad* { return nullptr; }), true);
     quad.addFunc("setViewport", &Quad::setViewport);

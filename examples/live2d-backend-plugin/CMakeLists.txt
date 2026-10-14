@@ -6,3 +6,6 @@ project(eve_live2d_backend_plugin LANGUAGES CXX)
 find_package(EVEngine REQUIRED)
 
 add_eve_plugin(live2d_backend_plugin SOURCES live2d_backend_plugin.cpp)
+if(MSVC)
+    target_compile_options(live2d_backend_plugin PRIVATE /utf-8 /EHsc)
+endif()

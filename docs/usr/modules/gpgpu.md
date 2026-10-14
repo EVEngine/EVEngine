@@ -175,14 +175,9 @@ local out = stagingBuffer.readFloat32s(count);
 - GPU 写完立即频繁 readback，造成同步停顿。
 - 组件字段不是 number：只有 float/int 字段可打包。
 
-## API 快查
+## 绑定与行为说明
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `begin()`、`bindBuffer()`、`clearBindings()`、`dispatch()`、`fillFloat32()`、`getBoundBuffer()`、`getFloat()`、`getName()`、`getSize()`
-- `getUsage()`、`isAvailable()`、`newBuffer()`、`newShader()`、`newShaderFromBytecode()`、`newShaderFromSpvFile()`、`readData()`、`readFloat32()`、`setFloat()`
 - GPU-driven resident render：`setGpuDrivenEnabled()` / `isGpuDrivenEnabled()` / `gpuDrivenMeshRecord()` / `gpuDrivenMaterialRecord()` / `gpuDrivenMaterialUsable()` / `getGpuDrivenInstanceStride()` / `getGpuResidentOffsetAlignment()` / `writeGpuDrivenInstance()` / `submitResidentInstances()`
-- `newSequence()`、`recordDispatch()`、`recordDownload()`、`recordUpload()`、`submit()`、`submitAsync()`、`poll()`、`wait()`、`getStatus()`、`writeData()`、`writeFloat32()`、`packEcsFloats()`、`unpackEcsFloats()`、`packEcsFloatsRange()`、`unpackEcsFloatsRange()`
 - `eve.EcsShaderSystem`：`setGpgpu` / `setShaderSource` / `ensureBuffer` / `dispatch` / …
 - `eve.ShaderSystem`：`bindFields` / `setShaderSource` / `setReadback` / `update` / GPU-driven 资源注册与 `submitResidentInstances`
 - GPU 驻留控制：`setBindingUpload` / `setBindingReadback` / `requestUpload` / `requestReadback`、对应的 `*Range` 接口
@@ -193,8 +188,11 @@ local out = stagingBuffer.readFloat32s(count);
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/gpgpu/`](../../../src/modules/gpgpu/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `gpgpu` / `ShaderECS`。
-**示例：** [`examples/ecs/gpu_main.nut`](../../../examples/ecs/gpu_main.nut)、[`examples/basic/compute/ecs_move.comp`](../../../examples/basic/compute/ecs_move.comp)
+**示例：** [`examples/ecs/gpu_main.nut`](../../../examples/ecs/gpu_main.nut)（计算 shader 内嵌在该脚本的 kMoveKernel 中）
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](gpgpu/api-reference.md)，使用前先确认本章的前置条件与生命周期。

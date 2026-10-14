@@ -1,5 +1,8 @@
 # AI 生成 / 辅助开发与 MCP 支持
 
+[English practical setup](../en/usr/AI-MCP.md)
+
+
 > 状态：首版落地（嵌入式 MCP + DevTools AI 面板 + Cursor stdio 桥）。
 > 代码：[`src/engine/devtools/McpServer.*`](../../src/engine/devtools/McpServer.hpp)、
 > [`AiPanel.*`](../../src/engine/devtools/AiPanel.hpp)、[`DevTool.*`](../../src/engine/devtools/DevTool.hpp)；
@@ -93,6 +96,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_profiler_frame` / `eve_profiler_report` | CPU profiler 采样：当前帧 zone 树与聚合报告（总时长/自耗时/热点） |
 | `eve_sensing_last_query` | 感知模块最近一次查询结果（谁看见了什么，便于排查 AI/视线问题） |
 | `eve_gameplay` | 共享玩法协议：`domains` / `instances` 发现 + `observe` / `actions` / `submit` / `advance` / `events` 驱动玩家的背包、经济账本、对话与手牌（见「玩法域」） |
+| `eve_input_status` / `eve_input_batch` / `eve_input_poll` | Playtest 输入闭环：经 `IInputInjection` 注入键鼠/滚轮/文本，经 `IUIAutomation` 语义点击；`wait`/`waitFrames`/`capture` 跨 `poll` 完成，不阻塞主线程（对齐 Godot MCP runtime） |
 
 ### Resources
 
@@ -557,13 +561,44 @@ level 为 `engine`、detach 后关闭捕获）、`devtools.mcp.engineLineDropsSc
 （会话/崩溃计数、`previousSessionCrashed` 与 `previousSessionEnded`、`eve_status.crashLog`）、
 `devtools.mcp.scriptToolExportRoundTrip`（脚本注册→tools/list→tools/call 参数与返回值、
 抛异常报错、remove 后从发现中消失、反遮蔽不变量、detach 不遗留 handler）、
-`devtools.mcp.scriptToolNameRules`（命名规则与非法注册拒绝）。
+`devtools.mcp.scriptToolNameRules`（命名规则与非法注册拒绝）、
+`devtools.mcp.inputBatchInjectsThroughCapability` /
+`devtools.mcp.inputBatchWaitCompletesAcrossPoll` /
+`devtools.mcp.inputBatchReportsMissingProvider`、
+`devtools.mcp.toolTagsClassifyFamilies` /
+`devtools.mcp.toolsetFilterHidesAndRejects`。
 
 ## 测试
 
 ```bash
 ./build/<platform>-debug/test/unit_test --testcase='^devtools\.(mcp|ai)\..*$'
 ```
+
+## 工具面裁剪（Toolset / read-only / exclude）
+
+Agent 上下文塞满 130+ schema 会伤命中率。引擎在 `tools/list` 与 `tools/call` 共用同一过滤：
+
+| 环境变量 | 含义 |
+|----------|------|
+| `EVE_MCP_TOOLSET` | 逗号分隔标签，默认 `all`；可选 `core,debug,play,editor,host,scene,input,domain,agent` |
+| `EVE_MCP_READONLY` | `1` 时隐藏/拒绝会改状态的工具 |
+| `EVE_MCP_EXCLUDE` | 逗号分隔的精确工具名黑名单 |
+
+被过滤的 `tools/call` 返回 `{ok:false, filtered:true, hint, nextTools, tags, mutates}`。
+
+## `tools/eve-mcp` 生命周期
+
+`tools/eve-mcp/server.js` 仍是 stdio↔TCP 转发器；另支持：
+
+- `EVE_MCP_AUTO_START=1`：端口未开时自动 `spawn(EVE_MCP_EVE_BIN run --debug --mcp-port=… EVE_MCP_GAME)`
+- 断开 / SIGTERM 时结束子进程
+
+详见 [`tools/eve-mcp/README.md`](../../tools/eve-mcp/README.md)。
+
+## 错误可自愈字段
+
+结构化失败尽量带 `hint` / `retryable` / `nextTools`（见 `mcpFailureObject`），方便 Agent
+在截图未就绪、输入 provider 缺失、toolset 过滤等情况下自己改调用路径。
 
 ## 后续可扩展
 
@@ -583,3 +618,5 @@ level 为 `engine`、detach 后关闭捕获）、`devtools.mcp.engineLineDropsSc
   `conflict: multiple gameplay providers publish the same domain`。路由器**不会**靠"逐个调用
   看谁成功"来猜，那等于为了回答路由问题去执行未知副作用。全部 10 个 provider 都已实现
   `IGameplayInstanceCatalog`，`domains` 也已对重复域去重
+- MCP 协议 `2026-07-28` stateless / tools/list cache hints
+- 危险工具 elicitation / strict 模式（远程暴露时再谈 token）

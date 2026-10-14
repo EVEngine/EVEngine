@@ -74,6 +74,18 @@ def play(client, **request):
     return json.loads(text)
 
 
+def wait_until_paused(client, timeout=30):
+    """Step requests queue work; wait for the frame budget to be consumed."""
+    deadline = time.monotonic() + timeout
+    while True:
+        status = play(client, op="status")
+        if status.get("paused"):
+            return
+        if time.monotonic() >= deadline:
+            raise RuntimeError("Timed out waiting for frame stepping to finish")
+        time.sleep(0.05)
+
+
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_PORT
     c = McpClient(HOST, port)
@@ -104,7 +116,16 @@ def main():
 
     shot_ok = False
     try:
-        captured = play(c, op="capture", path="ai_game_agent.png")
+        # The first request enables readback; its copy lands on a later present.
+        deadline = time.monotonic() + 10
+        while True:
+            try:
+                captured = play(c, op="capture", path="ai_game_agent.png")
+                break
+            except RuntimeError as exc:
+                if "no presented frame yet" not in str(exc) or time.monotonic() >= deadline:
+                    raise
+                time.sleep(0.05)
         print("[2] capture ->", captured)
         shot_ok = "path" in captured
     except RuntimeError as exc:
@@ -127,10 +148,11 @@ def main():
 
     stepped = play(c, op="step", clock="frame", count=8)
     print("[6] step ->", stepped)
+    wait_until_paused(c)
     observed1 = play(c, op="observe", observation="combat-alive")
     tick1 = int(observed1["state"]["tick"])
     print(f"[6] after step tick {tick0} -> {tick1}")
-    assert tick1 > tick0, f"expected tick to advance, got {tick0} then {tick1}"
+    assert tick1 == tick0 + 8, f"expected 8 ticks, got {tick0} then {tick1}"
 
     restored = play(c, op="checkpoint", mode="restore", json=snap)
     print("[7] restore ->", restored)

@@ -290,9 +290,11 @@ std::string screenshotImage(Poco::JSON::Object::Ptr args) {
         // Enabling readback and reading it back cannot happen inside one
         // presented frame: the swapchain copy is recorded by the next present.
         // This is a retryable state, not a failed call, so isError stays false.
-        Poco::JSON::Object::Ptr out = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        out->set("ok", false);
-        out->set("retryable", true);
+        Poco::JSON::Object::Ptr out =
+            mcpFailureObject("no-presented-frame",
+                             "Wait for one rendered frame and call eve_screenshot_image again "
+                             "(eve_render_status.readbackEnabled flips to true after enable)",
+                             true, {"eve_render_status", "eve_screenshot_image"});
         out->set("reason", "no-presented-frame");
         out->set("readbackEnabled", capture->status().readbackEnabled);
         out->set("message",

@@ -16,7 +16,7 @@
         "src/modules/spritestack/editing/SpriteStackRuntime.cpp"
       ],
       "tests": [
-        "test/editor_spritestack_target.cpp",
+        "test/editor_offscreen_preview.cpp",
         "test/spritestack.cpp"
       ],
       "provides": [

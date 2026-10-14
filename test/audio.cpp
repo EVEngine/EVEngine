@@ -1,55 +1,57 @@
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-
 #include "audio/Audio.h"
-#include "audio/AudioZone.h"
-#include "audio/Source.h"
+#include <zeroerr/unittest.h>
+#include <algorithm>
+#include <chrono>
+#include <cstdint>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <limits>
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
+#include <thread>
+#include <vector>
+#include "PathBesideSource.h"
 #include "action/ActionAudioBlock.h"
 #include "action/ActionAudioWaveform.h"
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
-#include "action/ActionPreview.h"
 #include "action/ActionParameterCurve.h"
-#include "common/Capability.h"
+#include "action/ActionPreview.h"
+#include "audio/AudioZone.h"
+#include "audio/Source.h"
 #include "audio/UnderwaterAudio.h"
+#include "audio/editing/AudioTarget.h"
+#include "common/Capability.h"
 #include "common/Exception.h"
+#include "common/SquirrelBinding.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
-#include "sound/Decoder.h"
-#include "sound/Sound.h"
-#include "sound/SoundData.h"
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
 #include "scene/SceneObject.h"
+#include "sound/Decoder.h"
+#include "sound/Sound.h"
+#include "sound/SoundData.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
-#include <algorithm>
-#include <chrono>
-#include <cstring>
-#include <cstdint>
-#include <fstream>
-#include <iostream>
-#include <limits>
-#include <string>
-#include <thread>
-#include <vector>
-
+// audio.cpp
 namespace {
 
-#include "PathBesideSource.h"
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 std::vector<char> readBinaryFile(const std::string &path) {
     std::ifstream in(path, std::ios::binary);
-    if (!in)
-        return {};
+    if (!in) return {};
     return std::vector<char>((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 }
 
 class TestAudioAttachmentSource final : public eve::IAttachmentPointSource {
 public:
-    eve::Result<eve::AttachmentPoint> sampleAttachmentPoint(
-        std::string_view name, eve::AttachmentPoint localOffset) const override {
+    eve::Result<eve::AttachmentPoint> sampleAttachmentPoint(std::string_view     name,
+                                                            eve::AttachmentPoint localOffset) const override {
         ++calls;
         if (name != "hand_r")
             return eve::Result<eve::AttachmentPoint>::failure(
@@ -78,10 +80,10 @@ static eve::audio::Audio *tryCreateAudio() {
 }
 
 static std::vector<char> makeSilentWav(int samples = 441) {
-    const int dataBytes = samples * 2;
+    const int         dataBytes = samples * 2;
     std::vector<char> buf(44 + dataBytes, 0);
-    auto w32 = [&](int off, uint32_t v) { std::memcpy(buf.data() + off, &v, 4); };
-    auto w16 = [&](int off, uint16_t v) { std::memcpy(buf.data() + off, &v, 2); };
+    auto              w32 = [&](int off, uint32_t v) { std::memcpy(buf.data() + off, &v, 4); };
+    auto              w16 = [&](int off, uint16_t v) { std::memcpy(buf.data() + off, &v, 2); };
     std::memcpy(buf.data(), "RIFF", 4);
     w32(4, 36 + dataBytes);
     std::memcpy(buf.data() + 8, "WAVEfmt ", 8);
@@ -99,8 +101,7 @@ static std::vector<char> makeSilentWav(int samples = 441) {
 
 TEST_CASE("audio.device") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
+    if (!audio) return;
     audio->setVolume(0.5f);
     CHECK(audio->getVolume() == 0.5f);
     audio->setPosition(1.f, 2.f, 3.f);
@@ -109,13 +110,12 @@ TEST_CASE("audio.device") {
 
 TEST_CASE("audio.staticSource.playStop") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
-    auto *sound = eve::sound::Sound::create();
-    auto wav = makeSilentWav(4410);
+    if (!audio) return;
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav(4410);
     eve::data::ByteData data(wav.data(), wav.size());
-    auto *sd = sound->newSoundData(&data);
-    auto *src = audio->newSource(sd);
+    auto               *sd  = sound->newSoundData(&data);
+    auto               *src = audio->newSource(sd);
     REQUIRE(src != nullptr);
     src->setVolume(0.2f);
     src->setPitch(1.0f);
@@ -129,24 +129,29 @@ TEST_CASE("audio.staticSource.playStop") {
 }
 
 TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
-    auto* audio = tryCreateAudio();
+    auto *audio = tryCreateAudio();
     if (!audio) return;
-    auto* filesystem = eve::filesystem::Filesystem::create();
+    auto *filesystem = eve::filesystem::Filesystem::create();
     REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
-    auto* scene = eve::scene::Scene::create();
-    auto mounted = scene->mountAs("action-audio", eve::scene::node("source").withPosition(8.f, 9.f, 10.f));
+    auto *scene   = eve::scene::Scene::create();
+    auto  mounted = scene->mountAs("action-audio", eve::scene::node("source").withPosition(8.f, 9.f, 10.f));
     REQUIRE(mounted.ok());
     auto source = eve::scene::SceneObject::createObject("action-audio", "source");
     REQUIRE(source.ok());
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     eve::action::ActionBlockRuntime runtime(registry.value());
-    eve::action::ActionAdvance advance;
+    eve::action::ActionAdvance      advance;
     advance.id = eve::action::ActionExecutionId{92};
-    eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"}, {"bone", "hand_r"},
+    eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"},
+                               {"bone", "hand_r"},
                                {"randomUris", eve::Value::Array{"test/fixtures/resource_formats/tone.wav"}},
-                               {"volume", 0.25}, {"pitch", 1.0}, {"randomPitchOffset", 0.05},
-                               {"spatialBlend", 1.0}, {"minDistance", 2.0}, {"maxDistance", 30.0},
+                               {"volume", 0.25},
+                               {"pitch", 1.0},
+                               {"randomPitchOffset", 0.05},
+                               {"spatialBlend", 1.0},
+                               {"minDistance", 2.0},
+                               {"maxDistance", 30.0},
                                {"looping", true}};
     advance.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
                                       actionLogicalId("presentation-track:audio"),
@@ -158,7 +163,7 @@ TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
                                     eve::Duration::fromNanoseconds(100), payload});
     eve::action::ActionNotifyContext context;
     context.executionId = advance.id;
-    context.source = ecs::handle_of(source.value());
+    context.source      = ecs::handle_of(source.value());
     TestAudioAttachmentSource attachmentSource;
     context.sourceAttachment = std::cref(attachmentSource);
     REQUIRE(runtime.apply(advance, context).ok());
@@ -169,20 +174,21 @@ TEST_CASE("audio.actionBlockProviderOwnsRealSourceEnterExit") {
 }
 
 TEST_CASE("audio.instantActionNotifyRetainsThenDeterministicallyReleasesSource") {
-    auto* audio = tryCreateAudio();
+    auto *audio = tryCreateAudio();
     if (!audio) return;
-    auto* filesystem = eve::filesystem::Filesystem::create();
+    auto *filesystem = eve::filesystem::Filesystem::create();
     REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     eve::action::ActionBlockRuntime runtime(registry.value());
-    const int before = audio->getSourceCount();
-    eve::action::ActionAdvance trigger;
+    const int                       before = audio->getSourceCount();
+    eve::action::ActionAdvance      trigger;
     trigger.id = eve::action::ActionExecutionId{93};
     trigger.timelineEvents.push_back({eve::action::ActionTimelineEventKind::Notify,
                                       actionLogicalId("presentation-track:audio"),
                                       actionLogicalId("presentation-audio:hit"),
-                                      actionLogicalId("presentation:audio"), eve::Duration::zero(),
+                                      actionLogicalId("presentation:audio"),
+                                      eve::Duration::zero(),
                                       {{"uri", "test/fixtures/resource_formats/tone.wav"}, {"volume", 0.5}}});
     eve::action::ActionNotifyContext context;
     context.executionId = trigger.id;
@@ -190,45 +196,47 @@ TEST_CASE("audio.instantActionNotifyRetainsThenDeterministicallyReleasesSource")
     CHECK_EQ(audio->getSourceCount(), before + 1);
 
     eve::action::ActionAdvance expired;
-    expired.id = trigger.id;
+    expired.id           = trigger.id;
     expired.totalElapsed = eve::Duration::fromNanoseconds(10'000'000'000LL);
     REQUIRE(runtime.apply(expired, context).ok());
     CHECK_EQ(audio->getSourceCount(), before);
 }
 
 TEST_CASE("audio.actionStateFadeOutUsesInjectedActionTimeAndReleasesSource") {
-    auto* audio = tryCreateAudio();
+    auto *audio = tryCreateAudio();
     if (!audio) return;
-    auto* filesystem = eve::filesystem::Filesystem::create();
+    auto *filesystem = eve::filesystem::Filesystem::create();
     REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
-    eve::action::ActionBlockRuntime runtime(registry.value());
-    const int before = audio->getSourceCount();
-    const auto execution = eve::action::ActionExecutionId{94};
-    const auto track = actionLogicalId("presentation-track:audio");
-    const auto item = actionLogicalId("presentation-audio:fade");
-    const auto type = actionLogicalId("presentation:audio-state");
-    eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"},
-                               {"volume", 0.8}, {"looping", true},
-                               {"fadeOutOnExit", true}, {"fadeOutDuration", 0.2}};
+    eve::action::ActionBlockRuntime  runtime(registry.value());
+    const int                        before    = audio->getSourceCount();
+    const auto                       execution = eve::action::ActionExecutionId{94};
+    const auto                       track     = actionLogicalId("presentation-track:audio");
+    const auto                       item      = actionLogicalId("presentation-audio:fade");
+    const auto                       type      = actionLogicalId("presentation:audio-state");
+    eve::Value::Object               payload{{"uri", "test/fixtures/resource_formats/tone.wav"},
+                                             {"volume", 0.8},
+                                             {"looping", true},
+                                             {"fadeOutOnExit", true},
+                                             {"fadeOutDuration", 0.2}};
     eve::action::ActionNotifyContext context;
     context.executionId = execution;
 
     eve::action::ActionAdvance entered;
     entered.id = execution;
-    entered.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
-                                      track, item, type, eve::Duration::zero(), payload});
-    entered.activeBlocks.push_back({track, item, type, eve::Duration::zero(),
-                                    eve::Duration::fromSeconds(1.0).takeValue(), payload});
+    entered.timelineEvents.push_back(
+        {eve::action::ActionTimelineEventKind::StateEnter, track, item, type, eve::Duration::zero(), payload});
+    entered.activeBlocks.push_back(
+        {track, item, type, eve::Duration::zero(), eve::Duration::fromSeconds(1.0).takeValue(), payload});
     REQUIRE(runtime.apply(entered, context).ok());
     CHECK_EQ(audio->getSourceCount(), before + 1);
 
     eve::action::ActionAdvance exited;
-    exited.id = execution;
+    exited.id           = execution;
     exited.totalElapsed = eve::Duration::fromSeconds(1.0).takeValue();
-    exited.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateExit,
-                                     track, item, type, exited.totalElapsed, payload});
+    exited.timelineEvents.push_back(
+        {eve::action::ActionTimelineEventKind::StateExit, track, item, type, exited.totalElapsed, payload});
     REQUIRE(runtime.apply(exited, context).ok());
     CHECK_EQ(audio->getSourceCount(), before + 1);
 
@@ -242,25 +250,24 @@ TEST_CASE("audio.actionStateFadeOutUsesInjectedActionTimeAndReleasesSource") {
 }
 
 TEST_CASE("audio.actionPreviewRetainsAdvanceSeeksRefreshAndStopsOnExit") {
-    auto* audio = tryCreateAudio();
+    auto *audio = tryCreateAudio();
     if (!audio) return;
-    auto* filesystem = eve::filesystem::Filesystem::create();
+    auto *filesystem = eve::filesystem::Filesystem::create();
     REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
     REQUIRE_EQ(eve::cap::listenerCount<eve::action::IActionPreviewSinkProvider>(), 1u);
-    auto* provider = eve::cap::listenerAt<eve::action::IActionPreviewSinkProvider>(0);
+    auto *provider = eve::cap::listenerAt<eve::action::IActionPreviewSinkProvider>(0);
     REQUIRE(provider != nullptr);
     auto sink = provider->createActionPreviewSink();
     REQUIRE(sink.ok());
     const int before = audio->getSourceCount();
 
-    eve::Value::Object payload{{"uri", "test/fixtures/resource_formats/tone.wav"},
-                               {"volume", 0.35}, {"pitch", 1.25}, {"looping", true}};
+    eve::Value::Object payload{
+        {"uri", "test/fixtures/resource_formats/tone.wav"}, {"volume", 0.35}, {"pitch", 1.25}, {"looping", true}};
     eve::action::ActionPreviewFrame frame;
     frame.reason = eve::action::ActionPreviewReason::Seek;
     frame.activeBlocks.push_back({actionLogicalId("presentation-track:audio"),
                                   actionLogicalId("presentation-audio:preview"),
-                                  actionLogicalId("presentation:audio-state"),
-                                  eve::Duration::fromNanoseconds(5000000),
+                                  actionLogicalId("presentation:audio-state"), eve::Duration::fromNanoseconds(5000000),
                                   eve::Duration::fromNanoseconds(100000000), payload});
     REQUIRE(sink.value()->prepare(frame).ok());
     CHECK_EQ(audio->getSourceCount(), before + 1);
@@ -277,7 +284,7 @@ TEST_CASE("audio.actionPreviewRetainsAdvanceSeeksRefreshAndStopsOnExit") {
     sink.value()->present(frame);
     CHECK_EQ(audio->getSourceCount(), before + 1);
 
-    auto invalid = frame;
+    auto invalid                                  = frame;
     invalid.activeBlocks.front().payload["pitch"] = 0.0;
     CHECK(!sink.value()->prepare(invalid).ok());
     CHECK_EQ(audio->getSourceCount(), before + 1);
@@ -288,9 +295,9 @@ TEST_CASE("audio.actionPreviewRetainsAdvanceSeeksRefreshAndStopsOnExit") {
     CHECK_EQ(audio->getSourceCount(), before);
 
     eve::action::ActionPreviewCue instant;
-    instant.kind = eve::action::ActionPreviewCueKind::Audio;
-    instant.itemId = actionLogicalId("presentation-audio:instant-preview");
-    instant.type = actionLogicalId("presentation:audio");
+    instant.kind    = eve::action::ActionPreviewCueKind::Audio;
+    instant.itemId  = actionLogicalId("presentation-audio:instant-preview");
+    instant.type    = actionLogicalId("presentation:audio");
     instant.payload = {{"uri", "test/fixtures/resource_formats/tone.wav"}, {"volume", 0.5}};
     empty.cues.push_back(std::move(instant));
     REQUIRE(sink.value()->prepare(empty).ok());
@@ -301,55 +308,52 @@ TEST_CASE("audio.actionPreviewRetainsAdvanceSeeksRefreshAndStopsOnExit") {
 }
 
 TEST_CASE("audio.actionWaveformProjectsRealPcmWithPitchLoopAndBoundedBuckets") {
-    auto* audio = tryCreateAudio();
+    auto *audio = tryCreateAudio();
     if (!audio) return;
-    auto* filesystem = eve::filesystem::Filesystem::create();
+    auto *filesystem = eve::filesystem::Filesystem::create();
     REQUIRE(filesystem->mountRealDirectory(EVENGINE_SOURCE_DIR, "/", false));
-    auto* provider = eve::cap::query<eve::action::IActionAudioWaveformProvider>();
+    auto *provider = eve::cap::query<eve::action::IActionAudioWaveformProvider>();
     REQUIRE(provider != nullptr);
 
     eve::action::ActionAudioWaveformRequest request;
-    request.binding.uri = "test/fixtures/resource_formats/tone.wav";
-    request.binding.pitch = 2.0;
+    request.binding.uri     = "test/fixtures/resource_formats/tone.wav";
+    request.binding.pitch   = 2.0;
     request.binding.looping = true;
-    request.blockDuration = eve::Duration::fromNanoseconds(200'000'000);
-    request.bucketCount = 64;
-    auto waveform = provider->waveform(request);
+    request.blockDuration   = eve::Duration::fromNanoseconds(200'000'000);
+    request.bucketCount     = 64;
+    auto waveform           = provider->waveform(request);
     REQUIRE(waveform.ok());
     CHECK(waveform.value().clipDurationSeconds > 0.0);
     REQUIRE_EQ(waveform.value().buckets.size(), 64u);
-    CHECK(std::any_of(waveform.value().buckets.begin(), waveform.value().buckets.end(), [](const auto& bucket) {
-        return bucket.minimum < -0.01f || bucket.maximum > 0.01f;
-    }));
+    CHECK(std::any_of(waveform.value().buckets.begin(), waveform.value().buckets.end(),
+                      [](const auto &bucket) { return bucket.minimum < -0.01f || bucket.maximum > 0.01f; }));
 
     request.bucketCount = 5000;
     CHECK(!provider->waveform(request).ok());
 }
 
 TEST_CASE("audio.actionParameterCurveDrivesAndRestoresMasterVolume") {
-    auto* audio = tryCreateAudio();
+    auto *audio = tryCreateAudio();
     if (!audio) return;
     audio->setVolume(0.8f);
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
     eve::action::ActionBlockRuntime runtime(registry.value());
-    eve::Value::Object payload{
-        {"target", "audio:master-volume"}, {"operation", "multiply"},
-        {"keys", eve::Value::Array{
-                     eve::Value::Object{{"time", 0.0}, {"value", 1.0}, {"interpolation", "linear"}},
-                     eve::Value::Object{{"time", 1.0}, {"value", 0.0}, {"interpolation", "linear"}}}}};
+    eve::Value::Object              payload{
+                     {"target", "audio:master-volume"},
+                     {"operation", "multiply"},
+                     {"keys", eve::Value::Array{eve::Value::Object{{"time", 0.0}, {"value", 1.0}, {"interpolation", "linear"}},
+                                   eve::Value::Object{{"time", 1.0}, {"value", 0.0}, {"interpolation", "linear"}}}}};
     eve::action::ActionAdvance advance;
     advance.id = eve::action::ActionExecutionId{94};
     advance.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter,
                                       actionLogicalId("presentation-track:parameter"),
                                       actionLogicalId("presentation-parameter:master-fade"),
-                                      actionLogicalId("presentation:parameter-curve"),
-                                      eve::Duration::zero(), payload});
-    advance.activeBlocks.push_back({actionLogicalId("presentation-track:parameter"),
-                                    actionLogicalId("presentation-parameter:master-fade"),
-                                    actionLogicalId("presentation:parameter-curve"),
-                                    eve::Duration::fromNanoseconds(500'000'000),
-                                    eve::Duration::fromNanoseconds(1'000'000'000), payload});
+                                      actionLogicalId("presentation:parameter-curve"), eve::Duration::zero(), payload});
+    advance.activeBlocks.push_back(
+        {actionLogicalId("presentation-track:parameter"), actionLogicalId("presentation-parameter:master-fade"),
+         actionLogicalId("presentation:parameter-curve"), eve::Duration::fromNanoseconds(500'000'000),
+         eve::Duration::fromNanoseconds(1'000'000'000), payload});
     eve::action::ActionNotifyContext context;
     context.executionId = advance.id;
     REQUIRE(runtime.apply(advance, context).ok());
@@ -361,23 +365,21 @@ TEST_CASE("audio.actionParameterCurveDrivesAndRestoresMasterVolume") {
 TEST_CASE("audio.underwater.transitionsAndAtomicValidation") {
     auto *audio = tryCreateAudio();
     if (!audio) return;
-    auto *sd = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
-    auto *down = audio->newSource(sd);
-    auto *up = audio->newSource(sd);
+    auto *sd       = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
+    auto *down     = audio->newSource(sd);
+    auto *up       = audio->newSource(sd);
     auto *ambience = audio->newSource(sd);
 
     CHECK(!eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 1.5F));
     CHECK(!down->isPlaying());
     CHECK(!ambience->isPlaying());
-    REQUIRE(static_cast<bool>(
-        eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 0.35F)));
+    REQUIRE(static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 0.35F)));
     CHECK(down->isPlaying());
     CHECK(ambience->isPlaying());
     CHECK(ambience->isLooping());
     CHECK(ambience->getVolume() == 0.35F);
 
-    REQUIRE(static_cast<bool>(
-        eve::audio::applyUnderwaterAudio(down, up, ambience, false, true, false, 0.35F)));
+    REQUIRE(static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, false, true, false, 0.35F)));
     CHECK(up->isPlaying());
     CHECK(!ambience->isPlaying());
 
@@ -390,26 +392,31 @@ TEST_CASE("audio.underwater.transitionsAndAtomicValidation") {
 TEST_CASE("audio.pcgZone.outputDrivesRealSource") {
     auto *audio = tryCreateAudio();
     if (!audio) return;
-    auto *sd = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
-    auto *source = audio->newSource(sd);
-    eve::audio::AudioZoneOutput command; command.play=true; command.volume=.35f;
-    REQUIRE(eve::audio::applyAudioZoneOutput(source,command).ok());
-    CHECK(source->isPlaying()); CHECK(source->getVolume()==.35f);
-    command.play=false; command.stop=true; command.volume=0.f;
-    REQUIRE(eve::audio::applyAudioZoneOutput(source,command).ok());
+    auto                       *sd     = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
+    auto                       *source = audio->newSource(sd);
+    eve::audio::AudioZoneOutput command;
+    command.play   = true;
+    command.volume = .35f;
+    REQUIRE(eve::audio::applyAudioZoneOutput(source, command).ok());
+    CHECK(source->isPlaying());
+    CHECK(source->getVolume() == .35f);
+    command.play   = false;
+    command.stop   = true;
+    command.volume = 0.f;
+    REQUIRE(eve::audio::applyAudioZoneOutput(source, command).ok());
     CHECK(!source->isPlaying());
-    command.volume=std::numeric_limits<float>::quiet_NaN();
-    CHECK(!eve::audio::applyAudioZoneOutput(source,command).ok());
-    delete source; delete sd;
+    command.volume = std::numeric_limits<float>::quiet_NaN();
+    CHECK(!eve::audio::applyAudioZoneOutput(source, command).ok());
+    delete source;
+    delete sd;
 }
 
 TEST_CASE("audio.streamSource.pump") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
-    auto wav = makeSilentWav(44100);
+    if (!audio) return;
+    auto                wav = makeSilentWav(44100);
     eve::data::ByteData data(wav.data(), wav.size());
-    auto *src = audio->newSourceFromData(&data, "stream");
+    auto               *src = audio->newSourceFromData(&data, "stream");
     REQUIRE(src != nullptr);
     src->setLooping(true);
     src->play();
@@ -425,13 +432,12 @@ TEST_CASE("audio.streamSource.pump") {
 
 TEST_CASE("audio.spatial.api") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
-    auto *sound = eve::sound::Sound::create();
-    auto wav = makeSilentWav();
+    if (!audio) return;
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav();
     eve::data::ByteData data(wav.data(), wav.size());
-    auto *sd = sound->newSoundData(&data);
-    auto *src = audio->newSource(sd);
+    auto               *sd  = sound->newSoundData(&data);
+    auto               *src = audio->newSource(sd);
     audio->setPosition(0, 0, 0);
     src->setRelative(false);
     src->setPosition(5.f, 0.f, 0.f);
@@ -445,15 +451,14 @@ TEST_CASE("audio.spatial.api") {
 
 TEST_CASE("audio.stopAll") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
+    if (!audio) return;
 
-    auto *sound = eve::sound::Sound::create();
-    auto wav = makeSilentWav(44100);
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav(44100);
     eve::data::ByteData data(wav.data(), wav.size());
-    auto *sd = sound->newSoundData(&data);
-    auto *src1 = audio->newSource(sd);
-    auto *src2 = audio->newSource(sd);
+    auto               *sd   = sound->newSoundData(&data);
+    auto               *src1 = audio->newSource(sd);
+    auto               *src2 = audio->newSource(sd);
     src1->play();
     src2->play();
     audio->pump();
@@ -470,14 +475,13 @@ TEST_CASE("audio.stopAll") {
 
 TEST_CASE("audio.pause") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
+    if (!audio) return;
 
-    auto *sound = eve::sound::Sound::create();
-    auto wav = makeSilentWav(44100);
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav(44100);
     eve::data::ByteData data(wav.data(), wav.size());
-    auto *sd = sound->newSoundData(&data);
-    auto *src = audio->newSource(sd);
+    auto               *sd  = sound->newSoundData(&data);
+    auto               *src = audio->newSource(sd);
     src->play();
     audio->pump();
     CHECK(src->isPlaying());
@@ -489,14 +493,13 @@ TEST_CASE("audio.pause") {
 
 TEST_CASE("audio.source.seekTell") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
+    if (!audio) return;
 
-    auto *sound = eve::sound::Sound::create();
-    auto wav = makeSilentWav(44100);
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav(44100);
     eve::data::ByteData data(wav.data(), wav.size());
-    auto *sd = sound->newSoundData(&data);
-    auto *src = audio->newSource(sd);
+    auto               *sd  = sound->newSoundData(&data);
+    auto               *src = audio->newSource(sd);
 
     CHECK(src->getDuration() > 0.9);
     src->play();
@@ -516,14 +519,13 @@ TEST_CASE("audio.source.seekTell") {
 
 TEST_CASE("audio.source.pitch") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
+    if (!audio) return;
 
-    auto *sound = eve::sound::Sound::create();
-    auto wav = makeSilentWav();
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav();
     eve::data::ByteData data(wav.data(), wav.size());
-    auto *sd = sound->newSoundData(&data);
-    auto *src = audio->newSource(sd);
+    auto               *sd  = sound->newSoundData(&data);
+    auto               *src = audio->newSource(sd);
 
     src->setPitch(1.5f);
     CHECK(src->getPitch() == 1.5f);
@@ -536,17 +538,16 @@ TEST_CASE("audio.source.pitch") {
 
 TEST_CASE("audio.volumeRoundTrip") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
+    if (!audio) return;
 
     audio->setVolume(0.75f);
     CHECK(audio->getVolume() == 0.75f);
 
-    auto *sound = eve::sound::Sound::create();
-    auto wav = makeSilentWav();
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav();
     eve::data::ByteData data(wav.data(), wav.size());
-    auto *sd = sound->newSoundData(&data);
-    auto *src = audio->newSource(sd);
+    auto               *sd  = sound->newSoundData(&data);
+    auto               *src = audio->newSource(sd);
 
     src->setVolume(0.3f);
     CHECK(src->getVolume() == 0.3f);
@@ -557,11 +558,10 @@ TEST_CASE("audio.volumeRoundTrip") {
 
 TEST_CASE("audio.modplug.midi.play") {
     auto *audio = tryCreateAudio();
-    if (!audio)
-        return;
+    if (!audio) return;
 
-    const std::string path = pathBesideThisSource("angel.mid");
-    auto bytes = readBinaryFile(path);
+    const std::string path  = pathBesideThisSource("angel.mid");
+    auto              bytes = readBinaryFile(path);
     REQUIRE(!bytes.empty());
 
     eve::filesystem::FileData fd("angel.mid", bytes.size());
@@ -586,19 +586,17 @@ TEST_CASE("audio.modplug.midi.play") {
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
     src->play();
-    bool heardPlaying = false;
-    double maxTell = 0.0;
+    bool       heardPlaying   = false;
+    double     maxTell        = 0.0;
     const auto streamDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(4);
     while (std::chrono::steady_clock::now() < streamDeadline) {
         audio->pump();
-        if (src->isPlaying())
-            heardPlaying = true;
+        if (src->isPlaying()) heardPlaying = true;
         maxTell = std::max(maxTell, src->tell());
         if (heardPlaying && maxTell > 0.05) break;
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-    std::cerr << "stream: isPlayingSeen=" << (heardPlaying ? "yes" : "no")
-              << " maxTell=" << maxTell << "s\n";
+    std::cerr << "stream: isPlayingSeen=" << (heardPlaying ? "yes" : "no") << " maxTell=" << maxTell << "s\n";
     REQUIRE(heardPlaying);
     REQUIRE(maxTell > 0.05);  // stream path currently underfills; static path is the reliable play test
     src->stop();
@@ -609,7 +607,7 @@ TEST_CASE("audio.modplug.midi.play") {
     eve::filesystem::FileData fd2("angel.mid", bytes.size());
     std::memcpy(fd2.getData(), bytes.data(), bytes.size());
     auto *sound = eve::sound::Sound::create();
-    auto *sd = sound->newSoundData(&fd2);
+    auto *sd    = sound->newSoundData(&fd2);
     REQUIRE(sd != nullptr);
     CHECK(sd->getSampleCount() > 0);
     auto *staticSrc = audio->newSource(sd);
@@ -626,4 +624,157 @@ TEST_CASE("audio.modplug.midi.play") {
     staticSrc->stop();
     delete staticSrc;
     delete sd;
+}
+
+// audio_editing_contracts.cpp
+using namespace eve::audio_editing;
+
+namespace {
+
+SelectionSnapshot select(const AudioSourceTarget &target) {
+    eve::editing::SelectionItem item;
+    item.domain = eve::editing::SelectionDomain::Asset;
+    item.target = TargetId(target.targetId());
+    item.item   = StableId(target.targetId().value());
+    item.type   = "audio.source";
+
+    SelectionSnapshot selection;
+    selection.channel = "audio";
+    selection.items.push_back(item);
+    selection.primary = item;
+    return selection;
+}
+
+class RecordingSink final : public IAudioSourceRuntimeSink {
+public:
+    Result<void> publish(const AudioSourceTarget &candidate) override {
+        ++calls;
+        observedRevision = candidate.revision();
+        if (reject)
+            return eve::editing::failed<void>(EditorStatus::Failed, RuleId("test.audio.publish"),
+                                              "injected publication failure");
+        return eve::editing::applied<void>();
+    }
+
+    bool     reject           = false;
+    int      calls            = 0;
+    Revision observedRevision = 0;
+};
+
+DomainOperation setClip(const AudioSourceTarget &target, std::string uri) {
+    auto operation = target.makeSet(select(target), PropertyPath("clip.asset"), EditorValue(std::move(uri)),
+                                    PropertySetMode::Absolute);
+    REQUIRE(operation.ok());
+    return std::move(operation.value());
+}
+
+}  // namespace
+
+TEST_CASE("audio_editing.provider_absence_is_explicit_and_preserves_authoring_state") {
+    AudioSourcePublishingTarget target("voice", nullptr);
+    const Revision              before = target.revision();
+    auto applied = target.applyDomainOperation(setClip(target.authoringTarget(), "asset://audio/voice.ogg"));
+    CHECK(!applied.ok());
+    CHECK_EQ(static_cast<int>(applied.code()), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(target.revision(), before);
+}
+
+TEST_CASE("audio_editing.publication_failure_is_atomic_and_success_commits_candidate") {
+    RecordingSink               sink;
+    AudioSourcePublishingTarget target("voice", &sink);
+    const Revision              before    = target.revision();
+    const DomainOperation       operation = setClip(target.authoringTarget(), "asset://audio/voice.ogg");
+
+    sink.reject   = true;
+    auto rejected = target.applyDomainOperation(operation);
+    CHECK(!rejected.ok());
+    CHECK_EQ(target.revision(), before);
+    CHECK_EQ(sink.calls, 1);
+
+    sink.reject    = false;
+    auto committed = target.applyDomainOperation(operation);
+    CHECK(committed.ok());
+    CHECK_EQ(target.revision(), before + 1);
+    CHECK_EQ(sink.calls, 2);
+    CHECK_EQ(sink.observedRevision, before + 1);
+}
+
+// audio_zone.cpp
+using namespace eve::audio;
+
+TEST_CASE("audio.pcgZone.activationFadeTrackAndDelayedExit") {
+    AudioZoneProfile profile;
+    profile.radius           = 10.f;
+    profile.minimumBreakTime = 2.f;
+    profile.maximumBreakTime = 2.f;
+    AudioZoneItem item;
+    item.volume      = .8f;
+    item.fadeInTime  = 2.f;
+    item.fadeOutTime = 2.f;
+    item.duration    = 10.f;
+    REQUIRE(profile.addItem(item).ok());
+    AudioZoneState state;
+    auto           start = evaluateAudioZone(profile, state, .1f, 0.f, 0.f, 0.f, .5f, 1u);
+    REQUIRE(start.ok());
+    CHECK(start.value().play);
+    CHECK(state.phase == AudioZonePhase::Active);
+    auto fade = evaluateAudioZone(profile, state, 1.1f, 0.f, 0.f, 0.f, .5f, 1u);
+    REQUIRE(fade.ok());
+    CHECK(fade.value().volume > .39f);
+    CHECK(fade.value().volume < .41f);
+    auto leave = evaluateAudioZone(profile, state, 2.f, 20.f, 0.f, 0.f, 1.f, 1u);
+    REQUIRE(leave.ok());
+    CHECK(state.phase == AudioZonePhase::BecomingInactive);
+    CHECK(!leave.value().stop);
+    REQUIRE(evaluateAudioZone(profile, state, 11.9f, 20.f, 0.f, 0.f, 1.f, 1u).ok());
+    CHECK(state.phase == AudioZonePhase::BecomingInactive);
+    auto stopped = evaluateAudioZone(profile, state, 12.1f, 20.f, 0.f, 0.f, 1.f, 1u);
+    REQUIRE(stopped.ok());
+    CHECK(stopped.value().stop);
+    CHECK(state.phase == AudioZonePhase::Inactive);
+}
+
+TEST_CASE("audio.pcgZone.avoidsImmediateRepeatAndFailsAtomically") {
+    AudioZoneProfile profile;
+    profile.global           = true;
+    profile.minimumBreakTime = 0;
+    profile.maximumBreakTime = 0;
+    AudioZoneItem item;
+    item.duration    = .5f;
+    item.fadeInTime  = 0;
+    item.fadeOutTime = 0;
+    REQUIRE(profile.addItem(item).ok());
+    REQUIRE(profile.addItem(item).ok());
+    AudioZoneState state;
+    auto           first = evaluateAudioZone(profile, state, .1f, 0, 0, 0, 1, 55u);
+    REQUIRE(first.ok());
+    const int selected = state.selectedTrack;
+    REQUIRE(evaluateAudioZone(profile, state, .7f, 0, 0, 0, 1, 55u).ok());
+    auto second = evaluateAudioZone(profile, state, .8f, 0, 0, 0, 1, 55u);
+    REQUIRE(second.ok());
+    CHECK(second.value().play);
+    CHECK(state.selectedTrack != selected);
+    const auto before = state;
+    CHECK(!evaluateAudioZone(profile, state, std::numeric_limits<float>::quiet_NaN(), 0, 0, 0, 1, 1u).ok());
+    CHECK(state.selectedTrack == before.selectedTrack);
+    CHECK(state.playing == before.playing);
+}
+
+TEST_CASE("audio.pcgZone.squirrelContract") {
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    auto    table = vm.addTable("eve");
+    eve::script::exposeResultBindings(table);
+    Audio::expose(table);
+    vm.run(vm.compileSource(R"(
+        local profile=eve.AudioZoneProfile(); profile.radius=12.0;
+        profile.minimumBreakTime=1.0; profile.maximumBreakTime=1.0;
+        local item=eve.AudioZoneItem(); item.volume=0.8; item.fadeInTime=2.0;
+        item.fadeOutTime=2.0; item.duration=10.0;
+        assert(profile.addItem(item).value==0 && profile.getItemCount()==1);
+        local state=eve.AudioZoneState();
+        local start=eve.evaluateAudioZone(profile,state,0.1,0.0,0.0,0.0,0.5,17);
+        assert(start.ok && start.value.play && start.value.trackIndex==0);
+        local fade=eve.evaluateAudioZone(profile,state,1.1,0.0,0.0,0.0,0.5,17);
+        assert(fade.ok && fade.value.volume>0.39 && fade.value.volume<0.41);
+    )"));
 }

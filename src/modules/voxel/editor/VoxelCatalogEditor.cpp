@@ -1,11 +1,16 @@
 #include "voxel/editor/VoxelCatalogEditor.h"
-
-#include "editor/EditorProtocol.h"
-
 #include <algorithm>
 #include <cmath>
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
 #include <utility>
+#include "editor/EditorProtocol.h"
+#include "editor/EditorScriptProjection.h"
+#include "editor/EditorWorkspace.h"
+#include "voxel/editor/VoxelCatalogEditorScriptBindings.h"
+#include "voxel/editor/VoxelEditorModule.h"
 
+// VoxelCatalogEditor.cpp
 namespace eve::voxel_editor {
 namespace {
 
@@ -20,8 +25,7 @@ VoxelCatalogEditor::VoxelCatalogEditor(std::string targetId)
     : target_(std::move(targetId)), authority_(&target_), transactions_(&authority_) {
     seedProject();
     auto previewed = refreshPreview();
-    if (!previewed.ok())
-        previewed.ignore("voxel editor keeps an empty projection when the seeded preview is rejected");
+    if (!previewed.ok()) previewed.ignore("voxel editor keeps an empty projection when the seeded preview is rejected");
 }
 
 void VoxelCatalogEditor::seedProject() {
@@ -114,20 +118,17 @@ const voxel_editing::VoxelModelValue* VoxelCatalogEditor::selectedModel() const 
 
 const char* VoxelCatalogEditor::fillName(voxel_editing::VoxelCellFill fill) {
     switch (fill) {
-        case voxel_editing::VoxelCellFill::Filled:
-            return "filled";
-        case voxel_editing::VoxelCellFill::Partial:
-            return "partial";
+        case voxel_editing::VoxelCellFill::Filled: return "filled";
+        case voxel_editing::VoxelCellFill::Partial: return "partial";
         case voxel_editing::VoxelCellFill::Empty:
-        default:
-            return "empty";
+        default: return "empty";
     }
 }
 
 std::string VoxelCatalogEditor::toolName() const { return tool_ == VoxelSculptTool::Erase ? "erase" : "attach"; }
 
-voxel_editing::Result<void> VoxelCatalogEditor::commit(
-    voxel_editing::Result<voxel_editing::DomainOperation> operation, std::string label) {
+voxel_editing::Result<void> VoxelCatalogEditor::commit(voxel_editing::Result<voxel_editing::DomainOperation> operation,
+                                                       std::string                                           label) {
     if (!operation.ok()) return voxel_editing::Result<void>::failure(operation.status());
     editor::TransactionSpec spec;
     spec.id           = editor::TransactionId("voxel.sculpt.tx." + std::to_string(++txSequence_));
@@ -135,8 +136,7 @@ voxel_editing::Result<void> VoxelCatalogEditor::commit(
     spec.target       = editor::TargetId(target_.targetId());
     spec.baseRevision = target_.revision();
     auto begun        = transactions_.begin(std::move(spec));
-    if (!begun.ok())
-        return editorError(begun.code(), "editor.voxel.begin", "Could not begin the voxel transaction");
+    if (!begun.ok()) return editorError(begun.code(), "editor.voxel.begin", "Could not begin the voxel transaction");
     auto appended = transactions_.append(std::move(operation).takeValue());
     if (!appended.ok()) {
         auto discarded = transactions_.discard();
@@ -171,9 +171,9 @@ void VoxelCatalogEditor::rebuildScreen() {
     if (!model) return;
     float fx, fy, fz, rx, ry, rz, ux, uy, uz;
     cameraAxes(fx, fy, fz, rx, ry, rz, ux, uy, uz);
-    const float cx    = static_cast<float>(model->sizeX) * 0.5f;
-    const float cy    = static_cast<float>(model->sizeY) * 0.5f;
-    const float cz    = static_cast<float>(model->sizeZ) * 0.5f;
+    const float cx = static_cast<float>(model->sizeX) * 0.5f;
+    const float cy = static_cast<float>(model->sizeY) * 0.5f;
+    const float cz = static_cast<float>(model->sizeZ) * 0.5f;
     const float extent =
         std::max(1.0f, static_cast<float>(std::max(model->sizeX, std::max(model->sizeY, model->sizeZ))));
     const float scale = std::min(viewportW_, viewportH_) / (extent * 1.8f);
@@ -189,7 +189,8 @@ void VoxelCatalogEditor::rebuildScreen() {
         box.y     = viewportH_ * 0.5f - (px * ux + py * uy + pz * uz) * scale - box.h * 0.5f;
         screen_.push_back(box);
     }
-    std::sort(screen_.begin(), screen_.end(), [](const ScreenVoxel& a, const ScreenVoxel& b) { return a.depth > b.depth; });
+    std::sort(screen_.begin(), screen_.end(),
+              [](const ScreenVoxel& a, const ScreenVoxel& b) { return a.depth > b.depth; });
 }
 
 voxel_editing::Result<void> VoxelCatalogEditor::refreshPreview() {
@@ -232,8 +233,7 @@ voxel_editing::Result<void> VoxelCatalogEditor::setViewport(float width, float h
 
 voxel_editing::Result<void> VoxelCatalogEditor::orbit(float yawDelta, float pitchDelta) {
     if (!std::isfinite(yawDelta) || !std::isfinite(pitchDelta))
-        return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.orbit",
-                           "Orbit deltas must be finite");
+        return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.orbit", "Orbit deltas must be finite");
     yaw_ += yawDelta;
     pitch_ = std::clamp(pitch_ + pitchDelta, -1.2f, 1.2f);
     rebuildScreen();
@@ -258,7 +258,7 @@ voxel_editing::Result<void> VoxelCatalogEditor::applyPick(const voxel_editing::V
 }
 
 voxel_editing::Result<void> VoxelCatalogEditor::pointerWorldRay(float ox, float oy, float oz, float dx, float dy,
-                                                                      float dz) {
+                                                                float dz) {
     const auto* model = selectedModel();
     if (!model)
         return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.selection",
@@ -279,9 +279,9 @@ voxel_editing::Result<void> VoxelCatalogEditor::pointerDown(float x, float y) {
                            "Pointer coordinates must be finite");
     float fx, fy, fz, rx, ry, rz, ux, uy, uz;
     cameraAxes(fx, fy, fz, rx, ry, rz, ux, uy, uz);
-    const float cx     = static_cast<float>(model->sizeX) * 0.5f;
-    const float cy     = static_cast<float>(model->sizeY) * 0.5f;
-    const float cz     = static_cast<float>(model->sizeZ) * 0.5f;
+    const float cx = static_cast<float>(model->sizeX) * 0.5f;
+    const float cy = static_cast<float>(model->sizeY) * 0.5f;
+    const float cz = static_cast<float>(model->sizeZ) * 0.5f;
     const float extent =
         std::max(1.0f, static_cast<float>(std::max(model->sizeX, std::max(model->sizeY, model->sizeZ))));
     const float scale = std::min(viewportW_, viewportH_) / (extent * 1.8f);
@@ -309,11 +309,11 @@ voxel_editing::Result<void> VoxelCatalogEditor::setSelectedSocket(std::string ta
                                voxel_editing::EditorValue(std::move(tag)), voxel_editing::PropertySetMode::Absolute),
                "Set socket tag");
     if (!tagSet.ok()) return tagSet;
-    return commit(target_.makeSet(selection(),
-                                  voxel_editing::PropertyPath("model.socket." + std::to_string(selectedFace_) + ".kind"),
-                                  voxel_editing::EditorValue(std::move(kind)),
-                                  voxel_editing::PropertySetMode::Absolute),
-                  "Set socket kind");
+    return commit(
+        target_.makeSet(selection(),
+                        voxel_editing::PropertyPath("model.socket." + std::to_string(selectedFace_) + ".kind"),
+                        voxel_editing::EditorValue(std::move(kind)), voxel_editing::PropertySetMode::Absolute),
+        "Set socket kind");
 }
 
 voxel_editing::Result<void> VoxelCatalogEditor::selectFace(int face) {
@@ -323,14 +323,14 @@ voxel_editing::Result<void> VoxelCatalogEditor::selectFace(int face) {
     return refreshPreview();
 }
 
-voxel_editing::Result<void> VoxelCatalogEditor::createModel(std::string id, std::string name, int sizeX,
-                                                                  int sizeY, int sizeZ) {
+voxel_editing::Result<void> VoxelCatalogEditor::createModel(std::string id, std::string name, int sizeX, int sizeY,
+                                                            int sizeZ) {
     voxel_editing::VoxelModelValue model;
-    model.id    = voxel_editing::ObjectId(id);
-    model.name  = std::move(name);
-    model.sizeX = sizeX;
-    model.sizeY = sizeY;
-    model.sizeZ = sizeZ;
+    model.id     = voxel_editing::ObjectId(id);
+    model.name   = std::move(name);
+    model.sizeX  = sizeX;
+    model.sizeY  = sizeY;
+    model.sizeZ  = sizeZ;
     auto created = commit(target_.makeCreateModel(model), "Create model");
     if (!created.ok()) return created;
     return selectModel(std::move(id));
@@ -457,6 +457,141 @@ std::string VoxelCatalogEditor::selectedSocketKind() const {
 std::string VoxelCatalogEditor::joinPartnerId(int index) const {
     if (index < 0 || index >= joinPartnerCount()) return {};
     return joinPartners_[static_cast<std::size_t>(index)].value();
+}
+
+}  // namespace eve::voxel_editor
+
+// VoxelCatalogEditorScriptBindings.cpp
+namespace eve::voxel_editor {
+namespace {
+
+constexpr const char* kBindingSource = "editor.voxel.sculpt.squirrel";
+
+class ScriptVoxelCatalogEditor {
+public:
+    explicit ScriptVoxelCatalogEditor(std::string targetId) : editor_(std::move(targetId)) {}
+
+    VoxelCatalogEditor&       editor() noexcept { return editor_; }
+    const VoxelCatalogEditor& editor() const noexcept { return editor_; }
+
+private:
+    VoxelCatalogEditor editor_;
+};
+
+}  // namespace
+
+void exposeVoxelCatalogEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
+    const editor::ScriptBind bind{table.getHandle(), kBindingSource};
+    auto voxelEditor = editor::addScriptClass<ScriptVoxelCatalogEditor>(table, "VoxelCatalogEditor");
+
+    editor::registerEditorWorkspace<ScriptVoxelCatalogEditor>(voxelEditor, bind,
+                                                              "voxel editor and workspace must not be null");
+    voxelEditor.addFunc("selectModel", [bind](ScriptVoxelCatalogEditor* self, const std::string& id) {
+        return bind.checked(self, "voxel editor must not be null", [&] { return self->editor().selectModel(id); });
+    });
+    voxelEditor.addFunc("setTool", [bind](ScriptVoxelCatalogEditor* self, const std::string& tool) {
+        return bind.checked(self, "voxel editor must not be null", [&] { return self->editor().setTool(tool); });
+    });
+    voxelEditor.addFunc("setViewport", [bind](ScriptVoxelCatalogEditor* self, float width, float height) {
+        return bind.checked(self, "voxel editor must not be null",
+                            [&] { return self->editor().setViewport(width, height); });
+    });
+    voxelEditor.addFunc("orbit", [bind](ScriptVoxelCatalogEditor* self, float yaw, float pitch) {
+        return bind.checked(self, "voxel editor must not be null", [&] { return self->editor().orbit(yaw, pitch); });
+    });
+    voxelEditor.addFunc("pointerDown", [bind](ScriptVoxelCatalogEditor* self, float x, float y) {
+        return bind.checked(self, "voxel editor must not be null", [&] { return self->editor().pointerDown(x, y); });
+    });
+    voxelEditor.addFunc("pointerWorldRay", [bind](ScriptVoxelCatalogEditor* self, float ox, float oy, float oz,
+                                                  float dx, float dy, float dz) {
+        return bind.checked(self, "voxel editor must not be null",
+                            [&] { return self->editor().pointerWorldRay(ox, oy, oz, dx, dy, dz); });
+    });
+    voxelEditor.addFunc("setVoxel", [bind](ScriptVoxelCatalogEditor* self, int x, int y, int z, bool occupied) {
+        return bind.checked(self, "voxel editor must not be null",
+                            [&] { return self->editor().setVoxel(x, y, z, occupied); });
+    });
+    voxelEditor.addFunc("setSelectedSocket",
+                        [bind](ScriptVoxelCatalogEditor* self, const std::string& tag, const std::string& kind) {
+                            return bind.checked(self, "voxel editor must not be null",
+                                                [&] { return self->editor().setSelectedSocket(tag, kind); });
+                        });
+    voxelEditor.addFunc("selectFace", [bind](ScriptVoxelCatalogEditor* self, int face) {
+        return bind.checked(self, "voxel editor must not be null", [&] { return self->editor().selectFace(face); });
+    });
+    voxelEditor.addFunc("createModel", [bind](ScriptVoxelCatalogEditor* self, const std::string& id,
+                                              const std::string& name, int sx, int sy, int sz) {
+        return bind.checked(self, "voxel editor must not be null",
+                            [&] { return self->editor().createModel(id, name, sx, sy, sz); });
+    });
+    voxelEditor.addFunc("deleteSelectedModel", [bind](ScriptVoxelCatalogEditor* self) {
+        return bind.checked(self, "voxel editor must not be null",
+                            [&] { return self->editor().deleteSelectedModel(); });
+    });
+    editor::registerEditorHistory<ScriptVoxelCatalogEditor>(voxelEditor, bind, "voxel editor must not be null");
+    voxelEditor.addFunc("getSelectedId", [](ScriptVoxelCatalogEditor* self) {
+        return self ? self->editor().selectedId() : std::string{};
+    });
+    voxelEditor.addFunc(
+        "getTool", [](ScriptVoxelCatalogEditor* self) { return self ? self->editor().toolName() : std::string{}; });
+    voxelEditor.addFunc("getSelectedFace",
+                        [](ScriptVoxelCatalogEditor* self) { return self ? self->editor().selectedFace() : 0; });
+    voxelEditor.addFunc("getModelCount",
+                        [](ScriptVoxelCatalogEditor* self) { return self ? self->editor().modelCount() : 0; });
+    voxelEditor.addFunc("getModelId", [](ScriptVoxelCatalogEditor* self, int index) {
+        return self ? self->editor().modelId(index) : std::string{};
+    });
+    voxelEditor.addFunc("getModelName", [](ScriptVoxelCatalogEditor* self, int index) {
+        return self ? self->editor().modelName(index) : std::string{};
+    });
+    voxelEditor.addFunc("getModelFill", [](ScriptVoxelCatalogEditor* self, int index) {
+        return self ? self->editor().modelFill(index) : std::string{};
+    });
+    voxelEditor.addFunc("getModelSelected", [](ScriptVoxelCatalogEditor* self, int index) {
+        return self && self->editor().isModelSelected(index);
+    });
+    voxelEditor.addFunc("getVoxelCount",
+                        [](ScriptVoxelCatalogEditor* self) { return self ? self->editor().voxelCount() : 0; });
+    voxelEditor.addFunc(
+        "getVoxelX", [](ScriptVoxelCatalogEditor* self, int index) { return self ? self->editor().voxelX(index) : 0; });
+    voxelEditor.addFunc(
+        "getVoxelY", [](ScriptVoxelCatalogEditor* self, int index) { return self ? self->editor().voxelY(index) : 0; });
+    voxelEditor.addFunc(
+        "getVoxelZ", [](ScriptVoxelCatalogEditor* self, int index) { return self ? self->editor().voxelZ(index) : 0; });
+    voxelEditor.addFunc("getModelSizeX",
+                        [](ScriptVoxelCatalogEditor* self) { return self ? self->editor().modelSizeX() : 0; });
+    voxelEditor.addFunc("getModelSizeY",
+                        [](ScriptVoxelCatalogEditor* self) { return self ? self->editor().modelSizeY() : 0; });
+    voxelEditor.addFunc("getModelSizeZ",
+                        [](ScriptVoxelCatalogEditor* self) { return self ? self->editor().modelSizeZ() : 0; });
+    voxelEditor.addFunc("getScreenVoxelCount",
+                        [](ScriptVoxelCatalogEditor* self) { return self ? self->editor().screenVoxelCount() : 0; });
+    voxelEditor.addFunc("getScreenVoxelX", [](ScriptVoxelCatalogEditor* self, int index) {
+        return self ? self->editor().screenVoxelX(index) : 0.0f;
+    });
+    voxelEditor.addFunc("getScreenVoxelY", [](ScriptVoxelCatalogEditor* self, int index) {
+        return self ? self->editor().screenVoxelY(index) : 0.0f;
+    });
+    voxelEditor.addFunc("getScreenVoxelW", [](ScriptVoxelCatalogEditor* self, int index) {
+        return self ? self->editor().screenVoxelW(index) : 0.0f;
+    });
+    voxelEditor.addFunc("getScreenVoxelH", [](ScriptVoxelCatalogEditor* self, int index) {
+        return self ? self->editor().screenVoxelH(index) : 0.0f;
+    });
+    voxelEditor.addFunc("getSelectedSocketTag", [](ScriptVoxelCatalogEditor* self) {
+        return self ? self->editor().selectedSocketTag() : std::string{};
+    });
+    voxelEditor.addFunc("getSelectedSocketKind", [](ScriptVoxelCatalogEditor* self) {
+        return self ? self->editor().selectedSocketKind() : std::string{};
+    });
+    voxelEditor.addFunc("getJoinPartnerCount",
+                        [](ScriptVoxelCatalogEditor* self) { return self ? self->editor().joinPartnerCount() : 0; });
+    voxelEditor.addFunc("getJoinPartnerId", [](ScriptVoxelCatalogEditor* self, int index) {
+        return self ? self->editor().joinPartnerId(index) : std::string{};
+    });
+
+    editor::registerEditorOwnedCreate<ScriptVoxelCatalogEditor, VoxelEditorModule>(moduleClass, bind,
+                                                                                   "voxel target id must not be empty");
 }
 
 }  // namespace eve::voxel_editor
