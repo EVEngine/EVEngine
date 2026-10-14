@@ -512,6 +512,38 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 const auto props = hppDevices.front().getProperties();
                 std::fprintf(stderr, "[vkdiag] hpp properties vendor=%u\n", props.vendorID);
                 std::fflush(stderr);
+                const auto features =
+                    reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures>(gpa(raw, "vkGetPhysicalDeviceFeatures"));
+                const auto memory = reinterpret_cast<PFN_vkGetPhysicalDeviceMemoryProperties>(
+                    gpa(raw, "vkGetPhysicalDeviceMemoryProperties"));
+                std::fprintf(stderr, "[vkdiag] features pointer=%d memory pointer=%d\n",
+                             features == VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceFeatures,
+                             memory == VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceMemoryProperties);
+                std::fflush(stderr);
+                const auto hppFeatures = hppDevices.front().getFeatures();
+                std::fprintf(stderr, "[vkdiag] hpp features anisotropy=%u\n", hppFeatures.samplerAnisotropy);
+                std::fflush(stderr);
+                const auto hppMemory = hppDevices.front().getMemoryProperties();
+                std::fprintf(stderr, "[vkdiag] hpp memory types=%u\n", hppMemory.memoryTypeCount);
+                std::fflush(stderr);
+                VkBool32 presentSupport = VK_FALSE;
+                if (surface) {
+                    const auto support = hppDevices.front().getSurfaceSupportKHR(0, surface, &presentSupport);
+                    std::fprintf(stderr, "[vkdiag] hpp surface support result=%d value=%u\n", static_cast<int>(support),
+                                 presentSupport);
+                    std::fflush(stderr);
+                }
+                const auto extensions = hppDevices.front().enumerateDeviceExtensionProperties();
+                std::fprintf(stderr, "[vkdiag] hpp extensions=%zu\n", extensions.size());
+                std::fflush(stderr);
+                if (surface) {
+                    const auto formats = hppDevices.front().getSurfaceFormatsKHR(surface);
+                    std::fprintf(stderr, "[vkdiag] hpp surface formats=%zu\n", formats.size());
+                    std::fflush(stderr);
+                    const auto modes = hppDevices.front().getSurfacePresentModesKHR(surface);
+                    std::fprintf(stderr, "[vkdiag] hpp present modes=%zu\n", modes.size());
+                    std::fflush(stderr);
+                }
             }
         }
 #endif
