@@ -8,6 +8,7 @@
 #include "common/SquirrelBinding.h"
 #include "devtools/AgentDevelopmentSession.hpp"
 #include "devtools/Debugger.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/PlayTrace.h"
 #include "devtools/Snapshot.hpp"
@@ -343,14 +344,30 @@ Result<Value> opStatus(IPlayHostRuntime& runtime) {
     Value::Object extra{{"paused", Value(runtime.paused())},
                         {"hostFrame", Value(static_cast<std::int64_t>(runtime.hostFrame()))},
                         {"domains", encodeDomains(runtime.gameplayDomains())}};
+    GameWorldSnapshotInput worldInput;
+    worldInput.domains  = runtime.gameplayDomains();
+    worldInput.gameRoot = McpServer::instance().gameRoot();
+    const HSQUIRRELVM      vm = Debugger::instance().vm();
+    worldInput.configTitle       = readConfigTitle(vm);
+    worldInput.configuredModules = readConfiguredModules(vm);
+    worldInput.liveModules       = readLiveModules(vm);
+
     auto loaded = runtime.loadContract();
     if (loaded) {
         auto parsed = parseContract(loaded.value());
         if (!parsed) return Result<Value>::failure(parsed.status());
         extra.emplace("contractId", Value(parsed.value().id));
         extra.emplace("contractLoaded", Value(true));
+        worldInput.contractId     = parsed.value().id;
+        worldInput.contractLoaded = true;
+        auto snapshot = buildGameWorldSnapshot(worldInput);
+        if (!snapshot) return Result<Value>::failure(snapshot.status());
+        extra.emplace("gameWorld", std::move(snapshot).takeValue());
     } else if (loaded.code() == StatusCode::NotFound) {
         extra.emplace("contractLoaded", Value(false));
+        auto snapshot = buildGameWorldSnapshot(worldInput);
+        if (!snapshot) return Result<Value>::failure(snapshot.status());
+        extra.emplace("gameWorld", std::move(snapshot).takeValue());
     } else {
         return Result<Value>::failure(loaded.status());
     }

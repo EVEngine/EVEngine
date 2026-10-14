@@ -515,6 +515,7 @@ function soft_restart_game(reload_scripts = true) {
                 if (name in root) delete root[name];
             }
             eve.dev.clearStateRoots();
+            if ("clearWorldContext" in eve.dev) eve.dev.clearWorldContext();
             eve.dev.resetNativeState();
         }
 
