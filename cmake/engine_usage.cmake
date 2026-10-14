@@ -17,7 +17,7 @@ function(eve_external_include dir)
             # The third-party install tree stays a plain -I on GCC (see the
             # function comment); everything else (external/*, header-only
             # vendored roots) can be marked system without reordering.
-            if(NOT dir MATCHES "third-party-binary")
+            if(NOT dir MATCHES "third-party-(binary|releases)")
                 target_compile_options(eve_engine_includes INTERFACE "-isystem${dir}")
             endif()
         endif()

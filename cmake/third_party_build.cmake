@@ -385,7 +385,9 @@ function(load_third_party)
                 "EVENGINE_THIRD_PARTY_BINARY_DIR must contain include/ and lib/: ${_eve_prebuilt_tp}")
         endif()
         message(STATUS "third-party: using read-only prebuilt install ${_eve_prebuilt_tp}")
-        target_include_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/include")
+        # The install ships the pinned vulkan.hpp. Keep it ahead of the host SDK
+        # for every TU so the shared Vulkan-Hpp dispatcher has one layout.
+        target_include_directories(eve_engine_includes BEFORE INTERFACE "${_eve_prebuilt_tp}/include")
         eve_external_include("${_eve_prebuilt_tp}/include")
         target_link_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/lib")
         set(EVENGINE_TP_INSTALL_PREFIX "${_eve_prebuilt_tp}" CACHE INTERNAL
