@@ -17,7 +17,7 @@ External exchanges belong to six faces:
 
 New/changed modules need a `module-interface` contract. Reuse existing link/ecs-system entries by scope instead of duplicating them. Declarations must be falsifiable against source/build/tests (`R-FACE-1..5`). Domains own their interfaces/state; common owns mechanisms and domain-neutral values/envelopes.
 
-Architecture contracts can be maintained in `scripts/architecture_contracts/*.json` shards. Update the owning shard and run `python3 scripts/sort_architecture_contracts.py`, rather than editing only the generated aggregate.
+Architecture contracts are currently maintained in `scripts/architecture_contracts/*.json` shards (update the owning shard and run `python3 scripts/sort_architecture_contracts.py`; do not hand-edit only the generated aggregate). **Do not add empty `module-interface` shells** with no `provides`/`requires`/`hot_path`. The code-first rewrite (scan facts from source; intent-only overlay) is specified in [`docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`](../../dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md).
 
 ## Include dependencies and trimming
 

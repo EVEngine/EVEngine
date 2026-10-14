@@ -458,9 +458,14 @@ make check
 That includes architecture contracts against `CI_BASE` (default `origin/dev`).
 Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA.
 `scripts/architecture_contracts/` (per-module shards; composed snapshot at
-`scripts/architecture_contracts.json`) is the single catalogue for contract
+`scripts/architecture_contracts.json`) is the **current** catalogue for contract
 evidence; do not silence a finding with a new baseline, allowlist, or broad
-scope. A compatibility facade may retain a legacy shape only when the public
+scope. **Do not add empty `module-interface` shells** (no `provides`/`requires`/
+`hot_path`) just to pass G-2/coverage — that pattern is frozen pending the
+code-first rewrite in
+`docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`
+(facts from source scan; intent-only overlay; drop the committed composed
+snapshot). A compatibility facade may retain a legacy shape only when the public
 documentation states that it is compatibility-only and the canonical
 Result/status API is the inward implementation. New debt markers still require the
 owner/issue/reason/expiry/removal metadata enforced by `check/quality-metadata`.
