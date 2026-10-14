@@ -1,16 +1,21 @@
 #include "gpuagents/editor/GpuAgentsEditorModule.h"
-#include <algorithm>
-#include <cmath>
-#include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string_view>
-#include <utility>
-#include <vector>
+
 #include "common/Capability.h"
+#include "editing/EditorPackage.h"
 #include "gpuagents/EffectBackend.h"
 #include "gpuagents/GpuAgentWorld.h"
 #include "gpuagents/editing/GpuAgentsDocument.h"
+#include "gpuagents/editor/GpuAgentsEditorPackage.h"
 #include "gpuagents/editor/GpuAgentsPreview.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
+#include <algorithm>
+#include <cmath>
+#include <memory>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 // GpuAgentsEditorModule.cpp
 namespace eve::gpuagents_editor {
@@ -47,11 +52,15 @@ editor::Result<editor::AutomationOwnedTarget> GpuAgentsAutomationTargetFactory::
     return makeTarget(target, request);
 }
 
-GpuAgentsEditorModule::GpuAgentsEditorModule() : factory_(std::make_unique<GpuAgentsAutomationTargetFactory>()) {
+GpuAgentsEditorModule::GpuAgentsEditorModule()
+    : factory_(std::make_unique<GpuAgentsAutomationTargetFactory>()),
+      packageProvider_(std::make_unique<GpuAgentsEditorPackageProvider>()) {
     eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
+    eve::cap::addListener<editing::IEditorPackageProvider>(packageProvider_.get());
 }
 
 GpuAgentsEditorModule::~GpuAgentsEditorModule() {
+    eve::cap::removeListener<editing::IEditorPackageProvider>(packageProvider_.get());
     eve::cap::removeListener<editor::IEditorAutomationTargetFactory>(factory_.get());
 }
 

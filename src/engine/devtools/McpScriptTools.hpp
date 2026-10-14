@@ -80,7 +80,7 @@ namespace eve::dev {
  */
 EVENGINE_API_FOUNDATION void clearScriptTools(HSQUIRRELVM owner);
 
-/** @brief Expose `eve.mcp.tool/remove/tools/clear` on a VM. */
+/** @brief Expose `eve.mcp.tool/remove/tools/clear/attachEditor/detachEditor` on a VM. */
 EVENGINE_API_FOUNDATION void exposeMcpScriptApi(ssq::VM& vm);
 
 /**
