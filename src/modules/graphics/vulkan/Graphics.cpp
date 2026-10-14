@@ -29,6 +29,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#if defined(EVENGINE_MACOSX)
+#include <dlfcn.h>
+#endif
 #if !defined(_WIN32)
 #include <unistd.h>
 #endif
@@ -477,7 +480,42 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
 
     {
         StartupStage stage("  vulkan: physical device + device");
-        auto         selector = inst.selectPhysicalDevice();
+#if defined(EVENGINE_MACOSX)
+        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) {
+            const auto raw = static_cast<VkInstance>(inst.instance);
+            const auto gpa = VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr;
+            Dl_info    owner{};
+            dladdr(&VULKAN_HPP_DEFAULT_DISPATCHER, &owner);
+            const auto enumerate =
+                reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(gpa(raw, "vkEnumeratePhysicalDevices"));
+            const auto properties =
+                reinterpret_cast<PFN_vkGetPhysicalDeviceProperties>(gpa(raw, "vkGetPhysicalDeviceProperties"));
+            uint32_t       count        = 0;
+            const VkResult directResult = enumerate(raw, &count, nullptr);
+            std::fprintf(
+                stderr, "[vkdiag] owner=%s sdl-gpa=%d linked-gpa=%d enumerate=%d properties=%d direct=%d count=%u\n",
+                owner.dli_fname ? owner.dli_fname : "unknown",
+                gpa == reinterpret_cast<PFN_vkGetInstanceProcAddr>(SDL_Vulkan_GetVkGetInstanceProcAddr()),
+                gpa == &vkGetInstanceProcAddr, enumerate == VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumeratePhysicalDevices,
+                properties == VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceProperties,
+                static_cast<int>(directResult), count);
+            std::fflush(stderr);
+            std::fprintf(stderr, "[vkdiag] hpp enumerate begin\n");
+            std::fflush(stderr);
+            const auto hppDevices = inst.instance.enumeratePhysicalDevices();
+            std::fprintf(stderr, "[vkdiag] hpp enumerate count=%zu\n", hppDevices.size());
+            std::fflush(stderr);
+            if (!hppDevices.empty()) {
+                const auto queues = hppDevices.front().getQueueFamilyProperties();
+                std::fprintf(stderr, "[vkdiag] hpp queues=%zu\n", queues.size());
+                std::fflush(stderr);
+                const auto props = hppDevices.front().getProperties();
+                std::fprintf(stderr, "[vkdiag] hpp properties vendor=%u\n", props.vendorID);
+                std::fflush(stderr);
+            }
+        }
+#endif
+        auto selector = inst.selectPhysicalDevice();
         selector.set_minimum_version(1, 0);
         if (surface) {
             selector.set_surface(surface);

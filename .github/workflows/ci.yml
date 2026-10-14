@@ -769,8 +769,7 @@ jobs:
     name: macOS
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
-    # v0.1.0's arm64 dependencies were built on macOS 15.
-    runs-on: macos-15
+    runs-on: macos-latest
     # The debug unit suite exceeded its former 30-minute step guard in release
     # run 35566503055. Budget the suite and the separate Dawn lane together.
     timeout-minutes: 240
@@ -826,6 +825,12 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_VULKAN_DISPATCH_PROBE: "1"
+        run: ctest --test-dir build/macosx-debug --output-on-failure -R '^ao\.qualityAndModePresets$'
+
+      - name: Run macosx full unit tests
         timeout-minutes: 60
         env:
           ALSOFT_DRIVERS: "null"
