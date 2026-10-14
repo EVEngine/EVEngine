@@ -565,8 +565,8 @@ void measureNode(UIHost::Tree &tree, int index) {
     }
     case NodeType::Tab: {
         const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
-        n.measuredW = t.x + style.FramePadding.x * 4.f;
-        n.measuredH = ImGui::GetFrameHeight();
+        n.measuredW    = t.x + style.FramePadding.x * 4.f;
+        n.measuredH    = ImGui::GetFrameHeight();
         break;
     }
     case NodeType::TabBar: {
@@ -578,9 +578,9 @@ void measureNode(UIHost::Tree &tree, int index) {
             w += child.measuredW;
             h = std::max(h, child.measuredH);
         }
-        n.measuredW = w;
+        n.measuredW               = w;
         const float defaultHeight = globalTheme().layout.tabBarHeight * themeUiScale();
-        n.measuredH = n.sizeY > 0.f ? n.sizeY : defaultHeight;
+        n.measuredH               = n.sizeY > 0.f ? n.sizeY : defaultHeight;
         break;
     }
     case NodeType::TabContainer:

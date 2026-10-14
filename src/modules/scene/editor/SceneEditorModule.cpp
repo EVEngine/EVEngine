@@ -138,12 +138,12 @@ void SceneEditorModule::expose(ssq::Class&) {}
 }  // namespace eve::scene_editor
 
 // SceneEditorScriptBindings.cpp
-#include "scene/editor/SceneEditorScriptBindings.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "scene/Scene.h"
 #include "scene/editing/SceneTarget.h"
 #include "scene/editor/SceneEditorModule.h"
+#include "scene/editor/SceneEditorScriptBindings.h"
 #include "scene/editor/SceneEditorSession.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>

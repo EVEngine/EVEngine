@@ -97,8 +97,8 @@ Result<int> Scene::applyPcgTerrainCullingAt(const std::string &hostName, graphic
 }  // namespace eve::scene
 
 // SceneComponent.cpp
-#include "scene/SceneComponent.h"
 #include <vector>
+#include "scene/SceneComponent.h"
 
 #include "scene/Scene.h"
 #include "scene/TransformSystem.h"
@@ -180,7 +180,7 @@ void SceneComponent::mountAs(const std::string &hostName) {
 void SceneComponent::rebuild(bool forceFull) {
     if (!host() || building_) return;
     building_ = true;
-    dirty_ = false;
+    dirty_    = false;
     try {
         auto  tree   = build();
         auto *target = host();

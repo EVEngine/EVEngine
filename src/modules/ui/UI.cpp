@@ -538,37 +538,32 @@ void UI::beginTabBar(const std::string &id) { pushOpen(tabBar({}, id)); }
 
 void UI::beginTabContainer(const std::string &activePageId, const std::string &id) {
     WidgetDesc d;
-    d.type = NodeType::TabContainer;
-    d.id = id;
-    d.key = id;
-    d.valueText = activePageId;
+    d.type          = NodeType::TabContainer;
+    d.id            = id;
+    d.key           = id;
+    d.valueText     = activePageId;
     d.flexDirection = FlexDirection::Column;
-    d.flexGrow = 1.f;
+    d.flexGrow      = 1.f;
     pushOpen(std::move(d));
 }
 
-void UI::beginPanelFrame(const std::string &title, const std::string &id) {
-    pushOpen(panelFrame(title, {}, id));
-}
+void UI::beginPanelFrame(const std::string &title, const std::string &id) { pushOpen(panelFrame(title, {}, id)); }
 
-void UI::beginDockArea(const std::string &region, const std::string &id) {
-    pushOpen(dockArea(region, {}, id));
-}
+void UI::beginDockArea(const std::string &region, const std::string &id) { pushOpen(dockArea(region, {}, id)); }
 
 void UI::beginAppFrame(const std::string &id) {
     WidgetDesc d;
-    d.type = NodeType::AppFrame;
-    d.id = id;
-    d.key = id;
+    d.type          = NodeType::AppFrame;
+    d.id            = id;
+    d.key           = id;
     d.flexDirection = FlexDirection::Column;
-    d.flexGrow = 1.f;
-    d.percentW = 1.f;
-    d.percentH = 1.f;
+    d.flexGrow      = 1.f;
+    d.percentW      = 1.f;
+    d.percentH      = 1.f;
     pushOpen(std::move(d));
 }
 
-void UI::addTab(const std::string &label, const std::string &pageId, bool selected,
-                const std::string &id) {
+void UI::addTab(const std::string &label, const std::string &pageId, bool selected, const std::string &id) {
     currentParent().children.push_back(tab(label, pageId, selected, id));
 }
 
